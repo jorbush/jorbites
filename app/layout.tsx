@@ -8,6 +8,9 @@ const font = Nunito({ subsets: ["latin"] })
 export const metadata = {
   title: 'Jorbites',
   description: 'a web to create and share receipts',
+  icons: {
+    icon: '/advocado.png',
+  },
 }
 
 export default function RootLayout({
