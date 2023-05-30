@@ -120,7 +120,7 @@ const Modal: React.FC<ModalProps> = ({
               bg-white 
               outline-none 
               focus:outline-none
-            "
+            " style={{ minHeight: '753px' }}
             >
               {/*header*/}
               <div className="
