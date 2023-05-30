@@ -16,6 +16,7 @@ interface ModalProps {
   disabled?: boolean;
   secondaryAction?: () => void;
   secondaryActionLabel?: string;
+  minHeight?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({ 
@@ -28,7 +29,8 @@ const Modal: React.FC<ModalProps> = ({
   footer, 
   disabled,
   secondaryAction,
-  secondaryActionLabel
+  secondaryActionLabel,
+  minHeight
 }) => {
   const [showModal, setShowModal] = useState(isOpen);
 
@@ -120,7 +122,7 @@ const Modal: React.FC<ModalProps> = ({
               bg-white 
               outline-none 
               focus:outline-none
-            " style={{ minHeight: '753px' }}
+            " style={{ minHeight: minHeight ? minHeight:'0px' }}
             >
               {/*header*/}
               <div className="
