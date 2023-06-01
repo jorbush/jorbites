@@ -6,8 +6,16 @@ import { useCallback, useState } from 'react';
 import MenuItem from './MenuItem';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
+import { User } from '@prisma/client';
+import { signOut } from 'next-auth/react';
 
-const UserMenu = () => {
+interface UserMenuProps {
+    currentUser?: User | null
+}
+
+const UserMenu: React.FC<UserMenuProps> = ({
+    currentUser
+}) => {
     const registerModal = useRegisterModal()
     const loginModal = useLoginModal()
     const [isOpen, setIsOpen] = useState(false)
@@ -74,16 +82,34 @@ const UserMenu = () => {
                     text-sm
                 '>
                     <div className='flex flex-col cursor-pointer'>
-                        <>
-                            <MenuItem
-                                onClick={loginModal.onOpen}
-                                label='Login'
-                            />
-                            <MenuItem
-                                onClick={registerModal.onOpen}
-                                label='Sign Up'
-                            />
-                        </>
+                        {currentUser ? (
+                            <>
+                                <MenuItem
+                                    onClick={() => {}}
+                                    label='My recipes'
+                                />
+                                <MenuItem
+                                    onClick={() => {}}
+                                    label='My favorites'
+                                />
+                                <MenuItem
+                                    onClick={() => signOut()}
+                                    label='Logout'
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <MenuItem
+                                    onClick={loginModal.onOpen}
+                                    label='Login'
+                                />
+                                <MenuItem
+                                    onClick={registerModal.onOpen}
+                                    label='Sign Up'
+                                />
+                            </>
+                        )}
+                        
                     </div>
                 </div>
             )}
