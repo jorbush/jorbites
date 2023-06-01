@@ -42,7 +42,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
                         cursor-pointer
                     "
                 >
-                    Post a receipt
+                    Post a recipe
                 </div>
                 <div
                     onClick={toggleOpen}
@@ -84,6 +84,10 @@ const UserMenu: React.FC<UserMenuProps> = ({
                     <div className='flex flex-col cursor-pointer'>
                         {currentUser ? (
                             <>
+                                <MenuItem
+                                    onClick={() => {}}
+                                    label='Post a recipe'
+                                />
                                 <MenuItem
                                     onClick={() => {}}
                                     label='My recipes'
