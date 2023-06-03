@@ -36,11 +36,25 @@ const RecipeModal = () => {
             imageSrc: '',
             title: '',
             description: '',
-            ingredient: [],
+            ingredients: [],
             steps: [],
             seconds: 60,
         }
     })
+
+    const category = watch('category')
+    const seconds = watch('seconds')
+    const imageSrc = watch('imageSrc')
+    const ingredients = watch('ingredients')
+    const steps = watch('steps')
+
+    const setCustomValue = (id: string, value: any) => {
+        setValue(id, value, {
+          shouldDirty: true,
+          shouldTouch: true,
+          shouldValidate: true
+        })
+    }
 
     const onBack = () => {
         setStep((value) => value - 1)
@@ -83,8 +97,8 @@ const RecipeModal = () => {
                 {categories.map((item) => (
                     <div key={item.label} className="col-span-1">
                         <CategoryInput
-                            onClick={() => {}}
-                            selected={false}
+                            onClick={(category) => setCustomValue('category', category)}
+                            selected={category === item.label}
                             label={item.label}
                             icon={item.icon}
                         />
