@@ -68,7 +68,14 @@ const RecipeModal = () => {
 
     const onNext = () => {
         if (step === STEPS.INGREDIENTS){
-            // TODO: setValue ingredients 
+            const newIngredients: string[] = []
+            for (let i = 0; i < numIngredients; i++) {
+                if (watch('ingredient ' + i) !== ""){
+                    newIngredients.push(watch('ingredient ' + i))
+                }
+            }
+            console.log(newIngredients)
+            setCustomValue('ingrediens', newIngredients)
         }
         setStep((value) => value + 1)
     }
@@ -79,7 +86,7 @@ const RecipeModal = () => {
 
     const removeIngredientInput = (index: number) => {
         setNumIngredients((value) => value - 1)
-        setValue('ingredient ' + index, "")
+        setCustomValue('ingredient ' + index, "")
         console.log(numIngredients, ' ingredient ' + index, "")
     }
 
