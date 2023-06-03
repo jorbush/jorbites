@@ -24,11 +24,18 @@ const UserMenu: React.FC<UserMenuProps> = ({
         setIsOpen((value) => !value)
     }, [])
 
+    const onPost = useCallback(() =>{
+        if (!currentUser){
+            return loginModal.onOpen()
+        }
+        // open post a recipe
+    }, [currentUser, loginModal])
+
     return (
         <div className="relative">
             <div className="flex flex-row items-center gap-3">
                 <div
-                    onClick={() => {} }
+                    onClick={onPost}
                     className="
                         hidden
                         border-[1px] 
