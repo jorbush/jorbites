@@ -1,7 +1,6 @@
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
-import { TbBeach, TbMountain, TbPool } from 'react-icons/tb';
 import { 
   GiGrain, 
   GiChicken, 
@@ -61,6 +60,7 @@ const Categories = () => {
           flex 
           flex-row 
           items-center 
+          justify-between
           overflow-x-auto
         "
       >
