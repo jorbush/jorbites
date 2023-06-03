@@ -11,7 +11,11 @@ module.exports = {
         green: {
           450: '#C5F0A4',
         },
-      }
+      },
+      screens: {
+        sm: "360px",
+        // Resto de las configuraciones de tamaño de pantalla
+      },
     }
   },
   plugins: [],
