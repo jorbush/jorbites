@@ -7,6 +7,7 @@ import Heading from "../Heading";
 import { categories } from "../navbar/Categories";
 import CategoryInput from "../inputs/CategoryInput";
 import { FieldValues, useForm } from "react-hook-form";
+import Button from "../Button";
 
 enum STEPS {
     CATEGORY = 0,
@@ -108,11 +109,33 @@ const RecipeModal = () => {
         </div>
     )
 
+    if (step === STEPS.INGREDIENTS){
+        bodyContent = (
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Set ingredients"
+                />
+                <div 
+                    className="
+                    grid 
+                    grid-cols-1 
+                    gap-3
+                    max-h-[50vh]
+                    overflow-y-auto
+                    "
+                >
+                    
+                </div>
+                <Button label="+" onClick={() => {}}/>
+            </div>
+        )
+    }
+
     return (
         <Modal
             isOpen={recipeModal.isOpen}
             onClose={recipeModal.onClose}
-            onSubmit={recipeModal.onClose}
+            onSubmit={onNext}
             actionLabel={actionLabel}
             secondaryActionLabel={secondaryActionLabel}
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
