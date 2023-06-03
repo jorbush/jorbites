@@ -8,6 +8,9 @@ import { categories } from "../navbar/Categories";
 import CategoryInput from "../inputs/CategoryInput";
 import { FieldValues, useForm } from "react-hook-form";
 import Button from "../Button";
+import {AiFillDelete} from "react-icons/ai"
+import Input from "../inputs/Input";
+
 
 enum STEPS {
     CATEGORY = 0,
@@ -78,15 +81,40 @@ const RecipeModal = () => {
     const renderIngredientInput = () => {
         const components = [];
         for (let i = 0; i < numIngredients; i++) {
-          components.push(
-            <div key={i}>
-              <p>Componente {i + 1}</p>
-              {numIngredients>1&&<button onClick={removeIngredientInput}>Eliminar</button>}
-            </div>
-          );
+            components.push(
+                <div key={i}
+                    className="
+                    grid 
+                    grid-cols-10
+                    gap-3
+                    max-h-[50vh]
+                    max-w
+                    overflow-y-auto
+                    "
+                >
+                    <div className="col-span-9">
+                        <Input
+                            id={"ingredient " + i}
+                            label=""
+                            register={register}  
+                            errors={errors}
+                            required={numIngredients === 1}
+                        />
+                    </div>
+                    {numIngredients>1&&(
+                        <div className="flex justify-center items-center">
+                            <AiFillDelete 
+                                color="#F43F5F" 
+                                onClick={removeIngredientInput} 
+                                size={24} 
+                            />
+                        </div>
+                    )}
+                </div>
+            )
         }
-        return components;
-      };
+        return components
+    }
 
     const actionLabel = useMemo(() => {
         if (step === STEPS.DESCRIPTION) {
@@ -111,8 +139,7 @@ const RecipeModal = () => {
             <div 
                 className="
                 grid 
-                grid-cols-1 
-                md:grid-cols-2 
+                grid-cols-2
                 gap-3
                 max-h-[50vh]
                 overflow-y-auto
