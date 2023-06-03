@@ -14,7 +14,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({
     currentUser
 }) => {
-    console.log({currentUser})
+    //console.log({currentUser})
 
     const [isFilterOpen, setIsFilterOpen] = useState(false)
 
