@@ -31,6 +31,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
                     onClick={() => {} }
                     className="
                         hidden
+                        border-[1px] 
                         text-sm
                         font-semibold
                         py-3
