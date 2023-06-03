@@ -67,15 +67,20 @@ const RecipeModal = () => {
     }
 
     const onNext = () => {
+        if (step === STEPS.INGREDIENTS){
+            // TODO: setValue ingredients 
+        }
         setStep((value) => value + 1)
     }
 
     const addIngredientInput = () => {
         setNumIngredients((value) => value + 1)
-    }
+    }      
 
-    const removeIngredientInput = () => {
+    const removeIngredientInput = (index: number) => {
         setNumIngredients((value) => value - 1)
+        setValue('ingredient ' + index, "")
+        console.log(numIngredients, ' ingredient ' + index, "")
     }
 
     const renderIngredientInput = () => {
@@ -101,11 +106,11 @@ const RecipeModal = () => {
                             required={numIngredients === 1}
                         />
                     </div>
-                    {numIngredients>1&&(
+                    {(numIngredients>1&&i===(numIngredients - 1)) &&(
                         <div className="flex justify-center items-center">
                             <AiFillDelete 
                                 color="#F43F5F" 
-                                onClick={removeIngredientInput} 
+                                onClick={() => {removeIngredientInput(i)}} 
                                 size={24} 
                             />
                         </div>
@@ -176,7 +181,7 @@ const RecipeModal = () => {
                 >
                     {renderIngredientInput()}
                 </div>
-                <Button outline={true}label="+" onClick={addIngredientInput}/>
+                <Button outline={true}label="+" onClick={() => {addIngredientInput()}}/>
             </div>
         )
     }
