@@ -22,6 +22,8 @@ const RecipeModal = () => {
 
     const [step, setStep] = useState(STEPS.CATEGORY)
 
+    const [numIngredients, setNumIngredients] = useState(1)
+
     const { 
         register, 
         handleSubmit,
@@ -64,6 +66,27 @@ const RecipeModal = () => {
     const onNext = () => {
         setStep((value) => value + 1)
     }
+
+    const addIngredientInput = () => {
+        setNumIngredients((value) => value + 1)
+    }
+
+    const removeIngredientInput = () => {
+        setNumIngredients((value) => value - 1)
+    }
+
+    const renderIngredientInput = () => {
+        const components = [];
+        for (let i = 0; i < numIngredients; i++) {
+          components.push(
+            <div key={i}>
+              <p>Componente {i + 1}</p>
+              {numIngredients>1&&<button onClick={removeIngredientInput}>Eliminar</button>}
+            </div>
+          );
+        }
+        return components;
+      };
 
     const actionLabel = useMemo(() => {
         if (step === STEPS.DESCRIPTION) {
@@ -124,9 +147,9 @@ const RecipeModal = () => {
                     overflow-y-auto
                     "
                 >
-                    
+                    {renderIngredientInput()}
                 </div>
-                <Button label="+" onClick={() => {}}/>
+                <Button outline={true}label="+" onClick={addIngredientInput}/>
             </div>
         )
     }
