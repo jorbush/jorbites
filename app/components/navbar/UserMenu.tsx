@@ -8,6 +8,7 @@ import useRegisterModal from '@/app/hooks/useRegisterModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import { signOut } from 'next-auth/react';
 import { SafeUser } from '@/app/types';
+import useRecipeModal from '@/app/hooks/useRecipeModal';
 
 interface UserMenuProps {
     currentUser?: SafeUser | null
@@ -18,6 +19,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
 }) => {
     const registerModal = useRegisterModal()
     const loginModal = useLoginModal()
+    const recipeModal = useRecipeModal()
     const [isOpen, setIsOpen] = useState(false)
 
     const toggleOpen = useCallback(() => {
@@ -29,6 +31,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
             return loginModal.onOpen()
         }
         // open post a recipe
+        recipeModal.onOpen()
     }, [currentUser, loginModal])
 
     return (
@@ -94,7 +97,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
                         {currentUser ? (
                             <>
                                 <MenuItem
-                                    onClick={() => {}}
+                                    onClick={recipeModal.onOpen}
                                     label='Post a recipe'
                                 />
                                 <MenuItem
