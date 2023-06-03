@@ -1,8 +1,8 @@
 'use client';
 
+import { useCallback, useState } from "react";
 import Container from "../Container";
 import Categories from "./Categories";
-import Logo from "./Logo";
 import Search from "./Search";
 import UserMenu from "./UserMenu";
 import { SafeUser } from "@/app/types";
@@ -15,6 +15,13 @@ const Navbar: React.FC<NavbarProps> = ({
     currentUser
 }) => {
     console.log({currentUser})
+
+    const [isFilterOpen, setIsFilterOpen] = useState(false)
+
+    const filterOpen = useCallback(() => {
+        setIsFilterOpen((value) => !value)
+    }, [])
+    
     return (
         <div className="fixed w-full bg-white z-10 shadow-sm">
             <div className="py-4 border-b-[1px]">
@@ -27,13 +34,12 @@ const Navbar: React.FC<NavbarProps> = ({
                         gap-3
                         md:gap-0
                     ">
-                    
-                        {<Search/>}
+                        <Search onClick={filterOpen}/>
                         <UserMenu currentUser={currentUser}/>
                     </div>
                 </Container>
             </div>
-            <Categories />
+            {isFilterOpen && (<Categories />)}
         </div>
     );
 }
