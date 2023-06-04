@@ -38,7 +38,8 @@ const Home = async () => {
           {listings.map((listing: any) => (
             <ListingCard
               key={listing.id}
-              
+              data={listing}
+              currentUser={currentUser}
             />
           ))}
         </div>
