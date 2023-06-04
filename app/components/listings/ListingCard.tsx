@@ -58,11 +58,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 <Image
                     fill
                     className="
-                    object-cover 
-                    h-full 
-                    w-full 
-                    group-hover:scale-110 
-                    transition
+                        object-cover 
+                        h-full 
+                        w-full 
+                        group-hover:scale-110 
+                        transition
                     "
                     src={data.imageSrc}
                     alt="Listing"
@@ -82,13 +82,14 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 { data.title }
             </div>
             <div className="font-light text-neutral-500">
-            { data.category}
+            {data.minutes} min
             </div>
+            {/*
             <div className="flex flex-row items-center gap-1">
-            <div className="font-semibold">
-                {data.minutes} min
-            </div>
-            </div>
+                <div className="font-semibold">
+                    { data.category}
+                </div>
+            </div>*/}
             {onAction && actionLabel && (
             <Button
                 disabled={disabled}
