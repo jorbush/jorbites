@@ -78,9 +78,9 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     />
                 </div>
             </div>
-            {/*<div className="font-semibold text-lg">
-                { data.steps.length } steps { data.ingredients.length }
-            </div>*/}
+            <div className="font-semibold text-lg">
+                { data.title }
+            </div>
             <div className="font-light text-neutral-500">
             { data.category}
             </div>
