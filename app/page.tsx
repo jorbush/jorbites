@@ -24,7 +24,6 @@ const Home = async () => {
       <Container>
         <div 
           className="
-            pt-24
             grid 
             grid-cols-1 
             sm:grid-cols-2 
