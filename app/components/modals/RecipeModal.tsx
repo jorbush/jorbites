@@ -6,23 +6,28 @@ import { useMemo, useState } from "react";
 import Heading from "../Heading";
 import { categories } from "../navbar/Categories";
 import CategoryInput from "../inputs/CategoryInput";
-import { FieldValues, useForm } from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Button from "../Button";
 import {AiFillDelete} from "react-icons/ai"
 import Input from "../inputs/Input";
 import Counter from "../inputs/Counter";
 import ImageUpload from "../inputs/ImageUpload";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 
 enum STEPS {
     CATEGORY = 0,
     INGREDIENTS = 1,
-    STEPS = 2,
-    DESCRIPTION = 3,
+    DESCRIPTION = 2,
+    STEPS = 3,
     IMAGES = 4
 }
 
 const RecipeModal = () => {
+    const router = useRouter()
+
     const recipeModal = useRecipeModal()
 
     const [step, setStep] = useState(STEPS.CATEGORY)
@@ -31,8 +36,6 @@ const RecipeModal = () => {
     const [numSteps, setNumSteps] = useState(1)
 
     const [isLoading, setIsLoading] = useState(false)
-
-
 
     const { 
         register, 
@@ -82,7 +85,7 @@ const RecipeModal = () => {
                 }
             }
             console.log(newIngredients)
-            setCustomValue('ingrediens', newIngredients)
+            setCustomValue('ingredients', newIngredients)
         }
         if (step === STEPS.STEPS){
             const newSteps: string[] = []
@@ -95,6 +98,29 @@ const RecipeModal = () => {
             setCustomValue('steps', newSteps)
         }
         setStep((value) => value + 1)
+    }
+
+    const onSubmit: SubmitHandler<FieldValues> = (data) => {
+        if (step !== STEPS.IMAGES){
+            return onNext()
+        }
+
+        setIsLoading(true)
+
+        axios.post('api/listings', data)
+            .then(() => {
+                toast.success('Recipe created!')
+                router.refresh()
+                reset()
+                setStep(STEPS.CATEGORY)
+                setNumIngredients(1)
+                setNumSteps(1)
+                recipeModal.onClose()
+            }).catch(() => {
+                toast.error('Something went wrong.')
+            }).finally(()=>{
+                setIsLoading(false)
+            })
     }
 
     const addIngredientInput = () => {
@@ -279,6 +305,7 @@ const RecipeModal = () => {
             </div>
         )
     }
+
     if (step === STEPS.DESCRIPTION){
         bodyContent = (
             <div className="flex flex-col gap-8">
@@ -313,6 +340,7 @@ const RecipeModal = () => {
             </div>
         )
     }
+
     if (step === STEPS.IMAGES){
         bodyContent = (
             <div className="flex flex-col gap-8">
@@ -324,11 +352,12 @@ const RecipeModal = () => {
             </div>
         )
     }
+
     return (
         <Modal
             isOpen={recipeModal.isOpen}
             onClose={recipeModal.onClose}
-            onSubmit={onNext}
+            onSubmit={handleSubmit(onSubmit)}
             actionLabel={actionLabel}
             secondaryActionLabel={secondaryActionLabel}
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
