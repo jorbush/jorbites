@@ -52,7 +52,7 @@ model Listing {
   imageSrc String
   createdAt DateTime @default(now())
   category String
-  seconds Int
+  minutes Int
   ingredients String[]
   steps String[]
   userId String @db.ObjectId
