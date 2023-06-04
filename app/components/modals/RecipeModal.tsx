@@ -10,14 +10,15 @@ import { FieldValues, useForm } from "react-hook-form";
 import Button from "../Button";
 import {AiFillDelete} from "react-icons/ai"
 import Input from "../inputs/Input";
+import Counter from "../inputs/Counter";
 
 
 enum STEPS {
     CATEGORY = 0,
     INGREDIENTS = 1,
     STEPS = 2,
-    IMAGES = 3,
-    DESCRIPTION = 4
+    DESCRIPTION = 3,
+    IMAGES = 4
 }
 
 const RecipeModal = () => {
@@ -46,12 +47,12 @@ const RecipeModal = () => {
             description: '',
             ingredients: [],
             steps: [],
-            seconds: 60,
+            minutes: 10,
         }
     })
 
     const category = watch('category')
-    const seconds = watch('seconds')
+    const minutes = watch('minutes')
     const imageSrc = watch('imageSrc')
     const ingredients = watch('ingredients')
     const steps = watch('steps')
@@ -189,14 +190,14 @@ const RecipeModal = () => {
     }
 
     const actionLabel = useMemo(() => {
-        if (step === STEPS.DESCRIPTION) {
+        if (step === STEPS.IMAGES) {
             return 'Create'
         }
         return 'Next'
     }, [step])
 
     const secondaryActionLabel = useMemo(() => {
-        if (step === STEPS.DESCRIPTION) {
+        if (step === STEPS.CATEGORY) {
             return undefined
         }
         return 'Back'
@@ -274,7 +275,33 @@ const RecipeModal = () => {
             </div>
         )
     }
-
+    if (step === STEPS.DESCRIPTION){
+        bodyContent = (
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Share some basics about your recipe"
+                    subtitle="What is about your recipe?"
+                />
+                <Input
+                    id="description"
+                    label="Description"
+                    register={register}  
+                    errors={errors}
+                />
+                <Counter title="Minutes" subtitle="How many seconds does it take to complete the recipe?" value={minutes} onChange={(value) => setCustomValue('minutes', value)}/>
+            </div>
+        )
+    }
+    if (step === STEPS.IMAGES){
+        bodyContent = (
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="Images"
+                    subtitle="Post images of your recipe"
+                />
+            </div>
+        )
+    }
     return (
         <Modal
             isOpen={recipeModal.isOpen}
