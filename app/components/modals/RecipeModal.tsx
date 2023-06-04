@@ -30,6 +30,9 @@ const RecipeModal = () => {
     const [numIngredients, setNumIngredients] = useState(1)
     const [numSteps, setNumSteps] = useState(1)
 
+    const [isLoading, setIsLoading] = useState(false)
+
+
 
     const { 
         register, 
@@ -280,16 +283,33 @@ const RecipeModal = () => {
         bodyContent = (
             <div className="flex flex-col gap-8">
                 <Heading
-                    title="Share some basics about your recipe"
-                    subtitle="What is about your recipe?"
+                    title="How would you describe your recipe?"
+                    subtitle="Short and sweet works best!"
                 />
+                <Input
+                    id="title"
+                    label="Title"
+                    disabled={isLoading}
+                    register={register}  
+                    errors={errors}
+                    required
+                />
+                <hr/>
                 <Input
                     id="description"
                     label="Description"
+                    disabled={isLoading}
                     register={register}  
                     errors={errors}
+                    required
                 />
-                <Counter title="Minutes" subtitle="How many seconds does it take to complete the recipe?" value={minutes} onChange={(value) => setCustomValue('minutes', value)}/>
+                <hr/>
+                <Counter 
+                    title="Minutes" 
+                    subtitle="How many seconds does it take to complete the recipe?" 
+                    value={minutes} 
+                    onChange={(value) => setCustomValue('minutes', value)}
+                />
             </div>
         )
     }
@@ -314,6 +334,7 @@ const RecipeModal = () => {
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
             title="Post a recipe!"
             body={bodyContent}
+            minHeight="753px"
         />
     );
 }
