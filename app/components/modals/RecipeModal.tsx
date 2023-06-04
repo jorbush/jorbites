@@ -11,6 +11,7 @@ import Button from "../Button";
 import {AiFillDelete} from "react-icons/ai"
 import Input from "../inputs/Input";
 import Counter from "../inputs/Counter";
+import ImageUpload from "../inputs/ImageUpload";
 
 
 enum STEPS {
@@ -299,6 +300,7 @@ const RecipeModal = () => {
                     title="Images"
                     subtitle="Post images of your recipe"
                 />
+                <ImageUpload value={imageSrc} onChange={(value) => setCustomValue('imageSrc', value)}/>
             </div>
         )
     }
