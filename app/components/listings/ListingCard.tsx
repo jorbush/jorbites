@@ -3,6 +3,7 @@
 import { SafeUser } from "@/app/types";
 import { Listing } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 
 interface ListingCardProps {
     data: Listing;
@@ -18,11 +19,22 @@ const ListingCard: React.FC<ListingCardProps> = ({
     onAction,
     disabled,
     actionLabel,
-    actionId,
+    actionId = "",
     currentUser
 }) => {
     const router = useRouter()
-    
+
+    const handleCancel = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation()
+
+        if(disabled){
+            return;
+        }
+
+        onAction?.(actionId)
+        
+    }, [onAction, actionId, disabled])
+
     return (
         <div>
             Listing Card
