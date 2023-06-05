@@ -70,53 +70,57 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       text-lg font-light text-neutral-500">
         {description}
       </div>
-      { (ingredients.length>0) && (<hr />)}
       { (ingredients.length>0) && (
-        <div>
-            <div 
-                className="
-                text-xl 
-                font-semibold 
-                flex 
-                flex-row 
-                items-center
-                gap-2
-                "
-            >
-                Ingredients
+        <>
+            <hr />
+            <div>
+                <div 
+                    className="
+                    text-xl 
+                    font-semibold 
+                    flex 
+                    flex-row 
+                    items-center
+                    gap-2
+                    "
+                >
+                    Ingredients
+                </div>
+                <ul className="list-disc pl-9 pt-4">
+                    {ingredients.map((ingredient, index) => (
+                        <li key={index} className="mb-2">
+                            {ingredient}
+                        </li>
+                    ))}
+                </ul>
             </div>
-            <ul className="list-disc pl-9 pt-4">
-                {ingredients.map((ingredient, index) => (
-                    <li key={index} className="mb-2">
-                        {ingredient}
+        </>
+      )}
+      { (steps.length>0) && (
+        <>
+            <hr />
+            <div>
+                <div 
+                    className="
+                    text-xl 
+                    font-semibold 
+                    flex 
+                    flex-row 
+                    items-center
+                    gap-2
+                    "
+                >
+                    Steps
+                </div>
+                <ol className="list-decimal pl-9 pt-4">
+                {steps.map((step, index) => (
+                    <li key={index} className="mb-2 ">
+                        {step}
                     </li>
                 ))}
-            </ul>
-        </div>    
-      )}
-      { (steps.length>0) && (<hr />)}
-      { (steps.length>0) && (
-        <div>
-            <div 
-                className="
-                text-xl 
-                font-semibold 
-                flex 
-                flex-row 
-                items-center
-                gap-2
-                "
-            >
-                Steps
+                </ol>
             </div>
-            <ol className="list-decimal pl-9 pt-4">
-            {steps.map((step, index) => (
-                <li key={index} className="mb-2 ">
-                    {step}
-                </li>
-            ))}
-            </ol>
-        </div>
+        </>
       )}
     </div>
   );
