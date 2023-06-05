@@ -1,9 +1,7 @@
 'use client';
 
 import { IconType } from "react-icons";
-
 import { SafeUser } from "@/app/types";
-
 import Avatar from "../Avatar";
 import ListingCategory from "./ListingCategory";
 
@@ -26,8 +24,6 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   steps,
   category
 }) => {
-
-
   return ( 
     <div className="col-span-4 flex flex-col gap-8">
       <div className="flex flex-col gap-2">
@@ -74,9 +70,33 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       text-lg font-light text-neutral-500">
         {description}
       </div>
-      <hr />
+      { (ingredients.length>0) && (<hr />)}
+      { (ingredients.length>0) && (
+        <div>
+            <h3 className="text-lg font-semibold mb-2">Ingredients</h3>
+            <ul className="list-disc pl-6">
+            {ingredients.map((ingredient, index) => (
+                <li key={index} className="mb-2">
+                    {ingredient}
+                </li>
+            ))}
+            </ul>
+        </div>    
+      )}
+      
+      { (steps.length>0) && (<hr />)}
+      { (steps.length>0) && (<div>
+        <h3 className="text-lg font-semibold mb-2">Steps</h3>
+        <ol className="list-decimal pl-6 ">
+          {steps.map((step, index) => (
+            <li key={index} className="mb-2 ">
+                {step}
+            </li>
+          ))}
+        </ol>
+      </div>)}
     </div>
-   );
+  );
 }
  
 export default ListingInfo;
