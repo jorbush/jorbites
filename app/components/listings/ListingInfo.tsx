@@ -25,7 +25,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   category
 }) => {
   return ( 
-    <div className="col-span-4 flex flex-col gap-8">
+    <div className="col-span-4 flex flex-col gap-8 pl-2 pr-2">
       <div className="flex flex-col gap-2">
         <div 
           className="
@@ -73,28 +73,51 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       { (ingredients.length>0) && (<hr />)}
       { (ingredients.length>0) && (
         <div>
-            <h3 className="text-lg font-semibold mb-2">Ingredients</h3>
-            <ul className="list-disc pl-6">
-            {ingredients.map((ingredient, index) => (
-                <li key={index} className="mb-2">
-                    {ingredient}
-                </li>
-            ))}
+            <div 
+                className="
+                text-xl 
+                font-semibold 
+                flex 
+                flex-row 
+                items-center
+                gap-2
+                "
+            >
+                Ingredients
+            </div>
+            <ul className="list-disc pl-9 pt-4">
+                {ingredients.map((ingredient, index) => (
+                    <li key={index} className="mb-2">
+                        {ingredient}
+                    </li>
+                ))}
             </ul>
         </div>    
       )}
-      
       { (steps.length>0) && (<hr />)}
-      { (steps.length>0) && (<div>
-        <h3 className="text-lg font-semibold mb-2">Steps</h3>
-        <ol className="list-decimal pl-6 ">
-          {steps.map((step, index) => (
-            <li key={index} className="mb-2 ">
-                {step}
-            </li>
-          ))}
-        </ol>
-      </div>)}
+      { (steps.length>0) && (
+        <div>
+            <div 
+                className="
+                text-xl 
+                font-semibold 
+                flex 
+                flex-row 
+                items-center
+                gap-2
+                "
+            >
+                Steps
+            </div>
+            <ol className="list-decimal pl-9 pt-4">
+            {steps.map((step, index) => (
+                <li key={index} className="mb-2 ">
+                    {step}
+                </li>
+            ))}
+            </ol>
+        </div>
+      )}
     </div>
   );
 }
