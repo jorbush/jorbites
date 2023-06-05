@@ -14,6 +14,10 @@ interface ListingInfoProps {
     icon: IconType,
     label: string;
     description: string;
+  } | undefined;
+  method: {
+    icon: IconType,
+    label: string;
   } | undefined
 }
 
@@ -22,7 +26,8 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   description,
   ingredients,
   steps,
-  category
+  category,
+  method
 }) => {
   return ( 
     <div className="col-span-4 flex flex-col gap-8 pl-2 pr-2">
@@ -57,13 +62,25 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           </div>
         </div>
       </div>
-      <hr />
       {category && (
-        <ListingCategory
-          icon={category.icon} 
-          label={category?.label}
-          description={category?.description} 
-        />
+        <>
+          <hr />
+          <ListingCategory
+            icon={category.icon} 
+            label={category?.label}
+            description={category?.description} 
+          />
+        </>
+      )}
+      {method && (
+        <>
+          <hr />
+          <ListingCategory
+            icon={method.icon} 
+            label={method?.label}
+            description={""} 
+          />
+        </>
       )}
       <hr />
       <div className="
