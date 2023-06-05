@@ -100,6 +100,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 <ListingInfo
                     user={listing.user}
                     category={category}
+                    method={method}
                     description={listing.description}
                     ingredients={listing.ingredients}
                     steps={listing.steps}
