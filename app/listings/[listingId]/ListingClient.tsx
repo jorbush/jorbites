@@ -13,6 +13,7 @@ import { categories } from "@/app/components/navbar/Categories";
 import ListingHead from "@/app/components/listings/ListingHead";
 import { Comment } from "@prisma/client";
 import ListingInfo from "@/app/components/listings/ListingInfo";
+import { preparationMethods } from "@/app/components/modals/RecipeModal";
 
 interface ListingClientProps {
   comments?: Comment[];
@@ -33,6 +34,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
      return categories.find((item) => 
       item.label === listing.category);
   }, [listing.category]);
+
+  const method = useMemo(() => {
+    return preparationMethods.find((item) => 
+     item.label === listing.method);
+ }, [listing.method]);
 
   const [isLoading, setIsLoading] = useState(false);
 /*

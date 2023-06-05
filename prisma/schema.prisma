@@ -52,6 +52,7 @@ model Listing {
   imageSrc String
   createdAt DateTime @default(now())
   category String
+  method String
   minutes Int
   ingredients String[]
   steps String[]
