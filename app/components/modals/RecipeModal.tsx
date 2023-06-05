@@ -15,15 +15,42 @@ import ImageUpload from "../inputs/ImageUpload";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
+import { GiCookingPot, GiPressureCooker } from "react-icons/gi";
+import { MdMicrowave } from "react-icons/md";
+import { TbCooker } from "react-icons/tb";
+import { CgSmartHomeCooker } from "react-icons/cg";
 
 enum STEPS {
     CATEGORY = 0,
     INGREDIENTS = 1,
     DESCRIPTION = 2,
-    STEPS = 3,
-    IMAGES = 4
+    METHODS = 3,
+    STEPS = 4,
+    IMAGES = 5
 }
+
+export const preparationMethods = [
+    {
+        label: 'Frying pan',
+        icon: GiCookingPot,
+    },
+    {
+        label: 'Microwave',
+        icon: MdMicrowave,
+    },
+    {
+        label: 'Air fryer',
+        icon: GiPressureCooker,
+    },
+    {
+        label: 'Deep fryer',
+        icon: CgSmartHomeCooker,
+    },
+    {
+        label: 'Oven',
+        icon: TbCooker,
+    },
+]
 
 const RecipeModal = () => {
     const router = useRouter()
@@ -49,6 +76,7 @@ const RecipeModal = () => {
     } = useForm<FieldValues>({
         defaultValues: {
             category: '',
+            method: '',
             imageSrc: '',
             title: '',
             description: '',
@@ -61,8 +89,7 @@ const RecipeModal = () => {
     const category = watch('category')
     const minutes = watch('minutes')
     const imageSrc = watch('imageSrc')
-    const ingredients = watch('ingredients')
-    const steps = watch('steps')
+    const method = watch('method')
 
     const setCustomValue = (id: string, value: any) => {
         setValue(id, value, {
@@ -337,6 +364,37 @@ const RecipeModal = () => {
                     value={minutes} 
                     onChange={(value) => setCustomValue('minutes', value)}
                 />
+            </div>
+        )
+    }
+
+    if (step == STEPS.METHODS){
+        bodyContent = (
+            <div className="flex flex-col gap-8">
+                <Heading
+                    title="What method will you use to prepare this recipe?"
+                    subtitle="Pick a preparation method"
+                />
+                <div 
+                    className="
+                    grid 
+                    grid-cols-2
+                    gap-3
+                    max-h-[50vh]
+                    overflow-y-auto
+                    "
+                >
+                    {preparationMethods.map((item) => (
+                        <div key={item.label} className="col-span-1">
+                            <CategoryInput
+                                onClick={(method) => setCustomValue('method', method)}
+                                selected={method === item.label}
+                                label={item.label}
+                                icon={item.icon}
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
         )
     }
