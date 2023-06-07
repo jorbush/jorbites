@@ -45,7 +45,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         <div
           className="
             absolute
-            top-5
+            bottom-5
             right-5
           "
         >

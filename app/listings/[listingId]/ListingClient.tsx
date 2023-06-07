@@ -95,7 +95,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
               grid-cols-1 
               md:grid-cols-7 
               md:gap-10 
-              mt-6
+              mt-1
             " >
                 <ListingInfo
                     user={listing.user}
