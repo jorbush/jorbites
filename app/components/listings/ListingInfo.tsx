@@ -3,7 +3,8 @@
 import { IconType } from "react-icons";
 import { SafeUser } from "@/app/types";
 import Avatar from "../Avatar";
-import ListingCategory from "./ListingCategory";
+import ListingCategoryAndMethod from "./ListingCategoryAndMethod";
+
 
 interface ListingInfoProps {
   user: SafeUser,
@@ -42,8 +43,9 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             gap-2
           "
         >
-          <div>Created by {user?.name}</div>
           <Avatar src={user?.image} />
+          <div>{user?.name}</div>
+          
         </div>
         <div className="
             flex 
@@ -62,26 +64,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           </div>
         </div>
       </div>
-      {category && (
-        <>
-          <hr />
-          <ListingCategory
-            icon={category.icon} 
-            label={category?.label}
-            description={category?.description} 
-          />
-        </>
-      )}
-      {method && (
-        <>
-          <hr />
-          <ListingCategory
-            icon={method.icon} 
-            label={method?.label}
-            description={""} 
-          />
-        </>
-      )}
+      <ListingCategoryAndMethod category={category} method={method}/>
       <hr />
       <div className="
       text-lg font-light text-neutral-500">
