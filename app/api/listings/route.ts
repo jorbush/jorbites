@@ -40,6 +40,7 @@ export async function POST(
       ingredients,
       steps,
       minutes,
+      numLikes: 0,
       userId: currentUser.id
     }
   });

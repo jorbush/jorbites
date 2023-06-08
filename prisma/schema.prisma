@@ -54,6 +54,7 @@ model Listing {
   category String
   method String
   minutes Int
+  numLikes Int
   ingredients String[]
   steps String[]
   userId String @db.ObjectId

@@ -42,18 +42,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           className="object-cover w-full"
           alt="Image"
         />
-        <div
-          className="
-            absolute
-            bottom-5
-            right-5
-          "
-        >
-          <HeartButton 
-            listingId={id}
-            currentUser={currentUser}
-          />
-        </div>
       </div>
     </>
    );

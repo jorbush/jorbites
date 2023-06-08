@@ -4,6 +4,7 @@ import { IconType } from "react-icons";
 import { SafeUser } from "@/app/types";
 import Avatar from "../Avatar";
 import ListingCategoryAndMethod from "./ListingCategoryAndMethod";
+import HeartButton from "../HeartButton";
 
 
 interface ListingInfoProps {
@@ -19,7 +20,10 @@ interface ListingInfoProps {
   method: {
     icon: IconType,
     label: string;
-  } | undefined
+  } | undefined;
+  currentUser?: SafeUser | null;
+  id: string;
+  likes: number;
 }
 
 const ListingInfo: React.FC<ListingInfoProps> = ({
@@ -28,7 +32,10 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   ingredients,
   steps,
   category,
-  method
+  method,
+  likes,
+  id,
+  currentUser
 }) => {
   return ( 
     <div className="col-span-4 flex flex-col gap-8 pl-2 pr-2">
@@ -45,7 +52,11 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
         >
           <Avatar src={user?.image} />
           <div>{user?.name}</div>
-          
+          <HeartButton 
+            listingId={id}
+            currentUser={currentUser}
+          />
+          <div>{likes}</div>
         </div>
         <div className="
             flex 
