@@ -98,7 +98,10 @@ const ListingClient: React.FC<ListingClientProps> = ({
               mt-1
             " >
                 <ListingInfo
+                    id={listing.id}
                     user={listing.user}
+                    likes={listing.numLikes}
+                    currentUser={currentUser}
                     category={category}
                     method={method}
                     description={listing.description}
