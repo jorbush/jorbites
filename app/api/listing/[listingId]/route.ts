@@ -40,7 +40,7 @@ export async function POST(
   
     let numLikes = currentListing?.numLikes;
   
-    if (!numLikes ) {
+    if (!numLikes && numLikes!==0) {
         throw Error()
     }
     
