@@ -42,21 +42,47 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       <div className="flex flex-col gap-2">
         <div 
           className="
-            text-xl 
-            font-semibold 
-            flex 
-            flex-row 
-            items-center
-            gap-2
+            grid 
+            grid-cols-3 
+            sm:grid-cols-3 
+            md:grid-cols-3 
+            lg:grid-cols-4
+            xl:grid-cols-5
+            2xl:grid-cols-6
+            gap-8
           "
         >
-          <Avatar src={user?.image} />
-          <div>{user?.name}</div>
-          <HeartButton 
-            listingId={id}
-            currentUser={currentUser}
-          />
-          <div>{likes}</div>
+          <div 
+            className="
+              text-xl 
+              font-semibold 
+              flex 
+              flex-row 
+              items-center
+              gap-2
+              col-span-2
+            "
+          >
+            <Avatar src={user?.image} />
+            <div>{user?.name}</div>
+          </div>
+          <div 
+            className="
+              text-xl 
+              flex 
+              flex-row 
+              items-end
+              gap-2
+              ml-auto
+              mr-4
+            "
+          >
+            <HeartButton 
+              listingId={id}
+              currentUser={currentUser}
+            />
+            <div>{likes}</div>
+          </div>
         </div>
         <div className="
             flex 
