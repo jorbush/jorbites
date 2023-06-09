@@ -8,6 +8,7 @@ import ToasterProvider from './providers/ToasterProvider'
 import LoginModal from './components/modals/LoginModal'
 import getCurrentUser from './actions/getCurrentUser'
 import RecipeModal from './components/modals/RecipeModal'
+import SettingsModal from './components/modals/SettingsModal'
 
 const inter = Inter({ subsets: ['latin'] })
 const font = Nunito({ subsets: ["latin"] })
@@ -33,6 +34,7 @@ export default async function RootLayout({
         <ClientOnly>
           <ToasterProvider/>
           <LoginModal/>
+          <SettingsModal/>
           <RecipeModal/>
           <RegisterModal />
           <Navbar currentUser={currentUser}/>
