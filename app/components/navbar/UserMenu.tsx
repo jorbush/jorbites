@@ -9,6 +9,7 @@ import useLoginModal from '@/app/hooks/useLoginModal';
 import { signOut } from 'next-auth/react';
 import { SafeUser } from '@/app/types';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
+import useSettingsModal from '@/app/hooks/useSettingsModal';
 
 interface UserMenuProps {
     currentUser?: SafeUser | null
@@ -20,6 +21,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
     const registerModal = useRegisterModal()
     const loginModal = useLoginModal()
     const recipeModal = useRecipeModal()
+    const settingsModal = useSettingsModal()
     const [isOpen, setIsOpen] = useState(false)
 
     const toggleOpen = useCallback(() => {
@@ -109,7 +111,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
                                     label='My favorites'
                                 />
                                 <MenuItem
-                                    onClick={() => signOut()}
+                                    onClick={settingsModal.onOpen}
                                     label='Settings'
                                 />
                                 <MenuItem
