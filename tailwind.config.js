@@ -11,6 +11,8 @@ module.exports = {
         green: {
           450: '#C5F0A4',
         },
+        light: 'white', // Colores para el tema claro
+        dark: '#353535', // Colores para el tema oscuro
       },
       screens: {
         sm: "360px",
@@ -18,5 +20,12 @@ module.exports = {
       },
     }
   },
+  variants: {
+    extend: {
+      backgroundColor: ['dark'],
+      textColor: ['dark'],
+    },
+  },
+  darkMode: 'class',
   plugins: [],
 }
