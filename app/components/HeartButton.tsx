@@ -1,30 +1,45 @@
-'use client';
-
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
-
 import { SafeUser } from "@/app/types";
-
 import ClientOnly from "./ClientOnly";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useFavorite from "../hooks/useFavorite";
 
 interface HeartButtonProps {
-  listingId: string
-  currentUser?: SafeUser | null
+  listingId: string;
+  currentUser?: SafeUser | null;
 }
 
-const HeartButton: React.FC<HeartButtonProps> = ({ 
+const HeartButton: React.FC<HeartButtonProps> = ({
   listingId,
   currentUser
 }) => {
   const { hasFavorited, toggleFavorite } = useFavorite({
     listingId,
     currentUser
-  }) 
+  });
+
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const handleButtonClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (!isDisabled) {
+      toggleFavorite(e);
+      setIsDisabled(true);
+    }
+  };
+
+  useEffect(() => {
+    if (isDisabled) {
+      const timeout = setTimeout(() => {
+        setIsDisabled(false);
+      }, 2000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [isDisabled]);
 
   return (
-    <div 
-      onClick={toggleFavorite}
+    <div
+      onClick={handleButtonClick}
       className="
         relative
         hover:opacity-80
@@ -43,12 +58,11 @@ const HeartButton: React.FC<HeartButtonProps> = ({
       />
       <AiFillHeart
         size={24}
-        className={
-          hasFavorited ? 'fill-rose-500' : 'fill-neutral-500/70'
-        }
+        className={hasFavorited ? "fill-rose-500" : "fill-neutral-500/70"}
+        style={{ pointerEvents: isDisabled ? "none" : "auto" }}
       />
     </div>
-   );
-}
- 
+  );
+};
+
 export default HeartButton;
