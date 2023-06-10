@@ -132,6 +132,11 @@ const RecipeModal = () => {
             return onNext()
         }
 
+        if (imageSrc === ""){
+            toast.error('You must upload an image')
+            return
+        }
+
         setIsLoading(true)
 
         axios.post('api/listings', data)
