@@ -30,6 +30,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
 }) => {
   const loginModal = useLoginModal();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const category = useMemo(() => {
      return categories.find((item) => 
@@ -41,22 +42,18 @@ const ListingClient: React.FC<ListingClientProps> = ({
      item.label === listing.method);
  }, [listing.method]);
 
-  const [isLoading, setIsLoading] = useState(false);
-/*
-  const onCreateComment = useCallback(() => {
+  const onCreateComment = useCallback((comment: string) => {
       if (!currentUser) {
         return loginModal.onOpen();
       }
       setIsLoading(true);
       
       axios.post('/api/comments', {
-        totalPrice,
-        startDate: dateRange.startDate,
-        endDate: dateRange.endDate,
+        comment: comment,
         listingId: listing?.id
       })
       .then(() => {
-        toast.success('Listing commented!');
+        toast.success('Recipe commented!');
       })
       .catch(() => {
         toast.error('Something went wrong.');
@@ -66,13 +63,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
       })
   },
   [
-    totalPrice, 
-    dateRange, 
     listing?.id,
     router,
     currentUser,
     loginModal
-  ]);*/
+  ]);
 
   return ( 
     <Container>
@@ -111,7 +106,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 />
                 
           </div>
-          <Comments currentUser={currentUser}/>
+          <Comments currentUser={currentUser} onCreateComment={onCreateComment}/>
         </div>
       </div>
     </Container>
