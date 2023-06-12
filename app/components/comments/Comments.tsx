@@ -1,15 +1,22 @@
 "use client";
 
-import { SafeUser } from "@/app/types";
+import { SafeComment, SafeUser } from "@/app/types";
 import CommentBox from "./CommentBox";
+import Comment from "./Comment";
 
 interface CommentsProps {
   currentUser?: SafeUser | null;
   onCreateComment: (comment: string) => void;
   listingId: string;
+  comments?: SafeComment[];
 }
 
-const Comments: React.FC<CommentsProps> = ({ currentUser, onCreateComment, listingId }) => {
+const Comments: React.FC<CommentsProps> = ({ 
+    currentUser, 
+    onCreateComment, 
+    listingId, 
+    comments
+}) => {
     
     return (
         <div className="
@@ -33,8 +40,14 @@ const Comments: React.FC<CommentsProps> = ({ currentUser, onCreateComment, listi
             >
                 Comments
             </div>
-            <CommentBox userImage={currentUser?.image} onCreateComment={onCreateComment}/>
-            {/* TODO: LIST COMMENTS */}
+            <div className="mr-4 ml-4">
+               <CommentBox userImage={currentUser?.image} onCreateComment={onCreateComment}/>
+                {comments?.map((comment: SafeComment) => (
+                    <Comment userImage={comment.user.image} comment={comment.comment} createdAt={comment.createdAt}/>
+                ))} 
+            </div>
+            
+            
         </div>
     );
 }

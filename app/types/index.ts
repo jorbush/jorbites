@@ -12,6 +12,7 @@ export type SafeComment = Omit<
   "createdAt"
 > & {
   createdAt: string;
+  user: SafeUser;
 };
 
 

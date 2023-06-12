@@ -26,7 +26,8 @@ interface ListingClientProps {
 
 const ListingClient: React.FC<ListingClientProps> = ({
   listing,
-  currentUser
+  currentUser,
+  comments
 }) => {
   const loginModal = useLoginModal();
   const router = useRouter();
@@ -60,6 +61,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       })
       .finally(() => {
         setIsLoading(false);
+        router.refresh()
       })
   },
   [
@@ -106,7 +108,12 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 />
                 
           </div>
-          <Comments currentUser={currentUser} onCreateComment={onCreateComment} listingId={listing.id}/>
+          <Comments 
+            currentUser={currentUser} 
+            onCreateComment={onCreateComment} 
+            listingId={listing.id}
+            comments={comments}
+          />
         </div>
       </div>
     </Container>

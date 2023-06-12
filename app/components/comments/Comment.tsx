@@ -9,11 +9,11 @@ interface CommentProps {
 
 const Comment: React.FC<CommentProps> = ({ userImage, comment, createdAt }) => {
   return (
-    <div className="flex items-start mb-4">
-      <div className="flex-shrink-0">
+    <div className="flex items-start mb-4 ml-4 mr-4">
+      <div className="flex-shrink-0 mt-2">
         <Avatar src={userImage} />
       </div>
-      <div className="ml-3">
+      <div className="ml-4">
         <p className="text-gray-800">{comment}</p>
         <p className="text-gray-500 text-sm">{createdAt}</p>
       </div>

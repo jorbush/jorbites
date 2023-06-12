@@ -33,8 +33,8 @@ const CommentBox: React.FC<CommentBoxProps> = ({ userImage, onCreateComment }) =
   };
 
   return (
-    <div className="flex items-center">
-      <div className="m-4">
+    <div className="flex items-center mb-4">
+      <div className="mt-4 mb-4 mr-4">
         <Avatar src={userImage} />
       </div>
 
@@ -51,7 +51,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({ userImage, onCreateComment }) =
         type="submit"
         onClick={handleSubmit}
         disabled={isButtonDisabled}
-        className={`m-4 text-green-450 hover:text-green-500 transition-colors ${
+        className={`mt-4 mb-4 ml-4 text-green-450 hover:text-green-500 transition-colors ${
           isButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       >
