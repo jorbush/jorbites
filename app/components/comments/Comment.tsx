@@ -12,6 +12,10 @@ interface CommentProps {
 
 const Comment: React.FC<CommentProps> = ({ userImage, comment, createdAt }) => {
   const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
+  const words = comment.split(' ');
+
+  // Verificar si alguna palabra es demasiado larga
+  const isLongWord = words.some((word) => word.length > 20);
 
   return (
     <div className="flex items-start mt-2 mb-2 mr-1 ml-1">
@@ -19,7 +23,13 @@ const Comment: React.FC<CommentProps> = ({ userImage, comment, createdAt }) => {
         <Avatar src={userImage} />
       </div>
       <div className="ml-4 mt-2 flex-grow">
-        <p className="text-gray-800 whitespace-normal truncate text-justify break-all">{comment}</p>
+        <p
+          className={`text-gray-800 whitespace-normal truncate text-justify ${
+            isLongWord ? 'break-all' : ''
+          }`}
+        >
+          {comment}
+        </p>
         <div className="flex flex-col text-gray-400 text-sm items-end">
           {formattedDate}
         </div>
@@ -29,4 +39,5 @@ const Comment: React.FC<CommentProps> = ({ userImage, comment, createdAt }) => {
 };
 
 export default Comment;
+
 
