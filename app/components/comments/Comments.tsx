@@ -43,7 +43,12 @@ const Comments: React.FC<CommentsProps> = ({
             <div className="mr-4 ml-4">
                <CommentBox userImage={currentUser?.image} onCreateComment={onCreateComment}/>
                 {comments?.map((comment: SafeComment) => (
-                    <Comment userImage={comment.user.image} comment={comment.comment} createdAt={comment.createdAt}/>
+                
+                <div className="mr-2 ml-2">
+                <hr/>
+                    <Comment key={comment.id} userImage={comment.user.image} comment={comment.comment} createdAt={comment.createdAt}/>
+                </div>
+                    
                 ))} 
             </div>
             
