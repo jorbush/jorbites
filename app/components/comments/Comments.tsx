@@ -5,9 +5,10 @@ import CommentBox from "./CommentBox";
 
 interface CommentsProps {
   currentUser?: SafeUser | null;
+  onCreateComment: (comment: string) => void
 }
 
-const Comments: React.FC<CommentsProps> = ({ currentUser }) => {
+const Comments: React.FC<CommentsProps> = ({ currentUser, onCreateComment }) => {
     return (
         <div className="
             flex
@@ -30,7 +31,7 @@ const Comments: React.FC<CommentsProps> = ({ currentUser }) => {
             >
                 Comments
             </div>
-            <CommentBox userImage={currentUser?.image}/>
+            <CommentBox userImage={currentUser?.image} onCreateComment={onCreateComment}/>
             {/* TODO: LIST COMMENTS */}
         </div>
     );

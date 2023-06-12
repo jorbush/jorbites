@@ -7,9 +7,10 @@ import { toast } from 'react-hot-toast';
 
 interface CommentBoxProps {
   userImage: string | undefined | null;
+  onCreateComment: (comment: string) => void;
 }
 
-const CommentBox: React.FC<CommentBoxProps> = ({ userImage }) => {
+const CommentBox: React.FC<CommentBoxProps> = ({ userImage, onCreateComment }) => {
   const [comment, setComment] = useState('');
   const [isButtonDisabled, setButtonDisabled] = useState(false);
 
@@ -24,8 +25,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({ userImage }) => {
       toast.error('Comment cannot be empty');
       
     } else {
-      toast.success('Comment: ' + comment);
-      // Aquí puedes realizar alguna acción con el comentario, como enviarlo al servidor.
+      onCreateComment(comment)
     }
     await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulación de una operación asincrónica de 2 segundos
     setComment('');
