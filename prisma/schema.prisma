@@ -66,6 +66,7 @@ model Listing {
 model Comment {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   userId String @db.ObjectId
+  comment String 
   listingId String @db.ObjectId 
   createdAt DateTime @default(now())
 
