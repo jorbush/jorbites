@@ -16,17 +16,14 @@ export default async function getCommentsById(
       query.listingId = listingId;
     };
 
-    const reservations = await prisma.comment.findMany({
+    const comments = await prisma.comment.findMany({
       where: query,
-      include: {
-        listing: true
-      },
       orderBy: {
         createdAt: 'desc'
       }
     });
 
-    const safeComments = reservations.map(
+    const safeComments = comments.map(
       (comment) => ({
       ...comment,
       createdAt: comment.createdAt.toISOString(),

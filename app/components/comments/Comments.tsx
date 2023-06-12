@@ -5,10 +5,12 @@ import CommentBox from "./CommentBox";
 
 interface CommentsProps {
   currentUser?: SafeUser | null;
-  onCreateComment: (comment: string) => void
+  onCreateComment: (comment: string) => void;
+  listingId: string;
 }
 
-const Comments: React.FC<CommentsProps> = ({ currentUser, onCreateComment }) => {
+const Comments: React.FC<CommentsProps> = ({ currentUser, onCreateComment, listingId }) => {
+    
     return (
         <div className="
             flex

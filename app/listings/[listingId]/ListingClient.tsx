@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 import useLoginModal from "@/app/hooks/useLoginModal";
-import { SafeListing, SafeUser } from "@/app/types";
+import { SafeComment, SafeListing, SafeUser } from "@/app/types";
 
 import Container from "@/app/components/Container";
 import { categories } from "@/app/components/navbar/Categories";
@@ -17,7 +17,7 @@ import { preparationMethods } from "@/app/components/modals/RecipeModal";
 import Comments from "@/app/components/comments/Comments";
 
 interface ListingClientProps {
-  comments?: Comment[];
+  comments?: SafeComment[];
   listing: SafeListing & {
     user: SafeUser;
   };
@@ -106,7 +106,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 />
                 
           </div>
-          <Comments currentUser={currentUser} onCreateComment={onCreateComment}/>
+          <Comments currentUser={currentUser} onCreateComment={onCreateComment} listingId={listing.id}/>
         </div>
       </div>
     </Container>
