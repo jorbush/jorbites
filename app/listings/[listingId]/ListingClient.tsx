@@ -109,8 +109,9 @@ const ListingClient: React.FC<ListingClientProps> = ({
                     ingredients={listing.ingredients}
                     steps={listing.steps}
                 />
-                <Comments/>
+                
           </div>
+          <Comments currentUser={currentUser}/>
         </div>
       </div>
     </Container>
