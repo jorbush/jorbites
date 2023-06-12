@@ -51,7 +51,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({ userImage, onCreateComment }) =
         type="submit"
         onClick={handleSubmit}
         disabled={isButtonDisabled}
-        className={`mt-4 mb-4 ml-4 text-green-450 hover:text-green-500 transition-colors ${
+        className={`mt-4 mb-4 ml-4 text-green-450  ${
           isButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       >
