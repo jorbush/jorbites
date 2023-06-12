@@ -14,6 +14,7 @@ import ListingHead from "@/app/components/listings/ListingHead";
 import { Comment } from "@prisma/client";
 import ListingInfo from "@/app/components/listings/ListingInfo";
 import { preparationMethods } from "@/app/components/modals/RecipeModal";
+import Comments from "@/app/components/comments/Comments";
 
 interface ListingClientProps {
   comments?: Comment[];
@@ -108,24 +109,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
                     ingredients={listing.ingredients}
                     steps={listing.steps}
                 />
-            {/* <div 
-              className="
-                order-first 
-                mb-10 
-                md:order-last 
-                md:col-span-3
-              "
-            >
-              <ListingReservation
-                price={listing.price}
-                totalPrice={totalPrice}
-                onChangeDate={(value) => setDateRange(value)}
-                dateRange={dateRange}
-                onSubmit={onCreateComment}
-                disabled={isLoading}
-                disabledDates={disabledDates}
-              />
-            </div> */}
+                <Comments/>
           </div>
         </div>
       </div>
