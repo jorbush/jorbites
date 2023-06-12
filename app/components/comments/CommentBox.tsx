@@ -19,18 +19,15 @@ const CommentBox: React.FC<CommentBoxProps> = ({ userImage }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (comment === "") {
-      toast.error('Comment cannot be empty');
-      return;
-    }
-
     setButtonDisabled(true);
-
-    // Aquí puedes realizar alguna acción con el comentario, como enviarlo al servidor.
-    // Por ahora, solo mostraremos el comentario en la consola.
+    if (comment.trim() === "") {
+      toast.error('Comment cannot be empty');
+      
+    } else {
+      toast.success('Comment: ' + comment);
+      // Aquí puedes realizar alguna acción con el comentario, como enviarlo al servidor.
+    }
     await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulación de una operación asincrónica de 2 segundos
-
-    toast.success('Comment: ' + comment);
     setComment('');
     setButtonDisabled(false);
   };
