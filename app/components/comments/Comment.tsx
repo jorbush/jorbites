@@ -19,7 +19,7 @@ const Comment: React.FC<CommentProps> = ({ userImage, comment, createdAt }) => {
         <Avatar src={userImage} />
       </div>
       <div className="ml-4 mt-2 flex-grow">
-        <p className="text-gray-800 whitespace-normal truncate text-justify" style={{ maxWidth: '60vh' }}>{comment}</p>
+        <p className="text-gray-800 whitespace-normal truncate text-justify break-all">{comment}</p>
         <div className="flex flex-col text-gray-400 text-sm items-end">
           {formattedDate}
         </div>
