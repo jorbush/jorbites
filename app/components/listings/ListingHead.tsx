@@ -54,7 +54,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between sm:ml-4 sm:mr-4">
         <button
           className="flex items-center space-x-2 text-gray-600 dark:text-neutral-100 focus:outline-none"
           onClick={() => router.back()}
