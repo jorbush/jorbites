@@ -1,46 +1,69 @@
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
-import { 
-  GiGrain, 
-  GiChicken, 
-  GiAvocado,
-  GiSalmon
-} from 'react-icons/gi';
-
-import {FaFish} from 'react-icons/fa';
-
 import Container from '../Container';
 import CategoryBox from '../CategoryBox';
-
+import { 
+  GiLindenLeaf,
+  GiAvocado,
+  GiCakeSlice,
+  GiPizzaSlice,
+  GiCoffeeCup,
+  GiMeat,
+  GiBowlOfRice,
+} from 'react-icons/gi';
+import {FaFish} from 'react-icons/fa';
+import { TbSoup } from "react-icons/tb"
 
 export const categories = [
-    {
-        label: 'Avocado',
-        icon: GiAvocado,
-        description: 'Recipes with avocado',
-    },
-    {
-        label: 'Oat',
-        icon: GiGrain,
-        description: 'Recipes with oat',
-    },
-    {
-        label: 'Chicken',
-        icon: GiChicken,
-        description: 'Recipes with chicken',
-    },
-    {
-        label: 'Salmon',
-        icon: GiSalmon,
-        description: 'Recipes with salmon',
-    },
-    {
-        label: 'Fish',
-        icon: FaFish,
-        description: 'Recipes with chicken',
-    },
-]
+  {
+    label: 'Fruits',
+    icon: GiAvocado,
+    description: 'Recipes with fresh fruits',
+  },
+  {
+    label: 'Vegetarian',
+    icon: GiLindenLeaf,
+    description: 'Vegetarian recipes',
+  },
+  {
+    label: 'Seafood',
+    icon: FaFish,
+    description: 'Seafood recipes',
+  },
+  {
+    label: 'Meat',
+    icon: GiMeat,
+    description: 'Meat recipes',
+  },
+  {
+    label: 'Legumes',
+    icon: GiBowlOfRice,
+    description: 'Recipes with legumes',
+  },
+  {
+    label: 'Desserts',
+    icon: GiCakeSlice,
+    description: 'Delicious desserts',
+  },
+  {
+    label: 'Pizza',
+    icon: GiPizzaSlice,
+    description: 'Pizza recipes',
+  },
+  {
+    label: 'Soup',
+    icon: TbSoup,
+    description: 'Soup recipes',
+  },
+  {
+    label: 'Drinks',
+    icon: GiCoffeeCup,
+    description: 'Refreshing drinks',
+  },
+  
+];
+
 
 const Categories = () => {
   const params = useSearchParams();
