@@ -1,10 +1,12 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { HiMoon, HiSun } from 'react-icons/hi';
 
 const ThemeSelector: React.FC = () => {
   const [theme, setTheme] = useState<string>('light');
+  const router = useRouter();
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -21,6 +23,7 @@ const ThemeSelector: React.FC = () => {
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
+    router.refresh()
   }, [theme]);
 
   return (
