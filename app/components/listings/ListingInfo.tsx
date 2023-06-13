@@ -100,7 +100,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       <ListingCategoryAndMethod category={category} method={method}/>
       <hr />
       <div className="
-      text-lg font-light text-neutral-500 dark:text-neutral-100">
+      text-lg font-light text-neutral-500 dark:text-neutral-100 text-justify">
         {description}
       </div>
       { (ingredients.length>0) && (
