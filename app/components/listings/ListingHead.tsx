@@ -1,18 +1,19 @@
 'use client';
 
 import Image from "next/image";
+import { useState } from "react";
+import { FiChevronLeft, FiShare2 } from "react-icons/fi";
 
 import { SafeUser } from "@/app/types";
-
 import Heading from "../Heading";
-import HeartButton from "../HeartButton";
+import { toast } from "react-hot-toast";
 
 interface ListingHeadProps {
   title: string;
   minutes: string;
   imageSrc: string;
   id: string;
-  currentUser?: SafeUser | null
+  currentUser?: SafeUser | null;
 }
 
 const ListingHead: React.FC<ListingHeadProps> = ({
@@ -20,31 +21,58 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   minutes,
   imageSrc,
   id,
-  currentUser
+  currentUser,
 }) => {
-  return ( 
+  const [isCopied, setIsCopied] = useState(false);
+
+  const copyToClipboard = () => {
+    const currentURL = window.location.href;
+    navigator.clipboard.writeText(currentURL);
+    setIsCopied(true);
+    toast.success("URL copied");
+  };
+
+  const share = () => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: document.title,
+          url: window.location.href,
+        })
+        .then(() => {
+          console.log("Successfully shared");
+        })
+        .catch((error) => {
+          console.error("Error sharing:", error);
+        });
+    } else {
+      copyToClipboard();
+    }
+  };
+
+  return (
     <>
-      <Heading
-        title={title}
-        subtitle={`${minutes} min`}
-      />
-      <div className="
-          w-full
-          h-[60vh]
-          overflow-hidden 
-          rounded-xl
-          relative
-        "
-      >
-        <Image
-          src={imageSrc}
-          fill
-          className="object-cover w-full"
-          alt="Image"
-        />
+      <div className="flex items-center justify-between">
+        <button
+          className="flex items-center space-x-2 text-gray-600 dark:text-neutral-100 focus:outline-none"
+          onClick={() => window.history.back()}
+        >
+          <FiChevronLeft className="text-xl" />
+        </button>
+        <Heading title={title} subtitle={`${minutes} min`} center/>
+        <button
+          className="flex items-center space-x-2 text-gray-600 dark:text-neutral-100 focus:outline-none"
+          onClick={share}
+        >
+          <FiShare2 className="text-xl" />
+        </button>
+      </div>
+      <div className="w-full h-[60vh] overflow-hidden rounded-xl relative">
+        <Image src={imageSrc} fill className="object-cover w-full" alt="Image" />
       </div>
     </>
-   );
-}
- 
+  );
+};
+
 export default ListingHead;
+
