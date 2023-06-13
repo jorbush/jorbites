@@ -50,6 +50,8 @@ const UserMenu: React.FC<UserMenuProps> = ({
                         px-4
                         rounded-full
                         hover:bg-neutral-100
+                        dark:text-neutral-100
+                        hover:text-black  
                         transition
                         cursor-pointer
                         sm:block
@@ -90,6 +92,8 @@ const UserMenu: React.FC<UserMenuProps> = ({
                     w-[40vw]
                     md:w-3/4
                     bg-white
+                    dark:bg-dark
+                    dark:text-neutral-100
                     overflow-hidden
                     right-0
                     top-12
@@ -121,6 +125,10 @@ const UserMenu: React.FC<UserMenuProps> = ({
                             </>
                         ) : (
                             <>
+                                <MenuItem
+                                    onClick={settingsModal.onOpen}
+                                    label='Settings'
+                                />
                                 <MenuItem
                                     onClick={loginModal.onOpen}
                                     label='Login'

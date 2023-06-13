@@ -1,5 +1,6 @@
 import { IconType } from "react-icons";
 import { useState, useEffect } from "react";
+import useTheme from "../hooks/useTheme";
 
 interface ButtonProps {
   label: string;
@@ -21,7 +22,6 @@ const Button: React.FC<ButtonProps> = ({
   withDelay = false,
 }) => {
   const [isDisabled, setIsDisabled] = useState(false);
-
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!disabled && !isDisabled) {
       onClick(e);
@@ -46,9 +46,9 @@ const Button: React.FC<ButtonProps> = ({
         hover:opacity-80
         transition
         w-full
-        ${outline ? "bg-white" : "bg-green-450"}
-        ${outline ? "border-black" : "border-green-450"}
-        ${outline ? "text-black" : "text-white"}
+        ${outline ? "bg-white dark:bg-dark" : "bg-green-450"}
+        ${outline ? "border-black dark:border-neutral-100" : "border-green-450"}
+        ${outline ? "text-black dark:text-neutral-100" : "text-white dark:text-dark"}
         ${small ? "text-sm" : "text-md"}
         ${small ? "py-1" : "py-3"}
         ${small ? "font-light" : "font-semibold"}
