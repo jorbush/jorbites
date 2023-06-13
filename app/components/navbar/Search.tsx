@@ -19,6 +19,7 @@ const Search: React.FC<SearchProps> = ({
                 bg-green-450
                 rounded-full
                 text-white
+                dark:text-dark
                 shadow-sm
                 hover:shadow-md
                 transition

@@ -12,7 +12,7 @@ module.exports = {
           450: '#C5F0A4',
         },
         light: 'white', // Colores para el tema claro
-        dark: '#353535', // Colores para el tema oscuro
+        dark: '#0F0F0F', // Colores para el tema oscuro
       },
       screens: {
         sm: "360px",

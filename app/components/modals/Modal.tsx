@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
 import Button from "../Button";
+import useTheme from "@/app/hooks/useTheme";
 
 interface ModalProps {
   isOpen?: boolean;
@@ -37,6 +38,8 @@ const Modal: React.FC<ModalProps> = ({
   useEffect(() => {
     setShowModal(isOpen);
   }, [isOpen]);
+
+  useTheme()
 
   const handleClose = useCallback(() => {
     if (disabled) {
@@ -120,6 +123,7 @@ const Modal: React.FC<ModalProps> = ({
               flex-col 
               w-full 
               bg-white 
+              dark:bg-dark
               outline-none 
               focus:outline-none
             " style={{ minHeight: minHeight ? minHeight:'0px' }}
@@ -143,17 +147,18 @@ const Modal: React.FC<ModalProps> = ({
                     transition
                     absolute
                     left-9
+                    text-black dark:text-neutral-100
                   "
                   onClick={handleClose}
                 >
                   <IoMdClose size={18} />
                 </button>
-                <div className="text-lg font-semibold">
+                <div className="text-lg font-semibold text-black dark:text-neutral-100">
                   {title}
                 </div>
               </div>
               {/*body*/}
-              <div className="relative p-6 flex-auto">
+              <div className="relative p-6 flex-auto text-black dark:text-neutral-100">
                 {body}
               </div>
               {/*footer*/}
