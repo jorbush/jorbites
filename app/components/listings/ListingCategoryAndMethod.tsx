@@ -30,6 +30,7 @@ const ListingCategoryAndMethod: React.FC<ListingInfoProps> = ({
           xl:grid-cols-2
           2xl:grid-cols-2
           gap-8
+          dark:text-neutral-100
         "
       >
             {category && (
