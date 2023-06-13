@@ -7,6 +7,7 @@ import { FiChevronLeft, FiShare2 } from "react-icons/fi";
 import { SafeUser } from "@/app/types";
 import Heading from "../Heading";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 interface ListingHeadProps {
   title: string;
@@ -24,6 +25,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   currentUser,
 }) => {
   const [isCopied, setIsCopied] = useState(false);
+  const router = useRouter()
 
   const copyToClipboard = () => {
     const currentURL = window.location.href;
@@ -55,7 +57,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       <div className="flex items-center justify-between">
         <button
           className="flex items-center space-x-2 text-gray-600 dark:text-neutral-100 focus:outline-none"
-          onClick={() => window.history.back()}
+          onClick={() => router.back()}
         >
           <FiChevronLeft className="text-xl" />
         </button>
