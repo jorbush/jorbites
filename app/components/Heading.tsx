@@ -11,9 +11,13 @@ const Heading: React.FC<HeadingProps> = ({
   subtitle,
   center
 }) => {
+  const words = title.split(' ');
+  const isLongWord = words.some((word) => word.length > 20);
   return ( 
     <div className={center ? 'text-center' : 'text-start'}>
-      <div className="text-2xl font-bold dark:text-neutral-100">
+      <div className={`text-2xl font-bold dark:text-neutral-100 whitespace-normal truncate text-justify ${
+            isLongWord ? 'break-all' : ''
+          }`}>
         {title}
       </div>
       <div className="font-light text-neutral-500 mt-2">

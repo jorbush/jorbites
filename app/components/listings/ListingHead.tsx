@@ -56,14 +56,14 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     <>
       <div className="flex items-center justify-between sm:ml-4 sm:mr-4">
         <button
-          className="flex items-center space-x-2 text-gray-600 dark:text-neutral-100 focus:outline-none"
+          className="mr-4 flex items-center space-x-2 text-gray-600 dark:text-neutral-100 focus:outline-none"
           onClick={() => router.back()}
         >
           <FiChevronLeft className="text-xl" />
         </button>
         <Heading title={title} subtitle={`${minutes} min`} center/>
         <button
-          className="flex items-center space-x-2 text-gray-600 dark:text-neutral-100 focus:outline-none"
+          className="ml-4 flex items-center space-x-2 text-gray-600 dark:text-neutral-100 focus:outline-none"
           onClick={share}
         >
           <FiShare2 className="text-xl" />
