@@ -56,6 +56,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
               items-center
               gap-2
               col-span-2
+              dark:text-neutral-100
             "
           >
             <Avatar src={user?.image} />
@@ -76,7 +77,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
               listingId={id}
               currentUser={currentUser}
             />
-            <div>{likes}</div>
+            <div className="dark:text-neutral-100">{likes}</div>
           </div>
         </div>
         <div className="
@@ -99,13 +100,13 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       <ListingCategoryAndMethod category={category} method={method}/>
       <hr />
       <div className="
-      text-lg font-light text-neutral-500">
+      text-lg font-light text-neutral-500 dark:text-neutral-100">
         {description}
       </div>
       { (ingredients.length>0) && (
         <>
             <hr />
-            <div>
+            <div className="dark:text-neutral-100">
                 <div 
                     className="
                     text-xl 
@@ -131,7 +132,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       { (steps.length>0) && (
         <>
             <hr />
-            <div>
+            <div className="dark:text-neutral-100">
                 <div 
                     className="
                     text-xl 

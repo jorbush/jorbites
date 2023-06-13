@@ -24,7 +24,7 @@ const Comment: React.FC<CommentProps> = ({ userImage, comment, createdAt }) => {
       </div>
       <div className="ml-4 mt-2 flex-grow">
         <p
-          className={`text-gray-800 whitespace-normal truncate text-justify ${
+          className={`text-gray-800 dark:text-neutral-100 whitespace-normal truncate text-justify ${
             isLongWord ? 'break-all' : ''
           }`}
         >

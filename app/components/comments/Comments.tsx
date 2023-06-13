@@ -36,6 +36,7 @@ const Comments: React.FC<CommentsProps> = ({
                 gap-2
                 mb-4
                 mt-8
+                dark:text-neutral-100
                 "
             >
                 Comments
