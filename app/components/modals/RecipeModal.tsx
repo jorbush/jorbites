@@ -19,6 +19,7 @@ import { GiCookingPot, GiPressureCooker } from "react-icons/gi";
 import { MdMicrowave } from "react-icons/md";
 import { TbCooker } from "react-icons/tb";
 import { CgSmartHomeCooker } from "react-icons/cg";
+import { useTranslation } from 'react-i18next';
 
 enum STEPS {
     CATEGORY = 0,
@@ -54,6 +55,7 @@ export const preparationMethods = [
 
 const RecipeModal = () => {
     const router = useRouter()
+    const { t } = useTranslation();
 
     const recipeModal = useRecipeModal()
 
@@ -424,7 +426,7 @@ const RecipeModal = () => {
             actionLabel={actionLabel}
             secondaryActionLabel={secondaryActionLabel}
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
-            title="Post a recipe!"
+            title={t('post_recipe')?? "Post a recipe!"}
             body={bodyContent}
             minHeight="753px"
         />

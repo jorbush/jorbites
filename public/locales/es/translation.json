@@ -7,6 +7,13 @@
     "light_theme": "Activar el tema claro",
     "dark_theme": "Activar el tema oscuro",
     "settings": "Ajustes",
-    "save": "Guarda"
+    "save": "Guarda",
+    "post_recipe": "Publica una receta",
+    "my_recipes": "Mis recetas",
+    "my_favorites": "Mis favoritos",
+    "logout": "Cerrar sesión",
+    "login": "Iniciar sesión",
+    "sign_up": "Registrarse",
+    "comments": "Comentarios"
   }
   

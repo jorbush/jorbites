@@ -7,6 +7,13 @@
     "light_theme": "Enable light theme",
     "dark_theme": "Enable dark theme",
     "settings": "Settings",
-    "save": "Save"
+    "save": "Save",
+    "post_recipe": "Post a recipe",
+    "my_recipes": "My recipes",
+    "my_favorites": "My favorites",
+    "logout": "Logout",
+    "login": "Login",
+    "sign_up": "Sign Up",
+    "comments": "Comments"
   }
   
