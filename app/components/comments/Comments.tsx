@@ -51,7 +51,12 @@ const Comments: React.FC<CommentsProps> = ({
                 
                 <div key={comment.id} className="mr-2 ml-2">
                 <hr/>
-                    <Comment userImage={comment.user.image} comment={comment.comment} createdAt={comment.createdAt}/>
+                    <Comment 
+                        userImage={comment.user.image} 
+                        comment={comment.comment} 
+                        createdAt={comment.createdAt}
+                        userName={comment.user.name??""}
+                    />
                 </div>
                     
                 ))} 

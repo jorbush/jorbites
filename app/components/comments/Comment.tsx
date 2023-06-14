@@ -8,9 +8,10 @@ interface CommentProps {
   userImage: string | undefined | null;
   comment: string;
   createdAt: string;
+  userName: string;
 }
 
-const Comment: React.FC<CommentProps> = ({ userImage, comment, createdAt }) => {
+const Comment: React.FC<CommentProps> = ({ userImage, comment, createdAt,userName }) => {
   const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
   const words = comment.split(' ');
 
@@ -23,6 +24,13 @@ const Comment: React.FC<CommentProps> = ({ userImage, comment, createdAt }) => {
         <Avatar src={userImage} />
       </div>
       <div className="ml-4 mt-2 flex-grow">
+        <p
+            className={`text-gray-800 dark:text-neutral-100 whitespace-normal truncate text-justify font-bold ${
+              isLongWord ? 'break-all' : ''
+            }`}
+          >
+            {userName}
+        </p>
         <p
           className={`text-gray-800 dark:text-neutral-100 whitespace-normal truncate text-justify ${
             isLongWord ? 'break-all' : ''
