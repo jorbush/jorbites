@@ -3,6 +3,8 @@
 import { SafeComment, SafeUser } from "@/app/types";
 import CommentBox from "./CommentBox";
 import Comment from "./Comment";
+import { useTranslation } from 'react-i18next';
+
 
 interface CommentsProps {
   currentUser?: SafeUser | null;
@@ -17,6 +19,8 @@ const Comments: React.FC<CommentsProps> = ({
     listingId, 
     comments
 }) => {
+    const { t } = useTranslation();
+
     
     return (
         <div className="
@@ -39,7 +43,7 @@ const Comments: React.FC<CommentsProps> = ({
                 dark:text-neutral-100
                 "
             >
-                Comments
+                {t('comments')}
             </div>
             <div className="mr-4 ml-4">
                <CommentBox userImage={currentUser?.image} onCreateComment={onCreateComment}/>

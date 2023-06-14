@@ -10,6 +10,8 @@ import { signOut } from 'next-auth/react';
 import { SafeUser } from '@/app/types';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import useSettingsModal from '@/app/hooks/useSettingsModal';
+import { useTranslation } from 'react-i18next';
+
 
 interface UserMenuProps {
     currentUser?: SafeUser | null
@@ -23,6 +25,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
     const recipeModal = useRecipeModal()
     const settingsModal = useSettingsModal()
     const [isOpen, setIsOpen] = useState(false)
+    const { t } = useTranslation();
 
     const toggleOpen = useCallback(() => {
         setIsOpen((value) => !value)
@@ -57,7 +60,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
                         sm:block
                     "
                 >
-                    Post a recipe
+                    {t('post_recipe')}
                 </div>
                 <div
                     onClick={toggleOpen}
@@ -107,30 +110,30 @@ const UserMenu: React.FC<UserMenuProps> = ({
                                         recipeModal.onOpen()
                                         toggleOpen()
                                     }}
-                                    label='Post a recipe'
+                                    label={t('post_recipe')}
                                 />
                                 <MenuItem
                                     onClick={() => {
                                         toggleOpen()
                                     }}
-                                    label='My recipes'
+                                    label={t('my_recipes')}
                                 />
                                 <MenuItem
                                     onClick={() => {
                                         toggleOpen()
                                     }}
-                                    label='My favorites'
+                                    label={t('my_favorites')}
                                 />
                                 <MenuItem
                                     onClick={()=>{
                                         settingsModal.onOpen()
                                         toggleOpen()
                                     }}
-                                    label='Settings'
+                                    label={t('settings')}
                                 />
                                 <MenuItem
                                     onClick={() => signOut()}
-                                    label='Logout'
+                                    label={t('logout')}
                                 />
                             </>
                         ) : (
@@ -140,21 +143,21 @@ const UserMenu: React.FC<UserMenuProps> = ({
                                         settingsModal.onOpen()
                                         toggleOpen()
                                     }}
-                                    label='Settings'
+                                    label={t('settings')}
                                 />
                                 <MenuItem
                                     onClick={()=>{
                                         loginModal.onOpen()
                                         toggleOpen()
                                     }}
-                                    label='Login'
+                                    label={t('login')}
                                 />
                                 <MenuItem
                                     onClick={()=>{
                                         registerModal.onOpen()
                                         toggleOpen()
                                     }}
-                                    label='Sign Up'
+                                    label={t('sign_up')}
                                 />
                             </>
                         )}

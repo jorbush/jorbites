@@ -7,6 +7,13 @@
     "light_theme": "Activar el tema clar",
     "dark_theme": "Activar el tema fosc",
     "settings": "Configuració",
-    "save": "Desa"
+    "save": "Desa",
+    "post_recipe": "Penja una recepta",
+    "my_recipes": "Les meves receptes",
+    "my_favorites": "Els meus preferits",
+    "logout": "Tancar sessió",
+    "login": "Iniciar sessió",
+    "sign_up": "Registra't",
+    "comments": "Comentaris"
   }
   
