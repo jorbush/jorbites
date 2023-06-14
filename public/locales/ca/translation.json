@@ -1,6 +1,12 @@
 {
     "greeting": "Hola!",
     "welcome": "Benvingut/da",
-    "button": "Enviar"
+    "button": "Enviar",
+    "set_your_preferences": "Estableix les teves preferences",
+    "select_your_language": "Selecciona el teu idioma",
+    "light_theme": "Activar el tema clar",
+    "dark_theme": "Activar el tema fosc",
+    "settings": "Configuració",
+    "save": "Desa"
   }
   

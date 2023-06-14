@@ -10,15 +10,14 @@ import { useTranslation } from 'react-i18next';
 
 const SettingsModal = () => {
     const settingsModal = useSettingsModal();
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
     const bodyContent = (
         <div className="flex flex-col gap-4">
           <Heading
-            title="Set your preferences"
+            title={t('set_your_preferences')}
           />
           <ThemeSelector/>
-          <h1>{t('greeting')}</h1>
           <LanguageSelector/>
         </div>
       )
@@ -26,8 +25,8 @@ const SettingsModal = () => {
     return (
         <Modal
           isOpen={settingsModal.isOpen}
-          title="Settings"
-          actionLabel="Save"
+          title={t('settings') ?? "Settings"}
+          actionLabel={t('save')}
           onClose={settingsModal.onClose}
           onSubmit={settingsModal.onClose}
           body={bodyContent}
