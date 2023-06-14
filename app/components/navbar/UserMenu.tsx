@@ -1,6 +1,5 @@
 'use client';
 
-import { AiOutlineMenu } from 'react-icons/ai'
 import Avatar from '../Avatar';
 import { useCallback, useState } from 'react';
 import MenuItem from './MenuItem';
@@ -11,6 +10,7 @@ import { SafeUser } from '@/app/types';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import useSettingsModal from '@/app/hooks/useSettingsModal';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/navigation';
 
 
 interface UserMenuProps {
@@ -26,6 +26,8 @@ const UserMenu: React.FC<UserMenuProps> = ({
     const settingsModal = useSettingsModal()
     const [isOpen, setIsOpen] = useState(false)
     const { t } = useTranslation();
+    const router = useRouter();
+
 
     const toggleOpen = useCallback(() => {
         setIsOpen((value) => !value)
@@ -120,6 +122,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
                                 />
                                 <MenuItem
                                     onClick={() => {
+                                        router.push('/favorites')
                                         toggleOpen()
                                     }}
                                     label={t('my_favorites')}
