@@ -4,6 +4,7 @@ import qs from 'query-string';
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { IconType } from "react-icons";
+import { useTranslation } from 'react-i18next';
 
 interface CategoryBoxProps {
   icon: IconType,
@@ -18,6 +19,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
 }) => {
   const router = useRouter();
   const params = useSearchParams();
+  const { t } = useTranslation();
 
   const handleClick = useCallback(() => {
     let currentQuery = {};
@@ -63,7 +65,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     >
       <Icon size={26} />
       <div className="font-medium text-sm">
-        {label}
+        {t(label.toLocaleLowerCase())}
       </div>
     </div>
    );

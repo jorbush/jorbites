@@ -17,6 +17,15 @@
     "comments": "Comentaris",
     "steps": "Passos",
     "ingredients": "Ingredients",
-    "write_comment": "Escriu un comentari..."
+    "write_comment": "Escriu un comentari...",
+    "fruits": "Fruites",
+    "vegetarian": "Vegetarià",
+    "seafood": "Marisc",
+    "meat": "Carn",
+    "legumes": "Llavors",
+    "desserts": "Postres",
+    "pizza": "Pizza",
+    "soup": "Sopa",
+    "drinks": "Begudes"
   }
   
