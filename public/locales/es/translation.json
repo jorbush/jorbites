@@ -17,6 +17,15 @@
     "comments": "Comentarios",
     "steps": "Pasos",
     "ingredients": "Ingredientes",
-    "write_comment": "Escribe un comentario..."
+    "write_comment": "Escribe un comentario...",
+    "fruits": "Frutas",
+    "vegetarian": "Vegetariano",
+    "seafood": "Mariscos",
+    "meat": "Carne",
+    "legumes": "Legumbres",
+    "desserts": "Postres",
+    "pizza": "Pizza",
+    "soup": "Sopa",
+    "drinks": "Bebidas"
   }
   

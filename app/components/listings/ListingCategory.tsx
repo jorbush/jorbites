@@ -1,6 +1,7 @@
 'use client';
 
 import { IconType } from "react-icons";
+import { useTranslation } from 'react-i18next';
 
 interface CategoryViewProps {
   icon: IconType,
@@ -13,6 +14,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   label,
   description
  }) => {
+  const { t } = useTranslation();
   return ( 
     <div className="flex flex-col gap-6">
       <div className="flex flex-row items-center gap-4">
@@ -21,7 +23,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
             <div 
               className="text-lg font-semibold"
             >
-              {label}
+              {t(label.toLocaleLowerCase())}
             </div>
             <div 
               className="text-neutral-500 font-light"
