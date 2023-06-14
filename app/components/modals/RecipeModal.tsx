@@ -255,23 +255,23 @@ const RecipeModal = () => {
 
     const actionLabel = useMemo(() => {
         if (step === STEPS.IMAGES) {
-            return 'Create'
+            return t('create')
         }
-        return 'Next'
+        return t('next')
     }, [step])
 
     const secondaryActionLabel = useMemo(() => {
         if (step === STEPS.CATEGORY) {
             return undefined
         }
-        return 'Back'
+        return t('back')
     }, [step])
 
     let bodyContent = (
         <div className="flex flex-col gap-8">
             <Heading
-                title="Which of these best describes your recipe?"
-                subtitle="Pick a category"
+                title={t('title_category_recipe')}
+                subtitle={t('subtitle_category_recipe')??""}
             />
             <div 
                 className="
@@ -287,7 +287,7 @@ const RecipeModal = () => {
                         <CategoryInput
                             onClick={(category) => setCustomValue('category', category)}
                             selected={category === item.label}
-                            label={item.label}
+                            label={t(item.label.toLocaleLowerCase())}
                             icon={item.icon}
                         />
                     </div>
@@ -300,7 +300,7 @@ const RecipeModal = () => {
         bodyContent = (
             <div className="flex flex-col gap-8">
                 <Heading
-                    title="Set ingredients"
+                    title={t('title_ingredients')}
                 />
                 <div 
                     className="
@@ -322,7 +322,7 @@ const RecipeModal = () => {
         bodyContent = (
             <div className="flex flex-col gap-8">
                 <Heading
-                    title="Set steps"
+                    title={t('title_steps')}
                 />
                 <div 
                     className="
@@ -344,12 +344,12 @@ const RecipeModal = () => {
         bodyContent = (
             <div className="flex flex-col gap-8">
                 <Heading
-                    title="How would you describe your recipe?"
-                    subtitle="Short and sweet works best!"
+                    title={t('title_description')}
+                    subtitle={t('subtitle_description')??""}
                 />
                 <Input
                     id="title"
-                    label="Title"
+                    label={t('title')}
                     disabled={isLoading}
                     register={register}  
                     errors={errors}
@@ -358,7 +358,7 @@ const RecipeModal = () => {
                 <hr/>
                 <Input
                     id="description"
-                    label="Description"
+                    label={t('description')}
                     disabled={isLoading}
                     register={register}  
                     errors={errors}
@@ -366,8 +366,8 @@ const RecipeModal = () => {
                 />
                 <hr/>
                 <Counter 
-                    title="Minutes" 
-                    subtitle="How many seconds does it take to complete the recipe?" 
+                    title={t('minutes')}
+                    subtitle={t('minutes_subtitle')}
                     value={minutes} 
                     onChange={(value) => setCustomValue('minutes', value)}
                 />
@@ -379,8 +379,8 @@ const RecipeModal = () => {
         bodyContent = (
             <div className="flex flex-col gap-8">
                 <Heading
-                    title="What method will you use to prepare this recipe?"
-                    subtitle="Pick a preparation method"
+                    title={t('methods_title')}
+                    subtitle={t('methods_subtitle')??""}
                 />
                 <div 
                     className="
@@ -396,7 +396,7 @@ const RecipeModal = () => {
                             <CategoryInput
                                 onClick={(method) => setCustomValue('method', method)}
                                 selected={method === item.label}
-                                label={item.label}
+                                label={t(item.label.toLocaleLowerCase())}
                                 icon={item.icon}
                             />
                         </div>
@@ -410,8 +410,8 @@ const RecipeModal = () => {
         bodyContent = (
             <div className="flex flex-col gap-8">
                 <Heading
-                    title="Images"
-                    subtitle="Post images of your recipe"
+                    title={t('images')}
+                    subtitle={t('images_subtitle')??""}
                 />
                 <ImageUpload value={imageSrc} onChange={(value) => setCustomValue('imageSrc', value)}/>
             </div>

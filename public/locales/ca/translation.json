@@ -31,6 +31,23 @@
     "microwave": "Microones",
     "air fryer": "Fregidora d'aire",
     "deep fryer": "Fregidora",
-    "oven": "Forn"
+    "oven": "Forn",
+    "create": "Crear",
+    "next": "Següent",
+    "back": "Enrere",
+    "title_category_recipe": "Quina d'aquestes descriu millor la teva recepta?",
+    "subtitle_category_recipe": "Selecciona una categoria",
+    "title_ingredients": "Afegir ingredients",
+    "title_steps": "Afegir passos",
+    "title_description": "Com descriuries la teva recepta?",
+    "subtitle_description": "Breu i concís és el millor!",
+    "title": "Títol",
+    "description": "Descripció",
+    "minutes": "Minuts",
+    "minutes_subtitle": "Quants minuts es triga a completar la recepta?",
+    "methods_title": "Quin mètode utilitzaràs per preparar aquesta recepta?",
+    "methods_subtitle": "Selecciona un mètode de preparació",
+    "images": "Imatges",
+    "images_subtitle": "Afegeix imatges de la teva recepta"
   }
   
