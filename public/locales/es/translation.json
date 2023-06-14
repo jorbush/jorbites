@@ -31,6 +31,23 @@
     "microwave": "Microondas",
     "air fryer": "Freidora de aire",
     "deep fryer": "Freidora",
-    "oven": "Horno"
+    "oven": "Horno",
+    "create": "Crear",
+    "next": "Siguiente",
+    "back": "Atrás",
+    "title_category_recipe": "¿Cuál de estos describe mejor tu receta?",
+    "subtitle_category_recipe": "Selecciona una categoría",
+    "title_ingredients": "Añadir ingredientes",
+    "title_steps": "Añadir pasos",
+    "title_description": "¿Cómo describirías tu receta?",
+    "subtitle_description": "¡Breve y conciso es lo mejor!",
+    "title": "Título",
+    "description": "Descripción",
+    "minutes": "Minutos",
+    "minutes_subtitle": "¿Cuántos minutos se tarda en completar la receta?",
+    "methods_title": "¿Qué método usarás para preparar esta receta?",
+    "methods_subtitle": "Selecciona un método de preparación",
+    "images": "Imágenes",
+    "images_subtitle": "Añade imágenes de tu receta"
   }
   

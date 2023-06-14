@@ -31,6 +31,23 @@
     "microwave": "Microwave",
     "air fryer": "Air fryer",
     "deep fryer": "Deep fryer",
-    "oven": "Oven"
+    "oven": "Oven",
+    "create": "Create",
+    "next": "Next",
+    "back": "Back",
+    "title_category_recipe": "Which of these best describes your recipe?",
+    "subtitle_category_recipe": "Pick a category",
+    "title_ingredients": "Set ingredients",
+    "title_steps": "Set steps",
+    "title_description": "How would you describe your recipe?",
+    "subtitle_description": "Short and sweet works best!",
+    "title": "Title",
+    "description": "Description",
+    "minutes": "Minutes",
+    "minutes_subtitle": "How many seconds does it take to complete the recipe?",
+    "methods_title": "What method will you use to prepare this recipe?",
+    "methods_subtitle": "Pick a preparation method",
+    "images": "Images",
+    "images_subtitle":"Post images of your recipe"
   }
   
