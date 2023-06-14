@@ -12,7 +12,7 @@ interface HomeProps {
 
 
 const Home = async ({ searchParams }: HomeProps) => {
-  const listings:any = [];
+  const listings = await getListings(searchParams);
   const currentUser = await getCurrentUser();
 
   if (listings.length === 0) {
@@ -38,6 +38,13 @@ const Home = async ({ searchParams }: HomeProps) => {
             gap-8
           "
         >
+          {listings.map((listing) => (
+            <ListingCard
+              key={listing.id}
+              data={listing}
+              currentUser={currentUser}
+            />
+          ))}
         </div>
       </Container>
     </ClientOnly>
