@@ -116,6 +116,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
                                 />
                                 <MenuItem
                                     onClick={() => {
+                                        router.push('/myrecipes')
                                         toggleOpen()
                                     }}
                                     label={t('my_recipes')}
