@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
+    "@types/nodemailer": "^6.4.8",
     "prisma": "^4.15.0"
   }
 }
