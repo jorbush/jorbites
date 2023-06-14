@@ -5,10 +5,9 @@ export interface IListingsParams {
 }
 
 export default async function getListings(
-    params?: IListingsParams
+    params: IListingsParams
 ){
-    if(params){
-      try{
+    try{
         const { category } = params;
 
         let query: any = {};
@@ -32,9 +31,5 @@ export default async function getListings(
         return safeListings
     } catch (error: any) {
         throw new Error(error)
-    }  
-    } else {
-        return []
     }
-    
 }
