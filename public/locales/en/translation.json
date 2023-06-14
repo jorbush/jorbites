@@ -1,6 +1,12 @@
 {
     "greeting": "Hello!",
     "welcome": "Welcome",
-    "button": "Submit"
+    "button": "Submit",
+    "set_your_preferences": "Set your preferences",
+    "select_your_language": "Select your language",
+    "light_theme": "Enable light theme",
+    "dark_theme": "Enable dark theme",
+    "settings": "Settings",
+    "save": "Save"
   }
   

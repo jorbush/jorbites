@@ -1,6 +1,12 @@
 {
     "greeting": "¡Hola!",
     "welcome": "Bienvenido/a",
-    "button": "Enviar"
+    "button": "Enviar",
+    "set_your_preferences": "Establece tus preferencias",
+    "select_your_language": "Selecciona tu idioma",
+    "light_theme": "Activar el tema claro",
+    "dark_theme": "Activar el tema oscuro",
+    "settings": "Ajustes",
+    "save": "Guarda"
   }
   

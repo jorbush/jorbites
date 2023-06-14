@@ -3,10 +3,14 @@
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { HiMoon, HiSun } from 'react-icons/hi';
+import { useTranslation } from 'react-i18next';
+
 
 const ThemeSelector: React.FC = () => {
   const [theme, setTheme] = useState<string>('light');
   const router = useRouter();
+  const { t } = useTranslation();
+
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -29,7 +33,7 @@ const ThemeSelector: React.FC = () => {
   return (
     <div className="flex items-center">
       <div className="flex-1">
-        <p className="text-left">{theme === 'dark' ? 'Enable light theme' : 'Enable dark theme'}</p>
+        <p className="text-left">{theme === 'dark' ? t('light_theme') : t('dark_theme')}</p>
       </div>
       <div className="flex items-center">
         <button
