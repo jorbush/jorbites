@@ -48,6 +48,21 @@
     "methods_title": "Quin mètode utilitzaràs per preparar aquesta recepta?",
     "methods_subtitle": "Selecciona un mètode de preparació",
     "images": "Imatges",
-    "images_subtitle": "Afegeix imatges de la teva recepta"
+    "images_subtitle": "Afegeix imatges de la teva recepta",
+    "logged_in": "Connectat",
+    "welcome_back": "Benvingut de nou",
+    "login_subtitle": "Inicia sessió al teu compte!",
+    "email": "Correu electrònic",
+    "password": "Contrasenya",
+    "login_google": "Continuar amb Google",
+    "login_github": "Continuar amb Github",
+    "first_jorbites": "És la primera vegada que utilitzes Jorbites?",
+    "create_account": "Crear un compte",
+    "continue": "Continuar",
+    "register": "Registrar",
+    "already_account": "Ja tens un compte?",
+    "name": "Nom",
+    "welcome_jorbites": "Benvingut a Jorbites",
+    "create_an_account": "Crear un compte!"
   }
   
