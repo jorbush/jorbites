@@ -48,6 +48,21 @@
     "methods_title": "What method will you use to prepare this recipe?",
     "methods_subtitle": "Pick a preparation method",
     "images": "Images",
-    "images_subtitle":"Post images of your recipe"
+    "images_subtitle":"Post images of your recipe",
+    "logged_in": "Logged in",
+    "welcome_back": "Welcome back",
+    "login_subtitle": "Login to your account!",
+    "email": "Email",
+    "password": "Password",
+    "login_google": "Continue with Google",
+    "login_github": "Continue with Github",
+    "first_jorbites": "First time using Jorbites?",
+    "create_account": "Create an account",
+    "continue": "Continue",
+    "register": "Register",
+    "already_account": "Already have an account?",
+    "name": "Name",
+    "welcome_jorbites": "Welcome to Jorbites",
+    "create_an_account": "Create an account!"
   }
   

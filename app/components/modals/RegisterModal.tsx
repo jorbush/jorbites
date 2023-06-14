@@ -19,10 +19,12 @@ import Heading from "../Heading";
 import Button from "../Button";
 import { signIn } from "next-auth/react";
 import useLoginModal from "@/app/hooks/useLoginModal";
+import { useTranslation } from 'react-i18next';
 
 const RegisterModal= () => {
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
+  const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -64,12 +66,12 @@ const RegisterModal= () => {
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Heading
-        title="Welcome to Jorbites"
-        subtitle="Create an account!"
+        title={t('welcome_jorbites')}
+        subtitle={t('create_an_account')??""}
       />
       <Input
         id="email"
-        label="Email"
+        label={t('email')}
         disabled={isLoading}
         register={register}
         errors={errors}
@@ -77,7 +79,7 @@ const RegisterModal= () => {
       />
       <Input
         id="name"
-        label="Name"
+        label={t('name')}
         disabled={isLoading}
         register={register}
         errors={errors}
@@ -85,7 +87,7 @@ const RegisterModal= () => {
       />
       <Input
         id="password"
-        label="Password"
+        label={t('password')}
         type="password"
         disabled={isLoading}
         register={register}
@@ -100,13 +102,13 @@ const RegisterModal= () => {
       <hr />
       <Button 
         outline 
-        label="Continue with Google"
+        label={t('login_google')}
         icon={FcGoogle}
         onClick={() => signIn('google')} 
       />
       <Button 
         outline 
-        label="Continue with Github"
+        label={t('login_github')}
         icon={AiFillGithub}
         onClick={() => signIn('github')}
       />
@@ -118,7 +120,7 @@ const RegisterModal= () => {
           font-light
         "
       >
-        <p>Already have an account?
+        <p>{t('already_account')}
           <span 
             onClick={onToggle}
             className="
@@ -126,7 +128,7 @@ const RegisterModal= () => {
               cursor-pointer 
               hover:underline
             "
-            > Log in</span>
+            > {t('login')}</span>
         </p>
       </div>
     </div>
@@ -136,8 +138,8 @@ const RegisterModal= () => {
     <Modal
       disabled={isLoading}
       isOpen={registerModal.isOpen}
-      title="Register"
-      actionLabel="Continue"
+      title={t('register')??""}
+      actionLabel={t('continue')}
       onClose={registerModal.onClose}
       onSubmit={handleSubmit(onSubmit)}
       body={bodyContent}
