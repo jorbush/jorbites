@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import Avatar from '../Avatar';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 interface CommentBoxProps {
   userImage: string | undefined | null;
@@ -13,6 +14,7 @@ interface CommentBoxProps {
 const CommentBox: React.FC<CommentBoxProps> = ({ userImage, onCreateComment }) => {
   const [comment, setComment] = useState('');
   const [isButtonDisabled, setButtonDisabled] = useState(false);
+  const { t } = useTranslation();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
@@ -41,7 +43,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({ userImage, onCreateComment }) =
       <form onSubmit={handleSubmit} className="flex-grow mt-2">
         <textarea
           className="w-full p-2 h-11 bg-gray-100 border border-gray-100 rounded-md resize-none focus:outline-none focus:ring-0"
-          placeholder="Write a comment..."
+          placeholder={t('write_comment')??"Write a comment..."}
           value={comment}
           onChange={handleInputChange}
         />
