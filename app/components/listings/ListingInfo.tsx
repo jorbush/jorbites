@@ -5,6 +5,7 @@ import { SafeUser } from "@/app/types";
 import Avatar from "../Avatar";
 import ListingCategoryAndMethod from "./ListingCategoryAndMethod";
 import HeartButton from "../HeartButton";
+import { useTranslation } from 'react-i18next';
 
 
 interface ListingInfoProps {
@@ -37,6 +38,8 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   id,
   currentUser
 }) => {
+  const { t } = useTranslation();
+
   return ( 
     <div className="col-span-4 flex flex-col gap-8 pl-2 pr-2">
       <div className="flex flex-col gap-2">
@@ -90,10 +93,10 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           "
         >
           <div>
-            {steps.length} steps
+            {steps.length} {t('steps').toLowerCase()}
           </div>
           <div>
-            {ingredients.length} ingredients
+            {ingredients.length} {t('ingredients').toLowerCase()}
           </div>
         </div>
       </div>
@@ -117,7 +120,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
                     gap-2
                     "
                 >
-                    Ingredients
+                    {t('ingredients')}
                 </div>
                 <ul className="list-disc pl-9 pt-4">
                     {ingredients.map((ingredient, index) => (
@@ -143,7 +146,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
                     gap-2
                     "
                 >
-                    Steps
+                    {t('steps')}
                 </div>
                 <ol className="list-decimal pl-9 pt-4">
                 {steps.map((step, index) => (
