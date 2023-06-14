@@ -12,7 +12,7 @@ export default async function getListings(
 
         let query: any = {};
 
-        if (typeof category === 'string') {
+        if (category) {
             query.category = category;
         }
       
