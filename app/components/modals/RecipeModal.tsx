@@ -313,7 +313,7 @@ const RecipeModal = () => {
                 >
                     {renderIngredientInput()}
                 </div>
-                <Button outline={true}label="+" onClick={() => {addIngredientInput()}}/>
+                <Button outline={true} label="+" onClick={() => {addIngredientInput()}}/>
             </div>
         )
     }
@@ -335,7 +335,7 @@ const RecipeModal = () => {
                 >
                     {renderStepsInput()}
                 </div>
-                <Button outline={true}label="+" onClick={() => {addStepInput()}}/>
+                <Button outline={true} label="+" onClick={() => {addStepInput()}}/>
             </div>
         )
     }
