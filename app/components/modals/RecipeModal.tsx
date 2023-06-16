@@ -188,6 +188,7 @@ const RecipeModal = () => {
                     gap-3
                     max-h-[50vh]
                     max-w
+                    overflow-x-auto
                     overflow-y-auto
                     "
                 >
