@@ -288,7 +288,7 @@ const RecipeModal = () => {
                         <CategoryInput
                             onClick={(category) => setCustomValue('category', category)}
                             selected={category === item.label}
-                            label={t(item.label.toLocaleLowerCase())}
+                            label={item.label}
                             icon={item.icon}
                         />
                     </div>
@@ -397,7 +397,7 @@ const RecipeModal = () => {
                             <CategoryInput
                                 onClick={(method) => setCustomValue('method', method)}
                                 selected={method === item.label}
-                                label={t(item.label.toLocaleLowerCase())}
+                                label={item.label}
                                 icon={item.icon}
                             />
                         </div>

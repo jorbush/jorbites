@@ -1,6 +1,7 @@
 'use client';
 
 import { IconType } from "react-icons";
+import { useTranslation } from 'react-i18next';
 
 interface CategoryBoxProps {
   icon: IconType,
@@ -15,6 +16,8 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
   selected,
   onClick
 }) => {
+  const { t } = useTranslation();
+
   return ( 
     <div
       onClick={() => onClick(label)}
@@ -33,7 +36,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     >
       <Icon size={30} />
       <div className="font-semibold">
-        {label}
+        {t(label.toLocaleLowerCase())}
       </div>
     </div>
    );
