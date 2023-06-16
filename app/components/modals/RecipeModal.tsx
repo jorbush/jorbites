@@ -23,8 +23,8 @@ import { useTranslation } from 'react-i18next';
 
 enum STEPS {
     CATEGORY = 0,
-    INGREDIENTS = 1,
-    DESCRIPTION = 2,
+    DESCRIPTION = 1,
+    INGREDIENTS = 2,
     METHODS = 3,
     STEPS = 4,
     IMAGES = 5
@@ -188,7 +188,7 @@ const RecipeModal = () => {
                     gap-3
                     max-h-[50vh]
                     max-w
-                    overflow-x-auto
+                    min-w-[10vh]
                     overflow-y-auto
                     "
                 >
