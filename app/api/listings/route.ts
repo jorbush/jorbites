@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import sendEmail from "@/app/actions/sendEmail";
 
 export async function POST(
   request: Request, 
@@ -44,6 +45,15 @@ export async function POST(
       userId: currentUser.id
     }
   });
+
+  const users = await prisma.user.findMany({
+    orderBy: {
+        createdAt: 'desc'
+    }
+  })
+  await Promise.all(users.map(async (user) => {
+    await sendEmail("There's a new recipe available on Jorbites!\nCheck it out: https://jorbites.vercel.app/listings/" + listing.id, user.email);
+  }));    
 
   return NextResponse.json(listing);
 }
