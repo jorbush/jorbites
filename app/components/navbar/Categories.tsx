@@ -13,7 +13,7 @@ import {
   GiBowlOfRice,
 } from 'react-icons/gi';
 import {FaFish} from 'react-icons/fa';
-import { TbSoup } from "react-icons/tb"
+import { TbSoup, TbSalad } from "react-icons/tb";
 
 export const categories = [
   {
@@ -61,7 +61,11 @@ export const categories = [
     icon: GiCoffeeCup,
     description: 'Refreshing drinks',
   },
-  
+  {
+    label: 'Salad',
+    icon: TbSalad,
+    description: 'Salad recipes',
+  },
 ];
 
 
