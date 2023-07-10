@@ -4,9 +4,20 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import sendEmail from "@/app/actions/sendEmail";
 
+let isProcessing = false
+
 export async function POST(
   request: Request, 
 ) {
+
+  //console.log(isProcessing)
+
+  if (isProcessing) {
+    return NextResponse.error();
+  }
+
+  isProcessing = true
+
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -51,9 +62,12 @@ export async function POST(
         createdAt: 'desc'
     }
   })
+
   await Promise.all(users.map(async (user) => {
     await sendEmail("There's a new recipe available on Jorbites!\nCheck it out: https://jorbites.vercel.app/listings/" + listing.id, user.email);
-  }));    
+  }));   
+  
+  isProcessing = false
 
   return NextResponse.json(listing);
 }
