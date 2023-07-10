@@ -15,6 +15,7 @@ interface ModalProps {
   footer?: React.ReactElement;
   actionLabel: string;
   disabled?: boolean;
+  isLoading?: boolean;
   secondaryAction?: () => void;
   secondaryActionLabel?: string;
   minHeight?: string;
@@ -29,6 +30,7 @@ const Modal: React.FC<ModalProps> = ({
   actionLabel, 
   footer, 
   disabled,
+  isLoading,
   secondaryAction,
   secondaryActionLabel,
   minHeight
@@ -174,14 +176,14 @@ const Modal: React.FC<ModalProps> = ({
                 >
                   {secondaryAction && secondaryActionLabel && (
                     <Button 
-                      disabled={disabled} 
+                      disabled={disabled || isLoading} 
                       label={secondaryActionLabel} 
                       onClick={handleSecondaryAction}
                       outline
                     />  
                   )}
                   <Button 
-                    disabled={disabled} 
+                    disabled={disabled || isLoading} 
                     label={actionLabel} 
                     onClick={handleSubmit}
                     withDelay

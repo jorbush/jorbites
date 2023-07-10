@@ -429,6 +429,7 @@ const RecipeModal = () => {
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
             title={t('post_recipe')?? "Post a recipe!"}
             body={bodyContent}
+            isLoading={isLoading}
             minHeight="753px"
         />
     );
