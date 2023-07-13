@@ -42,6 +42,18 @@ export async function POST(
     }
   });
 
+  const listingExist = await prisma.listing.findFirst({
+    where: {
+      imageSrc: imageSrc as string,
+    }
+  })?? null;
+
+  console.log(listingExist)
+
+  if (listingExist !== null){
+    return NextResponse.error();
+  }
+
   const listing = await prisma.listing.create({
     data: {
       title,
