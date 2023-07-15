@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import EmailNotificationsSelector from "../settings/EmailNotificationsSelector";
 import { SafeUser } from "@/app/types";
 import ChangeUserImageSelector from "../settings/ChangeUserImage";
+import { useState } from "react";
 
 interface SettingsProps {
   currentUser?: SafeUser | null 
@@ -19,6 +20,7 @@ const SettingsModal: React.FC<SettingsProps> = ({
 }) => {
     const settingsModal = useSettingsModal();
     const { t } = useTranslation();
+    const [saveImage, setSaveImage] = useState(false);
 
     const bodyContent = (
         <div className="flex flex-col gap-4">
@@ -28,17 +30,21 @@ const SettingsModal: React.FC<SettingsProps> = ({
           <ThemeSelector/>
           <LanguageSelector/>
           <EmailNotificationsSelector currentUser={currentUser}/>
-          <ChangeUserImageSelector currentUser={currentUser}/>
+          <ChangeUserImageSelector currentUser={currentUser} saveImage={saveImage} setSaveImage={setSaveImage} onSave={() =>settingsModal.onClose()}/>
         </div>
       )
     
+    const handleSaveClick = () => {
+      setSaveImage(true)
+    }
+
     return (
         <Modal
           isOpen={settingsModal.isOpen}
           title={t('settings') ?? "Settings"}
           actionLabel={t('save')}
           onClose={settingsModal.onClose}
-          onSubmit={settingsModal.onClose}
+          onSubmit={handleSaveClick}
           body={bodyContent}
           footer={<div></div>}
         />

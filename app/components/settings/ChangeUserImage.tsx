@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
@@ -12,13 +12,19 @@ import Image from 'next/image';
 
 
 interface ChangeUserImageProps {
-  currentUser?: SafeUser | null 
+  currentUser?: SafeUser | null,
+  saveImage: boolean;
+  setSaveImage: Dispatch<SetStateAction<boolean>>;
+  onSave: () => void;
 }
 
 const uploadPreset = "ibbxxl6z";
 
 const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
-  currentUser
+  currentUser,
+  saveImage,
+  setSaveImage,
+  onSave
 }) => {
   const router = useRouter();
   const { t } = useTranslation();
@@ -51,6 +57,19 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
     setNewImage(result.info.secure_url)
     setCanSave(true)
   }, []);
+
+  useEffect(() => {
+    console.log("ey")
+    if (saveImage && canSave){
+      console.log("Saving...")
+      updateUserProfile()
+      setSaveImage(false)
+      onSave()
+    } else if (saveImage){
+      setSaveImage(false)
+      onSave()
+    }
+  }, [saveImage]);
 
   return (
     <div className="flex items-center">
