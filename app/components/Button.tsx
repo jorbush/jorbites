@@ -10,6 +10,7 @@ interface ButtonProps {
   small?: boolean;
   icon?: IconType;
   withDelay?: boolean;
+  deleteButton?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -20,6 +21,7 @@ const Button: React.FC<ButtonProps> = ({
   small,
   icon: Icon,
   withDelay = false,
+  deleteButton
 }) => {
   const [isDisabled, setIsDisabled] = useState(false);
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -53,6 +55,7 @@ const Button: React.FC<ButtonProps> = ({
         ${small ? "py-1" : "py-3"}
         ${small ? "font-light" : "font-semibold"}
         ${small ? "border-[1px]" : "border-2"}
+        ${deleteButton ? "bg-rose-500 text-neutral-100 border-rose-500" : ""}
       `}
     >
       {Icon && (
