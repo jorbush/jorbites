@@ -6,6 +6,7 @@ import Avatar from "../Avatar";
 import ListingCategoryAndMethod from "./ListingCategoryAndMethod";
 import HeartButton from "../HeartButton";
 import { useTranslation } from 'react-i18next';
+import { MdVerified } from "react-icons/md";
 
 
 interface ListingInfoProps {
@@ -64,6 +65,9 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           >
             <Avatar src={user?.image} />
             <div>{user?.name}</div>
+            {user.verified && (
+              <MdVerified className="text-green-450"/>
+            )}
           </div>
           <div 
             className="

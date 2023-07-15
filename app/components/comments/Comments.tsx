@@ -56,6 +56,7 @@ const Comments: React.FC<CommentsProps> = ({
                         comment={comment.comment} 
                         createdAt={comment.createdAt}
                         userName={comment.user.name??""}
+                        verified={comment.user.verified}
                     />
                 </div>
                     
