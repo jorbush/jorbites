@@ -68,8 +68,7 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
           {({ open }) => {
             return (
               <>
-                {typeof newImage === 'string'&&
-                  newImage !== "" && (
+                { (
                   <div className="
                     flex flex-row
                   ">
@@ -78,7 +77,7 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                       height="30"
                       width="30"
                       alt="Upload" 
-                      src={newImage} 
+                      src={newImage|| "/images/placeholder.jpg"} 
                       onClick={() => open?.()}
                     />
                     
