@@ -8,6 +8,7 @@ import LanguageSelector from "../settings/LanguageSelector";
 import { useTranslation } from 'react-i18next';
 import EmailNotificationsSelector from "../settings/EmailNotificationsSelector";
 import { SafeUser } from "@/app/types";
+import ChangeUserImageSelector from "../settings/ChangeUserImage";
 
 interface SettingsProps {
   currentUser?: SafeUser | null 
@@ -27,6 +28,7 @@ const SettingsModal: React.FC<SettingsProps> = ({
           <ThemeSelector/>
           <LanguageSelector/>
           <EmailNotificationsSelector currentUser={currentUser}/>
+          <ChangeUserImageSelector currentUser={currentUser}/>
         </div>
       )
     
