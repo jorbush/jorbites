@@ -223,13 +223,17 @@ const RecipeModal = () => {
                 <div key={i}
                     className="
                     grid 
-                    grid-cols-10
+                    grid-cols-11
                     gap-3
                     max-h-[50vh]
                     max-w
                     overflow-y-auto
                     "
                 >
+                    <div className="col-span-1 flex justify-center items-center">
+                    {`${i+1}.`}
+                    </div>
+                    
                     <div className="col-span-9">
                         <Input
                             id={"step " + i}
