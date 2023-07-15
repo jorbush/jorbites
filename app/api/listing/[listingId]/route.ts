@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import sendEmail from "@/app/actions/sendEmail";
+import getListingById from "@/app/actions/getListingById";
 
 interface IParams {
     listingId?: string;
@@ -79,4 +80,35 @@ export async function POST(
   isProcessing = false
 
   return NextResponse.json(listing);
+}
+
+export async function DELETE(
+  request: Request, 
+  { params }: { params: IParams }
+) {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return NextResponse.error();
+  }
+
+  const { listingId: listingId } = params;
+
+  if (!listingId || typeof listingId !== 'string') {
+    throw new Error('Invalid ID');
+  }
+
+  const recipe = await getListingById({listingId: listingId})
+
+  if (recipe?.userId !== currentUser.id){
+    return NextResponse.error();
+  }
+
+  const user = await prisma.listing.delete({
+    where: {
+      id: listingId
+    },
+  });
+
+  return NextResponse.json(user);
 }
