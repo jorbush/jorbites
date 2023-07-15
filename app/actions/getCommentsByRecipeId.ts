@@ -4,7 +4,7 @@ interface IParams {
   listingId?: string;
 }
 
-export default async function getCommentsById(
+export default async function getCommentsByRecipeId(
   params: IParams
 ) {
   try {
