@@ -67,6 +67,9 @@
     "salad": "Ensalada",
     "enable_email_notifications": "Notificaciones por email",
     "update_user_image": "Imagen del usuario",
-    "delete_recipe": "Elimina la receta"
+    "delete_recipe": "Elimina la receta",
+    "text_delete": "Jorbites elimina esta receta",
+    "delete": "Elimina",
+    "write_this_to_delete": "Vuelva a escribir la frase para eliminar"
   }
   

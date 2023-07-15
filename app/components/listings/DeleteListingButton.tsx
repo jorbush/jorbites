@@ -7,6 +7,7 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import DeleteListingsModal from "../modals/DeleteListingModal";
 
 interface DeleteListingButtonProps {
     id: string;
@@ -15,42 +16,28 @@ interface DeleteListingButtonProps {
 const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
     id
 }) => {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
     const { t } = useTranslation();
 
-    const router = useRouter();
-
     const onClick = () => {
-
-        setIsLoading(true);
-    
-        axios.delete(`/api/listing/${id}`)
-        .then(() => {
-          toast.success('Recipe deleted!');
-        })
-        .catch(() => {
-          toast.error('Something went wrong.');
-        })
-        .finally(() => {
-          setIsLoading(false);
-          router.push('/')
-        })
-
+        setIsOpen(true)
     }
 
     return (
-        <div className="flex flex-row w-full justify-center items-center">
-            <div className="w-[240px]">
-                <Button 
-                    deleteButton
-                    disabled={isLoading}
-                    label={t('delete_recipe')}
-                    icon={AiFillDelete}
-                    onClick={onClick}
-                />  
+        <>
+            <DeleteListingsModal open={isOpen} setIsOpen={setIsOpen} id={id}/>
+            <div className="flex flex-row w-full justify-center items-center">
+                <div className="w-[240px]">
+                    <Button 
+                        deleteButton
+                        label={t('delete_recipe')}
+                        icon={AiFillDelete}
+                        onClick={onClick}
+                    />  
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 
