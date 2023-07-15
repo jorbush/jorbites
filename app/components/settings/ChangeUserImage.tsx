@@ -74,6 +74,10 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                   ">
                     <Image
                       className="rounded-full"
+                      style={{
+                        objectFit: 'cover',
+                        aspectRatio: '1/1',
+                      }}
                       height="30"
                       width="30"
                       alt="Upload" 

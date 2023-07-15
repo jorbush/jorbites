@@ -16,6 +16,10 @@ const Avatar: React.FC<AvatarProps> = ({
             width="30"
             alt="Avatar"
             src= {src || "/images/placeholder.jpg"}
+            style={{
+                objectFit: 'cover',
+                aspectRatio: '1/1',
+            }}
         />
     );
 }
