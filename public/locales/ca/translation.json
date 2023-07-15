@@ -67,6 +67,9 @@
     "salad": "Amanida",
     "enable_email_notifications": "Notificacions per email",
     "update_user_image": "Foto de perfil",
-    "delete_recipe": "Elimina la recepta"
+    "delete_recipe": "Elimina la recepta",
+    "text_delete": "Jorbites elimina aquesta recepta",
+    "delete": "Elimina",
+    "write_this_to_delete": "Torna a escriure la frase per eliminar"
   }
   

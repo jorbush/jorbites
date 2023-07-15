@@ -59,9 +59,7 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
   }, []);
 
   useEffect(() => {
-    console.log("ey")
     if (saveImage && canSave){
-      console.log("Saving...")
       updateUserProfile()
       setSaveImage(false)
       onSave()
