@@ -76,7 +76,9 @@ export async function POST(
   })
 
   await Promise.all(users.map(async (user) => {
-    await sendEmail("There's a new recipe available on Jorbites!\nCheck it out: https://jorbites.vercel.app/listings/" + listing.id, user.email);
+    if (user.emailNotifications){
+      await sendEmail("There's a new recipe available on Jorbites!\nCheck it out: https://jorbites.vercel.app/listings/" + listing.id, user.email);
+    }
   }));   
   
   isProcessing = false

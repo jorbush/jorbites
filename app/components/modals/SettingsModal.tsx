@@ -3,12 +3,19 @@
 import useSettingsModal from "@/app/hooks/useSettingsModal";
 import Modal from "./Modal";
 import Heading from "../Heading";
-import ThemeSelector from "../ThemeSelector";
-import LanguageSelector from "../LanguageSelector";
+import ThemeSelector from "../settings/ThemeSelector";
+import LanguageSelector from "../settings/LanguageSelector";
 import { useTranslation } from 'react-i18next';
+import EmailNotificationsSelector from "../settings/EmailNotificationsSelector";
+import { SafeUser } from "@/app/types";
 
+interface SettingsProps {
+  currentUser?: SafeUser | null 
+}
 
-const SettingsModal = () => {
+const SettingsModal: React.FC<SettingsProps> = ({
+  currentUser
+}) => {
     const settingsModal = useSettingsModal();
     const { t } = useTranslation();
 
@@ -19,6 +26,7 @@ const SettingsModal = () => {
           />
           <ThemeSelector/>
           <LanguageSelector/>
+          <EmailNotificationsSelector currentUser={currentUser}/>
         </div>
       )
     
