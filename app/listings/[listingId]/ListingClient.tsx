@@ -15,6 +15,7 @@ import { Comment } from "@prisma/client";
 import ListingInfo from "@/app/components/listings/ListingInfo";
 import { preparationMethods } from "@/app/components/modals/RecipeModal";
 import Comments from "@/app/components/comments/Comments";
+import DeleteListingButton from "@/app/components/listings/DeleteListingButton";
 
 interface ListingClientProps {
   comments?: SafeComment[];
@@ -114,6 +115,9 @@ const ListingClient: React.FC<ListingClientProps> = ({
             listingId={listing.id}
             comments={comments}
           />
+          {currentUser?.id === listing.userId&&(
+            <DeleteListingButton id={listing.id}/>
+          )}
         </div>
       </div>
     </Container>
