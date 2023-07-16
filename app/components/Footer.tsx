@@ -12,7 +12,7 @@ const Footer = () => {
     return (
         <div className="
             flex
-            flex-row
+            flex-col
             w-full
             justify-center
             items-center
@@ -20,7 +20,12 @@ const Footer = () => {
             dark:text-gray-600
             p-4
         ">
-            {`${t('version')} 0.4`}
+            <div>
+                {`${t('version')} 0.4`}
+            </div>
+            <div>
+                {`${t('contact')} jbonetv5@gmail.com`}
+            </div>
         </div>
     );
 }
