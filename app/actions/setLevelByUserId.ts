@@ -16,7 +16,7 @@ export default async function setLevelByUserId(params: IParams) {
       }
     });
 
-    console.log(user?.name)
+    //console.log(user?.name)
 
     if (!user) {
       throw new Error("El usuario no existe.");
@@ -28,15 +28,15 @@ export default async function setLevelByUserId(params: IParams) {
       }
     });
 
-    console.log(userRecipes.length)
+    //console.log(userRecipes.length)
 
     const totalLikes = userRecipes.reduce((total, recipe) => total + (recipe.numLikes || 0), 0);
 
-    console.log(totalLikes)
+    //console.log(totalLikes)
 
     const newLevel = calculateLevel(userRecipes.length, totalLikes);
 
-    console.log(newLevel)
+    //console.log(newLevel)
 
     const updatedUser = await prisma.user.update({
       where: {
