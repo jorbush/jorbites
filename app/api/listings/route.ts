@@ -3,20 +3,11 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import sendEmail from "@/app/actions/sendEmail";
-
-let isProcessing = false
+import setLevelByUserId from "@/app/actions/setLevelByUserId";
 
 export async function POST(
   request: Request, 
 ) {
-
-  //console.log(isProcessing)
-
-  if (isProcessing) {
-    return NextResponse.error();
-  }
-
-  isProcessing = true
 
   const currentUser = await getCurrentUser();
 
@@ -80,8 +71,8 @@ export async function POST(
       await sendEmail("There's a new recipe available on Jorbites!\nCheck it out: https://jorbites.vercel.app/listings/" + listing.id, user.email);
     }
   }));   
-  
-  isProcessing = false
 
+  const newUser = await setLevelByUserId({userId: currentUser.id})
+  
   return NextResponse.json(listing);
 }
