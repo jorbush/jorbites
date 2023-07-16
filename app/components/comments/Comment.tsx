@@ -76,7 +76,7 @@ const Comment: React.FC<CommentProps> = ({
           {verified && (
               <MdVerified className="text-green-450 mt-1 ml-1"/>
           )}
-          <div className="text-gray-400 text-sm mt-[3.3px] ml-1.5">{`${t('level')} ${userLevel}`}</div>
+          <div className="text-gray-400 text-sm mt-[2.5px] ml-1.5">{`${t('level')} ${userLevel}`}</div>
         </div>
         <p
           className={`text-gray-800 dark:text-neutral-100 whitespace-normal truncate text-justify ${
