@@ -83,6 +83,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
               items-end
               gap-2
               ml-auto
+              mb-5
               mr-4
             "
           >
