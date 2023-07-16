@@ -8,6 +8,7 @@ import ConfirmModal from '../modals/ConfirmModal';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 interface CommentProps {
   userImage: string | undefined | null;
@@ -17,6 +18,7 @@ interface CommentProps {
   canDelete?: boolean;
   verified?: boolean;
   commentId: string;
+  userLevel: number;
 }
 
 const Comment: React.FC<CommentProps> = ({ 
@@ -27,12 +29,15 @@ const Comment: React.FC<CommentProps> = ({
   canDelete, 
   verified, 
   commentId, 
+  userLevel
 }) => {
+
   const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
   const words = comment.split(' ');
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false)
+  const { t } = useTranslation();
 
   // Verificar si alguna palabra es demasiado larga
   const isLongWord = words.some((word) => word.length > 20);
@@ -71,6 +76,7 @@ const Comment: React.FC<CommentProps> = ({
           {verified && (
               <MdVerified className="text-green-450 mt-1 ml-1"/>
           )}
+          <div className="text-gray-400 text-sm mt-[3.3px] ml-1.5">{`${t('level')} ${userLevel}`}</div>
         </div>
         <p
           className={`text-gray-800 dark:text-neutral-100 whitespace-normal truncate text-justify ${

@@ -59,6 +59,7 @@ const Comments: React.FC<CommentsProps> = ({
                         verified={comment.user.verified}
                         canDelete={currentUser?.id === comment.userId}
                         commentId={comment.id}
+                        userLevel={comment.user.level}
                     />
                 </div>
                     
