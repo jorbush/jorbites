@@ -63,11 +63,17 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
               dark:text-neutral-100
             "
           >
-            <Avatar src={user?.image} />
-            <div>{user?.name}</div>
-            {user.verified && (
-              <MdVerified className="text-green-450"/>
-            )}
+            <Avatar src={user?.image} size={40}/>
+            <div className="flex flex-col">
+              <div className="flex flex-row">
+                <div>{user?.name}</div>
+                {user.verified && (
+                  <MdVerified className="text-green-450 mt-1 ml-1"/>
+                )}
+              </div>
+              <div className="text-green-450 text-sm">{`${t('level')} ${user?.level}`}</div>
+            </div>
+            
           </div>
           <div 
             className="
