@@ -57,6 +57,8 @@ const Comments: React.FC<CommentsProps> = ({
                         createdAt={comment.createdAt}
                         userName={comment.user.name??""}
                         verified={comment.user.verified}
+                        canDelete={currentUser?.id === comment.userId}
+                        commentId={comment.id}
                     />
                 </div>
                     

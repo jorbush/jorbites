@@ -70,6 +70,8 @@
     "delete_recipe": "Elimina la recepta",
     "text_delete": "Jorbites elimina aquesta recepta",
     "delete": "Elimina",
-    "write_this_to_delete": "Torna a escriure la frase per eliminar"
+    "write_this_to_delete": "Torna a escriure la frase per eliminar",
+    "cancel": "Cancel·la",
+    "confirm_title": "Estàs segur/a?"
   }
   
