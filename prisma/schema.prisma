@@ -21,7 +21,7 @@ model User {
   updatedAt           DateTime  @updatedAt
   favoriteIds         String[]  @db.ObjectId
   emailNotifications  Boolean   @default(false)
-  level               Int       @default(1)
+  level               Int       @default(0)
   verified            Boolean   @default(false)
 
   accounts            Account[]
