@@ -71,7 +71,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
                   <MdVerified className="text-green-450 mt-1 ml-1"/>
                 )}
               </div>
-              <div className="text-green-450 text-sm">{`${t('level')} ${user?.level}`}</div>
+              <div className="text-gray-400 text-sm">{`${t('level')} ${user?.level}`}</div>
             </div>
             
           </div>
