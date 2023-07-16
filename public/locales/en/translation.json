@@ -70,6 +70,7 @@
     "delete_recipe": "Delete recipe",
     "text_delete": "Jorbites delete this recipe",
     "delete": "Delete",
-    "write_this_to_delete": "Retype the phrase to remove"
+    "write_this_to_delete": "Retype the phrase to remove",
+    "confirm_title": "Are you sure?"
   }
   
