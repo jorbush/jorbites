@@ -31,7 +31,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({
     if (isDisabled) {
       const timeout = setTimeout(() => {
         setIsDisabled(false);
-      }, 2000);
+      }, 4000);
 
       return () => clearTimeout(timeout);
     }
