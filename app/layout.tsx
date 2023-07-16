@@ -9,6 +9,7 @@ import LoginModal from './components/modals/LoginModal'
 import getCurrentUser from './actions/getCurrentUser'
 import RecipeModal from './components/modals/RecipeModal'
 import SettingsModal from './components/modals/SettingsModal'
+import Footer from './components/Footer'
 
 const inter = Inter({ subsets: ['latin'] })
 const font = Nunito({ subsets: ["latin"] })
@@ -42,6 +43,9 @@ export default async function RootLayout({
         <div className='pb-20 pt-28'>
           {children}
         </div>
+        <ClientOnly>
+          <Footer/>
+        </ClientOnly>
       </body>
     </html>
   )

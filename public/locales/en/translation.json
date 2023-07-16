@@ -71,6 +71,7 @@
     "text_delete": "Jorbites delete this recipe",
     "delete": "Delete",
     "write_this_to_delete": "Retype the phrase to remove",
-    "confirm_title": "Are you sure?"
+    "confirm_title": "Are you sure?",
+    "version": "Version"
   }
   
