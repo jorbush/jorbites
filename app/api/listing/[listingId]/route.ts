@@ -4,25 +4,16 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import sendEmail from "@/app/actions/sendEmail";
 import getListingById from "@/app/actions/getListingById";
+import setLevelByUserId from "@/app/actions/setLevelByUserId";
 
 interface IParams {
     listingId?: string;
 }
 
-let isProcessing = false
-
 export async function POST(
     request: Request, 
     { params }: { params: IParams }
 ) {
-
-  //console.log(isProcessing)
-
-  if (isProcessing) {
-    return NextResponse.error();
-  }
-
-  isProcessing = true
 
   const body = await request.json();
 
@@ -77,7 +68,7 @@ export async function POST(
     }
   });
 
-  isProcessing = false
+  const newUser = await setLevelByUserId({userId: currentListing?.user.id})
 
   return NextResponse.json(listing);
 }
@@ -104,11 +95,13 @@ export async function DELETE(
     return NextResponse.error();
   }
 
-  const user = await prisma.listing.delete({
+  const deletedRecipe = await prisma.listing.delete({
     where: {
       id: listingId
     },
   });
 
-  return NextResponse.json(user);
+  const newUser = await setLevelByUserId({userId: recipe.userId})
+
+  return NextResponse.json(deletedRecipe);
 }
