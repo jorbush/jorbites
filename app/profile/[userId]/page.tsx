@@ -5,11 +5,15 @@ import ClientOnly from "@/app/components/ClientOnly";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import getFavoriteListings from "@/app/actions/getFavoriteListings";
 
-import MyRecipesClient from "./MyRecipesClient";
-import getMyRecipes from "../actions/getMyRecipes";
+import ProfileClient from "./ProfileClient";
+import getRecipesByUserId from "../../actions/getRecipesByUserId";
 
-const ListingPage = async () => {
-  const listings = await getMyRecipes();
+interface IParams {
+  userId?: string;
+}
+
+const ListingPage = async ({ params }: { params: IParams }) => {
+  const listings = await getRecipesByUserId(params);
   const currentUser = await getCurrentUser();
 
   if (listings.length === 0) {
@@ -25,7 +29,7 @@ const ListingPage = async () => {
 
   return (
     <ClientOnly>
-      <MyRecipesClient
+      <ProfileClient
         listings={listings}
         currentUser={currentUser}
       />
