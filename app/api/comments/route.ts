@@ -33,7 +33,7 @@ export async function POST(
   });
 
   if (currentListing?.user.emailNotifications) {
-    await sendEmail("You have received a new comment from " + currentUser.name + ".\nIn this recipe: https://jorbites.vercel.app/listings/" + listingId, currentListing?.user.email);
+    await sendEmail("You have received a new comment from " + currentUser.name + ".\nIn this recipe: https://jorbites.com/recipes/" + listingId, currentListing?.user.email);
   }
 
   const listingAndComment = await prisma.listing.update({
