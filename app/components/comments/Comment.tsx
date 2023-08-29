@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
 interface CommentProps {
+  userId: string,
   userImage: string | undefined | null;
   comment: string;
   createdAt: string;
@@ -22,6 +23,7 @@ interface CommentProps {
 }
 
 const Comment: React.FC<CommentProps> = ({ 
+  userId,
   userImage, 
   comment, 
   createdAt,
@@ -61,14 +63,15 @@ const Comment: React.FC<CommentProps> = ({
   return (
     <div className="flex items-start mt-2 mb-2 mr-1 ml-1 relative">
       <div className="flex-shrink-0 mt-2">
-        <Avatar src={userImage} />
+        <Avatar src={userImage}  onClick={() => router.push('/profile/'+ userId)} />
       </div>
       <div className="ml-4 mt-2 flex-grow">
         <div className='flex flex-row'>
           <p
-              className={`text-gray-800 dark:text-neutral-100 whitespace-normal truncate text-justify font-bold ${
+              className={`text-gray-800 dark:text-neutral-100 whitespace-normal cursor-pointer truncate text-justify font-bold ${
                 isLongWord ? 'break-all' : ''
               }`}
+              onClick={() => router.push('/profile/'+ userId)}
             >
               {userName}
               
