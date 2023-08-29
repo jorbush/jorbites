@@ -7,6 +7,7 @@ import ListingCategoryAndMethod from "./ListingCategoryAndMethod";
 import HeartButton from "../HeartButton";
 import { useTranslation } from 'react-i18next';
 import { MdVerified } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 
 interface ListingInfoProps {
@@ -40,6 +41,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   currentUser
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
 
   return ( 
     <div className="col-span-4 flex flex-col gap-8 pl-2 pr-2">
@@ -63,10 +65,14 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
               dark:text-neutral-100
             "
           >
-            <Avatar src={user?.image} size={40}/>
+            <Avatar src={user?.image} size={40} onClick={() => router.push('/profile/'+ user.id)}/>
             <div className="flex flex-col">
               <div className="flex flex-row">
-                <div>{user?.name}</div>
+                <div className="cursor-pointer" 
+                  onClick={() => router.push('/profile/'+ user.id)}
+                >
+                  {user?.name}
+                </div>
                 {user.verified && (
                   <MdVerified className="text-green-450 mt-1 ml-1"/>
                 )}
