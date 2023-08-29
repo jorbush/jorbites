@@ -19,12 +19,12 @@ const ListingPage = async ({ params }: { params: IParams }) => {
   const user = await getUserById(params);
   const currentUser = await getCurrentUser();
 
-  if (listings.length === 0) {
+  if (!user && listings.length === 0) {
     return (
       <ClientOnly>
         <EmptyState
           title="No recipes found"
-          subtitle="Looks like you have not created recipes."
+          subtitle="Looks like this user has not created recipes."
         />
       </ClientOnly>
     );
@@ -33,10 +33,16 @@ const ListingPage = async ({ params }: { params: IParams }) => {
   return (
     <ClientOnly>
       <ProfileHeader user={user}/>
-      <ProfileClient
-        listings={listings}
-        currentUser={currentUser}
+      {listings.length > 0 && <ProfileClient
+          listings={listings}
+          currentUser={currentUser}
+        />
+      }
+      {listings.length === 0 && <EmptyState
+        title="No recipes found"
+        subtitle="Looks like this user has not created recipes."
       />
+      }
     </ClientOnly>
   );
 }
