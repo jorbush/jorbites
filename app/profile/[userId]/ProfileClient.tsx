@@ -1,3 +1,5 @@
+'use client';
+
 import { SafeListing, SafeUser } from "@/app/types";
 
 import Heading from "@/app/components/Heading";
@@ -15,9 +17,6 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
 }) => {
   return (
     <Container>
-      <Heading
-        title="My recipes"
-      />
       <div 
         className="
           mt-10

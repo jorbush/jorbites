@@ -15,15 +15,12 @@ export default async function getRecipesByUserId(
     const recipes = await prisma.listing.findMany({
       where: {
         userId: userId
-      },
-      include: {
-        user: true
       }
     });
 
     const safeRecipes = recipes.map((recipe) => ({
       ...recipe,
-      createdAt: recipe.createdAt.toString(),
+      createdAt: recipe.createdAt.toString()
     }));
 
     return safeRecipes;
