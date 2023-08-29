@@ -68,7 +68,7 @@ export async function POST(
 
   await Promise.all(users.map(async (user) => {
     if (user.emailNotifications){
-      await sendEmail("There's a new recipe available on Jorbites!\nCheck it out: https://jorbites.vercel.app/listings/" + listing.id, user.email);
+      await sendEmail("There's a new recipe available on Jorbites!\nCheck it out: https://jorbites.com/recipes/" + listing.id, user.email);
     }
   }));   
 

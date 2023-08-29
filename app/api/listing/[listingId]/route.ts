@@ -51,7 +51,7 @@ export async function POST(
   if (operation === "increment"){
       numLikes++;
       if (currentListing?.user.emailNotifications) {
-        await sendEmail("You have received a new like from " + currentUser.name + ".\nIn this recipe: https://jorbites.vercel.app/listings/" + listingId, currentListing?.user.email);
+        await sendEmail("You have received a new like from " + currentUser.name + ".\nIn this recipe: https://jorbites.com/recipes/" + listingId, currentListing?.user.email);
       }
   } else {
       if (numLikes>0){
