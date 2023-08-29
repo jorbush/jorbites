@@ -58,7 +58,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({
       />
       <AiFillHeart
         size={24}
-        className={hasFavorited ? "fill-rose-500" : "fill-neutral-500/70"}
+        className={hasFavorited ? "fill-green-450" : "fill-neutral-500/70"}
         style={{ pointerEvents: isDisabled ? "none" : "auto" }}
       />
     </div>
