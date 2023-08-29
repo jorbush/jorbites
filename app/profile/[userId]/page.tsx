@@ -7,6 +7,8 @@ import getFavoriteListings from "@/app/actions/getFavoriteListings";
 
 import ProfileClient from "./ProfileClient";
 import getRecipesByUserId from "../../actions/getRecipesByUserId";
+import getUserById from "@/app/actions/getUserById";
+import ProfileHeader from "./ProfileHeader";
 
 interface IParams {
   userId?: string;
@@ -14,6 +16,7 @@ interface IParams {
 
 const ListingPage = async ({ params }: { params: IParams }) => {
   const listings = await getRecipesByUserId(params);
+  const user = await getUserById(params);
   const currentUser = await getCurrentUser();
 
   if (listings.length === 0) {
@@ -29,6 +32,7 @@ const ListingPage = async ({ params }: { params: IParams }) => {
 
   return (
     <ClientOnly>
+      <ProfileHeader user={user}/>
       <ProfileClient
         listings={listings}
         currentUser={currentUser}
