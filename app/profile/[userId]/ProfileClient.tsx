@@ -4,12 +4,12 @@ import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 
-interface MyRecipesClientProps {
+interface ProfileClientProps {
   listings: SafeListing[],
   currentUser?: SafeUser | null,
 }
 
-const MyRecipesClient: React.FC<MyRecipesClientProps> = ({
+const ProfileClient: React.FC<ProfileClientProps> = ({
   listings,
   currentUser
 }) => {
@@ -43,4 +43,4 @@ const MyRecipesClient: React.FC<MyRecipesClientProps> = ({
    );
 }
  
-export default MyRecipesClient;
+export default ProfileClient;
