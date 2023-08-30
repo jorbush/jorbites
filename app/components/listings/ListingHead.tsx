@@ -91,21 +91,28 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         />
         {(imagesSrc.length > 1) &&
           <>
-            <button
-              className="absolute left-3 top-1/2 transform -translate-y-1/2"
+            <div
+              className="absolute left-0 top-0 bottom-0 w-1/4 flex items-center justify-center"
               onClick={goToPreviousImage}
             >
-              <FiChevronLeft className="text-2xl text-white" />
-            </button>
-            <button
-              className="absolute right-3 top-1/2 transform -translate-y-1/2"
+               <div
+                className="absolute left-3 top-1/2 transform -translate-y-1/2"
+              >
+                <FiChevronLeft className="text-2xl text-white" />
+              </div>
+            </div>
+            <div
+              className="absolute right-0 top-0 bottom-0 w-1/4 flex items-center justify-center"
               onClick={goToNextImage}
             >
+              <div
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              >
               <FiChevronRight className="text-2xl text-white" />
-            </button>
+              </div>
+            </div>
           </>
         }
-        
       </div>
     </>
   );
