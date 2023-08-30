@@ -84,7 +84,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
           <ListingHead
             title={listing.title}
             minutes={listing.minutes.toString()}
-            imageSrc={listing.imageSrc}
+            imagesSrc={[listing.imageSrc, ...listing.extraImages]}
             id={listing.id}
             currentUser={currentUser}
           />
