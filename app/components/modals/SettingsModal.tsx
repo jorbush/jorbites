@@ -29,8 +29,15 @@ const SettingsModal: React.FC<SettingsProps> = ({
           />
           <ThemeSelector/>
           <LanguageSelector/>
-          <EmailNotificationsSelector currentUser={currentUser}/>
-          <ChangeUserImageSelector currentUser={currentUser} saveImage={saveImage} setSaveImage={setSaveImage} onSave={() =>settingsModal.onClose()}/>
+          { currentUser && <>
+            <EmailNotificationsSelector currentUser={currentUser}/>
+            <ChangeUserImageSelector 
+              currentUser={currentUser} 
+              saveImage={saveImage} 
+              setSaveImage={setSaveImage} 
+              onSave={() =>settingsModal.onClose()}
+            />
+          </>}
         </div>
       )
     
