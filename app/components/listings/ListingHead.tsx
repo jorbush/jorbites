@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { FiChevronLeft, FiChevronRight, FiShare2 } from "react-icons/fi";
 
 import { SafeUser } from "@/app/types";
@@ -27,9 +27,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const [isCopied, setIsCopied] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const router = useRouter()
-  const [touchStartX, setTouchStartX] = useState(0);
-  const [touchEndX, setTouchEndX] = useState(0);
-  const imageSliderRef = useRef<HTMLDivElement>(null);
 
   const copyToClipboard = () => {
     const currentURL = window.location.href;
@@ -68,20 +65,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     );
   };
 
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    setTouchStartX(e.touches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchEndX - touchStartX > 50) {
-      // Deslizar a la derecha
-      goToPreviousImage();
-    } else if (touchStartX - touchEndX > 50) {
-      // Deslizar a la izquierda
-      goToNextImage();
-    }
-  };
-
   return (
     <>
       <div className="flex items-center justify-between sm:ml-4 sm:mr-4">
@@ -99,36 +82,30 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           <FiShare2 className="text-xl" />
         </button>
       </div>
-      <div
-        ref={imageSliderRef}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        className="relative w-full h-[60vh] overflow-hidden rounded-xl"
-      >
-        <div className="relative w-full h-[60vh] overflow-hidden rounded-xl">
-          <Image
-            src={imagesSrc[currentImageIndex]}
-            layout="fill"
-            objectFit="cover"
-            alt="Image"
-          />
-          {(imagesSrc.length > 1) &&
-            <>
-              <button
-                className="absolute left-3 top-1/2 transform -translate-y-1/2"
-                onClick={goToPreviousImage}
-              >
-                <FiChevronLeft className="text-2xl text-white" />
-              </button>
-              <button
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                onClick={goToNextImage}
-              >
-                <FiChevronRight className="text-2xl text-white" />
-              </button>
-            </>
-          }
-        </div>
+      <div className="relative w-full h-[60vh] overflow-hidden rounded-xl">
+        <Image
+          src={imagesSrc[currentImageIndex]}
+          layout="fill"
+          objectFit="cover"
+          alt="Image"
+        />
+        {(imagesSrc.length > 1) &&
+          <>
+            <button
+              className="absolute left-3 top-1/2 transform -translate-y-1/2"
+              onClick={goToPreviousImage}
+            >
+              <FiChevronLeft className="text-2xl text-white" />
+            </button>
+            <button
+              className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              onClick={goToNextImage}
+            >
+              <FiChevronRight className="text-2xl text-white" />
+            </button>
+          </>
+        }
+        
       </div>
     </>
   );
