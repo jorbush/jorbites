@@ -25,7 +25,12 @@ export async function POST(
     ingredients,
     steps,
     minutes,
+    imageSrc1,
+    imageSrc2,
+    imageSrc3,
    } = body;
+
+   //console.log(body)
 
   Object.keys(body).forEach((value: any) => {
     if (!body[value]) {
@@ -39,11 +44,23 @@ export async function POST(
     }
   })?? null;
 
-  console.log(listingExist)
+  //console.log(listingExist)
 
   if (listingExist !== null){
     return NextResponse.error();
   }
+
+  const extraImages: string[] = []
+  if (imageSrc1 !== "" && imageSrc1 !== undefined){
+      extraImages.push(imageSrc1)
+  }
+  if (imageSrc2 !== "" && imageSrc2 !== undefined){
+    extraImages.push(imageSrc2)
+  }
+  if (imageSrc3 !== "" && imageSrc3 !== undefined){
+    extraImages.push(imageSrc3)
+  }
+  //console.log(extraImages)
 
   const listing = await prisma.listing.create({
     data: {
@@ -56,6 +73,7 @@ export async function POST(
       steps,
       minutes,
       numLikes: 0,
+      extraImages,
       userId: currentUser.id
     }
   });

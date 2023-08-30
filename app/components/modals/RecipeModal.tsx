@@ -80,6 +80,7 @@ const RecipeModal = () => {
             category: '',
             method: '',
             imageSrc: '',
+            extraImages: [],
             title: '',
             description: '',
             ingredients: [],
@@ -418,7 +419,16 @@ const RecipeModal = () => {
                     title={t('images')}
                     subtitle={t('images_subtitle')??""}
                 />
-                <ImageUpload value={imageSrc} onChange={(value) => setCustomValue('imageSrc', value)}/>
+                <div className="
+                    grid 
+                    grid-cols-2
+                    gap-4
+                ">
+                    <ImageUpload value={imageSrc} onChange={(value) => setCustomValue('imageSrc', value)} />
+                    <ImageUpload value={watch('imageSrc1')} onChange={(value) => setCustomValue('imageSrc1', value)} />
+                    <ImageUpload value={watch('imageSrc2')} onChange={(value) => setCustomValue('imageSrc2', value)} />
+                    <ImageUpload value={watch('imageSrc3')} onChange={(value) => setCustomValue('imageSrc3', value)} />
+                </div>
             </div>
         )
     }
