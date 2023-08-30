@@ -89,18 +89,23 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           objectFit="cover"
           alt="Image"
         />
-        <button
-          className="absolute left-3 top-1/2 transform -translate-y-1/2"
-          onClick={goToPreviousImage}
-        >
-          <FiChevronLeft className="text-2xl text-white" />
-        </button>
-        <button
-          className="absolute right-3 top-1/2 transform -translate-y-1/2"
-          onClick={goToNextImage}
-        >
-          <FiChevronRight className="text-2xl text-white" />
-        </button>
+        {(imagesSrc.length > 1) &&
+          <>
+            <button
+              className="absolute left-3 top-1/2 transform -translate-y-1/2"
+              onClick={goToPreviousImage}
+            >
+              <FiChevronLeft className="text-2xl text-white" />
+            </button>
+            <button
+              className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              onClick={goToNextImage}
+            >
+              <FiChevronRight className="text-2xl text-white" />
+            </button>
+          </>
+        }
+        
       </div>
     </>
   );
