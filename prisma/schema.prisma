@@ -60,6 +60,7 @@ model Listing {
   numLikes Int
   ingredients String[]
   steps String[]
+  extraImages String[]
   userId String @db.ObjectId
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -51,14 +51,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               items-center
               gap-4
               text-neutral-600
+              rounded-lg
+              h-50
             "
           >
             <TbPhotoPlus
               size={50}
             />
-            <div className="font-semibold text-lg">
-              Click to upload
-            </div>
             {value && (
               <div className="
               absolute inset-0 w-full h-full">
