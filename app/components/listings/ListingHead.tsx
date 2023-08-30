@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 interface ListingHeadProps {
   title: string;
   minutes: string;
-  imageSrc: string;
+  imagesSrc: string[];
   id: string;
   currentUser?: SafeUser | null;
 }
@@ -20,7 +20,7 @@ interface ListingHeadProps {
 const ListingHead: React.FC<ListingHeadProps> = ({
   title,
   minutes,
-  imageSrc,
+  imagesSrc,
   id,
   currentUser,
 }) => {
@@ -69,9 +69,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           <FiShare2 className="text-xl" />
         </button>
       </div>
-      <div className="w-full h-[60vh] overflow-hidden rounded-xl relative">
-        <Image src={imageSrc} fill className="object-cover w-full" alt="Image" />
-      </div>
+      {imagesSrc.map((imageSrc: string) => (
+        <div className="w-full h-[60vh] overflow-hidden rounded-xl relative">
+            <Image src={imageSrc} fill className="object-cover w-full" alt="Image" />
+        </div>
+      ))}
+
     </>
   );
 };
