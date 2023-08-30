@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { FiChevronLeft, FiShare2 } from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiShare2 } from "react-icons/fi";
 
 import { SafeUser } from "@/app/types";
 import Heading from "../Heading";
@@ -25,6 +25,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   currentUser,
 }) => {
   const [isCopied, setIsCopied] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const router = useRouter()
 
   const copyToClipboard = () => {
@@ -52,6 +53,18 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     }
   };
 
+  const goToPreviousImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? imagesSrc.length - 1 : prevIndex - 1
+    );
+  };
+
+  const goToNextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === imagesSrc.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
   return (
     <>
       <div className="flex items-center justify-between sm:ml-4 sm:mr-4">
@@ -69,12 +82,26 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           <FiShare2 className="text-xl" />
         </button>
       </div>
-      {imagesSrc.map((imageSrc: string) => (
-        <div className="w-full h-[60vh] overflow-hidden rounded-xl relative">
-            <Image src={imageSrc} fill className="object-cover w-full" alt="Image" />
-        </div>
-      ))}
-
+      <div className="relative w-full h-[60vh] overflow-hidden rounded-xl">
+        <Image
+          src={imagesSrc[currentImageIndex]}
+          layout="fill"
+          objectFit="cover"
+          alt="Image"
+        />
+        <button
+          className="absolute left-3 top-1/2 transform -translate-y-1/2"
+          onClick={goToPreviousImage}
+        >
+          <FiChevronLeft className="text-2xl text-white" />
+        </button>
+        <button
+          className="absolute right-3 top-1/2 transform -translate-y-1/2"
+          onClick={goToNextImage}
+        >
+          <FiChevronRight className="text-2xl text-white" />
+        </button>
+      </div>
     </>
   );
 };
