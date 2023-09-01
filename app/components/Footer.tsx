@@ -21,7 +21,7 @@ const Footer = () => {
             p-4
         ">
             <div>
-                {`${t('version')} 0.4`}
+                {`${t('version')} 0.5`}
             </div>
             <div>
                 {`${t('contact')} jbonetv5@gmail.com`}
