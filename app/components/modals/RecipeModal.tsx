@@ -131,6 +131,8 @@ const RecipeModal = () => {
     }
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
+        const url = `${window.location.origin}/api/listings`;
+
         if (step !== STEPS.IMAGES){
             return onNext()
         }
@@ -142,7 +144,7 @@ const RecipeModal = () => {
 
         setIsLoading(true)
 
-        axios.post('api/listings', data)
+        axios.post(url, data)
             .then(() => {
                 toast.success('Recipe created!')
                 router.refresh()
