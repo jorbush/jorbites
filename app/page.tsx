@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import EmptyState from "@/app/components/EmptyState";
+import Pagination from "@/app/components/Pagination";
 
 import getListings, { IListingsParams } from "@/app/actions/getListings";
 import getCurrentUser from "@/app/actions/getCurrentUser";
@@ -12,12 +13,11 @@ interface HomeProps {
   searchParams: IListingsParams
 };
 
-
 const Home = async ({ searchParams }: HomeProps) => {
-  const listings = await getListings(searchParams);
+  const listingsData = await getListings(searchParams);
   const currentUser = await getCurrentUser();
 
-  if (listings.length === 0) {
+  if (listingsData.listings.length === 0) {
     return (
       <ClientOnly>
         <EmptyState showReset />
@@ -28,19 +28,19 @@ const Home = async ({ searchParams }: HomeProps) => {
   return (
     <ClientOnly>
       <Container>
-        <div 
+        <div
           className="
-            grid 
-            grid-cols-1 
-            sm:grid-cols-2 
-            md:grid-cols-3 
+            grid
+            grid-cols-1
+            sm:grid-cols-2
+            md:grid-cols-3
             lg:grid-cols-4
             xl:grid-cols-5
             2xl:grid-cols-6
             gap-8
           "
         >
-          {listings.map((listing) => (
+          {listingsData.listings.map((listing) => (
             <ListingCard
               key={listing.id}
               data={listing}
@@ -48,6 +48,11 @@ const Home = async ({ searchParams }: HomeProps) => {
             />
           ))}
         </div>
+        <Pagination
+          totalPages={listingsData.totalPages}
+          currentPage={listingsData.currentPage}
+          searchParams={searchParams}
+        />
       </Container>
     </ClientOnly>
   )
