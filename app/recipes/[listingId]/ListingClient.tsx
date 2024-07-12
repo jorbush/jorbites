@@ -10,7 +10,7 @@ import { SafeComment, SafeListing, SafeUser } from "@/app/types";
 
 import Container from "@/app/components/Container";
 import { categories } from "@/app/components/navbar/Categories";
-import ListingHead from "@/app/components/listings/ListingHead";
+import RecipeHead from "@/app/components/listings/RecipeHead";
 import { Comment } from "@prisma/client";
 import ListingInfo from "@/app/components/listings/ListingInfo";
 import { preparationMethods } from "@/app/components/modals/RecipeModal";
@@ -35,12 +35,12 @@ const ListingClient: React.FC<ListingClientProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const category = useMemo(() => {
-     return categories.find((item) => 
+     return categories.find((item) =>
       item.label === listing.category);
   }, [listing.category]);
 
   const method = useMemo(() => {
-    return preparationMethods.find((item) => 
+    return preparationMethods.find((item) =>
      item.label === listing.method);
  }, [listing.method]);
 
@@ -49,7 +49,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
         return loginModal.onOpen();
       }
       setIsLoading(true);
-      
+
       axios.post('/api/comments', {
         comment: comment,
         listingId: listing?.id
@@ -72,28 +72,28 @@ const ListingClient: React.FC<ListingClientProps> = ({
     loginModal
   ]);
 
-  return ( 
+  return (
     <Container>
-      <div 
+      <div
         className="
-          max-w-screen-lg 
+          max-w-screen-lg
           mx-auto
         "
       >
         <div className="flex flex-col gap-6">
-          <ListingHead
+          <RecipeHead
             title={listing.title}
             minutes={listing.minutes.toString()}
             imagesSrc={[listing.imageSrc, ...listing.extraImages]}
             id={listing.id}
             currentUser={currentUser}
           />
-            <div 
+            <div
             className="
-              grid 
-              grid-cols-1 
+              grid
+              grid-cols-1
               md:grid-cols-1
-              md:gap-10 
+              md:gap-10
               mt-1
             " >
                 <ListingInfo
@@ -107,11 +107,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
                     ingredients={listing.ingredients}
                     steps={listing.steps}
                 />
-                
+
           </div>
-          <Comments 
-            currentUser={currentUser} 
-            onCreateComment={onCreateComment} 
+          <Comments
+            currentUser={currentUser}
+            onCreateComment={onCreateComment}
             listingId={listing.id}
             comments={comments}
           />
@@ -123,5 +123,5 @@ const ListingClient: React.FC<ListingClientProps> = ({
     </Container>
    );
 }
- 
+
 export default ListingClient;

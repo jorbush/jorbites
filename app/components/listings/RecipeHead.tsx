@@ -9,7 +9,7 @@ import Heading from "../Heading";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-interface ListingHeadProps {
+interface RecipeHeadProps {
   title: string;
   minutes: string;
   imagesSrc: string[];
@@ -17,7 +17,7 @@ interface ListingHeadProps {
   currentUser?: SafeUser | null;
 }
 
-const ListingHead: React.FC<ListingHeadProps> = ({
+const RecipeHead: React.FC<RecipeHeadProps> = ({
   title,
   minutes,
   imagesSrc,
@@ -26,7 +26,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const router = useRouter()
+  const router = useRouter();
 
   const copyToClipboard = () => {
     const currentURL = window.location.href;
@@ -74,7 +74,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         >
           <FiChevronLeft className="text-xl" />
         </button>
-        <Heading title={title} subtitle={`${minutes} min`} center/>
+        <Heading title={title} subtitle={`${minutes} min`} center />
         <button
           className="ml-4 flex items-center space-x-2 text-gray-600 dark:text-neutral-100 focus:outline-none"
           onClick={share}
@@ -85,19 +85,21 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       <div className="relative w-full h-[60vh] overflow-hidden rounded-xl">
         <Image
           src={imagesSrc[currentImageIndex]}
-          layout="fill"
-          objectFit="cover"
+          fill
+          priority={true}
+          className="object-cover"
           alt="Image"
+          sizes="(max-width: 768px) 100vw,
+                 (max-width: 1200px) 50vw,
+                 33vw"
         />
-        {(imagesSrc.length > 1) &&
+        {imagesSrc.length > 1 && (
           <>
             <div
               className="absolute left-0 top-0 bottom-0 w-1/4 flex items-center justify-center"
               onClick={goToPreviousImage}
             >
-               <div
-                className="absolute left-3 top-1/2 transform -translate-y-1/2"
-              >
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
                 <FiChevronLeft className="text-2xl text-white cursor-pointer" />
               </div>
             </div>
@@ -105,18 +107,15 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               className="absolute right-0 top-0 bottom-0 w-1/4 flex items-center justify-center"
               onClick={goToNextImage}
             >
-              <div
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
-              >
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                 <FiChevronRight className="text-2xl text-white cursor-pointer" />
               </div>
             </div>
           </>
-        }
+        )}
       </div>
     </>
   );
 };
 
-export default ListingHead;
-
+export default RecipeHead;

@@ -4,7 +4,7 @@ import { SafeListing, SafeUser } from "@/app/types";
 
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
-import ListingCard from "@/app/components/listings/ListingCard";
+import RecipeCard from "@/app/components/listings/RecipeCard";
 
 interface ProfileClientProps {
   listings: SafeListing[],
@@ -17,13 +17,13 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
 }) => {
   return (
     <Container>
-      <div 
+      <div
         className="
           mt-6
-          grid 
-          grid-cols-1 
-          sm:grid-cols-2 
-          md:grid-cols-3 
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          md:grid-cols-3
           lg:grid-cols-4
           xl:grid-cols-5
           2xl:grid-cols-6
@@ -31,7 +31,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
         "
       >
         {listings.map((listing: any) => (
-          <ListingCard
+          <RecipeCard
             currentUser={currentUser}
             key={listing.id}
             data={listing}
@@ -41,5 +41,5 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
     </Container>
    );
 }
- 
+
 export default ProfileClient;

@@ -35,7 +35,7 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
 
   const updateUserProfile = () => {
     setIsLoading(true);
-    
+
     axios.put(`/api/userImage/${currentUser?.id}`, {
       userImage: newImage
     })
@@ -50,7 +50,7 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
       setCanSave(false)
       router.refresh()
     })
-    
+
   };
 
   const handleUpload = useCallback((result: any) => {
@@ -75,11 +75,12 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
         <p className="text-left">{t('update_user_image')}</p>
       </div>
       <div className="flex items-center">
-        <CldUploadWidget 
-          onUpload={handleUpload} 
+        <CldUploadWidget
+          onUpload={handleUpload}
           uploadPreset={uploadPreset}
           options={{
-            maxFiles: 1
+            maxFiles: 1,
+            clientAllowedFormats: ['png', 'jpeg', 'jpg', 'webp'],
           }}
         >
           {({ open }) => {
@@ -97,14 +98,14 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                       }}
                       height="30"
                       width="30"
-                      alt="Upload" 
-                      src={newImage|| "/images/placeholder.jpg"} 
+                      alt="Upload"
+                      src={newImage|| "/images/placeholder.jpg"}
                       onClick={() => open?.()}
                     />
-                    
+
                     {canSave && (
-                      <FaRegSave 
-                        className="mt-1 ml-2  h-5 w-5 text-green-450" 
+                      <FaRegSave
+                        className="mt-1 ml-2  h-5 w-5 text-green-450"
                         onClick={updateUserProfile}
                       />
                     )}
@@ -112,8 +113,8 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                   </div>
                 )}
               </>
-              
-            ) 
+
+            )
           }}
         </CldUploadWidget>
       </div>

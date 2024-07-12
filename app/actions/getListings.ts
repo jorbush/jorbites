@@ -10,7 +10,7 @@ export default async function getListings(
     params: IListingsParams
 ){
     try {
-        const { category, page = 1, limit = 15 } = params;
+        const { category, page = 1, limit = 10 } = params;
 
         let query: any = {};
 
