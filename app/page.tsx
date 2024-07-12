@@ -2,7 +2,7 @@ import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import EmptyState from "@/app/components/EmptyState";
 import Pagination from "@/app/components/Pagination";
-import { isMobile as detectMobile } from "./utils/deviceDetector";
+import { isMobile as detectMobile } from "@/app/utils/deviceDetector";
 import getListings, { IListingsParams } from "@/app/actions/getListings";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import ClientOnly from "./components/ClientOnly";
