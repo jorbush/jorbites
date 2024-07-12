@@ -9,7 +9,7 @@ import Heading from "../Heading";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-interface ListingHeadProps {
+interface RecipeHeadProps {
   title: string;
   minutes: string;
   imagesSrc: string[];
@@ -17,7 +17,7 @@ interface ListingHeadProps {
   currentUser?: SafeUser | null;
 }
 
-const ListingHead: React.FC<ListingHeadProps> = ({
+const RecipeHead: React.FC<RecipeHeadProps> = ({
   title,
   minutes,
   imagesSrc,
@@ -118,4 +118,4 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   );
 };
 
-export default ListingHead;
+export default RecipeHead;
