@@ -17,7 +17,7 @@ interface ListingCardProps {
     currentUser?: SafeUser | null;
 }
 
-const ListingCard: React.FC<ListingCardProps> = ({
+const RecipeCard: React.FC<ListingCardProps> = ({
     data,
     onAction,
     disabled,
@@ -38,34 +38,36 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
     }, [onAction, actionId, disabled])
 
-    
+
 
     return (
-        <div 
-            onClick={() => router.push(`/recipes/${data.id}`)} 
+        <div
+            onClick={() => router.push(`/recipes/${data.id}`)}
             className="col-span-1 cursor-pointer group"
         >
         <div className="flex flex-col gap-2 w-full">
-            <div 
+            <div
             className="
-                aspect-square 
-                w-full 
-                relative 
-                overflow-hidden 
+                aspect-square
+                w-full
+                relative
+                overflow-hidden
                 rounded-xl
             "
             >
                 <Image
                     fill
+                    priority={true}
                     className="
-                        object-cover 
-                        h-full 
-                        w-full 
-                        group-hover:scale-110 
+                        object-cover
+                        h-full
+                        w-full
+                        group-hover:scale-110
                         transition
                     "
                     src={data.imageSrc}
-                    alt="Listing"
+                    alt="recipe"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
                 <div className="
                     absolute
@@ -73,7 +75,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     right-3
                 ">
                     <HeartButton
-                        listingId={data.id} 
+                        listingId={data.id}
                         currentUser={currentUser}
                     />
                 </div>
@@ -94,7 +96,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             <Button
                 disabled={disabled}
                 small
-                label={actionLabel} 
+                label={actionLabel}
                 onClick={handleCancel}
             />
             )}
@@ -103,4 +105,4 @@ const ListingCard: React.FC<ListingCardProps> = ({
    );
 }
 
-export default ListingCard
+export default RecipeCard

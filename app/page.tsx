@@ -1,5 +1,5 @@
 import Container from "@/app/components/Container";
-import ListingCard from "@/app/components/listings/ListingCard";
+import RecipeCard from "@/app/components/listings/RecipeCard";
 import EmptyState from "@/app/components/EmptyState";
 import Pagination from "@/app/components/Pagination";
 import { isMobile as detectMobile } from "@/app/utils/deviceDetector";
@@ -44,7 +44,7 @@ const Home = async ({ searchParams }: HomeProps) => {
           "
         >
           {listingsData.listings.map((listing) => (
-            <ListingCard
+            <RecipeCard
               key={listing.id}
               data={listing}
               currentUser={currentUser}
