@@ -66,8 +66,8 @@ const RecipeModal = () => {
 
     const [isLoading, setIsLoading] = useState(false)
 
-    const { 
-        register, 
+    const {
+        register,
         handleSubmit,
         setValue,
         watch,
@@ -114,7 +114,6 @@ const RecipeModal = () => {
                     newIngredients.push(watch('ingredient ' + i))
                 }
             }
-            console.log(newIngredients)
             setCustomValue('ingredients', newIngredients)
         }
         if (step === STEPS.STEPS){
@@ -124,7 +123,6 @@ const RecipeModal = () => {
                     newSteps.push(watch('step ' + i))
                 }
             }
-            console.log(newSteps)
             setCustomValue('steps', newSteps)
         }
         setStep((value) => value + 1)
@@ -162,22 +160,20 @@ const RecipeModal = () => {
 
     const addIngredientInput = () => {
         setNumIngredients((value) => value + 1)
-    }      
+    }
 
     const removeIngredientInput = (index: number) => {
         setNumIngredients((value) => value - 1)
         setCustomValue('ingredient ' + index, "")
-        console.log(numIngredients, ' ingredient ' + index, "")
     }
 
     const addStepInput = () => {
         setNumSteps((value) => value + 1)
-    }      
+    }
 
     const removeStepInput = (index: number) => {
         setNumSteps((value) => value - 1)
         setCustomValue('step ' + index, "")
-        console.log(numSteps, ' step ' + index, "")
     }
 
     const renderIngredientInput = () => {
@@ -186,7 +182,7 @@ const RecipeModal = () => {
             components.push(
                 <div key={i}
                     className="
-                    grid 
+                    grid
                     grid-cols-10
                     gap-3
                     max-h-[50vh]
@@ -199,17 +195,17 @@ const RecipeModal = () => {
                         <Input
                             id={"ingredient " + i}
                             label=""
-                            register={register}  
+                            register={register}
                             errors={errors}
                             required={numIngredients === 1}
                         />
                     </div>
                     {(numIngredients>1&&i===(numIngredients - 1)) &&(
                         <div className="flex justify-center items-center">
-                            <AiFillDelete 
-                                color="#F43F5F" 
-                                onClick={() => {removeIngredientInput(i)}} 
-                                size={24} 
+                            <AiFillDelete
+                                color="#F43F5F"
+                                onClick={() => {removeIngredientInput(i)}}
+                                size={24}
                             />
                         </div>
                     )}
@@ -225,7 +221,7 @@ const RecipeModal = () => {
             components.push(
                 <div key={i}
                     className="
-                    grid 
+                    grid
                     grid-cols-11
                     gap-3
                     max-h-[50vh]
@@ -236,22 +232,22 @@ const RecipeModal = () => {
                     <div className="col-span-1 flex justify-center items-center">
                     {`${i+1}.`}
                     </div>
-                    
+
                     <div className="col-span-9">
                         <Input
                             id={"step " + i}
                             label=""
-                            register={register}  
+                            register={register}
                             errors={errors}
                             required={numSteps === 1}
                         />
                     </div>
                     {(numSteps>1&&i===(numSteps - 1)) &&(
                         <div className="flex justify-center items-center">
-                            <AiFillDelete 
-                                color="#F43F5F" 
-                                onClick={() => {removeStepInput(i)}} 
-                                size={24} 
+                            <AiFillDelete
+                                color="#F43F5F"
+                                onClick={() => {removeStepInput(i)}}
+                                size={24}
                             />
                         </div>
                     )}
@@ -281,9 +277,9 @@ const RecipeModal = () => {
                 title={t('title_category_recipe')}
                 subtitle={t('subtitle_category_recipe')??""}
             />
-            <div 
+            <div
                 className="
-                grid 
+                grid
                 grid-cols-2
                 gap-3
                 max-h-[50vh]
@@ -310,10 +306,10 @@ const RecipeModal = () => {
                 <Heading
                     title={t('title_ingredients')}
                 />
-                <div 
+                <div
                     className="
-                    grid 
-                    grid-cols-1 
+                    grid
+                    grid-cols-1
                     gap-3
                     max-h-[50vh]
                     overflow-y-auto
@@ -332,10 +328,10 @@ const RecipeModal = () => {
                 <Heading
                     title={t('title_steps')}
                 />
-                <div 
+                <div
                     className="
-                    grid 
-                    grid-cols-1 
+                    grid
+                    grid-cols-1
                     gap-3
                     max-h-[50vh]
                     overflow-y-auto
@@ -359,7 +355,7 @@ const RecipeModal = () => {
                     id="title"
                     label={t('title')}
                     disabled={isLoading}
-                    register={register}  
+                    register={register}
                     errors={errors}
                     required
                 />
@@ -368,15 +364,15 @@ const RecipeModal = () => {
                     id="description"
                     label={t('description')}
                     disabled={isLoading}
-                    register={register}  
+                    register={register}
                     errors={errors}
                     required
                 />
                 <hr/>
-                <Counter 
+                <Counter
                     title={t('minutes')}
                     subtitle={t('minutes_subtitle')}
-                    value={minutes} 
+                    value={minutes}
                     onChange={(value) => setCustomValue('minutes', value)}
                 />
             </div>
@@ -390,9 +386,9 @@ const RecipeModal = () => {
                     title={t('methods_title')}
                     subtitle={t('methods_subtitle')??""}
                 />
-                <div 
+                <div
                     className="
-                    grid 
+                    grid
                     grid-cols-2
                     gap-3
                     max-h-[50vh]
@@ -422,7 +418,7 @@ const RecipeModal = () => {
                     subtitle={t('images_subtitle')??""}
                 />
                 <div className="
-                    grid 
+                    grid
                     grid-cols-2
                     gap-4
                 ">

@@ -16,8 +16,6 @@ export async function PUT(
   const body = await request.json();
   const { userImage } = body;
 
-  console.log(userImage)
-
   if (!userImage || typeof userImage !== 'string') {
     throw new Error('Invalid ID');
   }
