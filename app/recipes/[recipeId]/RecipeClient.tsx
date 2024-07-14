@@ -25,7 +25,7 @@ interface ListingClientProps {
   currentUser?: SafeUser | null;
 }
 
-const ListingClient: React.FC<ListingClientProps> = ({
+const RecipeClient: React.FC<ListingClientProps> = ({
   listing,
   currentUser,
   comments
@@ -124,4 +124,4 @@ const ListingClient: React.FC<ListingClientProps> = ({
    );
 }
 
-export default ListingClient;
+export default RecipeClient;

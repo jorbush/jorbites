@@ -1,19 +1,19 @@
 import prisma from "@/app/libs/prismadb";
 
 interface IParams {
-  listingId?: string;
+  recipeId?: string;
 }
 
 export default async function getCommentsByRecipeId(
   params: IParams
 ) {
   try {
-    const { listingId } = params;
+    const { recipeId } = params;
 
     const query: any = {};
-        
-    if (listingId) {
-      query.listingId = listingId;
+
+    if (recipeId) {
+      query.listingId = recipeId;
     };
 
     const comments = await prisma.comment.findMany({
@@ -34,7 +34,7 @@ export default async function getCommentsByRecipeId(
         ...comment.user,
         createdAt: comment.user.createdAt.toISOString(),
       updatedAt: comment.user.updatedAt.toISOString(),
-      emailVerified: 
+      emailVerified:
         comment.user.emailVerified?.toISOString() || null,
       },
     }));

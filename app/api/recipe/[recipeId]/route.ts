@@ -7,7 +7,7 @@ import getRecipeById from "@/app/actions/getRecipeById";
 import setLevelByUserId from "@/app/actions/setLevelByUserId";
 
 interface IParams {
-    listingId?: string;
+    recipeId?: string;
 }
 
 export async function POST(
@@ -27,15 +27,15 @@ export async function POST(
     return NextResponse.error();
   }
 
-  const { listingId } = params;
+  const { recipeId } = params;
 
-  if (!listingId || typeof listingId !== 'string') {
+  if (!recipeId || typeof recipeId !== 'string') {
     throw new Error('Invalid ID');
   }
 
   const currentListing = await prisma.listing.findUnique({
     where: {
-      id: listingId,
+      id: recipeId,
     },
     include: {
       user: true
@@ -51,7 +51,7 @@ export async function POST(
   if (operation === "increment"){
       numLikes++;
       if (currentListing?.user.emailNotifications) {
-        await sendEmail("You have received a new like from " + currentUser.name + ".\nIn this recipe: https://jorbites.com/recipes/" + listingId, currentListing?.user.email);
+        await sendEmail("You have received a new like from " + currentUser.name + ".\nIn this recipe: https://jorbites.com/recipes/" + recipeId, currentListing?.user.email);
       }
   } else {
       if (numLikes>0){
@@ -61,7 +61,7 @@ export async function POST(
 
   const listing = await prisma.listing.update({
     where: {
-      id: listingId
+      id: recipeId
     },
     data: {
       numLikes: numLikes
@@ -83,13 +83,13 @@ export async function DELETE(
     return NextResponse.error();
   }
 
-  const { listingId: listingId } = params;
+  const { recipeId } = params;
 
-  if (!listingId || typeof listingId !== 'string') {
+  if (!recipeId || typeof recipeId !== 'string') {
     throw new Error('Invalid ID');
   }
 
-  const recipe = await getRecipeById({listingId: listingId})
+  const recipe = await getRecipeById({recipeId})
 
   if (recipe?.userId !== currentUser.id){
     return NextResponse.error();
@@ -97,7 +97,7 @@ export async function DELETE(
 
   const deletedRecipe = await prisma.listing.delete({
     where: {
-      id: listingId
+      id: recipeId
     },
   });
 
