@@ -14,7 +14,7 @@ import RecipeHead from "@/app/components/recipes/RecipeHead";
 import RecipeInfo from "@/app/components/recipes/RecipeInfo";
 import { preparationMethods } from "@/app/components/modals/RecipeModal";
 import Comments from "@/app/components/comments/Comments";
-import DeleteListingButton from "@/app/components/recipes/DeleteListingButton";
+import DeleteRecipeButton from "@/app/components/recipes/DeleteRecipeButton";
 
 interface RecipeClientProps {
   comments?: SafeComment[];
@@ -115,7 +115,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
             comments={comments}
           />
           {currentUser?.id === recipe.userId&&(
-            <DeleteListingButton id={recipe.id}/>
+            <DeleteRecipeButton id={recipe.id}/>
           )}
         </div>
       </div>

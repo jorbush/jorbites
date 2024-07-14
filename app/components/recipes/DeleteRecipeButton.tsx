@@ -4,16 +4,13 @@ import { AiFillDelete } from "react-icons/ai";
 import Button from "../Button";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import axios from "axios";
-import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
 import DeleteListingsModal from "../modals/DeleteListingModal";
 
-interface DeleteListingButtonProps {
+interface DeleteRecipeButtonProps {
     id: string;
   }
 
-const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
+const DeleteRecipeButton: React.FC<DeleteRecipeButtonProps> = ({
     id
 }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -29,16 +26,16 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
             <DeleteListingsModal open={isOpen} setIsOpen={setIsOpen} id={id}/>
             <div className="flex flex-row w-full justify-center items-center">
                 <div className="w-[240px]">
-                    <Button 
+                    <Button
                         deleteButton
                         label={t('delete_recipe')}
                         icon={AiFillDelete}
                         onClick={onClick}
-                    />  
+                    />
                 </div>
             </div>
         </>
     );
 }
 
-export default DeleteListingButton
+export default DeleteRecipeButton;
