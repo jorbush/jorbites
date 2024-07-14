@@ -1,7 +1,7 @@
 'use client';
 
 import axios from "axios";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -11,21 +11,21 @@ import { SafeComment, SafeListing, SafeUser } from "@/app/types";
 import Container from "@/app/components/Container";
 import { categories } from "@/app/components/navbar/Categories";
 import RecipeHead from "@/app/components/recipes/RecipeHead";
-import ListingInfo from "@/app/components/recipes/ListingInfo";
+import RecipeInfo from "@/app/components/recipes/RecipeInfo";
 import { preparationMethods } from "@/app/components/modals/RecipeModal";
 import Comments from "@/app/components/comments/Comments";
 import DeleteListingButton from "@/app/components/recipes/DeleteListingButton";
 
-interface ListingClientProps {
+interface RecipeClientProps {
   comments?: SafeComment[];
-  listing: SafeListing & {
+  recipe: SafeListing & {
     user: SafeUser;
   };
   currentUser?: SafeUser | null;
 }
 
-const RecipeClient: React.FC<ListingClientProps> = ({
-  listing,
+const RecipeClient: React.FC<RecipeClientProps> = ({
+  recipe,
   currentUser,
   comments
 }) => {
@@ -35,13 +35,13 @@ const RecipeClient: React.FC<ListingClientProps> = ({
 
   const category = useMemo(() => {
      return categories.find((item) =>
-      item.label === listing.category);
-  }, [listing.category]);
+      item.label === recipe.category);
+  }, [recipe.category]);
 
   const method = useMemo(() => {
     return preparationMethods.find((item) =>
-     item.label === listing.method);
- }, [listing.method]);
+     item.label === recipe.method);
+ }, [recipe.method]);
 
   const onCreateComment = useCallback((comment: string) => {
       if (!currentUser) {
@@ -51,7 +51,7 @@ const RecipeClient: React.FC<ListingClientProps> = ({
 
       axios.post('/api/comments', {
         comment: comment,
-        listingId: listing?.id
+        listingId: recipe?.id
       })
       .then(() => {
         toast.success('Recipe commented!');
@@ -65,7 +65,7 @@ const RecipeClient: React.FC<ListingClientProps> = ({
       })
   },
   [
-    listing?.id,
+    recipe?.id,
     router,
     currentUser,
     loginModal
@@ -81,10 +81,10 @@ const RecipeClient: React.FC<ListingClientProps> = ({
       >
         <div className="flex flex-col gap-6">
           <RecipeHead
-            title={listing.title}
-            minutes={listing.minutes.toString()}
-            imagesSrc={[listing.imageSrc, ...listing.extraImages]}
-            id={listing.id}
+            title={recipe.title}
+            minutes={recipe.minutes.toString()}
+            imagesSrc={[recipe.imageSrc, ...recipe.extraImages]}
+            id={recipe.id}
             currentUser={currentUser}
           />
             <div
@@ -95,27 +95,27 @@ const RecipeClient: React.FC<ListingClientProps> = ({
               md:gap-10
               mt-1
             " >
-                <ListingInfo
-                    id={listing.id}
-                    user={listing.user}
-                    likes={listing.numLikes}
+                <RecipeInfo
+                    id={recipe.id}
+                    user={recipe.user}
+                    likes={recipe.numLikes}
                     currentUser={currentUser}
                     category={category}
                     method={method}
-                    description={listing.description}
-                    ingredients={listing.ingredients}
-                    steps={listing.steps}
+                    description={recipe.description}
+                    ingredients={recipe.ingredients}
+                    steps={recipe.steps}
                 />
 
           </div>
           <Comments
             currentUser={currentUser}
             onCreateComment={onCreateComment}
-            listingId={listing.id}
+            listingId={recipe.id}
             comments={comments}
           />
-          {currentUser?.id === listing.userId&&(
-            <DeleteListingButton id={listing.id}/>
+          {currentUser?.id === recipe.userId&&(
+            <DeleteListingButton id={recipe.id}/>
           )}
         </div>
       </div>

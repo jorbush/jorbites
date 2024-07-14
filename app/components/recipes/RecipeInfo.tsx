@@ -10,7 +10,7 @@ import { MdVerified } from "react-icons/md";
 import { useRouter } from "next/navigation";
 
 
-interface ListingInfoProps {
+interface RecipeInfoProps {
   user: SafeUser,
   description: string;
   steps: string[];
@@ -29,7 +29,7 @@ interface ListingInfoProps {
   likes: number;
 }
 
-const ListingInfo: React.FC<ListingInfoProps> = ({
+const RecipeInfo: React.FC<RecipeInfoProps> = ({
   user,
   description,
   ingredients,
@@ -179,4 +179,4 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   );
 }
 
-export default ListingInfo;
+export default RecipeInfo;

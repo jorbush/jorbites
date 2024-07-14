@@ -14,11 +14,11 @@ interface IParams {
 
 const RecipePage = async ({ params }: { params: IParams }) => {
 
-  const listing = await getRecipeById(params);
+  const recipe = await getRecipeById(params);
   const currentUser = await getCurrentUser();
   const comments = await getCommentsByRecipeId(params);
 
-  if (!listing) {
+  if (!recipe) {
     return (
       <ClientOnly>
         <EmptyState />
@@ -29,7 +29,7 @@ const RecipePage = async ({ params }: { params: IParams }) => {
   return (
     <ClientOnly>
       <RecipeClient
-        listing={listing}
+        recipe={recipe}
         currentUser={currentUser}
         comments={comments}
       />
