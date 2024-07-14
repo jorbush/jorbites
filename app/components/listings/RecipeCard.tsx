@@ -75,7 +75,7 @@ const RecipeCard: React.FC<ListingCardProps> = ({
                     right-3
                 ">
                     <HeartButton
-                        listingId={data.id}
+                        recipeId={data.id}
                         currentUser={currentUser}
                     />
                 </div>

@@ -28,9 +28,9 @@ const DeleteListingsModal: React.FC<DeleteListingModalProps> = ({
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false)
 
-    
-    const { 
-      register, 
+
+    const {
+      register,
       handleSubmit,
       setValue,
       watch,
@@ -43,15 +43,15 @@ const DeleteListingsModal: React.FC<DeleteListingModalProps> = ({
         text: ''
       },
     });
-      
+
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
       if (watch("text") !== t('text_delete')){
         toast.error('The text does not match.')
         return
       }
       setIsLoading(true);
-  
-      axios.delete(`/api/listing/${id}`)
+
+      axios.delete(`/api/recipe/${id}`)
       .then(() => {
         toast.success('Recipe deleted!');
         router.refresh()
@@ -76,7 +76,7 @@ const DeleteListingsModal: React.FC<DeleteListingModalProps> = ({
             <Input
                 id="text"
                 label={""}
-                register={register}  
+                register={register}
                 errors={errors}
                 required
             />

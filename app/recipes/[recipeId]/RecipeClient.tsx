@@ -11,7 +11,6 @@ import { SafeComment, SafeListing, SafeUser } from "@/app/types";
 import Container from "@/app/components/Container";
 import { categories } from "@/app/components/navbar/Categories";
 import RecipeHead from "@/app/components/listings/RecipeHead";
-import { Comment } from "@prisma/client";
 import ListingInfo from "@/app/components/listings/ListingInfo";
 import { preparationMethods } from "@/app/components/modals/RecipeModal";
 import Comments from "@/app/components/comments/Comments";

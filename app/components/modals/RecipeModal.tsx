@@ -129,7 +129,7 @@ const RecipeModal = () => {
     }
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
-        const url = `${window.location.origin}/api/listings`;
+        const url = `${window.location.origin}/api/recipes`;
 
         if (step !== STEPS.IMAGES){
             return onNext()

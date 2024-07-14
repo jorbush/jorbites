@@ -43,22 +43,22 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   const { t } = useTranslation();
   const router = useRouter();
 
-  return ( 
+  return (
     <div className="col-span-4 flex flex-col gap-8 pl-2 pr-2">
       <div className="flex flex-col gap-2">
-        <div 
+        <div
           className="
-            grid 
-            grid-cols-3 
+            grid
+            grid-cols-3
             gap-8
           "
         >
-          <div 
+          <div
             className="
-              text-xl 
-              font-semibold 
-              flex 
-              flex-row 
+              text-xl
+              font-semibold
+              flex
+              flex-row
               items-center
               gap-2
               col-span-2
@@ -68,7 +68,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             <Avatar src={user?.image} size={40} onClick={() => router.push('/profile/'+ user.id)}/>
             <div className="flex flex-col">
               <div className="flex flex-row">
-                <div className="cursor-pointer" 
+                <div className="cursor-pointer"
                   onClick={() => router.push('/profile/'+ user.id)}
                 >
                   {user?.name}
@@ -79,13 +79,13 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
               </div>
               <div className="text-gray-400 text-sm">{`${t('level')} ${user?.level}`}</div>
             </div>
-            
+
           </div>
-          <div 
+          <div
             className="
-              text-xl 
-              flex 
-              flex-row 
+              text-xl
+              flex
+              flex-row
               items-end
               gap-2
               ml-auto
@@ -93,18 +93,18 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
               mr-4
             "
           >
-            <HeartButton 
-              listingId={id}
+            <HeartButton
+              recipeId={id}
               currentUser={currentUser}
             />
             <div className="dark:text-neutral-100">{likes}</div>
           </div>
         </div>
         <div className="
-            flex 
-            flex-row 
-            items-center 
-            gap-4 
+            flex
+            flex-row
+            items-center
+            gap-4
             font-light
             text-neutral-500
           "
@@ -127,12 +127,12 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
         <>
             <hr />
             <div className="dark:text-neutral-100">
-                <div 
+                <div
                     className="
-                    text-xl 
-                    font-semibold 
-                    flex 
-                    flex-row 
+                    text-xl
+                    font-semibold
+                    flex
+                    flex-row
                     items-center
                     gap-2
                     "
@@ -153,12 +153,12 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
         <>
             <hr />
             <div className="dark:text-neutral-100">
-                <div 
+                <div
                     className="
-                    text-xl 
-                    font-semibold 
-                    flex 
-                    flex-row 
+                    text-xl
+                    font-semibold
+                    flex
+                    flex-row
                     items-center
                     gap-2
                     "
@@ -178,5 +178,5 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
     </div>
   );
 }
- 
+
 export default ListingInfo;
