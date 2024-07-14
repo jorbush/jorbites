@@ -18,7 +18,7 @@ export default async function getRecipes(
             query.category = category;
         }
 
-        const listings = await prisma.listing.findMany({
+        const recipes = await prisma.listing.findMany({
             where: query,
             orderBy: {
                 createdAt: 'desc'
@@ -27,17 +27,17 @@ export default async function getRecipes(
             take: limit
         });
 
-        const totalListings = await prisma.listing.count({ where: query });
+        const totalRecipes = await prisma.listing.count({ where: query });
 
-        const safeListings = listings.map((listing) => ({
-            ...listing,
-            createdAt: listing.createdAt.toISOString()
+        const safeRecipes = recipes.map((recipe) => ({
+            ...recipe,
+            createdAt: recipe.createdAt.toISOString()
         }));
 
         return {
-            listings: safeListings,
-            totalListings,
-            totalPages: Math.ceil(totalListings / limit),
+            recipes: safeRecipes,
+            totalRecipes,
+            totalPages: Math.ceil(totalRecipes / limit),
             currentPage: page
         };
     } catch (error: any) {

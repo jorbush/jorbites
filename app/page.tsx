@@ -17,10 +17,10 @@ const Home = async ({ searchParams }: HomeProps) => {
   const userAgent = headersList.get('user-agent') || '';
   const isMobile = detectMobile(userAgent);
   const limit = isMobile ? 6 : 10;
-  const listingsData = await getRecipes({ ...searchParams, limit });
+  const recipesData = await getRecipes({ ...searchParams, limit });
   const currentUser = await getCurrentUser();
 
-  if (listingsData.listings.length === 0) {
+  if (recipesData.recipes.length === 0) {
     return (
       <ClientOnly>
         <EmptyState showReset />
@@ -43,7 +43,7 @@ const Home = async ({ searchParams }: HomeProps) => {
             gap-8
           "
         >
-          {listingsData.listings.map((listing) => (
+          {recipesData.recipes.map((listing) => (
             <RecipeCard
               key={listing.id}
               data={listing}
@@ -52,8 +52,8 @@ const Home = async ({ searchParams }: HomeProps) => {
           ))}
         </div>
         <Pagination
-          totalPages={listingsData.totalPages}
-          currentPage={listingsData.currentPage}
+          totalPages={recipesData.totalPages}
+          currentPage={recipesData.currentPage}
           searchParams={searchParams}
         />
       </Container>
