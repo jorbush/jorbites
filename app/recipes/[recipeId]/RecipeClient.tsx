@@ -10,11 +10,11 @@ import { SafeComment, SafeListing, SafeUser } from "@/app/types";
 
 import Container from "@/app/components/Container";
 import { categories } from "@/app/components/navbar/Categories";
-import RecipeHead from "@/app/components/listings/RecipeHead";
-import ListingInfo from "@/app/components/listings/ListingInfo";
+import RecipeHead from "@/app/components/recipes/RecipeHead";
+import ListingInfo from "@/app/components/recipes/ListingInfo";
 import { preparationMethods } from "@/app/components/modals/RecipeModal";
 import Comments from "@/app/components/comments/Comments";
-import DeleteListingButton from "@/app/components/listings/DeleteListingButton";
+import DeleteListingButton from "@/app/components/recipes/DeleteListingButton";
 
 interface ListingClientProps {
   comments?: SafeComment[];

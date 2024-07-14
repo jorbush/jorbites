@@ -1,5 +1,5 @@
 import Container from "@/app/components/Container";
-import RecipeCard from "@/app/components/listings/RecipeCard";
+import RecipeCard from "@/app/components/recipes/RecipeCard";
 import EmptyState from "@/app/components/EmptyState";
 import Pagination from "@/app/components/Pagination";
 import { isMobile as detectMobile } from "@/app/utils/deviceDetector";
