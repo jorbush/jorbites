@@ -43,10 +43,10 @@ const Home = async ({ searchParams }: HomeProps) => {
             gap-8
           "
         >
-          {recipesData.recipes.map((listing) => (
+          {recipesData.recipes.map((recipe) => (
             <RecipeCard
-              key={listing.id}
-              data={listing}
+              key={recipe.id}
+              data={recipe}
               currentUser={currentUser}
             />
           ))}
