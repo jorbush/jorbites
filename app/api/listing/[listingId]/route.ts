@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import sendEmail from "@/app/actions/sendEmail";
-import getListingById from "@/app/actions/getListingById";
+import getRecipeById from "@/app/actions/getRecipeById";
 import setLevelByUserId from "@/app/actions/setLevelByUserId";
 
 interface IParams {
@@ -11,13 +11,13 @@ interface IParams {
 }
 
 export async function POST(
-    request: Request, 
+    request: Request,
     { params }: { params: IParams }
 ) {
 
   const body = await request.json();
 
-  const { 
+  const {
     operation
     } = body;
 
@@ -26,7 +26,7 @@ export async function POST(
   if (!currentUser) {
     return NextResponse.error();
   }
-  
+
   const { listingId } = params;
 
   if (!listingId || typeof listingId !== 'string') {
@@ -47,7 +47,7 @@ export async function POST(
   if (!numLikes && numLikes!==0) {
       throw Error()
   }
-  
+
   if (operation === "increment"){
       numLikes++;
       if (currentListing?.user.emailNotifications) {
@@ -58,7 +58,7 @@ export async function POST(
         numLikes--;
       }
   }
-  
+
   const listing = await prisma.listing.update({
     where: {
       id: listingId
@@ -74,7 +74,7 @@ export async function POST(
 }
 
 export async function DELETE(
-  request: Request, 
+  request: Request,
   { params }: { params: IParams }
 ) {
   const currentUser = await getCurrentUser();
@@ -89,7 +89,7 @@ export async function DELETE(
     throw new Error('Invalid ID');
   }
 
-  const recipe = await getListingById({listingId: listingId})
+  const recipe = await getRecipeById({listingId: listingId})
 
   if (recipe?.userId !== currentUser.id){
     return NextResponse.error();

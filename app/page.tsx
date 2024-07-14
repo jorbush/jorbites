@@ -3,13 +3,13 @@ import RecipeCard from "@/app/components/listings/RecipeCard";
 import EmptyState from "@/app/components/EmptyState";
 import Pagination from "@/app/components/Pagination";
 import { isMobile as detectMobile } from "@/app/utils/deviceDetector";
-import getListings, { IListingsParams } from "@/app/actions/getListings";
+import getRecipes, { IRecipesParams } from "@/app/actions/getRecipes";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import ClientOnly from "./components/ClientOnly";
 import { headers } from 'next/headers';
 
 interface HomeProps {
-  searchParams: IListingsParams
+  searchParams: IRecipesParams
 };
 
 const Home = async ({ searchParams }: HomeProps) => {
@@ -17,7 +17,7 @@ const Home = async ({ searchParams }: HomeProps) => {
   const userAgent = headersList.get('user-agent') || '';
   const isMobile = detectMobile(userAgent);
   const limit = isMobile ? 6 : 10;
-  const listingsData = await getListings({ ...searchParams, limit });
+  const listingsData = await getRecipes({ ...searchParams, limit });
   const currentUser = await getCurrentUser();
 
   if (listingsData.listings.length === 0) {

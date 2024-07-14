@@ -1,6 +1,6 @@
 
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import getListingById from "@/app/actions/getListingById";
+import getRecipeById from "@/app/actions/getRecipeById";
 
 import ClientOnly from "@/app/components/ClientOnly";
 import EmptyState from "@/app/components/EmptyState";
@@ -14,7 +14,7 @@ interface IParams {
 
 const ListingPage = async ({ params }: { params: IParams }) => {
 
-  const listing = await getListingById(params);
+  const listing = await getRecipeById(params);
   const currentUser = await getCurrentUser();
   const comments = await getCommentsByRecipeId(params);
 
@@ -36,5 +36,5 @@ const ListingPage = async ({ params }: { params: IParams }) => {
     </ClientOnly>
   );
 }
- 
+
 export default ListingPage;

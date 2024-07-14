@@ -1,13 +1,13 @@
 import prisma from "@/app/libs/prismadb";
 
-export interface IListingsParams {
+export interface IRecipesParams {
     category?: string;
     page?: number;
     limit?: number;
 }
 
-export default async function getListings(
-    params: IListingsParams
+export default async function getRecipes(
+    params: IRecipesParams
 ){
     try {
         const { category, page = 1, limit = 10 } = params;

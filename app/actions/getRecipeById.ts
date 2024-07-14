@@ -4,7 +4,7 @@ interface IParams {
   listingId?: string;
 }
 
-export default async function getListingById(
+export default async function getRecipeById(
   params: IParams
 ) {
   try {
@@ -30,7 +30,7 @@ export default async function getListingById(
         ...listing.user,
         createdAt: listing.user.createdAt.toISOString(),
         updatedAt: listing.user.updatedAt.toISOString(),
-        emailVerified: 
+        emailVerified:
           listing.user.emailVerified?.toString() || null,
       }
     };
