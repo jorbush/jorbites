@@ -1,7 +1,6 @@
 'use client';
 
 import { SafeListing, SafeUser } from "@/app/types";
-import { Listing } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import Button from "../Button";

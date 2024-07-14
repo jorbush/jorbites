@@ -3,7 +3,7 @@
 import { IconType } from "react-icons";
 import { SafeUser } from "@/app/types";
 import Avatar from "../Avatar";
-import ListingCategoryAndMethod from "./ListingCategoryAndMethod";
+import RecipeCategoryAndMethod from "@/app/components/recipes/RecipeCategoryAndMethod";
 import HeartButton from "../HeartButton";
 import { useTranslation } from 'react-i18next';
 import { MdVerified } from "react-icons/md";
@@ -117,7 +117,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
           </div>
         </div>
       </div>
-      <ListingCategoryAndMethod category={category} method={method}/>
+      <RecipeCategoryAndMethod category={category} method={method}/>
       <hr />
       <div className="
       text-lg font-light text-neutral-500 dark:text-neutral-100 text-justify">
