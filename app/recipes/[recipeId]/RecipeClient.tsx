@@ -51,7 +51,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
 
       axios.post('/api/comments', {
         comment: comment,
-        listingId: recipe?.id
+        recipeId: recipe?.id
       })
       .then(() => {
         toast.success('Recipe commented!');

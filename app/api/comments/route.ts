@@ -5,7 +5,7 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import sendEmail from "@/app/actions/sendEmail";
 
 export async function POST(
-  request: Request, 
+  request: Request,
 ) {
   const currentUser = await getCurrentUser();
 
@@ -14,18 +14,18 @@ export async function POST(
   }
 
   const body = await request.json();
-  const { 
-    listingId,
+  const {
+    recipeId,
     comment
    } = body;
 
-   if (!listingId || !comment) {
+   if (!recipeId || !comment) {
     return NextResponse.error();
   }
 
   const currentListing = await prisma.listing.findUnique({
     where: {
-      id: listingId,
+      id: recipeId,
     },
     include: {
       user: true
@@ -33,12 +33,12 @@ export async function POST(
   });
 
   if (currentListing?.user.emailNotifications) {
-    await sendEmail("You have received a new comment from " + currentUser.name + ".\nIn this recipe: https://jorbites.com/recipes/" + listingId, currentListing?.user.email);
+    await sendEmail("You have received a new comment from " + currentUser.name + ".\nIn this recipe: https://jorbites.com/recipes/" + recipeId, currentListing?.user.email);
   }
 
   const listingAndComment = await prisma.listing.update({
     where: {
-      id: listingId
+      id: recipeId
     },
     data: {
       comments: {

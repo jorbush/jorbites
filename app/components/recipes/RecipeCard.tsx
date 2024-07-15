@@ -7,7 +7,7 @@ import Button from "../Button";
 import Image from "next/image";
 import HeartButton from "../HeartButton";
 
-interface ListingCardProps {
+interface RecipeCardProps {
     data: SafeListing;
     onAction?: (id: string) => void;
     disabled?: boolean;
@@ -16,7 +16,7 @@ interface ListingCardProps {
     currentUser?: SafeUser | null;
 }
 
-const RecipeCard: React.FC<ListingCardProps> = ({
+const RecipeCard: React.FC<RecipeCardProps> = ({
     data,
     onAction,
     disabled,
