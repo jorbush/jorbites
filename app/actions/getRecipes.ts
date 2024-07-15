@@ -18,7 +18,7 @@ export default async function getRecipes(
             query.category = category;
         }
 
-        const recipes = await prisma.listing.findMany({
+        const recipes = await prisma.recipe.findMany({
             where: query,
             orderBy: {
                 createdAt: 'desc'
@@ -27,7 +27,7 @@ export default async function getRecipes(
             take: limit
         });
 
-        const totalRecipes = await prisma.listing.count({ where: query });
+        const totalRecipes = await prisma.recipe.count({ where: query });
 
         const safeRecipes = recipes.map((recipe) => ({
             ...recipe,

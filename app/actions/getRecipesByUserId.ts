@@ -12,7 +12,7 @@ export default async function getRecipesByUserId(
   try {
     const { userId } = params;
 
-    const recipes = await prisma.listing.findMany({
+    const recipes = await prisma.recipe.findMany({
       where: {
         userId: userId
       }

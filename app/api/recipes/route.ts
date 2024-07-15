@@ -36,7 +36,7 @@ export async function POST(
     }
   });
 
-  const recipeExist = await prisma.listing.findFirst({
+  const recipeExist = await prisma.recipe.findFirst({
     where: {
       imageSrc: imageSrc as string,
     }
@@ -60,7 +60,7 @@ export async function POST(
     extraImages.push(imageSrc3)
   }
 
-  const recipe = await prisma.listing.create({
+  const recipe = await prisma.recipe.create({
     data: {
       title,
       description,

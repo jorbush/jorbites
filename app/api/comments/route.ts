@@ -23,7 +23,7 @@ export async function POST(
     return NextResponse.error();
   }
 
-  const currentRecipe = await prisma.listing.findUnique({
+  const currentRecipe = await prisma.recipe.findUnique({
     where: {
       id: recipeId,
     },
@@ -36,7 +36,7 @@ export async function POST(
     await sendEmail("You have received a new comment from " + currentUser.name + ".\nIn this recipe: https://jorbites.com/recipes/" + recipeId, currentRecipe?.user.email);
   }
 
-  const recipeAndComment = await prisma.listing.update({
+  const recipeAndComment = await prisma.recipe.update({
     where: {
       id: recipeId
     },

@@ -33,7 +33,7 @@ export async function POST(
     throw new Error('Invalid ID');
   }
 
-  const currentRecipe = await prisma.listing.findUnique({
+  const currentRecipe = await prisma.recipe.findUnique({
     where: {
       id: recipeId,
     },
@@ -59,7 +59,7 @@ export async function POST(
       }
   }
 
-  const recipe = await prisma.listing.update({
+  const recipe = await prisma.recipe.update({
     where: {
       id: recipeId
     },
@@ -95,7 +95,7 @@ export async function DELETE(
     return NextResponse.error();
   }
 
-  const deletedRecipe = await prisma.listing.delete({
+  const deletedRecipe = await prisma.recipe.delete({
     where: {
       id: recipeId
     },

@@ -20,7 +20,7 @@ export default async function setLevelByUserId(params: IParams) {
       throw new Error("El usuario no existe.");
     }
 
-    const userRecipes = await prisma.listing.findMany({
+    const userRecipes = await prisma.recipe.findMany({
       where: {
         userId: userId
       }
