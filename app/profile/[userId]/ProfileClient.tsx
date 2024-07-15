@@ -7,12 +7,12 @@ import Container from "@/app/components/Container";
 import RecipeCard from "@/app/components/recipes/RecipeCard";
 
 interface ProfileClientProps {
-  listings: SafeListing[],
+  recipes: SafeListing[],
   currentUser?: SafeUser | null,
 }
 
 const ProfileClient: React.FC<ProfileClientProps> = ({
-  listings,
+  recipes,
   currentUser
 }) => {
   return (
@@ -30,11 +30,11 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
           gap-8
         "
       >
-        {listings.map((listing: any) => (
+        {recipes.map((recipe: any) => (
           <RecipeCard
             currentUser={currentUser}
-            key={listing.id}
-            data={listing}
+            key={recipe.id}
+            data={recipe}
           />
         ))}
       </div>

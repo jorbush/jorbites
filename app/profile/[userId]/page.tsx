@@ -33,7 +33,7 @@ const ProfilePage = async ({ params }: { params: IParams }) => {
     <ClientOnly>
       <ProfileHeader user={user}/>
       {recipes.length > 0 && <ProfileClient
-          listings={recipes}
+          recipes={recipes}
           currentUser={currentUser}
         />
       }
