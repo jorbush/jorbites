@@ -33,7 +33,7 @@ export async function POST(
     throw new Error('Invalid ID');
   }
 
-  const currentListing = await prisma.listing.findUnique({
+  const currentRecipe = await prisma.listing.findUnique({
     where: {
       id: recipeId,
     },
@@ -42,7 +42,7 @@ export async function POST(
     }
   });
 
-  let numLikes = currentListing?.numLikes;
+  let numLikes = currentRecipe?.numLikes;
 
   if (!numLikes && numLikes!==0) {
       throw Error()
@@ -50,8 +50,8 @@ export async function POST(
 
   if (operation === "increment"){
       numLikes++;
-      if (currentListing?.user.emailNotifications) {
-        await sendEmail("You have received a new like from " + currentUser.name + ".\nIn this recipe: https://jorbites.com/recipes/" + recipeId, currentListing?.user.email);
+      if (currentRecipe?.user.emailNotifications) {
+        await sendEmail("You have received a new like from " + currentUser.name + ".\nIn this recipe: https://jorbites.com/recipes/" + recipeId, currentRecipe?.user.email);
       }
   } else {
       if (numLikes>0){
@@ -59,7 +59,7 @@ export async function POST(
       }
   }
 
-  const listing = await prisma.listing.update({
+  const recipe = await prisma.listing.update({
     where: {
       id: recipeId
     },
@@ -68,9 +68,9 @@ export async function POST(
     }
   });
 
-  const newUser = await setLevelByUserId({userId: currentListing?.user.id})
+  const newUser = await setLevelByUserId({userId: currentRecipe?.user.id})
 
-  return NextResponse.json(listing);
+  return NextResponse.json(recipe);
 }
 
 export async function DELETE(

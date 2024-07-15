@@ -111,7 +111,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
           <Comments
             currentUser={currentUser}
             onCreateComment={onCreateComment}
-            listingId={recipe.id}
+            recipeId={recipe.id}
             comments={comments}
           />
           {currentUser?.id === recipe.userId&&(

@@ -36,13 +36,13 @@ export async function POST(
     }
   });
 
-  const listingExist = await prisma.listing.findFirst({
+  const recipeExist = await prisma.listing.findFirst({
     where: {
       imageSrc: imageSrc as string,
     }
   })?? null;
 
-  if (listingExist !== null){
+  if (recipeExist !== null){
     return NextResponse.error();
   }
 
@@ -60,7 +60,7 @@ export async function POST(
     extraImages.push(imageSrc3)
   }
 
-  const listing = await prisma.listing.create({
+  const recipe = await prisma.listing.create({
     data: {
       title,
       description,
@@ -84,11 +84,11 @@ export async function POST(
 
   await Promise.all(users.map(async (user) => {
     if (user.emailNotifications){
-      await sendEmail("There's a new recipe available on Jorbites!\nCheck it out: https://jorbites.com/recipes/" + listing.id, user.email);
+      await sendEmail("There's a new recipe available on Jorbites!\nCheck it out: https://jorbites.com/recipes/" + recipe.id, user.email);
     }
   }));
 
   const newUser = await setLevelByUserId({userId: currentUser.id})
 
-  return NextResponse.json(listing);
+  return NextResponse.json(recipe);
 }
