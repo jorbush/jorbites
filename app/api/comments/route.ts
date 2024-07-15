@@ -23,7 +23,7 @@ export async function POST(
     return NextResponse.error();
   }
 
-  const currentListing = await prisma.listing.findUnique({
+  const currentRecipe = await prisma.listing.findUnique({
     where: {
       id: recipeId,
     },
@@ -32,11 +32,11 @@ export async function POST(
     }
   });
 
-  if (currentListing?.user.emailNotifications) {
-    await sendEmail("You have received a new comment from " + currentUser.name + ".\nIn this recipe: https://jorbites.com/recipes/" + recipeId, currentListing?.user.email);
+  if (currentRecipe?.user.emailNotifications) {
+    await sendEmail("You have received a new comment from " + currentUser.name + ".\nIn this recipe: https://jorbites.com/recipes/" + recipeId, currentRecipe?.user.email);
   }
 
-  const listingAndComment = await prisma.listing.update({
+  const recipeAndComment = await prisma.listing.update({
     where: {
       id: recipeId
     },
@@ -50,5 +50,5 @@ export async function POST(
     }
   });
 
-  return NextResponse.json(listingAndComment);
+  return NextResponse.json(recipeAndComment);
 }
