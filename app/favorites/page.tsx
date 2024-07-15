@@ -3,15 +3,15 @@ import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/ClientOnly";
 
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import getFavoriteListings from "@/app/actions/getFavoriteListings";
+import getFavoriteRecipes from "@/app/actions/getFavoriteRecipes";
 
 import FavoritesClient from "./FavoritesClient";
 
-const ListingPage = async () => {
-  const listings = await getFavoriteListings();
+const FavoritesPage = async () => {
+  const favoriteRecipes = await getFavoriteRecipes();
   const currentUser = await getCurrentUser();
 
-  if (listings.length === 0) {
+  if (favoriteRecipes.length === 0) {
     return (
       <ClientOnly>
         <EmptyState
@@ -25,11 +25,11 @@ const ListingPage = async () => {
   return (
     <ClientOnly>
       <FavoritesClient
-        listings={listings}
+        recipes={favoriteRecipes}
         currentUser={currentUser}
       />
     </ClientOnly>
   );
 }
- 
-export default ListingPage;
+
+export default FavoritesPage;

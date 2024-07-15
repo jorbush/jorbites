@@ -1,7 +1,7 @@
 import { IconType } from "react-icons";
-import ListingCategory from "./ListingCategory";
+import RecipeCategoryView from "./RecipeCategory";
 
-interface ListingInfoProps {
+interface RecipeInfoProps {
     category: {
       icon: IconType,
       label: string;
@@ -13,19 +13,19 @@ interface ListingInfoProps {
     } | undefined
 }
 
-const ListingCategoryAndMethod: React.FC<ListingInfoProps> = ({
+const RecipeCategoryAndMethod: React.FC<RecipeInfoProps> = ({
     category,
     method
 }) => {
     return (
         <>
         <hr/>
-        <div 
+        <div
         className="
-          grid 
-          grid-cols-1 
-          sm:grid-cols-2 
-          md:grid-cols-2 
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          md:grid-cols-2
           lg:grid-cols-2
           xl:grid-cols-2
           2xl:grid-cols-2
@@ -35,25 +35,26 @@ const ListingCategoryAndMethod: React.FC<ListingInfoProps> = ({
       >
             {category && (
             <>
-              <ListingCategory
-                icon={category.icon} 
+              <RecipeCategoryView
+                icon={category.icon}
                 label={category?.label}
-                description={""} 
+                description={""}
               />
             </>
           )}
           {method && (
             <>
-              <ListingCategory
-                icon={method.icon} 
+              <RecipeCategoryView
+                icon={method.icon}
                 label={method?.label}
-                description={""} 
+                description={""}
               />
             </>
           )}
         </div>
         </>
-        
+
     );
 }
-export default ListingCategoryAndMethod
+
+export default RecipeCategoryAndMethod;

@@ -6,7 +6,7 @@ import sendEmail from "@/app/actions/sendEmail";
 import setLevelByUserId from "@/app/actions/setLevelByUserId";
 
 export async function POST(
-  request: Request, 
+  request: Request,
 ) {
 
   const currentUser = await getCurrentUser();
@@ -16,7 +16,7 @@ export async function POST(
   }
 
   const body = await request.json();
-  const { 
+  const {
     title,
     description,
     imageSrc,
@@ -30,39 +30,37 @@ export async function POST(
     imageSrc3,
    } = body;
 
-   //console.log(body)
-
   Object.keys(body).forEach((value: any) => {
     if (!body[value]) {
         NextResponse.error();
     }
   });
 
-  const listingExist = await prisma.listing.findFirst({
+  const recipeExist = await prisma.listing.findFirst({
     where: {
       imageSrc: imageSrc as string,
     }
   })?? null;
 
-  //console.log(listingExist)
-
-  if (listingExist !== null){
+  if (recipeExist !== null){
     return NextResponse.error();
   }
 
   const extraImages: string[] = []
+
   if (imageSrc1 !== "" && imageSrc1 !== undefined){
       extraImages.push(imageSrc1)
   }
+
   if (imageSrc2 !== "" && imageSrc2 !== undefined){
     extraImages.push(imageSrc2)
   }
+
   if (imageSrc3 !== "" && imageSrc3 !== undefined){
     extraImages.push(imageSrc3)
   }
-  //console.log(extraImages)
 
-  const listing = await prisma.listing.create({
+  const recipe = await prisma.listing.create({
     data: {
       title,
       description,
@@ -86,11 +84,11 @@ export async function POST(
 
   await Promise.all(users.map(async (user) => {
     if (user.emailNotifications){
-      await sendEmail("There's a new recipe available on Jorbites!\nCheck it out: https://jorbites.com/recipes/" + listing.id, user.email);
+      await sendEmail("There's a new recipe available on Jorbites!\nCheck it out: https://jorbites.com/recipes/" + recipe.id, user.email);
     }
-  }));   
+  }));
 
   const newUser = await setLevelByUserId({userId: currentUser.id})
-  
-  return NextResponse.json(listing);
+
+  return NextResponse.json(recipe);
 }

@@ -1,24 +1,24 @@
 
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import getListingById from "@/app/actions/getListingById";
+import getRecipeById from "@/app/actions/getRecipeById";
 
 import ClientOnly from "@/app/components/ClientOnly";
 import EmptyState from "@/app/components/EmptyState";
-import ListingClient from "./ListingClient";
+import RecipeClient from "./RecipeClient";
 import getCommentsByRecipeId from "@/app/actions/getCommentsByRecipeId";
 
 
 interface IParams {
-  listingId?: string;
+  recipeId?: string;
 }
 
-const ListingPage = async ({ params }: { params: IParams }) => {
+const RecipePage = async ({ params }: { params: IParams }) => {
 
-  const listing = await getListingById(params);
+  const recipe = await getRecipeById(params);
   const currentUser = await getCurrentUser();
   const comments = await getCommentsByRecipeId(params);
 
-  if (!listing) {
+  if (!recipe) {
     return (
       <ClientOnly>
         <EmptyState />
@@ -28,13 +28,13 @@ const ListingPage = async ({ params }: { params: IParams }) => {
 
   return (
     <ClientOnly>
-      <ListingClient
-        listing={listing}
+      <RecipeClient
+        recipe={recipe}
         currentUser={currentUser}
         comments={comments}
       />
     </ClientOnly>
   );
 }
- 
-export default ListingPage;
+
+export default RecipePage;

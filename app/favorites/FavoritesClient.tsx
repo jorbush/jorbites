@@ -1,16 +1,16 @@
-import { SafeListing, SafeUser } from "@/app/types";
+import { SafeRecipe, SafeUser } from "@/app/types";
 
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
-import RecipeCard from "@/app/components/listings/RecipeCard";
+import RecipeCard from "@/app/components/recipes/RecipeCard";
 
 interface FavoritesClientProps {
-  listings: SafeListing[],
+  recipes: SafeRecipe[],
   currentUser?: SafeUser | null,
 }
 
 const FavoritesClient: React.FC<FavoritesClientProps> = ({
-  listings,
+  recipes,
   currentUser
 }) => {
   return (
@@ -31,11 +31,11 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
           gap-8
         "
       >
-        {listings.map((listing: any) => (
+        {recipes.map((recipe: any) => (
           <RecipeCard
             currentUser={currentUser}
-            key={listing.id}
-            data={listing}
+            key={recipe.id}
+            data={recipe}
           />
         ))}
       </div>

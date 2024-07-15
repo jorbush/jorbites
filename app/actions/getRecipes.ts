@@ -1,13 +1,13 @@
 import prisma from "@/app/libs/prismadb";
 
-export interface IListingsParams {
+export interface IRecipesParams {
     category?: string;
     page?: number;
     limit?: number;
 }
 
-export default async function getListings(
-    params: IListingsParams
+export default async function getRecipes(
+    params: IRecipesParams
 ){
     try {
         const { category, page = 1, limit = 10 } = params;
@@ -18,7 +18,7 @@ export default async function getListings(
             query.category = category;
         }
 
-        const listings = await prisma.listing.findMany({
+        const recipes = await prisma.listing.findMany({
             where: query,
             orderBy: {
                 createdAt: 'desc'
@@ -27,17 +27,17 @@ export default async function getListings(
             take: limit
         });
 
-        const totalListings = await prisma.listing.count({ where: query });
+        const totalRecipes = await prisma.listing.count({ where: query });
 
-        const safeListings = listings.map((listing) => ({
-            ...listing,
-            createdAt: listing.createdAt.toISOString()
+        const safeRecipes = recipes.map((recipe) => ({
+            ...recipe,
+            createdAt: recipe.createdAt.toISOString()
         }));
 
         return {
-            listings: safeListings,
-            totalListings,
-            totalPages: Math.ceil(totalListings / limit),
+            recipes: safeRecipes,
+            totalRecipes,
+            totalPages: Math.ceil(totalRecipes / limit),
             currentPage: page
         };
     } catch (error: any) {

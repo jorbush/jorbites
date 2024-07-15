@@ -12,25 +12,22 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 
-interface DeleteListingModalProps {
+interface DeleteRecipeModalProps {
     id: string;
     open: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const DeleteListingsModal: React.FC<DeleteListingModalProps> = ({
+const DeleteRecipeModal: React.FC<DeleteRecipeModalProps> = ({
     open,
     setIsOpen,
     id,
 }) => {
     const { t } = useTranslation();
-    const registerModal = useRegisterModal();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false)
-
-    
-    const { 
-      register, 
+    const {
+      register,
       handleSubmit,
       setValue,
       watch,
@@ -43,15 +40,15 @@ const DeleteListingsModal: React.FC<DeleteListingModalProps> = ({
         text: ''
       },
     });
-      
+
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
       if (watch("text") !== t('text_delete')){
         toast.error('The text does not match.')
         return
       }
       setIsLoading(true);
-  
-      axios.delete(`/api/listing/${id}`)
+
+      axios.delete(`/api/recipe/${id}`)
       .then(() => {
         toast.success('Recipe deleted!');
         router.refresh()
@@ -76,7 +73,7 @@ const DeleteListingsModal: React.FC<DeleteListingModalProps> = ({
             <Input
                 id="text"
                 label={""}
-                register={register}  
+                register={register}
                 errors={errors}
                 required
             />
@@ -97,4 +94,4 @@ const DeleteListingsModal: React.FC<DeleteListingModalProps> = ({
       );
 }
 
-export default DeleteListingsModal
+export default DeleteRecipeModal;

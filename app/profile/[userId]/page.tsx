@@ -3,7 +3,6 @@ import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/ClientOnly";
 
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import getFavoriteListings from "@/app/actions/getFavoriteListings";
 
 import ProfileClient from "./ProfileClient";
 import getRecipesByUserId from "../../actions/getRecipesByUserId";
@@ -14,12 +13,12 @@ interface IParams {
   userId?: string;
 }
 
-const ListingPage = async ({ params }: { params: IParams }) => {
-  const listings = await getRecipesByUserId(params);
+const ProfilePage = async ({ params }: { params: IParams }) => {
+  const recipes = await getRecipesByUserId(params);
   const user = await getUserById(params);
   const currentUser = await getCurrentUser();
 
-  if (!user && listings.length === 0) {
+  if (!user && recipes.length === 0) {
     return (
       <ClientOnly>
         <EmptyState
@@ -33,12 +32,12 @@ const ListingPage = async ({ params }: { params: IParams }) => {
   return (
     <ClientOnly>
       <ProfileHeader user={user}/>
-      {listings.length > 0 && <ProfileClient
-          listings={listings}
+      {recipes.length > 0 && <ProfileClient
+          recipes={recipes}
           currentUser={currentUser}
         />
       }
-      {listings.length === 0 && <EmptyState
+      {recipes.length === 0 && <EmptyState
         title="No recipes found"
         subtitle="Looks like this user has not created recipes."
       />
@@ -46,5 +45,5 @@ const ListingPage = async ({ params }: { params: IParams }) => {
     </ClientOnly>
   );
 }
- 
-export default ListingPage;
+
+export default ProfilePage;

@@ -1,15 +1,14 @@
 'use client';
 
-import { SafeListing, SafeUser } from "@/app/types";
-import { Listing } from "@prisma/client";
+import { SafeRecipe, SafeUser } from "@/app/types";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import Button from "../Button";
 import Image from "next/image";
 import HeartButton from "../HeartButton";
 
-interface ListingCardProps {
-    data: SafeListing;
+interface RecipeCardProps {
+    data: SafeRecipe;
     onAction?: (id: string) => void;
     disabled?: boolean;
     actionLabel?: string;
@@ -17,7 +16,7 @@ interface ListingCardProps {
     currentUser?: SafeUser | null;
 }
 
-const RecipeCard: React.FC<ListingCardProps> = ({
+const RecipeCard: React.FC<RecipeCardProps> = ({
     data,
     onAction,
     disabled,
@@ -75,7 +74,7 @@ const RecipeCard: React.FC<ListingCardProps> = ({
                     right-3
                 ">
                     <HeartButton
-                        listingId={data.id}
+                        recipeId={data.id}
                         currentUser={currentUser}
                     />
                 </div>

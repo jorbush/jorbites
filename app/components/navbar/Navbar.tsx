@@ -9,26 +9,23 @@ import { SafeUser } from "@/app/types";
 import useTheme from "@/app/hooks/useTheme";
 
 interface NavbarProps {
-    currentUser?: SafeUser | null 
+    currentUser?: SafeUser | null
 }
 
 const Navbar: React.FC<NavbarProps> = ({
     currentUser
 }) => {
-    //console.log({currentUser})
-
     const [isFilterOpen, setIsFilterOpen] = useState(false)
-
     useTheme();
 
     const filterOpen = useCallback(() => {
         setIsFilterOpen((value) => !value)
     }, [])
-    
+
     return (
         <div className="fixed w-full dark:bg-dark bg-white z-10 shadow-sm">
             <div className="py-4 border-b-[1px]">
-                <Container> 
+                <Container>
                     <div className="
                         flex
                         flex-row

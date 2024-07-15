@@ -8,11 +8,11 @@ import { SafeUser } from "@/app/types";
 import useLoginModal from "./useLoginModal";
 
 interface IUseFavorite {
-  listingId: string;
+  recipeId: string;
   currentUser?: SafeUser | null;
 }
 
-const useFavorite = ({ listingId, currentUser}: IUseFavorite) => {
+const useFavorite = ({ recipeId, currentUser}: IUseFavorite) => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -22,8 +22,8 @@ const useFavorite = ({ listingId, currentUser}: IUseFavorite) => {
   const hasFavorited = useMemo(() => {
     const list = currentUser?.favoriteIds || [];
 
-    return list.includes(listingId);
-  }, [currentUser, listingId]);
+    return list.includes(recipeId);
+  }, [currentUser, recipeId]);
 
   const toggleFavorite = useCallback(async (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -43,13 +43,13 @@ const useFavorite = ({ listingId, currentUser}: IUseFavorite) => {
       let requestLike;
 
       if (hasFavorited) {
-        request = () => axios.delete(`/api/favorites/${listingId}`);
-        requestLike = () => axios.post(`/api/listing/${listingId}`, {operation: "decrement"});
+        request = () => axios.delete(`/api/favorites/${recipeId}`);
+        requestLike = () => axios.post(`/api/recipe/${recipeId}`, {operation: "decrement"});
       } else {
-        request = () => axios.post(`/api/favorites/${listingId}`);
-        requestLike = () => axios.post(`/api/listing/${listingId}`, {operation: "increment"});
+        request = () => axios.post(`/api/favorites/${recipeId}`);
+        requestLike = () => axios.post(`/api/recipe/${recipeId}`, {operation: "increment"});
       }
-      
+
       await requestLike();
       await request();
       router.refresh();
@@ -59,11 +59,11 @@ const useFavorite = ({ listingId, currentUser}: IUseFavorite) => {
     } finally {
       setIsLoading(false);
     }
-  }, 
+  },
   [
-    currentUser, 
-    hasFavorited, 
-    listingId, 
+    currentUser,
+    hasFavorited,
+    recipeId,
     loginModal,
     router
   ]);

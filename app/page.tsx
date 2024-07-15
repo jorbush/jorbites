@@ -1,15 +1,15 @@
 import Container from "@/app/components/Container";
-import RecipeCard from "@/app/components/listings/RecipeCard";
+import RecipeCard from "@/app/components/recipes/RecipeCard";
 import EmptyState from "@/app/components/EmptyState";
 import Pagination from "@/app/components/Pagination";
 import { isMobile as detectMobile } from "@/app/utils/deviceDetector";
-import getListings, { IListingsParams } from "@/app/actions/getListings";
+import getRecipes, { IRecipesParams } from "@/app/actions/getRecipes";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import ClientOnly from "./components/ClientOnly";
 import { headers } from 'next/headers';
 
 interface HomeProps {
-  searchParams: IListingsParams
+  searchParams: IRecipesParams
 };
 
 const Home = async ({ searchParams }: HomeProps) => {
@@ -17,10 +17,10 @@ const Home = async ({ searchParams }: HomeProps) => {
   const userAgent = headersList.get('user-agent') || '';
   const isMobile = detectMobile(userAgent);
   const limit = isMobile ? 6 : 10;
-  const listingsData = await getListings({ ...searchParams, limit });
+  const recipesData = await getRecipes({ ...searchParams, limit });
   const currentUser = await getCurrentUser();
 
-  if (listingsData.listings.length === 0) {
+  if (recipesData.recipes.length === 0) {
     return (
       <ClientOnly>
         <EmptyState showReset />
@@ -43,17 +43,17 @@ const Home = async ({ searchParams }: HomeProps) => {
             gap-8
           "
         >
-          {listingsData.listings.map((listing) => (
+          {recipesData.recipes.map((recipe) => (
             <RecipeCard
-              key={listing.id}
-              data={listing}
+              key={recipe.id}
+              data={recipe}
               currentUser={currentUser}
             />
           ))}
         </div>
         <Pagination
-          totalPages={listingsData.totalPages}
-          currentPage={listingsData.currentPage}
+          totalPages={recipesData.totalPages}
+          currentPage={recipesData.currentPage}
           searchParams={searchParams}
         />
       </Container>

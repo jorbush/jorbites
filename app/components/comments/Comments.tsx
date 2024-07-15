@@ -9,19 +9,18 @@ import { useTranslation } from 'react-i18next';
 interface CommentsProps {
   currentUser?: SafeUser | null;
   onCreateComment: (comment: string) => void;
-  listingId: string;
+  recipeId: string;
   comments?: SafeComment[];
 }
 
-const Comments: React.FC<CommentsProps> = ({ 
-    currentUser, 
-    onCreateComment, 
-    listingId, 
+const Comments: React.FC<CommentsProps> = ({
+    currentUser,
+    onCreateComment,
+    recipeId,
     comments
 }) => {
     const { t } = useTranslation();
 
-    
     return (
         <div className="
             flex
@@ -30,12 +29,12 @@ const Comments: React.FC<CommentsProps> = ({
             pl-2
         ">
             <hr/>
-            <div 
+            <div
                 className="
-                text-xl 
-                font-semibold 
-                flex 
-                flex-row 
+                text-xl
+                font-semibold
+                flex
+                flex-row
                 items-center
                 gap-2
                 mb-4
@@ -48,13 +47,13 @@ const Comments: React.FC<CommentsProps> = ({
             <div className="mr-4 ml-4">
                <CommentBox userImage={currentUser?.image} onCreateComment={onCreateComment}/>
                 {comments?.map((comment: SafeComment) => (
-                
+
                 <div key={comment.id} className="mr-2 ml-2">
                 <hr/>
-                    <Comment 
+                    <Comment
                         userId={comment.user.id}
-                        userImage={comment.user.image} 
-                        comment={comment.comment} 
+                        userImage={comment.user.image}
+                        comment={comment.comment}
                         createdAt={comment.createdAt}
                         userName={comment.user.name??""}
                         verified={comment.user.verified}
@@ -63,11 +62,9 @@ const Comments: React.FC<CommentsProps> = ({
                         userLevel={comment.user.level}
                     />
                 </div>
-                    
-                ))} 
+
+                ))}
             </div>
-            
-            
         </div>
     );
 }

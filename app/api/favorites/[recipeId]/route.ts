@@ -4,11 +4,11 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 
 interface IParams {
-  listingId?: string;
+  recipeId?: string;
 }
 
 export async function POST(
-  request: Request, 
+  request: Request,
   { params }: { params: IParams }
 ) {
   const currentUser = await getCurrentUser();
@@ -17,15 +17,15 @@ export async function POST(
     return NextResponse.error();
   }
 
-  const { listingId } = params;
+  const { recipeId } = params;
 
-  if (!listingId || typeof listingId !== 'string') {
+  if (!recipeId || typeof recipeId !== 'string') {
     throw new Error('Invalid ID');
   }
 
   let favoriteIds = [...(currentUser.favoriteIds || [])];
 
-  favoriteIds.push(listingId);
+  favoriteIds.push(recipeId);
 
   const user = await prisma.user.update({
     where: {
@@ -40,7 +40,7 @@ export async function POST(
 }
 
 export async function DELETE(
-  request: Request, 
+  request: Request,
   { params }: { params: IParams }
 ) {
   const currentUser = await getCurrentUser();
@@ -49,15 +49,15 @@ export async function DELETE(
     return NextResponse.error();
   }
 
-  const { listingId } = params;
+  const { recipeId } = params;
 
-  if (!listingId || typeof listingId !== 'string') {
+  if (!recipeId || typeof recipeId !== 'string') {
     throw new Error('Invalid ID');
   }
 
   let favoriteIds = [...(currentUser.favoriteIds || [])];
 
-  favoriteIds = favoriteIds.filter((id) => id !== listingId);
+  favoriteIds = favoriteIds.filter((id) => id !== recipeId);
 
   const user = await prisma.user.update({
     where: {
