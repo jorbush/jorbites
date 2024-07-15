@@ -1,6 +1,6 @@
 'use client';
 
-import { SafeListing, SafeUser } from "@/app/types";
+import { SafeRecipe, SafeUser } from "@/app/types";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import Button from "../Button";
@@ -8,7 +8,7 @@ import Image from "next/image";
 import HeartButton from "../HeartButton";
 
 interface RecipeCardProps {
-    data: SafeListing;
+    data: SafeRecipe;
     onAction?: (id: string) => void;
     disabled?: boolean;
     actionLabel?: string;

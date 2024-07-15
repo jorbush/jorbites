@@ -1,6 +1,6 @@
 import { Listing, User, Comment } from "@prisma/client";
 
-export type SafeListing = Omit<
+export type SafeRecipe = Omit<
     Listing,
     "createdAt"
 > & {
@@ -8,7 +8,7 @@ export type SafeListing = Omit<
 }
 
 export type SafeComment = Omit<
-  Comment, 
+  Comment,
   "createdAt"
 > & {
   createdAt: string;

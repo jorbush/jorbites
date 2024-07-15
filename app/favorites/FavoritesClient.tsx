@@ -1,11 +1,11 @@
-import { SafeListing, SafeUser } from "@/app/types";
+import { SafeRecipe, SafeUser } from "@/app/types";
 
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import RecipeCard from "@/app/components/recipes/RecipeCard";
 
 interface FavoritesClientProps {
-  recipes: SafeListing[],
+  recipes: SafeRecipe[],
   currentUser?: SafeUser | null,
 }
 

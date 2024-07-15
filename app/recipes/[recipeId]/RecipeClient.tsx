@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 import useLoginModal from "@/app/hooks/useLoginModal";
-import { SafeComment, SafeListing, SafeUser } from "@/app/types";
+import { SafeComment, SafeRecipe, SafeUser } from "@/app/types";
 
 import Container from "@/app/components/Container";
 import { categories } from "@/app/components/navbar/Categories";
@@ -18,7 +18,7 @@ import DeleteRecipeButton from "@/app/components/recipes/DeleteRecipeButton";
 
 interface RecipeClientProps {
   comments?: SafeComment[];
-  recipe: SafeListing & {
+  recipe: SafeRecipe & {
     user: SafeUser;
   };
   currentUser?: SafeUser | null;
