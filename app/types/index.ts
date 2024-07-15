@@ -1,7 +1,7 @@
-import { Listing, User, Comment } from "@prisma/client";
+import { Recipe, User, Comment } from "@prisma/client";
 
 export type SafeRecipe = Omit<
-    Listing,
+    Recipe,
     "createdAt"
 > & {
     createdAt: string

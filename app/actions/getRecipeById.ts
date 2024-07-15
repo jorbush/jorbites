@@ -10,7 +10,7 @@ export default async function getRecipeById(
   try {
     const { recipeId } = params;
 
-    const recipe = await prisma.listing.findUnique({
+    const recipe = await prisma.recipe.findUnique({
       where: {
         id: recipeId,
       },
