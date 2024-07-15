@@ -4,7 +4,7 @@ import { AiFillDelete } from "react-icons/ai";
 import Button from "../Button";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import DeleteListingsModal from "../modals/DeleteListingModal";
+import DeleteRecipeModal from "../modals/DeleteRecipeModal";
 
 interface DeleteRecipeButtonProps {
     id: string;
@@ -23,7 +23,7 @@ const DeleteRecipeButton: React.FC<DeleteRecipeButtonProps> = ({
 
     return (
         <>
-            <DeleteListingsModal open={isOpen} setIsOpen={setIsOpen} id={id}/>
+            <DeleteRecipeModal open={isOpen} setIsOpen={setIsOpen} id={id}/>
             <div className="flex flex-row w-full justify-center items-center">
                 <div className="w-[240px]">
                     <Button

@@ -12,23 +12,20 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 
-interface DeleteListingModalProps {
+interface DeleteRecipeModalProps {
     id: string;
     open: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const DeleteListingsModal: React.FC<DeleteListingModalProps> = ({
+const DeleteRecipeModal: React.FC<DeleteRecipeModalProps> = ({
     open,
     setIsOpen,
     id,
 }) => {
     const { t } = useTranslation();
-    const registerModal = useRegisterModal();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false)
-
-
     const {
       register,
       handleSubmit,
@@ -97,4 +94,4 @@ const DeleteListingsModal: React.FC<DeleteListingModalProps> = ({
       );
 }
 
-export default DeleteListingsModal
+export default DeleteRecipeModal;
