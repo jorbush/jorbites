@@ -13,7 +13,7 @@ export default async function getCommentsByRecipeId(
     const query: any = {};
 
     if (recipeId) {
-      query.listingId = recipeId;
+      query.recipeId = recipeId;
     };
 
     const comments = await prisma.comment.findMany({
