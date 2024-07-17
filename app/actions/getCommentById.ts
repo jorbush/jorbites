@@ -8,7 +8,7 @@ export default async function getCommentById(
     params: IParams
 ) {
     try {
-        const { commentId: commentId } = params;
+        const { commentId } = params;
 
         const comment = await prisma.comment.findUnique({
             where: {

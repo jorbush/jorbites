@@ -18,7 +18,7 @@ export async function DELETE(
         return NextResponse.error();
     }
 
-    const { commentId: commentId } = params;
+    const { commentId } = params;
 
     if (!commentId || typeof commentId !== 'string') {
         throw new Error('Invalid ID');
