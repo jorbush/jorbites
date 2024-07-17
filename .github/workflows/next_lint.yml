@@ -23,5 +23,11 @@ jobs:
       run: npm install
 
     - name: Run linter
-      run: npm run lint
-      continue-on-error: false
+      run: |
+        npm run lint
+        LINT_EXIT_CODE=$?
+        if [ $LINT_EXIT_CODE -ne 0 ]; then
+          echo "Linting errors found. Exiting with code 1."
+          exit 1
+        fi
+        echo "No linting errors found."
