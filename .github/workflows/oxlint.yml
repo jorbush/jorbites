@@ -1,4 +1,4 @@
-name: Oxlint linter
+name: Oxlint
 
 on:
   push:
