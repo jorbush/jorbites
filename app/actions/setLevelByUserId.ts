@@ -1,5 +1,3 @@
-// Nivel = log(1 + (RecetasPublicadas ^ 1.5)) / log(LikesTotales + 1)
-
 import prisma from '@/app/libs/prismadb';
 
 interface IParams {

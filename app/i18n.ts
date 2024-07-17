@@ -7,14 +7,14 @@ i18n.use(Backend)
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
-        fallbackLng: 'es', // Idioma por defecto
-        supportedLngs: ['es', 'en', 'ca'], // Idiomas soportados
+        fallbackLng: 'es',
+        supportedLngs: ['es', 'en', 'ca'],
         detection: {
-            order: ['localStorage', 'navigator'], // Prioridad del detector de idioma
-            caches: ['localStorage'], // Caché utilizada
+            order: ['localStorage', 'navigator'],
+            caches: ['localStorage'],
         },
         interpolation: {
-            escapeValue: false, // No escapar valores HTML
+            escapeValue: false,
         },
     });
 

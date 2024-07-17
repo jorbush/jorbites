@@ -8,9 +8,7 @@ const sendEmail = async (
         return;
     }
     try {
-        // Configura el transporte de correo
         const transporter = nodemailer.createTransport({
-            // Configura los detalles del servidor de correo saliente (SMTP)
             service: 'gmail',
             port: 587,
             secure: false,
@@ -20,7 +18,6 @@ const sendEmail = async (
             },
         });
 
-        // Envía el correo electrónico
         await transporter.sendMail({
             from: process.env.JORBITES_EMAIL,
             to: userEmail,
@@ -28,7 +25,6 @@ const sendEmail = async (
             text: message,
         });
     } catch (error) {
-        // Maneja cualquier error ocurrido durante el envío del correo
         console.error('Error sending an email:', error);
     }
 };

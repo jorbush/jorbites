@@ -14,7 +14,7 @@ const ThemeSelector: React.FC = () => {
         const newTheme =
             theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
-        localStorage.setItem('theme', newTheme); // Almacena la preferencia del usuario en caché
+        localStorage.setItem('theme', newTheme);
     };
 
     useEffect(() => {

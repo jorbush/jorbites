@@ -36,7 +36,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
         }
         await new Promise((resolve) =>
             setTimeout(resolve, 2000)
-        ); // Simulación de una operación asincrónica de 2 segundos
+        );
         setComment('');
         setButtonDisabled(false);
     };

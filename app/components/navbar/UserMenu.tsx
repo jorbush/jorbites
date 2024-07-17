@@ -35,7 +35,6 @@ const UserMenu: React.FC<UserMenuProps> = ({
         if (!currentUser) {
             return loginModal.onOpen();
         }
-        // open post a recipe
         recipeModal.onOpen();
     }, [currentUser, loginModal]);
 

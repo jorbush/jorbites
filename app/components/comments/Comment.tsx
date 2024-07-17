@@ -44,7 +44,6 @@ const Comment: React.FC<CommentProps> = ({
     const [isLoading, setIsLoading] = useState(false);
     const { t } = useTranslation();
 
-    // Verificar si alguna palabra es demasiado larga
     const isLongWord = words.some(
         (word) => word.length > 20
     );
