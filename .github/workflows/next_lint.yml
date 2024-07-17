@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  lint:
+  next_lint:
     runs-on: ubuntu-latest
 
     steps:

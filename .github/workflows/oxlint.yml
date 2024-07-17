@@ -10,7 +10,6 @@ on:
 
 jobs:
   oxlint:
-    name: Oxlint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
