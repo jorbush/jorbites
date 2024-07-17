@@ -1,40 +1,40 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import getCurrentUser from "@/app/actions/getCurrentUser";
-import prisma from "@/app/libs/prismadb";
-import getCommentById from "@/app/actions/getCommentById";
+import getCurrentUser from '@/app/actions/getCurrentUser';
+import prisma from '@/app/libs/prismadb';
+import getCommentById from '@/app/actions/getCommentById';
 
 interface IParams {
-  commentId?: string;
+    commentId?: string;
 }
 
 export async function DELETE(
-  request: Request, 
-  { params }: { params: IParams }
+    request: Request,
+    { params }: { params: IParams }
 ) {
-  const currentUser = await getCurrentUser();
+    const currentUser = await getCurrentUser();
 
-  if (!currentUser) {
-    return NextResponse.error();
-  }
+    if (!currentUser) {
+        return NextResponse.error();
+    }
 
-  const { commentId: commentId } = params;
+    const { commentId: commentId } = params;
 
-  if (!commentId || typeof commentId !== 'string') {
-    throw new Error('Invalid ID');
-  }
+    if (!commentId || typeof commentId !== 'string') {
+        throw new Error('Invalid ID');
+    }
 
-  const comment = await getCommentById({commentId})
+    const comment = await getCommentById({ commentId });
 
-  if (comment?.userId !== currentUser.id){
-    return NextResponse.error();
-  }
+    if (comment?.userId !== currentUser.id) {
+        return NextResponse.error();
+    }
 
-  const user = await prisma.comment.delete({
-    where: {
-      id: commentId
-    },
-  });
+    const user = await prisma.comment.delete({
+        where: {
+            id: commentId,
+        },
+    });
 
-  return NextResponse.json(user);
+    return NextResponse.json(user);
 }

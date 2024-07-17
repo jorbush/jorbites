@@ -1,40 +1,43 @@
-import prisma from "@/app/libs/prismadb";
+import prisma from '@/app/libs/prismadb';
 
 interface IParams {
-  recipeId?: string;
+    recipeId?: string;
 }
 
 export default async function getRecipeById(
-  params: IParams
+    params: IParams
 ) {
-  try {
-    const { recipeId } = params;
+    try {
+        const { recipeId } = params;
 
-    const recipe = await prisma.recipe.findUnique({
-      where: {
-        id: recipeId,
-      },
-      include: {
-        user: true
-      }
-    });
+        const recipe = await prisma.recipe.findUnique({
+            where: {
+                id: recipeId,
+            },
+            include: {
+                user: true,
+            },
+        });
 
-    if (!recipe) {
-      return null;
+        if (!recipe) {
+            return null;
+        }
+
+        return {
+            ...recipe,
+            createdAt: recipe.createdAt.toISOString(),
+            user: {
+                ...recipe.user,
+                createdAt:
+                    recipe.user.createdAt.toISOString(),
+                updatedAt:
+                    recipe.user.updatedAt.toISOString(),
+                emailVerified:
+                    recipe.user.emailVerified?.toString() ||
+                    null,
+            },
+        };
+    } catch (error: any) {
+        throw new Error(error);
     }
-
-    return {
-      ...recipe,
-      createdAt: recipe.createdAt.toISOString(),
-      user: {
-        ...recipe.user,
-        createdAt: recipe.user.createdAt.toISOString(),
-        updatedAt: recipe.user.updatedAt.toISOString(),
-        emailVerified:
-          recipe.user.emailVerified?.toString() || null,
-      }
-    };
-  } catch (error: any) {
-    throw new Error(error);
-  }
 }

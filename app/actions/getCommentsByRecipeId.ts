@@ -1,46 +1,48 @@
-import prisma from "@/app/libs/prismadb";
+import prisma from '@/app/libs/prismadb';
 
 interface IParams {
-  recipeId?: string;
+    recipeId?: string;
 }
 
 export default async function getCommentsByRecipeId(
-  params: IParams
+    params: IParams
 ) {
-  try {
-    const { recipeId } = params;
+    try {
+        const { recipeId } = params;
 
-    const query: any = {};
+        const query: any = {};
 
-    if (recipeId) {
-      query.recipeId = recipeId;
-    };
+        if (recipeId) {
+            query.recipeId = recipeId;
+        }
 
-    const comments = await prisma.comment.findMany({
-      where: query,
-      include: {
-        user: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    });
+        const comments = await prisma.comment.findMany({
+            where: query,
+            include: {
+                user: true,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
 
-    const safeComments = comments.map(
-      (comment) => ({
-      ...comment,
-      createdAt: comment.createdAt.toISOString(),
-      user: {
-        ...comment.user,
-        createdAt: comment.user.createdAt.toISOString(),
-      updatedAt: comment.user.updatedAt.toISOString(),
-      emailVerified:
-        comment.user.emailVerified?.toISOString() || null,
-      },
-    }));
+        const safeComments = comments.map((comment) => ({
+            ...comment,
+            createdAt: comment.createdAt.toISOString(),
+            user: {
+                ...comment.user,
+                createdAt:
+                    comment.user.createdAt.toISOString(),
+                updatedAt:
+                    comment.user.updatedAt.toISOString(),
+                emailVerified:
+                    comment.user.emailVerified?.toISOString() ||
+                    null,
+            },
+        }));
 
-    return safeComments;
-  } catch (error: any) {
-    throw new Error(error);
-  }
+        return safeComments;
+    } catch (error: any) {
+        throw new Error(error);
+    }
 }

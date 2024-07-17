@@ -1,60 +1,50 @@
-import { IconType } from "react-icons";
-import RecipeCategoryView from "./RecipeCategory";
+import { IconType } from 'react-icons';
+import RecipeCategoryView from './RecipeCategory';
 
 interface RecipeInfoProps {
-    category: {
-      icon: IconType,
-      label: string;
-      description: string;
-    } | undefined;
-    method: {
-      icon: IconType,
-      label: string;
-    } | undefined
+    category:
+        | {
+              icon: IconType;
+              label: string;
+              description: string;
+          }
+        | undefined;
+    method:
+        | {
+              icon: IconType;
+              label: string;
+          }
+        | undefined;
 }
 
-const RecipeCategoryAndMethod: React.FC<RecipeInfoProps> = ({
-    category,
-    method
-}) => {
+const RecipeCategoryAndMethod: React.FC<
+    RecipeInfoProps
+> = ({ category, method }) => {
     return (
         <>
-        <hr/>
-        <div
-        className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          md:grid-cols-2
-          lg:grid-cols-2
-          xl:grid-cols-2
-          2xl:grid-cols-2
-          gap-8
-          dark:text-neutral-100
-        "
-      >
-            {category && (
-            <>
-              <RecipeCategoryView
-                icon={category.icon}
-                label={category?.label}
-                description={""}
-              />
-            </>
-          )}
-          {method && (
-            <>
-              <RecipeCategoryView
-                icon={method.icon}
-                label={method?.label}
-                description={""}
-              />
-            </>
-          )}
-        </div>
+            <hr />
+            <div className="grid grid-cols-1 gap-8 dark:text-neutral-100 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2">
+                {category && (
+                    <>
+                        <RecipeCategoryView
+                            icon={category.icon}
+                            label={category?.label}
+                            description={''}
+                        />
+                    </>
+                )}
+                {method && (
+                    <>
+                        <RecipeCategoryView
+                            icon={method.icon}
+                            label={method?.label}
+                            description={''}
+                        />
+                    </>
+                )}
+            </div>
         </>
-
     );
-}
+};
 
 export default RecipeCategoryAndMethod;
