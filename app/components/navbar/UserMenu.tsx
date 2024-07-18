@@ -12,165 +12,127 @@ import useSettingsModal from '@/app/hooks/useSettingsModal';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 
-
 interface UserMenuProps {
-    currentUser?: SafeUser | null
+    currentUser?: SafeUser | null;
 }
 
 const UserMenu: React.FC<UserMenuProps> = ({
-    currentUser
+    currentUser,
 }) => {
-    const registerModal = useRegisterModal()
-    const loginModal = useLoginModal()
-    const recipeModal = useRecipeModal()
-    const settingsModal = useSettingsModal()
-    const [isOpen, setIsOpen] = useState(false)
+    const registerModal = useRegisterModal();
+    const loginModal = useLoginModal();
+    const recipeModal = useRecipeModal();
+    const settingsModal = useSettingsModal();
+    const [isOpen, setIsOpen] = useState(false);
     const { t } = useTranslation();
     const router = useRouter();
 
-
     const toggleOpen = useCallback(() => {
-        setIsOpen((value) => !value)
-    }, [])
+        setIsOpen((value) => !value);
+    }, []);
 
-    const onPost = useCallback(() =>{
-        if (!currentUser){
-            return loginModal.onOpen()
+    const onPost = useCallback(() => {
+        if (!currentUser) {
+            return loginModal.onOpen();
         }
-        // open post a recipe
-        recipeModal.onOpen()
-    }, [currentUser, loginModal])
+        recipeModal.onOpen();
+    }, [currentUser, loginModal, recipeModal]);
 
     return (
         <div className="relative">
             <div className="flex flex-row items-center gap-3">
                 <div
                     onClick={onPost}
-                    className="
-                        hidden
-                        border-[1px] 
-                        text-sm
-                        font-semibold
-                        py-3
-                        px-4
-                        rounded-full
-                        hover:bg-neutral-100
-                        dark:text-neutral-100
-                        hover:text-black  
-                        transition
-                        cursor-pointer
-                        sm:block
-                    "
+                    className="hidden cursor-pointer rounded-full border-[1px] px-4 py-3 text-sm font-semibold transition hover:bg-neutral-100 hover:text-black dark:text-neutral-100 sm:block"
                 >
                     {t('post_recipe')}
                 </div>
                 <div
                     onClick={toggleOpen}
-                    className="
-                        md:py-1
-                        md:px-1
-                        border-[1px]
-                        border-neutral-200
-                        flex
-                        flex-row
-                        items-center
-                        justify-center
-                        gap-3
-                        rounded-full
-                        cursor-pointer
-                        hover:shadow-md
-                        transition
-                        min-w-[40px]
-                        min-h-[40px]
-                    "
+                    className="flex min-h-[40px] min-w-[40px] cursor-pointer flex-row items-center justify-center gap-3 rounded-full border-[1px] border-neutral-200 transition hover:shadow-md md:px-1 md:py-1"
                 >
-                    <div className='md:block'>
-                        <Avatar src={currentUser?.image}/>
+                    <div className="md:block">
+                        <Avatar src={currentUser?.image} />
                     </div>
                 </div>
             </div>
             {isOpen && (
-                <div className='
-                    absolute
-                    rounded-xl
-                    shadow-md
-                    w-[40vw]
-                    md:w-3/4
-                    bg-white
-                    dark:bg-dark
-                    dark:text-neutral-100
-                    overflow-hidden
-                    right-0
-                    top-12
-                    text-sm
-                '>
-                    <div className='flex flex-col cursor-pointer'>
+                <div className="absolute right-0 top-12 w-[40vw] overflow-hidden rounded-xl bg-white text-sm shadow-md dark:bg-dark dark:text-neutral-100 md:w-3/4">
+                    <div className="flex cursor-pointer flex-col">
                         {currentUser ? (
                             <>
                                 <MenuItem
                                     onClick={() => {
-                                        recipeModal.onOpen()
-                                        toggleOpen()
+                                        recipeModal.onOpen();
+                                        toggleOpen();
                                     }}
                                     label={t('post_recipe')}
                                 />
                                 <MenuItem
                                     onClick={() => {
-                                        router.push('/profile/'+currentUser.id)
-                                        toggleOpen()
+                                        router.push(
+                                            '/profile/' +
+                                                currentUser.id
+                                        );
+                                        toggleOpen();
                                     }}
                                     label={t('my_profile')}
                                 />
                                 <MenuItem
                                     onClick={() => {
-                                        router.push('/favorites')
-                                        toggleOpen()
+                                        router.push(
+                                            '/favorites'
+                                        );
+                                        toggleOpen();
                                     }}
-                                    label={t('my_favorites')}
+                                    label={t(
+                                        'my_favorites'
+                                    )}
                                 />
                                 <MenuItem
-                                    onClick={()=>{
-                                        settingsModal.onOpen()
-                                        toggleOpen()
+                                    onClick={() => {
+                                        settingsModal.onOpen();
+                                        toggleOpen();
                                     }}
                                     label={t('settings')}
                                 />
                                 <MenuItem
-                                    onClick={() => signOut()}
+                                    onClick={() =>
+                                        signOut()
+                                    }
                                     label={t('logout')}
                                 />
                             </>
                         ) : (
                             <>
                                 <MenuItem
-                                    onClick={()=>{
-                                        settingsModal.onOpen()
-                                        toggleOpen()
+                                    onClick={() => {
+                                        settingsModal.onOpen();
+                                        toggleOpen();
                                     }}
                                     label={t('settings')}
                                 />
                                 <MenuItem
-                                    onClick={()=>{
-                                        loginModal.onOpen()
-                                        toggleOpen()
+                                    onClick={() => {
+                                        loginModal.onOpen();
+                                        toggleOpen();
                                     }}
                                     label={t('login')}
                                 />
                                 <MenuItem
-                                    onClick={()=>{
-                                        registerModal.onOpen()
-                                        toggleOpen()
+                                    onClick={() => {
+                                        registerModal.onOpen();
+                                        toggleOpen();
                                     }}
                                     label={t('sign_up')}
                                 />
                             </>
                         )}
-                        
                     </div>
                 </div>
             )}
         </div>
     );
-}
+};
 
-export default UserMenu
+export default UserMenu;

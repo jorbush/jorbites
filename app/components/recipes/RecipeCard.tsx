@@ -1,11 +1,11 @@
 'use client';
 
-import { SafeRecipe, SafeUser } from "@/app/types";
-import { useRouter } from "next/navigation";
-import { useCallback } from "react";
-import Button from "../Button";
-import Image from "next/image";
-import HeartButton from "../HeartButton";
+import { SafeRecipe, SafeUser } from '@/app/types';
+import { useRouter } from 'next/navigation';
+import { useCallback } from 'react';
+import Button from '../Button';
+import Image from 'next/image';
+import HeartButton from '../HeartButton';
 
 interface RecipeCardProps {
     data: SafeRecipe;
@@ -21,87 +21,71 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
     onAction,
     disabled,
     actionLabel,
-    actionId = "",
-    currentUser
+    actionId = '',
+    currentUser,
 }) => {
-    const router = useRouter()
+    const router = useRouter();
 
-    const handleCancel = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation()
+    const handleCancel = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
 
-        if(disabled){
-            return;
-        }
+            if (disabled) {
+                return;
+            }
 
-        onAction?.(actionId)
-
-    }, [onAction, actionId, disabled])
-
-
+            onAction?.(actionId);
+        },
+        [onAction, actionId, disabled]
+    );
 
     return (
         <div
-            onClick={() => router.push(`/recipes/${data.id}`)}
-            className="col-span-1 cursor-pointer group"
+            onClick={() =>
+                router.push(`/recipes/${data.id}`)
+            }
+            className="group col-span-1 cursor-pointer"
         >
-        <div className="flex flex-col gap-2 w-full">
-            <div
-            className="
-                aspect-square
-                w-full
-                relative
-                overflow-hidden
-                rounded-xl
-            "
-            >
-                <Image
-                    fill
-                    priority={true}
-                    className="
-                        object-cover
-                        h-full
-                        w-full
-                        group-hover:scale-110
-                        transition
-                    "
-                    src={data.imageSrc}
-                    alt="recipe"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-                <div className="
-                    absolute
-                    top-3
-                    right-3
-                ">
-                    <HeartButton
-                        recipeId={data.id}
-                        currentUser={currentUser}
+            <div className="flex w-full flex-col gap-2">
+                <div className="relative aspect-square w-full overflow-hidden rounded-xl">
+                    <Image
+                        fill
+                        priority={true}
+                        className="h-full w-full object-cover transition group-hover:scale-110"
+                        src={data.imageSrc}
+                        alt="recipe"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
+                    <div className="absolute right-3 top-3">
+                        <HeartButton
+                            recipeId={data.id}
+                            currentUser={currentUser}
+                        />
+                    </div>
                 </div>
-            </div>
-            <div className="font-semibold text-lg dark:text-neutral-100">
-                { data.title }
-            </div>
-            <div className="font-light text-neutral-500">
-            {data.minutes} min
-            </div>
-            {/*
+                <div className="text-lg font-semibold dark:text-neutral-100">
+                    {data.title}
+                </div>
+                <div className="font-light text-neutral-500">
+                    {data.minutes} min
+                </div>
+                {/*
             <div className="flex flex-row items-center gap-1">
                 <div className="font-semibold">
                     { data.category}
                 </div>
             </div>*/}
-            {onAction && actionLabel && (
-            <Button
-                disabled={disabled}
-                small
-                label={actionLabel}
-                onClick={handleCancel}
-            />
-            )}
+                {onAction && actionLabel && (
+                    <Button
+                        disabled={disabled}
+                        small
+                        label={actionLabel}
+                        onClick={handleCancel}
+                    />
+                )}
+            </div>
         </div>
-    </div>
-   );
-}
+    );
+};
 
-export default RecipeCard
+export default RecipeCard;

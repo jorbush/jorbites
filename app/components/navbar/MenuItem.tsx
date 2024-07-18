@@ -7,23 +7,16 @@ interface MenuItemProps {
 
 const MenuItem: React.FC<MenuItemProps> = ({
     onClick,
-    label
+    label,
 }) => {
     return (
         <div
             onClick={onClick}
-            className="
-                px-4
-                py-3
-                hover:bg-neutral-100
-                hover:text-black
-                transition
-                font-semibold
-            "
+            className="px-4 py-3 font-semibold transition hover:bg-neutral-100 hover:text-black"
         >
             {label}
         </div>
     );
-}
+};
 
-export default MenuItem
+export default MenuItem;

@@ -1,4 +1,4 @@
-import prisma from "@/app/libs/prismadb";
+import prisma from '@/app/libs/prismadb';
 
 export interface IRecipesParams {
     category?: string;
@@ -8,7 +8,7 @@ export interface IRecipesParams {
 
 export default async function getRecipes(
     params: IRecipesParams
-){
+) {
     try {
         const { category, page = 1, limit = 10 } = params;
 
@@ -21,24 +21,26 @@ export default async function getRecipes(
         const recipes = await prisma.recipe.findMany({
             where: query,
             orderBy: {
-                createdAt: 'desc'
+                createdAt: 'desc',
             },
             skip: (page - 1) * limit,
-            take: limit
+            take: limit,
         });
 
-        const totalRecipes = await prisma.recipe.count({ where: query });
+        const totalRecipes = await prisma.recipe.count({
+            where: query,
+        });
 
         const safeRecipes = recipes.map((recipe) => ({
             ...recipe,
-            createdAt: recipe.createdAt.toISOString()
+            createdAt: recipe.createdAt.toISOString(),
         }));
 
         return {
             recipes: safeRecipes,
             totalRecipes,
             totalPages: Math.ceil(totalRecipes / limit),
-            currentPage: page
+            currentPage: page,
         };
     } catch (error: any) {
         throw new Error(error);
