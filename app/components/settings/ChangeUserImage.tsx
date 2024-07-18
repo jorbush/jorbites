@@ -70,7 +70,13 @@ const ChangeUserImageSelector: React.FC<
             setSaveImage(false);
             onSave();
         }
-    }, [saveImage, canSave, setSaveImage, onSave, updateUserProfile]);
+    }, [
+        saveImage,
+        canSave,
+        setSaveImage,
+        onSave,
+        updateUserProfile,
+    ]);
 
     return (
         <div className="flex items-center">
