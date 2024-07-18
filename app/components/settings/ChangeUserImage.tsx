@@ -36,7 +36,7 @@ const ChangeUserImageSelector: React.FC<
     );
     const [canSave, setCanSave] = useState(false);
 
-    const updateUserProfile = () => {
+    const updateUserProfile = useCallback(() => {
         setIsLoading(true);
 
         axios
@@ -54,7 +54,7 @@ const ChangeUserImageSelector: React.FC<
                 setCanSave(false);
                 router.refresh();
             });
-    };
+    }, [currentUser?.id, newImage, router]);
 
     const handleUpload = useCallback((result: any) => {
         setNewImage(result.info.secure_url);
@@ -70,7 +70,7 @@ const ChangeUserImageSelector: React.FC<
             setSaveImage(false);
             onSave();
         }
-    }, [saveImage]);
+    }, [saveImage, canSave, setSaveImage, onSave, updateUserProfile]);
 
     return (
         <div className="flex items-center">
