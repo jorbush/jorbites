@@ -30,7 +30,7 @@ const ThemeSelector: React.FC = () => {
             theme === 'dark'
         );
         router.refresh();
-    }, [theme]);
+    }, [theme, router]);
 
     return (
         <div className="flex items-center">

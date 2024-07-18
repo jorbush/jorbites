@@ -90,6 +90,7 @@ const useFavorite = ({
             recipeId,
             loginModal,
             router,
+            isLoading,
         ]
     );
 
