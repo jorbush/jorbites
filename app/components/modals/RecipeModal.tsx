@@ -266,14 +266,14 @@ const RecipeModal = () => {
             return t('create');
         }
         return t('next');
-    }, [step]);
+    }, [step, t]);
 
     const secondaryActionLabel = useMemo(() => {
         if (step === STEPS.CATEGORY) {
             return undefined;
         }
         return t('back');
-    }, [step]);
+    }, [step, t]);
 
     let bodyContent = (
         <div className="flex flex-col gap-8">
