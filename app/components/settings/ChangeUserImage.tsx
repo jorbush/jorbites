@@ -86,9 +86,12 @@ const ChangeUserImageSelector: React.FC<
             <div className="flex items-center">
                 <CldUploadWidget
                     onUpload={handleUpload}
-                    uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                    uploadPreset={
+                        process.env
+                            .NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+                    }
                     options={{
-                        maxFiles: 1
+                        maxFiles: 1,
                     }}
                 >
                     {({ open }) => {
