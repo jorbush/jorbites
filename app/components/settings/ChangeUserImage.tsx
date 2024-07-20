@@ -23,8 +23,6 @@ interface ChangeUserImageProps {
     onSave: () => void;
 }
 
-const uploadPreset = 'ibbxxl6z';
-
 const ChangeUserImageSelector: React.FC<
     ChangeUserImageProps
 > = ({ currentUser, saveImage, setSaveImage, onSave }) => {
@@ -88,15 +86,12 @@ const ChangeUserImageSelector: React.FC<
             <div className="flex items-center">
                 <CldUploadWidget
                     onUpload={handleUpload}
-                    uploadPreset={uploadPreset}
+                    uploadPreset={
+                        process.env
+                            .NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+                    }
                     options={{
                         maxFiles: 1,
-                        clientAllowedFormats: [
-                            'png',
-                            'jpeg',
-                            'jpg',
-                            'webp',
-                        ],
                     }}
                 >
                     {({ open }) => {
