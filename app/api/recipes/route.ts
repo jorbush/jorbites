@@ -92,7 +92,7 @@ export async function POST(request: Request) {
         })
     );
 
-    const newUser = await setLevelByUserId({
+    await setLevelByUserId({
         userId: currentUser.id,
     });
 

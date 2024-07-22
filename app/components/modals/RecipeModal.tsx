@@ -1,21 +1,21 @@
 'use client';
 
 import useRecipeModal from '@/app/hooks/useRecipeModal';
-import Modal from './Modal';
+import Modal from '@/app/components/modals/Modal';
 import { useMemo, useState } from 'react';
-import Heading from '../Heading';
-import { categories } from '../navbar/Categories';
-import CategoryInput from '../inputs/CategoryInput';
+import Heading from '@/app/components/Heading';
+import { categories } from '@/app/components/navbar/Categories';
+import CategoryInput from '@/app/components/inputs/CategoryInput';
 import {
     FieldValues,
     SubmitHandler,
     useForm,
 } from 'react-hook-form';
-import Button from '../Button';
+import Button from '@/app/components/Button';
 import { AiFillDelete } from 'react-icons/ai';
-import Input from '../inputs/Input';
-import Counter from '../inputs/Counter';
-import ImageUpload from '../inputs/ImageUpload';
+import Input from '@/app/components/inputs/Input';
+import Counter from '@/app/components/inputs/Counter';
+import ImageUpload from '@/app/components/inputs/ImageUpload';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -28,6 +28,7 @@ import { TbCooker } from 'react-icons/tb';
 import { CgSmartHomeCooker } from 'react-icons/cg';
 import { useTranslation } from 'react-i18next';
 
+/* eslint-disable unused-imports/no-unused-vars */
 enum STEPS {
     CATEGORY = 0,
     DESCRIPTION = 1,

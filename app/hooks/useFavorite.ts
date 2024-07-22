@@ -1,12 +1,6 @@
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import {
-    Dispatch,
-    SetStateAction,
-    useCallback,
-    useMemo,
-    useState,
-} from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { SafeUser } from '@/app/types';

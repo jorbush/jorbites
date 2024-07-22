@@ -7,9 +7,7 @@ import {
     FiChevronRight,
     FiShare2,
 } from 'react-icons/fi';
-
-import { SafeUser } from '@/app/types';
-import Heading from '../Heading';
+import Heading from '@/app/components/Heading';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
@@ -17,18 +15,13 @@ interface RecipeHeadProps {
     title: string;
     minutes: string;
     imagesSrc: string[];
-    id: string;
-    currentUser?: SafeUser | null;
 }
 
 const RecipeHead: React.FC<RecipeHeadProps> = ({
     title,
     minutes,
     imagesSrc,
-    id,
-    currentUser,
 }) => {
-    const [isCopied, setIsCopied] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] =
         useState(0);
     const router = useRouter();
@@ -36,7 +29,6 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     const copyToClipboard = () => {
         const currentURL = window.location.href;
         navigator.clipboard.writeText(currentURL);
-        setIsCopied(true);
         toast.success('URL copied');
     };
 

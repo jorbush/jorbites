@@ -1,17 +1,15 @@
 'use client';
 
-import Modal from './Modal';
-import Heading from '../Heading';
+import Modal from '@/app/components/modals/Modal';
+import Heading from '@/app/components/Heading';
 import { useTranslation } from 'react-i18next';
-import { SafeUser } from '@/app/types';
-import { Dispatch, SetStateAction, useState } from 'react';
-import useRegisterModal from '@/app/hooks/useRegisterModal';
+import { Dispatch, SetStateAction } from 'react';
 import {
     FieldValues,
     SubmitHandler,
     useForm,
 } from 'react-hook-form';
-import Input from '../inputs/Input';
+import Input from '@/app/components/inputs/Input';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
@@ -27,11 +25,9 @@ const DeleteRecipeModal: React.FC<
 > = ({ open, setIsOpen, id }) => {
     const { t } = useTranslation();
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
     const {
         register,
         handleSubmit,
-        setValue,
         watch,
         formState: { errors },
         reset,
@@ -41,13 +37,11 @@ const DeleteRecipeModal: React.FC<
         },
     });
 
-    const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    const onSubmit: SubmitHandler<FieldValues> = () => {
         if (watch('text') !== t('text_delete')) {
             toast.error('The text does not match.');
             return;
         }
-        setIsLoading(true);
-
         axios
             .delete(`/api/recipe/${id}`)
             .then(() => {
@@ -60,7 +54,6 @@ const DeleteRecipeModal: React.FC<
                 toast.error('Something went wrong.');
             })
             .finally(() => {
-                setIsLoading(false);
                 router.push('/');
             });
     };

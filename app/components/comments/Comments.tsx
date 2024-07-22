@@ -1,21 +1,20 @@
 'use client';
 
 import { SafeComment, SafeUser } from '@/app/types';
-import CommentBox from './CommentBox';
-import Comment from './Comment';
+import CommentBox from '@/app/components/comments/CommentBox';
+import Comment from '@/app/components/comments/Comment';
 import { useTranslation } from 'react-i18next';
 
+/* eslint-disable unused-imports/no-unused-vars */
 interface CommentsProps {
     currentUser?: SafeUser | null;
     onCreateComment: (comment: string) => void;
-    recipeId: string;
     comments?: SafeComment[];
 }
 
 const Comments: React.FC<CommentsProps> = ({
     currentUser,
     onCreateComment,
-    recipeId,
     comments,
 }) => {
     const { t } = useTranslation();

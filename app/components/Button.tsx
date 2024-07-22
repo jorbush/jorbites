@@ -1,7 +1,7 @@
 import { IconType } from 'react-icons';
-import { useState, useEffect } from 'react';
-import useTheme from '../hooks/useTheme';
+import { useState } from 'react';
 
+/* eslint-disable unused-imports/no-unused-vars */
 interface ButtonProps {
     label: string;
     onClick: (
@@ -50,6 +50,7 @@ const Button: React.FC<ButtonProps> = ({
                 <Icon
                     size={24}
                     className="absolute left-4 top-3"
+                    data-testid="button-icon"
                 />
             )}
             {label}

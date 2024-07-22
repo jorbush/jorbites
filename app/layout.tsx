@@ -1,5 +1,4 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
 import { Nunito } from 'next/font/google';
 import Navbar from './components/navbar/Navbar';
 import ClientOnly from './components/ClientOnly';
@@ -11,7 +10,6 @@ import RecipeModal from './components/modals/RecipeModal';
 import SettingsModal from './components/modals/SettingsModal';
 import Footer from './components/Footer';
 
-const inter = Inter({ subsets: ['latin'] });
 const font = Nunito({ subsets: ['latin'] });
 
 export const metadata = {

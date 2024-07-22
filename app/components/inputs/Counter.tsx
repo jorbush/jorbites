@@ -6,6 +6,7 @@ import {
     AiOutlinePlus,
 } from 'react-icons/ai';
 
+/* eslint-disable unused-imports/no-unused-vars */
 interface CounterProps {
     title: string;
     subtitle: string;

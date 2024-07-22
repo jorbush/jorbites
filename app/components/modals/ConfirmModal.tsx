@@ -1,20 +1,9 @@
 'use client';
 
-import Modal from './Modal';
-import Heading from '../Heading';
+import Modal from '@/app/components/modals/Modal';
+import Heading from '@/app/components/Heading';
 import { useTranslation } from 'react-i18next';
-import { SafeUser } from '@/app/types';
-import { Dispatch, SetStateAction, useState } from 'react';
-import useRegisterModal from '@/app/hooks/useRegisterModal';
-import {
-    FieldValues,
-    SubmitHandler,
-    useForm,
-} from 'react-hook-form';
-import Input from '../inputs/Input';
-import { useRouter } from 'next/navigation';
-import { toast } from 'react-hot-toast';
-import axios from 'axios';
+import { Dispatch, SetStateAction } from 'react';
 
 interface ConfirmModalProps {
     open: boolean;

@@ -2,10 +2,11 @@
 
 import React, { useState } from 'react';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
-import Avatar from '../Avatar';
+import Avatar from '@/app/components/Avatar';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
+/* eslint-disable unused-imports/no-unused-vars */
 interface CommentBoxProps {
     userImage: string | undefined | null;
     onCreateComment: (comment: string) => void;

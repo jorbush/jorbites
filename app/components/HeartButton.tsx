@@ -3,9 +3,8 @@ import {
     AiOutlineHeart,
 } from 'react-icons/ai';
 import { SafeUser } from '@/app/types';
-import ClientOnly from './ClientOnly';
 import { useState, useEffect } from 'react';
-import useFavorite from '../hooks/useFavorite';
+import useFavorite from '@/app/hooks/useFavorite';
 
 interface HeartButtonProps {
     recipeId: string;

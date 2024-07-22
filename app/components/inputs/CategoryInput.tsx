@@ -3,6 +3,7 @@
 import { IconType } from 'react-icons';
 import { useTranslation } from 'react-i18next';
 
+/* eslint-disable unused-imports/no-unused-vars */
 interface CategoryBoxProps {
     icon: IconType;
     label: string;

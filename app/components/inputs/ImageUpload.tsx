@@ -5,10 +5,7 @@ import Image from 'next/image';
 import { useCallback } from 'react';
 import { TbPhotoPlus } from 'react-icons/tb';
 
-declare global {
-    var cloudinary: any;
-}
-
+/* eslint-disable unused-imports/no-unused-vars */
 interface ImageUploadProps {
     onChange: (value: string) => void;
     value: string;
