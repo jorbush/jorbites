@@ -22,5 +22,5 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Prettier Check Format
+      - name: Run unit tests
         run: npm run vitest
