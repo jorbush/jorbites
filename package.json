@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint --max-warnings 0",
-    "format": "prettier --write 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}'",
-    "check-format": "prettier --check 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}'",
+    "format": "prettier --write 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
+    "check-format": "prettier --check 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
     "unit-test": "vitest run"
   },
   "dependencies": {
