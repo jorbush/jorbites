@@ -1,4 +1,4 @@
-name: Prettier Format
+name: Vitest Unit Test
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  prettier:
+  vitest:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,4 +23,4 @@ jobs:
         run: npm install
 
       - name: Prettier Check Format
-        run: npm run check-format
+        run: npm run vitest
