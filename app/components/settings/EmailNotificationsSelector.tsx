@@ -85,7 +85,10 @@ const EmailNotificationsSelector: React.FC<
                             } absolute inset-0 flex h-full w-full items-center justify-center transition-opacity`}
                             aria-hidden="true"
                         >
-                            <HiThumbUp className="h-3 w-3 text-gray-400" />
+                            <HiThumbUp
+                                data-testid="thumb-up-icon"
+                                className="h-3 w-3 text-gray-400"
+                            />
                         </span>
                         <span
                             className={`${
@@ -95,7 +98,10 @@ const EmailNotificationsSelector: React.FC<
                             } absolute inset-0 flex h-full w-full items-center justify-center transition-opacity`}
                             aria-hidden="true"
                         >
-                            <HiThumbDown className="h-3 w-3 text-gray-400" />
+                            <HiThumbDown
+                                data-testid="thumb-down-icon"
+                                className="h-3 w-3 text-gray-400"
+                            />
                         </span>
                     </span>
                 </button>
