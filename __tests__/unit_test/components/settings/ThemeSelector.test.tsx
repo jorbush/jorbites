@@ -12,7 +12,7 @@ import {
     beforeEach,
     afterEach,
 } from 'vitest';
-import {act} from 'react';
+import { act } from 'react';
 import ThemeSelector from '@/app/components/settings/ThemeSelector';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';

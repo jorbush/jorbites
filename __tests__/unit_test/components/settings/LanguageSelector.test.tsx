@@ -15,7 +15,7 @@ import {
 import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import i18n from '@/app/i18n';
 
-vi.mock('../../app/i18n', () => ({
+vi.mock('@/app/i18n', () => ({
     default: {
         language: 'en',
         changeLanguage: vi.fn(),
