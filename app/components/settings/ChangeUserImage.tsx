@@ -117,6 +117,7 @@ const ChangeUserImageSelector: React.FC<
 
                                         {canSave && (
                                             <FaRegSave
+                                                data-testid="save-icon"
                                                 className="ml-2 mt-1 h-5 w-5 text-green-450"
                                                 onClick={
                                                     updateUserProfile
