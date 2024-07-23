@@ -74,7 +74,10 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                     {user?.name}
                                 </div>
                                 {user.verified && (
-                                    <MdVerified className="ml-1 mt-1 text-green-450" />
+                                    <MdVerified
+                                        data-testid="verified-icon"
+                                        className="ml-1 mt-1 text-green-450"
+                                    />
                                 )}
                             </div>
                             <div className="text-sm text-gray-400">{`${t('level')} ${user?.level}`}</div>
