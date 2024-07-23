@@ -1,9 +1,7 @@
 import React from 'react';
 import {
     render,
-    screen,
-    fireEvent,
-    act,
+    screen
 } from '@testing-library/react';
 import {
     describe,
@@ -12,11 +10,11 @@ import {
     vi,
     beforeEach,
 } from 'vitest';
-import HeartButton from '../app/components/HeartButton';
+import HeartButton from '@/app/components/HeartButton';
 import { SafeUser } from '@/app/types';
 
 // Mock the useFavorite hook
-vi.mock('../app/hooks/useFavorite', () => ({
+vi.mock('@/app/hooks/useFavorite', () => ({
     default: vi.fn(() => ({
         hasFavorited: false,
         toggleFavorite: vi.fn(),

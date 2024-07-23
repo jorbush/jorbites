@@ -2,7 +2,6 @@ import {
     render,
     screen,
     fireEvent,
-    act,
     cleanup,
 } from '@testing-library/react';
 import {
@@ -13,7 +12,8 @@ import {
     beforeEach,
     afterEach,
 } from 'vitest';
-import ThemeSelector from '../../app/components/settings/ThemeSelector';
+import {act} from 'react';
+import ThemeSelector from '@/app/components/settings/ThemeSelector';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 

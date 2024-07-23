@@ -10,10 +10,10 @@ import {
     vi,
     beforeEach,
 } from 'vitest';
-import Button from '../app/components/Button';
+import Button from '@/app/components/Button';
 import { FaUser } from 'react-icons/fa';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 
 describe('<Button />', () => {
     const mockOnClick = vi.fn();

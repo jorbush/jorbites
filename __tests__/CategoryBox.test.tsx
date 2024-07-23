@@ -17,7 +17,7 @@ import {
     useRouter,
     useSearchParams,
 } from 'next/navigation';
-import CategoryBox from '../app/components/CategoryBox';
+import CategoryBox from '@/app/components/CategoryBox';
 import { FaHome } from 'react-icons/fa';
 
 vi.mock('next/navigation', () => ({

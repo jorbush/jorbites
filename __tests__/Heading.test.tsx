@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import Heading from '../app/components/Heading';
+import Heading from '@/app/components/Heading';
 
 describe('<Heading />', () => {
     it('renders the title', () => {

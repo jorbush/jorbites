@@ -12,7 +12,7 @@ import {
     beforeEach,
     afterEach,
 } from 'vitest';
-import EmptyState from '../app/components/EmptyState';
+import EmptyState from '@/app/components/EmptyState';
 import React from 'react';
 
 const pushMock = vi.fn();

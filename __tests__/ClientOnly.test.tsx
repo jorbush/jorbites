@@ -13,7 +13,7 @@ import {
     beforeEach,
     afterEach,
 } from 'vitest';
-import ClientOnly from '../app/components/ClientOnly';
+import ClientOnly from '@/app/components/ClientOnly';
 
 vi.mock('react-i18next', () => ({
     I18nextProvider: ({

@@ -12,7 +12,7 @@ import {
     beforeEach,
     afterEach,
 } from 'vitest';
-import Pagination from '../app/components/Pagination';
+import Pagination from '@/app/components/Pagination';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 

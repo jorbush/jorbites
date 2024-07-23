@@ -12,7 +12,7 @@ import {
     beforeEach,
     afterEach,
 } from 'vitest';
-import Footer from '../app/components/Footer';
+import Footer from '@/app/components/Footer';
 
 // Mock the react-i18next module
 vi.mock('react-i18next', () => ({
@@ -22,7 +22,7 @@ vi.mock('react-i18next', () => ({
 }));
 
 // Mock the useTheme hook
-vi.mock('../app/hooks/useTheme', () => ({
+vi.mock('@/app/hooks/useTheme', () => ({
     default: vi.fn(),
 }));
 

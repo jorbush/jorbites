@@ -11,7 +11,7 @@ import {
     vi,
     afterEach,
 } from 'vitest';
-import Avatar from '../app/components/Avatar.tsx';
+import Avatar from '@/app/components/Avatar';
 import React from 'react';
 
 describe('<Avatar/>', () => {

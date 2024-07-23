@@ -12,7 +12,7 @@ import {
     beforeEach,
     afterEach,
 } from 'vitest';
-import LanguageSelector from '../../app/components/settings/LanguageSelector';
+import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import i18n from '@/app/i18n';
 
 vi.mock('../../app/i18n', () => ({
