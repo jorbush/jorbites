@@ -97,7 +97,7 @@ describe('RecipeInfo', () => {
     it('renders user information correctly', () => {
         render(<RecipeInfo {...mockProps} />);
         expect(
-            screen.queryByText(mockUser.name!!)
+            screen.queryByText(mockUser.name!)
         ).toBeDefined();
         expect(screen.getByText('level 5')).toBeDefined();
         expect(
