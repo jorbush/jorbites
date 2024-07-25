@@ -1,7 +1,7 @@
 'use client';
 
 import { BiSearch } from 'react-icons/bi';
-import Logo from './Logo';
+import Logo from '@/app/components/navbar/Logo';
 import { MouseEventHandler } from 'react';
 
 interface SearchProps {
