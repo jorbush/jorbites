@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
 
-import Button from '../Button';
+import Button from '@/app/components/Button';
 import useTheme from '@/app/hooks/useTheme';
 
 interface ModalProps {
@@ -95,6 +95,7 @@ const Modal: React.FC<ModalProps> = ({
                                 <button
                                     className="absolute left-9 border-0 p-1 text-black transition hover:opacity-70 dark:text-neutral-100"
                                     onClick={handleClose}
+                                    data-testid="close-modal-button"
                                 >
                                     <IoMdClose size={18} />
                                 </button>
