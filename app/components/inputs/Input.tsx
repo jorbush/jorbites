@@ -34,6 +34,7 @@ const Input: React.FC<InputProps> = ({
                 <BiDollar
                     size={24}
                     className="absolute left-2 top-5 text-neutral-700"
+                    data-testid="BiDollar"
                 />
             )}
             <input
