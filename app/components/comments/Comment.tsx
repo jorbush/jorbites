@@ -85,7 +85,10 @@ const Comment: React.FC<CommentProps> = ({
                         {userName}
                     </p>
                     {verified && (
-                        <MdVerified className="ml-1 mt-1 text-green-450" />
+                        <MdVerified
+                            className="ml-1 mt-1 text-green-450"
+                            data-testid="MdVerified"
+                        />
                     )}
                     <div className="ml-1.5 mt-0.5 text-sm text-gray-400">{`${t('level')} ${userLevel}`}</div>
                 </div>
@@ -106,6 +109,7 @@ const Comment: React.FC<CommentProps> = ({
                         onClick={() =>
                             setConfirmModalOpen(true)
                         }
+                        data-testid="MdDelete"
                     />
                 )}
                 <ConfirmModal
