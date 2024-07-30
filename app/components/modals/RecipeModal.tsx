@@ -208,6 +208,7 @@ const RecipeModal = () => {
                         i === numIngredients - 1 && (
                             <div className="flex items-center justify-center">
                                 <AiFillDelete
+                                    data-testid="remove-ingredient-button"
                                     color="#F43F5F"
                                     onClick={() => {
                                         removeIngredientInput(
@@ -248,6 +249,7 @@ const RecipeModal = () => {
                     {numSteps > 1 && i === numSteps - 1 && (
                         <div className="flex items-center justify-center">
                             <AiFillDelete
+                                data-testid="remove-step-button"
                                 color="#F43F5F"
                                 onClick={() => {
                                     removeStepInput(i);
@@ -426,6 +428,7 @@ const RecipeModal = () => {
                 />
                 <div className="grid grid-cols-2 gap-4">
                     <ImageUpload
+                        data-testid="image-upload"
                         value={imageSrc}
                         onChange={(value) =>
                             setCustomValue(
@@ -435,6 +438,7 @@ const RecipeModal = () => {
                         }
                     />
                     <ImageUpload
+                        data-testid="image-upload-2"
                         value={watch('imageSrc1')}
                         onChange={(value) =>
                             setCustomValue(
@@ -444,6 +448,7 @@ const RecipeModal = () => {
                         }
                     />
                     <ImageUpload
+                        data-testid="image-upload-3"
                         value={watch('imageSrc2')}
                         onChange={(value) =>
                             setCustomValue(
@@ -453,6 +458,7 @@ const RecipeModal = () => {
                         }
                     />
                     <ImageUpload
+                        data-testid="image-upload-4"
                         value={watch('imageSrc3')}
                         onChange={(value) =>
                             setCustomValue(
