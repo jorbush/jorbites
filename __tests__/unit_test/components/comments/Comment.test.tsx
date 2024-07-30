@@ -59,7 +59,7 @@ describe('Comment', () => {
         userId: '123',
         userImage: 'https://example.com/avatar.jpg',
         comment: 'This is a test comment',
-        createdAt: '2023-05-20T12:00:00Z',
+        createdAt: '2023-05-20T12:00:00',
         userName: 'Test User',
         commentId: 'comment123',
         userLevel: 5,
@@ -82,7 +82,7 @@ describe('Comment', () => {
         ).toBeDefined();
         expect(screen.getByText('level 5')).toBeDefined();
         expect(
-            screen.getByText('20/05/2023 14:00')
+            screen.getByText('20/05/2023 12:00')
         ).toBeDefined();
     });
 
