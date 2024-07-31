@@ -3,7 +3,7 @@ import getRecipeById from '@/app/actions/getRecipeById';
 
 import ClientOnly from '@/app/components/ClientOnly';
 import EmptyState from '@/app/components/EmptyState';
-import RecipeClient from './RecipeClient';
+import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
 
 interface IParams {

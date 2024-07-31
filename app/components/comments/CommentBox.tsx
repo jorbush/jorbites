@@ -65,6 +65,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 
             <button
                 type="submit"
+                data-testid="submit-comment"
                 onClick={handleSubmit}
                 disabled={isButtonDisabled}
                 className={`mb-4 ml-4 mt-4 text-green-450 ${

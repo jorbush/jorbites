@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import {
     describe,
     it,
@@ -8,7 +8,6 @@ import {
     beforeEach,
 } from 'vitest';
 import Home from '@/app/page';
-import { IRecipesParams } from '@/app/actions/getRecipes';
 
 // Mocks
 vi.mock('@/app/components/Container', () => ({
