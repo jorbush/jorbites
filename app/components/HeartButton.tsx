@@ -3,9 +3,8 @@ import {
     AiOutlineHeart,
 } from 'react-icons/ai';
 import { SafeUser } from '@/app/types';
-import ClientOnly from './ClientOnly';
 import { useState, useEffect } from 'react';
-import useFavorite from '../hooks/useFavorite';
+import useFavorite from '@/app/hooks/useFavorite';
 
 interface HeartButtonProps {
     recipeId: string;
@@ -52,6 +51,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({
                 className="absolute -right-[2px] -top-[2px] fill-white"
             />
             <AiFillHeart
+                data-testid="heart-button"
                 size={24}
                 className={
                     hasFavorited

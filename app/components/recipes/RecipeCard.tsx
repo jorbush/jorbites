@@ -2,42 +2,19 @@
 
 import { SafeRecipe, SafeUser } from '@/app/types';
 import { useRouter } from 'next/navigation';
-import { useCallback } from 'react';
-import Button from '../Button';
 import Image from 'next/image';
-import HeartButton from '../HeartButton';
+import HeartButton from '@/app/components/HeartButton';
 
 interface RecipeCardProps {
     data: SafeRecipe;
-    onAction?: (id: string) => void;
-    disabled?: boolean;
-    actionLabel?: string;
-    actionId?: string;
     currentUser?: SafeUser | null;
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({
     data,
-    onAction,
-    disabled,
-    actionLabel,
-    actionId = '',
     currentUser,
 }) => {
     const router = useRouter();
-
-    const handleCancel = useCallback(
-        (e: React.MouseEvent<HTMLButtonElement>) => {
-            e.stopPropagation();
-
-            if (disabled) {
-                return;
-            }
-
-            onAction?.(actionId);
-        },
-        [onAction, actionId, disabled]
-    );
 
     return (
         <div
@@ -69,20 +46,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                 <div className="font-light text-neutral-500">
                     {data.minutes} min
                 </div>
-                {/*
-            <div className="flex flex-row items-center gap-1">
-                <div className="font-semibold">
-                    { data.category}
-                </div>
-            </div>*/}
-                {onAction && actionLabel && (
-                    <Button
-                        disabled={disabled}
-                        small
-                        label={actionLabel}
-                        onClick={handleCancel}
-                    />
-                )}
             </div>
         </div>
     );

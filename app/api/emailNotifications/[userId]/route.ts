@@ -4,7 +4,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/libs/prismadb';
 import sendEmail from '@/app/actions/sendEmail';
 
-export async function PUT(request: Request) {
+export async function PUT(_request: Request) {
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {

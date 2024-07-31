@@ -28,15 +28,12 @@ const ChangeUserImageSelector: React.FC<
 > = ({ currentUser, saveImage, setSaveImage, onSave }) => {
     const router = useRouter();
     const { t } = useTranslation();
-    const [isLoading, setIsLoading] = useState(false);
     const [newImage, setNewImage] = useState(
         currentUser?.image
     );
     const [canSave, setCanSave] = useState(false);
 
     const updateUserProfile = useCallback(() => {
-        setIsLoading(true);
-
         axios
             .put(`/api/userImage/${currentUser?.id}`, {
                 userImage: newImage,
@@ -48,7 +45,6 @@ const ChangeUserImageSelector: React.FC<
                 toast.error('Something went wrong.');
             })
             .finally(() => {
-                setIsLoading(false);
                 setCanSave(false);
                 router.refresh();
             });
@@ -121,6 +117,7 @@ const ChangeUserImageSelector: React.FC<
 
                                         {canSave && (
                                             <FaRegSave
+                                                data-testid="save-icon"
                                                 className="ml-2 mt-1 h-5 w-5 text-green-450"
                                                 onClick={
                                                     updateUserProfile

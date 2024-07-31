@@ -1,14 +1,14 @@
 'use client';
 
 import useSettingsModal from '@/app/hooks/useSettingsModal';
-import Modal from './Modal';
-import Heading from '../Heading';
-import ThemeSelector from '../settings/ThemeSelector';
-import LanguageSelector from '../settings/LanguageSelector';
+import Modal from '@/app/components/modals/Modal';
+import Heading from '@/app/components/Heading';
+import ThemeSelector from '@/app/components/settings/ThemeSelector';
+import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import { useTranslation } from 'react-i18next';
-import EmailNotificationsSelector from '../settings/EmailNotificationsSelector';
+import EmailNotificationsSelector from '@/app/components/settings/EmailNotificationsSelector';
 import { SafeUser } from '@/app/types';
-import ChangeUserImageSelector from '../settings/ChangeUserImage';
+import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
 import { useState } from 'react';
 
 interface SettingsProps {

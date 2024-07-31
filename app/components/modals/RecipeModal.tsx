@@ -1,21 +1,21 @@
 'use client';
 
 import useRecipeModal from '@/app/hooks/useRecipeModal';
-import Modal from './Modal';
+import Modal from '@/app/components/modals/Modal';
 import { useMemo, useState } from 'react';
-import Heading from '../Heading';
-import { categories } from '../navbar/Categories';
-import CategoryInput from '../inputs/CategoryInput';
+import Heading from '@/app/components/Heading';
+import { categories } from '@/app/components/navbar/Categories';
+import CategoryInput from '@/app/components/inputs/CategoryInput';
 import {
     FieldValues,
     SubmitHandler,
     useForm,
 } from 'react-hook-form';
-import Button from '../Button';
+import Button from '@/app/components/Button';
 import { AiFillDelete } from 'react-icons/ai';
-import Input from '../inputs/Input';
-import Counter from '../inputs/Counter';
-import ImageUpload from '../inputs/ImageUpload';
+import Input from '@/app/components/inputs/Input';
+import Counter from '@/app/components/inputs/Counter';
+import ImageUpload from '@/app/components/inputs/ImageUpload';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -28,6 +28,7 @@ import { TbCooker } from 'react-icons/tb';
 import { CgSmartHomeCooker } from 'react-icons/cg';
 import { useTranslation } from 'react-i18next';
 
+/* eslint-disable unused-imports/no-unused-vars */
 enum STEPS {
     CATEGORY = 0,
     DESCRIPTION = 1,
@@ -207,6 +208,7 @@ const RecipeModal = () => {
                         i === numIngredients - 1 && (
                             <div className="flex items-center justify-center">
                                 <AiFillDelete
+                                    data-testid="remove-ingredient-button"
                                     color="#F43F5F"
                                     onClick={() => {
                                         removeIngredientInput(
@@ -247,6 +249,7 @@ const RecipeModal = () => {
                     {numSteps > 1 && i === numSteps - 1 && (
                         <div className="flex items-center justify-center">
                             <AiFillDelete
+                                data-testid="remove-step-button"
                                 color="#F43F5F"
                                 onClick={() => {
                                     removeStepInput(i);
@@ -425,6 +428,7 @@ const RecipeModal = () => {
                 />
                 <div className="grid grid-cols-2 gap-4">
                     <ImageUpload
+                        data-testid="image-upload"
                         value={imageSrc}
                         onChange={(value) =>
                             setCustomValue(
@@ -434,6 +438,7 @@ const RecipeModal = () => {
                         }
                     />
                     <ImageUpload
+                        data-testid="image-upload-2"
                         value={watch('imageSrc1')}
                         onChange={(value) =>
                             setCustomValue(
@@ -443,6 +448,7 @@ const RecipeModal = () => {
                         }
                     />
                     <ImageUpload
+                        data-testid="image-upload-3"
                         value={watch('imageSrc2')}
                         onChange={(value) =>
                             setCustomValue(
@@ -452,6 +458,7 @@ const RecipeModal = () => {
                         }
                     />
                     <ImageUpload
+                        data-testid="image-upload-4"
                         value={watch('imageSrc3')}
                         onChange={(value) =>
                             setCustomValue(

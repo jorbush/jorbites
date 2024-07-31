@@ -7,7 +7,7 @@ import getRecipes, {
     IRecipesParams,
 } from '@/app/actions/getRecipes';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import ClientOnly from './components/ClientOnly';
+import ClientOnly from '@/app/components/ClientOnly';
 import { headers } from 'next/headers';
 
 interface HomeProps {

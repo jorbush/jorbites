@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import Container from '../Container';
-import Categories from './Categories';
-import Search from './Search';
-import UserMenu from './UserMenu';
+import { useCallback, useState } from 'react';
+import Container from '@/app/components/Container';
+import Categories from '@/app/components/navbar/Categories';
+import Search from '@/app/components/navbar/Search';
+import UserMenu from '@/app/components/navbar/UserMenu';
 import { SafeUser } from '@/app/types';
 import useTheme from '@/app/hooks/useTheme';
 

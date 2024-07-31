@@ -6,6 +6,7 @@ import {
     AiOutlinePlus,
 } from 'react-icons/ai';
 
+/* eslint-disable unused-imports/no-unused-vars */
 interface CounterProps {
     title: string;
     subtitle: string;
@@ -44,7 +45,7 @@ const Counter: React.FC<CounterProps> = ({
                     onClick={onReduce}
                     className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition hover:opacity-80"
                 >
-                    <AiOutlineMinus />
+                    <AiOutlineMinus data-testid="AiOutlineMinus" />
                 </div>
                 <div className="text-xl font-light text-neutral-600">
                     {value}
@@ -53,7 +54,7 @@ const Counter: React.FC<CounterProps> = ({
                     onClick={onAdd}
                     className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition hover:opacity-80"
                 >
-                    <AiOutlinePlus />
+                    <AiOutlinePlus data-testid="AiOutlinePlus" />
                 </div>
             </div>
         </div>

@@ -1,17 +1,15 @@
-import './globals.css';
-import { Inter } from 'next/font/google';
+import '@/app/globals.css';
 import { Nunito } from 'next/font/google';
-import Navbar from './components/navbar/Navbar';
-import ClientOnly from './components/ClientOnly';
-import RegisterModal from './components/modals/RegisterModal';
-import ToasterProvider from './providers/ToasterProvider';
-import LoginModal from './components/modals/LoginModal';
-import getCurrentUser from './actions/getCurrentUser';
-import RecipeModal from './components/modals/RecipeModal';
-import SettingsModal from './components/modals/SettingsModal';
-import Footer from './components/Footer';
+import Navbar from '@/app/components/navbar/Navbar';
+import ClientOnly from '@/app/components/ClientOnly';
+import RegisterModal from '@/app/components/modals/RegisterModal';
+import ToasterProvider from '@/app/providers/ToasterProvider';
+import LoginModal from '@/app/components/modals/LoginModal';
+import getCurrentUser from '@/app/actions/getCurrentUser';
+import RecipeModal from '@/app/components/modals/RecipeModal';
+import SettingsModal from '@/app/components/modals/SettingsModal';
+import Footer from '@/app/components/Footer';
 
-const inter = Inter({ subsets: ['latin'] });
 const font = Nunito({ subsets: ['latin'] });
 
 export const metadata = {

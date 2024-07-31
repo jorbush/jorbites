@@ -71,7 +71,7 @@ export async function POST(
         },
     });
 
-    const newUser = await setLevelByUserId({
+    await setLevelByUserId({
         userId: currentRecipe?.user.id,
     });
 
@@ -106,7 +106,7 @@ export async function DELETE(
         },
     });
 
-    const newUser = await setLevelByUserId({
+    await setLevelByUserId({
         userId: recipe.userId,
     });
 

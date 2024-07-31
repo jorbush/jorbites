@@ -7,9 +7,7 @@ import {
     FiChevronRight,
     FiShare2,
 } from 'react-icons/fi';
-
-import { SafeUser } from '@/app/types';
-import Heading from '../Heading';
+import Heading from '@/app/components/Heading';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
@@ -17,18 +15,13 @@ interface RecipeHeadProps {
     title: string;
     minutes: string;
     imagesSrc: string[];
-    id: string;
-    currentUser?: SafeUser | null;
 }
 
 const RecipeHead: React.FC<RecipeHeadProps> = ({
     title,
     minutes,
     imagesSrc,
-    id,
-    currentUser,
 }) => {
-    const [isCopied, setIsCopied] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] =
         useState(0);
     const router = useRouter();
@@ -36,7 +29,6 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     const copyToClipboard = () => {
         const currentURL = window.location.href;
         navigator.clipboard.writeText(currentURL);
-        setIsCopied(true);
         toast.success('URL copied');
     };
 
@@ -91,6 +83,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 <button
                     className="ml-4 flex items-center space-x-2 text-gray-600 focus:outline-none dark:text-neutral-100"
                     onClick={share}
+                    aria-label="Share"
                 >
                     <FiShare2 className="text-xl" />
                 </button>
@@ -111,6 +104,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                         <div
                             className="absolute bottom-0 left-0 top-0 flex w-1/4 items-center justify-center"
                             onClick={goToPreviousImage}
+                            data-testid="prev-button"
                         >
                             <div className="absolute left-3 top-1/2 -translate-y-1/2 transform">
                                 <FiChevronLeft className="cursor-pointer text-2xl text-white" />
@@ -119,6 +113,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                         <div
                             className="absolute bottom-0 right-0 top-0 flex w-1/4 items-center justify-center"
                             onClick={goToNextImage}
+                            data-testid="next-button"
                         >
                             <div className="absolute right-3 top-1/2 -translate-y-1/2 transform">
                                 <FiChevronRight className="cursor-pointer text-2xl text-white" />

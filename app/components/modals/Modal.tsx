@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
 
-import Button from '../Button';
+import Button from '@/app/components/Button';
 import useTheme from '@/app/hooks/useTheme';
 
 interface ModalProps {
@@ -95,10 +95,14 @@ const Modal: React.FC<ModalProps> = ({
                                 <button
                                     className="absolute left-9 border-0 p-1 text-black transition hover:opacity-70 dark:text-neutral-100"
                                     onClick={handleClose}
+                                    data-testid="close-modal-button"
                                 >
                                     <IoMdClose size={18} />
                                 </button>
-                                <div className="text-lg font-semibold text-black dark:text-neutral-100">
+                                <div
+                                    data-testid="modal-title"
+                                    className="text-lg font-semibold text-black dark:text-neutral-100"
+                                >
                                     {title}
                                 </div>
                             </div>
@@ -112,6 +116,7 @@ const Modal: React.FC<ModalProps> = ({
                                     {secondaryAction &&
                                         secondaryActionLabel && (
                                             <Button
+                                                data-testid="secondary-action-button"
                                                 disabled={
                                                     disabled ||
                                                     isLoading
@@ -126,6 +131,7 @@ const Modal: React.FC<ModalProps> = ({
                                             />
                                         )}
                                     <Button
+                                        data-testid="action-button"
                                         disabled={
                                             disabled ||
                                             isLoading

@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import Avatar from '../Avatar';
+import Avatar from '@/app/components/Avatar';
 import { MdDelete, MdVerified } from 'react-icons/md';
-import ConfirmModal from '../modals/ConfirmModal';
+import ConfirmModal from '@/app/components/modals/ConfirmModal';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -41,7 +41,6 @@ const Comment: React.FC<CommentProps> = ({
     const [confirmModalOpen, setConfirmModalOpen] =
         useState(false);
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
     const { t } = useTranslation();
 
     const isLongWord = words.some(
@@ -49,8 +48,6 @@ const Comment: React.FC<CommentProps> = ({
     );
 
     const deleteComment = () => {
-        setIsLoading(true);
-
         axios
             .delete(`/api/comments/${commentId}`)
             .then(() => {
@@ -60,9 +57,7 @@ const Comment: React.FC<CommentProps> = ({
             .catch(() => {
                 toast.error('Something went wrong.');
             })
-            .finally(() => {
-                setIsLoading(false);
-            });
+            .finally(() => {});
     };
 
     return (
@@ -90,7 +85,10 @@ const Comment: React.FC<CommentProps> = ({
                         {userName}
                     </p>
                     {verified && (
-                        <MdVerified className="ml-1 mt-1 text-green-450" />
+                        <MdVerified
+                            className="ml-1 mt-1 text-green-450"
+                            data-testid="MdVerified"
+                        />
                     )}
                     <div className="ml-1.5 mt-0.5 text-sm text-gray-400">{`${t('level')} ${userLevel}`}</div>
                 </div>
@@ -111,6 +109,7 @@ const Comment: React.FC<CommentProps> = ({
                         onClick={() =>
                             setConfirmModalOpen(true)
                         }
+                        data-testid="MdDelete"
                     />
                 )}
                 <ConfirmModal
