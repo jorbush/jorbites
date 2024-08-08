@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
-import setLevelByUserId from '@/app/actions/setLevelByUserId';
+import updateUserLevel from '@/app/actions/updateUserLevel';
 
 export async function POST(request: Request) {
     const currentUser = await getCurrentUser();
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
         })
     );
 
-    await setLevelByUserId({
+    await updateUserLevel({
         userId: currentUser.id,
     });
 
