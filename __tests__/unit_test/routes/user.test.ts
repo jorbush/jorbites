@@ -1,6 +1,6 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import { be } from 'date-fns/locale';
 import { Session } from 'next-auth';
+import prisma from '@/app/libs/prismadb';
 
 let mockedSession: Session | null = null;
 
@@ -22,8 +22,9 @@ jest.mock('next-auth/next', () => ({
 
 describe('User API Routes and Server Actions', () => {
 
-    afterEach(() => {
+    afterEach(async () => {
         mockedSession = null;
+        await prisma.$connect();
     });
 
     it('should return empty user', async () => {
