@@ -1,17 +1,5 @@
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import i18n from '@/app/i18n';
 
@@ -45,29 +33,21 @@ describe('<LanguageSelector />', () => {
     it('renders correctly with initial language', () => {
         render(<LanguageSelector />);
 
-        expect(
-            screen.getByText('select_your_language')
-        ).toBeDefined();
+        expect(screen.getByText('select_your_language')).toBeDefined();
         expect(screen.getByRole('combobox')).toBeDefined();
         expect(
             screen.getByRole('option', {
                 name: 'Castellano',
             })
         ).toBeDefined();
-        expect(
-            screen.getByRole('option', { name: 'English' })
-        ).toBeDefined();
-        expect(
-            screen.getByRole('option', { name: 'Català' })
-        ).toBeDefined();
+        expect(screen.getByRole('option', { name: 'English' })).toBeDefined();
+        expect(screen.getByRole('option', { name: 'Català' })).toBeDefined();
     });
 
     it('sets the correct initial value for the select element', () => {
         render(<LanguageSelector />);
 
-        const select = screen.getByRole(
-            'combobox'
-        ) as HTMLSelectElement;
+        const select = screen.getByRole('combobox') as HTMLSelectElement;
         expect(select.value).toBe('en');
     });
 
@@ -79,17 +59,13 @@ describe('<LanguageSelector />', () => {
             target: { value: 'es' },
         });
 
-        expect(i18n.changeLanguage).toHaveBeenCalledWith(
-            'es'
-        );
+        expect(i18n.changeLanguage).toHaveBeenCalledWith('es');
     });
 
     it('changes select value when language is changed', () => {
         render(<LanguageSelector />);
 
-        const select = screen.getByRole(
-            'combobox'
-        ) as HTMLSelectElement;
+        const select = screen.getByRole('combobox') as HTMLSelectElement;
         fireEvent.change(select, {
             target: { value: 'ca' },
         });

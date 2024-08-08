@@ -1,13 +1,6 @@
 import React from 'react';
 import { render, cleanup } from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RootLayout from '@/app/layout';
 
 // Mocks
@@ -20,33 +13,21 @@ vi.mock('@/app/components/navbar/Navbar', () => ({
 }));
 
 vi.mock('@/app/components/ClientOnly', () => ({
-    default: ({
-        children,
-    }: {
-        children: React.ReactNode;
-    }) => <div data-testid="client-only">{children}</div>,
+    default: ({ children }: { children: React.ReactNode }) => (
+        <div data-testid="client-only">{children}</div>
+    ),
 }));
 
 vi.mock('@/app/components/modals/RegisterModal', () => ({
-    default: () => (
-        <div data-testid="register-modal">
-            RegisterModal
-        </div>
-    ),
+    default: () => <div data-testid="register-modal">RegisterModal</div>,
 }));
 
 vi.mock('@/app/providers/ToasterProvider', () => ({
-    default: () => (
-        <div data-testid="toaster-provider">
-            ToasterProvider
-        </div>
-    ),
+    default: () => <div data-testid="toaster-provider">ToasterProvider</div>,
 }));
 
 vi.mock('@/app/components/modals/LoginModal', () => ({
-    default: () => (
-        <div data-testid="login-modal">LoginModal</div>
-    ),
+    default: () => <div data-testid="login-modal">LoginModal</div>,
 }));
 
 vi.mock('@/app/actions/getCurrentUser', () => ({
@@ -54,17 +35,11 @@ vi.mock('@/app/actions/getCurrentUser', () => ({
 }));
 
 vi.mock('@/app/components/modals/RecipeModal', () => ({
-    default: () => (
-        <div data-testid="recipe-modal">RecipeModal</div>
-    ),
+    default: () => <div data-testid="recipe-modal">RecipeModal</div>,
 }));
 
 vi.mock('@/app/components/modals/SettingsModal', () => ({
-    default: () => (
-        <div data-testid="settings-modal">
-            SettingsModal
-        </div>
-    ),
+    default: () => <div data-testid="settings-modal">SettingsModal</div>,
 }));
 
 vi.mock('@/app/components/Footer', () => ({
@@ -81,12 +56,8 @@ describe('RootLayout', () => {
     });
 
     it('renders the layout correctly', async () => {
-        const getCurrentUserMock = await import(
-            '@/app/actions/getCurrentUser'
-        );
-        vi.mocked(
-            getCurrentUserMock.default
-        ).mockResolvedValue({
+        const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
+        vi.mocked(getCurrentUserMock.default).mockResolvedValue({
             id: '1',
             name: 'Test User',
         } as any);
@@ -94,49 +65,26 @@ describe('RootLayout', () => {
         const layout = await RootLayout({
             children: <div>Test Content</div>,
         });
-        const {
-            findByTestId,
-            findAllByTestId,
-            findByText,
-        } = render(layout);
+        const { findByTestId, findAllByTestId, findByText } = render(layout);
 
         // Check if all components are rendered
         expect(await findByTestId('navbar')).toBeDefined();
-        const clientOnlyComponents =
-            await findAllByTestId('client-only');
-        expect(clientOnlyComponents.length).toBeGreaterThan(
-            0
-        );
-        expect(
-            await findByTestId('register-modal')
-        ).toBeDefined();
-        expect(
-            await findByTestId('toaster-provider')
-        ).toBeDefined();
-        expect(
-            await findByTestId('login-modal')
-        ).toBeDefined();
-        expect(
-            await findByTestId('recipe-modal')
-        ).toBeDefined();
-        expect(
-            await findByTestId('settings-modal')
-        ).toBeDefined();
+        const clientOnlyComponents = await findAllByTestId('client-only');
+        expect(clientOnlyComponents.length).toBeGreaterThan(0);
+        expect(await findByTestId('register-modal')).toBeDefined();
+        expect(await findByTestId('toaster-provider')).toBeDefined();
+        expect(await findByTestId('login-modal')).toBeDefined();
+        expect(await findByTestId('recipe-modal')).toBeDefined();
+        expect(await findByTestId('settings-modal')).toBeDefined();
         expect(await findByTestId('footer')).toBeDefined();
 
         // Check if the children are rendered
-        expect(
-            await findByText('Test Content')
-        ).toBeDefined();
+        expect(await findByText('Test Content')).toBeDefined();
     });
 
     it('applies the correct CSS classes', async () => {
-        const getCurrentUserMock = await import(
-            '@/app/actions/getCurrentUser'
-        );
-        vi.mocked(
-            getCurrentUserMock.default
-        ).mockResolvedValue(null);
+        const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
+        vi.mocked(getCurrentUserMock.default).mockResolvedValue(null);
 
         const layout = await RootLayout({
             children: <div>Test Content</div>,
@@ -144,30 +92,21 @@ describe('RootLayout', () => {
         const { container } = render(layout);
 
         const body = container.querySelector('body');
-        expect(body?.className).include(
-            'mocked-font-class'
-        );
+        expect(body?.className).include('mocked-font-class');
         expect(body?.className).include('dark:bg-dark');
     });
 
     it('wraps children in a div with correct classes', async () => {
-        const getCurrentUserMock = await import(
-            '@/app/actions/getCurrentUser'
-        );
-        vi.mocked(
-            getCurrentUserMock.default
-        ).mockResolvedValue(null);
+        const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
+        vi.mocked(getCurrentUserMock.default).mockResolvedValue(null);
 
         const layout = await RootLayout({
             children: <div>Test Content</div>,
         });
         const { container } = render(layout);
 
-        const contentWrapper =
-            container.querySelector('.pb-20.pt-28');
+        const contentWrapper = container.querySelector('.pb-20.pt-28');
         expect(contentWrapper).toBeDefined();
-        expect(contentWrapper?.textContent).toBe(
-            'Test Content'
-        );
+        expect(contentWrapper?.textContent).toBe('Test Content');
     });
 });

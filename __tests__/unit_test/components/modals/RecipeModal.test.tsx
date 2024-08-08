@@ -6,14 +6,7 @@ import {
     cleanup,
     waitFor,
 } from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RecipeModal from '@/app/components/modals/RecipeModal';
 import { categories } from '@/app/components/navbar/Categories';
 import { preparationMethods } from '@/app/components/modals/RecipeModal';
@@ -57,9 +50,7 @@ describe('<RecipeModal />', () => {
 
     it('renders the modal with initial step (CATEGORY)', () => {
         renderComponent();
-        expect(
-            screen.getByText('title_category_recipe')
-        ).toBeDefined();
+        expect(screen.getByText('title_category_recipe')).toBeDefined();
     });
 
     it('advances to next step (DESCRIPTION) when next button is clicked', async () => {
@@ -72,9 +63,7 @@ describe('<RecipeModal />', () => {
                 act(() => {
                     fireEvent.click(nextButton);
                 });
-                expect(
-                    screen.getByText('title_description')
-                ).toBeDefined();
+                expect(screen.getByText('title_description')).toBeDefined();
             },
             { timeout: 4000 }
         );
@@ -90,19 +79,10 @@ describe('<RecipeModal />', () => {
                 act(() => {
                     fireEvent.click(nextButton);
                 });
-                expect(
-                    screen.getByText('title_description')
-                ).toBeDefined();
-                const backButton = screen.getByRole(
-                    'button',
-                    { name: 'back' }
-                );
+                expect(screen.getByText('title_description')).toBeDefined();
+                const backButton = screen.getByRole('button', { name: 'back' });
                 fireEvent.click(backButton);
-                expect(
-                    screen.getByText(
-                        'title_category_recipe'
-                    )
-                ).toBeDefined();
+                expect(screen.getByText('title_category_recipe')).toBeDefined();
             },
             { timeout: 4000 }
         );
@@ -112,9 +92,7 @@ describe('<RecipeModal />', () => {
         renderComponent();
         categories.forEach((category) => {
             expect(
-                screen.getByText(
-                    category.label.toLowerCase()
-                )
+                screen.getByText(category.label.toLowerCase())
             ).toBeDefined();
         });
     });
@@ -126,9 +104,7 @@ describe('<RecipeModal />', () => {
             firstCategory.label.toLowerCase()
         );
         fireEvent.click(categoryButton);
-        expect(
-            categoryButton.parentElement?.className
-        ).include('selected');
+        expect(categoryButton.parentElement?.className).include('selected');
     });
 
     it('renders all preparation methods when method step is reached', () => {
@@ -149,26 +125,18 @@ describe('<RecipeModal />', () => {
                         waitFor(
                             () => {
                                 act(() => {
-                                    fireEvent.click(
-                                        nextButton
-                                    );
+                                    fireEvent.click(nextButton);
                                 }); // Move to STEPS step
                                 waitFor(
                                     () => {
                                         act(() => {
-                                            fireEvent.click(
-                                                nextButton
-                                            );
+                                            fireEvent.click(nextButton);
                                         }); // Move to METHODS step
-                                        preparationMethods.forEach(
-                                            (method) => {
-                                                expect(
-                                                    screen.getByText(
-                                                        method.label
-                                                    )
-                                                ).toBeDefined();
-                                            }
-                                        );
+                                        preparationMethods.forEach((method) => {
+                                            expect(
+                                                screen.getByText(method.label)
+                                            ).toBeDefined();
+                                        });
                                     },
                                     { timeout: 4000 }
                                 );
@@ -202,29 +170,20 @@ describe('<RecipeModal />', () => {
                         waitFor(
                             () => {
                                 act(() => {
-                                    fireEvent.click(
-                                        nextButton
-                                    );
+                                    fireEvent.click(nextButton);
                                 }); // Move to STEPS step
                                 waitFor(
                                     () => {
                                         act(() => {
-                                            fireEvent.click(
-                                                nextButton
-                                            );
+                                            fireEvent.click(nextButton);
                                         }); // Move to METHODS step
                                         const firstMethod =
                                             preparationMethods[0];
-                                        const methodButton =
-                                            screen.getByText(
-                                                firstMethod.label
-                                            );
-                                        fireEvent.click(
-                                            methodButton
+                                        const methodButton = screen.getByText(
+                                            firstMethod.label
                                         );
-                                        expect(
-                                            methodButton
-                                        ).toHaveProperty(
+                                        fireEvent.click(methodButton);
+                                        expect(methodButton).toHaveProperty(
                                             'selected'
                                         );
                                     },
@@ -256,17 +215,13 @@ describe('<RecipeModal />', () => {
                         act(() => {
                             fireEvent.click(nextButton);
                         }); // Move to INGREDIENTS step
-                        const addButton = screen.getByRole(
-                            'button',
-                            { name: '+' }
-                        );
+                        const addButton = screen.getByRole('button', {
+                            name: '+',
+                        });
                         fireEvent.click(addButton);
 
-                        const ingredientInputs =
-                            screen.getAllByLabelText('');
-                        expect(
-                            ingredientInputs.length
-                        ).toBe(2);
+                        const ingredientInputs = screen.getAllByLabelText('');
+                        expect(ingredientInputs.length).toBe(2);
                     },
                     { timeout: 4000 }
                 );
@@ -290,22 +245,17 @@ describe('<RecipeModal />', () => {
                         act(() => {
                             fireEvent.click(nextButton);
                         }); // Move to INGREDIENTS step
-                        const addButton = screen.getByRole(
-                            'button',
-                            { name: '+' }
-                        );
+                        const addButton = screen.getByRole('button', {
+                            name: '+',
+                        });
                         fireEvent.click(addButton);
-                        const deleteButton =
-                            screen.getAllByTestId(
-                                'remove-ingredient-button'
-                            )[0];
+                        const deleteButton = screen.getAllByTestId(
+                            'remove-ingredient-button'
+                        )[0];
                         fireEvent.click(deleteButton);
 
-                        const ingredientInputs =
-                            screen.getAllByLabelText('');
-                        expect(
-                            ingredientInputs.length
-                        ).toBe(1);
+                        const ingredientInputs = screen.getAllByLabelText('');
+                        expect(ingredientInputs.length).toBe(1);
                     },
                     { timeout: 4000 }
                 );
@@ -333,24 +283,15 @@ describe('<RecipeModal />', () => {
                         waitFor(
                             () => {
                                 act(() => {
-                                    fireEvent.click(
-                                        nextButton
-                                    );
+                                    fireEvent.click(nextButton);
                                 }); // Move to STEPS step
-                                const addButton =
-                                    screen.getByRole(
-                                        'button',
-                                        { name: '+' }
-                                    );
+                                const addButton = screen.getByRole('button', {
+                                    name: '+',
+                                });
                                 fireEvent.click(addButton);
 
-                                const stepInputs =
-                                    screen.getAllByLabelText(
-                                        ''
-                                    );
-                                expect(
-                                    stepInputs.length
-                                ).toBe(2);
+                                const stepInputs = screen.getAllByLabelText('');
+                                expect(stepInputs.length).toBe(2);
                             },
                             { timeout: 4000 }
                         );
@@ -381,31 +322,20 @@ describe('<RecipeModal />', () => {
                         waitFor(
                             () => {
                                 act(() => {
-                                    fireEvent.click(
-                                        nextButton
-                                    );
+                                    fireEvent.click(nextButton);
                                 }); // Move to STEPS step
-                                const addButton =
-                                    screen.getByRole(
-                                        'button',
-                                        { name: '+' }
-                                    );
+                                const addButton = screen.getByRole('button', {
+                                    name: '+',
+                                });
                                 fireEvent.click(addButton);
                                 const deleteButton =
                                     screen.getAllByTestId(
                                         'remove-step-button'
                                     )[0];
-                                fireEvent.click(
-                                    deleteButton
-                                );
+                                fireEvent.click(deleteButton);
 
-                                const stepInputs =
-                                    screen.getAllByLabelText(
-                                        ''
-                                    );
-                                expect(
-                                    stepInputs.length
-                                ).toBe(1);
+                                const stepInputs = screen.getAllByLabelText('');
+                                expect(stepInputs.length).toBe(1);
                             },
                             { timeout: 4000 }
                         );
@@ -435,34 +365,23 @@ describe('<RecipeModal />', () => {
                         waitFor(
                             () => {
                                 act(() => {
-                                    fireEvent.click(
-                                        nextButton
-                                    );
+                                    fireEvent.click(nextButton);
                                 }); // Move to STEPS step
                                 waitFor(
                                     () => {
                                         act(() => {
-                                            fireEvent.click(
-                                                nextButton
-                                            );
+                                            fireEvent.click(nextButton);
                                         }); // Move to METHODS step
                                         waitFor(
                                             () => {
                                                 act(() => {
-                                                    fireEvent.click(
-                                                        nextButton
-                                                    );
+                                                    fireEvent.click(nextButton);
                                                 }); // Move to IMAGES step
                                                 const submitButton =
-                                                    screen.getByRole(
-                                                        'button',
-                                                        {
-                                                            name: 'create',
-                                                        }
-                                                    );
-                                                fireEvent.click(
-                                                    submitButton
-                                                );
+                                                    screen.getByRole('button', {
+                                                        name: 'create',
+                                                    });
+                                                fireEvent.click(submitButton);
                                                 expect(
                                                     screen.getByText(
                                                         'You must upload an image'

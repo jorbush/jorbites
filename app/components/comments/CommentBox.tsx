@@ -17,13 +17,10 @@ const CommentBox: React.FC<CommentBoxProps> = ({
     onCreateComment,
 }) => {
     const [comment, setComment] = useState('');
-    const [isButtonDisabled, setButtonDisabled] =
-        useState(false);
+    const [isButtonDisabled, setButtonDisabled] = useState(false);
     const { t } = useTranslation();
 
-    const handleInputChange = (
-        e: React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setComment(e.target.value);
     };
 
@@ -35,9 +32,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
         } else {
             onCreateComment(comment);
         }
-        await new Promise((resolve) =>
-            setTimeout(resolve, 2000)
-        );
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         setComment('');
         setButtonDisabled(false);
     };
@@ -54,10 +49,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
             >
                 <textarea
                     className="h-11 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 focus:outline-none focus:ring-0"
-                    placeholder={
-                        t('write_comment') ??
-                        'Write a comment...'
-                    }
+                    placeholder={t('write_comment') ?? 'Write a comment...'}
                     value={comment}
                     onChange={handleInputChange}
                 />
@@ -69,9 +61,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 onClick={handleSubmit}
                 disabled={isButtonDisabled}
                 className={`mb-4 ml-4 mt-4 text-green-450 ${
-                    isButtonDisabled
-                        ? 'cursor-not-allowed opacity-50'
-                        : ''
+                    isButtonDisabled ? 'cursor-not-allowed opacity-50' : ''
                 }`}
             >
                 <HiOutlinePaperAirplane size={20} />

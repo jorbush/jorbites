@@ -15,9 +15,7 @@ interface SettingsProps {
     currentUser?: SafeUser | null;
 }
 
-const SettingsModal: React.FC<SettingsProps> = ({
-    currentUser,
-}) => {
+const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
     const settingsModal = useSettingsModal();
     const { t } = useTranslation();
     const [saveImage, setSaveImage] = useState(false);
@@ -29,16 +27,12 @@ const SettingsModal: React.FC<SettingsProps> = ({
             <LanguageSelector />
             {currentUser && (
                 <>
-                    <EmailNotificationsSelector
-                        currentUser={currentUser}
-                    />
+                    <EmailNotificationsSelector currentUser={currentUser} />
                     <ChangeUserImageSelector
                         currentUser={currentUser}
                         saveImage={saveImage}
                         setSaveImage={setSaveImage}
-                        onSave={() =>
-                            settingsModal.onClose()
-                        }
+                        onSave={() => settingsModal.onClose()}
                     />
                 </>
             )}

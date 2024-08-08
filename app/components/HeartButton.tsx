@@ -1,7 +1,4 @@
-import {
-    AiFillHeart,
-    AiOutlineHeart,
-} from 'react-icons/ai';
+import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { SafeUser } from '@/app/types';
 import { useState, useEffect } from 'react';
 import useFavorite from '@/app/hooks/useFavorite';
@@ -11,10 +8,7 @@ interface HeartButtonProps {
     currentUser?: SafeUser | null;
 }
 
-const HeartButton: React.FC<HeartButtonProps> = ({
-    recipeId,
-    currentUser,
-}) => {
+const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
     const { hasFavorited, toggleFavorite } = useFavorite({
         recipeId,
         currentUser,
@@ -54,14 +48,10 @@ const HeartButton: React.FC<HeartButtonProps> = ({
                 data-testid="heart-button"
                 size={24}
                 className={
-                    hasFavorited
-                        ? 'fill-green-450'
-                        : 'fill-neutral-500/70'
+                    hasFavorited ? 'fill-green-450' : 'fill-neutral-500/70'
                 }
                 style={{
-                    pointerEvents: isDisabled
-                        ? 'none'
-                        : 'auto',
+                    pointerEvents: isDisabled ? 'none' : 'auto',
                 }}
             />
         </div>

@@ -10,9 +10,7 @@ interface DeleteRecipeButtonProps {
     id: string;
 }
 
-const DeleteRecipeButton: React.FC<
-    DeleteRecipeButtonProps
-> = ({ id }) => {
+const DeleteRecipeButton: React.FC<DeleteRecipeButtonProps> = ({ id }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const { t } = useTranslation();

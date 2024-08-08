@@ -1,25 +1,9 @@
 // RecipeClient.test.tsx
 import React from 'react';
-import {
-    render,
-    fireEvent,
-    waitFor,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
-import {
-    SafeUser,
-    SafeRecipe,
-    SafeComment,
-} from '@/app/types';
+import { SafeUser, SafeRecipe, SafeComment } from '@/app/types';
 
 // Mocks
 vi.mock('axios');
@@ -139,29 +123,24 @@ describe('RecipeClient', () => {
         const axios = await import('axios');
         vi.mocked(axios.default.post).mockResolvedValue({});
 
-        const { getByPlaceholderText, getByTestId } =
-            render(
-                <RecipeClient
-                    recipe={mockRecipe}
-                    currentUser={mockCurrentUser}
-                    comments={mockComments}
-                />
-            );
-
-        fireEvent.change(
-            getByPlaceholderText('write_comment'),
-            { target: { value: 'New comment' } }
+        const { getByPlaceholderText, getByTestId } = render(
+            <RecipeClient
+                recipe={mockRecipe}
+                currentUser={mockCurrentUser}
+                comments={mockComments}
+            />
         );
+
+        fireEvent.change(getByPlaceholderText('write_comment'), {
+            target: { value: 'New comment' },
+        });
         fireEvent.click(getByTestId('submit-comment'));
 
         await waitFor(() => {
-            expect(axios.default.post).toHaveBeenCalledWith(
-                '/api/comments',
-                {
-                    comment: 'New comment',
-                    recipeId: '1',
-                }
-            );
+            expect(axios.default.post).toHaveBeenCalledWith('/api/comments', {
+                comment: 'New comment',
+                recipeId: '1',
+            });
         });
     });
 });

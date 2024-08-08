@@ -12,11 +12,7 @@ interface IParams {
     userId?: string;
 }
 
-const ProfilePage = async ({
-    params,
-}: {
-    params: IParams;
-}) => {
+const ProfilePage = async ({ params }: { params: IParams }) => {
     const recipes = await getRecipesByUserId(params);
     const user = await getUserById(params);
     const currentUser = await getCurrentUser();

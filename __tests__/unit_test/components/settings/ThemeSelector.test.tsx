@@ -1,17 +1,5 @@
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act } from 'react';
 import ThemeSelector from '@/app/components/settings/ThemeSelector';
 import { useRouter } from 'next/navigation';
@@ -45,9 +33,7 @@ describe('<ThemeSelector />', () => {
         localStorageMock = {};
         Object.defineProperty(window, 'localStorage', {
             value: {
-                getItem: vi.fn(
-                    (key) => localStorageMock[key]
-                ),
+                getItem: vi.fn((key) => localStorageMock[key]),
                 setItem: vi.fn((key, value) => {
                     localStorageMock[key] = value;
                 }),
@@ -67,9 +53,7 @@ describe('<ThemeSelector />', () => {
     it('renders correctly with initial light theme', () => {
         render(<ThemeSelector />);
 
-        expect(
-            screen.getByText('dark_theme')
-        ).toBeDefined();
+        expect(screen.getByText('dark_theme')).toBeDefined();
         expect(screen.getByRole('button')).toBeDefined();
     });
 
@@ -82,13 +66,12 @@ describe('<ThemeSelector />', () => {
             fireEvent.click(button);
         });
 
-        expect(
-            screen.getByText('light_theme')
-        ).toBeDefined();
+        expect(screen.getByText('light_theme')).toBeDefined();
         expect(localStorageMock['theme']).toBe('dark');
-        expect(
-            document.documentElement.classList.toggle
-        ).toHaveBeenCalledWith('dark', true);
+        expect(document.documentElement.classList.toggle).toHaveBeenCalledWith(
+            'dark',
+            true
+        );
         expect(mockRefresh).toHaveBeenCalled();
     });
 
@@ -99,20 +82,17 @@ describe('<ThemeSelector />', () => {
             render(<ThemeSelector />);
         });
 
-        expect(
-            screen.getByText('light_theme')
-        ).toBeDefined();
-        expect(
-            document.documentElement.classList.toggle
-        ).toHaveBeenCalledWith('dark', true);
+        expect(screen.getByText('light_theme')).toBeDefined();
+        expect(document.documentElement.classList.toggle).toHaveBeenCalledWith(
+            'dark',
+            true
+        );
     });
 
     it('uses translation for theme text', () => {
         render(<ThemeSelector />);
 
-        expect(mockTranslate).toHaveBeenCalledWith(
-            'dark_theme'
-        );
+        expect(mockTranslate).toHaveBeenCalledWith('dark_theme');
     });
 
     it('toggles theme multiple times', async () => {
@@ -124,18 +104,14 @@ describe('<ThemeSelector />', () => {
             fireEvent.click(button);
         });
 
-        expect(
-            screen.getByText('light_theme')
-        ).toBeDefined();
+        expect(screen.getByText('light_theme')).toBeDefined();
         expect(localStorageMock['theme']).toBe('dark');
 
         await act(async () => {
             fireEvent.click(button);
         });
 
-        expect(
-            screen.getByText('dark_theme')
-        ).toBeDefined();
+        expect(screen.getByText('dark_theme')).toBeDefined();
         expect(localStorageMock['theme']).toBe('light');
     });
 });

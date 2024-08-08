@@ -1,49 +1,31 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-} from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Home from '@/app/page';
 
 // Mocks
 vi.mock('@/app/components/Container', () => ({
-    default: ({
-        children,
-    }: {
-        children: React.ReactNode;
-    }) => <div data-testid="container">{children}</div>,
+    default: ({ children }: { children: React.ReactNode }) => (
+        <div data-testid="container">{children}</div>
+    ),
 }));
 
 vi.mock('@/app/components/recipes/RecipeCard', () => ({
     default: ({ data }: { data: any }) => (
-        <div data-testid={`recipe-card-${data.id}`}>
-            {data.title}
-        </div>
+        <div data-testid={`recipe-card-${data.id}`}>{data.title}</div>
     ),
 }));
 
 vi.mock('@/app/components/EmptyState', () => ({
-    default: () => (
-        <div data-testid="empty-state">Empty State</div>
-    ),
+    default: () => <div data-testid="empty-state">Empty State</div>,
 }));
 
 vi.mock('@/app/components/Pagination', () => ({
-    default: () => (
-        <div data-testid="pagination">Pagination</div>
-    ),
+    default: () => <div data-testid="pagination">Pagination</div>,
 }));
 
 vi.mock('@/app/components/ClientOnly', () => ({
-    default: ({
-        children,
-    }: {
-        children: React.ReactNode;
-    }) => <>{children}</>,
+    default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 vi.mock('@/app/utils/deviceDetector', () => ({
@@ -98,91 +80,53 @@ describe('Home', () => {
     });
 
     it('renders recipes when available', async () => {
-        const getRecipesMock = await import(
-            '@/app/actions/getRecipes'
-        );
-        vi.mocked(getRecipesMock.default).mockResolvedValue(
-            {
-                recipes: mockRecipes,
-                totalPages: 1,
-                currentPage: 1,
-                totalRecipes: 2,
-            }
-        );
+        const getRecipesMock = await import('@/app/actions/getRecipes');
+        vi.mocked(getRecipesMock.default).mockResolvedValue({
+            recipes: mockRecipes,
+            totalPages: 1,
+            currentPage: 1,
+            totalRecipes: 2,
+        });
 
-        const getCurrentUserMock = await import(
-            '@/app/actions/getCurrentUser'
-        );
-        vi.mocked(
-            getCurrentUserMock.default
-        ).mockResolvedValue({} as any);
+        const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
+        vi.mocked(getCurrentUserMock.default).mockResolvedValue({} as any);
 
-        const { findByTestId } = render(
-            await Home({ searchParams: {} })
-        );
+        const { findByTestId } = render(await Home({ searchParams: {} }));
 
-        expect(
-            await findByTestId('container')
-        ).toBeDefined();
-        expect(
-            await findByTestId('recipe-card-1')
-        ).toBeDefined();
-        expect(
-            await findByTestId('recipe-card-2')
-        ).toBeDefined();
-        expect(
-            await findByTestId('pagination')
-        ).toBeDefined();
+        expect(await findByTestId('container')).toBeDefined();
+        expect(await findByTestId('recipe-card-1')).toBeDefined();
+        expect(await findByTestId('recipe-card-2')).toBeDefined();
+        expect(await findByTestId('pagination')).toBeDefined();
     });
 
     it('renders empty state when no recipes', async () => {
-        const getRecipesMock = await import(
-            '@/app/actions/getRecipes'
-        );
-        vi.mocked(getRecipesMock.default).mockResolvedValue(
-            {
-                recipes: [],
-                totalPages: 0,
-                currentPage: 1,
-                totalRecipes: 0,
-            }
-        );
+        const getRecipesMock = await import('@/app/actions/getRecipes');
+        vi.mocked(getRecipesMock.default).mockResolvedValue({
+            recipes: [],
+            totalPages: 0,
+            currentPage: 1,
+            totalRecipes: 0,
+        });
 
-        const getCurrentUserMock = await import(
-            '@/app/actions/getCurrentUser'
-        );
-        vi.mocked(
-            getCurrentUserMock.default
-        ).mockResolvedValue(null);
+        const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
+        vi.mocked(getCurrentUserMock.default).mockResolvedValue(null);
 
-        const { findByTestId } = render(
-            await Home({ searchParams: {} })
-        );
+        const { findByTestId } = render(await Home({ searchParams: {} }));
 
-        expect(
-            await findByTestId('empty-state')
-        ).toBeDefined();
+        expect(await findByTestId('empty-state')).toBeDefined();
     });
 
     it('uses mobile limit when on mobile device', async () => {
-        const deviceDetectorMock = await import(
-            '@/app/utils/deviceDetector'
-        );
-        vi.mocked(
-            deviceDetectorMock.isMobile
-        ).mockReturnValue(true);
+        const deviceDetectorMock = await import('@/app/utils/deviceDetector');
+        vi.mocked(deviceDetectorMock.isMobile).mockReturnValue(true);
 
-        const getRecipesMock = await import(
-            '@/app/actions/getRecipes'
-        );
-        vi.mocked(getRecipesMock.default).mockResolvedValue(
-            {
-                recipes: mockRecipes,
-                totalPages: 1,
-                currentPage: 1,
-                totalRecipes: 2,
-            }
-        );
+        const getRecipesMock = await import('@/app/actions/getRecipes');
+        vi.mocked(getRecipesMock.default).mockResolvedValue({
+            recipes: mockRecipes,
+            totalPages: 1,
+            currentPage: 1,
+            totalRecipes: 2,
+        });
 
         await Home({ searchParams: {} });
 
@@ -192,24 +136,16 @@ describe('Home', () => {
     });
 
     it('uses desktop limit when not on mobile device', async () => {
-        const deviceDetectorMock = await import(
-            '@/app/utils/deviceDetector'
-        );
-        vi.mocked(
-            deviceDetectorMock.isMobile
-        ).mockReturnValue(false);
+        const deviceDetectorMock = await import('@/app/utils/deviceDetector');
+        vi.mocked(deviceDetectorMock.isMobile).mockReturnValue(false);
 
-        const getRecipesMock = await import(
-            '@/app/actions/getRecipes'
-        );
-        vi.mocked(getRecipesMock.default).mockResolvedValue(
-            {
-                recipes: mockRecipes,
-                totalPages: 1,
-                currentPage: 1,
-                totalRecipes: 2,
-            }
-        );
+        const getRecipesMock = await import('@/app/actions/getRecipes');
+        vi.mocked(getRecipesMock.default).mockResolvedValue({
+            recipes: mockRecipes,
+            totalPages: 1,
+            currentPage: 1,
+            totalRecipes: 2,
+        });
 
         await Home({ searchParams: {} });
 

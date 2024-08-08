@@ -12,10 +12,7 @@ interface IUseFavorite {
     currentUser?: SafeUser | null;
 }
 
-const useFavorite = ({
-    recipeId,
-    currentUser,
-}: IUseFavorite) => {
+const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
     const router = useRouter();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -47,25 +44,17 @@ const useFavorite = ({
                 let requestLike;
 
                 if (hasFavorited) {
-                    request = () =>
-                        axios.delete(
-                            `/api/favorites/${recipeId}`
-                        );
+                    request = () => axios.delete(`/api/favorites/${recipeId}`);
                     requestLike = () =>
-                        axios.post(
-                            `/api/recipe/${recipeId}`,
-                            { operation: 'decrement' }
-                        );
+                        axios.post(`/api/recipe/${recipeId}`, {
+                            operation: 'decrement',
+                        });
                 } else {
-                    request = () =>
-                        axios.post(
-                            `/api/favorites/${recipeId}`
-                        );
+                    request = () => axios.post(`/api/favorites/${recipeId}`);
                     requestLike = () =>
-                        axios.post(
-                            `/api/recipe/${recipeId}`,
-                            { operation: 'increment' }
-                        );
+                        axios.post(`/api/recipe/${recipeId}`, {
+                            operation: 'increment',
+                        });
                 }
 
                 await requestLike();
@@ -78,14 +67,7 @@ const useFavorite = ({
                 setIsLoading(false);
             }
         },
-        [
-            currentUser,
-            hasFavorited,
-            recipeId,
-            loginModal,
-            router,
-            isLoading,
-        ]
+        [currentUser, hasFavorited, recipeId, loginModal, router, isLoading]
     );
 
     return {

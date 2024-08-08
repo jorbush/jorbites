@@ -1,17 +1,6 @@
 import React from 'react';
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import CategoryBox from '@/app/components/inputs/CategoryInput';
 import { FaHome } from 'react-icons/fa';
 
@@ -51,11 +40,8 @@ describe('CategoryBox', () => {
             />
         );
 
-        const categoryBox =
-            container.firstChild as HTMLElement;
-        expect(categoryBox.className).toContain(
-            'border-black'
-        );
+        const categoryBox = container.firstChild as HTMLElement;
+        expect(categoryBox.className).toContain('border-black');
         expect(categoryBox.className).toContain('selected');
     });
 
@@ -69,14 +55,9 @@ describe('CategoryBox', () => {
             />
         );
 
-        const categoryBox =
-            container.firstChild as HTMLElement;
-        expect(categoryBox.className).toContain(
-            'border-neutral-200'
-        );
-        expect(categoryBox.className).not.toContain(
-            'selected'
-        );
+        const categoryBox = container.firstChild as HTMLElement;
+        expect(categoryBox.className).toContain('border-neutral-200');
+        expect(categoryBox.className).not.toContain('selected');
     });
 
     it('calls onClick with the correct label when clicked', () => {
@@ -88,8 +69,7 @@ describe('CategoryBox', () => {
             />
         );
 
-        const categoryBox =
-            screen.getByText('home').parentElement;
+        const categoryBox = screen.getByText('home').parentElement;
         fireEvent.click(categoryBox!);
 
         expect(mockOnClick).toHaveBeenCalledWith('Home');

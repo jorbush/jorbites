@@ -11,8 +11,7 @@ const ThemeSelector: React.FC = () => {
     const { t } = useTranslation();
 
     const toggleTheme = () => {
-        const newTheme =
-            theme === 'light' ? 'dark' : 'light';
+        const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
         localStorage.setItem('theme', newTheme);
     };
@@ -25,10 +24,7 @@ const ThemeSelector: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        document.documentElement.classList.toggle(
-            'dark',
-            theme === 'dark'
-        );
+        document.documentElement.classList.toggle('dark', theme === 'dark');
         router.refresh();
     }, [theme, router]);
 
@@ -36,9 +32,7 @@ const ThemeSelector: React.FC = () => {
         <div className="flex items-center">
             <div className="flex-1">
                 <p className="text-left">
-                    {theme === 'dark'
-                        ? t('light_theme')
-                        : t('dark_theme')}
+                    {theme === 'dark' ? t('light_theme') : t('dark_theme')}
                 </p>
             </div>
             <div className="flex items-center">
@@ -49,9 +43,7 @@ const ThemeSelector: React.FC = () => {
                     <span className="sr-only">Toggle</span>
                     <span
                         className={`${
-                            theme === 'dark'
-                                ? 'translate-x-5'
-                                : 'translate-x-0'
+                            theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
                         } relative ml-[1.2px] mt-[1.2px] inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
                     >
                         <span

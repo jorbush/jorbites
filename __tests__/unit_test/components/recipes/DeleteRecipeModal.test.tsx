@@ -1,18 +1,6 @@
 import React from 'react';
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import DeleteRecipeButton from '@/app/components/recipes/DeleteRecipeButton';
 
 // Mock the react-i18next module
@@ -23,38 +11,25 @@ vi.mock('react-i18next', () => ({
 }));
 
 // Mock the DeleteRecipeModal component
-vi.mock(
-    '@/app/components/modals/DeleteRecipeModal',
-    () => ({
-        default: ({
-            open,
-            setIsOpen,
-            id,
-        }: {
-            open: boolean;
-            setIsOpen: (open: boolean) => void;
-            id: string;
-        }) => (
-            <div data-testid="delete-recipe-modal">
-                {open && (
-                    <div>
-                        Delete Recipe Modal for ID: {id}
-                    </div>
-                )}
-            </div>
-        ),
-    })
-);
+vi.mock('@/app/components/modals/DeleteRecipeModal', () => ({
+    default: ({
+        open,
+        setIsOpen,
+        id,
+    }: {
+        open: boolean;
+        setIsOpen: (open: boolean) => void;
+        id: string;
+    }) => (
+        <div data-testid="delete-recipe-modal">
+            {open && <div>Delete Recipe Modal for ID: {id}</div>}
+        </div>
+    ),
+}));
 
 // Mock the Button component
 vi.mock('@/app/components/Button', () => ({
-    default: ({
-        label,
-        onClick,
-    }: {
-        label: string;
-        onClick: () => void;
-    }) => (
+    default: ({ label, onClick }: { label: string; onClick: () => void }) => (
         <button
             onClick={onClick}
             data-testid="delete-button"
@@ -85,18 +60,14 @@ describe('<DeleteRecipeButton />', () => {
         const button = screen.getByTestId('delete-button');
         fireEvent.click(button);
 
-        const modal = screen.getByTestId(
-            'delete-recipe-modal'
-        );
+        const modal = screen.getByTestId('delete-recipe-modal');
         expect(modal.textContent).toContain(
             `Delete Recipe Modal for ID: ${recipeId}`
         );
     });
 
     it('initially does not show the DeleteRecipeModal content', () => {
-        const modal = screen.getByTestId(
-            'delete-recipe-modal'
-        );
+        const modal = screen.getByTestId('delete-recipe-modal');
         expect(modal.textContent).not.toContain(
             `Delete Recipe Modal for ID: ${recipeId}`
         );

@@ -41,14 +41,9 @@ const Comments: React.FC<CommentsProps> = ({
                             userImage={comment.user.image}
                             comment={comment.comment}
                             createdAt={comment.createdAt}
-                            userName={
-                                comment.user.name ?? ''
-                            }
+                            userName={comment.user.name ?? ''}
                             verified={comment.user.verified}
-                            canDelete={
-                                currentUser?.id ===
-                                comment.userId
-                            }
+                            canDelete={currentUser?.id === comment.userId}
                             commentId={comment.id}
                             userLevel={comment.user.level}
                         />

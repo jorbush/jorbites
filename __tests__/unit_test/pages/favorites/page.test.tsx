@@ -24,13 +24,9 @@ describe('FavoritesPage', () => {
         const { getByText } = render(page);
 
         await waitFor(() => {
+            expect(getByText('No favorites found')).toBeDefined();
             expect(
-                getByText('No favorites found')
-            ).toBeDefined();
-            expect(
-                getByText(
-                    'Looks like you have no favorite recipes.'
-                )
+                getByText('Looks like you have no favorite recipes.')
             ).toBeDefined();
         });
     });
@@ -60,12 +56,8 @@ describe('FavoritesPage', () => {
             createdAt: new Date().toISOString(),
         };
 
-        (getFavoriteRecipes as any).mockResolvedValue(
-            mockFavoriteRecipes
-        );
-        (getCurrentUser as any).mockResolvedValue(
-            mockCurrentUser
-        );
+        (getFavoriteRecipes as any).mockResolvedValue(mockFavoriteRecipes);
+        (getCurrentUser as any).mockResolvedValue(mockCurrentUser);
 
         const page = await FavoritesPage();
         const { getByText } = render(page);

@@ -6,14 +6,7 @@ import {
     waitFor,
     cleanup,
 } from '@testing-library/react';
-import {
-    vi,
-    describe,
-    it,
-    expect,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import LoginModal from '@/app/components/modals/LoginModal';
 import { SignInResponse } from 'next-auth/react';
 
@@ -68,15 +61,9 @@ describe('LoginModal', () => {
 
     it('renders the login modal', () => {
         render(<LoginModal />);
-        expect(
-            screen.getByText('welcome_back')
-        ).toBeDefined();
-        expect(
-            screen.getByRole('textbox', { name: /email/i })
-        ).toBeDefined();
-        expect(
-            screen.getByLabelText(/password/i)
-        ).toBeDefined();
+        expect(screen.getByText('welcome_back')).toBeDefined();
+        expect(screen.getByRole('textbox', { name: /email/i })).toBeDefined();
+        expect(screen.getByLabelText(/password/i)).toBeDefined();
         expect(
             screen.getByRole('button', {
                 name: /login_google/i,
@@ -90,9 +77,7 @@ describe('LoginModal', () => {
     });
 
     it('submits the form with valid credentials', async () => {
-        const signIn = vi.mocked(
-            await import('next-auth/react')
-        ).signIn;
+        const signIn = vi.mocked(await import('next-auth/react')).signIn;
         signIn.mockResolvedValue({
             ok: true,
             error: null,
@@ -105,32 +90,24 @@ describe('LoginModal', () => {
         fireEvent.change(screen.getByLabelText('email'), {
             target: { value: 'test@example.com' },
         });
-        fireEvent.change(
-            screen.getByLabelText('password'),
-            { target: { value: 'password123' } }
-        );
+        fireEvent.change(screen.getByLabelText('password'), {
+            target: { value: 'password123' },
+        });
 
         fireEvent.click(screen.getByText('continue'));
 
         await waitFor(() => {
-            expect(signIn).toHaveBeenCalledWith(
-                'credentials',
-                {
-                    email: 'test@example.com',
-                    password: 'password123',
-                    redirect: false,
-                }
-            );
+            expect(signIn).toHaveBeenCalledWith('credentials', {
+                email: 'test@example.com',
+                password: 'password123',
+                redirect: false,
+            });
         });
     });
 
     it('displays success toast on successful login', async () => {
-        const signIn = vi.mocked(
-            await import('next-auth/react')
-        ).signIn;
-        const toast = vi.mocked(
-            await import('react-hot-toast')
-        ).toast;
+        const signIn = vi.mocked(await import('next-auth/react')).signIn;
+        const toast = vi.mocked(await import('react-hot-toast')).toast;
 
         signIn.mockResolvedValue({
             ok: true,
@@ -144,37 +121,27 @@ describe('LoginModal', () => {
         fireEvent.change(screen.getByLabelText('email'), {
             target: { value: 'test@example.com' },
         });
-        fireEvent.change(
-            screen.getByLabelText('password'),
-            { target: { value: 'password123' } }
-        );
+        fireEvent.change(screen.getByLabelText('password'), {
+            target: { value: 'password123' },
+        });
         fireEvent.click(screen.getByText('continue'));
 
         await waitFor(() => {
-            expect(signIn).toHaveBeenCalledWith(
-                'credentials',
-                {
-                    email: 'test@example.com',
-                    password: 'password123',
-                    redirect: false,
-                }
-            );
+            expect(signIn).toHaveBeenCalledWith('credentials', {
+                email: 'test@example.com',
+                password: 'password123',
+                redirect: false,
+            });
         });
 
         await waitFor(() => {
-            expect(toast.success).toHaveBeenCalledWith(
-                'logged_in'
-            );
+            expect(toast.success).toHaveBeenCalledWith('logged_in');
         });
     });
 
     it('displays error toast on failed login', async () => {
-        const signIn = vi.mocked(
-            await import('next-auth/react')
-        ).signIn;
-        const toast = vi.mocked(
-            await import('react-hot-toast')
-        ).toast;
+        const signIn = vi.mocked(await import('next-auth/react')).signIn;
+        const toast = vi.mocked(await import('react-hot-toast')).toast;
 
         signIn.mockResolvedValue({
             ok: false,
@@ -188,24 +155,19 @@ describe('LoginModal', () => {
         fireEvent.change(screen.getByLabelText('email'), {
             target: { value: 'test@example.com' },
         });
-        fireEvent.change(
-            screen.getByLabelText('password'),
-            { target: { value: 'wrongpassword' } }
-        );
+        fireEvent.change(screen.getByLabelText('password'), {
+            target: { value: 'wrongpassword' },
+        });
 
         fireEvent.click(screen.getByText('continue'));
 
         await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith(
-                'Invalid credentials'
-            );
+            expect(toast.error).toHaveBeenCalledWith('Invalid credentials');
         });
     });
 
     it('calls signIn with Google provider when Google button is clicked', async () => {
-        const signIn = vi.mocked(
-            await import('next-auth/react')
-        ).signIn;
+        const signIn = vi.mocked(await import('next-auth/react')).signIn;
         render(<LoginModal />);
 
         fireEvent.click(screen.getByText('login_google'));
@@ -214,9 +176,7 @@ describe('LoginModal', () => {
     });
 
     it('calls signIn with GitHub provider when GitHub button is clicked', async () => {
-        const signIn = vi.mocked(
-            await import('next-auth/react')
-        ).signIn;
+        const signIn = vi.mocked(await import('next-auth/react')).signIn;
         render(<LoginModal />);
 
         fireEvent.click(screen.getByText('login_github'));
@@ -230,9 +190,7 @@ describe('LoginModal', () => {
         fireEvent.click(screen.getByText('create_account'));
 
         await waitFor(() => {
-            expect(
-                mockRegisterModalOpen
-            ).toHaveBeenCalled();
+            expect(mockRegisterModalOpen).toHaveBeenCalled();
             expect(mockLoginModalClose).toHaveBeenCalled();
         });
     });

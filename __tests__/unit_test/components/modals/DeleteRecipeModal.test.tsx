@@ -5,14 +5,7 @@ import {
     act,
     cleanup,
 } from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
 import React from 'react';
 
@@ -45,9 +38,7 @@ describe('<ConfirmModal />', () => {
             />
         );
         // Using getAllByText and checking the first occurrence
-        expect(
-            screen.getAllByText('delete')[0]
-        ).toBeDefined();
+        expect(screen.getAllByText('delete')[0]).toBeDefined();
     });
 
     it('renders the confirm title correctly', () => {
@@ -58,9 +49,7 @@ describe('<ConfirmModal />', () => {
                 onConfirm={mockOnConfirm}
             />
         );
-        expect(
-            screen.getByText('confirm_title')
-        ).toBeDefined();
+        expect(screen.getByText('confirm_title')).toBeDefined();
     });
 
     it('calls setIsOpen with false when close button is clicked', () => {
@@ -71,9 +60,7 @@ describe('<ConfirmModal />', () => {
                 onConfirm={mockOnConfirm}
             />
         );
-        const closeButton = screen.getByTestId(
-            'close-modal-button'
-        );
+        const closeButton = screen.getByTestId('close-modal-button');
         fireEvent.click(closeButton);
 
         // Wait for the setTimeout in handleClose
@@ -92,8 +79,7 @@ describe('<ConfirmModal />', () => {
                 onConfirm={mockOnConfirm}
             />
         );
-        const confirmButton =
-            screen.getAllByText('delete')[1];
+        const confirmButton = screen.getAllByText('delete')[1];
         fireEvent.click(confirmButton);
         expect(mockOnConfirm).toHaveBeenCalledTimes(1);
         expect(mockSetIsOpen).toHaveBeenCalledWith(false);

@@ -10,10 +10,7 @@ interface IParams {
     recipeId?: string;
 }
 
-export async function POST(
-    request: Request,
-    { params }: { params: IParams }
-) {
+export async function POST(request: Request, { params }: { params: IParams }) {
     const body = await request.json();
 
     const { operation } = body;

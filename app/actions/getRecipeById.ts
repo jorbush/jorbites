@@ -4,9 +4,7 @@ interface IParams {
     recipeId?: string;
 }
 
-export default async function getRecipeById(
-    params: IParams
-) {
+export default async function getRecipeById(params: IParams) {
     try {
         const { recipeId } = params;
 
@@ -28,13 +26,9 @@ export default async function getRecipeById(
             createdAt: recipe.createdAt.toISOString(),
             user: {
                 ...recipe.user,
-                createdAt:
-                    recipe.user.createdAt.toISOString(),
-                updatedAt:
-                    recipe.user.updatedAt.toISOString(),
-                emailVerified:
-                    recipe.user.emailVerified?.toString() ||
-                    null,
+                createdAt: recipe.user.createdAt.toISOString(),
+                updatedAt: recipe.user.updatedAt.toISOString(),
+                emailVerified: recipe.user.emailVerified?.toString() || null,
             },
         };
     } catch (error: any) {

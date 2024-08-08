@@ -4,9 +4,7 @@ interface IParams {
     recipeId?: string;
 }
 
-export default async function getCommentsByRecipeId(
-    params: IParams
-) {
+export default async function getCommentsByRecipeId(params: IParams) {
     try {
         const { recipeId } = params;
 
@@ -31,13 +29,10 @@ export default async function getCommentsByRecipeId(
             createdAt: comment.createdAt.toISOString(),
             user: {
                 ...comment.user,
-                createdAt:
-                    comment.user.createdAt.toISOString(),
-                updatedAt:
-                    comment.user.updatedAt.toISOString(),
+                createdAt: comment.user.createdAt.toISOString(),
+                updatedAt: comment.user.updatedAt.toISOString(),
                 emailVerified:
-                    comment.user.emailVerified?.toISOString() ||
-                    null,
+                    comment.user.emailVerified?.toISOString() || null,
             },
         }));
 

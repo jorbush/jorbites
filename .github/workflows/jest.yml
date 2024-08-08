@@ -1,4 +1,4 @@
-name: Jest Unit Testing (Routes)
+name: Jest Unit Testing (API Routes & Server Actions)
 
 on:
   push:

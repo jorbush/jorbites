@@ -5,14 +5,7 @@ import {
     act,
     cleanup,
 } from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Modal from '@/app/components/modals/Modal';
 import React from 'react';
 
@@ -57,9 +50,7 @@ describe('<Modal />', () => {
                 title="Test Modal"
             />
         );
-        expect(
-            screen.getByText('Test Modal')
-        ).toBeDefined();
+        expect(screen.getByText('Test Modal')).toBeDefined();
     });
 
     it('calls onClose when close button is clicked', () => {
@@ -71,9 +62,7 @@ describe('<Modal />', () => {
                 actionLabel="Submit"
             />
         );
-        const closeButton = screen.getByTestId(
-            'close-modal-button'
-        );
+        const closeButton = screen.getByTestId('close-modal-button');
         fireEvent.click(closeButton);
 
         // Wait for the setTimeout in handleClose
@@ -132,9 +121,7 @@ describe('<Modal />', () => {
             name: 'Cancel',
         });
         fireEvent.click(cancelButton);
-        expect(mockSecondaryAction).toHaveBeenCalledTimes(
-            1
-        );
+        expect(mockSecondaryAction).toHaveBeenCalledTimes(1);
     });
 
     it('disables buttons when disabled prop is true', () => {
@@ -169,9 +156,7 @@ describe('<Modal />', () => {
                 body={<div>Test Body Content</div>}
             />
         );
-        expect(
-            screen.getByText('Test Body Content')
-        ).toBeDefined();
+        expect(screen.getByText('Test Body Content')).toBeDefined();
     });
 
     it('renders footer content when provided', () => {
@@ -184,8 +169,6 @@ describe('<Modal />', () => {
                 footer={<div>Test Footer Content</div>}
             />
         );
-        expect(
-            screen.getByText('Test Footer Content')
-        ).toBeDefined();
+        expect(screen.getByText('Test Footer Content')).toBeDefined();
     });
 });

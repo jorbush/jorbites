@@ -1,26 +1,11 @@
 import React from 'react';
-import {
-    render,
-    screen,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    afterEach,
-} from 'vitest';
+import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import Input from '@/app/components/inputs/Input';
-import {
-    UseFormRegister,
-    FieldValues,
-    FieldErrors,
-} from 'react-hook-form';
+import { UseFormRegister, FieldValues, FieldErrors } from 'react-hook-form';
 
 describe('Input', () => {
-    const mockRegister: UseFormRegister<FieldValues> =
-        vi.fn();
+    const mockRegister: UseFormRegister<FieldValues> = vi.fn();
     const mockErrors: FieldErrors = {};
 
     afterEach(() => {
@@ -37,9 +22,7 @@ describe('Input', () => {
             />
         );
 
-        expect(
-            screen.getByLabelText('Test Input')
-        ).toBeDefined();
+        expect(screen.getByLabelText('Test Input')).toBeDefined();
         expect(screen.getByRole('textbox')).toBeDefined();
     });
 
@@ -56,9 +39,7 @@ describe('Input', () => {
 
         const input = screen.getByRole('textbox');
         expect(input.className).toContain('pl-9');
-        expect(
-            screen.getByTestId('BiDollar')
-        ).toBeDefined();
+        expect(screen.getByTestId('BiDollar')).toBeDefined();
     });
 
     it('shows error styling when there is an error', () => {
@@ -78,12 +59,8 @@ describe('Input', () => {
         );
 
         const input = screen.getByRole('textbox');
-        expect(input.className).toContain(
-            'border-rose-500'
-        );
-        expect(input.className).toContain(
-            'focus:border-rose-500'
-        );
+        expect(input.className).toContain('border-rose-500');
+        expect(input.className).toContain('focus:border-rose-500');
     });
 
     it('disables the input when disabled prop is true', () => {

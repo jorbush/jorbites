@@ -16,9 +16,7 @@ const LanguageSelector: React.FC = () => {
     return (
         <div className="relative inline-flex">
             <div className="flex-1">
-                <p className="text-left">
-                    {t('select_your_language')}
-                </p>
+                <p className="text-left">{t('select_your_language')}</p>
             </div>
             <select
                 value={i18n.language}

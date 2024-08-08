@@ -1,13 +1,7 @@
 import React from 'react';
 import { render, cleanup } from '@testing-library/react';
 import ProfileClient from '@/app/profile/[userId]/ProfileClient';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    afterEach,
-} from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { SafeRecipe, SafeUser } from '@/app/types';
 
 vi.mock('next/navigation', () => ({
@@ -104,8 +98,6 @@ describe('ProfileClient', () => {
         );
 
         // Assert that no recipes are displayed
-        expect(
-            container.querySelector('.grid')?.nodeValue
-        ).toBeNull();
+        expect(container.querySelector('.grid')?.nodeValue).toBeNull();
     });
 });

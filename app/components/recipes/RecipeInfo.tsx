@@ -54,21 +54,14 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         <Avatar
                             src={user?.image}
                             size={40}
-                            onClick={() =>
-                                router.push(
-                                    '/profile/' + user.id
-                                )
-                            }
+                            onClick={() => router.push('/profile/' + user.id)}
                         />
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <div
                                     className="cursor-pointer"
                                     onClick={() =>
-                                        router.push(
-                                            '/profile/' +
-                                                user.id
-                                        )
+                                        router.push('/profile/' + user.id)
                                     }
                                 >
                                     {user?.name}
@@ -88,19 +81,15 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                             recipeId={id}
                             currentUser={currentUser}
                         />
-                        <div className="dark:text-neutral-100">
-                            {likes}
-                        </div>
+                        <div className="dark:text-neutral-100">{likes}</div>
                     </div>
                 </div>
                 <div className="flex flex-row items-center gap-4 font-light text-neutral-500">
                     <div>
-                        {steps.length}{' '}
-                        {t('steps').toLowerCase()}
+                        {steps.length} {t('steps').toLowerCase()}
                     </div>
                     <div>
-                        {ingredients.length}{' '}
-                        {t('ingredients').toLowerCase()}
+                        {ingredients.length} {t('ingredients').toLowerCase()}
                     </div>
                 </div>
             </div>
@@ -120,16 +109,14 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                             {t('ingredients')}
                         </div>
                         <ul className="list-disc pl-9 pt-4">
-                            {ingredients.map(
-                                (ingredient, index) => (
-                                    <li
-                                        key={index}
-                                        className="mb-2"
-                                    >
-                                        {ingredient}
-                                    </li>
-                                )
-                            )}
+                            {ingredients.map((ingredient, index) => (
+                                <li
+                                    key={index}
+                                    className="mb-2"
+                                >
+                                    {ingredient}
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 </>

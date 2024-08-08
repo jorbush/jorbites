@@ -1,16 +1,5 @@
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import Avatar from '@/app/components/Avatar';
 import React from 'react';
 
@@ -67,12 +56,10 @@ describe('<Avatar/>', () => {
     });
 
     it('should not have cursor-pointer class when onClick is not provided', () => {
-        render(
-            <Avatar src="https://example.com/avatar.jpg" />
+        render(<Avatar src="https://example.com/avatar.jpg" />);
+        expect(screen.getByAltText('Avatar')).not.toHaveProperty(
+            'cursor-pointer'
         );
-        expect(
-            screen.getByAltText('Avatar')
-        ).not.toHaveProperty('cursor-pointer');
     });
 
     it('should have cursor-pointer class when onClick is provided', () => {
@@ -82,8 +69,8 @@ describe('<Avatar/>', () => {
                 onClick={() => {}}
             />
         );
-        expect(
-            screen.getByAltText('Avatar').className
-        ).include('cursor-pointer');
+        expect(screen.getByAltText('Avatar').className).include(
+            'cursor-pointer'
+        );
     });
 });

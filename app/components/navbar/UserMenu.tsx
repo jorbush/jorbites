@@ -16,9 +16,7 @@ interface UserMenuProps {
     currentUser?: SafeUser | null;
 }
 
-const UserMenu: React.FC<UserMenuProps> = ({
-    currentUser,
-}) => {
+const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
     const registerModal = useRegisterModal();
     const loginModal = useLoginModal();
     const recipeModal = useRecipeModal();
@@ -71,8 +69,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
                                 <MenuItem
                                     onClick={() => {
                                         router.push(
-                                            '/profile/' +
-                                                currentUser.id
+                                            '/profile/' + currentUser.id
                                         );
                                         toggleOpen();
                                     }}
@@ -80,14 +77,10 @@ const UserMenu: React.FC<UserMenuProps> = ({
                                 />
                                 <MenuItem
                                     onClick={() => {
-                                        router.push(
-                                            '/favorites'
-                                        );
+                                        router.push('/favorites');
                                         toggleOpen();
                                     }}
-                                    label={t(
-                                        'my_favorites'
-                                    )}
+                                    label={t('my_favorites')}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -97,9 +90,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
                                     label={t('settings')}
                                 />
                                 <MenuItem
-                                    onClick={() =>
-                                        signOut()
-                                    }
+                                    onClick={() => signOut()}
                                     label={t('logout')}
                                 />
                             </>

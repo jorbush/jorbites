@@ -23,13 +23,10 @@ describe('<Container />', () => {
             </Container>
         );
 
-        const container =
-            screen.getByText('Test Content').parentElement;
+        const container = screen.getByText('Test Content').parentElement;
         expect(container).toBeDefined();
         expect(container?.className).toContain('mx-auto');
-        expect(container?.className).toContain(
-            'max-w-[2520px]'
-        );
+        expect(container?.className).toContain('max-w-[2520px]');
         expect(container?.className).toContain('px-4');
         expect(container?.className).toContain('sm:px-2');
         expect(container?.className).toContain('md:px-10');
