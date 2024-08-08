@@ -20,7 +20,6 @@ jest.mock('next-auth/next', () => ({
 }));
 
 describe('User API Routes and Server Actions', () => {
-
     afterEach(async () => {
         mockedSession = null;
     });
