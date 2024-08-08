@@ -1,6 +1,5 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { Session } from 'next-auth';
-import prisma from '@/app/libs/prismadb';
 
 let mockedSession: Session | null = null;
 
@@ -24,7 +23,6 @@ describe('User API Routes and Server Actions', () => {
 
     afterEach(async () => {
         mockedSession = null;
-        await prisma.$connect();
     });
 
     it('should return empty user', async () => {
