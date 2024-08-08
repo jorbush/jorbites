@@ -17,6 +17,7 @@ jobs:
       - name: Set up .env
         run: |
           echo ${{ secrets.ENV}} >> .env
+          source .env
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
