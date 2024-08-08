@@ -20,8 +20,6 @@ jest.mock('next-auth/next', () => ({
     }),
 }));
 
-jest.setTimeout(60000);
-
 describe('User API Routes and Server Actions', () => {
 
     afterEach(() => {
