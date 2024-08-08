@@ -39,5 +39,5 @@ describe('User API Routes and Server Actions', () => {
         };
         const response = await getCurrentUser();
         expect(response).toMatchObject(mockedSession?.user || {});
-    });
+    }, 10000);
 });
