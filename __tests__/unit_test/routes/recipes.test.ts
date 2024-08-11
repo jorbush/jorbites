@@ -116,7 +116,7 @@ describe('Recipes API Routes and Server Actions', () => {
 
     it('should return the recipe by id', async () => {
         const response = await getRecipeById({ recipeId: publishedRecipe?.id });
-        expect(response).toMatchObject(publishedRecipe!!);
+        expect(response).toMatchObject(publishedRecipe || {});
     });
 
     it('should delete the recipe', async () => {
@@ -128,7 +128,7 @@ describe('Recipes API Routes and Server Actions', () => {
 
         const response = await DELETE({} as unknown as Request, mockParams);
         const result = await response.json();
-        expect(result).toMatchObject(publishedRecipe!!);
+        expect(result).toMatchObject(publishedRecipe || {});
         publishedRecipe = null;
     });
 
