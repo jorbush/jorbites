@@ -3,6 +3,8 @@ import { Session } from 'next-auth';
 import { POST } from '@/app/api/recipes/route';
 import { DELETE } from '@/app/api/recipe/[recipeId]/route';
 import getRecipeById from '@/app/actions/getRecipeById';
+import getCurrentUser from '@/app/actions/getCurrentUser';
+import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
 
 let mockedSession: Session | null = null;
 
@@ -54,7 +56,22 @@ describe('Recipes API Routes and Server Actions', () => {
         userId: string;
     } | null = null;
 
-    afterEach(() => {
+    let initialUser: {
+        createdAt: string;
+        updatedAt: string;
+        emailVerified: string | null;
+        id: string;
+        name: string | null;
+        email: string | null;
+        image: string | null;
+        hashedPassword: string | null;
+        favoriteIds: string[];
+        emailNotifications: boolean;
+        level: number;
+        verified: boolean;
+    } | null = null;
+
+    beforeEach(() => {
         mockedSession = {
             expires: 'expires',
             user: {
@@ -64,9 +81,11 @@ describe('Recipes API Routes and Server Actions', () => {
         };
     });
 
-    it('should return the current recipes', async () => {
+    it('should return the current recipes and the current user', async () => {
         const response = await getRecipes({});
         initialRecipes = response.recipes;
+        const currentUser = await getCurrentUser();
+        initialUser = currentUser;
     });
 
     it('should create a new recipe', async () => {
@@ -109,6 +128,27 @@ describe('Recipes API Routes and Server Actions', () => {
         expect(response.recipes.length).toBeGreaterThan(initialRecipes.length);
     });
 
+    it('should level up the recipe user level', async () => {
+        const currentUser = await getCurrentUser();
+        if (!currentUser || !initialUser) {
+            console.log({
+                currentUser,
+                initialUser,
+            });
+            throw new Error('currentUser or initialUser is not defined');
+        }
+        expect(currentUser.level).toBeGreaterThan(initialUser.level);
+    });
+
+    it('should return the user recipes', async () => {
+        if (!initialUser) {
+            throw new Error('initialUser is not defined');
+        }
+        const mockParams = { userId: initialUser.id };
+        const response = await getRecipesByUserId(mockParams);
+        expect(response.length).toBeGreaterThan(0);
+    });
+
     it('should return the recipes filtered by category', async () => {
         const response = await getRecipes({ category: 'Desserts' });
         expect(response.recipes.length).toBeGreaterThan(0);
@@ -135,5 +175,13 @@ describe('Recipes API Routes and Server Actions', () => {
     it('should return the updated recipes', async () => {
         const response = await getRecipes({});
         expect(response.recipes.length).toBe(initialRecipes.length);
+    });
+
+    it('should level down the recipe user level', async () => {
+        const currentUser = await getCurrentUser();
+        if (!currentUser || !initialUser) {
+            throw new Error('currentUser or initialUser is not defined');
+        }
+        expect(currentUser.level).toBe(initialUser.level);
     });
 });
