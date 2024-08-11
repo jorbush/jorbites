@@ -1,4 +1,5 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import getUserById from '@/app/actions/getUserById';
 import { Session } from 'next-auth';
 
 let mockedSession: Session | null = null;
@@ -20,6 +21,7 @@ jest.mock('next-auth/next', () => ({
 }));
 
 describe('User API Routes and Server Actions', () => {
+    let currentUser: any = null;
     afterEach(async () => {
         mockedSession = null;
     });
@@ -38,6 +40,12 @@ describe('User API Routes and Server Actions', () => {
             },
         };
         const response = await getCurrentUser();
+        expect(response).toMatchObject(mockedSession?.user || {});
+        currentUser = response;
+    });
+
+    it('should return the user with the id', async () => {
+        const response = await getUserById({ userId: currentUser.id });
         expect(response).toMatchObject(mockedSession?.user || {});
     });
 });
