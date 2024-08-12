@@ -53,14 +53,13 @@ const CookiesPolicy: React.FC = () => {
                         Tipos de cookies que utilizamos
                     </h2>
                     <h3 className="mb-2 mt-4 text-xl font-semibold">
-                    1. Cookies técnicas esenciales
+                        1. Cookies técnicas esenciales
                     </h3>
                     <p className="mb-4">
-                        Estas cookies son
-                        necesarias para que nuestro sitio web funcione
-                        correctamente y te permiten navegar por él y utilizar
-                        sus funciones esenciales. Sin estas cookies, algunos
-                        servicios en nuestro sitio no funcionarían
+                        Estas cookies son necesarias para que nuestro sitio web
+                        funcione correctamente y te permiten navegar por él y
+                        utilizar sus funciones esenciales. Sin estas cookies,
+                        algunos servicios en nuestro sitio no funcionarían
                         correctamente.
                     </p>
                     <ul className="mb-4 ml-6 list-disc">
