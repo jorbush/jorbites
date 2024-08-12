@@ -28,13 +28,13 @@ describe('<Footer />', () => {
     it('renders the Footer component', () => {
         render(<Footer />);
         expect(screen.getByText(/version 0.5/)).toBeDefined();
-        expect(screen.getByText(/contact jbonetv5@gmail.com/)).toBeDefined();
+        expect(screen.getByText(/contact: jbonetv5@gmail.com/)).toBeDefined();
     });
 
     it('uses the useTranslation hook', () => {
         render(<Footer />);
         expect(screen.getByText('version 0.5')).toBeDefined();
-        expect(screen.getByText('contact jbonetv5@gmail.com')).toBeDefined();
+        expect(screen.getByText('contact: jbonetv5@gmail.com')).toBeDefined();
     });
 
     it('applies the correct CSS classes', () => {
