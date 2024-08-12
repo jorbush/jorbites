@@ -30,11 +30,11 @@ export async function DELETE(
         return NextResponse.error();
     }
 
-    const user = await prisma.comment.delete({
+    const deletedComment = await prisma.comment.delete({
         where: {
             id: commentId,
         },
     });
 
-    return NextResponse.json(user);
+    return NextResponse.json(deletedComment);
 }

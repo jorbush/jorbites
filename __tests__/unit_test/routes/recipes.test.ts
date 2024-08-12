@@ -1,10 +1,17 @@
 import getRecipes from '@/app/actions/getRecipes';
 import { Session } from 'next-auth';
-import { POST } from '@/app/api/recipes/route';
-import { DELETE } from '@/app/api/recipe/[recipeId]/route';
+import { POST as RecipePOST } from '@/app/api/recipes/route';
+import { DELETE as RecipeDELETE } from '@/app/api/recipe/[recipeId]/route';
 import getRecipeById from '@/app/actions/getRecipeById';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
+import { POST as FavoritePOST } from '@/app/api/favorites/[recipeId]/route';
+import { DELETE as FavoriteDELETE } from '@/app/api/favorites/[recipeId]/route';
+import getFavoriteRecipes from '@/app/actions/getFavoriteRecipes';
+import { POST as CommentPOST } from '@/app/api/comments/route';
+import { DELETE as CommentDELETE } from '@/app/api/comments/[commentId]/route';
+import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
+import getCommentById from '@/app/actions/getCommentById';
 
 let mockedSession: Session | null = null;
 
@@ -71,6 +78,14 @@ describe('Recipes API Routes and Server Actions', () => {
         verified: boolean;
     } | null = null;
 
+    let comment: {
+        id: string;
+        userId: string;
+        comment: string;
+        recipeId: string;
+        createdAt: string;
+    } | null = null;
+
     beforeEach(() => {
         mockedSession = {
             expires: 'expires',
@@ -103,7 +118,7 @@ describe('Recipes API Routes and Server Actions', () => {
             json: jest.fn().mockResolvedValue(mockRecipe),
         } as unknown as Request;
 
-        const response = await POST(mockRequest);
+        const response = await RecipePOST(mockRequest);
         const result = await response.json();
         expect(result).toMatchObject(mockRecipe);
         publishedRecipe = result as {
@@ -159,14 +174,121 @@ describe('Recipes API Routes and Server Actions', () => {
         expect(response).toMatchObject(publishedRecipe || {});
     });
 
+    it('should like the recipe', async () => {
+        const mockParams = { params: { recipeId: publishedRecipe?.id } };
+        const responseFav = await FavoritePOST(
+            {} as unknown as Request,
+            mockParams
+        );
+        const resultFav = await responseFav.json();
+        const currentUser = await getCurrentUser();
+        expect(resultFav).toMatchObject(currentUser || {});
+    });
+
+    it('should have added the recipe id to the current user favoriteIds', async () => {
+        const currentUser = await getCurrentUser();
+        expect(currentUser?.favoriteIds).toContain(publishedRecipe?.id);
+    });
+
+    it('should return favorites recipes from the current user with the return', async () => {
+        const response = await getFavoriteRecipes();
+        expect(
+            response.filter((recipe) => recipe.id == publishedRecipe?.id).length
+        ).toBe(1);
+    });
+
+    it('should undo the like of the recipe', async () => {
+        const mockParams = { params: { recipeId: publishedRecipe?.id } };
+        const responseFav = await FavoriteDELETE(
+            {} as unknown as Request,
+            mockParams
+        );
+        const resultFav = await responseFav.json();
+        const currentUser = await getCurrentUser();
+        expect(resultFav).toMatchObject(currentUser || {});
+    });
+
+    it('should have removed the recipe id to the current user favoriteIds', async () => {
+        const currentUser = await getCurrentUser();
+        expect(currentUser?.favoriteIds).not.toContain(publishedRecipe?.id);
+    });
+
+    it('should return favorites recipes from the current user without the recipe id', async () => {
+        const response = await getFavoriteRecipes();
+        expect(
+            response.filter((recipe) => recipe.id == publishedRecipe?.id).length
+        ).toBe(0);
+    });
+
+    it('should comment the recipe', async () => {
+        const mockBody = {
+            recipeId: publishedRecipe?.id,
+            comment: 'Great recipe!',
+        };
+        const mockRequest = {
+            json: jest.fn().mockResolvedValue(mockBody),
+        } as unknown as Request;
+        const response = await CommentPOST(mockRequest);
+        const result = await response.json();
+        expect(result).toMatchObject(publishedRecipe || {});
+        expect(result.comments.length).toBe(1);
+        expect(result.comments[0].recipeId).toBe(publishedRecipe?.id);
+        const currentUser = await getCurrentUser();
+        expect(result.comments[0].userId).toBe(currentUser?.id);
+        expect(result.comments[0].comment).toBe(mockBody.comment);
+        comment = result.comments[0];
+    });
+
+    it('should return comment by comment id', async () => {
+        if (!comment) {
+            throw new Error('comment is not defined');
+        }
+        const response = await getCommentById({ commentId: comment?.id });
+        expect(response).toMatchObject(comment);
+    });
+
+    it('should return comments by recipe id', async () => {
+        if (!comment) {
+            throw new Error('comment is not defined');
+        }
+        const response = await getCommentsByRecipeId({
+            recipeId: publishedRecipe?.id,
+        });
+        expect(response[0]).toMatchObject(comment);
+    });
+
+    it('should delete the comment', async () => {
+        if (!comment) {
+            throw new Error('comment is not defined');
+        }
+        const mockParams = { params: { commentId: comment.id } };
+        const response = await CommentDELETE(
+            {} as unknown as Request,
+            mockParams
+        );
+        const result = await response.json();
+        expect(result).toMatchObject(comment || {});
+    });
+
+    it('should not return any comments by recipe id', async () => {
+        if (!comment) {
+            throw new Error('comment is not defined');
+        }
+        const response = await getCommentsByRecipeId({
+            recipeId: publishedRecipe?.id,
+        });
+        expect(response.length).toBe(0);
+    });
+
     it('should delete the recipe', async () => {
         if (!publishedRecipe?.id) {
             throw new Error('publishedRecipe id is not defined');
         }
-
         const mockParams = { params: { recipeId: publishedRecipe.id } };
-
-        const response = await DELETE({} as unknown as Request, mockParams);
+        const response = await RecipeDELETE(
+            {} as unknown as Request,
+            mockParams
+        );
         const result = await response.json();
         expect(result).toMatchObject(publishedRecipe || {});
         publishedRecipe = null;
