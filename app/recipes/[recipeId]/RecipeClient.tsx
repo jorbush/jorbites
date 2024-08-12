@@ -6,11 +6,7 @@ import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
 import useLoginModal from '@/app/hooks/useLoginModal';
-import {
-    SafeComment,
-    SafeRecipe,
-    SafeUser,
-} from '@/app/types';
+import { SafeComment, SafeRecipe, SafeUser } from '@/app/types';
 
 import Container from '@/app/components/Container';
 import { categories } from '@/app/components/navbar/Categories';
@@ -37,15 +33,11 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const router = useRouter();
 
     const category = useMemo(() => {
-        return categories.find(
-            (item) => item.label === recipe.category
-        );
+        return categories.find((item) => item.label === recipe.category);
     }, [recipe.category]);
 
     const method = useMemo(() => {
-        return preparationMethods.find(
-            (item) => item.label === recipe.method
-        );
+        return preparationMethods.find((item) => item.label === recipe.method);
     }, [recipe.method]);
 
     const onCreateComment = useCallback(
@@ -78,10 +70,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                     <RecipeHead
                         title={recipe.title}
                         minutes={recipe.minutes.toString()}
-                        imagesSrc={[
-                            recipe.imageSrc,
-                            ...recipe.extraImages,
-                        ]}
+                        imagesSrc={[recipe.imageSrc, ...recipe.extraImages]}
                     />
                     <div className="mt-1 grid grid-cols-1 md:grid-cols-1 md:gap-10">
                         <RecipeInfo
@@ -102,9 +91,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                         comments={comments}
                     />
                     {currentUser?.id === recipe.userId && (
-                        <DeleteRecipeButton
-                            id={recipe.id}
-                        />
+                        <DeleteRecipeButton id={recipe.id} />
                     )}
                 </div>
             </div>

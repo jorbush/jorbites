@@ -12,14 +12,11 @@ export const authOptions: AuthOptions = {
     providers: [
         GithubProvider({
             clientId: process.env.GITHUB_ID as string,
-            clientSecret: process.env
-                .GITHUB_SECRET as string,
+            clientSecret: process.env.GITHUB_SECRET as string,
         }),
         GoogleProvider({
-            clientId: process.env
-                .GOOGLE_CLIENT_ID as string,
-            clientSecret: process.env
-                .GOOGLE_CLIENT_SECRET as string,
+            clientId: process.env.GOOGLE_CLIENT_ID as string,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         }),
         CredentialsProvider({
             name: 'credentials',
@@ -31,10 +28,7 @@ export const authOptions: AuthOptions = {
                 },
             },
             async authorize(credentials) {
-                if (
-                    !credentials?.email ||
-                    !credentials?.password
-                ) {
+                if (!credentials?.email || !credentials?.password) {
                     throw new Error('Invalid credentials');
                 }
 
@@ -48,11 +42,10 @@ export const authOptions: AuthOptions = {
                     throw new Error('Invalid credentials');
                 }
 
-                const isCorrectPassword =
-                    await bcrypt.compare(
-                        credentials.password,
-                        user.hashedPassword
-                    );
+                const isCorrectPassword = await bcrypt.compare(
+                    credentials.password,
+                    user.hashedPassword
+                );
 
                 if (!isCorrectPassword) {
                     throw new Error('Invalid credentials');

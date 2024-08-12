@@ -9,7 +9,8 @@
     "lint": "next lint --max-warnings 0",
     "format": "prettier --write 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
     "check-format": "prettier --check 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
-    "vitest": "vitest run"
+    "vitest": "vitest run __tests__/unit_test/components __tests__/unit_test/pages",
+    "jest": "jest __tests__/unit_test/routes"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
@@ -41,17 +42,24 @@
     "react-i18next": "^12.3.1",
     "react-icons": "^4.8.0",
     "tailwindcss": "3.3.2",
+    "ts-node": "^10.9.2",
     "typescript": "5.0.4",
     "vite-tsconfig-paths": "^4.3.2",
     "zustand": "^4.3.8"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
     "@types/bcrypt": "^5.0.0",
+    "@types/jest-json-schema": "^6.1.4",
     "@types/nodemailer": "^6.4.8",
     "@vitejs/plugin-react": "^4.3.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-json-schema": "^6.1.0",
     "jsdom": "^24.1.1",
     "prisma": "^4.15.0",
+    "ts-jest": "^29.2.4",
     "vitest": "^2.0.3"
   }
 }

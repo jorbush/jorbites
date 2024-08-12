@@ -4,9 +4,7 @@ interface IParams {
     commentId?: string;
 }
 
-export default async function getCommentById(
-    params: IParams
-) {
+export default async function getCommentById(params: IParams) {
     try {
         const { commentId } = params;
 
@@ -28,13 +26,9 @@ export default async function getCommentById(
             createdAt: comment.createdAt.toISOString(),
             user: {
                 ...comment.user,
-                createdAt:
-                    comment.user.createdAt.toISOString(),
-                updatedAt:
-                    comment.user.updatedAt.toISOString(),
-                emailVerified:
-                    comment.user.emailVerified?.toString() ||
-                    null,
+                createdAt: comment.user.createdAt.toISOString(),
+                updatedAt: comment.user.updatedAt.toISOString(),
+                emailVerified: comment.user.emailVerified?.toString() || null,
             },
         };
     } catch (error: any) {

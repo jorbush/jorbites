@@ -1,17 +1,5 @@
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import EmptyState from '@/app/components/EmptyState';
 import React from 'react';
 
@@ -37,13 +25,9 @@ describe('<EmptyState />', () => {
     it('renders with default props', () => {
         render(<EmptyState />);
 
+        expect(screen.getByText('No exact matches')).toBeDefined();
         expect(
-            screen.getByText('No exact matches')
-        ).toBeDefined();
-        expect(
-            screen.getByText(
-                'Try changing or removing some of your filters.'
-            )
+            screen.getByText('Try changing or removing some of your filters.')
         ).toBeDefined();
         expect(screen.queryByRole('button')).toBeNull();
     });
@@ -60,9 +44,7 @@ describe('<EmptyState />', () => {
         );
 
         expect(screen.getByText(customTitle)).toBeDefined();
-        expect(
-            screen.getByText(customSubtitle)
-        ).toBeDefined();
+        expect(screen.getByText(customSubtitle)).toBeDefined();
     });
 
     it('renders reset button when showReset is true', () => {

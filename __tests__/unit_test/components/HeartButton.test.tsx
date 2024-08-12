@@ -1,12 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-} from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import HeartButton from '@/app/components/HeartButton';
 import { SafeUser } from '@/app/types';
 
@@ -21,9 +15,7 @@ vi.mock('@/app/hooks/useFavorite', () => ({
 // Mock the react-icons
 vi.mock('react-icons/ai', () => ({
     AiFillHeart: () => <div data-testid="filled-heart" />,
-    AiOutlineHeart: () => (
-        <div data-testid="outline-heart" />
-    ),
+    AiOutlineHeart: () => <div data-testid="outline-heart" />,
 }));
 
 describe('<HeartButton />', () => {
@@ -54,11 +46,7 @@ describe('<HeartButton />', () => {
                 currentUser={mockCurrentUser}
             />
         );
-        expect(
-            screen.getByTestId('filled-heart')
-        ).toBeDefined();
-        expect(
-            screen.getByTestId('outline-heart')
-        ).toBeDefined();
+        expect(screen.getByTestId('filled-heart')).toBeDefined();
+        expect(screen.getByTestId('outline-heart')).toBeDefined();
     });
 });

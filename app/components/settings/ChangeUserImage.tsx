@@ -23,14 +23,15 @@ interface ChangeUserImageProps {
     onSave: () => void;
 }
 
-const ChangeUserImageSelector: React.FC<
-    ChangeUserImageProps
-> = ({ currentUser, saveImage, setSaveImage, onSave }) => {
+const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
+    currentUser,
+    saveImage,
+    setSaveImage,
+    onSave,
+}) => {
     const router = useRouter();
     const { t } = useTranslation();
-    const [newImage, setNewImage] = useState(
-        currentUser?.image
-    );
+    const [newImage, setNewImage] = useState(currentUser?.image);
     const [canSave, setCanSave] = useState(false);
 
     const updateUserProfile = useCallback(() => {
@@ -64,27 +65,18 @@ const ChangeUserImageSelector: React.FC<
             setSaveImage(false);
             onSave();
         }
-    }, [
-        saveImage,
-        canSave,
-        setSaveImage,
-        onSave,
-        updateUserProfile,
-    ]);
+    }, [saveImage, canSave, setSaveImage, onSave, updateUserProfile]);
 
     return (
         <div className="flex items-center">
             <div className="flex-1">
-                <p className="text-left">
-                    {t('update_user_image')}
-                </p>
+                <p className="text-left">{t('update_user_image')}</p>
             </div>
             <div className="flex items-center">
                 <CldUploadWidget
                     onUpload={handleUpload}
                     uploadPreset={
-                        process.env
-                            .NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+                        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
                     }
                     options={{
                         maxFiles: 1,
@@ -98,10 +90,8 @@ const ChangeUserImageSelector: React.FC<
                                         <Image
                                             className="rounded-full"
                                             style={{
-                                                objectFit:
-                                                    'cover',
-                                                aspectRatio:
-                                                    '1/1',
+                                                objectFit: 'cover',
+                                                aspectRatio: '1/1',
                                             }}
                                             height="30"
                                             width="30"
@@ -110,18 +100,14 @@ const ChangeUserImageSelector: React.FC<
                                                 newImage ||
                                                 '/images/placeholder.jpg'
                                             }
-                                            onClick={() =>
-                                                open?.()
-                                            }
+                                            onClick={() => open?.()}
                                         />
 
                                         {canSave && (
                                             <FaRegSave
                                                 data-testid="save-icon"
                                                 className="ml-2 mt-1 h-5 w-5 text-green-450"
-                                                onClick={
-                                                    updateUserProfile
-                                                }
+                                                onClick={updateUserProfile}
                                             />
                                         )}
                                     </div>

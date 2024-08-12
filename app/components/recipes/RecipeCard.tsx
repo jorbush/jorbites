@@ -10,17 +10,12 @@ interface RecipeCardProps {
     currentUser?: SafeUser | null;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({
-    data,
-    currentUser,
-}) => {
+const RecipeCard: React.FC<RecipeCardProps> = ({ data, currentUser }) => {
     const router = useRouter();
 
     return (
         <div
-            onClick={() =>
-                router.push(`/recipes/${data.id}`)
-            }
+            onClick={() => router.push(`/recipes/${data.id}`)}
             className="group col-span-1 cursor-pointer"
         >
             <div className="flex w-full flex-col gap-2">

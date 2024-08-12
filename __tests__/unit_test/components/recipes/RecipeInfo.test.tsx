@@ -1,17 +1,6 @@
 import React from 'react';
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import RecipeInfo from '@/app/components/recipes/RecipeInfo';
 import { SafeUser } from '@/app/types';
 import * as nextNavigation from 'next/navigation';
@@ -45,17 +34,13 @@ vi.mock('../HeartButton', () => ({
     ),
 }));
 
-vi.mock(
-    '@/app/components/recipes/RecipeCategoryAndMethod',
-    () => ({
-        default: ({ category, method }: any) => (
-            <div data-testid="recipe-category-and-method">
-                Category: {category?.label}, Method:{' '}
-                {method?.label}
-            </div>
-        ),
-    })
-);
+vi.mock('@/app/components/recipes/RecipeCategoryAndMethod', () => ({
+    default: ({ category, method }: any) => (
+        <div data-testid="recipe-category-and-method">
+            Category: {category?.label}, Method: {method?.label}
+        </div>
+    ),
+}));
 
 describe('RecipeInfo', () => {
     const mockUser: SafeUser = {
@@ -96,38 +81,24 @@ describe('RecipeInfo', () => {
 
     it('renders user information correctly', () => {
         render(<RecipeInfo {...mockProps} />);
-        expect(
-            screen.queryByText(mockUser.name!)
-        ).toBeDefined();
+        expect(screen.queryByText(mockUser.name!)).toBeDefined();
         expect(screen.getByText('level 5')).toBeDefined();
-        expect(
-            screen.getByTestId('heart-button')
-        ).toBeDefined();
+        expect(screen.getByTestId('heart-button')).toBeDefined();
         expect(screen.getByText('10')).toBeDefined();
     });
 
     it('displays recipe details correctly', () => {
         render(<RecipeInfo {...mockProps} />);
         expect(screen.getByText('2 steps')).toBeDefined();
-        expect(
-            screen.getByText('2 ingredients')
-        ).toBeDefined();
-        expect(
-            screen.getByText('A delicious recipe')
-        ).toBeDefined();
+        expect(screen.getByText('2 ingredients')).toBeDefined();
+        expect(screen.getByText('A delicious recipe')).toBeDefined();
     });
 
     it('renders ingredients and steps', () => {
         render(<RecipeInfo {...mockProps} />);
-        expect(
-            screen.getByText('ingredients')
-        ).toBeDefined();
-        expect(
-            screen.getByText('Ingredient 1')
-        ).toBeDefined();
-        expect(
-            screen.getByText('Ingredient 2')
-        ).toBeDefined();
+        expect(screen.getByText('ingredients')).toBeDefined();
+        expect(screen.getByText('Ingredient 1')).toBeDefined();
+        expect(screen.getByText('Ingredient 2')).toBeDefined();
         expect(screen.getByText('steps')).toBeDefined();
         expect(screen.getByText('Step 1')).toBeDefined();
         expect(screen.getByText('Step 2')).toBeDefined();
@@ -135,10 +106,7 @@ describe('RecipeInfo', () => {
 
     it('navigates to user profile when avatar is clicked', () => {
         const pushMock = vi.fn();
-        vi.spyOn(
-            nextNavigation,
-            'useRouter'
-        ).mockReturnValue({
+        vi.spyOn(nextNavigation, 'useRouter').mockReturnValue({
             push: pushMock,
         } as any);
 
@@ -149,9 +117,7 @@ describe('RecipeInfo', () => {
 
     it('displays verified icon for verified users', () => {
         render(<RecipeInfo {...mockProps} />);
-        expect(
-            screen.getByTestId('verified-icon')
-        ).toBeDefined();
+        expect(screen.getByTestId('verified-icon')).toBeDefined();
     });
 
     it('does not display verified icon for unverified users', () => {
@@ -160,15 +126,11 @@ describe('RecipeInfo', () => {
             user: { ...mockUser, verified: false },
         };
         render(<RecipeInfo {...unverifiedProps} />);
-        expect(
-            screen.queryByTestId('verified-icon')
-        ).toBeNull();
+        expect(screen.queryByTestId('verified-icon')).toBeNull();
     });
 
     it('renders RecipeCategoryAndMethod component', () => {
         render(<RecipeInfo {...mockProps} />);
-        expect(
-            screen.getByTestId('recipe-category-and-method')
-        ).toBeDefined();
+        expect(screen.getByTestId('recipe-category-and-method')).toBeDefined();
     });
 });

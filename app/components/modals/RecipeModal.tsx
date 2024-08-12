@@ -6,11 +6,7 @@ import { useMemo, useState } from 'react';
 import Heading from '@/app/components/Heading';
 import { categories } from '@/app/components/navbar/Categories';
 import CategoryInput from '@/app/components/inputs/CategoryInput';
-import {
-    FieldValues,
-    SubmitHandler,
-    useForm,
-} from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import Button from '@/app/components/Button';
 import { AiFillDelete } from 'react-icons/ai';
 import Input from '@/app/components/inputs/Input';
@@ -19,10 +15,7 @@ import ImageUpload from '@/app/components/inputs/ImageUpload';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import {
-    GiCookingPot,
-    GiPressureCooker,
-} from 'react-icons/gi';
+import { GiCookingPot, GiPressureCooker } from 'react-icons/gi';
 import { MdMicrowave } from 'react-icons/md';
 import { TbCooker } from 'react-icons/tb';
 import { CgSmartHomeCooker } from 'react-icons/cg';
@@ -117,9 +110,7 @@ const RecipeModal = () => {
             const newIngredients: string[] = [];
             for (let i = 0; i < numIngredients; i++) {
                 if (watch('ingredient ' + i) !== '') {
-                    newIngredients.push(
-                        watch('ingredient ' + i)
-                    );
+                    newIngredients.push(watch('ingredient ' + i));
                 }
             }
             setCustomValue('ingredients', newIngredients);
@@ -204,21 +195,18 @@ const RecipeModal = () => {
                             required={numIngredients === 1}
                         />
                     </div>
-                    {numIngredients > 1 &&
-                        i === numIngredients - 1 && (
-                            <div className="flex items-center justify-center">
-                                <AiFillDelete
-                                    data-testid="remove-ingredient-button"
-                                    color="#F43F5F"
-                                    onClick={() => {
-                                        removeIngredientInput(
-                                            i
-                                        );
-                                    }}
-                                    size={24}
-                                />
-                            </div>
-                        )}
+                    {numIngredients > 1 && i === numIngredients - 1 && (
+                        <div className="flex items-center justify-center">
+                            <AiFillDelete
+                                data-testid="remove-ingredient-button"
+                                color="#F43F5F"
+                                onClick={() => {
+                                    removeIngredientInput(i);
+                                }}
+                                size={24}
+                            />
+                        </div>
+                    )}
                 </div>
             );
         }
@@ -282,9 +270,7 @@ const RecipeModal = () => {
         <div className="flex flex-col gap-8">
             <Heading
                 title={t('title_category_recipe')}
-                subtitle={
-                    t('subtitle_category_recipe') ?? ''
-                }
+                subtitle={t('subtitle_category_recipe') ?? ''}
             />
             <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-y-auto">
                 {categories.map((item) => (
@@ -294,14 +280,9 @@ const RecipeModal = () => {
                     >
                         <CategoryInput
                             onClick={(category) =>
-                                setCustomValue(
-                                    'category',
-                                    category
-                                )
+                                setCustomValue('category', category)
                             }
-                            selected={
-                                category === item.label
-                            }
+                            selected={category === item.label}
                             label={item.label}
                             icon={item.icon}
                         />
@@ -352,9 +333,7 @@ const RecipeModal = () => {
             <div className="flex flex-col gap-8">
                 <Heading
                     title={t('title_description')}
-                    subtitle={
-                        t('subtitle_description') ?? ''
-                    }
+                    subtitle={t('subtitle_description') ?? ''}
                 />
                 <Input
                     id="title"
@@ -378,9 +357,7 @@ const RecipeModal = () => {
                     title={t('minutes')}
                     subtitle={t('minutes_subtitle')}
                     value={minutes}
-                    onChange={(value) =>
-                        setCustomValue('minutes', value)
-                    }
+                    onChange={(value) => setCustomValue('minutes', value)}
                 />
             </div>
         );
@@ -401,14 +378,9 @@ const RecipeModal = () => {
                         >
                             <CategoryInput
                                 onClick={(method) =>
-                                    setCustomValue(
-                                        'method',
-                                        method
-                                    )
+                                    setCustomValue('method', method)
                                 }
-                                selected={
-                                    method === item.label
-                                }
+                                selected={method === item.label}
                                 label={item.label}
                                 icon={item.icon}
                             />
@@ -430,42 +402,22 @@ const RecipeModal = () => {
                     <ImageUpload
                         data-testid="image-upload"
                         value={imageSrc}
-                        onChange={(value) =>
-                            setCustomValue(
-                                'imageSrc',
-                                value
-                            )
-                        }
+                        onChange={(value) => setCustomValue('imageSrc', value)}
                     />
                     <ImageUpload
                         data-testid="image-upload-2"
                         value={watch('imageSrc1')}
-                        onChange={(value) =>
-                            setCustomValue(
-                                'imageSrc1',
-                                value
-                            )
-                        }
+                        onChange={(value) => setCustomValue('imageSrc1', value)}
                     />
                     <ImageUpload
                         data-testid="image-upload-3"
                         value={watch('imageSrc2')}
-                        onChange={(value) =>
-                            setCustomValue(
-                                'imageSrc2',
-                                value
-                            )
-                        }
+                        onChange={(value) => setCustomValue('imageSrc2', value)}
                     />
                     <ImageUpload
                         data-testid="image-upload-4"
                         value={watch('imageSrc3')}
-                        onChange={(value) =>
-                            setCustomValue(
-                                'imageSrc3',
-                                value
-                            )
-                        }
+                        onChange={(value) => setCustomValue('imageSrc3', value)}
                     />
                 </div>
             </div>
@@ -479,9 +431,7 @@ const RecipeModal = () => {
             onSubmit={handleSubmit(onSubmit)}
             actionLabel={actionLabel}
             secondaryActionLabel={secondaryActionLabel}
-            secondaryAction={
-                step === STEPS.CATEGORY ? undefined : onBack
-            }
+            secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
             title={t('post_recipe') ?? 'Post a recipe!'}
             body={bodyContent}
             isLoading={isLoading}

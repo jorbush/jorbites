@@ -1,24 +1,8 @@
 import React from 'react';
-import {
-    cleanup,
-    render,
-    screen,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
-import Categories, {
-    categories,
-} from '@/app/components/navbar/Categories';
-import {
-    usePathname,
-    useSearchParams,
-} from 'next/navigation';
+import { cleanup, render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import Categories, { categories } from '@/app/components/navbar/Categories';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 // Mock the next/navigation module
 vi.mock('next/navigation', () => ({
@@ -28,25 +12,15 @@ vi.mock('next/navigation', () => ({
 
 // Mock the Container component
 vi.mock('@/app/components/Container', () => ({
-    default: ({
-        children,
-    }: {
-        children: React.ReactNode;
-    }) => <div data-testid="container">{children}</div>,
+    default: ({ children }: { children: React.ReactNode }) => (
+        <div data-testid="container">{children}</div>
+    ),
 }));
 
 // Mock the CategoryBox component
 vi.mock('@/app/components/CategoryBox', () => ({
-    default: ({
-        label,
-        selected,
-    }: {
-        label: string;
-        selected: boolean;
-    }) => (
-        <div
-            data-testid={`category-box-${label.toLowerCase()}`}
-        >
+    default: ({ label, selected }: { label: string; selected: boolean }) => (
+        <div data-testid={`category-box-${label.toLowerCase()}`}>
             {label} {selected ? '(selected)' : ''}
         </div>
     ),
@@ -90,9 +64,7 @@ describe('<Categories />', () => {
                 `category-box-${category.label.toLowerCase()}`
             );
             expect(categoryBox).toBeDefined();
-            expect(categoryBox.textContent?.trim()).toBe(
-                category.label
-            );
+            expect(categoryBox.textContent?.trim()).toBe(category.label);
         });
     });
 
@@ -104,11 +76,7 @@ describe('<Categories />', () => {
 
         render(<Categories />);
 
-        const selectedCategory = screen.getByTestId(
-            'category-box-fruits'
-        );
-        expect(selectedCategory.textContent).toBe(
-            'Fruits (selected)'
-        );
+        const selectedCategory = screen.getByTestId('category-box-fruits');
+        expect(selectedCategory.textContent).toBe('Fruits (selected)');
     });
 });

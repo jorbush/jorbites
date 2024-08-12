@@ -2,13 +2,7 @@ import React from 'react';
 import { render, cleanup } from '@testing-library/react';
 import FavoritesClient from '@/app/favorites/FavoritesClient';
 import { SafeRecipe, SafeUser } from '@/app/types';
-import {
-    vi,
-    it,
-    describe,
-    expect,
-    afterEach,
-} from 'vitest';
+import { vi, it, describe, expect, afterEach } from 'vitest';
 
 // Mock the useRouter hook
 vi.mock('next/navigation', () => ({
@@ -105,8 +99,6 @@ describe('FavoritesClient', () => {
         );
 
         // Assert that no recipes are displayed
-        expect(
-            container.querySelector('.grid')?.nodeValue
-        ).toBeNull();
+        expect(container.querySelector('.grid')?.nodeValue).toBeNull();
     });
 });

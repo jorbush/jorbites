@@ -1,17 +1,6 @@
 import React from 'react';
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import MenuItem from '@/app/components/navbar/MenuItem';
 
 describe('<MenuItem />', () => {
@@ -33,9 +22,7 @@ describe('<MenuItem />', () => {
         render(<MenuItem {...defaultProps} />);
         const menuItem = screen.getByText('Test Item');
         fireEvent.click(menuItem);
-        expect(defaultProps.onClick).toHaveBeenCalledTimes(
-            1
-        );
+        expect(defaultProps.onClick).toHaveBeenCalledTimes(1);
     });
 
     it('has the correct CSS classes', () => {
@@ -45,12 +32,8 @@ describe('<MenuItem />', () => {
         expect(menuItem.className).contain('py-3');
         expect(menuItem.className).contain('font-semibold');
         expect(menuItem.className).contain('transition');
-        expect(menuItem.className).contain(
-            'hover:bg-neutral-100'
-        );
-        expect(menuItem.className).contain(
-            'hover:text-black'
-        );
+        expect(menuItem.className).contain('hover:bg-neutral-100');
+        expect(menuItem.className).contain('hover:text-black');
     });
 
     it('applies custom label', () => {

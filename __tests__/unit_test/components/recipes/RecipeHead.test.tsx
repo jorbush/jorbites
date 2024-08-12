@@ -1,17 +1,5 @@
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RecipeHead from '@/app/components/recipes/RecipeHead';
 import { useRouter } from 'next/navigation';
 
@@ -49,9 +37,7 @@ describe('<RecipeHead />', () => {
 
     it('renders the component with correct title and minutes', () => {
         render(<RecipeHead {...mockProps} />);
-        expect(
-            screen.getByText('Test Recipe')
-        ).toBeDefined();
+        expect(screen.getByText('Test Recipe')).toBeDefined();
         expect(screen.getByText('30 min')).toBeDefined();
     });
 
@@ -64,8 +50,7 @@ describe('<RecipeHead />', () => {
 
     it('changes image when next button is clicked', () => {
         render(<RecipeHead {...mockProps} />);
-        const nextButton =
-            screen.getByTestId('next-button');
+        const nextButton = screen.getByTestId('next-button');
         const image = screen.getByAltText('Image');
         expect(image).toHaveProperty(
             'src',
@@ -80,8 +65,7 @@ describe('<RecipeHead />', () => {
 
     it('changes image when previous button is clicked', () => {
         render(<RecipeHead {...mockProps} />);
-        const prevButton =
-            screen.getByTestId('prev-button');
+        const prevButton = screen.getByTestId('prev-button');
         const image = screen.getByAltText('Image');
         fireEvent.click(prevButton);
         expect(image).toHaveProperty(
@@ -100,8 +84,8 @@ describe('<RecipeHead />', () => {
         render(<RecipeHead {...mockProps} />);
         const shareButton = screen.getByLabelText('Share');
         fireEvent.click(shareButton);
-        expect(
-            mockClipboard.writeText
-        ).toHaveBeenCalledWith(window.location.href);
+        expect(mockClipboard.writeText).toHaveBeenCalledWith(
+            window.location.href
+        );
     });
 });

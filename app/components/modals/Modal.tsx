@@ -85,9 +85,7 @@ const Modal: React.FC<ModalProps> = ({
                         <div
                             className="translate relative flex h-full w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none dark:bg-dark md:h-auto lg:h-auto"
                             style={{
-                                minHeight: minHeight
-                                    ? minHeight
-                                    : '0px',
+                                minHeight: minHeight ? minHeight : '0px',
                             }}
                         >
                             {/*header*/}
@@ -117,29 +115,17 @@ const Modal: React.FC<ModalProps> = ({
                                         secondaryActionLabel && (
                                             <Button
                                                 data-testid="secondary-action-button"
-                                                disabled={
-                                                    disabled ||
-                                                    isLoading
-                                                }
-                                                label={
-                                                    secondaryActionLabel
-                                                }
-                                                onClick={
-                                                    handleSecondaryAction
-                                                }
+                                                disabled={disabled || isLoading}
+                                                label={secondaryActionLabel}
+                                                onClick={handleSecondaryAction}
                                                 outline
                                             />
                                         )}
                                     <Button
                                         data-testid="action-button"
-                                        disabled={
-                                            disabled ||
-                                            isLoading
-                                        }
+                                        disabled={disabled || isLoading}
                                         label={actionLabel}
-                                        onClick={
-                                            handleSubmit
-                                        }
+                                        onClick={handleSubmit}
                                         withDelay
                                     />
                                 </div>

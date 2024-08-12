@@ -5,14 +5,7 @@ import {
     waitFor,
     cleanup,
 } from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import EmailNotificationsSelector from '@/app/components/settings/EmailNotificationsSelector';
 import axios from 'axios';
 import { act } from 'react';
@@ -60,34 +53,22 @@ describe('<EmailNotificationsSelector />', () => {
     });
 
     it('renders correctly with user preferences', () => {
-        render(
-            <EmailNotificationsSelector
-                currentUser={mockUser}
-            />
-        );
+        render(<EmailNotificationsSelector currentUser={mockUser} />);
 
-        expect(
-            screen.getByText('enable_email_notifications')
-        ).toBeDefined();
+        expect(screen.getByText('enable_email_notifications')).toBeDefined();
         expect(screen.getByRole('button')).toBeDefined();
     });
 
     it('toggles email notifications when button is clicked', async () => {
         (axios.put as any).mockResolvedValue({});
 
-        render(
-            <EmailNotificationsSelector
-                currentUser={mockUser}
-            />
-        );
+        render(<EmailNotificationsSelector currentUser={mockUser} />);
 
         const button = screen.getByRole('button');
         fireEvent.click(button);
 
         await waitFor(() => {
-            expect(axios.put).toHaveBeenCalledWith(
-                '/api/emailNotifications/1'
-            );
+            expect(axios.put).toHaveBeenCalledWith('/api/emailNotifications/1');
             expect(toast.success).toHaveBeenCalledWith(
                 'Email notifications updated!'
             );
@@ -95,26 +76,16 @@ describe('<EmailNotificationsSelector />', () => {
     });
 
     it('shows error toast when API call fails', async () => {
-        (axios.put as any).mockRejectedValue(
-            new Error('API Error')
-        );
+        (axios.put as any).mockRejectedValue(new Error('API Error'));
 
-        render(
-            <EmailNotificationsSelector
-                currentUser={mockUser}
-            />
-        );
+        render(<EmailNotificationsSelector currentUser={mockUser} />);
 
         const button = screen.getByRole('button');
         fireEvent.click(button);
 
         await waitFor(() => {
-            expect(axios.put).toHaveBeenCalledWith(
-                '/api/emailNotifications/1'
-            );
-            expect(toast.error).toHaveBeenCalledWith(
-                'Something went wrong.'
-            );
+            expect(axios.put).toHaveBeenCalledWith('/api/emailNotifications/1');
+            expect(toast.error).toHaveBeenCalledWith('Something went wrong.');
         });
     });
 
@@ -123,11 +94,7 @@ describe('<EmailNotificationsSelector />', () => {
         (axios.put as any).mockResolvedValue({});
 
         await act(async () => {
-            render(
-                <EmailNotificationsSelector
-                    currentUser={mockUser}
-                />
-            );
+            render(<EmailNotificationsSelector currentUser={mockUser} />);
         });
 
         const button = screen.getByRole('button');
@@ -162,14 +129,10 @@ describe('<EmailNotificationsSelector />', () => {
             verified: false,
         };
         const { rerender } = render(
-            <EmailNotificationsSelector
-                currentUser={userWithNotifications}
-            />
+            <EmailNotificationsSelector currentUser={userWithNotifications} />
         );
 
-        expect(
-            screen.getByTestId('thumb-up-icon')
-        ).toBeDefined();
+        expect(screen.getByTestId('thumb-up-icon')).toBeDefined();
 
         const userWithoutNotifications = {
             ...mockUser,
@@ -191,8 +154,6 @@ describe('<EmailNotificationsSelector />', () => {
             />
         );
 
-        expect(
-            screen.getByTestId('thumb-down-icon')
-        ).toBeDefined();
+        expect(screen.getByTestId('thumb-down-icon')).toBeDefined();
     });
 });

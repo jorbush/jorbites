@@ -1,4 +1,4 @@
-name: Vitest Unit Testing (Components & Pages)
+name: Jest Unit Testing (API Routes & Server Actions)
 
 on:
   push:
@@ -7,9 +7,11 @@ on:
     branches: [main]
 
 jobs:
-  vitest:
+  jest:
     runs-on: ubuntu-latest
-
+    environment: testing
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -23,4 +25,4 @@ jobs:
         run: npm install
 
       - name: Run unit tests
-        run: npm run vitest
+        run: npm run jest

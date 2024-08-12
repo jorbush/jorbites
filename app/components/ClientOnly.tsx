@@ -8,9 +8,7 @@ interface ClientOnlyProps {
     children: React.ReactNode;
 }
 
-const ClientOnly: React.FC<ClientOnlyProps> = ({
-    children,
-}) => {
+const ClientOnly: React.FC<ClientOnlyProps> = ({ children }) => {
     const [hasMounted, setHasMounted] = useState(false);
 
     useEffect(() => {
@@ -19,11 +17,7 @@ const ClientOnly: React.FC<ClientOnlyProps> = ({
 
     if (!hasMounted) return null;
 
-    return (
-        <I18nextProvider i18n={i18n}>
-            {children}
-        </I18nextProvider>
-    );
+    return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
 };
 
 export default ClientOnly;

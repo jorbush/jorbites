@@ -3,9 +3,7 @@ import RecipeCard from '@/app/components/recipes/RecipeCard';
 import EmptyState from '@/app/components/EmptyState';
 import Pagination from '@/app/components/Pagination';
 import { isMobile as detectMobile } from '@/app/utils/deviceDetector';
-import getRecipes, {
-    IRecipesParams,
-} from '@/app/actions/getRecipes';
+import getRecipes, { IRecipesParams } from '@/app/actions/getRecipes';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import ClientOnly from '@/app/components/ClientOnly';
 import { headers } from 'next/headers';

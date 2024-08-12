@@ -16,16 +16,12 @@ export async function PUT(_request: Request) {
             id: currentUser.id,
         },
         data: {
-            emailNotifications:
-                !currentUser.emailNotifications,
+            emailNotifications: !currentUser.emailNotifications,
         },
     });
 
     if (user.emailNotifications) {
-        await sendEmail(
-            'Email notifications have been activated.',
-            user.email
-        );
+        await sendEmail('Email notifications have been activated.', user.email);
     }
 
     return NextResponse.json(user);

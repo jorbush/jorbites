@@ -2,11 +2,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import {
-    FiChevronLeft,
-    FiChevronRight,
-    FiShare2,
-} from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/Heading';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -22,8 +18,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     minutes,
     imagesSrc,
 }) => {
-    const [currentImageIndex, setCurrentImageIndex] =
-        useState(0);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const router = useRouter();
 
     const copyToClipboard = () => {
@@ -52,17 +47,13 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
 
     const goToPreviousImage = () => {
         setCurrentImageIndex((prevIndex) =>
-            prevIndex === 0
-                ? imagesSrc.length - 1
-                : prevIndex - 1
+            prevIndex === 0 ? imagesSrc.length - 1 : prevIndex - 1
         );
     };
 
     const goToNextImage = () => {
         setCurrentImageIndex((prevIndex) =>
-            prevIndex === imagesSrc.length - 1
-                ? 0
-                : prevIndex + 1
+            prevIndex === imagesSrc.length - 1 ? 0 : prevIndex + 1
         );
     };
 

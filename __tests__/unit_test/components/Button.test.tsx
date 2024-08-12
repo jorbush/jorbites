@@ -1,15 +1,5 @@
-import {
-    render,
-    screen,
-    fireEvent,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-} from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Button from '@/app/components/Button';
 import { FaUser } from 'react-icons/fa';
 import React from 'react';
@@ -30,9 +20,7 @@ describe('<Button />', () => {
                 onClick={mockOnClick}
             />
         );
-        expect(
-            screen.getByText('Test Button')
-        ).toBeDefined();
+        expect(screen.getByText('Test Button')).toBeDefined();
     });
 
     it('calls onClick when clicked', () => {
@@ -54,9 +42,7 @@ describe('<Button />', () => {
                 disabled
             />
         );
-        expect(screen.getByText('Disabled')).toHaveProperty(
-            'disabled'
-        );
+        expect(screen.getByText('Disabled')).toHaveProperty('disabled');
     });
 
     it('applies outline styles when outline prop is true', () => {
@@ -93,9 +79,7 @@ describe('<Button />', () => {
                 icon={FaUser}
             />
         );
-        expect(
-            screen.getByTestId('button-icon')
-        ).toBeDefined();
+        expect(screen.getByTestId('button-icon')).toBeDefined();
     });
 
     it('applies delay when withDelay prop is true', async () => {
@@ -127,9 +111,7 @@ describe('<Button />', () => {
             />
         );
         const button = screen.getByText('Delete');
-        expect(button.className).toContain(
-            'border-rose-500'
-        );
+        expect(button.className).toContain('border-rose-500');
         expect(button.className).toContain('bg-rose-500');
     });
 });

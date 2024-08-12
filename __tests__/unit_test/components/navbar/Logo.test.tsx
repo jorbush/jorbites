@@ -1,18 +1,6 @@
 import React from 'react';
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Logo from '@/app/components/navbar/Logo';
 import { useRouter } from 'next/navigation';
 
@@ -58,25 +46,17 @@ describe('<Logo />', () => {
 
     it('renders the logo with default light theme', () => {
         render(<Logo />);
-        const logo = screen.getByAltText(
-            'Logo'
-        ) as HTMLImageElement;
+        const logo = screen.getByAltText('Logo') as HTMLImageElement;
         expect(logo).toBeDefined();
         expect(logo.src).toContain('/images/logo-nobg.png');
     });
 
     it('renders the logo with dark theme', () => {
-        vi.mocked(localStorage.getItem).mockReturnValue(
-            'dark'
-        );
+        vi.mocked(localStorage.getItem).mockReturnValue('dark');
         render(<Logo />);
-        const logo = screen.getByAltText(
-            'Logo'
-        ) as HTMLImageElement;
+        const logo = screen.getByAltText('Logo') as HTMLImageElement;
         expect(logo).toBeDefined();
-        expect(logo.src).toContain(
-            '/images/no_bg_white.png'
-        );
+        expect(logo.src).toContain('/images/no_bg_white.png');
     });
 
     it('navigates to home page when clicked', () => {

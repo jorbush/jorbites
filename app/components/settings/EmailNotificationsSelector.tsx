@@ -11,9 +11,9 @@ import { toast } from 'react-hot-toast';
 interface EmailNotificationProps {
     currentUser?: SafeUser | null;
 }
-const EmailNotificationsSelector: React.FC<
-    EmailNotificationProps
-> = ({ currentUser }) => {
+const EmailNotificationsSelector: React.FC<EmailNotificationProps> = ({
+    currentUser,
+}) => {
     const router = useRouter();
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
@@ -39,13 +39,9 @@ const EmailNotificationsSelector: React.FC<
     const toggleEmailNotifications = () => {
         setIsLoading(true);
         axios
-            .put(
-                `/api/emailNotifications/${currentUser?.id}`
-            )
+            .put(`/api/emailNotifications/${currentUser?.id}`)
             .then(() => {
-                toast.success(
-                    'Email notifications updated!'
-                );
+                toast.success('Email notifications updated!');
             })
             .catch(() => {
                 toast.error('Something went wrong.');
@@ -59,9 +55,7 @@ const EmailNotificationsSelector: React.FC<
     return (
         <div className="flex items-center">
             <div className="flex-1">
-                <p className="text-left">
-                    {t('enable_email_notifications')}
-                </p>
+                <p className="text-left">{t('enable_email_notifications')}</p>
             </div>
             <div className="flex items-center">
                 <button

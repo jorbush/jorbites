@@ -49,6 +49,9 @@ export async function POST(request: Request) {
                 },
             },
         },
+        include: {
+            comments: true,
+        },
     });
 
     return NextResponse.json(recipeAndComment);

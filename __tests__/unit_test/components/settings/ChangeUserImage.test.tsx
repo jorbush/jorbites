@@ -5,14 +5,7 @@ import {
     waitFor,
     cleanup,
 } from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -43,8 +36,7 @@ vi.mock('next-cloudinary', () => ({
         const handleClick = () => {
             onUpload({
                 info: {
-                    secure_url:
-                        'https://example.com/new-image.jpg',
+                    secure_url: 'https://example.com/new-image.jpg',
                 },
             });
         };
@@ -101,11 +93,7 @@ describe('<ChangeUserImageSelector />', () => {
                 image: null,
             },
         };
-        render(
-            <ChangeUserImageSelector
-                {...propsWithoutImage}
-            />
-        );
+        render(<ChangeUserImageSelector {...propsWithoutImage} />);
         const image = screen.getByAltText('Upload');
         expect(image).toHaveProperty(
             'src',
@@ -120,8 +108,7 @@ describe('<ChangeUserImageSelector />', () => {
         fireEvent.click(uploadWidget);
 
         await waitFor(() => {
-            const saveIcon =
-                screen.getByTestId('save-icon');
+            const saveIcon = screen.getByTestId('save-icon');
             expect(saveIcon).toBeDefined();
         });
     });
@@ -135,8 +122,7 @@ describe('<ChangeUserImageSelector />', () => {
         fireEvent.click(uploadWidget);
 
         await waitFor(() => {
-            const saveIcon =
-                screen.getByTestId('save-icon');
+            const saveIcon = screen.getByTestId('save-icon');
             fireEvent.click(saveIcon);
         });
 
@@ -144,20 +130,15 @@ describe('<ChangeUserImageSelector />', () => {
             expect(axios.put).toHaveBeenCalledWith(
                 `/api/userImage/${mockCurrentUser.id}`,
                 {
-                    userImage:
-                        'https://example.com/new-image.jpg',
+                    userImage: 'https://example.com/new-image.jpg',
                 }
             );
-            expect(toast.success).toHaveBeenCalledWith(
-                'Image updated!'
-            );
+            expect(toast.success).toHaveBeenCalledWith('Image updated!');
         });
     });
 
     it('handles API error when updating profile', async () => {
-        (axios.put as any).mockRejectedValue(
-            new Error('API Error')
-        );
+        (axios.put as any).mockRejectedValue(new Error('API Error'));
 
         render(<ChangeUserImageSelector {...mockProps} />);
         const uploadWidget = screen.getByAltText('Upload');
@@ -165,15 +146,12 @@ describe('<ChangeUserImageSelector />', () => {
         fireEvent.click(uploadWidget);
 
         await waitFor(() => {
-            const saveIcon =
-                screen.getByTestId('save-icon');
+            const saveIcon = screen.getByTestId('save-icon');
             fireEvent.click(saveIcon);
         });
 
         await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith(
-                'Something went wrong.'
-            );
+            expect(toast.error).toHaveBeenCalledWith('Something went wrong.');
         });
     });
 });

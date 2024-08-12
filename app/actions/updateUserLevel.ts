@@ -1,12 +1,11 @@
 import prisma from '@/app/libs/prismadb';
+import { calculateLevel } from '@/app/utils/calculateLevel';
 
 interface IParams {
     userId?: string;
 }
 
-export default async function setLevelByUserId(
-    params: IParams
-) {
+export default async function updateUserLevel(params: IParams) {
     try {
         const { userId } = params;
 
@@ -27,15 +26,11 @@ export default async function setLevelByUserId(
         });
 
         const totalLikes = userRecipes.reduce(
-            (total, recipe) =>
-                total + (recipe.numLikes || 0),
+            (total, recipe) => total + (recipe.numLikes || 0),
             0
         );
 
-        const newLevel = calculateLevel(
-            userRecipes.length,
-            totalLikes
-        );
+        const newLevel = calculateLevel(userRecipes.length, totalLikes);
 
         const updatedUser = await prisma.user.update({
             where: {
@@ -50,13 +45,4 @@ export default async function setLevelByUserId(
     } catch (error: any) {
         throw new Error(error);
     }
-}
-
-function calculateLevel(
-    numRecipes: number,
-    numTotalLikes: number
-): number {
-    const level = numRecipes + numTotalLikes;
-
-    return Math.floor(level);
 }

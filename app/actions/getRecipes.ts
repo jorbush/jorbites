@@ -6,9 +6,7 @@ export interface IRecipesParams {
     limit?: number;
 }
 
-export default async function getRecipes(
-    params: IRecipesParams
-) {
+export default async function getRecipes(params: IRecipesParams) {
     try {
         const { category, page = 1, limit = 10 } = params;
 

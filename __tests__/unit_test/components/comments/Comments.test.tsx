@@ -6,13 +6,7 @@ import {
     waitFor,
     cleanup,
 } from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    afterEach,
-} from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import Comments from '@/app/components/comments/Comments';
 import { SafeComment, SafeUser } from '@/app/types';
 
@@ -36,11 +30,7 @@ vi.mock('@/app/components/comments/CommentBox', () => ({
                 src={userImage}
                 alt="avatar"
             />
-            <button
-                onClick={() =>
-                    onCreateComment('This is a new comment')
-                }
-            >
+            <button onClick={() => onCreateComment('This is a new comment')}>
                 Submit
             </button>
         </div>
@@ -48,13 +38,7 @@ vi.mock('@/app/components/comments/CommentBox', () => ({
 }));
 
 vi.mock('@/app/components/comments/Comment', () => ({
-    default: ({
-        userName,
-        comment,
-    }: {
-        userName: string;
-        comment: string;
-    }) => (
+    default: ({ userName, comment }: { userName: string; comment: string }) => (
         <div>
             <p>{userName}</p>
             <p>{comment}</p>
@@ -105,9 +89,10 @@ describe('Comments', () => {
         );
 
         expect(screen.getByText('comments')).toBeDefined();
-        expect(
-            screen.getByAltText('avatar')
-        ).toHaveProperty('src', mockUser.image);
+        expect(screen.getByAltText('avatar')).toHaveProperty(
+            'src',
+            mockUser.image
+        );
     });
 
     it('displays comments', () => {
@@ -120,9 +105,7 @@ describe('Comments', () => {
         );
 
         expect(screen.getByText('Test User')).toBeDefined();
-        expect(
-            screen.getByText('This is a comment')
-        ).toBeDefined();
+        expect(screen.getByText('This is a comment')).toBeDefined();
     });
 
     it('handles creating a comment', async () => {
@@ -138,9 +121,9 @@ describe('Comments', () => {
         fireEvent.click(submitButton);
 
         await waitFor(() => {
-            expect(
-                mockOnCreateComment
-            ).toHaveBeenCalledWith('This is a new comment');
+            expect(mockOnCreateComment).toHaveBeenCalledWith(
+                'This is a new comment'
+            );
         });
     });
 });

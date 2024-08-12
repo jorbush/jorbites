@@ -33,19 +33,13 @@ const Comment: React.FC<CommentProps> = ({
     commentId,
     userLevel,
 }) => {
-    const formattedDate = format(
-        new Date(createdAt),
-        'dd/MM/yyyy HH:mm'
-    );
+    const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
     const words = comment.split(' ');
-    const [confirmModalOpen, setConfirmModalOpen] =
-        useState(false);
+    const [confirmModalOpen, setConfirmModalOpen] = useState(false);
     const router = useRouter();
     const { t } = useTranslation();
 
-    const isLongWord = words.some(
-        (word) => word.length > 20
-    );
+    const isLongWord = words.some((word) => word.length > 20);
 
     const deleteComment = () => {
         axios
@@ -65,9 +59,7 @@ const Comment: React.FC<CommentProps> = ({
             <div className="mt-2 flex-shrink-0">
                 <Avatar
                     src={userImage}
-                    onClick={() =>
-                        router.push('/profile/' + userId)
-                    }
+                    onClick={() => router.push('/profile/' + userId)}
                 />
             </div>
             <div className="ml-4 mt-2 flex-grow">
@@ -76,11 +68,7 @@ const Comment: React.FC<CommentProps> = ({
                         className={`cursor-pointer truncate whitespace-normal text-justify font-bold text-gray-800 dark:text-neutral-100 ${
                             isLongWord ? 'break-all' : ''
                         }`}
-                        onClick={() =>
-                            router.push(
-                                '/profile/' + userId
-                            )
-                        }
+                        onClick={() => router.push('/profile/' + userId)}
                     >
                         {userName}
                     </p>
@@ -106,9 +94,7 @@ const Comment: React.FC<CommentProps> = ({
                     <MdDelete
                         size={20}
                         className="absolute right-1 top-2 text-rose-500"
-                        onClick={() =>
-                            setConfirmModalOpen(true)
-                        }
+                        onClick={() => setConfirmModalOpen(true)}
                         data-testid="MdDelete"
                     />
                 )}

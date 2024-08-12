@@ -11,10 +11,7 @@ interface ImageUploadProps {
     value: string;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({
-    onChange,
-    value,
-}) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value }) => {
     const handleUpload = useCallback(
         (result: any) => {
             onChange(result.info.secure_url);
@@ -25,10 +22,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     return (
         <CldUploadWidget
             onUpload={handleUpload}
-            uploadPreset={
-                process.env
-                    .NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
-            }
+            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
             options={{
                 maxFiles: 1,
             }}

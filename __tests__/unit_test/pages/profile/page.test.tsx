@@ -1,17 +1,6 @@
 import React from 'react';
-import {
-    cleanup,
-    render,
-    waitFor,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { cleanup, render, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ProfilePage from '@/app/profile/[userId]/page';
 import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
 import getUserById from '@/app/actions/getUserById';
@@ -82,13 +71,9 @@ describe('ProfilePage', () => {
         const { getByText } = render(profilePage);
 
         await waitFor(() => {
+            expect(getByText('No recipes found')).toBeDefined();
             expect(
-                getByText('No recipes found')
-            ).toBeDefined();
-            expect(
-                getByText(
-                    'Looks like this user has not created recipes.'
-                )
+                getByText('Looks like this user has not created recipes.')
             ).toBeDefined();
         });
     });
@@ -147,12 +132,8 @@ describe('ProfilePage', () => {
 
         await waitFor(() => {
             expect(getByText('Test User')).toBeDefined();
-            expect(
-                getByText('Test Recipe 1')
-            ).toBeDefined();
-            expect(
-                getByText('Test Recipe 2')
-            ).toBeDefined();
+            expect(getByText('Test Recipe 1')).toBeDefined();
+            expect(getByText('Test Recipe 2')).toBeDefined();
         });
     });
 
@@ -194,13 +175,9 @@ describe('ProfilePage', () => {
 
         await waitFor(() => {
             expect(getByText('Test User')).toBeDefined();
+            expect(getByText('No recipes found')).toBeDefined();
             expect(
-                getByText('No recipes found')
-            ).toBeDefined();
-            expect(
-                getByText(
-                    'Looks like this user has not created recipes.'
-                )
+                getByText('Looks like this user has not created recipes.')
             ).toBeDefined();
         });
     });

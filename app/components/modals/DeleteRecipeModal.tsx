@@ -4,11 +4,7 @@ import Modal from '@/app/components/modals/Modal';
 import Heading from '@/app/components/Heading';
 import { useTranslation } from 'react-i18next';
 import { Dispatch, SetStateAction } from 'react';
-import {
-    FieldValues,
-    SubmitHandler,
-    useForm,
-} from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import Input from '@/app/components/inputs/Input';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
@@ -20,9 +16,11 @@ interface DeleteRecipeModalProps {
     setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const DeleteRecipeModal: React.FC<
-    DeleteRecipeModalProps
-> = ({ open, setIsOpen, id }) => {
+const DeleteRecipeModal: React.FC<DeleteRecipeModalProps> = ({
+    open,
+    setIsOpen,
+    id,
+}) => {
     const { t } = useTranslation();
     const router = useRouter();
     const {

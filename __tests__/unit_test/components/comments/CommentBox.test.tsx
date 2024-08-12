@@ -6,14 +6,7 @@ import {
     waitFor,
     cleanup,
 } from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import CommentBox from '@/app/components/comments/CommentBox';
 import { toast } from 'react-hot-toast';
 
@@ -53,31 +46,25 @@ describe('CommentBox', () => {
     it('renders correctly', () => {
         render(<CommentBox {...mockProps} />);
 
-        expect(
-            screen.getByPlaceholderText('write_comment')
-        ).toBeDefined();
-        expect(
-            screen.getByAltText('avatar')
-        ).toHaveProperty('src', mockProps.userImage);
+        expect(screen.getByPlaceholderText('write_comment')).toBeDefined();
+        expect(screen.getByAltText('avatar')).toHaveProperty(
+            'src',
+            mockProps.userImage
+        );
     });
 
     it('enables submit button when comment is not empty', async () => {
         render(<CommentBox {...mockProps} />);
 
-        const textarea =
-            screen.getByPlaceholderText('write_comment');
+        const textarea = screen.getByPlaceholderText('write_comment');
         fireEvent.change(textarea, {
             target: { value: 'This is a test comment' },
         });
 
         await waitFor(
             () => {
-                const submitButton =
-                    screen.getByRole('button');
-                expect(submitButton).toHaveProperty(
-                    'disabled',
-                    false
-                );
+                const submitButton = screen.getByRole('button');
+                expect(submitButton).toHaveProperty('disabled', false);
             },
             { timeout: 4000 }
         );
@@ -97,17 +84,14 @@ describe('CommentBox', () => {
         fireEvent.click(submitButton);
 
         await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith(
-                'Comment cannot be empty'
-            );
+            expect(toast.error).toHaveBeenCalledWith('Comment cannot be empty');
         });
     });
 
     it('calls onCreateComment with the comment text when submitted', async () => {
         render(<CommentBox {...mockProps} />);
 
-        const textarea =
-            screen.getByPlaceholderText('write_comment');
+        const textarea = screen.getByPlaceholderText('write_comment');
         fireEvent.change(textarea, {
             target: { value: 'This is a test comment' },
         });
@@ -116,9 +100,7 @@ describe('CommentBox', () => {
         fireEvent.click(submitButton);
 
         await waitFor(() => {
-            expect(
-                mockProps.onCreateComment
-            ).toHaveBeenCalledWith(
+            expect(mockProps.onCreateComment).toHaveBeenCalledWith(
                 'This is a test comment'
             );
         });
@@ -127,8 +109,7 @@ describe('CommentBox', () => {
     it('resets the textarea and re-enables the submit button after submission', async () => {
         render(<CommentBox {...mockProps} />);
 
-        const textarea =
-            screen.getByPlaceholderText('write_comment');
+        const textarea = screen.getByPlaceholderText('write_comment');
         fireEvent.change(textarea, {
             target: { value: 'This is a test comment' },
         });
@@ -139,10 +120,7 @@ describe('CommentBox', () => {
         await waitFor(
             () => {
                 expect(textarea.nodeValue).toBeNull();
-                expect(submitButton).toHaveProperty(
-                    'disabled',
-                    false
-                );
+                expect(submitButton).toHaveProperty('disabled', false);
             },
             { timeout: 4000 }
         );

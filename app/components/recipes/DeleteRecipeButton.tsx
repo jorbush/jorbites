@@ -1,18 +1,16 @@
 'use client';
 
 import { AiFillDelete } from 'react-icons/ai';
-import Button from '../Button';
+import Button from '@/app/components/Button';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import DeleteRecipeModal from '../modals/DeleteRecipeModal';
+import DeleteRecipeModal from '@/app/components/modals/DeleteRecipeModal';
 
 interface DeleteRecipeButtonProps {
     id: string;
 }
 
-const DeleteRecipeButton: React.FC<
-    DeleteRecipeButtonProps
-> = ({ id }) => {
+const DeleteRecipeButton: React.FC<DeleteRecipeButtonProps> = ({ id }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const { t } = useTranslation();

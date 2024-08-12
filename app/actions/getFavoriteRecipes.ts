@@ -13,9 +13,7 @@ export default async function getFavoriteRecipes() {
         const favorites = await prisma.recipe.findMany({
             where: {
                 id: {
-                    in: [
-                        ...(currentUser.favoriteIds || []),
-                    ],
+                    in: [...(currentUser.favoriteIds || [])],
                 },
             },
         });

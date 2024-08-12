@@ -4,9 +4,7 @@ interface IParams {
     userId?: string;
 }
 
-export default async function getRecipesByUserId(
-    params: IParams
-) {
+export default async function getRecipesByUserId(params: IParams) {
     try {
         const { userId } = params;
 

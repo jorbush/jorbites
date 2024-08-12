@@ -1,39 +1,21 @@
 import React from 'react';
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ImageUpload from '@/app/components/inputs/ImageUpload';
 
 // Define types for CldUploadWidget
 type CldUploadWidgetProps = {
     onUpload: (result: any) => void;
-    children: (props: {
-        open: () => void;
-    }) => React.ReactNode;
+    children: (props: { open: () => void }) => React.ReactNode;
 };
 
 // Mock next-cloudinary
 vi.mock('next-cloudinary', () => ({
-    CldUploadWidget: ({
-        onUpload,
-        children,
-    }: CldUploadWidgetProps) => {
+    CldUploadWidget: ({ onUpload, children }: CldUploadWidgetProps) => {
         const handleUpload = () => {
             onUpload({
                 info: {
-                    secure_url:
-                        'https://example.com/newimage.jpg',
+                    secure_url: 'https://example.com/newimage.jpg',
                 },
             });
         };
@@ -65,9 +47,7 @@ describe('ImageUpload', () => {
             />
         );
 
-        expect(
-            screen.getByTestId('TbPhotoPlus')
-        ).toBeDefined();
+        expect(screen.getByTestId('TbPhotoPlus')).toBeDefined();
         expect(screen.queryByRole('img')).toBeNull();
     });
 
@@ -79,9 +59,7 @@ describe('ImageUpload', () => {
             />
         );
 
-        expect(
-            screen.getByTestId('TbPhotoPlus')
-        ).toBeDefined();
+        expect(screen.getByTestId('TbPhotoPlus')).toBeDefined();
         expect(screen.getByRole('img')).toBeDefined();
         expect(screen.getByRole('img')).toHaveProperty(
             'src',
@@ -97,9 +75,7 @@ describe('ImageUpload', () => {
             />
         );
 
-        fireEvent.click(
-            screen.getByTestId('TbPhotoPlus').parentElement!
-        );
+        fireEvent.click(screen.getByTestId('TbPhotoPlus').parentElement!);
         expect(mockOnChange).toHaveBeenCalledWith(
             'https://example.com/newimage.jpg'
         );

@@ -1,16 +1,6 @@
 import React from 'react';
-import {
-    render,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    afterEach,
-} from 'vitest';
+import { render, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
 import { SafeUser } from '@/app/types';
 import { useRouter } from 'next/navigation';
@@ -60,26 +50,20 @@ describe('ProfileHeader', () => {
         expect(getByText('Test User')).toBeDefined();
         expect(getByText('level 5')).toBeDefined();
         expect(getByAltText('Avatar')).toBeDefined();
-        expect(
-            getByText('Test User').closest('svg')
-        ).toBeDefined();
+        expect(getByText('Test User').closest('svg')).toBeDefined();
     });
 
     it('calls router.push on user name click', () => {
         const router = { push: vi.fn() };
         (useRouter as any).mockReturnValue(router);
 
-        const { getByText } = render(
-            <ProfileHeader user={mockUser} />
-        );
+        const { getByText } = render(<ProfileHeader user={mockUser} />);
 
         // Simulate click on user name
         fireEvent.click(getByText('Test User'));
 
         // Assert router.push is called with correct URL
-        expect(router.push).toHaveBeenCalledWith(
-            '/profile/user1'
-        );
+        expect(router.push).toHaveBeenCalledWith('/profile/user1');
     });
 
     it('renders correctly with unverified user', () => {

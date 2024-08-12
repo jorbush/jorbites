@@ -1,17 +1,5 @@
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Pagination from '@/app/components/Pagination';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -54,9 +42,7 @@ describe('<Pagination />', () => {
         );
 
         expect(screen.getByText('2 of 5')).toBeDefined();
-        expect(screen.getAllByRole('button')).toHaveLength(
-            2
-        );
+        expect(screen.getAllByRole('button')).toHaveLength(2);
     });
 
     it('disables previous button on first page', () => {
@@ -97,9 +83,7 @@ describe('<Pagination />', () => {
         const prevButton = screen.getAllByRole('button')[0];
         fireEvent.click(prevButton);
 
-        expect(mockPush).toHaveBeenCalledWith(
-            '?foo=bar&page=2'
-        );
+        expect(mockPush).toHaveBeenCalledWith('?foo=bar&page=2');
     });
 
     it('calls router.push with correct URL when next button is clicked', () => {
@@ -114,9 +98,7 @@ describe('<Pagination />', () => {
         const nextButton = screen.getAllByRole('button')[1];
         fireEvent.click(nextButton);
 
-        expect(mockPush).toHaveBeenCalledWith(
-            '?foo=bar&page=4'
-        );
+        expect(mockPush).toHaveBeenCalledWith('?foo=bar&page=4');
     });
 
     it('uses translation for "of"', () => {

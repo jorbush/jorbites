@@ -1,18 +1,6 @@
 import React from 'react';
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Counter from '@/app/components/inputs/Counter';
 
 describe('Counter', () => {
@@ -37,9 +25,7 @@ describe('Counter', () => {
         );
 
         expect(screen.getByText('Guests')).toBeDefined();
-        expect(
-            screen.getByText('How many guests are coming?')
-        ).toBeDefined();
+        expect(screen.getByText('How many guests are coming?')).toBeDefined();
         expect(screen.getByText('2')).toBeDefined();
     });
 
@@ -53,8 +39,7 @@ describe('Counter', () => {
             />
         );
 
-        const plusButton =
-            screen.getByTestId('AiOutlinePlus');
+        const plusButton = screen.getByTestId('AiOutlinePlus');
         fireEvent.click(plusButton.parentElement!);
 
         expect(mockOnChange).toHaveBeenCalledWith(3);
@@ -70,9 +55,7 @@ describe('Counter', () => {
             />
         );
 
-        const minusButton = screen.getByTestId(
-            'AiOutlineMinus'
-        );
+        const minusButton = screen.getByTestId('AiOutlineMinus');
         fireEvent.click(minusButton.parentElement!);
 
         expect(mockOnChange).toHaveBeenCalledWith(1);
@@ -88,9 +71,7 @@ describe('Counter', () => {
             />
         );
 
-        const minusButton = screen.getByTestId(
-            'AiOutlineMinus'
-        );
+        const minusButton = screen.getByTestId('AiOutlineMinus');
         fireEvent.click(minusButton.parentElement!);
 
         expect(mockOnChange).not.toHaveBeenCalled();

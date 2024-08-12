@@ -7,10 +7,7 @@ interface IParams {
     recipeId?: string;
 }
 
-export async function POST(
-    request: Request,
-    { params }: { params: IParams }
-) {
+export async function POST(request: Request, { params }: { params: IParams }) {
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
@@ -57,9 +54,7 @@ export async function DELETE(
 
     let favoriteIds = [...(currentUser.favoriteIds || [])];
 
-    favoriteIds = favoriteIds.filter(
-        (id) => id !== recipeId
-    );
+    favoriteIds = favoriteIds.filter((id) => id !== recipeId);
 
     const user = await prisma.user.update({
         where: {

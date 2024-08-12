@@ -1,22 +1,7 @@
 import React from 'react';
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-} from '@testing-library/react';
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-} from 'vitest';
-import {
-    useRouter,
-    useSearchParams,
-} from 'next/navigation';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { useRouter, useSearchParams } from 'next/navigation';
 import CategoryBox from '@/app/components/CategoryBox';
 import { FaHome } from 'react-icons/fa';
 
@@ -70,14 +55,9 @@ describe('<CategoryBox />', () => {
                 selected
             />
         );
-        const container =
-            screen.getAllByText('home')[0].parentElement;
-        expect(container?.className).toContain(
-            'border-b-neutral-800'
-        );
-        expect(container?.className).toContain(
-            'text-neutral-800'
-        );
+        const container = screen.getAllByText('home')[0].parentElement;
+        expect(container?.className).toContain('border-b-neutral-800');
+        expect(container?.className).toContain('text-neutral-800');
     });
 
     it('applies default styles when selected prop is false', () => {
@@ -87,14 +67,9 @@ describe('<CategoryBox />', () => {
                 label="Home"
             />
         );
-        const container =
-            screen.getAllByText('home')[0].parentElement;
-        expect(container?.className).toContain(
-            'border-transparent'
-        );
-        expect(container?.className).toContain(
-            'text-neutral-500'
-        );
+        const container = screen.getAllByText('home')[0].parentElement;
+        expect(container?.className).toContain('border-transparent');
+        expect(container?.className).toContain('text-neutral-500');
     });
 
     it('calls router.push with correct URL when clicked and category is not selected', () => {
@@ -109,9 +84,7 @@ describe('<CategoryBox />', () => {
         );
         fireEvent.click(screen.getByText('home'));
 
-        expect(mockPush).toHaveBeenCalledWith(
-            '/?category=Home'
-        );
+        expect(mockPush).toHaveBeenCalledWith('/?category=Home');
     });
 
     it('calls router.push with correct URL when clicked and category is already selected', () => {

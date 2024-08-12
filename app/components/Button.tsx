@@ -4,9 +4,7 @@ import { useState } from 'react';
 /* eslint-disable unused-imports/no-unused-vars */
 interface ButtonProps {
     label: string;
-    onClick: (
-        e: React.MouseEvent<HTMLButtonElement>
-    ) => void;
+    onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
     disabled?: boolean;
     outline?: boolean;
     small?: boolean;
@@ -26,9 +24,7 @@ const Button: React.FC<ButtonProps> = ({
     deleteButton,
 }) => {
     const [isDisabled, setIsDisabled] = useState(false);
-    const handleButtonClick = (
-        e: React.MouseEvent<HTMLButtonElement>
-    ) => {
+    const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         if (!disabled && !isDisabled) {
             onClick(e);
             if (withDelay) {

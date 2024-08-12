@@ -6,14 +6,7 @@ import {
     waitFor,
     cleanup,
 } from '@testing-library/react';
-import {
-    vi,
-    describe,
-    it,
-    expect,
-    beforeEach,
-    afterEach,
-} from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import RegisterModal from '@/app/components/modals/RegisterModal';
 import { signIn } from 'next-auth/react';
 import axios from 'axios';
@@ -71,18 +64,10 @@ describe('RegisterModal', () => {
 
     it('renders the register modal', () => {
         render(<RegisterModal />);
-        expect(
-            screen.getByText('welcome_jorbites')
-        ).toBeDefined();
-        expect(
-            screen.getByRole('textbox', { name: /email/i })
-        ).toBeDefined();
-        expect(
-            screen.getByRole('textbox', { name: /name/i })
-        ).toBeDefined();
-        expect(
-            screen.getByLabelText(/password/i)
-        ).toBeDefined();
+        expect(screen.getByText('welcome_jorbites')).toBeDefined();
+        expect(screen.getByRole('textbox', { name: /email/i })).toBeDefined();
+        expect(screen.getByRole('textbox', { name: /name/i })).toBeDefined();
+        expect(screen.getByLabelText(/password/i)).toBeDefined();
         expect(
             screen.getByRole('button', {
                 name: /login_google/i,
@@ -106,35 +91,25 @@ describe('RegisterModal', () => {
         fireEvent.change(screen.getByLabelText('name'), {
             target: { value: 'testuser' },
         });
-        fireEvent.change(
-            screen.getByLabelText('password'),
-            { target: { value: 'password123' } }
-        );
+        fireEvent.change(screen.getByLabelText('password'), {
+            target: { value: 'password123' },
+        });
 
         fireEvent.click(screen.getByText('continue'));
 
         await waitFor(() => {
-            expect(axios.post).toHaveBeenCalledWith(
-                '/api/register',
-                {
-                    email: 'test@example.com',
-                    name: 'testuser',
-                    password: 'password123',
-                }
-            );
-            expect(toast.success).toHaveBeenCalledWith(
-                'Registered!'
-            );
-            expect(
-                mockRegisterModalClose
-            ).toHaveBeenCalled();
+            expect(axios.post).toHaveBeenCalledWith('/api/register', {
+                email: 'test@example.com',
+                name: 'testuser',
+                password: 'password123',
+            });
+            expect(toast.success).toHaveBeenCalledWith('Registered!');
+            expect(mockRegisterModalClose).toHaveBeenCalled();
         });
     });
 
     it('displays error toast on failed registration', async () => {
-        (axios.post as any).mockRejectedValue(
-            'Registration error'
-        );
+        (axios.post as any).mockRejectedValue('Registration error');
 
         render(<RegisterModal />);
 
@@ -144,17 +119,14 @@ describe('RegisterModal', () => {
         fireEvent.change(screen.getByLabelText('name'), {
             target: { value: 'testuser' },
         });
-        fireEvent.change(
-            screen.getByLabelText('password'),
-            { target: { value: 'password123' } }
-        );
+        fireEvent.change(screen.getByLabelText('password'), {
+            target: { value: 'password123' },
+        });
 
         fireEvent.click(screen.getByText('continue'));
 
         await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith(
-                'Registration error'
-            );
+            expect(toast.error).toHaveBeenCalledWith('Registration error');
         });
     });
 
@@ -180,9 +152,7 @@ describe('RegisterModal', () => {
         fireEvent.click(screen.getByText('login'));
 
         await waitFor(() => {
-            expect(
-                mockRegisterModalClose
-            ).toHaveBeenCalled();
+            expect(mockRegisterModalClose).toHaveBeenCalled();
             expect(mockLoginModalOpen).toHaveBeenCalled();
         });
     });

@@ -4,16 +4,13 @@ import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import getRecipeById from '@/app/actions/getRecipeById';
-import setLevelByUserId from '@/app/actions/setLevelByUserId';
+import updateUserLevel from '@/app/actions/updateUserLevel';
 
 interface IParams {
     recipeId?: string;
 }
 
-export async function POST(
-    request: Request,
-    { params }: { params: IParams }
-) {
+export async function POST(request: Request, { params }: { params: IParams }) {
     const body = await request.json();
 
     const { operation } = body;
@@ -71,7 +68,7 @@ export async function POST(
         },
     });
 
-    await setLevelByUserId({
+    await updateUserLevel({
         userId: currentRecipe?.user.id,
     });
 
@@ -106,7 +103,7 @@ export async function DELETE(
         },
     });
 
-    await setLevelByUserId({
+    await updateUserLevel({
         userId: recipe.userId,
     });
 

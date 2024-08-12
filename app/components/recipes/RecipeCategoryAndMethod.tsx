@@ -17,9 +17,10 @@ interface RecipeInfoProps {
         | undefined;
 }
 
-const RecipeCategoryAndMethod: React.FC<
-    RecipeInfoProps
-> = ({ category, method }) => {
+const RecipeCategoryAndMethod: React.FC<RecipeInfoProps> = ({
+    category,
+    method,
+}) => {
     return (
         <>
             <hr />
