@@ -11,7 +11,7 @@ const PrivacyPolicy: React.FC = () => {
         <Container>
             <div className="mx-auto max-w-screen-md dark:text-neutral-100">
                 <Head>
-                    <title>Política de Privacidad | Jorbites</title>
+                    <title>{t('privacy_policy')} | Jorbites</title>
                     <meta
                         name="description"
                         content="Política de privacidad de Jorbites"
@@ -19,7 +19,7 @@ const PrivacyPolicy: React.FC = () => {
                 </Head>
                 <div className="container mx-auto px-4 py-6">
                     <h1 className="mb-4 text-3xl font-bold">
-                        Política de Privacidad
+                        {t('privacy_policy')}
                     </h1>
                     <p className="mb-4">
                         Última actualización: [12 de agosto de 2024]

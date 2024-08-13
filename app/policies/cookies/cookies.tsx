@@ -10,15 +10,15 @@ const CookiesPolicy: React.FC = () => {
         <Container>
             <div className="mx-auto max-w-screen-md dark:text-neutral-100">
                 <Head>
-                    <title>Política de Cookies | Jorbites</title>
+                    <title>{t('cookies_policy')} | Jorbites</title>
                     <meta
                         name="description"
-                        content="Política de cookies de Jorbites"
+                        content="Jorbites Cookies Policy"
                     />
                 </Head>
                 <div className="container mx-auto px-4 py-6">
                     <h1 className="mb-4 text-3xl font-bold">
-                        Política de Cookies
+                        {t('cookies_policy')}
                     </h1>
                     <p className="mb-4">
                         Última actualización: [12 de agosto de 2024]
