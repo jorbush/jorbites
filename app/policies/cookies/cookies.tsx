@@ -8,7 +8,7 @@ const CookiesPolicy: React.FC = () => {
 
     return (
         <Container>
-            <div className="mx-auto max-w-screen-md">
+            <div className="mx-auto max-w-screen-md dark:text-neutral-100">
                 <Head>
                     <title>Política de Cookies | Jorbites</title>
                     <meta

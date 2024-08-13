@@ -9,7 +9,7 @@ const PrivacyPolicy: React.FC = () => {
 
     return (
         <Container>
-            <div className="mx-auto max-w-screen-md">
+            <div className="mx-auto max-w-screen-md dark:text-neutral-100">
                 <Head>
                     <title>Política de Privacidad | Jorbites</title>
                     <meta
