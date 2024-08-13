@@ -3,9 +3,12 @@
 import Container from '@/app/components/Container';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/navigation';
+import { FiChevronLeft } from 'react-icons/fi';
 
 const PrivacyPolicy: React.FC = () => {
     const { t } = useTranslation();
+    const router = useRouter();
 
     return (
         <Container>
@@ -17,10 +20,19 @@ const PrivacyPolicy: React.FC = () => {
                         content="Política de privacidad de Jorbites"
                     />
                 </Head>
-                <div className="container mx-auto px-4 py-6">
-                    <h1 className="mb-4 text-3xl font-bold">
-                        {t('privacy_policy')}
-                    </h1>
+                <div className="mx-auto max-w-[700px] gap-10 px-1 py-0 md:px-4 md:py-6">
+                    <div className="mb-5 flex items-center justify-between">
+                        <button
+                            className="flex items-center space-x-2 text-gray-600 focus:outline-none dark:text-neutral-100"
+                            onClick={() => router.back()}
+                        >
+                            <FiChevronLeft className="text-xl" />
+                        </button>
+                        <h1 className="text-3xl font-bold">
+                            {t('privacy_policy')}
+                        </h1>
+                        <div className="w-8"></div>
+                    </div>
                     <p className="mb-4">
                         Última actualización: [12 de agosto de 2024]
                     </p>
