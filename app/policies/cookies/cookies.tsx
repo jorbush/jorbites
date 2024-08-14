@@ -37,8 +37,7 @@ const CookiesPolicy: React.FC = () => {
                         {t('last_update')}: [{t('cookies_date')}]
                     </p>
                     <p className="mb-4">
-                        {t('cookies_description_1')}{' '}
-                        <strong>Jorbites</strong>
+                        {t('cookies_description_1')} <strong>Jorbites</strong>
                         {t('cookies_description_2')}
                         <a
                             href="https://jorbites.com"
@@ -63,10 +62,12 @@ const CookiesPolicy: React.FC = () => {
                     </p>
                     <ul className="mb-4 ml-6 list-disc">
                         <li>
-                            <strong>{t('session_cookies_title')}</strong> {t('session_cookies_description')}
+                            <strong>{t('session_cookies_title')}</strong>{' '}
+                            {t('session_cookies_description')}
                         </li>
                         <li>
-                            <strong>{t('authentication_cookies_title')}</strong> {t('authentication_cookies_description_1')}
+                            <strong>{t('authentication_cookies_title')}</strong>{' '}
+                            {t('authentication_cookies_description_1')}
                             <a
                                 href="https://policies.google.com/privacy"
                                 className="text-blue-600"
@@ -119,22 +120,34 @@ const CookiesPolicy: React.FC = () => {
                     </p>
                     <ul className="mb-4 ml-6 list-disc">
                         <li>
-                            <a href="https://vercel.com/legal/privacy-policy" className="text-blue-600">
+                            <a
+                                href="https://vercel.com/legal/privacy-policy"
+                                className="text-blue-600"
+                            >
                                 {t('vercel_privacy_policy')}
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.godaddy.com/legal/agreements/privacy-policy" className="text-blue-600">
+                            <a
+                                href="https://www.godaddy.com/legal/agreements/privacy-policy"
+                                className="text-blue-600"
+                            >
                                 {t('godaddy_privacy_policy')}
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.mongodb.com/legal/privacy-policy" className="text-blue-600">
+                            <a
+                                href="https://www.mongodb.com/legal/privacy-policy"
+                                className="text-blue-600"
+                            >
                                 {t('mongodb_privacy_policy')}
                             </a>
                         </li>
                         <li>
-                            <a href="https://cloudinary.com/privacy" className="text-blue-600">
+                            <a
+                                href="https://cloudinary.com/privacy"
+                                className="text-blue-600"
+                            >
                                 {t('cloudinary_privacy_policy')}
                             </a>
                         </li>
