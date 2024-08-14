@@ -1,6 +1,7 @@
 'use client';
 import Container from '@/app/components/Container';
 import Head from 'next/head';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { FiChevronLeft } from 'react-icons/fi';
@@ -33,7 +34,7 @@ const CookiesPolicy: React.FC = () => {
                         <div className="w-8"></div>
                     </div>
                     <p className="mb-4">
-                        Última actualización: [12 de agosto de 2024]
+                        {t('last_update')}: [12 de agosto de 2024]
                     </p>
                     <p className="mb-4">
                         En <strong>Jorbites</strong> (&quot;nosotros&quot;,
@@ -192,7 +193,7 @@ const CookiesPolicy: React.FC = () => {
                         para estar informado sobre cómo utilizamos las cookies.
                     </p>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        Contacto
+                        {t('contact')}
                     </h2>
                     <p>
                         Si tienes alguna pregunta sobre nuestra política de
@@ -204,12 +205,12 @@ const CookiesPolicy: React.FC = () => {
                             jbonetv5@gmail.com
                         </a>{' '}
                         o visitar nuestra{' '}
-                        <a
-                            href="/politica-de-privacidad"
+                        <Link
+                            href="/policies/privacy"
                             className="text-blue-600"
                         >
-                            Política de Privacidad
-                        </a>{' '}
+                            {t('privacy_policy')}
+                        </Link>{' '}
                         para más información.
                     </p>
                 </div>

@@ -235,7 +235,7 @@ const PrivacyPolicy: React.FC = () => {
                         un aviso en nuestro sitio web.
                     </p>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        8. Contacto
+                        8. {t('contact')}
                     </h2>
                     <p>
                         Si tienes alguna pregunta o inquietud sobre nuestra
