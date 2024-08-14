@@ -34,63 +34,46 @@ const CookiesPolicy: React.FC = () => {
                         <div className="w-8"></div>
                     </div>
                     <p className="mb-4">
-                        {t('last_update')}: [12 de agosto de 2024]
+                        {t('last_update')}: [{t('cookies_date')}]
                     </p>
                     <p className="mb-4">
-                        En <strong>Jorbites</strong> (&quot;nosotros&quot;,
-                        &quot;nuestro&quot;, &quot;nuestra&quot;, &quot;sitio
-                        web&quot;), accesible desde{' '}
+                        {t('cookies_description_1')}{' '}
+                        <strong>Jorbites</strong>
+                        {t('cookies_description_2')}
                         <a
                             href="https://jorbites.com"
                             className="text-blue-600"
                         >
                             jorbites.com
                         </a>
-                        , utilizamos cookies y tecnologías similares para
-                        asegurar el correcto funcionamiento de nuestro sitio web
-                        y mejorar la experiencia de usuario. Esta política
-                        explica qué son las cookies, cómo las utilizamos, y las
-                        opciones que tienes para gestionarlas.
+                        {t('cookies_description_3')}
                     </p>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        ¿Qué son las cookies?
+                        {t('what_are_cookies')}
                     </h2>
-                    <p className="mb-4">
-                        Las cookies son pequeños archivos de texto que se
-                        almacenan en tu dispositivo cuando visitas un sitio web.
-                        Son ampliamente utilizadas para hacer que los sitios web
-                        funcionen de manera más eficiente, así como para
-                        proporcionar información a los propietarios del sitio.
-                    </p>
+                    <p className="mb-4">{t('cookies_definition')}</p>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        Tipos de cookies que utilizamos
+                        {t('types_of_cookies')}
                     </h2>
                     <h3 className="mb-2 mt-4 text-xl font-semibold">
-                        1. Cookies técnicas esenciales
+                        {t('essential_technical_cookies')}
                     </h3>
                     <p className="mb-4">
-                        Estas cookies son necesarias para que nuestro sitio web
-                        funcione correctamente y te permiten navegar por él y
-                        utilizar sus funciones esenciales. Sin estas cookies,
-                        algunos servicios en nuestro sitio no funcionarían
-                        correctamente.
+                        {t('essential_technical_cookies_description')}
                     </p>
                     <ul className="mb-4 ml-6 list-disc">
                         <li>
-                            <strong>Cookies de sesión:</strong> Mantienen tu
-                            sesión activa mientras navegas por el sitio.
+                            <strong>{t('session_cookies_title')}</strong> {t('session_cookies_description')}
                         </li>
                         <li>
-                            <strong>Cookies de autenticación:</strong> Facilitan
-                            el inicio de sesión y mantienen tu sesión activa,
-                            especialmente cuando usas{' '}
+                            <strong>{t('authentication_cookies_title')}</strong> {t('authentication_cookies_description_1')}
                             <a
                                 href="https://policies.google.com/privacy"
                                 className="text-blue-600"
                             >
                                 Google SSO
                             </a>{' '}
-                            y{' '}
+                            {t('authentication_cookies_description_2')}
                             <a
                                 href="https://docs.github.com/en/github/authenticating-to-github/githubs-privacy-statement"
                                 className="text-blue-600"
@@ -101,117 +84,88 @@ const CookiesPolicy: React.FC = () => {
                         </li>
                     </ul>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        Servicios de terceros
+                        {t('third_party_services')}
                     </h2>
                     <p className="mb-4">
-                        Nuestro sitio web está alojado en{' '}
+                        {t('third_party_services_description_1')}
                         <a
                             href="https://vercel.com"
                             className="text-blue-600"
                         >
                             Vercel
                         </a>
-                        , y el dominio es proporcionado por{' '}
+                        {t('third_party_services_description_2')}
                         <a
                             href="https://www.godaddy.com"
                             className="text-blue-600"
                         >
                             GoDaddy
                         </a>
-                        . Además, utilizamos{' '}
+                        {t('third_party_services_description_3')}
                         <a
                             href="https://www.mongodb.com"
                             className="text-blue-600"
                         >
                             MongoDB
                         </a>{' '}
-                        para alojar y gestionar nuestra base de datos y{' '}
+                        {t('third_party_services_description_4')}
                         <a
                             href="https://cloudinary.com/"
                             className="text-blue-600"
                         >
                             Cloudinary
                         </a>{' '}
-                        para almacenar y gestionar las imágenes que subes. Estos
-                        proveedores pueden utilizar cookies en sus servicios.
-                        Revisa sus políticas de privacidad para más detalles
-                        sobre cómo gestionan las cookies:
+                        {t('third_party_services_description_5')}
                     </p>
                     <ul className="mb-4 ml-6 list-disc">
                         <li>
-                            <a
-                                href="https://vercel.com/legal/privacy-policy"
-                                className="text-blue-600"
-                            >
-                                Política de Privacidad de Vercel
+                            <a href="https://vercel.com/legal/privacy-policy" className="text-blue-600">
+                                {t('vercel_privacy_policy')}
                             </a>
                         </li>
                         <li>
-                            <a
-                                href="https://www.godaddy.com/legal/agreements/privacy-policy"
-                                className="text-blue-600"
-                            >
-                                Política de Privacidad de GoDaddy
+                            <a href="https://www.godaddy.com/legal/agreements/privacy-policy" className="text-blue-600">
+                                {t('godaddy_privacy_policy')}
                             </a>
                         </li>
                         <li>
-                            <a
-                                href="https://www.mongodb.com/legal/privacy-policy"
-                                className="text-blue-600"
-                            >
-                                Política de Privacidad de MongoDB
+                            <a href="https://www.mongodb.com/legal/privacy-policy" className="text-blue-600">
+                                {t('mongodb_privacy_policy')}
                             </a>
                         </li>
                         <li>
-                            <a
-                                href="https://cloudinary.com/privacy"
-                                className="text-blue-600"
-                            >
-                                Política de Privacidad de Cloudinary
+                            <a href="https://cloudinary.com/privacy" className="text-blue-600">
+                                {t('cloudinary_privacy_policy')}
                             </a>
                         </li>
                     </ul>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        ¿Cómo puedes gestionar las cookies?
+                        {t('how_to_manage_cookies')}
                     </h2>
-                    <p className="mb-4">
-                        Dado que solo utilizamos cookies técnicas esenciales, no
-                        es necesario obtener tu consentimiento para su uso. Sin
-                        embargo, puedes configurar tu navegador para bloquear o
-                        alertarte sobre estas cookies, aunque al hacerlo,
-                        algunas partes del sitio podrían no funcionar
-                        correctamente.
-                    </p>
+                    <p className="mb-4">{t('manage_cookies_description')}</p>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        Cambios en la Política de Cookies
+                        {t('changes_in_cookies_policy')}
                     </h2>
-                    <p className="mb-4">
-                        Podemos actualizar esta política de cookies para
-                        reflejar cambios en nuestras prácticas o por otras
-                        razones operativas, legales o regulatorias. Te
-                        recomendamos que revises esta política periódicamente
-                        para estar informado sobre cómo utilizamos las cookies.
-                    </p>
+                    <p className="mb-4">{t('policy_changes_description')}</p>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
                         {t('contact')}
                     </h2>
                     <p>
-                        Si tienes alguna pregunta sobre nuestra política de
-                        cookies, puedes contactarnos a través de{' '}
+                        {t('contact_description_1')}
                         <a
                             href="mailto:jbonetv5@gmail.com"
                             className="text-blue-600"
                         >
                             jbonetv5@gmail.com
                         </a>{' '}
-                        o visitar nuestra{' '}
+                        {t('contact_description_2')}
                         <Link
                             href="/policies/privacy"
                             className="text-blue-600"
                         >
                             {t('privacy_policy')}
                         </Link>{' '}
-                        para más información.
+                        {t('contact_description_3')}
                     </p>
                 </div>
             </div>
