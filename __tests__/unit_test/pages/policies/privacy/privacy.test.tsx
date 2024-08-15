@@ -39,9 +39,6 @@ describe('PrivacyPolicy', () => {
 
         const backButton = getByRole('button');
         expect(backButton).toBeDefined();
-
-        // You can add a test here to simulate a click and check if router.back() is called
-        // This would require setting up a mock for useRouter and its back() method
     });
 
     it('contains links to external services', () => {
