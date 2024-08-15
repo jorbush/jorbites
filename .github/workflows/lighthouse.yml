@@ -6,16 +6,33 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
+
       - name: Install dependencies
         run: npm install
+
       - name: Start server
         run: npm run start &
+
+      - name: Wait for server to be ready
+        run: sleep 20  # Ajusta el tiempo según lo necesites para esperar que el servidor arranque
+
       - name: Run Lighthouse
         uses: treosh/lighthouse-ci-action@v1
         with:
           urls: http://localhost:3000
-          uploadArtifacts: true
+
+      - name: Save Lighthouse Report
+        if: always()
+        run: |
+          mkdir -p ./lighthouse-report
+          mv ./lighthouseci/* ./lighthouse-report/
+      - name: Upload Lighthouse Report
+        uses: actions/upload-artifact@v3
+        with:
+            name: lighthouse-report
+            path: ./lighthouse-report
