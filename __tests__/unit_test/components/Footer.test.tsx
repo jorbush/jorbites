@@ -37,6 +37,12 @@ describe('<Footer />', () => {
         expect(screen.getByText('contact: jbonetv5@gmail.com')).toBeDefined();
     });
 
+    it('renders the privacy policy and cookies policy links', () => {
+        render(<Footer />);
+        expect(screen.getByText('privacy_policy')).toBeDefined();
+        expect(screen.getByText('cookies_policy')).toBeDefined();
+    });
+
     it('applies the correct CSS classes', () => {
         render(<Footer />);
         const footerElement = screen
