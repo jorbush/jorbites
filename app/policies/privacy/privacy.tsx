@@ -17,7 +17,7 @@ const PrivacyPolicy: React.FC = () => {
                     <title>{t('privacy_policy')} | Jorbites</title>
                     <meta
                         name="description"
-                        content="Política de privacidad de Jorbites"
+                        content={t('privacy_policy_description') || ''}
                     />
                 </Head>
                 <div className="mx-auto max-w-[700px] gap-10 px-1 py-0 md:px-4 md:py-6">
@@ -34,180 +34,146 @@ const PrivacyPolicy: React.FC = () => {
                         <div className="w-8"></div>
                     </div>
                     <p className="mb-4">
-                        Última actualización: [12 de agosto de 2024]
+                        {t('last_update')}: {t('privacy_date')}
                     </p>
                     <p className="mb-4">
-                        En <strong>Jorbites</strong> (&quot;nosotros&quot;,
-                        &quot;nuestro&quot;, &quot;nuestra&quot;, &quot;sitio
-                        web&quot;), accesible desde{' '}
+                        {t('privacy_intro_1')}
+                        <strong>Jorbites</strong>
+                        {t('privacy_intro_2')}
                         <a
                             href="https://jorbites.com"
                             className="text-blue-600"
                         >
                             jorbites.com
                         </a>
-                        , respetamos tu privacidad y nos comprometemos a
-                        proteger tus datos personales. Esta política de
-                        privacidad explica cómo recopilamos, utilizamos y
-                        protegemos la información personal que nos proporcionas
-                        a través de nuestro sitio web.
+                        {t('privacy_intro_3')}
                     </p>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        1. Información que recopilamos
+                        {t('information_we_collect')}
                     </h2>
-                    <p className="mb-4">
-                        Recopilamos diferentes tipos de información personal
-                        cuando interactúas con nuestro sitio web:
-                    </p>
+                    <p className="mb-4">{t('information_collect_intro')}</p>
                     <ul className="mb-4 ml-6 list-disc">
                         <li>
-                            <strong>Datos de Usuario:</strong>
+                            <strong>{t('user_data')}:</strong>
                         </li>
                         <ul className="mb-4 ml-6 list-disc">
                             <li>
-                                <strong>Identificación y Contacto:</strong>{' '}
-                                Nombre, dirección de correo electrónico, imagen
-                                de perfil (si decides proporcionarla).
+                                <strong>{t('identification_contact')}:</strong>{' '}
+                                {t('identification_contact_desc')}
                             </li>
                             <li>
-                                <strong>Autenticación:</strong> Información
-                                relacionada con tu cuenta, incluyendo
-                                contraseñas cifradas.
+                                <strong>{t('authentication')}:</strong>{' '}
+                                {t('authentication_desc')}
                             </li>
                             <li>
-                                <strong>Preferencias y Configuraciones:</strong>{' '}
-                                Notificaciones por correo electrónico, nivel de
-                                usuario, y estado de verificación.
+                                <strong>{t('preferences_settings')}:</strong>{' '}
+                                {t('preferences_settings_desc')}
                             </li>
                         </ul>
                         <li>
-                            <strong>Datos de Actividad:</strong>
+                            <strong>{t('activity_data')}:</strong>
                         </li>
                         <ul className="mb-4 ml-6 list-disc">
                             <li>
-                                <strong>Recetas:</strong> Título, descripción,
-                                imágenes, categoría, método, tiempo de
-                                preparación, ingredientes, pasos y cualquier
-                                imagen adicional que subas.
+                                <strong>{t('recipes')}:</strong>{' '}
+                                {t('recipes_desc')}
                             </li>
                             <li>
-                                <strong>Comentarios:</strong> Comentarios que
-                                publiques en las recetas, junto con la
-                                información del usuario y del comentario.
+                                <strong>{t('comments')}:</strong>{' '}
+                                {t('comments_desc')}
                             </li>
                         </ul>
                         <li>
-                            <strong>Imágenes:</strong> Las imágenes que subes,
-                            ya sea para recetas o fotos de perfil, se almacenan
-                            en{' '}
+                            <strong>{t('images')}: </strong>
+                            {t('images_desc_1')}
                             <a
                                 href="https://cloudinary.com/"
                                 className="text-blue-600"
                             >
                                 Cloudinary
                             </a>
-                            , un servicio de gestión de medios.
+                            {t('images_desc_2')}
                         </li>
                     </ul>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        2. Cómo utilizamos tu información
+                        {t('how_we_use_info')}
                     </h2>
-                    <p className="mb-4">
-                        Utilizamos la información que recopilamos para:
-                    </p>
+                    <p className="mb-4">{t('use_info_intro')}</p>
                     <ul className="mb-4 ml-6 list-disc">
-                        <li>
-                            Proporcionarte acceso a los servicios y
-                            funcionalidades del sitio web, incluyendo la
-                            posibilidad de crear y gestionar tu cuenta, publicar
-                            recetas, y dejar comentarios.
-                        </li>
-                        <li>
-                            Personalizar tu experiencia en nuestro sitio web,
-                            incluyendo recomendaciones basadas en tus recetas
-                            favoritas y preferencias.
-                        </li>
-                        <li>
-                            Comunicarnos contigo para ofrecer soporte, enviar
-                            actualizaciones o notificaciones importantes.
-                        </li>
-                        <li>
-                            Mejorar nuestros servicios y el rendimiento de
-                            nuestro sitio web mediante análisis de datos.
-                        </li>
+                        <li>{t('use_info_1')}</li>
+                        <li>{t('use_info_2')}</li>
+                        <li>{t('use_info_3')}</li>
+                        <li>{t('use_info_4')}</li>
                     </ul>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        3. Compartir tu información
+                        {t('sharing_info')}
                     </h2>
-                    <p className="mb-4">
-                        No compartimos tus datos personales con terceros,
-                        excepto en los siguientes casos:
-                    </p>
+                    <p className="mb-4">{t('sharing_info_intro')}</p>
                     <ul className="mb-4 ml-6 list-disc">
                         <li>
-                            <strong>Proveedores de Servicios:</strong>{' '}
-                            Utilizamos proveedores de servicios externos para
-                            alojar nuestro sitio web (Vercel), gestionar nuestro
-                            dominio (GoDaddy), y almacenar nuestra base de datos
-                            (MongoDB). También usamos{' '}
+                            <strong>{t('service_providers')}:</strong>
+                            {t('service_providers_desc_1')}(
+                            <a
+                                href="https://vercel.com"
+                                className="text-blue-600"
+                            >
+                                Vercel
+                            </a>
+                            ){t('service_providers_desc_2')}(
+                            <a
+                                href="https://www.godaddy.com"
+                                className="text-blue-600"
+                            >
+                                GoDaddy
+                            </a>
+                            ){t('service_providers_desc_3')}(
+                            <a
+                                href="https://www.mongodb.com"
+                                className="text-blue-600"
+                            >
+                                MongoDB
+                            </a>
+                            ){t('service_providers_desc_4')}
                             <a
                                 href="https://cloudinary.com/"
                                 className="text-blue-600"
                             >
                                 Cloudinary
                             </a>{' '}
-                            para gestionar las imágenes que subes. Estos
-                            proveedores pueden tener acceso a tus datos
-                            personales en la medida en que sea necesario para
-                            realizar sus funciones, pero están obligados a
-                            protegerlos y no utilizarlos para otros fines.
+                            {t('service_providers_desc_5')}
                         </li>
                         <li>
-                            <strong>Requisitos Legales:</strong> Podemos
-                            divulgar tu información si es necesario para cumplir
-                            con obligaciones legales o en respuesta a
-                            solicitudes válidas de autoridades públicas.
+                            <strong>{t('legal_requirements')}:</strong>{' '}
+                            {t('legal_requirements_desc')}
                         </li>
                     </ul>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        4. Seguridad de tus datos
+                        {t('data_security')}
                     </h2>
-                    <p className="mb-4">
-                        Nos tomamos muy en serio la seguridad de tu información
-                        personal. Implementamos medidas técnicas y organizativas
-                        para proteger tus datos contra accesos no autorizados,
-                        alteraciones, divulgaciones o destrucción.
-                    </p>
+                    <p className="mb-4">{t('data_security_desc')}</p>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        5. Tus derechos
+                        {t('your_rights')}
                     </h2>
-                    <p className="mb-4">
-                        Tienes ciertos derechos sobre tus datos personales,
-                        incluyendo:
-                    </p>
+                    <p className="mb-4">{t('your_rights_intro')}</p>
                     <ul className="mb-4 ml-6 list-disc">
                         <li>
-                            <strong>Acceso:</strong> Puedes solicitar una copia
-                            de los datos personales que tenemos sobre ti.
+                            <strong>{t('access')}:</strong> {t('access_desc')}
                         </li>
                         <li>
-                            <strong>Rectificación:</strong> Puedes solicitar que
-                            corrijamos cualquier dato incorrecto o incompleto.
+                            <strong>{t('rectification')}:</strong>{' '}
+                            {t('rectification_desc')}
                         </li>
                         <li>
-                            <strong>Eliminación:</strong> Puedes solicitar que
-                            eliminemos tus datos personales, aunque esto puede
-                            limitar tu capacidad de utilizar algunos servicios
-                            en nuestro sitio web.
+                            <strong>{t('deletion')}:</strong>{' '}
+                            {t('deletion_desc')}
                         </li>
                         <li>
-                            <strong>Oposición:</strong> Puedes oponerte al
-                            procesamiento de tus datos en ciertas
-                            circunstancias.
+                            <strong>{t('opposition')}:</strong>{' '}
+                            {t('opposition_desc')}
                         </li>
                     </ul>
                     <p className="mb-4">
-                        Para ejercer estos derechos, puedes contactarnos en{' '}
+                        {t('exercise_rights')}
                         <a
                             href="mailto:jbonetv5@gmail.com"
                             className="text-blue-600"
@@ -217,30 +183,18 @@ const PrivacyPolicy: React.FC = () => {
                         .
                     </p>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        6. Retención de datos
+                        {t('data_retention')}
                     </h2>
-                    <p className="mb-4">
-                        Retenemos tus datos personales solo durante el tiempo
-                        que sea necesario para los fines descritos en esta
-                        política de privacidad, o según lo requiera la ley.
-                    </p>
+                    <p className="mb-4">{t('data_retention_desc')}</p>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
-                        7. Cambios en la Política de Privacidad
+                        {t('policy_changes')}
                     </h2>
-                    <p className="mb-4">
-                        Podemos actualizar esta política de privacidad de vez en
-                        cuando para reflejar cambios en nuestras prácticas o por
-                        otras razones operativas, legales o regulatorias. Te
-                        notificaremos sobre cualquier cambio importante mediante
-                        un aviso en nuestro sitio web.
-                    </p>
+                    <p className="mb-4">{t('policy_changes_desc')}</p>
                     <h2 className="mb-2 mt-4 text-2xl font-semibold">
                         8. {t('contact')}
                     </h2>
                     <p>
-                        Si tienes alguna pregunta o inquietud sobre nuestra
-                        política de privacidad, no dudes en contactarnos a
-                        través de{' '}
+                        {t('contact_desc')}
                         <a
                             href="mailto:jbonetv5@gmail.com"
                             className="text-blue-600"
