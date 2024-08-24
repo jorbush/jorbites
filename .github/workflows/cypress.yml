@@ -1,59 +1,45 @@
 name: Cypress E2E Testing
 
 on:
-    push:
-        branches: main
-    pull_request:
-        branches: main
+  push:
+    branches: main
+  pull_request:
+    branches: main
 
 jobs:
-    cypress:
-        runs-on: ubuntu-latest
-        environment: testing
+  cypress-run:
+    runs-on: ubuntu-latest
+    environment: testing
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js app
+        run: npm run build
+
+      - name: Create cypress.env.json
+        run: |
+          echo "{
+            \"userTestEmail\": \"${{ secrets.CYPRESS_USER_EMAIL }}\",
+            \"userTestPassword\": \"${{ secrets.CYPRESS_USER_PASSWORD }}\"
+          }" > cypress.env.json
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          build: npm run build
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          config-file: cypress.config.ts
         env:
-            DATABASE_URL: ${{ secrets.DATABASE_URL }}
-            CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
-            CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                node-version: '20'
-
-            - name: Create cypress.env.json
-              run: |
-                echo "{
-                  \"userTestEmail\": \"${{ secrets.CYPRESS_USER_EMAIL }}\",
-                  \"userTestPassword\": \"${{ secrets.CYPRESS_USER_PASSWORD }}\"
-                }" > cypress.env.json
-
-            - name: Print Environment Variables
-              run: |
-                echo "NODE_VERSION: ${{ runner.node-version }}"
-                echo "DATABASE_URL is set: ${{ secrets.DATABASE_URL != '' }}"
-                echo "CYPRESS_USER_EMAIL is set: ${{ secrets.CYPRESS_USER_EMAIL != '' }}"
-                echo "CYPRESS_USER_PASSWORD is set: ${{ secrets.CYPRESS_USER_PASSWORD != '' }}"
-
-            - name: Install dependencies
-              run: npm install
-
-            - name: Init NextJS app
-              run: npm run build && npm run start &
-              env:
-                DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-            - name: Cypress run
-              uses: cypress-io/github-action@v6
-              with:
-                project: ./
-                browser: chrome
-                build: yarn build
-                start: yarn start
-                wait-on: "http://localhost:3000"
-              env:
-                DATABASE_URL: ${{ secrets.DATABASE_URL }}
-                CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
-                CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
