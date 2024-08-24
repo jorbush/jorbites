@@ -13,12 +13,13 @@ describe('User', () => {
         );
         cy.get('[data-cy="modal-action-button"]').click();
         cy.get('body').should('not.contain', 'Invalid credentials');
+        cy.get('body').should('contain', 'Logged in');
         cy.get('[data-cy="login-modal"]').should('not.exist');
-        cy.get('[class^="go"]', { timeout: 10000 }).should('be.visible');
+        cy.get('[class^="go"]').should('be.visible');
         // Logout
         cy.get('[data-cy="user-menu"]').click();
         cy.get('[data-cy="user-menu-logout"]').click();
-        cy.get('[data-cy="user-menu"]', { timeout: 10000 }).click();
+        cy.get('[data-cy="user-menu"]').click();
         cy.get('[data-cy="user-menu-logout"]').should('not.exist');
         cy.get('[data-cy="user-menu-login"]').should('be.visible');
     });
