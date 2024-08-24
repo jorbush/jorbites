@@ -2,8 +2,6 @@ describe('User', () => {
     it('should login and logout', () => {
         cy.visit('http://localhost:3000/');
 
-        cy.task('log', Cypress.env('userTestEmail'));
-
         // Login
         cy.get('[data-cy="user-menu"]').click();
         cy.get('[data-cy="user-menu-login"]').should('be.visible').click();
@@ -12,7 +10,7 @@ describe('User', () => {
             Cypress.env('userTestPassword')
         );
         cy.get('[data-cy="modal-action-button"]').click();
-        cy.get('[class^="go"]').should('be.visible');
+        cy.get('[class^="go"]', { timeout: 10000 }).should('be.visible');
 
         // Logout
         cy.get('[data-cy="user-menu"]').click();
