@@ -12,10 +12,13 @@ describe('User', () => {
             Cypress.env('userTestPassword')
         );
         cy.get('[data-cy="modal-action-button"]').click();
+        cy.wait(30000);
+        cy.get('.go2072408551', { timeout: 30000 }).should('be.visible');
 
         // Logout
         cy.get('[data-cy="user-menu"]').click();
         cy.get('[data-cy="user-menu-logout"]').click();
+        cy.wait(30000);
         cy.get('[data-cy="user-menu"]', { timeout: 10000 }).click();
         cy.get('[data-cy="user-menu-logout"]').should('not.exist');
         cy.get('[data-cy="user-menu-login"]').should('be.visible');
