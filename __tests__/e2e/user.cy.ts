@@ -12,8 +12,9 @@ describe('User', () => {
             Cypress.env('userTestPassword')
         );
         cy.get('[data-cy="modal-action-button"]').click();
-        cy.get('.go2072408551', { timeout: 30000 }).should('be.visible');
-
+        cy.get('body').should('not.contain', 'Invalid credentials');
+        cy.get('[data-cy="login-modal"]').should('not.exist');
+        cy.get('[class^="go"]', { timeout: 10000 }).should('be.visible');
         // Logout
         cy.get('[data-cy="user-menu"]').click();
         cy.get('[data-cy="user-menu-logout"]').click();
