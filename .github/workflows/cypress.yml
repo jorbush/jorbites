@@ -30,6 +30,13 @@ jobs:
                   \"userTestPassword\": \"${{ secrets.CYPRESS_USER_PASSWORD }}\"
                 }" > cypress.env.json
 
+            - name: Print Environment Variables
+              run: |
+                echo "NODE_VERSION: ${{ runner.node-version }}"
+                echo "DATABASE_URL is set: ${{ secrets.DATABASE_URL != '' }}"
+                echo "CYPRESS_USER_EMAIL is set: ${{ secrets.CYPRESS_USER_EMAIL != '' }}"
+                echo "CYPRESS_USER_PASSWORD is set: ${{ secrets.CYPRESS_USER_PASSWORD != '' }}"
+
             - name: Install dependencies
               run: npm install
 
@@ -38,6 +45,9 @@ jobs:
 
             - name: Wait for NextJS to be ready
               run: sleep 60
+
+            - name: Check if application is running
+              run: curl -f http://localhost:3000 || (echo "Application is not running" && exit 1)
 
             - name: Run Cypress
               run: npm run cypress
