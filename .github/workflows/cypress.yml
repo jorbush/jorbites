@@ -25,10 +25,10 @@ jobs:
 
             - name: Create cypress.env.json
               run: |
-                echo '{
-                    "userTestEmail": "'${{ secrets.CYPRESS_USER_EMAIL }}'",
-                    "userTestPassword": "'${{ secrets.CYPRESS_USER_PASSWORD }}'"
-                }' > cypress.env.json
+                echo "{
+                  \"userTestEmail\": \"${{ secrets.CYPRESS_USER_EMAIL }}\",
+                  \"userTestPassword\": \"${{ secrets.CYPRESS_USER_PASSWORD }}\"
+                }" > cypress.env.json
 
             - name: Debug Files
               run: |
