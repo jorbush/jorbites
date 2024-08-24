@@ -2,6 +2,8 @@ describe('User', () => {
     it('should login and logout', () => {
         cy.visit('http://localhost:3000/');
 
+        cy.get('.text-lg').eq(0).should('have.text', 'a');
+
         // Login
         cy.get('[data-cy="user-menu"]').click();
         cy.get('[data-cy="user-menu-login"]').should('be.visible').click();
