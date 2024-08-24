@@ -2,7 +2,7 @@ describe('User', () => {
     it('should login and logout', () => {
         cy.visit('http://localhost:3000/');
 
-        cy.log('User Email:', Cypress.env('userTestEmail'));
+        cy.task('log', Cypress.env('userTestEmail'));
 
         // Login
         cy.get('[data-cy="user-menu"]').click();
