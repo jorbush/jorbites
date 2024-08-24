@@ -40,8 +40,6 @@ jobs:
             - name: Install dependencies
               run: npm install
 
-            - name: Init NextJS app
-              run: npm run build && npm run start &
 
             - name: Wait for NextJS to be ready
               run: sleep 60
@@ -49,5 +47,15 @@ jobs:
             - name: Check if application is running
               run: curl -f http://localhost:3000 || (echo "Application is not running" && exit 1)
 
-            - name: Run Cypress
-              run: npm run cypress
+            - name: Cypress run
+              uses: cypress-io/github-action@v6
+              with:
+                project: ./
+                browser: chrome
+                build: yarn build
+                start: yarn start
+                wait-on: "http://localhost:3000"
+              env:
+                DATABASE_URL: ${{ secrets.DATABASE_URL }}
+                CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+                CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
