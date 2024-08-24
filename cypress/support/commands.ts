@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-empty-file */
 /// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
