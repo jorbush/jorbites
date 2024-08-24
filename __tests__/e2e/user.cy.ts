@@ -10,7 +10,7 @@ describe('User', () => {
             Cypress.env('userTestPassword')
         );
         cy.get('[data-cy="modal-action-button"]').click();
-        cy.get('.go2072408551').should('be.visible');
+        cy.get('[class^="go"]').should('be.visible');
 
         // Logout
         cy.get('[data-cy="user-menu"]').click();
