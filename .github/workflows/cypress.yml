@@ -40,12 +40,10 @@ jobs:
             - name: Install dependencies
               run: npm install
 
-
-            - name: Wait for NextJS to be ready
-              run: sleep 60
-
-            - name: Check if application is running
-              run: curl -f http://localhost:3000 || (echo "Application is not running" && exit 1)
+            - name: Init NextJS app
+              run: npm run build && npm run start &
+              env:
+                DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
             - name: Cypress run
               uses: cypress-io/github-action@v6
