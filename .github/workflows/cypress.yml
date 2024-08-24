@@ -37,7 +37,7 @@ jobs:
               run: npm run build && npm run start &
 
             - name: Wait for NextJS to be ready
-              run: sleep 30
+              run: sleep 60
 
-            - name: Run Cypress tests
+            - name: Run Cypress
               run: npm run cypress
