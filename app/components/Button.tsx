@@ -11,6 +11,7 @@ interface ButtonProps {
     icon?: IconType;
     withDelay?: boolean;
     deleteButton?: boolean;
+    dataCy?: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -22,6 +23,7 @@ const Button: React.FC<ButtonProps> = ({
     icon: Icon,
     withDelay = false,
     deleteButton,
+    dataCy,
 }) => {
     const [isDisabled, setIsDisabled] = useState(false);
     const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -41,6 +43,7 @@ const Button: React.FC<ButtonProps> = ({
             disabled={disabled || isDisabled}
             onClick={handleButtonClick}
             className={`relative w-full rounded-lg transition hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-70 ${outline ? 'bg-white dark:bg-dark' : 'bg-green-450'} ${outline ? 'border-black dark:border-neutral-100' : 'border-green-450'} ${outline ? 'text-black dark:text-neutral-100' : 'text-white dark:text-dark'} ${small ? 'text-sm' : 'text-md'} ${small ? 'py-1' : 'py-3'} ${small ? 'font-light' : 'font-semibold'} ${small ? 'border-[1px]' : 'border-2'} ${deleteButton ? 'border-rose-500 bg-rose-500 text-neutral-100' : ''} `}
+            data-cy={dataCy}
         >
             {Icon && (
                 <Icon

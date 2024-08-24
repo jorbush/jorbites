@@ -74,6 +74,7 @@ const LoginModal = () => {
                 register={register}
                 errors={errors}
                 required
+                dataCy="login-email"
             />
             <Input
                 id="password"
@@ -83,6 +84,7 @@ const LoginModal = () => {
                 register={register}
                 errors={errors}
                 required
+                dataCy="login-password"
             />
         </div>
     );

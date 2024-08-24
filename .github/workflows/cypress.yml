@@ -21,6 +21,13 @@ jobs:
               with:
                 node-version: '20'
 
+            - name: create-json
+              id: create-json
+              uses: jsdaniell/create-json@v1.2.2
+              with:
+                name: "cypress.env.json"
+                json: ${{ secrets.CYPRESS_ENV_JSON }}
+
             - name: Install dependencies
               run: npm install
 

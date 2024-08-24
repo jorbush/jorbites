@@ -40,3 +40,4 @@ next-env.d.ts
 cypress/screenshots
 cypress/videos
 cypress/downloads
+cypress.env.json
