@@ -12,7 +12,8 @@ jobs:
         environment: testing
         env:
             DATABASE_URL: ${{ secrets.DATABASE_URL }}
-            CYPRESS_ENV_JSON: ${{ secrets.CYPRESS_ENV_JSON }}
+            CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+            CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -22,12 +23,12 @@ jobs:
               with:
                 node-version: '20'
 
-            - name: create-json
-              id: create-json
-              uses: jsdaniell/create-json@v1.2.2
-              with:
-                name: "cypress.env.json"
-                json: ${{ env.CYPRESS_ENV_JSON }}
+            - name: Create cypress.env.json
+              run: |
+                echo '{
+                    "userTestEmail": "'${{ secrets.CYPRESS_USER_EMAIL }}'",
+                    "userTestPassword": "'${{ secrets.CYPRESS_USER_PASSWORD }}'"
+                }' > cypress.env.json
 
             - name: Install dependencies
               run: npm install
@@ -36,7 +37,7 @@ jobs:
               run: npm run build && npm run start &
 
             - name: Wait for NextJS to be ready
-              run: sleep 60
+              run: sleep 30
 
             - name: Run Cypress tests
               run: npm run cypress
