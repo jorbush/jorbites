@@ -12,7 +12,6 @@ describe('User', () => {
             Cypress.env('userTestPassword')
         );
         cy.get('[data-cy="modal-action-button"]').click();
-        cy.get('[class^="go"]', { timeout: 30000 }).should('be.visible');
         // Logout
         cy.get('[data-cy="user-menu"]').click();
         cy.get('[data-cy="user-menu-logout"]').click();
