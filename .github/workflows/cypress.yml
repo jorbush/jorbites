@@ -1,0 +1,31 @@
+name: Cypress Tests
+
+on:
+    push:
+        branches: main
+    pull_request:
+        branches: main
+
+jobs:
+    cypress:
+        runs-on: ubuntu-latest
+        environment: testing
+        env:
+            DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                node-version: '20'
+
+            - name: Init NextJS app
+              run: npm run build && npm run start &
+
+            - name: Wait for NextJS to be ready
+              run: sleep 20
+
+            - name: Run Cypress tests
+              run: npm run cypress
