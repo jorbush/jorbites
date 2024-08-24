@@ -30,18 +30,11 @@ jobs:
                   \"userTestPassword\": \"${{ secrets.CYPRESS_USER_PASSWORD }}\"
                 }" > cypress.env.json
 
-            - name: Debug Files
-              run: |
-                ls -la
-                cat cypress.env.json
-                echo $CYPRESS_USER_EMAIL
-
-
             - name: Install dependencies
               run: npm install
 
             - name: Init NextJS app
-              run: npm run build && npm run start &
+              run: npm run dev &
 
             - name: Wait for NextJS to be ready
               run: sleep 60
