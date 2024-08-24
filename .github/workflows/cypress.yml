@@ -12,6 +12,7 @@ jobs:
         environment: testing
         env:
             DATABASE_URL: ${{ secrets.DATABASE_URL }}
+            CYPRESS_ENV_JSON: ${{ secrets.CYPRESS_ENV_JSON }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -26,7 +27,7 @@ jobs:
               uses: jsdaniell/create-json@v1.2.2
               with:
                 name: "cypress.env.json"
-                json: ${{ secrets.CYPRESS_ENV_JSON }}
+                json: ${{ env.CYPRESS_ENV_JSON }}
 
             - name: Install dependencies
               run: npm install
