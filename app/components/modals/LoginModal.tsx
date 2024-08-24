@@ -45,7 +45,9 @@ const LoginModal = () => {
             setIsLoading(false);
 
             if (callback?.ok) {
-                toast.success(t('logged_in'));
+                toast.success(t('logged_in'),{
+                    duration: 30000,
+                });
                 router.refresh();
                 loginModal.onClose();
             }
