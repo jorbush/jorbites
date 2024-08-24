@@ -12,6 +12,7 @@ describe('User', () => {
             Cypress.env('userTestPassword')
         );
         cy.get('[data-cy="modal-action-button"]').click();
+        cy.wait(5000);
         // Logout
         cy.get('[data-cy="user-menu"]').click();
         cy.get('[data-cy="user-menu-logout"]').click();
