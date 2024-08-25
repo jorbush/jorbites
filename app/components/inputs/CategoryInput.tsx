@@ -9,6 +9,7 @@ interface CategoryBoxProps {
     label: string;
     selected?: boolean;
     onClick: (value: string) => void;
+    dataCy?: string;
 }
 
 const CategoryBox: React.FC<CategoryBoxProps> = ({
@@ -16,6 +17,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     label,
     selected,
     onClick,
+    dataCy,
 }) => {
     const { t } = useTranslation();
 
@@ -23,6 +25,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
         <div
             onClick={() => onClick(label)}
             className={`flex cursor-pointer flex-col gap-3 rounded-xl border-2 p-4 transition hover:border-black ${selected ? 'selected border-black' : 'border-neutral-200'} `}
+            data-cy={dataCy}
         >
             <Icon size={30} />
             <div className="font-semibold">{t(label.toLocaleLowerCase())}</div>

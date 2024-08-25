@@ -42,6 +42,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                 <div
                     onClick={onPost}
                     className="hidden cursor-pointer rounded-full border-[1px] px-4 py-3 text-sm font-semibold transition hover:bg-neutral-100 hover:text-black dark:text-neutral-100 sm:block"
+                    data-cy="post-recipe"
                 >
                     {t('post_recipe')}
                 </div>

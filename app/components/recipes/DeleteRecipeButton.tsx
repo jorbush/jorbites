@@ -33,6 +33,7 @@ const DeleteRecipeButton: React.FC<DeleteRecipeButtonProps> = ({ id }) => {
                         label={t('delete_recipe')}
                         icon={AiFillDelete}
                         onClick={onClick}
+                        dataCy="delete-recipe"
                     />
                 </div>
             </div>

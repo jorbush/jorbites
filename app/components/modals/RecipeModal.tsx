@@ -134,7 +134,10 @@ const RecipeModal = () => {
             return onNext();
         }
 
-        if (imageSrc === '') {
+        if (
+            process.env.NEXT_PUBLIC_SKIP_IMAGE_VALIDATION !== 'true' &&
+            imageSrc === ''
+        ) {
             toast.error('You must upload an image');
             return;
         }
@@ -193,6 +196,7 @@ const RecipeModal = () => {
                             register={register}
                             errors={errors}
                             required={numIngredients === 1}
+                            dataCy={`recipe-ingredient-${i}`}
                         />
                     </div>
                     {numIngredients > 1 && i === numIngredients - 1 && (
@@ -232,6 +236,7 @@ const RecipeModal = () => {
                             register={register}
                             errors={errors}
                             required={numSteps === 1}
+                            dataCy={`recipe-step-${i}`}
                         />
                     </div>
                     {numSteps > 1 && i === numSteps - 1 && (
@@ -285,6 +290,7 @@ const RecipeModal = () => {
                             selected={category === item.label}
                             label={item.label}
                             icon={item.icon}
+                            dataCy={`category-box-${item.label}`}
                         />
                     </div>
                 ))}
@@ -305,6 +311,7 @@ const RecipeModal = () => {
                     onClick={() => {
                         addIngredientInput();
                     }}
+                    dataCy="add-ingredient-button"
                 />
             </div>
         );
@@ -323,6 +330,7 @@ const RecipeModal = () => {
                     onClick={() => {
                         addStepInput();
                     }}
+                    dataCy="add-step-button"
                 />
             </div>
         );
@@ -342,6 +350,7 @@ const RecipeModal = () => {
                     register={register}
                     errors={errors}
                     required
+                    dataCy="recipe-title"
                 />
                 <hr />
                 <Input
@@ -351,6 +360,7 @@ const RecipeModal = () => {
                     register={register}
                     errors={errors}
                     required
+                    dataCy="recipe-description"
                 />
                 <hr />
                 <Counter
@@ -383,6 +393,7 @@ const RecipeModal = () => {
                                 selected={method === item.label}
                                 label={item.label}
                                 icon={item.icon}
+                                dataCy={`method-box-${item.label}`}
                             />
                         </div>
                     ))}

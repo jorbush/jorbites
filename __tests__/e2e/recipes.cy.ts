@@ -1,7 +1,6 @@
 describe('Recipes', () => {
     beforeEach(() => {
         cy.visit('http://localhost:3000/');
-
         // Login
         cy.get('[data-cy="user-menu"]').click();
         cy.get('[data-cy="user-menu-login"]').should('be.visible').click();
@@ -10,5 +9,50 @@ describe('Recipes', () => {
             Cypress.env('userTestPassword')
         );
         cy.get('[data-cy="modal-action-button"]').click();
+        cy.get('[class^="go"]').should('be.visible');
+        cy.wait(1000);
+    });
+
+    it('should create a recipe', () => {
+        cy.get('[data-cy="post-recipe"]').click();
+        // Fill category step
+        cy.get('[data-cy="category-box-Fruits"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+        // Fill description step
+        cy.get('[data-cy="recipe-title"]').type('Test recipe');
+        cy.get('[data-cy="recipe-description"]').type('Test description');
+        cy.get('[data-cy="modal-action-button"]').click();
+        // Fill ingredients step
+        cy.get('[data-cy="recipe-ingredient-0"]').type('Test ingredient');
+        cy.get('[data-cy="add-ingredient-button"]').click();
+        cy.get('[data-cy="recipe-ingredient-1"]').type('Test ingredient');
+        cy.get('[data-cy="modal-action-button"]').click();
+        // Fill methods step
+        cy.get('[data-cy="method-box-Oven"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+        // Fill steps step
+        cy.get('[data-cy="recipe-step-0"]').type('Test step');
+        cy.get('[data-cy="add-step-button"]').click();
+        cy.get('[data-cy="recipe-step-1"]').type('Test step');
+        cy.get('[data-cy="modal-action-button"]').click();
+        // Skip images step and create the recipe
+        cy.get('[data-cy="modal-action-button"]').click();
+        // Check if the recipe was created
+        cy.get('[class^="go"]').should('be.visible');
+        cy.wait(1000);
+        cy.get('.text-lg').eq(0).should('have.text', 'Test recipe').click();
+        cy.wait(10000);
+        // Delete the recipe
+        cy.get('[data-cy="delete-recipe"]').click();
+        cy.get('.text-start > .mt-2').then(($el) => {
+            cy.get('[data-cy="delete-confirmation-text"]').type(
+                $el.text().slice(1, -1)
+            );
+        });
+        cy.get('[data-cy="modal-action-button"]').click();
+        cy.get('[class^="go"]').should('be.visible');
+        cy.wait(10000);
+        // Check if the recipe was deleted
+        cy.get('.text-lg').eq(0).should('not.have.text', 'Test recipe');
     });
 });

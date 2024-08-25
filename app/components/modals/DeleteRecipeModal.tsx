@@ -44,7 +44,6 @@ const DeleteRecipeModal: React.FC<DeleteRecipeModalProps> = ({
             .delete(`/api/recipe/${id}`)
             .then(() => {
                 toast.success('Recipe deleted!');
-                router.refresh();
                 reset();
                 setIsOpen(false);
             })
@@ -53,6 +52,7 @@ const DeleteRecipeModal: React.FC<DeleteRecipeModalProps> = ({
             })
             .finally(() => {
                 router.push('/');
+                router.refresh();
             });
     };
 
@@ -68,6 +68,7 @@ const DeleteRecipeModal: React.FC<DeleteRecipeModalProps> = ({
                 register={register}
                 errors={errors}
                 required
+                dataCy="delete-confirmation-text"
             />
         </div>
     );
