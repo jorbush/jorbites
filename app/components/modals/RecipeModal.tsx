@@ -134,14 +134,6 @@ const RecipeModal = () => {
             return onNext();
         }
 
-        if (
-            process.env.NEXT_PUBLIC_SKIP_IMAGE_VALIDATION !== 'true' &&
-            imageSrc === ''
-        ) {
-            toast.error('You must upload an image');
-            return;
-        }
-
         setIsLoading(true);
 
         axios
