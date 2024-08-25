@@ -48,15 +48,19 @@ describe('Recipes', () => {
         cy.get('[class^="go"]').should('be.visible');
         cy.wait(1000);
         cy.get('.text-lg').eq(0).should('have.text', 'Test recipe').click();
+        cy.task('log', 'Recipe opened');
         cy.wait(10000);
         // Delete the recipe
         cy.get('[data-cy="delete-recipe"]').click();
+        cy.task('log', 'Delete button clicked');
         cy.get('.text-start > .mt-2').then(($el) => {
             cy.get('[data-cy="delete-confirmation-text"]').type(
                 $el.text().slice(1, -1)
             );
         });
+        cy.task('log', 'Confirm Text filled');
         cy.get('[data-cy="modal-action-button"]').click();
+        cy.task('log', 'Delete button clicked');
         cy.get('[class^="go"]').should('be.visible');
         cy.wait(10000);
         // Check if the recipe was deleted
