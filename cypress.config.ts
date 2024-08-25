@@ -10,7 +10,6 @@ export default defineConfig({
         }
       })
     },
-    defaultCommandTimeout: 10000,
     specPattern: '__tests__/e2e/**/*.cy.{js,jsx,ts,tsx}',
   },
 })

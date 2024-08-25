@@ -17,27 +17,34 @@ describe('Recipes', () => {
         cy.get('[data-cy="post-recipe"]').click();
         // Fill category step
         cy.get('[data-cy="category-box-Fruits"]').click();
+        cy.task('log', 'Category step filled');
         cy.get('[data-cy="modal-action-button"]').click();
         // Fill description step
         cy.get('[data-cy="recipe-title"]').type('Test recipe');
         cy.get('[data-cy="recipe-description"]').type('Test description');
+        cy.task('log', 'Description step filled');
         cy.get('[data-cy="modal-action-button"]').click();
         // Fill ingredients step
         cy.get('[data-cy="recipe-ingredient-0"]').type('Test ingredient');
         cy.get('[data-cy="add-ingredient-button"]').click();
         cy.get('[data-cy="recipe-ingredient-1"]').type('Test ingredient');
+        cy.task('log', 'Ingredients step filled');
         cy.get('[data-cy="modal-action-button"]').click();
         // Fill methods step
         cy.get('[data-cy="method-box-Oven"]').click();
+        cy.task('log', 'Methods step filled');
         cy.get('[data-cy="modal-action-button"]').click();
         // Fill steps step
         cy.get('[data-cy="recipe-step-0"]').type('Test step');
         cy.get('[data-cy="add-step-button"]').click();
         cy.get('[data-cy="recipe-step-1"]').type('Test step');
+        cy.task('log', 'Steps step filled');
         cy.get('[data-cy="modal-action-button"]').click();
         // Skip images step and create the recipe
+        cy.task('log', 'Images step skipped');
         cy.get('[data-cy="modal-action-button"]').click();
         // Check if the recipe was created
+        cy.task('log', 'Recipe created');
         cy.get('[class^="go"]').should('be.visible');
         cy.wait(1000);
         cy.get('.text-lg').eq(0).should('have.text', 'Test recipe').click();
