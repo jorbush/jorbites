@@ -13,7 +13,7 @@ describe('Recipes', () => {
         cy.wait(1000);
     });
 
-    it('should create a recipe', () => {
+    it('should create and delete a recipe', () => {
         cy.get('[data-cy="post-recipe"]').click();
         // Fill category step
         cy.get('[data-cy="category-box-Fruits"]').click();
