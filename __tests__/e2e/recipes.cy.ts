@@ -34,7 +34,7 @@ describe('Recipes', () => {
         cy.get('[data-cy="recipe-step-0"]').type('Test step');
         cy.get('[data-cy="add-step-button"]').click();
         cy.get('[data-cy="recipe-step-1"]').type('Test step');
-        cy.get('[data-cy="modal-action-button"]', { timeout: 10000 }).click();
+        cy.get('[data-cy="modal-action-button"]').click();
         // Skip images step and create the recipe
         cy.get('[data-cy="modal-action-button"]').click();
         // Check if the recipe was created
