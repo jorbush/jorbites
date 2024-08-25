@@ -36,7 +36,7 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           build: npm run build
-          start: npm start
+          start: npm start NEXT_PUBLIC_SKIP_IMAGE_VALIDATION=true
           wait-on: 'http://localhost:3000'
           config-file: cypress.config.ts
         env:
@@ -44,4 +44,4 @@ jobs:
           CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
           CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: ${{ secrets.NEXT_PUBLIC_SKIP_IMAGE_VALIDATION }}
+          NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
