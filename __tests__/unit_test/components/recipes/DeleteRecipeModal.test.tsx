@@ -14,7 +14,6 @@ vi.mock('react-i18next', () => ({
 vi.mock('@/app/components/modals/DeleteRecipeModal', () => ({
     default: ({
         open,
-        setIsOpen,
         id,
     }: {
         open: boolean;

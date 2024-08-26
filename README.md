@@ -1,34 +1,78 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Jorbites
+
+**Jorbites** is a web platform for sharing and discovering delicious recipes. Users can post their own recipes, like and comment on others.
+
+## Features
+- **CRUD Operations:** Create, Read, Update and Delete.
+- **Authentication:** SSO via Google and GitHub using NextAuth.
+- **Image Handling:** Image optimization with Next Image, storage via Cloudinary.
+- **User Interactions:** Pagination, recipe filtering by category, dark theme, email notifications and multi-language support (English, Spanish, Catalan).
+- **Gamification:** User leveling and verification.
+- **Notifications:** Receive emails for comments, likes, and new recipes.
+
+## Architecture
+
+![architecture](/architecture/architecture.png)
+
+- **Fullstack APP:** [Next.js](https://nextjs.org/) (React with Server Side Rendering), TypeScript and Tailwind CSS. Deployed on Vercel.
+- **Database:** [MongoDB](https://www.mongodb.com/). Deployed on MongoDB Atlas (AWS under the hood). The NextJS APP uses [Prisma ORM](https://www.prisma.io/) to interact with the database.
+- **Authentication:** [NextAuth](https://next-auth.js.org/) with Google and GitHub providers for SSO.
+- **Image Handling:** [Cloudinary](https://cloudinary.com/) for image storage and optimization. It is used for recipe images and user avatars.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+To run Jorbites locally, you will need to set up a MongoDB database and create a `.env` file with the following content:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+DATABASE_URL=your_mongodb_url
+NEXTAUTH_SECRET=your_nextauth_secret
+GITHUB_ID=your_github_id
+GITHUB_SECRET=your_github_secret
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_cloudinary_upload_preset
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Running Locally
+Use the following command to start the development server:
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Testing
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Jorbites is thoroughly tested to ensure a robust experience.
 
-## Learn More
+- **Component & Page Testing:** [Vitest](https://vitest.dev/).
 
-To learn more about Next.js, take a look at the following resources:
+    ```bash
+    npm run vitest
+    ```
+- **API & Server Actions Testing:** [Jest](https://jestjs.io/).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    ```bash
+    npm run jest
+    ```
+- **End-to-End Testing:** [Cypress](https://www.cypress.io/).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+    ```bash
+    npm run cypress
+    npm run cypress:open # to open the Cypress GUI
+    ```
 
-## Deploy on Vercel
+## Linting & Formatting
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Jorbites uses Next Lint and Oxlint for linting:
+```bash
+npm run lint # Next Lint
+npx run oxlint # Oxlint
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+And Prettier for code formatting:
+```bash
+npm run format
+npm run check-format # check for formatting issues
+```

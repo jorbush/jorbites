@@ -25,6 +25,7 @@ export default async function getUserById(params: IParams) {
             emailVerified: user.emailVerified?.toISOString() || null,
         };
     } catch (error: any) {
+        console.log(error);
         return null;
     }
 }
