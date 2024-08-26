@@ -33,8 +33,6 @@ vi.mock('next/navigation', () => ({
 }));
 
 describe('<RecipeModal />', () => {
-    const mockOnClose = vi.fn();
-
     beforeEach(() => {
         vi.clearAllMocks();
         vi.useFakeTimers();
