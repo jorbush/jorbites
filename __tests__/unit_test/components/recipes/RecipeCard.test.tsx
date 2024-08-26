@@ -12,9 +12,7 @@ vi.mock('next/navigation', () => ({
 
 // Mock the HeartButton component
 vi.mock('@/app/components/HeartButton', () => ({
-    default: ({}: { recipeId: string; currentUser?: SafeUser | null }) => (
-        <button data-testid="heart-button">Heart</button>
-    ),
+    default: () => <button data-testid="heart-button">Heart</button>,
 }));
 
 describe('<RecipeCard />', () => {

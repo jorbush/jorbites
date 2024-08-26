@@ -29,7 +29,7 @@ vi.mock('../Avatar', () => ({
 }));
 
 vi.mock('../HeartButton', () => ({
-    default: ({}: any) => <button data-testid="heart-button">Heart</button>,
+    default: () => <button data-testid="heart-button">Heart</button>,
 }));
 
 vi.mock('@/app/components/recipes/RecipeCategoryAndMethod', () => ({
