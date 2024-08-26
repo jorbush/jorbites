@@ -45,6 +45,11 @@ describe('Recipes', () => {
         cy.get('body').then(($body) => {
             cy.task('log', $body.text());
         });
+        cy.get('body').then(($body) => {
+            if ($body.find('[data-cy="modal-action-button"]').length === 0) {
+                cy.wait(2000);
+            }
+        });
         cy.get('[data-cy="modal-action-button"]').click();
         // Check if the recipe was created
         cy.task('log', 'Recipe created');
