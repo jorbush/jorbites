@@ -42,12 +42,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                 <div
                     onClick={onPost}
                     className="hidden cursor-pointer rounded-full border-[1px] px-4 py-3 text-sm font-semibold transition hover:bg-neutral-100 hover:text-black dark:text-neutral-100 sm:block"
+                    data-cy="post-recipe"
                 >
                     {t('post_recipe')}
                 </div>
                 <div
                     onClick={toggleOpen}
                     className="flex min-h-[40px] min-w-[40px] cursor-pointer flex-row items-center justify-center gap-3 rounded-full border-[1px] border-neutral-200 transition hover:shadow-md md:px-1 md:py-1"
+                    data-cy="user-menu"
                 >
                     <div className="md:block">
                         <Avatar src={currentUser?.image} />
@@ -92,6 +94,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 <MenuItem
                                     onClick={() => signOut()}
                                     label={t('logout')}
+                                    dataCy="user-menu-logout"
                                 />
                             </>
                         ) : (
@@ -109,6 +112,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('login')}
+                                    dataCy="user-menu-login"
                                 />
                                 <MenuItem
                                     onClick={() => {

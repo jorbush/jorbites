@@ -127,6 +127,7 @@ const Modal: React.FC<ModalProps> = ({
                                         label={actionLabel}
                                         onClick={handleSubmit}
                                         withDelay
+                                        dataCy="modal-action-button"
                                     />
                                 </div>
                                 {footer}

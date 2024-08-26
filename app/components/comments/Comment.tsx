@@ -84,6 +84,7 @@ const Comment: React.FC<CommentProps> = ({
                     className={`truncate whitespace-normal text-justify text-gray-800 dark:text-neutral-100 ${
                         isLongWord ? 'break-all' : ''
                     }`}
+                    data-cy="comment-text"
                 >
                     {comment}
                 </p>

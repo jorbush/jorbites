@@ -39,6 +39,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
         <div
             onClick={handleButtonClick}
             className="relative cursor-pointer transition hover:opacity-80"
+            data-cy="heart-button"
         >
             <AiOutlineHeart
                 size={28}

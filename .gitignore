@@ -36,3 +36,8 @@ next-env.d.ts
 
 .env
 .vscode
+
+cypress/screenshots
+cypress/videos
+cypress/downloads
+cypress.env.json

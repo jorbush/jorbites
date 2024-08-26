@@ -21,6 +21,7 @@ const Logo = () => {
             width="100"
             src={logoImagePath}
             style={{ width: 'auto', height: 'auto' }}
+            data-cy="logo"
         />
     );
 };

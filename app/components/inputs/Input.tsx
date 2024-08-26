@@ -12,6 +12,7 @@ interface InputProps {
     required?: boolean;
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
+    dataCy?: string;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -23,6 +24,7 @@ const Input: React.FC<InputProps> = ({
     register,
     required,
     errors,
+    dataCy,
 }) => {
     return (
         <div className="relative w-full">
@@ -40,6 +42,7 @@ const Input: React.FC<InputProps> = ({
                 placeholder=" "
                 type={type}
                 className={`peer w-full rounded-md border-2 bg-white p-4 pt-6 font-light outline-none transition disabled:cursor-not-allowed disabled:opacity-70 dark:text-dark ${formatPrice ? 'pl-9' : 'pl-4'} ${errors[id] ? 'border-rose-500' : 'border-neutral-300'} ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'} `}
+                data-cy={dataCy}
             />
             <label
                 htmlFor={id}
