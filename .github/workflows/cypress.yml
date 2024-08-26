@@ -1,6 +1,10 @@
 name: Cypress E2E Testing
 
 on:
+  workflow_run:
+    workflows: ["Jest Unit Testing (API Routes & Server Actions)"]
+    types:
+      - completed
   push:
     branches: main
   pull_request:

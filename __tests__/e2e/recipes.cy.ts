@@ -42,14 +42,6 @@ describe('Recipes', () => {
         cy.get('[data-cy="modal-action-button"]').click();
         // Skip images step and create the recipe
         cy.task('log', 'Images step skipped');
-        cy.get('body').then(($body) => {
-            cy.task('log', $body.html());
-        });
-        cy.get('body').then(($body) => {
-            if ($body.find('[data-cy="modal-action-button"]').length === 0) {
-                cy.wait(2000);
-            }
-        });
         cy.get('[data-cy="modal-action-button"]').click();
         // Check if the recipe was created
         cy.task('log', 'Recipe created');
