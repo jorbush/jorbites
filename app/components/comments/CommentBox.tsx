@@ -52,6 +52,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                     placeholder={t('write_comment') ?? 'Write a comment...'}
                     value={comment}
                     onChange={handleInputChange}
+                    data-cy="comment-input"
                 />
             </form>
 
@@ -63,6 +64,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 className={`mb-4 ml-4 mt-4 text-green-450 ${
                     isButtonDisabled ? 'cursor-not-allowed opacity-50' : ''
                 }`}
+                data-cy="submit-comment"
             >
                 <HiOutlinePaperAirplane size={20} />
             </button>

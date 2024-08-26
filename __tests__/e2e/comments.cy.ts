@@ -1,4 +1,4 @@
-describe('Favorite', () => {
+describe('Comments', () => {
     beforeEach(() => {
         cy.visit('http://localhost:3000/');
         // Login
@@ -69,24 +69,18 @@ describe('Favorite', () => {
         cy.get('.text-lg').eq(0).should('not.have.text', 'Test recipe');
     });
 
-    it('should like a recipe and undo the like', () => {
-        // Like the recipe
-        cy.get('[data-cy="heart-button"]').click();
+    it('should comment a recipe and delete the comment', () => {
+        // Comment the recipe
+        cy.get('[data-cy="comment-input"]').type('Test comment');
+        cy.get('[data-cy="submit-comment"]').click();
         cy.get('[class^="go"]').should('be.visible');
-        cy.wait(2000);
-        cy.get('[data-testid="heart-button"]').should(
-            'have.class',
-            'fill-green-450'
-        );
-        cy.get('[data-cy="recipe-num-likes"]').should('have.text', '1');
-        // Unlike the recipe
-        cy.wait(5000);
-        cy.get('[data-cy="heart-button"]').click();
-        cy.wait(2000);
-        cy.get('[data-testid="heart-button"]').should(
-            'not.have.class',
-            'fill-green-450'
-        );
-        cy.get('[data-cy="recipe-num-likes"]').should('have.text', '0');
+        cy.wait(1000);
+        cy.get('[data-cy="comment-text"]').should('have.text', 'Test comment');
+        // Delete the comment
+        cy.get('[data-testid="MdDelete"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+        cy.get('[class^="go"]').should('be.visible');
+        cy.wait(1000);
+        cy.get('[data-cy="comment-text"]').should('not.exist');
     });
 });
