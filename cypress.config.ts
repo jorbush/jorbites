@@ -12,4 +12,7 @@ export default defineConfig({
     },
     specPattern: '__tests__/e2e/**/*.cy.{js,jsx,ts,tsx}',
   },
+  retries: {
+    runMode: 2,
+  },
 })
