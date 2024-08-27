@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Footer from '@/app/components/Footer';
+import { version } from '@/package.json';
 
 // Mock the react-i18next module
 vi.mock('react-i18next', () => ({
@@ -33,7 +34,7 @@ describe('<Footer />', () => {
 
     it('uses the useTranslation hook', () => {
         render(<Footer />);
-        expect(screen.getByText('version 0.5')).toBeDefined();
+        expect(screen.getByText(`version ${version}`)).toBeDefined();
         expect(screen.getByText('contact: jbonetv5@gmail.com')).toBeDefined();
     });
 
