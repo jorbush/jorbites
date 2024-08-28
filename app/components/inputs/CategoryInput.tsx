@@ -24,7 +24,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     return (
         <div
             onClick={() => onClick(label)}
-            className={`flex cursor-pointer flex-col gap-3 rounded-xl border-2 p-4 transition hover:border-black ${selected ? 'selected border-black' : 'border-neutral-200'} `}
+            className={`flex cursor-pointer flex-col gap-3 rounded-xl border-2 p-4 transition hover:border-black ${selected ? 'selected border-black dark:border-neutral-200' : 'border-neutral-200 dark:border-black'} `}
             data-cy={dataCy}
         >
             <Icon size={30} />
