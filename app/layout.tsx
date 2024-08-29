@@ -14,7 +14,7 @@ const font = Nunito({ subsets: ['latin'] });
 
 export const metadata = {
     title: 'Jorbites',
-    description: 'a web to create and share receipts',
+    description: 'a web to share recipes',
     icons: {
         icon: '/advocado.png',
     },
