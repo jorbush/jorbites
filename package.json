@@ -30,7 +30,7 @@
     "i18next": "^22.5.1",
     "i18next-browser-languagedetector": "^7.0.2",
     "i18next-http-backend": "^2.2.1",
-    "next": "^14.2.5",
+    "next": "^14.2.12",
     "next-auth": "^4.24.7",
     "next-cloudinary": "^6.6.2",
     "nodemailer": "^6.9.14",
