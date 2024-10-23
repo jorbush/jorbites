@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
-import { JORBITES_URL } from '@/app/utils/constants';
 
 export async function POST(request: Request) {
     const currentUser = await getCurrentUser();
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
         await sendEmail(
             'You have received a new comment from ' +
                 currentUser.name +
-                `.\nIn this recipe: ${JORBITES_URL}/recipes/` +
+                '.\nIn this recipe: https://jorbites.com/recipes/' +
                 recipeId,
             currentRecipe?.user.email
         );
