@@ -4,6 +4,7 @@ import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import updateUserLevel from '@/app/actions/updateUserLevel';
+import { JORBITES_URL } from '@/app/utils/constants';
 
 export async function POST(request: Request) {
     const currentUser = await getCurrentUser();
@@ -84,7 +85,7 @@ export async function POST(request: Request) {
         users.map(async (user) => {
             if (user.emailNotifications) {
                 await sendEmail(
-                    "There's a new recipe available on Jorbites!\nCheck it out: https://jorbites.com/recipes/" +
+                    `There's a new recipe available on Jorbites!\nCheck it out: ${JORBITES_URL}/recipes/` +
                         recipe.id,
                     user.email
                 );

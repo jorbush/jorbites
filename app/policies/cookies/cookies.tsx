@@ -1,5 +1,6 @@
 'use client';
 import Container from '@/app/components/Container';
+import { JORBITES_URL } from '@/app/utils/constants';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -40,10 +41,10 @@ const CookiesPolicy: React.FC = () => {
                         {t('cookies_description_1')} <strong>Jorbites</strong>
                         {t('cookies_description_2')}
                         <a
-                            href="https://jorbites.com"
+                            href={JORBITES_URL}
                             className="text-blue-600"
                         >
-                            jorbites.com
+                            {JORBITES_URL.split('//')[1]}
                         </a>
                         {t('cookies_description_3')}
                     </p>

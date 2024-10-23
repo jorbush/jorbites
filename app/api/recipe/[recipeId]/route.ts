@@ -5,6 +5,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import getRecipeById from '@/app/actions/getRecipeById';
 import updateUserLevel from '@/app/actions/updateUserLevel';
+import { JORBITES_URL } from '@/app/utils/constants';
 
 interface IParams {
     recipeId?: string;
@@ -48,7 +49,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
             await sendEmail(
                 'You have received a new like from ' +
                     currentUser.name +
-                    '.\nIn this recipe: https://jorbites.com/recipes/' +
+                    `.\nIn this recipe: ${JORBITES_URL}/recipes/` +
                     recipeId,
                 currentRecipe?.user.email
             );

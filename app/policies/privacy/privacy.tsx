@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import { FiChevronLeft } from 'react-icons/fi';
+import { JORBITES_URL } from '@/app/utils/constants';
 
 const PrivacyPolicy: React.FC = () => {
     const { t } = useTranslation();
@@ -41,10 +42,10 @@ const PrivacyPolicy: React.FC = () => {
                         <strong>Jorbites</strong>
                         {t('privacy_intro_2')}
                         <a
-                            href="https://jorbites.com"
+                            href={JORBITES_URL}
                             className="text-blue-600"
                         >
-                            jorbites.com
+                            {JORBITES_URL.split('//')[1]}
                         </a>
                         {t('privacy_intro_3')}
                     </p>
