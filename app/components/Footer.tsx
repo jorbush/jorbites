@@ -3,7 +3,8 @@
 import { useTranslation } from 'react-i18next';
 import useTheme from '@/app/hooks/useTheme';
 import Link from 'next/link';
-import { version } from '@/package.json';
+import packageJson from '@/package.json';
+const version = packageJson.version;
 
 const Footer = () => {
     const { t } = useTranslation();

@@ -11,12 +11,11 @@ module.exports = {
         green: {
           450: '#C5F0A4',
         },
-        light: 'white', // Colores para el tema claro
-        dark: '#0F0F0F', // Colores para el tema oscuro
+        light: 'white',
+        dark: '#0F0F0F',
       },
       screens: {
         sm: "360px",
-        // Resto de las configuraciones de tamaño de pantalla
       },
     }
   },

@@ -165,5 +165,8 @@
     "policy_changes": "7. Canvis en la Política de Privacitat",
     "policy_changes_desc": "Podem actualitzar aquesta política de privacitat de tant en tant per reflectir canvis en les nostres pràctiques o per altres raons operatives, legals o reguladores. Et notificarem sobre qualsevol canvi important mitjançant un avís al nostre lloc web.",
     "contact_desc": "Si tens alguna pregunta o inquietud sobre la nostra política de privacitat, no dubtis en contactar-nos a través de ",
-    "privacy_date": "12 d'agost de 2024"
+    "privacy_date": "12 d'agost de 2024",
+    "error_saving_draft": "Error en desar l'esborrany",
+    "error_loading_draft": "Error en carregar l'esborrany",
+    "error_deleting_draft": "Error en eliminar l'esborrany"
 }

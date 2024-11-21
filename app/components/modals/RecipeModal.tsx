@@ -2,7 +2,7 @@
 
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Heading from '@/app/components/Heading';
 import { categories } from '@/app/components/navbar/Categories';
 import CategoryInput from '@/app/components/inputs/CategoryInput';
@@ -20,6 +20,8 @@ import { MdMicrowave } from 'react-icons/md';
 import { TbCooker } from 'react-icons/tb';
 import { CgSmartHomeCooker } from 'react-icons/cg';
 import { useTranslation } from 'react-i18next';
+import { FiUploadCloud } from "react-icons/fi";
+import { SafeUser } from '@/app/types';
 
 /* eslint-disable unused-imports/no-unused-vars */
 enum STEPS {
@@ -54,7 +56,11 @@ export const preparationMethods = [
     },
 ];
 
-const RecipeModal = () => {
+interface RecipeModalProps {
+    currentUser?: SafeUser | null;
+}
+
+const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const router = useRouter();
     const { t } = useTranslation();
 
@@ -92,6 +98,12 @@ const RecipeModal = () => {
     const minutes = watch('minutes');
     const imageSrc = watch('imageSrc');
     const method = watch('method');
+
+    useEffect(() => {
+        if (currentUser) {
+            loadDraft();
+        }
+    }, [currentUser]);
 
     const setCustomValue = (id: string, value: any) => {
         setValue(id, value, {
@@ -159,6 +171,7 @@ const RecipeModal = () => {
                 toast.error('Something went wrong.');
             })
             .finally(() => {
+                deleteDraft();
                 setIsLoading(false);
             });
     };
@@ -270,6 +283,56 @@ const RecipeModal = () => {
         }
         return t('back');
     }, [step, t]);
+
+    const saveDraft = async () => {
+        const data = {
+            category: watch('category'),
+            method: watch('method'),
+            imageSrc: watch('imageSrc'),
+            extraImages: watch('extraImages'),
+            title: watch('title'),
+            description: watch('description'),
+            ingredients: watch('ingredients'),
+            steps: watch('steps'),
+            minutes: watch('minutes'),
+        };
+
+        try {
+            await axios.post(`${window.location.origin}/api/draft`, data);
+            toast.success(t('draft_saved') ?? 'Draft saved!');
+        } catch (error) {
+            console.error(error);
+            toast.error(t('error_saving_draft') ?? 'Failed to save draft.');
+        }
+    };
+
+    const loadDraft = async () => {
+        setIsLoading(true);
+        try {
+            const { data } = await axios.get(`${window.location.origin}/api/draft`);
+            if (!data) {
+                return;
+            }
+            reset(data);
+            console.log(data);
+            setNumIngredients(data.ingredients.length || 1);
+            setNumSteps(data.steps.length || 1);
+        } catch (error) {
+            console.error(error);
+            toast.error(t('error_loading_draft') ?? 'Failed to load draft.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const deleteDraft = async () => {
+        try {
+            await axios.delete(`${window.location.origin}/api/draft`);
+        } catch (error) {
+            console.error(error);
+            toast.error(t('error_deleting_draft') ?? 'Failed to delete draft.');
+        }
+    };
 
     let bodyContent = (
         <div className="flex flex-col gap-8">
@@ -447,6 +510,13 @@ const RecipeModal = () => {
             body={bodyContent}
             isLoading={isLoading}
             minHeight="753px"
+            topButton={
+                <FiUploadCloud
+                    onClick={saveDraft}
+                    className="cursor-pointer text-2xl text-black transition hover:opacity-70 dark:text-neutral-100"
+                    data-testid="load-draft-button"
+                />
+            }
         />
     );
 };
