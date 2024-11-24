@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { redis } from "@/app/libs/redis";
+import { redis } from '@/app/libs/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
 export async function POST(request: Request) {

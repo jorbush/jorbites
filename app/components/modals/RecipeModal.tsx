@@ -20,7 +20,7 @@ import { MdMicrowave } from 'react-icons/md';
 import { TbCooker } from 'react-icons/tb';
 import { CgSmartHomeCooker } from 'react-icons/cg';
 import { useTranslation } from 'react-i18next';
-import { FiUploadCloud } from "react-icons/fi";
+import { FiUploadCloud } from 'react-icons/fi';
 import { SafeUser } from '@/app/types';
 
 /* eslint-disable unused-imports/no-unused-vars */
@@ -323,7 +323,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const loadDraft = async () => {
         setIsLoading(true);
         try {
-            const { data } = await axios.get(`${window.location.origin}/api/draft`);
+            const { data } = await axios.get(
+                `${window.location.origin}/api/draft`
+            );
             if (!data) {
                 return;
             }
