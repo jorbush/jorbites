@@ -85,7 +85,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             category: '',
             method: '',
             imageSrc: '',
-            extraImages: [],
+            imageSrc1: '',
+            imageSrc2: '',
+            imageSrc3: '',
             title: '',
             description: '',
             ingredients: [],
@@ -101,7 +103,17 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     useEffect(() => {
         if (currentUser) {
-            loadDraft();
+            loadDraft().then(() => {
+                const ingredients = watch('ingredients') || [];
+                ingredients.forEach((ingredient: string, index: number) => {
+                    setValue(`ingredient ${index}`, ingredient);
+                });
+
+                const steps = watch('steps') || [];
+                steps.forEach((step: string, index: number) => {
+                    setValue(`step ${index}`, step);
+                });
+            });
         }
     }, [currentUser]);
 
@@ -289,7 +301,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             category: watch('category'),
             method: watch('method'),
             imageSrc: watch('imageSrc'),
-            extraImages: watch('extraImages'),
+            imageSrc1: watch('imageSrc1'),
+            imageSrc2: watch('imageSrc2'),
+            imageSrc3: watch('imageSrc3'),
             title: watch('title'),
             description: watch('description'),
             ingredients: watch('ingredients'),
@@ -317,6 +331,19 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             console.log(data);
             setNumIngredients(data.ingredients.length || 1);
             setNumSteps(data.steps.length || 1);
+            console.log({
+                category: watch('category'),
+                method: watch('method'),
+                imageSrc: watch('imageSrc'),
+                imageSrc1: watch('imageSrc1'),
+                imageSrc2: watch('imageSrc2'),
+                imageSrc3: watch('imageSrc3'),
+                title: watch('title'),
+                description: watch('description'),
+                ingredients: watch('ingredients'),
+                steps: watch('steps'),
+                minutes: watch('minutes'),
+            });
         } catch (error) {
             console.error(error);
             toast.error(t('error_loading_draft') ?? 'Failed to load draft.');
