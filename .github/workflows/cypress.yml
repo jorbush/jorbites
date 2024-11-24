@@ -36,6 +36,9 @@ jobs:
             \"userTestPassword\": \"${{ secrets.CYPRESS_USER_PASSWORD }}\"
           }" > cypress.env.json
 
+      - name: Debug environment variables
+        run: env | grep REDIS
+
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
