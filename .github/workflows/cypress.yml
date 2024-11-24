@@ -28,6 +28,13 @@ jobs:
 
       - name: Build Next.js app
         run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
 
       - name: Create cypress.env.json
         run: |
@@ -51,3 +58,4 @@ jobs:
           NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
           NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
           NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}

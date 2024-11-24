@@ -165,5 +165,9 @@
     "policy_changes": "7. Cambios en la Política de Privacidad",
     "policy_changes_desc": "Podemos actualizar esta política de privacidad de vez en cuando para reflejar cambios en nuestras prácticas o por otras razones operativas, legales o regulatorias. Te notificaremos sobre cualquier cambio importante mediante un aviso en nuestro sitio web.",
     "contact_desc": "Si tienes alguna pregunta o inquietud sobre nuestra política de privacidad, no dudes en contactarnos a través de ",
-    "privacy_date": "12 de agosto de 2024"
+    "privacy_date": "12 de agosto de 2024",
+    "draft_saved": "Borrador guardado",
+    "error_saving_draft": "Error al guardar el borrador",
+    "error_loading_draft": "Error al cargar el borrador",
+    "error_deleting_draft": "Error al eliminar el borrador"
 }

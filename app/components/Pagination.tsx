@@ -35,7 +35,7 @@ const Pagination = ({
             >
                 <FiChevronLeft className="text-xl" />
             </button>
-            <span className="px-4 py-2">
+            <span className="px-4 py-2 dark:text-gray-600">
                 {currentPage} {t('of')} {totalPages}
             </span>
             <button
