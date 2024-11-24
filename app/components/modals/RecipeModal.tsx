@@ -328,22 +328,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 return;
             }
             reset(data);
-            console.log(data);
             setNumIngredients(data.ingredients.length || 1);
             setNumSteps(data.steps.length || 1);
-            console.log({
-                category: watch('category'),
-                method: watch('method'),
-                imageSrc: watch('imageSrc'),
-                imageSrc1: watch('imageSrc1'),
-                imageSrc2: watch('imageSrc2'),
-                imageSrc3: watch('imageSrc3'),
-                title: watch('title'),
-                description: watch('description'),
-                ingredients: watch('ingredients'),
-                steps: watch('steps'),
-                minutes: watch('minutes'),
-            });
         } catch (error) {
             console.error(error);
             toast.error(t('error_loading_draft') ?? 'Failed to load draft.');
