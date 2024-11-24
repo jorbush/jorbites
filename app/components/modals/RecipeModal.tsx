@@ -2,7 +2,7 @@
 
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import Heading from '@/app/components/Heading';
 import { categories } from '@/app/components/navbar/Categories';
 import CategoryInput from '@/app/components/inputs/CategoryInput';
@@ -63,16 +63,12 @@ interface RecipeModalProps {
 const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const router = useRouter();
     const { t } = useTranslation();
-
     const recipeModal = useRecipeModal();
-
     const [step, setStep] = useState(STEPS.CATEGORY);
-
     const [numIngredients, setNumIngredients] = useState(1);
     const [numSteps, setNumSteps] = useState(1);
-
     const [isLoading, setIsLoading] = useState(false);
-
+    const hasLoadedDraft = useRef(false);
     const {
         register,
         handleSubmit,
@@ -101,21 +97,75 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const imageSrc = watch('imageSrc');
     const method = watch('method');
 
-    useEffect(() => {
-        if (currentUser) {
-            loadDraft().then(() => {
-                const ingredients = watch('ingredients') || [];
-                ingredients.forEach((ingredient: string, index: number) => {
-                    setValue(`ingredient ${index}`, ingredient);
-                });
+    const saveDraft = async () => {
+        const data = {
+            category: watch('category'),
+            method: watch('method'),
+            imageSrc: watch('imageSrc'),
+            imageSrc1: watch('imageSrc1'),
+            imageSrc2: watch('imageSrc2'),
+            imageSrc3: watch('imageSrc3'),
+            title: watch('title'),
+            description: watch('description'),
+            ingredients: watch('ingredients'),
+            steps: watch('steps'),
+            minutes: watch('minutes'),
+        };
 
-                const steps = watch('steps') || [];
-                steps.forEach((step: string, index: number) => {
-                    setValue(`step ${index}`, step);
-                });
+        try {
+            await axios.post(`${window.location.origin}/api/draft`, data);
+            toast.success(t('draft_saved') ?? 'Draft saved!');
+        } catch (error) {
+            console.error(error);
+            toast.error(t('error_saving_draft') ?? 'Failed to save draft.');
+        }
+    };
+
+    const loadDraft = async () => {
+        setIsLoading(true);
+        try {
+            const { data } = await axios.get(
+                `${window.location.origin}/api/draft`
+            );
+            if (!data) {
+                return;
+            }
+            reset(data);
+            setNumIngredients(data.ingredients.length || 1);
+            setNumSteps(data.steps.length || 1);
+            const ingredients = watch('ingredients') || [];
+            ingredients.forEach((ingredient: string, index: number) => {
+                setValue(`ingredient ${index}`, ingredient);
+            });
+            const steps = watch('steps') || [];
+            steps.forEach((step: string, index: number) => {
+                setValue(`step ${index}`, step);
+            });
+        } catch (error) {
+            console.error(error);
+            toast.error(t('error_loading_draft') ?? 'Failed to load draft.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const deleteDraft = async () => {
+        try {
+            await axios.delete(`${window.location.origin}/api/draft`);
+        } catch (error) {
+            console.error(error);
+            toast.error(t('error_deleting_draft') ?? 'Failed to delete draft.');
+        }
+    };
+
+    useEffect(() => {
+        if (currentUser && !hasLoadedDraft.current) {
+            hasLoadedDraft.current = true;
+            loadDraft().then(() => {
+                console.log('Draft loaded');
             });
         }
-    }, [currentUser]);
+    }, [currentUser, loadDraft]);
 
     const setCustomValue = (id: string, value: any) => {
         setValue(id, value, {
@@ -295,59 +345,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
         return t('back');
     }, [step, t]);
-
-    const saveDraft = async () => {
-        const data = {
-            category: watch('category'),
-            method: watch('method'),
-            imageSrc: watch('imageSrc'),
-            imageSrc1: watch('imageSrc1'),
-            imageSrc2: watch('imageSrc2'),
-            imageSrc3: watch('imageSrc3'),
-            title: watch('title'),
-            description: watch('description'),
-            ingredients: watch('ingredients'),
-            steps: watch('steps'),
-            minutes: watch('minutes'),
-        };
-
-        try {
-            await axios.post(`${window.location.origin}/api/draft`, data);
-            toast.success(t('draft_saved') ?? 'Draft saved!');
-        } catch (error) {
-            console.error(error);
-            toast.error(t('error_saving_draft') ?? 'Failed to save draft.');
-        }
-    };
-
-    const loadDraft = async () => {
-        setIsLoading(true);
-        try {
-            const { data } = await axios.get(
-                `${window.location.origin}/api/draft`
-            );
-            if (!data) {
-                return;
-            }
-            reset(data);
-            setNumIngredients(data.ingredients.length || 1);
-            setNumSteps(data.steps.length || 1);
-        } catch (error) {
-            console.error(error);
-            toast.error(t('error_loading_draft') ?? 'Failed to load draft.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const deleteDraft = async () => {
-        try {
-            await axios.delete(`${window.location.origin}/api/draft`);
-        } catch (error) {
-            console.error(error);
-            toast.error(t('error_deleting_draft') ?? 'Failed to delete draft.');
-        }
-    };
 
     let bodyContent = (
         <div className="flex flex-col gap-8">
