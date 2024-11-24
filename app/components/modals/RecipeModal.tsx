@@ -2,7 +2,7 @@
 
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
-import { useMemo, useState, useEffect, useRef } from 'react';
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import Heading from '@/app/components/Heading';
 import { categories } from '@/app/components/navbar/Categories';
 import CategoryInput from '@/app/components/inputs/CategoryInput';
@@ -121,7 +121,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
     };
 
-    const loadDraft = async () => {
+    const loadDraft = useCallback(async () => {
         setIsLoading(true);
         try {
             const { data } = await axios.get(
@@ -147,7 +147,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [reset, setNumIngredients, setNumSteps, watch, setValue, t]);
 
     const deleteDraft = async () => {
         try {
