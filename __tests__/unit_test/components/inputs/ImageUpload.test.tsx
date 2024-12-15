@@ -5,15 +5,15 @@ import ImageUpload from '@/app/components/inputs/ImageUpload';
 
 // Define types for CldUploadWidget
 type CldUploadWidgetProps = {
-    onUpload: (result: any) => void;
+    onSuccess: (result: any) => void;
     children: (props: { open: () => void }) => React.ReactNode;
 };
 
 // Mock next-cloudinary
 vi.mock('next-cloudinary', () => ({
-    CldUploadWidget: ({ onUpload, children }: CldUploadWidgetProps) => {
+    CldUploadWidget: ({ onSuccess, children }: CldUploadWidgetProps) => {
         const handleUpload = () => {
-            onUpload({
+            onSuccess({
                 info: {
                     secure_url: 'https://example.com/newimage.jpg',
                 },

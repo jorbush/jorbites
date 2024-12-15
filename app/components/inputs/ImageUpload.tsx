@@ -9,9 +9,10 @@ import { TbPhotoPlus } from 'react-icons/tb';
 interface ImageUploadProps {
     onChange: (value: string) => void;
     value: string;
+    disabled?: boolean;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value, disabled }) => {
     const handleUpload = useCallback(
         (result: any) => {
             onChange(result.info.secure_url);
@@ -21,7 +22,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value }) => {
 
     return (
         <CldUploadWidget
-            onUpload={handleUpload}
+            onSuccess={handleUpload}
             uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
             options={{
                 maxFiles: 1,
@@ -30,8 +31,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value }) => {
             {({ open }) => {
                 return (
                     <div
-                        onClick={() => open?.()}
-                        className="h-50 relative flex cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-neutral-300 p-20 text-neutral-600 transition hover:opacity-70"
+                        onClick={() => {
+                            if (!disabled) {
+                                open?.();
+                            }
+                        }}
+                        className={`h-50 relative flex cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-neutral-300 p-20 text-neutral-600 transition hover:opacity-70 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         <TbPhotoPlus
                             size={50}
