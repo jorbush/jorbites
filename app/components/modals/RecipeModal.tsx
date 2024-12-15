@@ -489,21 +489,27 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                         data-testid="image-upload"
                         value={imageSrc}
                         onChange={(value) => setCustomValue('imageSrc', value)}
+                        canRemove={watch('imageSrc1') === ''}
                     />
                     <ImageUpload
                         data-testid="image-upload-2"
                         value={watch('imageSrc1')}
                         onChange={(value) => setCustomValue('imageSrc1', value)}
+                        disabled={imageSrc === ''}
+                        canRemove={watch('imageSrc2') === ''}
                     />
                     <ImageUpload
                         data-testid="image-upload-3"
                         value={watch('imageSrc2')}
                         onChange={(value) => setCustomValue('imageSrc2', value)}
+                        disabled={watch('imageSrc1') === ''}
+                        canRemove={watch('imageSrc3') === ''}
                     />
                     <ImageUpload
                         data-testid="image-upload-4"
                         value={watch('imageSrc3')}
                         onChange={(value) => setCustomValue('imageSrc3', value)}
+                        disabled={watch('imageSrc2') === ''}
                     />
                 </div>
             </div>

@@ -28,7 +28,10 @@ export default async function RootLayout({
     const currentUser = await getCurrentUser();
 
     return (
-        <html lang="en">
+        <html
+            lang="en"
+            translate="no"
+        >
             <body className={`${font.className} dark:bg-dark`}>
                 <ClientOnly>
                     <ToasterProvider />

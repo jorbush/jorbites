@@ -27,14 +27,14 @@ vi.mock('react-hot-toast');
 // Mock the CldUploadWidget
 vi.mock('next-cloudinary', () => ({
     CldUploadWidget: ({
-        onUpload,
+        onSuccess,
         children,
     }: {
-        onUpload: (result: any) => void;
+        onSuccess: (result: any) => void;
         children: any;
     }) => {
         const handleClick = () => {
-            onUpload({
+            onSuccess({
                 info: {
                     secure_url: 'https://example.com/new-image.jpg',
                 },

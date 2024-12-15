@@ -74,7 +74,7 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
             </div>
             <div className="flex items-center">
                 <CldUploadWidget
-                    onUpload={handleUpload}
+                    onSuccess={handleUpload}
                     uploadPreset={
                         process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
                     }
