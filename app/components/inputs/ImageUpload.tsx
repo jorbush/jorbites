@@ -12,7 +12,11 @@ interface ImageUploadProps {
     disabled?: boolean;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value, disabled }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({
+    onChange,
+    value,
+    disabled,
+}) => {
     const handleUpload = useCallback(
         (result: any) => {
             onChange(result.info.secure_url);
@@ -36,7 +40,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value, disabled }) 
                                 open?.();
                             }
                         }}
-                        className={`h-50 relative flex cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-neutral-300 p-20 text-neutral-600 transition hover:opacity-70 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`h-50 relative flex cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-neutral-300 p-20 text-neutral-600 transition hover:opacity-70 ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
                     >
                         <TbPhotoPlus
                             size={50}
