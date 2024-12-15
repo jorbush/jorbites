@@ -75,7 +75,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                                             handleRemove();
                                         }}
                                         size={24}
-                                        className="absolute top-2 right-2"
+                                        className="absolute right-2 top-2"
                                     />
                                 )}
                             </>
