@@ -10,7 +10,7 @@ interface SearchProps {
 
 const Search: React.FC<SearchProps> = ({ onClick }) => {
     return (
-        <div className="flex flex-row items-center gap-3">
+        <div className="flex flex-row items-center gap-1 md:gap-3">
             <Logo />
             <div
                 className="max-w-[35px] cursor-pointer rounded-full bg-green-450 p-2 text-white shadow-sm transition hover:shadow-md dark:text-dark"

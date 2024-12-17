@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation';
 const Logo = () => {
     const router = useRouter();
 
-    let logoImagePath = '/images/logo-nobg.png';
+    let logoImagePath = '/images/logo-nobg.webp';
 
     if (localStorage.getItem('theme') === 'dark') {
-        logoImagePath = '/images/no_bg_white.png';
+        logoImagePath = '/images/no_bg_white.webp';
     }
 
     return (

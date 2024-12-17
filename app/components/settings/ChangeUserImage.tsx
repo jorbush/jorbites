@@ -98,7 +98,7 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                                             alt="Upload"
                                             src={
                                                 newImage ||
-                                                '/images/placeholder.jpg'
+                                                '/images/placeholder.webp'
                                             }
                                             onClick={() => open?.()}
                                         />

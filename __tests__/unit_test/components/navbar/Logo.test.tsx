@@ -48,7 +48,7 @@ describe('<Logo />', () => {
         render(<Logo />);
         const logo = screen.getByAltText('Logo') as HTMLImageElement;
         expect(logo).toBeDefined();
-        expect(logo.src).toContain('/images/logo-nobg.png');
+        expect(logo.src).toContain('/images/logo-nobg.webp');
     });
 
     it('renders the logo with dark theme', () => {
@@ -56,7 +56,7 @@ describe('<Logo />', () => {
         render(<Logo />);
         const logo = screen.getByAltText('Logo') as HTMLImageElement;
         expect(logo).toBeDefined();
-        expect(logo.src).toContain('/images/no_bg_white.png');
+        expect(logo.src).toContain('/images/no_bg_white.webp');
     });
 
     it('navigates to home page when clicked', () => {

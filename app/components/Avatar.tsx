@@ -16,7 +16,7 @@ const Avatar: React.FC<AvatarProps> = ({ src, size = 30, onClick }) => {
             width={size}
             alt="Avatar"
             onClick={onClick}
-            src={src || '/images/placeholder.jpg'}
+            src={src || '/images/placeholder.webp'}
             style={{
                 objectFit: 'cover',
                 aspectRatio: '1/1',
