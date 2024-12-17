@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 interface ButtonSelectorProps {
     sortOrder: 'asc' | 'desc';
-    onSortChange: (sortOrder: 'asc' | 'desc') => void;
+    onSortChange: (_sortOrder: 'asc' | 'desc') => void;
 }
 
 const ButtonSelector: React.FC<ButtonSelectorProps> = ({

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { SafeComment, SafeUser } from '@/app/types';
 import CommentBox from '@/app/components/comments/CommentBox';
 import Comment from '@/app/components/comments/Comment';
@@ -24,6 +24,18 @@ const Comments: React.FC<CommentsProps> = ({
         useState<SafeComment[]>(comments);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
+    const sortComments = useCallback(
+        (order: 'asc' | 'desc') => {
+            const sorted = [...comments].sort((a, b) => {
+                const dateA = new Date(a.createdAt).getTime();
+                const dateB = new Date(b.createdAt).getTime();
+                return order === 'asc' ? dateA - dateB : dateB - dateA;
+            });
+            setSortedComments(sorted);
+        },
+        [comments]
+    );
+
     useEffect(() => {
         const storedOrder = localStorage.getItem('commentSortOrder') as
             | 'asc'
@@ -34,19 +46,11 @@ const Comments: React.FC<CommentsProps> = ({
         } else {
             setSortedComments(comments);
         }
-    }, [comments]);
-
-    const sortComments = (order: 'asc' | 'desc') => {
-        const sorted = [...comments].sort((a, b) => {
-            const dateA = new Date(a.createdAt).getTime();
-            const dateB = new Date(b.createdAt).getTime();
-            return order === 'asc' ? dateA - dateB : dateB - dateA;
-        });
-        setSortedComments(sorted);
-    };
+    }, [comments, sortComments]);
 
     const handleSortChange = (order: 'asc' | 'desc') => {
         setSortOrder(order);
+        console.log('order', order);
         localStorage.setItem('commentSortOrder', order);
         sortComments(order);
     };
