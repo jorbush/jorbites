@@ -1,7 +1,7 @@
 'use client';
 
 import Avatar from '../Avatar';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import MenuItem from './MenuItem';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
@@ -24,6 +24,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { t } = useTranslation();
     const router = useRouter();
+    const menuRef = useRef<HTMLDivElement>(null);
 
     const toggleOpen = useCallback(() => {
         setIsOpen((value) => !value);
@@ -36,28 +37,56 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
         recipeModal.onOpen();
     }, [currentUser, loginModal, recipeModal]);
 
+    const handleClickOutside = useCallback((event: MouseEvent) => {
+        if (
+            menuRef.current &&
+            !menuRef.current.contains(event.target as Node)
+        ) {
+            setIsOpen(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen, handleClickOutside]);
+
     return (
-        <div className="relative">
-            <div className="flex flex-row items-center gap-3">
+        <div
+            className="relative"
+            ref={menuRef}
+        >
+            <div className="flex flex-row items-center gap-2 md:gap-3">
                 <div
                     onClick={onPost}
-                    className="hidden cursor-pointer rounded-full border-[1px] px-4 py-3 text-sm font-semibold transition hover:bg-neutral-100 hover:text-black dark:text-neutral-100 sm:block"
+                    className="hidden cursor-pointer rounded-full border-[1px] px-3 py-2 text-xs font-semibold transition hover:bg-neutral-100 hover:text-black dark:text-neutral-100 sm:block sm:text-sm md:px-4 md:py-3"
                     data-cy="post-recipe"
                 >
-                    {t('post_recipe')}
+                    <span className="whitespace-nowrap">
+                        {t('post_recipe')}
+                    </span>
                 </div>
                 <div
                     onClick={toggleOpen}
-                    className="flex min-h-[40px] min-w-[40px] cursor-pointer flex-row items-center justify-center gap-3 rounded-full border-[1px] border-neutral-200 transition hover:shadow-md md:px-1 md:py-1"
+                    className="flex min-h-[40px] min-w-[40px] cursor-pointer flex-row items-center justify-center gap-3 rounded-full border-[1px] border-neutral-200 p-1 transition hover:shadow-md"
                     data-cy="user-menu"
                 >
                     <div className="md:block">
-                        <Avatar src={currentUser?.image} />
+                        <Avatar
+                            src={currentUser?.image}
+                            size={35}
+                        />
                     </div>
                 </div>
             </div>
             {isOpen && (
-                <div className="absolute right-0 top-12 w-[40vw] overflow-hidden rounded-xl bg-white text-sm shadow-md dark:bg-dark dark:text-neutral-100 md:w-3/4">
+                <div className="absolute right-0 top-14 w-[40vw] overflow-hidden rounded-xl bg-white text-sm shadow-md dark:bg-dark dark:text-neutral-100 md:w-3/4">
                     <div className="flex cursor-pointer flex-col">
                         {currentUser ? (
                             <>

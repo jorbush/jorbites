@@ -15,7 +15,7 @@ describe('<Avatar/>', () => {
         expect(img).toBeDefined();
         expect(img).toHaveProperty(
             'src',
-            'http://localhost:3000/_next/image?url=%2Fimages%2Fplaceholder.jpg&w=64&q=75'
+            'http://localhost:3000/_next/image?url=%2Fimages%2Fplaceholder.webp&w=64&q=75'
         );
         expect(img).toHaveProperty('width', 30);
         expect(img).toHaveProperty('height', 30);

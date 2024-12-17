@@ -16,7 +16,7 @@ export const metadata = {
     title: 'Jorbites',
     description: 'a web to share recipes',
     icons: {
-        icon: '/advocado.png',
+        icon: '/advocado.webp',
     },
 };
 

@@ -168,5 +168,7 @@
     "draft_saved": "Draft saved",
     "error_saving_draft": "Error saving draft",
     "error_loading_draft": "Error loading draft",
-    "error_deleting_draft": "Error deleting draft"
+    "error_deleting_draft": "Error deleting draft",
+    "oldest_first": "Oldest first",
+    "newest_first": "Newest first"
 }
