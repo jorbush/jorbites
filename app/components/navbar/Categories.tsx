@@ -14,6 +14,7 @@ import {
 } from 'react-icons/gi';
 import { FaFish } from 'react-icons/fa';
 import { TbSoup, TbSalad } from 'react-icons/tb';
+import { PiBowlFoodFill } from "react-icons/pi";
 
 export const categories = [
     {
@@ -66,6 +67,11 @@ export const categories = [
         icon: TbSalad,
         description: 'Salad recipes',
     },
+    {
+        label: 'Snacks',
+        icon: PiBowlFoodFill,
+        description: 'Quick snacks',
+    }
 ];
 
 const Categories = () => {
