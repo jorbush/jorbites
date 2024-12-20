@@ -220,20 +220,32 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
         axios
             .post(url, data)
-            .then(() => {
+            .then(async () => {
+                await deleteDraft();
                 toast.success('Recipe created!');
-                router.refresh();
-                reset();
+                reset({
+                    category: '',
+                    method: '',
+                    imageSrc: '',
+                    imageSrc1: '',
+                    imageSrc2: '',
+                    imageSrc3: '',
+                    title: '',
+                    description: '',
+                    ingredients: [],
+                    steps: [],
+                    minutes: 10,
+                });
                 setStep(STEPS.CATEGORY);
                 setNumIngredients(1);
                 setNumSteps(1);
                 recipeModal.onClose();
+                router.refresh();
             })
             .catch(() => {
                 toast.error('Something went wrong.');
             })
             .finally(() => {
-                deleteDraft();
                 setIsLoading(false);
             });
     };
@@ -264,9 +276,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     key={i}
                     className="relative flex w-full items-center gap-3 px-2"
                 >
-                    <div className="flex-shrink-0 text-base">
-                        {`${i + 1}.`}
-                    </div>
+                    <div className="flex-shrink-0 text-base">{`${i + 1}.`}</div>
 
                     <div className="flex-grow">
                         <Input
@@ -290,7 +300,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                             />
                         </div>
                     ) : (
-                        <div className="flex-shrink-0 w-6" />
+                        <div className="w-6 flex-shrink-0" />
                     )}
                 </div>
             );
@@ -328,7 +338,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                             />
                         </div>
                     ) : (
-                        <div className="flex-shrink-0 w-6" />
+                        <div className="w-6 flex-shrink-0" />
                     )}
                 </div>
             );
