@@ -220,20 +220,32 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
         axios
             .post(url, data)
-            .then(() => {
+            .then(async () => {
+                await deleteDraft();
                 toast.success('Recipe created!');
-                router.refresh();
-                reset();
+                reset({
+                    category: '',
+                    method: '',
+                    imageSrc: '',
+                    imageSrc1: '',
+                    imageSrc2: '',
+                    imageSrc3: '',
+                    title: '',
+                    description: '',
+                    ingredients: [],
+                    steps: [],
+                    minutes: 10,
+                });
                 setStep(STEPS.CATEGORY);
                 setNumIngredients(1);
                 setNumSteps(1);
                 recipeModal.onClose();
+                router.refresh();
             })
             .catch(() => {
                 toast.error('Something went wrong.');
             })
             .finally(() => {
-                deleteDraft();
                 setIsLoading(false);
             });
     };
@@ -256,55 +268,17 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         setCustomValue('step ' + index, '');
     };
 
-    const renderIngredientInput = () => {
-        const components = [];
-        for (let i = 0; i < numIngredients; i++) {
-            components.push(
-                <div
-                    key={i}
-                    className="max-w grid max-h-[50vh] min-w-[10vh] grid-cols-10 gap-3 overflow-y-auto"
-                >
-                    <div className="col-span-9">
-                        <Input
-                            id={'ingredient ' + i}
-                            label=""
-                            register={register}
-                            errors={errors}
-                            required={numIngredients === 1}
-                            dataCy={`recipe-ingredient-${i}`}
-                        />
-                    </div>
-                    {numIngredients > 1 && i === numIngredients - 1 && (
-                        <div className="flex items-center justify-center">
-                            <AiFillDelete
-                                data-testid="remove-ingredient-button"
-                                color="#F43F5F"
-                                onClick={() => {
-                                    removeIngredientInput(i);
-                                }}
-                                size={24}
-                            />
-                        </div>
-                    )}
-                </div>
-            );
-        }
-        return components;
-    };
-
     const renderStepsInput = () => {
         const components = [];
         for (let i = 0; i < numSteps; i++) {
             components.push(
                 <div
                     key={i}
-                    className="max-w grid max-h-[50vh] grid-cols-11 gap-3 overflow-y-auto"
+                    className="relative flex w-full items-center gap-3 px-2"
                 >
-                    <div className="col-span-1 flex items-center justify-center">
-                        {`${i + 1}.`}
-                    </div>
+                    <div className="flex-shrink-0 text-base">{`${i + 1}.`}</div>
 
-                    <div className="col-span-9">
+                    <div className="flex-grow">
                         <Input
                             id={'step ' + i}
                             label=""
@@ -314,8 +288,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                             dataCy={`recipe-step-${i}`}
                         />
                     </div>
-                    {numSteps > 1 && i === numSteps - 1 && (
-                        <div className="flex items-center justify-center">
+                    {numSteps > 1 && i === numSteps - 1 ? (
+                        <div className="flex-shrink-0">
                             <AiFillDelete
                                 data-testid="remove-step-button"
                                 color="#F43F5F"
@@ -325,6 +299,46 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                                 size={24}
                             />
                         </div>
+                    ) : (
+                        <div className="w-6 flex-shrink-0" />
+                    )}
+                </div>
+            );
+        }
+        return components;
+    };
+
+    const renderIngredientInput = () => {
+        const components = [];
+        for (let i = 0; i < numIngredients; i++) {
+            components.push(
+                <div
+                    key={i}
+                    className="relative flex w-full items-center gap-3 px-2"
+                >
+                    <div className="flex-grow">
+                        <Input
+                            id={'ingredient ' + i}
+                            label=""
+                            register={register}
+                            errors={errors}
+                            required={numIngredients === 1}
+                            dataCy={`recipe-ingredient-${i}`}
+                        />
+                    </div>
+                    {numIngredients > 1 && i === numIngredients - 1 ? (
+                        <div className="flex-shrink-0">
+                            <AiFillDelete
+                                data-testid="remove-ingredient-button"
+                                color="#F43F5F"
+                                onClick={() => {
+                                    removeIngredientInput(i);
+                                }}
+                                size={24}
+                            />
+                        </div>
+                    ) : (
+                        <div className="w-6 flex-shrink-0" />
                     )}
                 </div>
             );
@@ -377,7 +391,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         bodyContent = (
             <div className="flex flex-col gap-8">
                 <Heading title={t('title_ingredients')} />
-                <div className="grid max-h-[50vh] grid-cols-1 gap-3 overflow-y-auto">
+                <div className="flex max-h-[50vh] flex-col gap-3 overflow-y-auto">
                     {renderIngredientInput()}
                 </div>
                 <Button
@@ -396,7 +410,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         bodyContent = (
             <div className="flex flex-col gap-8">
                 <Heading title={t('title_steps')} />
-                <div className="grid max-h-[50vh] grid-cols-1 gap-3 overflow-y-auto">
+                <div className="flex max-h-[50vh] flex-col gap-3 overflow-y-auto">
                     {renderStepsInput()}
                 </div>
                 <Button
