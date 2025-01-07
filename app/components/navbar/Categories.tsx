@@ -1,8 +1,8 @@
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
-import Container from '../Container';
-import CategoryBox from '../CategoryBox';
+import Container from '@/app/components/Container';
+import CategoryBox from '@/app/components/CategoryBox';
 import {
     GiLindenLeaf,
     GiAvocado,
@@ -11,10 +11,42 @@ import {
     GiCoffeeCup,
     GiMeat,
     GiBowlOfRice,
+    GiWheat,
 } from 'react-icons/gi';
 import { FaFish } from 'react-icons/fa';
-import { TbSoup, TbSalad } from 'react-icons/tb';
+import { TbSoup, TbSalad, TbSalt } from 'react-icons/tb';
 import { PiBowlFoodFill } from 'react-icons/pi';
+import { LuVegan } from 'react-icons/lu';
+import { FaBan } from 'react-icons/fa';
+
+const BannedIcon = ({
+    Icon,
+    size,
+}: {
+    Icon: React.ElementType;
+    size: number;
+}) => (
+    <div className="relative">
+        <Icon size={size} />
+        <div className="absolute inset-0 -translate-x-2 -translate-y-2 opacity-50">
+            <FaBan size={size + 15} />
+        </div>
+    </div>
+);
+
+const UnsaltedIcon = (props: any) => (
+    <BannedIcon
+        Icon={TbSalt}
+        size={props.size}
+    />
+);
+
+const GlutenFreeIcon = (props: any) => (
+    <BannedIcon
+        Icon={GiWheat}
+        size={props.size}
+    />
+);
 
 export const categories = [
     {
@@ -71,6 +103,21 @@ export const categories = [
         label: 'Snacks',
         icon: PiBowlFoodFill,
         description: 'Quick snacks',
+    },
+    {
+        label: 'Unsalted',
+        icon: UnsaltedIcon,
+        description: 'Recipes without salt',
+    },
+    {
+        label: 'Gluten-Free',
+        icon: GlutenFreeIcon,
+        description: 'Gluten-free recipes',
+    },
+    {
+        label: 'Vegan',
+        icon: LuVegan,
+        description: 'Vegan recipes',
     },
 ];
 

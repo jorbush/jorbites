@@ -172,5 +172,8 @@
     "error_deleting_draft": "Error en eliminar l'esborrany",
     "oldest_first": "Més antic primer",
     "newest_first": "Més nou primer",
-    "snacks": "Tapes"
+    "snacks": "Tapes",
+    "unsalted": "Sense sal",
+    "gluten-free": "Sense gluten",
+    "vegan": "Vegà"
 }

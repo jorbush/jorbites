@@ -171,5 +171,8 @@
     "error_deleting_draft": "Error deleting draft",
     "oldest_first": "Oldest first",
     "newest_first": "Newest first",
-    "snacks": "Snacks"
+    "snacks": "Snacks",
+    "unsalted": "Unsalted",
+    "gluten-free": "Gluten-free",
+    "vegan": "Vegan"
 }

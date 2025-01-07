@@ -172,5 +172,8 @@
     "error_deleting_draft": "Error al eliminar el borrador",
     "oldest_first": "Más antiguos primero",
     "newest_first": "Más recientes primero",
-    "snacks": "Tapas"
+    "snacks": "Tapas",
+    "unsalted": "Sin sal",
+    "gluten-free": "Sin gluten",
+    "vegan": "Vegano"
 }

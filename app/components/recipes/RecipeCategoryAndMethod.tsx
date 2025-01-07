@@ -1,5 +1,7 @@
+'use client';
+
 import { IconType } from 'react-icons';
-import RecipeCategoryView from './RecipeCategory';
+import RecipeCategoryView from '@/app/components/recipes/RecipeCategory';
 
 interface RecipeInfoProps {
     category:
