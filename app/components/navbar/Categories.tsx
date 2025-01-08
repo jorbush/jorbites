@@ -13,11 +13,10 @@ import {
     GiBowlOfRice,
     GiWheat,
 } from 'react-icons/gi';
-import { FaFish } from 'react-icons/fa';
+import { FaFish, FaBan } from 'react-icons/fa';
 import { TbSoup, TbSalad, TbSalt } from 'react-icons/tb';
 import { PiBowlFoodFill } from 'react-icons/pi';
 import { LuVegan } from 'react-icons/lu';
-import { FaBan } from 'react-icons/fa';
 
 const BannedIcon = ({
     Icon,
