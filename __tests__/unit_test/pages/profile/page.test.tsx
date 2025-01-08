@@ -71,9 +71,9 @@ describe('ProfilePage', () => {
         const { getByText } = render(profilePage);
 
         await waitFor(() => {
-            expect(getByText('No recipes found')).toBeDefined();
+            expect(getByText('no_recipes_found')).toBeDefined();
             expect(
-                getByText('Looks like this user has not created recipes.')
+                getByText('looks_like_this_user_has_not_created_recipes.')
             ).toBeDefined();
         });
     });
@@ -175,9 +175,9 @@ describe('ProfilePage', () => {
 
         await waitFor(() => {
             expect(getByText('Test User')).toBeDefined();
-            expect(getByText('No recipes found')).toBeDefined();
+            expect(getByText('no_recipes_found')).toBeDefined();
             expect(
-                getByText('Looks like this user has not created recipes.')
+                getByText('looks_like_this_user_has_not_created_recipes.')
             ).toBeDefined();
         });
     });

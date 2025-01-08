@@ -24,9 +24,9 @@ describe('FavoritesPage', () => {
         const { getByText } = render(page);
 
         await waitFor(() => {
-            expect(getByText('No favorites found')).toBeDefined();
+            expect(getByText('no_favorites_found')).toBeDefined();
             expect(
-                getByText('Looks like you have no favorite recipes.')
+                getByText('looks_like_you_have_no_favorite_recipes.')
             ).toBeDefined();
         });
     });

@@ -178,5 +178,9 @@
     "vegan": "Vegano",
     "no_exact_matches": "No hay coincidencias exactas",
     "try_changing_or_removing_some_of_your_filters.": "Intenta cambiar o eliminar algunos de tus filtros.",
-    "remove_all_filters": "Eliminar todos los filtros"
+    "remove_all_filters": "Eliminar todos los filtros",
+    "no_recipes_found": "No se encontraron recetas",
+    "looks_like_this_user_has_not_created_recipes.": "Parece que este usuario no ha creado recetas.",
+    "no_favorites_found": "No se encontraron favoritos",
+    "looks_like_you_have_no_favorite_recipes.": "Parece que no tienes recetas favoritas."
 }
