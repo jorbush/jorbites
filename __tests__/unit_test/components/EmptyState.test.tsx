@@ -25,9 +25,17 @@ describe('<EmptyState />', () => {
     it('renders with default props', () => {
         render(<EmptyState />);
 
-        expect(screen.getByText('No exact matches')).toBeDefined();
         expect(
-            screen.getByText('Try changing or removing some of your filters.')
+            screen.getByText(
+                'No exact matches'.toLowerCase().replace(/ /g, '_')
+            )
+        ).toBeDefined();
+        expect(
+            screen.getByText(
+                'Try changing or removing some of your filters.'
+                    .toLowerCase()
+                    .replace(/ /g, '_')
+            )
         ).toBeDefined();
         expect(screen.queryByRole('button')).toBeNull();
     });
@@ -43,15 +51,19 @@ describe('<EmptyState />', () => {
             />
         );
 
-        expect(screen.getByText(customTitle)).toBeDefined();
-        expect(screen.getByText(customSubtitle)).toBeDefined();
+        expect(
+            screen.getByText(customTitle.toLowerCase().replace(/ /g, '_'))
+        ).toBeDefined();
+        expect(
+            screen.getByText(customSubtitle.toLowerCase().replace(/ /g, '_'))
+        ).toBeDefined();
     });
 
     it('renders reset button when showReset is true', () => {
         render(<EmptyState showReset={true} />);
 
         const resetButton = screen.getByRole('button', {
-            name: 'Remove all filters',
+            name: 'Remove all filters'.toLowerCase().replace(/ /g, '_'),
         });
         expect(resetButton).toBeDefined();
     });
@@ -60,7 +72,7 @@ describe('<EmptyState />', () => {
         render(<EmptyState showReset={true} />);
 
         const resetButton = screen.getByRole('button', {
-            name: 'Remove all filters',
+            name: 'Remove all filters'.toLowerCase().replace(/ /g, '_'),
         });
         fireEvent.click(resetButton);
 

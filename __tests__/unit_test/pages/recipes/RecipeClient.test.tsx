@@ -1,4 +1,3 @@
-// RecipeClient.test.tsx
 import React from 'react';
 import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -6,6 +5,9 @@ import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import { SafeUser, SafeRecipe, SafeComment } from '@/app/types';
 
 // Mocks
+vi.mock('@/app/hooks/useMediaQuery', () => ({
+    default: () => false,
+}));
 vi.mock('axios');
 vi.mock('react-hot-toast');
 vi.mock('next/navigation', () => ({

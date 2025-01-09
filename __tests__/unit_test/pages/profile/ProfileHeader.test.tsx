@@ -6,6 +6,10 @@ import { SafeUser } from '@/app/types';
 import { useRouter } from 'next/navigation';
 
 // Mock data
+vi.mock('@/app/hooks/useMediaQuery', () => ({
+    default: () => false,
+}));
+
 const mockUser: SafeUser = {
     id: 'user1',
     name: 'Test User',

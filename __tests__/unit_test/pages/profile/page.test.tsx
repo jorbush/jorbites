@@ -1,4 +1,3 @@
-import React from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ProfilePage from '@/app/profile/[userId]/page';
@@ -7,6 +6,9 @@ import getUserById from '@/app/actions/getUserById';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
 // Mock implementations
+vi.mock('@/app/hooks/useMediaQuery', () => ({
+    default: () => false,
+}));
 vi.mock('@/app/actions/getRecipesByUserId');
 vi.mock('@/app/actions/getUserById');
 vi.mock('@/app/actions/getCurrentUser');
@@ -71,9 +73,9 @@ describe('ProfilePage', () => {
         const { getByText } = render(profilePage);
 
         await waitFor(() => {
-            expect(getByText('No recipes found')).toBeDefined();
+            expect(getByText('no_recipes_found')).toBeDefined();
             expect(
-                getByText('Looks like this user has not created recipes.')
+                getByText('looks_like_this_user_has_not_created_recipes.')
             ).toBeDefined();
         });
     });
@@ -175,9 +177,9 @@ describe('ProfilePage', () => {
 
         await waitFor(() => {
             expect(getByText('Test User')).toBeDefined();
-            expect(getByText('No recipes found')).toBeDefined();
+            expect(getByText('no_recipes_found')).toBeDefined();
             expect(
-                getByText('Looks like this user has not created recipes.')
+                getByText('looks_like_this_user_has_not_created_recipes.')
             ).toBeDefined();
         });
     });

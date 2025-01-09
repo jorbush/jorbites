@@ -171,5 +171,15 @@
     "error_deleting_draft": "Error deleting draft",
     "oldest_first": "Oldest first",
     "newest_first": "Newest first",
-    "snacks": "Snacks"
+    "snacks": "Snacks",
+    "unsalted": "Unsalted",
+    "gluten-free": "Gluten-free",
+    "vegan": "Vegan",
+    "no_exact_matches": "No exact matches",
+    "try_changing_or_removing_some_of_your_filters.": "Try changing or removing some of your filters.",
+    "remove_all_filters": "Remove all filters",
+    "no_recipes_found": "No recipes found",
+    "looks_like_this_user_has_not_created_recipes.": "Looks like this user has not created recipes.",
+    "no_favorites_found": "No favorites found",
+    "looks_like_you_have_no_favorite_recipes.": "Looks like you have no favorite recipes."
 }

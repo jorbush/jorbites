@@ -45,29 +45,28 @@ describe('<Heading />', () => {
         );
     });
 
-    it('applies break-all class for long words', () => {
+    it('applies break-words class for long words', () => {
         const longTitle =
             'ThisIsAVeryLongWordThatShouldTriggerTheBreakAllClass';
         const { container } = render(<Heading title={longTitle} />);
         const titleElement = container.querySelector('.text-2xl');
         expect(titleElement).toBeDefined();
-        expect(titleElement?.className).toContain('break-all');
+        expect(titleElement?.className).toContain('break-words');
     });
 
-    it('does not apply break-all class for normal words', () => {
+    it('does not apply break-words class for normal words', () => {
         const { container } = render(<Heading title="Normal Title" />);
         const titleElement = container.querySelector('.text-2xl');
         expect(titleElement).toBeDefined();
-        expect(titleElement?.className).not.toContain('break-all');
+        expect(titleElement?.className).not.toContain('break-words');
     });
 
     it('applies correct classes to title div', () => {
         const { container } = render(<Heading title="Test Title" />);
         const titleElement = container.querySelector('.text-2xl');
         expect(titleElement).toBeDefined();
-        expect(titleElement?.className).toContain('truncate');
-        expect(titleElement?.className).toContain('whitespace-normal');
-        expect(titleElement?.className).toContain('text-justify');
+        expect(titleElement?.className).toContain('whitespace-pre-wrap');
+        expect(titleElement?.className).toContain('text-center');
         expect(titleElement?.className).toContain('font-bold');
         expect(titleElement?.className).toContain('dark:text-neutral-100');
     });

@@ -12,8 +12,8 @@ const Heading: React.FC<HeadingProps> = ({ title, subtitle, center }) => {
     return (
         <div className={center ? 'text-center' : 'text-start'}>
             <div
-                className={`truncate whitespace-normal text-justify text-2xl font-bold dark:text-neutral-100 ${
-                    isLongWord ? 'break-all' : ''
+                className={`whitespace-pre-wrap text-center text-2xl font-bold dark:text-neutral-100 ${
+                    isLongWord ? 'break-words' : ''
                 }`}
             >
                 {title}

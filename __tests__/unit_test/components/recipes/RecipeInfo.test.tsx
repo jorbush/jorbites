@@ -5,6 +5,10 @@ import RecipeInfo from '@/app/components/recipes/RecipeInfo';
 import { SafeUser } from '@/app/types';
 import * as nextNavigation from 'next/navigation';
 
+vi.mock('@/app/hooks/useMediaQuery', () => ({
+    default: () => false,
+}));
+
 // Mock the dependencies
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
