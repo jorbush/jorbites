@@ -59,9 +59,9 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
 
     return (
         <>
-            <div className="flex items-center justify-between sm:ml-4 sm:mr-4">
+            <div className="flex items-baseline justify-between sm:ml-4 sm:mr-4">
                 <button
-                    className="mr-4 flex items-center space-x-2 text-gray-600 focus:outline-none dark:text-neutral-100"
+                    className="mr-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-none dark:text-neutral-100 md:translate-y-0"
                     onClick={() => router.back()}
                 >
                     <FiChevronLeft className="text-xl" />
@@ -72,7 +72,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                     center
                 />
                 <button
-                    className="ml-4 flex items-center space-x-2 text-gray-600 focus:outline-none dark:text-neutral-100"
+                    className="ml-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-none dark:text-neutral-100 md:translate-y-0"
                     onClick={share}
                     aria-label="Share"
                 >

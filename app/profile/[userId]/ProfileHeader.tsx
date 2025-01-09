@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { MdVerified } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import Container from '@/app/components/Container';
+import useMediaQuery from '@/app/hooks/useMediaQuery';
 
 interface ProfileHeaderProps {
     user?: SafeUser | null;
@@ -14,6 +15,29 @@ interface ProfileHeaderProps {
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
     const router = useRouter();
     const { t } = useTranslation();
+    const isMdOrSmaller = useMediaQuery('(max-width: 415px)');
+    const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
+
+    const getDisplayName = () => {
+        if (!user?.name) return '';
+        const parts = user.name.split(' ');
+        const firstName = parts[0];
+        const lastName = parts[1] || '';
+        if (lastName.length === 0) return firstName;
+        const fullNameLength = user.name.length;
+        if (isMdOrSmaller) {
+            if (
+                isSmOrSmaller ||
+                fullNameLength > 20 ||
+                (lastName && /^[a-z]/.test(lastName))
+            ) {
+                return firstName;
+            } else {
+                return `${firstName} ${lastName}`;
+            }
+        }
+        return user.name;
+    };
 
     return (
         <Container>
@@ -29,7 +53,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                             className="cursor-pointer"
                             onClick={() => router.push('/profile/' + user?.id)}
                         >
-                            {user?.name}
+                            {getDisplayName()}
                         </div>
                         {user?.verified && (
                             <MdVerified className="ml-1 mt-1 text-green-450" />

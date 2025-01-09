@@ -1,4 +1,3 @@
-import React from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ProfilePage from '@/app/profile/[userId]/page';
@@ -7,6 +6,9 @@ import getUserById from '@/app/actions/getUserById';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
 // Mock implementations
+vi.mock('@/app/hooks/useMediaQuery', () => ({
+    default: () => false,
+}));
 vi.mock('@/app/actions/getRecipesByUserId');
 vi.mock('@/app/actions/getUserById');
 vi.mock('@/app/actions/getCurrentUser');

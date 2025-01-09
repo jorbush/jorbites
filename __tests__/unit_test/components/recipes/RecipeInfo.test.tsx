@@ -1,9 +1,13 @@
 import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import RecipeInfo from '@/app/components/recipes/RecipeInfo';
 import { SafeUser } from '@/app/types';
 import * as nextNavigation from 'next/navigation';
+
+vi.mock('@/app/hooks/useMediaQuery', () => ({
+    default: () => false,
+}));
 
 // Mock the dependencies
 vi.mock('next/navigation', () => ({
