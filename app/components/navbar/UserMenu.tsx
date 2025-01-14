@@ -59,7 +59,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
 
     return (
         <div
-            className="relative"
+            className="relative z-50"
             ref={menuRef}
         >
             <div className="flex flex-row items-center gap-2 md:gap-3">

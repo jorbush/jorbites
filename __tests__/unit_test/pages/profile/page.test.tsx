@@ -27,6 +27,7 @@ const mockRecipes = [
         userId: 'user1',
         createdAt: new Date().toISOString(),
         imageSrc: 'http://image.png',
+        category: '',
     },
     {
         id: 'recipe2',
@@ -34,6 +35,7 @@ const mockRecipes = [
         userId: 'user1',
         createdAt: new Date().toISOString(),
         imageSrc: 'http://image.png',
+        category: '',
     },
 ];
 const mockCurrentUser = {
