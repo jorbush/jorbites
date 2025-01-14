@@ -38,12 +38,14 @@ describe('FavoritesPage', () => {
                 title: 'Recipe 1',
                 description: 'Description 1',
                 imageSrc: 'http://image.png',
+                category: '',
             },
             {
                 id: 'recipe2',
                 title: 'Recipe 2',
                 description: 'Description 2',
                 imageSrc: 'http://image.png',
+                category: '',
             },
         ];
         const mockCurrentUser = {

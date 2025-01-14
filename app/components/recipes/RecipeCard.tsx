@@ -4,6 +4,8 @@ import { SafeRecipe, SafeUser } from '@/app/types';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import HeartButton from '@/app/components/HeartButton';
+import { GiTrophyCup } from 'react-icons/gi';
+import { useTranslation } from 'react-i18next';
 
 interface RecipeCardProps {
     data: SafeRecipe;
@@ -12,7 +14,7 @@ interface RecipeCardProps {
 
 const RecipeCard: React.FC<RecipeCardProps> = ({ data, currentUser }) => {
     const router = useRouter();
-
+    const { t } = useTranslation();
     return (
         <div
             onClick={() => router.push(`/recipes/${data.id}`)}
@@ -34,6 +36,15 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ data, currentUser }) => {
                             currentUser={currentUser}
                         />
                     </div>
+                    {data.category.toLowerCase() === 'award-winning' && (
+                        <div className="absolute bottom-0 flex w-full items-center justify-center bg-gray-900/50 p-2 text-white">
+                            <GiTrophyCup
+                                className="mr-1 inline-block"
+                                size={20}
+                            />
+                            {t('award-winning')}
+                        </div>
+                    )}
                 </div>
                 <div className="text-lg font-semibold dark:text-neutral-100">
                     {data.title}

@@ -12,6 +12,7 @@ import {
     GiMeat,
     GiBowlOfRice,
     GiWheat,
+    GiTrophyCup,
 } from 'react-icons/gi';
 import { FaFish, FaBan } from 'react-icons/fa';
 import { TbSoup, TbSalad, TbSalt } from 'react-icons/tb';
@@ -117,6 +118,11 @@ export const categories = [
         label: 'Vegan',
         icon: LuVegan,
         description: 'Vegan recipes',
+    },
+    {
+        label: 'Award-Winning',
+        icon: GiTrophyCup,
+        description: 'Award-winning recipes',
     },
 ];
 

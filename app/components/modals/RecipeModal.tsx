@@ -367,22 +367,26 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 subtitle={t('subtitle_category_recipe') ?? ''}
             />
             <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-y-auto">
-                {categories.map((item) => (
-                    <div
-                        key={item.label}
-                        className="col-span-1"
-                    >
-                        <CategoryInput
-                            onClick={(category) =>
-                                setCustomValue('category', category)
-                            }
-                            selected={category === item.label}
-                            label={item.label}
-                            icon={item.icon}
-                            dataCy={`category-box-${item.label}`}
-                        />
-                    </div>
-                ))}
+                {categories
+                    .filter(
+                        (item) => item.label.toLowerCase() !== 'award-winning'
+                    )
+                    .map((item) => (
+                        <div
+                            key={item.label}
+                            className="col-span-1"
+                        >
+                            <CategoryInput
+                                onClick={(category) =>
+                                    setCustomValue('category', category)
+                                }
+                                selected={category === item.label}
+                                label={item.label}
+                                icon={item.icon}
+                                dataCy={`category-box-${item.label}`}
+                            />
+                        </div>
+                    ))}
             </div>
         </div>
     );

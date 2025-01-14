@@ -70,6 +70,16 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
         return user.name;
     };
 
+    const parseBoldText = (text: string): React.ReactNode => {
+        const parts = text.split(/(\*\*.*?\*\*)/g);
+        return parts.map((part, index) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={index}>{part.slice(2, -2)}</strong>;
+            }
+            return part;
+        });
+    };
+
     return (
         <div className="col-span-4 flex flex-col gap-8 pl-2 pr-2">
             <div className="flex flex-col gap-2">
@@ -143,7 +153,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                     key={index}
                                     className="mb-2"
                                 >
-                                    {ingredient}
+                                    {parseBoldText(ingredient)}
                                 </li>
                             ))}
                         </ul>
@@ -163,7 +173,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                     key={index}
                                     className="mb-2"
                                 >
-                                    {step}
+                                    {parseBoldText(step)}
                                 </li>
                             ))}
                         </ol>
