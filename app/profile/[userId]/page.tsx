@@ -1,12 +1,10 @@
 import EmptyState from '@/app/components/EmptyState';
 import ClientOnly from '@/app/components/ClientOnly';
-
 import getCurrentUser from '@/app/actions/getCurrentUser';
-
-import ProfileClient from './ProfileClient';
-import getRecipesByUserId from '../../actions/getRecipesByUserId';
+import ProfileClient from '@/app/profile/[userId]/ProfileClient';
+import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
 import getUserById from '@/app/actions/getUserById';
-import ProfileHeader from './ProfileHeader';
+import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
 
 interface IParams {
     userId?: string;
