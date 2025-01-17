@@ -23,6 +23,7 @@ model User {
   emailNotifications  Boolean   @default(false)
   level               Int       @default(0)
   verified            Boolean   @default(false)
+  badges              String[]  @default([])
 
   accounts            Account[]
   recipes             Recipe[]
