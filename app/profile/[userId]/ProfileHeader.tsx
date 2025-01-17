@@ -39,7 +39,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
         }
         return user.name;
     };
-    console.log(user?.badges);
+
     return (
         <Container>
             <div className="col-span-2 flex flex-row items-center gap-4 p-2 text-xl font-semibold dark:text-neutral-100">
