@@ -64,22 +64,24 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                 </div>
             </div>
             <hr className="mt-2" />
-            {Array.isArray(user?.badges) && user?.badges && (
-                <>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                        {user.badges.map((badge, index) => (
-                            <Image
-                                key={index}
-                                src={`/badges/${badge}.webp`}
-                                alt={`${badge} badge`}
-                                width={50}
-                                height={50}
-                            />
-                        ))}
-                    </div>
-                    <hr className="mt-2" />
-                </>
-            )}
+            {user?.badges &&
+                Array.isArray(user?.badges) &&
+                user.badges.length > 0 && (
+                    <>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                            {user.badges.map((badge, index) => (
+                                <Image
+                                    key={index}
+                                    src={`/badges/${badge}.webp`}
+                                    alt={`${badge} badge`}
+                                    width={50}
+                                    height={50}
+                                />
+                            ))}
+                        </div>
+                        <hr className="mt-2" />
+                    </>
+                )}
         </Container>
     );
 };
