@@ -22,11 +22,15 @@ export default function Error({ error, reset }: ErrorProps) {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-[60vh]">
+        <div className="flex h-[60vh] flex-col items-center justify-center">
             <h2 className="mb-4">{t('something_went_wrong')}</h2>
             <p className="mb-4">{error.message}</p>
             <div className="mt-4 w-48">
-                <Button outline onClick={handleReset} label={t('reload')} />
+                <Button
+                    outline
+                    onClick={handleReset}
+                    label={t('reload')}
+                />
             </div>
         </div>
     );
