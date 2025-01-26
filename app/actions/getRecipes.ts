@@ -11,17 +11,19 @@ export interface IRecipesParams {
 export interface ServerResponse<T> {
     data: T | null;
     error: {
-      code: string;
-      message: string;
+        code: string;
+        message: string;
     } | null;
-  }
+}
 
-  export default async function getRecipes(params: IRecipesParams): Promise<ServerResponse<{
-    recipes: any[];
-    totalRecipes: number;
-    totalPages: number;
-    currentPage: number;
-  }>> {
+export default async function getRecipes(params: IRecipesParams): Promise<
+    ServerResponse<{
+        recipes: any[];
+        totalRecipes: number;
+        totalPages: number;
+        currentPage: number;
+    }>
+> {
     try {
         const { category, page = 1, limit = 10 } = params;
 
@@ -40,8 +42,8 @@ export interface ServerResponse<T> {
                     data: null,
                     error: {
                         code: 'RATE_LIMIT_EXCEEDED',
-                        message: `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`
-                    }
+                        message: `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`,
+                    },
                 };
             }
         }
@@ -71,15 +73,15 @@ export interface ServerResponse<T> {
                 totalPages: Math.ceil(totalRecipes / limit),
                 currentPage: page,
             },
-            error: null
+            error: null,
         };
     } catch (error: any) {
         return {
             data: null,
             error: {
                 code: 'FETCH_ERROR',
-                message: 'Failed to get recipes'
-            }
+                message: 'Failed to get recipes',
+            },
         };
     }
 }

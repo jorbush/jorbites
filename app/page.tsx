@@ -14,57 +14,57 @@ interface HomeProps {
 }
 
 const Home = async ({ searchParams }: HomeProps) => {
-        const headersList = headers();
-        const userAgent = headersList.get('user-agent') || '';
-        const isMobile = detectMobile(userAgent);
-        const limit = isMobile ? 6 : 10;
-        const response = await getRecipes({
-            ...searchParams,
-            limit,
-        });
+    const headersList = headers();
+    const userAgent = headersList.get('user-agent') || '';
+    const isMobile = detectMobile(userAgent);
+    const limit = isMobile ? 6 : 10;
+    const response = await getRecipes({
+        ...searchParams,
+        limit,
+    });
 
-        if (response.error) {
-            return (
-                <ClientOnly>
-                    <ErrorDisplay
-                        code={response.error.code}
-                        message={response.error.message}
-                    />
-                </ClientOnly>
-            );
-        }
-
-        const recipesData = response.data;
-        const currentUser = await getCurrentUser();
-
-        if (recipesData?.recipes.length === 0) {
-            return (
-                <ClientOnly>
-                    <EmptyState showReset />
-                </ClientOnly>
-            );
-        }
-
+    if (response.error) {
         return (
             <ClientOnly>
-                <Container>
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                        {recipesData?.recipes.map((recipe) => (
-                            <RecipeCard
-                                key={recipe.id}
-                                data={recipe}
-                                currentUser={currentUser}
-                            />
-                        ))}
-                    </div>
-                    <Pagination
-                        totalPages={recipesData?.totalPages || 1}
-                        currentPage={recipesData?.currentPage || 1}
-                        searchParams={searchParams}
-                    />
-                </Container>
+                <ErrorDisplay
+                    code={response.error.code}
+                    message={response.error.message}
+                />
             </ClientOnly>
         );
+    }
+
+    const recipesData = response.data;
+    const currentUser = await getCurrentUser();
+
+    if (recipesData?.recipes.length === 0) {
+        return (
+            <ClientOnly>
+                <EmptyState showReset />
+            </ClientOnly>
+        );
+    }
+
+    return (
+        <ClientOnly>
+            <Container>
+                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                    {recipesData?.recipes.map((recipe) => (
+                        <RecipeCard
+                            key={recipe.id}
+                            data={recipe}
+                            currentUser={currentUser}
+                        />
+                    ))}
+                </div>
+                <Pagination
+                    totalPages={recipesData?.totalPages || 1}
+                    currentPage={recipesData?.currentPage || 1}
+                    searchParams={searchParams}
+                />
+            </Container>
+        </ClientOnly>
+    );
 };
 
 export default Home;

@@ -16,7 +16,7 @@ export default function ErrorDisplay({ code, message }: ErrorDisplayProps) {
         window.location.reload();
     };
 
-    const getErrorMessage = (message: string, statusCode?: number ) => {
+    const getErrorMessage = (message: string, statusCode?: number) => {
         if (message.startsWith('You have made too many requests')) {
             return message;
         }
@@ -35,8 +35,12 @@ export default function ErrorDisplay({ code, message }: ErrorDisplayProps) {
 
     return (
         <div className="flex h-[60vh] flex-col items-center justify-center">
-            <h2 className="mb-4 font-semibold text-2xl text-center dark:text-neutral-100">{t('something_went_wrong')}</h2>
-            <p className="mb-4 text-center">{getErrorMessage(message, parseInt(code))}</p>
+            <h2 className="mb-4 text-center text-2xl font-semibold dark:text-neutral-100">
+                {t('something_went_wrong')}
+            </h2>
+            <p className="mb-4 text-center">
+                {getErrorMessage(message, parseInt(code))}
+            </p>
             <div className="mt-4 w-48">
                 <Button
                     outline
