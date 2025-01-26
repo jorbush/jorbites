@@ -22,30 +22,17 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     const { t } = useTranslation();
 
     const handleClick = useCallback(() => {
-        let currentQuery = {};
-
-        if (params) {
-            currentQuery = qs.parse(params.toString());
-        }
-
-        const updatedQuery: any = {
-            ...currentQuery,
-            category: label,
-        };
-
-        if (params?.get('category') === label) {
-            delete updatedQuery.category;
-        }
-
-        const url = qs.stringifyUrl(
-            {
-                url: '/',
-                query: updatedQuery,
-            },
-            { skipNull: true }
+        router.push(
+            qs.stringifyUrl(
+                {
+                    url: '/',
+                    query: {
+                        category: label,
+                    },
+                },
+                { skipNull: true }
+            )
         );
-
-        router.push(url);
     }, [label, router, params]);
 
     return (
