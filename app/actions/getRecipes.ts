@@ -18,13 +18,15 @@ export default async function getRecipes(params: IRecipesParams) {
             query.category = category;
         }
 
-        const { success, reset } = await ratelimit.limit(
-            headers().get('x-forwarded-for') ?? ''
-        );
-        if (!success) {
-            throw new Error(
-                `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await ratelimit.limit(
+                headers().get('x-forwarded-for') ?? ''
             );
+            if (!success) {
+                throw new Error(
+                    `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`
+                );
+            }
         }
 
         const recipes = await prisma.recipe.findMany({
