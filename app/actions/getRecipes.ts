@@ -24,9 +24,9 @@ export interface RecipesResponse {
     currentPage: number;
 }
 
-export default async function getRecipes(params: IRecipesParams): Promise<
-    ServerResponse<RecipesResponse>
-> {
+export default async function getRecipes(
+    params: IRecipesParams
+): Promise<ServerResponse<RecipesResponse>> {
     try {
         const { category, page = 1, limit = 10 } = params;
 
