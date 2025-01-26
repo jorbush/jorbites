@@ -1,7 +1,6 @@
 import prisma from '@/app/libs/prismadb';
 import ratelimit from '@/app/libs/ratelimit';
 import { headers } from 'next/headers';
-import { CustomError } from '../utils/CustomError';
 
 export interface IRecipesParams {
     category?: string;
@@ -9,7 +8,20 @@ export interface IRecipesParams {
     limit?: number;
 }
 
-export default async function getRecipes(params: IRecipesParams) {
+export interface ServerResponse<T> {
+    data: T | null;
+    error: {
+      code: string;
+      message: string;
+    } | null;
+  }
+
+  export default async function getRecipes(params: IRecipesParams): Promise<ServerResponse<{
+    recipes: any[];
+    totalRecipes: number;
+    totalPages: number;
+    currentPage: number;
+  }>> {
     try {
         const { category, page = 1, limit = 10 } = params;
 
@@ -24,10 +36,13 @@ export default async function getRecipes(params: IRecipesParams) {
                 headers().get('x-forwarded-for') ?? ''
             );
             if (!success) {
-                throw new CustomError(
-                    `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`,
-                    429
-                );
+                return {
+                    data: null,
+                    error: {
+                        code: 'RATE_LIMIT_EXCEEDED',
+                        message: `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`
+                    }
+                };
             }
         }
 
@@ -50,18 +65,21 @@ export default async function getRecipes(params: IRecipesParams) {
         }));
 
         return {
-            recipes: safeRecipes,
-            totalRecipes,
-            totalPages: Math.ceil(totalRecipes / limit),
-            currentPage: page,
+            data: {
+                recipes: safeRecipes,
+                totalRecipes,
+                totalPages: Math.ceil(totalRecipes / limit),
+                currentPage: page,
+            },
+            error: null
         };
     } catch (error: any) {
-        if (error instanceof CustomError) {
-            throw error;
-        }
-        throw new CustomError(
-            error.message || 'Failed to get recipes',
-            500
-        );
+        return {
+            data: null,
+            error: {
+                code: 'FETCH_ERROR',
+                message: 'Failed to get recipes'
+            }
+        };
     }
 }

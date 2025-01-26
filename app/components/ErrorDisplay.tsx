@@ -1,32 +1,27 @@
+// app/components/ErrorDisplay.tsx
 'use client';
 
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '@/app/components/Button';
 
-interface ErrorProps {
-    error: Error & { statusCode?: number };
-    reset: () => void;
+interface ErrorDisplayProps {
+    code: string;
+    message: string;
 }
 
-export default function Error({ error, reset }: ErrorProps) {
+export default function ErrorDisplay({ code, message }: ErrorDisplayProps) {
     const { t } = useTranslation();
 
-    useEffect(() => {
-        console.error('An error occurred:', error);
-    }, [error]);
-
     const handleReset = () => {
-        reset();
         window.location.reload();
     };
 
-    const getErrorMessage = (error: Error & { statusCode?: number }) => {
-        if (error.message.startsWith('You have made too many requests')) {
-            return error.message;
+    const getErrorMessage = (message: string, statusCode?: number ) => {
+        if (message.startsWith('You have made too many requests')) {
+            return message;
         }
 
-        switch (error.statusCode) {
+        switch (statusCode) {
             case 429:
                 return t('too_many_requests');
             case 404:
@@ -40,8 +35,8 @@ export default function Error({ error, reset }: ErrorProps) {
 
     return (
         <div className="flex h-[60vh] flex-col items-center justify-center">
-            <h2 className="mb-4">{t('something_went_wrong')}</h2>
-            <p className="mb-4 text-center">{getErrorMessage(error)}</p>
+            <h2 className="mb-4 font-semibold text-2xl text-center dark:text-neutral-100">{t('something_went_wrong')}</h2>
+            <p className="mb-4 text-center">{getErrorMessage(message, parseInt(code))}</p>
             <div className="mt-4 w-48">
                 <Button
                     outline

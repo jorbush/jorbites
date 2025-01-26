@@ -7,24 +7,37 @@ import getRecipes, { IRecipesParams } from '@/app/actions/getRecipes';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import ClientOnly from '@/app/components/ClientOnly';
 import { headers } from 'next/headers';
+import ErrorDisplay from './components/ErrorDisplay';
 
 interface HomeProps {
     searchParams: IRecipesParams;
 }
 
 const Home = async ({ searchParams }: HomeProps) => {
-    try {
         const headersList = headers();
         const userAgent = headersList.get('user-agent') || '';
         const isMobile = detectMobile(userAgent);
         const limit = isMobile ? 6 : 10;
-        const recipesData = await getRecipes({
+        const response = await getRecipes({
             ...searchParams,
             limit,
         });
+
+        if (response.error) {
+            return (
+                <ClientOnly>
+                    <ErrorDisplay
+                        code={response.error.code}
+                        message={response.error.message}
+                    />
+                </ClientOnly>
+            );
+        }
+
+        const recipesData = response.data;
         const currentUser = await getCurrentUser();
 
-        if (recipesData.recipes.length === 0) {
+        if (recipesData?.recipes.length === 0) {
             return (
                 <ClientOnly>
                     <EmptyState showReset />
@@ -36,7 +49,7 @@ const Home = async ({ searchParams }: HomeProps) => {
             <ClientOnly>
                 <Container>
                     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                        {recipesData.recipes.map((recipe) => (
+                        {recipesData?.recipes.map((recipe) => (
                             <RecipeCard
                                 key={recipe.id}
                                 data={recipe}
@@ -45,16 +58,13 @@ const Home = async ({ searchParams }: HomeProps) => {
                         ))}
                     </div>
                     <Pagination
-                        totalPages={recipesData.totalPages}
-                        currentPage={recipesData.currentPage}
+                        totalPages={recipesData?.totalPages || 1}
+                        currentPage={recipesData?.currentPage || 1}
                         searchParams={searchParams}
                     />
                 </Container>
             </ClientOnly>
         );
-    } catch (error) {
-        throw error;
-    }
 };
 
 export default Home;
