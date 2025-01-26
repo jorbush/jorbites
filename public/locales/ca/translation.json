@@ -183,5 +183,7 @@
     "looks_like_this_user_has_not_created_recipes.": "Sembla que aquest usuari no ha creat receptes.",
     "no_favorites_found": "No s'han trobat preferits",
     "looks_like_you_have_no_favorite_recipes.": "Sembla que no tens receptes preferides.",
-    "award-winning": "Premiada"
+    "award-winning": "Premiada",
+    "something_went_wrong": "Alguna cosa ha anat malament",
+    "reload": "Recarrega"
 }
