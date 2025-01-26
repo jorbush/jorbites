@@ -82,10 +82,13 @@ describe('Home', () => {
     it('renders recipes when available', async () => {
         const getRecipesMock = await import('@/app/actions/getRecipes');
         vi.mocked(getRecipesMock.default).mockResolvedValue({
-            recipes: mockRecipes,
-            totalPages: 1,
-            currentPage: 1,
-            totalRecipes: 2,
+            data: {
+                recipes: mockRecipes,
+                totalPages: 1,
+                currentPage: 1,
+                totalRecipes: 2,
+            },
+            error: null,
         });
 
         const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
@@ -102,10 +105,13 @@ describe('Home', () => {
     it('renders empty state when no recipes', async () => {
         const getRecipesMock = await import('@/app/actions/getRecipes');
         vi.mocked(getRecipesMock.default).mockResolvedValue({
-            recipes: [],
-            totalPages: 0,
-            currentPage: 1,
-            totalRecipes: 0,
+            data: {
+                recipes: [],
+                totalPages: 1,
+                currentPage: 1,
+                totalRecipes: 0,
+            },
+            error: null,
         });
 
         const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
@@ -122,10 +128,13 @@ describe('Home', () => {
 
         const getRecipesMock = await import('@/app/actions/getRecipes');
         vi.mocked(getRecipesMock.default).mockResolvedValue({
-            recipes: mockRecipes,
-            totalPages: 1,
-            currentPage: 1,
-            totalRecipes: 2,
+            data: {
+                recipes: mockRecipes,
+                totalPages: 1,
+                currentPage: 1,
+                totalRecipes: 2,
+            },
+            error: null,
         });
 
         await Home({ searchParams: {} });
@@ -141,10 +150,13 @@ describe('Home', () => {
 
         const getRecipesMock = await import('@/app/actions/getRecipes');
         vi.mocked(getRecipesMock.default).mockResolvedValue({
-            recipes: mockRecipes,
-            totalPages: 1,
-            currentPage: 1,
-            totalRecipes: 2,
+            data: {
+                recipes: mockRecipes,
+                totalPages: 1,
+                currentPage: 1,
+                totalRecipes: 2,
+            },
+            error: null,
         });
 
         await Home({ searchParams: {} });
