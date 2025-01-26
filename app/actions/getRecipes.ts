@@ -1,6 +1,7 @@
 import prisma from '@/app/libs/prismadb';
 import ratelimit from '@/app/libs/ratelimit';
 import { headers } from 'next/headers';
+import { CustomError } from '../utils/CustomError';
 
 export interface IRecipesParams {
     category?: string;
@@ -23,8 +24,9 @@ export default async function getRecipes(params: IRecipesParams) {
                 headers().get('x-forwarded-for') ?? ''
             );
             if (!success) {
-                throw new Error(
-                    `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`
+                throw new CustomError(
+                    `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`,
+                    429
                 );
             }
         }
@@ -54,6 +56,12 @@ export default async function getRecipes(params: IRecipesParams) {
             currentPage: page,
         };
     } catch (error: any) {
-        throw new Error(error.message || 'Failed to get recipes');
+        if (error instanceof CustomError) {
+            throw error;
+        }
+        throw new CustomError(
+            error.message || 'Failed to get recipes',
+            500
+        );
     }
 }

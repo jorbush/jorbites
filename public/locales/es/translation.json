@@ -185,5 +185,9 @@
     "looks_like_you_have_no_favorite_recipes.": "Parece que no tienes recetas favoritas.",
     "award-winning": "Premiada",
     "something_went_wrong": "Algo salió mal",
-    "reload": "Recargar"
+    "reload": "Recargar",
+    "too_many_requests": "Demasiadas peticiones. Inténtalo de nuevo más tarde.",
+    "not_found": "No se ha encontrado el recurso solicitado",
+    "forbidden": "No tienes permiso para acceder a este recurso",
+    "error": "Error"
 }

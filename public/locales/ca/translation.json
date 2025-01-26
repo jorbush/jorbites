@@ -185,5 +185,9 @@
     "looks_like_you_have_no_favorite_recipes.": "Sembla que no tens receptes preferides.",
     "award-winning": "Premiada",
     "something_went_wrong": "Alguna cosa ha anat malament",
-    "reload": "Recarrega"
+    "reload": "Recarrega",
+    "too_many_requests": "Massa peticions. Torna-ho a provar més tard.",
+    "not_found": "No s'ha trobat el recurs sol·licitat",
+    "forbidden": "No tens permís per accedir a aquest recurs",
+    "error": "Error"
 }
