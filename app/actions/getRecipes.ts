@@ -1,6 +1,7 @@
 import prisma from '@/app/libs/prismadb';
 import ratelimit from '@/app/libs/ratelimit';
 import { headers } from 'next/headers';
+import { SafeRecipe } from '../types';
 
 export interface IRecipesParams {
     category?: string;
@@ -16,13 +17,15 @@ export interface ServerResponse<T> {
     } | null;
 }
 
+export interface RecipesResponse {
+    recipes: SafeRecipe[];
+    totalRecipes: number;
+    totalPages: number;
+    currentPage: number;
+}
+
 export default async function getRecipes(params: IRecipesParams): Promise<
-    ServerResponse<{
-        recipes: any[];
-        totalRecipes: number;
-        totalPages: number;
-        currentPage: number;
-    }>
+    ServerResponse<RecipesResponse>
 > {
     try {
         const { category, page = 1, limit = 10 } = params;
@@ -76,6 +79,7 @@ export default async function getRecipes(params: IRecipesParams): Promise<
             error: null,
         };
     } catch (error: any) {
+        console.error('Failed to get recipes', error);
         return {
             data: null,
             error: {

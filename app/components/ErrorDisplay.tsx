@@ -29,7 +29,7 @@ export default function ErrorDisplay({ code, message }: ErrorDisplayProps) {
             case 403:
                 return t('forbidden');
             default:
-                return t('something_went_wrong');
+                return t('error');
         }
     };
 
