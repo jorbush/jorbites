@@ -1,3 +1,4 @@
+import { expect } from '@jest/globals';
 import getRecipes from '@/app/actions/getRecipes';
 import { Session } from 'next-auth';
 import { POST as RecipePOST } from '@/app/api/recipes/route';
@@ -98,7 +99,7 @@ describe('Recipes API Routes and Server Actions', () => {
 
     it('should return the current recipes and the current user', async () => {
         const response = await getRecipes({});
-        initialRecipes = response.recipes;
+        initialRecipes = response.data?.recipes || [];
         const currentUser = await getCurrentUser();
         initialUser = currentUser;
     });
@@ -140,7 +141,9 @@ describe('Recipes API Routes and Server Actions', () => {
 
     it('should return the updated recipes', async () => {
         const response = await getRecipes({});
-        expect(response.recipes.length).toBeGreaterThan(initialRecipes.length);
+        expect(response.data?.recipes.length).toBeGreaterThan(
+            initialRecipes.length
+        );
     });
 
     it('should level up the recipe user level', async () => {
@@ -166,7 +169,7 @@ describe('Recipes API Routes and Server Actions', () => {
 
     it('should return the recipes filtered by category', async () => {
         const response = await getRecipes({ category: 'Desserts' });
-        expect(response.recipes.length).toBeGreaterThan(0);
+        expect(response.data?.recipes.length).toBeGreaterThan(0);
     });
 
     it('should return the recipe by id', async () => {
@@ -296,7 +299,7 @@ describe('Recipes API Routes and Server Actions', () => {
 
     it('should return the updated recipes', async () => {
         const response = await getRecipes({});
-        expect(response.recipes.length).toBe(initialRecipes.length);
+        expect(response?.data?.recipes?.length).toBe(initialRecipes.length);
     });
 
     it('should level down the recipe user level', async () => {

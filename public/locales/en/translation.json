@@ -182,5 +182,11 @@
     "looks_like_this_user_has_not_created_recipes.": "Looks like this user has not created recipes.",
     "no_favorites_found": "No favorites found",
     "looks_like_you_have_no_favorite_recipes.": "Looks like you have no favorite recipes.",
-    "award-winning": "Award-winning"
+    "award-winning": "Award-winning",
+    "something_went_wrong": "Something went wrong",
+    "reload": "Reload",
+    "too_many_requests": "Too many requests. Please try again later.",
+    "not_found": "The requested resource was not found",
+    "forbidden": "You don't have permission to access this resource",
+    "error": "Error"
 }
