@@ -1,5 +1,5 @@
-import { EmailTemplateParams, EmailType } from "@/app/types/email";
-import { JORBITES_URL } from "@/app/utils/constants";
+import { EmailTemplateParams, EmailType } from '@/app/types/email';
+import { JORBITES_URL } from '@/app/utils/constants';
 
 export const getEmailTemplate = (
     type: EmailType,
@@ -134,6 +134,6 @@ export const getEmailTemplate = (
 
     return {
         subject,
-        html: getBaseTemplate(content)
+        html: getBaseTemplate(content),
     };
 };

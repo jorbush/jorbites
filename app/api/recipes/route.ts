@@ -87,8 +87,8 @@ export async function POST(request: Request) {
                     type: EmailType.NEW_RECIPE,
                     userEmail: user.email,
                     params: {
-                        recipeId: recipe.id
-                    }
+                        recipeId: recipe.id,
+                    },
                 });
             }
         })

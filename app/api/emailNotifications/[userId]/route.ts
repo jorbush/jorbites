@@ -23,7 +23,7 @@ export async function PUT(_request: Request) {
     if (user.emailNotifications) {
         await sendEmail({
             type: EmailType.NOTIFICATIONS_ACTIVATED,
-            userEmail: user.email
+            userEmail: user.email,
         });
     }
 

@@ -50,8 +50,8 @@ export async function POST(request: Request, { params }: { params: IParams }) {
                 userEmail: currentRecipe?.user.email,
                 params: {
                     userName: currentUser.name,
-                    recipeId: recipeId
-                }
+                    recipeId: recipeId,
+                },
             });
         }
     } else {

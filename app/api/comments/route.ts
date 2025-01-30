@@ -34,8 +34,8 @@ export async function POST(request: Request) {
             userEmail: currentRecipe?.user.email,
             params: {
                 userName: currentUser.name,
-                recipeId: recipeId
-            }
+                recipeId: recipeId,
+            },
         });
     }
 
