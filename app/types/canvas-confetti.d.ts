@@ -1,4 +1,4 @@
 declare module 'canvas-confetti' {
-    const confetti: () => Promise<null>;
+    const confetti: (_options?: any) => Promise<null>;
     export default confetti;
 }
