@@ -29,12 +29,15 @@ const sendEmail = async ({ type, userEmail, params = {} }: SendEmailParams) => {
         const template = getEmailTemplate(type, params);
 
         await transporter.sendMail({
-            from: process.env.JORBITES_EMAIL,
+            from: {
+                name: 'Jorbites',
+                address: process.env.JORBITES_EMAIL || '',
+            },
             to: userEmail,
             subject: template.subject,
-            text: template.text,
+            html: template.html,
+            text: template.html.replace(/<[^>]*>/g, ''),
         });
-        console.log('Email sent to:', userEmail);
     } catch (error) {
         console.error('Error sending an email:', error);
     }
