@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import Container from '@/app/components/Container';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import Image from 'next/image';
+import confetti from 'canvas-confetti';
 
 interface ProfileHeaderProps {
     user?: SafeUser | null;
@@ -38,6 +39,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
             }
         }
         return user.name;
+    };
+
+    const handleBadgeClick = () => {
+        confetti({
+            particleCount: 100,
+            spread: 160,
+            origin: { y: 0.6 },
+        });
     };
 
     return (
@@ -76,6 +85,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                                     alt={`${badge} badge`}
                                     width={50}
                                     height={50}
+                                    className="cursor-pointer"
+                                    onClick={handleBadgeClick}
                                 />
                             ))}
                         </div>
