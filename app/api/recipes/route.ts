@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-
 import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import updateUserLevel from '@/app/actions/updateUserLevel';
-import { JORBITES_URL } from '@/app/utils/constants';
+import { EmailType } from '@/app/types/email';
 
 export async function POST(request: Request) {
     const currentUser = await getCurrentUser();
@@ -84,11 +83,13 @@ export async function POST(request: Request) {
     await Promise.all(
         users.map(async (user) => {
             if (user.emailNotifications) {
-                await sendEmail(
-                    `There's a new recipe available on Jorbites!\nCheck it out: ${JORBITES_URL}/recipes/` +
-                        recipe.id,
-                    user.email
-                );
+                await sendEmail({
+                    type: EmailType.NEW_RECIPE,
+                    userEmail: user.email,
+                    params: {
+                        recipeId: recipe.id,
+                    },
+                });
             }
         })
     );
