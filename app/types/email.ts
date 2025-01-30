@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 export enum EmailType {
     NEW_COMMENT = 'NEW_COMMENT',
     NEW_LIKE = 'NEW_LIKE',
