@@ -1,12 +1,20 @@
 import nodemailer from 'nodemailer';
+import { EmailType } from '@/app/types/email';
+import { getEmailTemplate } from '@/app/utils/emailTemplate';
 
-const sendEmail = async (
-    message: string,
-    userEmail: string | null | undefined
-) => {
-    if (userEmail === null || userEmail === undefined) {
-        return;
-    }
+interface SendEmailParams {
+    type: EmailType;
+    userEmail: string | null | undefined;
+    params?: {
+        userName?: string | null | undefined;
+        recipeId?: string;
+        recipeName?: string;
+    };
+}
+
+const sendEmail = async ({ type, userEmail, params = {} }: SendEmailParams) => {
+    if (!userEmail) return;
+
     try {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -18,12 +26,15 @@ const sendEmail = async (
             },
         });
 
+        const template = getEmailTemplate(type, params);
+
         await transporter.sendMail({
             from: process.env.JORBITES_EMAIL,
             to: userEmail,
-            subject: 'Something is happening in Jorbites!!',
-            text: message,
+            subject: template.subject,
+            text: template.text,
         });
+        console.log('Email sent to:', userEmail);
     } catch (error) {
         console.error('Error sending an email:', error);
     }
