@@ -41,7 +41,10 @@ export default async function RootLayout({
                     <RegisterModal />
                     <Navbar currentUser={currentUser} />
                 </ClientOnly>
-                <main id="main-content" className="pb-20 pt-28">
+                <main
+                    id="main-content"
+                    className="pb-20 pt-28"
+                >
                     {children}
                 </main>
                 <ClientOnly>
