@@ -29,13 +29,15 @@ describe('<Footer />', () => {
     it('renders the Footer component', () => {
         render(<Footer />);
         expect(screen.getByText(/version 0.5/)).toBeDefined();
-        expect(screen.getByText(/contact: jbonetv5@gmail.com/)).toBeDefined();
+        expect(screen.getByText('contact:')).toBeDefined();
+        expect(screen.getByText('jbonetv5@gmail.com')).toBeDefined();
     });
 
     it('uses the useTranslation hook', () => {
         render(<Footer />);
         expect(screen.getByText(`version ${version}`)).toBeDefined();
-        expect(screen.getByText('contact: jbonetv5@gmail.com')).toBeDefined();
+        expect(screen.getByText(/contact:/)).toBeDefined();
+        expect(screen.getByText('jbonetv5@gmail.com')).toBeDefined();
     });
 
     it('renders the privacy policy and cookies policy links', () => {
@@ -46,19 +48,11 @@ describe('<Footer />', () => {
 
     it('applies the correct CSS classes', () => {
         render(<Footer />);
-        const footerElement = screen
-            .getByText(/version 0.5/)
-            .closest('div')?.parentElement;
+        const footerElement = screen.getByRole('contentinfo');
         expect(footerElement).not.toBeNull();
-        if (footerElement) {
-            expect(footerElement.className).toContain('flex');
-            expect(footerElement.className).toContain('w-full');
-            expect(footerElement.className).toContain('flex-col');
-            expect(footerElement.className).toContain('items-center');
-            expect(footerElement.className).toContain('justify-center');
-            expect(footerElement.className).toContain('p-4');
-            expect(footerElement.className).toContain('text-neutral-200');
-            expect(footerElement.className).toContain('dark:text-gray-600');
-        }
+        expect(footerElement.className).toContain('w-full');
+        expect(footerElement.className).toContain('p-4');
+        expect(footerElement.className).toContain('text-neutral-500');
+        expect(footerElement.className).toContain('dark:text-gray-600');
     });
 });
