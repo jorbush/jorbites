@@ -32,18 +32,18 @@ const Pagination = ({
                 className="cursor-pointer items-center rounded-md bg-green-450 px-3 py-2 text-white shadow-sm transition hover:shadow-md disabled:opacity-50 dark:text-dark"
                 onClick={() => handlePageChange(+currentPage - 1)}
                 disabled={currentPage <= 1}
-                aria-label="previous_page"
+                aria-label="Previous page"
             >
                 <FiChevronLeft className="text-xl" aria-hidden="true" />
             </button>
             <span className="px-4 py-2 dark:text-gray-600">
-                {t('Page')} {currentPage} {t('of')} {totalPages}
+                {currentPage} {t('of')} {totalPages}
             </span>
             <button
                 className="cursor-pointer items-center rounded-md bg-green-450 px-3 py-2 text-white shadow-sm transition hover:shadow-md disabled:opacity-50 dark:text-dark"
                 onClick={() => handlePageChange(+currentPage + 1)}
                 disabled={currentPage >= totalPages}
-                aria-label="next_page"
+                aria-label="Next page"
             >
                 <FiChevronRight className="text-xl" aria-hidden="true" />
             </button>
