@@ -48,20 +48,24 @@ const Home = async ({ searchParams }: HomeProps) => {
     return (
         <ClientOnly>
             <Container>
-                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                    {recipesData?.recipes.map((recipe) => (
-                        <RecipeCard
-                            key={recipe.id}
-                            data={recipe}
-                            currentUser={currentUser}
-                        />
-                    ))}
-                </div>
-                <Pagination
-                    totalPages={recipesData?.totalPages || 1}
-                    currentPage={recipesData?.currentPage || 1}
-                    searchParams={searchParams}
-                />
+                <section aria-label="Recipes grid">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                        {recipesData?.recipes.map((recipe) => (
+                            <RecipeCard
+                                key={recipe.id}
+                                data={recipe}
+                                currentUser={currentUser}
+                            />
+                        ))}
+                    </div>
+                </section>
+                <nav aria-label="Pagination">
+                    <Pagination
+                        totalPages={recipesData?.totalPages || 1}
+                        currentPage={recipesData?.currentPage || 1}
+                        searchParams={searchParams}
+                    />
+                </nav>
             </Container>
         </ClientOnly>
     );

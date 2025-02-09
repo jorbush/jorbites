@@ -100,13 +100,12 @@ describe('<Navbar />', () => {
 
     it('applies correct CSS classes', () => {
         render(<Navbar />);
-        const navbar =
-            screen.getByTestId('container').parentElement?.parentElement;
-        expect(navbar?.className).include('fixed');
-        expect(navbar?.className).include('z-10');
-        expect(navbar?.className).include('w-full');
-        expect(navbar?.className).include('bg-white');
-        expect(navbar?.className).include('shadow-sm');
-        expect(navbar?.className).include('dark:bg-dark');
+        const header = screen.getByRole('banner');
+        expect(header.className).toContain('fixed');
+        expect(header.className).toContain('z-10');
+        expect(header.className).toContain('w-full');
+        expect(header.className).toContain('bg-white');
+        expect(header.className).toContain('shadow-sm');
+        expect(header.className).toContain('dark:bg-dark');
     });
 });

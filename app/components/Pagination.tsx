@@ -27,13 +27,21 @@ const Pagination = ({
     };
 
     return (
-        <div className="mt-10 flex justify-center pt-10">
+        <div
+            className="mt-10 flex justify-center pt-10"
+            role="navigation"
+            aria-label="Pagination"
+        >
             <button
                 className="cursor-pointer items-center rounded-md bg-green-450 px-3 py-2 text-white shadow-sm transition hover:shadow-md disabled:opacity-50 dark:text-dark"
                 onClick={() => handlePageChange(+currentPage - 1)}
                 disabled={currentPage <= 1}
+                aria-label="Previous page"
             >
-                <FiChevronLeft className="text-xl" />
+                <FiChevronLeft
+                    className="text-xl"
+                    aria-hidden="true"
+                />
             </button>
             <span className="px-4 py-2 dark:text-gray-600">
                 {currentPage} {t('of')} {totalPages}
@@ -42,8 +50,12 @@ const Pagination = ({
                 className="cursor-pointer items-center rounded-md bg-green-450 px-3 py-2 text-white shadow-sm transition hover:shadow-md disabled:opacity-50 dark:text-dark"
                 onClick={() => handlePageChange(+currentPage + 1)}
                 disabled={currentPage >= totalPages}
+                aria-label="Next page"
             >
-                <FiChevronRight className="text-xl" />
+                <FiChevronRight
+                    className="text-xl"
+                    aria-hidden="true"
+                />
             </button>
         </div>
     );

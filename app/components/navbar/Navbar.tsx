@@ -21,17 +21,31 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     }, []);
 
     return (
-        <div className="fixed z-10 w-full bg-white shadow-sm dark:bg-dark">
-            <div className="border-b-[1px] py-3 sm:py-4">
-                <Container>
-                    <div className="flex flex-row items-center justify-between gap-3 md:gap-0">
-                        <Search onClick={filterOpen} />
-                        <UserMenu currentUser={currentUser} />
+        <header className="fixed z-10 w-full bg-white shadow-sm dark:bg-dark">
+            <nav aria-label="Main navigation">
+                <div className="border-b-[1px] py-3 sm:py-4">
+                    <Container>
+                        <div className="flex flex-row items-center justify-between gap-3 md:gap-0">
+                            <Search
+                                onClick={filterOpen}
+                                aria-expanded={isFilterOpen}
+                                aria-controls="categories-menu"
+                            />
+                            <UserMenu currentUser={currentUser} />
+                        </div>
+                    </Container>
+                </div>
+                {isFilterOpen && (
+                    <div
+                        id="categories-menu"
+                        role="region"
+                        aria-label="Categories filter"
+                    >
+                        <Categories />
                     </div>
-                </Container>
-            </div>
-            {isFilterOpen && <Categories />}
-        </div>
+                )}
+            </nav>
+        </header>
     );
 };
 
