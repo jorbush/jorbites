@@ -142,6 +142,27 @@ const PrivacyPolicy: React.FC = () => {
                                 Cloudinary
                             </a>{' '}
                             {t('service_providers_desc_5')}
+                            <a
+                                href="https://www.upstash.com/"
+                                className="text-blue-600"
+                            >
+                                Upstash
+                            </a>
+                            {t('service_providers_desc_6')}
+                            <a
+                                href="https://www.redis.io"
+                                className="text-blue-600"
+                            >
+                                Redis
+                            </a>
+                            {t('service_providers_desc_7')}
+                            <a
+                                href="https://github.com/upstash/ratelimit-js"
+                                className="text-blue-600"
+                            >
+                                Rate Limit
+                            </a>
+                            {t('service_providers_desc_8')}
                         </li>
                         <li>
                             <strong>{t('legal_requirements')}:</strong>{' '}
