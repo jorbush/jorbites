@@ -98,10 +98,10 @@ const CookiesPolicy: React.FC = () => {
                         </a>
                         {t('third_party_services_description_2')}
                         <a
-                            href="https://www.godaddy.com"
+                            href="https://www.hostinger.com"
                             className="text-blue-600"
                         >
-                            GoDaddy
+                            Hostinger
                         </a>
                         {t('third_party_services_description_3')}
                         <a
@@ -118,6 +118,13 @@ const CookiesPolicy: React.FC = () => {
                             Cloudinary
                         </a>{' '}
                         {t('third_party_services_description_5')}
+                        <a
+                            href="https://www.upstash.com/"
+                            className="text-blue-600"
+                        >
+                            Upstash
+                        </a>
+                        {t('third_party_services_description_6')}
                     </p>
                     <ul className="mb-4 ml-6 list-disc">
                         <li>
@@ -130,10 +137,10 @@ const CookiesPolicy: React.FC = () => {
                         </li>
                         <li>
                             <a
-                                href="https://www.godaddy.com/legal/agreements/privacy-policy"
+                                href="https://www.hostinger.com/privacy"
                                 className="text-blue-600"
                             >
-                                {t('godaddy_privacy_policy')}
+                                {t('hostinger_privacy_policy')}
                             </a>
                         </li>
                         <li>
@@ -150,6 +157,14 @@ const CookiesPolicy: React.FC = () => {
                                 className="text-blue-600"
                             >
                                 {t('cloudinary_privacy_policy')}
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="https://upstash.com/trust/privacy.pdf"
+                                className="text-blue-600"
+                            >
+                                {t('upstash_privacy_policy')}
                             </a>
                         </li>
                     </ul>
