@@ -118,6 +118,13 @@ const CookiesPolicy: React.FC = () => {
                             Cloudinary
                         </a>{' '}
                         {t('third_party_services_description_5')}
+                        <a
+                            href="https://www.upstash.com/"
+                            className="text-blue-600"
+                        >
+                            Upstash
+                        </a>
+                        {t('third_party_services_description_6')}
                     </p>
                     <ul className="mb-4 ml-6 list-disc">
                         <li>
@@ -150,6 +157,14 @@ const CookiesPolicy: React.FC = () => {
                                 className="text-blue-600"
                             >
                                 {t('cloudinary_privacy_policy')}
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="https://upstash.com/trust/privacy.pdf"
+                                className="text-blue-600"
+                            >
+                                {t('upstash_privacy_policy')}
                             </a>
                         </li>
                     </ul>
