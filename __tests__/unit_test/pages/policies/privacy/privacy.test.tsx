@@ -46,7 +46,7 @@ describe('PrivacyPolicy', () => {
 
         expect(getAllByText('Cloudinary')).toBeDefined();
         expect(getByText('Vercel')).toBeDefined();
-        expect(getByText('GoDaddy')).toBeDefined();
+        expect(getByText('Hostinger')).toBeDefined();
         expect(getByText('MongoDB')).toBeDefined();
     });
 

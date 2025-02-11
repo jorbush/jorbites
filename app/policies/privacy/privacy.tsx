@@ -122,10 +122,10 @@ const PrivacyPolicy: React.FC = () => {
                             </a>
                             ){t('service_providers_desc_2')}(
                             <a
-                                href="https://www.godaddy.com"
+                                href="https://www.hostinger.com"
                                 className="text-blue-600"
                             >
-                                GoDaddy
+                                Hostinger
                             </a>
                             ){t('service_providers_desc_3')}(
                             <a
