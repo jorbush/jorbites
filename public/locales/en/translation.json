@@ -193,5 +193,6 @@
     "too_many_requests": "Too many requests. Please try again later.",
     "not_found": "The requested resource was not found",
     "forbidden": "You don't have permission to access this resource",
-    "error": "Error"
+    "error": "Error",
+    "rights_reserved": "All rights reserved"
 }
