@@ -194,5 +194,6 @@
     "too_many_requests": "Massa peticions. Torna-ho a provar més tard.",
     "not_found": "No s'ha trobat el recurs sol·licitat",
     "forbidden": "No tens permís per accedir a aquest recurs",
-    "error": "Error"
+    "error": "Error",
+    "rights_reserved": "Tots els drets reservats"
 }

@@ -194,5 +194,6 @@
     "too_many_requests": "Demasiadas peticiones. Inténtalo de nuevo más tarde.",
     "not_found": "No se ha encontrado el recurso solicitado",
     "forbidden": "No tienes permiso para acceder a este recurso",
-    "error": "Error"
+    "error": "Error",
+    "rights_reserved": "Todos los derechos reservados"
 }
