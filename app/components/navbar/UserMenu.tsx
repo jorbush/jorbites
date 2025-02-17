@@ -119,7 +119,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         router.push('/top-jorbiters');
                                         toggleOpen();
                                     }}
-                                    label='Top Jorbiters'
+                                    label="Top Jorbiters"
                                     isNew
                                 />
                                 <MenuItem

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
 import React from 'react';
-import { SafeUser } from "@/app/types";
+import { SafeUser } from '@/app/types';
 import Container from '@/app/components/Container';
 
 interface TopJorbitersClientProps {
@@ -19,7 +19,7 @@ const TopJorbitersClient: React.FC<TopJorbitersClientProps> = ({
             <div className="mx-auto max-w-screen-lg">
                 <h1>Top Jorbiters</h1>
                 {topJorbiters?.map((jorbiter) => (
-                    <div className='flex flex-row w-full justify-between'>
+                    <div className="flex w-full flex-row justify-between">
                         <div> {jorbiter.name} </div>
                         <div> {jorbiter.level} </div>
                     </div>

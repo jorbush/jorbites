@@ -1,5 +1,5 @@
 'use client';
-import { MdFiberNew } from "react-icons/md";
+import { MdFiberNew } from 'react-icons/md';
 
 interface MenuItemProps {
     onClick: () => void;
@@ -9,7 +9,13 @@ interface MenuItemProps {
     dataCy?: string;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ onClick, label, props, isNew, dataCy }) => {
+const MenuItem: React.FC<MenuItemProps> = ({
+    onClick,
+    label,
+    props,
+    isNew,
+    dataCy,
+}) => {
     return (
         <div
             onClick={onClick}
@@ -18,7 +24,12 @@ const MenuItem: React.FC<MenuItemProps> = ({ onClick, label, props, isNew, dataC
         >
             <div className="flex items-center justify-between">
                 {label}
-                {isNew && <MdFiberNew className="text-green-450 " size={25} />}
+                {isNew && (
+                    <MdFiberNew
+                        className="text-green-450"
+                        size={25}
+                    />
+                )}
             </div>
         </div>
     );
