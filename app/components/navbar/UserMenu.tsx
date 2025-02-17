@@ -116,6 +116,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 <MenuItem
                                     onClick={() => {
+                                        router.push('/top-jorbiters');
+                                        toggleOpen();
+                                    }}
+                                    label='Top Jorbiters'
+                                    isNew
+                                />
+                                <MenuItem
+                                    onClick={() => {
                                         settingsModal.onOpen();
                                         toggleOpen();
                                     }}
