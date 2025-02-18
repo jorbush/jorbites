@@ -16,4 +16,6 @@ export type SafeUser = Omit<
     createdAt: string;
     updatedAt: string;
     emailVerified: string | null;
+    recipeCount?: number | null | undefined;
+    likesReceived?: number | null | undefined;
 };
