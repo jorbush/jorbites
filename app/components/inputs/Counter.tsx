@@ -7,7 +7,7 @@ interface CounterProps {
     title: string;
     subtitle: string;
     value: number;
-    onChange: (value: number) => void;
+    onChange: (_value: number) => void;
 }
 
 const Counter: React.FC<CounterProps> = ({
