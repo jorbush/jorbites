@@ -1,9 +1,8 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 
-/* eslint-disable unused-imports/no-unused-vars */
 interface CounterProps {
     title: string;
     subtitle: string;
@@ -17,17 +16,57 @@ const Counter: React.FC<CounterProps> = ({
     value,
     onChange,
 }) => {
-    const onAdd = useCallback(() => {
+    const [isIncrementing, setIsIncrementing] = useState(false);
+    const [isDecrementing, setIsDecrementing] = useState(false);
+    const lastUpdateTime = useRef<number>(0);
+    const animationFrameId = useRef<number>();
+
+    const updateCounter = useCallback(() => {
+        const currentTime = Date.now();
+
+        if (currentTime - lastUpdateTime.current >= 100) {
+            if (isIncrementing) {
+                onChange(value + 1);
+            } else if (isDecrementing && value > 1) {
+                onChange(value - 1);
+            }
+            lastUpdateTime.current = currentTime;
+        }
+
+        animationFrameId.current = requestAnimationFrame(updateCounter);
+    }, [isIncrementing, isDecrementing, onChange, value]);
+
+    useEffect(() => {
+        if (isIncrementing || isDecrementing) {
+            lastUpdateTime.current = Date.now();
+            animationFrameId.current = requestAnimationFrame(updateCounter);
+        }
+
+        return () => {
+            if (animationFrameId.current) {
+                cancelAnimationFrame(animationFrameId.current);
+            }
+        };
+    }, [isIncrementing, isDecrementing, updateCounter]);
+
+    const handleStartIncrement = useCallback(() => {
+        setIsIncrementing(true);
+        setIsDecrementing(false);
         onChange(value + 1);
     }, [onChange, value]);
 
-    const onReduce = useCallback(() => {
-        if (value === 1) {
-            return;
+    const handleStartDecrement = useCallback(() => {
+        setIsDecrementing(true);
+        setIsIncrementing(false);
+        if (value > 1) {
+            onChange(value - 1);
         }
-
-        onChange(value - 1);
     }, [onChange, value]);
+
+    const handleStop = useCallback(() => {
+        setIsIncrementing(false);
+        setIsDecrementing(false);
+    }, []);
 
     return (
         <div className="flex flex-row items-center justify-between">
@@ -36,21 +75,31 @@ const Counter: React.FC<CounterProps> = ({
                 <div className="font-light text-gray-600">{subtitle}</div>
             </div>
             <div className="flex flex-row items-center gap-4">
-                <div
-                    onClick={onReduce}
-                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition hover:opacity-80"
+                <button
+                    type="button"
+                    onMouseDown={handleStartDecrement}
+                    onMouseUp={handleStop}
+                    onMouseLeave={handleStop}
+                    onTouchStart={handleStartDecrement}
+                    onTouchEnd={handleStop}
+                    className="flex h-10 w-10 cursor-pointer select-none items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition hover:opacity-80 active:bg-neutral-100"
                 >
                     <AiOutlineMinus data-testid="AiOutlineMinus" />
-                </div>
+                </button>
                 <div className="text-xl font-light text-neutral-600">
                     {value}
                 </div>
-                <div
-                    onClick={onAdd}
-                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition hover:opacity-80"
+                <button
+                    type="button"
+                    onMouseDown={handleStartIncrement}
+                    onMouseUp={handleStop}
+                    onMouseLeave={handleStop}
+                    onTouchStart={handleStartIncrement}
+                    onTouchEnd={handleStop}
+                    className="flex h-10 w-10 cursor-pointer select-none items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition hover:opacity-80 active:bg-neutral-100"
                 >
                     <AiOutlinePlus data-testid="AiOutlinePlus" />
-                </div>
+                </button>
             </div>
         </div>
     );
