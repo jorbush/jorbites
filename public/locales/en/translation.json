@@ -44,7 +44,7 @@
     "title": "Title",
     "description": "Description",
     "minutes": "Minutes",
-    "minutes_subtitle": "How many seconds does it take to complete the recipe?",
+    "minutes_subtitle": "How many minutes does it take to complete the recipe?",
     "methods_title": "What method will you use to prepare this recipe?",
     "methods_subtitle": "Pick a preparation method",
     "images": "Images",
