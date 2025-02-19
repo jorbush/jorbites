@@ -49,24 +49,32 @@ const Counter: React.FC<CounterProps> = ({
         };
     }, [isIncrementing, isDecrementing, updateCounter]);
 
-    const handleStartIncrement = useCallback(() => {
-        setIsIncrementing(true);
+    const handleStop = useCallback(() => {
+        setIsIncrementing(false);
         setIsDecrementing(false);
+    }, []);
+
+    const handleIncrement = useCallback(() => {
         onChange(value + 1);
     }, [onChange, value]);
 
-    const handleStartDecrement = useCallback(() => {
-        setIsDecrementing(true);
-        setIsIncrementing(false);
+    const handleDecrement = useCallback(() => {
         if (value > 1) {
             onChange(value - 1);
         }
     }, [onChange, value]);
 
-    const handleStop = useCallback(() => {
-        setIsIncrementing(false);
+    const handleIncrementStart = useCallback(() => {
+        setIsIncrementing(true);
         setIsDecrementing(false);
     }, []);
+
+    const handleDecrementStart = useCallback(() => {
+        if (value > 1) {
+            setIsDecrementing(true);
+            setIsIncrementing(false);
+        }
+    }, [value]);
 
     return (
         <div className="flex flex-row items-center justify-between">
@@ -77,10 +85,11 @@ const Counter: React.FC<CounterProps> = ({
             <div className="flex flex-row items-center gap-4">
                 <button
                     type="button"
-                    onMouseDown={handleStartDecrement}
+                    onClick={handleDecrement}
+                    onMouseDown={handleDecrementStart}
                     onMouseUp={handleStop}
                     onMouseLeave={handleStop}
-                    onTouchStart={handleStartDecrement}
+                    onTouchStart={handleDecrementStart}
                     onTouchEnd={handleStop}
                     className="flex h-10 w-10 cursor-pointer select-none items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition hover:opacity-80 active:bg-neutral-100"
                 >
@@ -91,10 +100,11 @@ const Counter: React.FC<CounterProps> = ({
                 </div>
                 <button
                     type="button"
-                    onMouseDown={handleStartIncrement}
+                    onClick={handleIncrement}
+                    onMouseDown={handleIncrementStart}
                     onMouseUp={handleStop}
                     onMouseLeave={handleStop}
-                    onTouchStart={handleStartIncrement}
+                    onTouchStart={handleIncrementStart}
                     onTouchEnd={handleStop}
                     className="flex h-10 w-10 cursor-pointer select-none items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition hover:opacity-80 active:bg-neutral-100"
                 >
