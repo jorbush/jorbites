@@ -14,7 +14,7 @@ i18n.use(Backend)
             lookupQuerystring: 'lng',
             lookupLocalStorage: 'i18nextLng',
             caches: ['localStorage'],
-            htmlTag: document.documentElement
+            htmlTag: document.documentElement,
         },
         interpolation: {
             escapeValue: false,
