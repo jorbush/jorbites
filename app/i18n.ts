@@ -10,8 +10,11 @@ i18n.use(Backend)
         fallbackLng: 'es',
         supportedLngs: ['es', 'en', 'ca'],
         detection: {
-            order: ['localStorage', 'navigator'],
+            order: ['localStorage', 'navigator', 'querystring', 'htmlTag'],
+            lookupQuerystring: 'lng',
+            lookupLocalStorage: 'i18nextLng',
             caches: ['localStorage'],
+            htmlTag: document.documentElement
         },
         interpolation: {
             escapeValue: false,
