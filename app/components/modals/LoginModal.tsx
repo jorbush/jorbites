@@ -129,6 +129,7 @@ const LoginModal = () => {
             onSubmit={handleSubmit(onSubmit)}
             body={bodyContent}
             footer={footerContent}
+            minHeight="700px"
         />
     );
 };
