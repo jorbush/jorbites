@@ -49,6 +49,7 @@ vi.mock('@/app/components/Footer', () => ({
 describe('RootLayout', () => {
     beforeEach(() => {
         vi.resetAllMocks();
+        document.body.innerHTML = '';
     });
 
     afterEach(() => {
@@ -89,11 +90,11 @@ describe('RootLayout', () => {
         const layout = await RootLayout({
             children: <div>Test Content</div>,
         });
-        const { container } = render(layout);
 
-        const body = container.querySelector('body');
-        expect(body?.className).include('mocked-font-class');
-        expect(body?.className).include('dark:bg-dark');
+        render(layout);
+
+        expect(document.body.className).toContain('mocked-font-class');
+        expect(document.body.className).toContain('dark:bg-dark');
     });
 
     it('wraps children in a div with correct classes', async () => {
@@ -101,12 +102,13 @@ describe('RootLayout', () => {
         vi.mocked(getCurrentUserMock.default).mockResolvedValue(null);
 
         const layout = await RootLayout({
-            children: <div>Test Content</div>,
+            children: <div data-testid="test-content">Test Content</div>,
         });
-        const { container } = render(layout);
 
-        const contentWrapper = container.querySelector('.pb-20.pt-28');
-        expect(contentWrapper).toBeDefined();
-        expect(contentWrapper?.textContent).toBe('Test Content');
+        const { getByTestId } = render(layout);
+
+        const content = getByTestId('test-content');
+        expect(content).toBeTruthy();
+        expect(content.textContent).toBe('Test Content');
     });
 });

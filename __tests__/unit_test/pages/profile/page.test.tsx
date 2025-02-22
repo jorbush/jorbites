@@ -19,6 +19,15 @@ vi.mock('next/navigation', () => ({
     })),
 }));
 
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (str: string) => str,
+        i18n: { changeLanguage: () => new Promise(() => {}) },
+    }),
+    initReactI18next: { type: '3rdParty', init: () => {} },
+    I18nextProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 const mockUser = { id: 'user1', name: 'Test User' };
 const mockRecipes = [
     {

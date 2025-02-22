@@ -103,7 +103,7 @@ describe('RegisterModal', () => {
                 name: 'testuser',
                 password: 'password123',
             });
-            expect(toast.success).toHaveBeenCalledWith('Registered!');
+            expect(toast.success).toHaveBeenCalledWith('registered');
             expect(mockRegisterModalClose).toHaveBeenCalled();
         });
     });
