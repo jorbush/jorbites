@@ -19,7 +19,7 @@ const Counter: React.FC<CounterProps> = ({
     const [isIncrementing, setIsIncrementing] = useState(false);
     const [isDecrementing, setIsDecrementing] = useState(false);
     const lastUpdateTime = useRef<number>(0);
-    const animationFrameId = useRef<number>();
+    const animationFrameId = useRef<number>(undefined);
 
     const updateCounter = useCallback(() => {
         const currentTime = Date.now();
