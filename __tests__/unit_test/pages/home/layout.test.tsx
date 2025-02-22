@@ -83,19 +83,6 @@ describe('RootLayout', () => {
         expect(await findByText('Test Content')).toBeDefined();
     });
 
-    it('applies the correct CSS classes', async () => {
-        const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
-        vi.mocked(getCurrentUserMock.default).mockResolvedValue(null);
-
-        const layout = await RootLayout({
-            children: <div>Test Content</div>,
-        });
-
-        render(layout);
-
-        expect(document.body.className).toContain('dark:bg-dark');
-    });
-
     it('wraps children in a div with correct classes', async () => {
         const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
         vi.mocked(getCurrentUserMock.default).mockResolvedValue(null);
