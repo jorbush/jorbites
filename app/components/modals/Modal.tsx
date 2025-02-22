@@ -85,7 +85,7 @@ const Modal: React.FC<ModalProps> = ({
         };
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [disabled, isOpen]);
+    }, [disabled, isOpen, handleSubmit]);
 
     if (!isOpen) {
         return null;
