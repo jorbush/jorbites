@@ -195,5 +195,6 @@
     "not_found": "No se ha encontrado el recurso solicitado",
     "forbidden": "No tienes permiso para acceder a este recurso",
     "error": "Error",
-    "rights_reserved": "Todos los derechos reservados"
+    "rights_reserved": "Todos los derechos reservados",
+    "registered": "Registrado"
 }

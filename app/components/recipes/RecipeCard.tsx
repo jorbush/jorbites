@@ -26,7 +26,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ data, currentUser }) => {
                         fill
                         priority={true}
                         className="h-full w-full object-cover transition group-hover:scale-110"
-                        src={data.imageSrc}
+                        src={data.imageSrc || '/advocado.webp'}
                         alt="recipe"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />

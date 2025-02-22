@@ -1,11 +1,10 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import FavoritesPage from '@/app/favorites/page';
 import getFavoriteRecipes from '@/app/actions/getFavoriteRecipes';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { vi, it, describe, expect } from 'vitest';
 
-// Mock the getFavoriteRecipes and getCurrentUser functions
 vi.mock('@/app/actions/getFavoriteRecipes');
 vi.mock('@/app/actions/getCurrentUser');
 vi.mock('next/navigation', () => ({
@@ -15,20 +14,34 @@ vi.mock('next/navigation', () => ({
     })),
 }));
 
+vi.mock('next/headers', () => ({
+    headers: () => Promise.resolve(new Headers({ 'x-forwarded-for': 'test' })),
+}));
+
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key: string) => key,
+        i18n: { changeLanguage: () => new Promise(() => {}) },
+    }),
+    initReactI18next: { type: '3rdParty', init: () => {} },
+    I18nextProvider: ({ children }: { children: React.ReactNode }) => children, // Añadir esto
+}));
+
 describe('FavoritesPage', () => {
     it('renders EmptyState when no favorite recipes are found', async () => {
         (getFavoriteRecipes as any).mockResolvedValue([]);
         (getCurrentUser as any).mockResolvedValue(null);
 
         const page = await FavoritesPage();
-        const { getByText } = render(page);
+        const { findByText } = render(page);
 
-        await waitFor(() => {
-            expect(getByText('no_favorites_found')).toBeDefined();
-            expect(
-                getByText('looks_like_you_have_no_favorite_recipes.')
-            ).toBeDefined();
-        });
+        const noFavText = await findByText('no_favorites_found');
+        const noFavDesc = await findByText(
+            'looks_like_you_have_no_favorite_recipes.'
+        );
+
+        expect(noFavText).toBeDefined();
+        expect(noFavDesc).toBeDefined();
     });
 
     it('renders FavoritesClient with favorite recipes', async () => {
@@ -62,11 +75,12 @@ describe('FavoritesPage', () => {
         (getCurrentUser as any).mockResolvedValue(mockCurrentUser);
 
         const page = await FavoritesPage();
-        const { getByText } = render(page);
+        const { findByText } = render(page);
 
-        await waitFor(() => {
-            expect(getByText('Recipe 1')).toBeDefined();
-            expect(getByText('Recipe 2')).toBeDefined();
-        });
+        const recipe1 = await findByText('Recipe 1');
+        const recipe2 = await findByText('Recipe 2');
+
+        expect(recipe1).toBeDefined();
+        expect(recipe2).toBeDefined();
     });
 });

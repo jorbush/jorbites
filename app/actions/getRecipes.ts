@@ -38,7 +38,7 @@ export default async function getRecipes(
 
         if (process.env.ENV === 'production') {
             const { success, reset } = await ratelimit.limit(
-                headers().get('x-forwarded-for') ?? ''
+                (await headers()).get('x-forwarded-for') ?? ''
             );
             if (!success) {
                 return {
