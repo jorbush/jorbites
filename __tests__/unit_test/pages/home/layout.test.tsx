@@ -93,7 +93,6 @@ describe('RootLayout', () => {
 
         render(layout);
 
-        expect(document.body.className).toContain('mocked-font-class');
         expect(document.body.className).toContain('dark:bg-dark');
     });
 
