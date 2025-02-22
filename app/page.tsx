@@ -14,8 +14,7 @@ interface HomeProps {
 }
 
 const Home = async ({ searchParams }: HomeProps) => {
-    const headersList = headers();
-    const userAgent = headersList.get('user-agent') || '';
+    const userAgent = (await headers()).get('user-agent') || '';
     const isMobile = detectMobile(userAgent);
     const limit = isMobile ? 6 : 10;
     const response = await getRecipes({
