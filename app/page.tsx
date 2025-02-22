@@ -2,7 +2,7 @@ import Container from '@/app/components/Container';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import EmptyState from '@/app/components/EmptyState';
 import Pagination from '@/app/components/Pagination';
-import { isMobile as detectMobile } from '@/app/utils/deviceDetector';
+import { isMobile } from '@/app/utils/deviceDetector';
 import getRecipes, { IRecipesParams } from '@/app/actions/getRecipes';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import ClientOnly from '@/app/components/ClientOnly';
@@ -14,12 +14,9 @@ interface HomeProps {
 }
 
 const Home = async ({ searchParams }: HomeProps) => {
-    const userAgent = (await headers()).get('user-agent') || '';
-    const isMobile = detectMobile(userAgent);
-    const limit = isMobile ? 6 : 10;
     const response = await getRecipes({
-        ...searchParams,
-        limit,
+        ...(await Promise.resolve(searchParams)),
+        limit: isMobile((await headers()).get('user-agent') || '') ? 6 : 10,
     });
 
     if (response.error) {
