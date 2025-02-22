@@ -195,5 +195,6 @@
     "not_found": "No s'ha trobat el recurs sol·licitat",
     "forbidden": "No tens permís per accedir a aquest recurs",
     "error": "Error",
-    "rights_reserved": "Tots els drets reservats"
+    "rights_reserved": "Tots els drets reservats",
+    "registered": "Registrat!"
 }
