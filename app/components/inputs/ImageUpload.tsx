@@ -12,6 +12,7 @@ interface ImageUploadProps {
     value: string;
     disabled?: boolean;
     canRemove?: boolean;
+    text?: string;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -19,6 +20,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     value,
     disabled,
     canRemove = true,
+    text,
 }) => {
     const handleUpload = useCallback(
         (result: any) => {
@@ -47,12 +49,17 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                                 open?.();
                             }
                         }}
-                        className={`h-50 relative flex cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-neutral-300 p-20 text-neutral-600 transition hover:opacity-70 ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
+                        className={`h-50 relative flex cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-neutral-300 px-20 py-14 text-neutral-600 transition hover:opacity-70 ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
                     >
                         <TbPhotoPlus
                             size={50}
                             data-testid="TbPhotoPlus"
                         />
+                        {text && (
+                            <div className="w-max text-center text-sm font-light">
+                                {text}
+                            </div>
+                        )}
                         {value && (
                             <>
                                 <div className="absolute inset-0 h-full w-full">
