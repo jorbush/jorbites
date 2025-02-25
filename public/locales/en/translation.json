@@ -195,5 +195,10 @@
     "forbidden": "You don't have permission to access this resource",
     "error": "Error",
     "rights_reserved": "All rights reserved",
-    "registered": "Registered!"
+    "registered": "Registered!",
+    "cover": "Cover",
+    "finished_recipe": "Finished recipe",
+    "first_steps": "First steps",
+    "next_steps": "Next steps",
+    "final_steps": "Final steps"
 }

@@ -196,5 +196,9 @@
     "forbidden": "No tens permís per accedir a aquest recurs",
     "error": "Error",
     "rights_reserved": "Tots els drets reservats",
-    "registered": "Registrat!"
+    "registered": "Registrat!",
+    "finished_recipe": "Recepta acabada",
+    "first_steps": "Primeres passes",
+    "next_steps": "Passes següents",
+    "final_steps": "Passes finals"
 }
