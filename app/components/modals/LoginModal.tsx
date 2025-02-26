@@ -16,6 +16,7 @@ import Input from '@/app/components/inputs/Input';
 import Heading from '@/app/components/Heading';
 import Button from '@/app/components/Button';
 import { useTranslation } from 'react-i18next';
+import { validateEmail } from '@/app/utils/validation';
 
 const LoginModal = () => {
     const router = useRouter();
@@ -36,8 +37,11 @@ const LoginModal = () => {
     });
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
+        if (!validateEmail(data.email)) {
+            toast.error(t('error_validate_email'));
+            return;
+        }
         setIsLoading(true);
-
         signIn('credentials', {
             ...data,
             redirect: false,
@@ -129,6 +133,7 @@ const LoginModal = () => {
             onSubmit={handleSubmit(onSubmit)}
             body={bodyContent}
             footer={footerContent}
+            minHeight="700px"
         />
     );
 };

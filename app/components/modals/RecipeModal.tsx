@@ -88,7 +88,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             description: '',
             ingredients: [],
             steps: [],
-            minutes: 10,
+            minutes: 30,
         },
     });
 
@@ -508,6 +508,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                         value={imageSrc}
                         onChange={(value) => setCustomValue('imageSrc', value)}
                         canRemove={watch('imageSrc1') === ''}
+                        text={t('finished_recipe') ?? 'Finished recipe'}
                     />
                     <ImageUpload
                         data-testid="image-upload-2"
@@ -515,6 +516,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                         onChange={(value) => setCustomValue('imageSrc1', value)}
                         disabled={imageSrc === ''}
                         canRemove={watch('imageSrc2') === ''}
+                        text={t('first_steps') ?? 'First steps'}
                     />
                     <ImageUpload
                         data-testid="image-upload-3"
@@ -522,12 +524,14 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                         onChange={(value) => setCustomValue('imageSrc2', value)}
                         disabled={watch('imageSrc1') === ''}
                         canRemove={watch('imageSrc3') === ''}
+                        text={t('next_steps') ?? 'Next steps'}
                     />
                     <ImageUpload
                         data-testid="image-upload-4"
                         value={watch('imageSrc3')}
                         onChange={(value) => setCustomValue('imageSrc3', value)}
                         disabled={watch('imageSrc2') === ''}
+                        text={t('final_steps') ?? 'Final steps'}
                     />
                 </div>
             </div>

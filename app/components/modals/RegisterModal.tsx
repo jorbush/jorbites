@@ -6,6 +6,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 
 import useRegisterModal from '@/app/hooks/useRegisterModal';
 
@@ -16,8 +17,10 @@ import Button from '@/app/components/Button';
 import { signIn } from 'next-auth/react';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import { useTranslation } from 'react-i18next';
+import { validateEmail } from '@/app/utils/validation';
 
 const RegisterModal = () => {
+    const router = useRouter();
     const registerModal = useRegisterModal();
     const loginModal = useLoginModal();
     const { t } = useTranslation();
@@ -37,13 +40,30 @@ const RegisterModal = () => {
     });
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
+        if (!validateEmail(data.email)) {
+            toast.error(t('error_validate_email'));
+            return;
+        }
         setIsLoading(true);
-
         axios
             .post('/api/register', data)
             .then(() => {
-                toast.success('Registered!');
+                toast.success(t('registered'));
                 registerModal.onClose();
+                // Login user after registration
+                signIn('credentials', {
+                    email: data.email,
+                    password: data.password,
+                    redirect: false,
+                }).then((callback) => {
+                    if (callback?.ok) {
+                        toast.success(t('logged_in'));
+                        router.refresh();
+                    }
+                    if (callback?.error) {
+                        toast.error(callback.error);
+                    }
+                });
             })
             .catch((error) => {
                 toast.error(error);

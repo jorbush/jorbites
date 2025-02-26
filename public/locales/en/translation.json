@@ -44,7 +44,7 @@
     "title": "Title",
     "description": "Description",
     "minutes": "Minutes",
-    "minutes_subtitle": "How many seconds does it take to complete the recipe?",
+    "minutes_subtitle": "How many minutes does it take to complete the recipe?",
     "methods_title": "What method will you use to prepare this recipe?",
     "methods_subtitle": "Pick a preparation method",
     "images": "Images",
@@ -194,5 +194,12 @@
     "not_found": "The requested resource was not found",
     "forbidden": "You don't have permission to access this resource",
     "error": "Error",
-    "rights_reserved": "All rights reserved"
+    "rights_reserved": "All rights reserved",
+    "registered": "Registered!",
+    "cover": "Cover",
+    "finished_recipe": "Finished recipe",
+    "first_steps": "First steps",
+    "next_steps": "Next steps",
+    "final_steps": "Final steps",
+    "error_validate_email": "The email is not valid"
 }

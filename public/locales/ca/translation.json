@@ -195,5 +195,11 @@
     "not_found": "No s'ha trobat el recurs sol·licitat",
     "forbidden": "No tens permís per accedir a aquest recurs",
     "error": "Error",
-    "rights_reserved": "Tots els drets reservats"
+    "rights_reserved": "Tots els drets reservats",
+    "registered": "Registrat!",
+    "finished_recipe": "Recepta acabada",
+    "first_steps": "Primeres passes",
+    "next_steps": "Passes següents",
+    "final_steps": "Passes finals",
+    "error_validate_email": "El correu electrònic no és vàlid"
 }
