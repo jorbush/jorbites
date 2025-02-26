@@ -200,5 +200,6 @@
     "finished_recipe": "Recepta acabada",
     "first_steps": "Primeres passes",
     "next_steps": "Passes següents",
-    "final_steps": "Passes finals"
+    "final_steps": "Passes finals",
+    "error_validate_email": "El correu electrònic no és vàlid"
 }
