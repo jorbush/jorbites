@@ -88,7 +88,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             description: '',
             ingredients: [],
             steps: [],
-            minutes: 10,
+            minutes: 30,
         },
     });
 
