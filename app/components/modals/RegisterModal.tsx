@@ -17,6 +17,7 @@ import Button from '@/app/components/Button';
 import { signIn } from 'next-auth/react';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import { useTranslation } from 'react-i18next';
+import { validateEmail } from '@/app/utils/validation';
 
 const RegisterModal = () => {
     const router = useRouter();
@@ -39,8 +40,11 @@ const RegisterModal = () => {
     });
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
+        if (!validateEmail(data.email)) {
+            toast.error(t('error_validate_email'));
+            return;
+        }
         setIsLoading(true);
-
         axios
             .post('/api/register', data)
             .then(() => {

@@ -201,5 +201,6 @@
     "finished_recipe": "Receta terminada",
     "first_steps": "Primeros pasos",
     "next_steps": "Siguientes pasos",
-    "final_steps": "Pasos finales"
+    "final_steps": "Pasos finales",
+    "error_validate_email": "El correo electrónico no es válido"
 }
