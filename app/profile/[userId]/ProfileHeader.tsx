@@ -9,6 +9,7 @@ import Container from '@/app/components/Container';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import Image from 'next/image';
 import confetti from 'canvas-confetti';
+import getUserDisplayName from '@/app/utils/responsive';
 
 interface ProfileHeaderProps {
     user?: SafeUser | null;
@@ -19,27 +20,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
     const { t } = useTranslation();
     const isMdOrSmaller = useMediaQuery('(max-width: 415px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
-
-    const getDisplayName = () => {
-        if (!user?.name) return '';
-        const parts = user.name.split(' ');
-        const firstName = parts[0];
-        const lastName = parts[1] || '';
-        if (lastName.length === 0) return firstName;
-        const fullNameLength = user.name.length;
-        if (isMdOrSmaller) {
-            if (
-                isSmOrSmaller ||
-                fullNameLength > 20 ||
-                (lastName && /^[a-z]/.test(lastName))
-            ) {
-                return firstName;
-            } else {
-                return `${firstName} ${lastName}`;
-            }
-        }
-        return user.name;
-    };
 
     const handleBadgeClick = () => {
         confetti({
@@ -63,7 +43,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                             className="cursor-pointer"
                             onClick={() => router.push('/profile/' + user?.id)}
                         >
-                            {getDisplayName()}
+                            {getUserDisplayName(
+                                user,
+                                isMdOrSmaller,
+                                isSmOrSmaller
+                            )}
                         </div>
                         {user?.verified && (
                             <MdVerified className="ml-1 mt-1 text-green-450" />
@@ -98,3 +82,23 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
 };
 
 export default ProfileHeader;
+
+{
+    /* <div className="flex items-center justify-end gap-4 text-sm sm:gap-6">
+<StatItem value={jorbiter.recipeCount || 0} label="recetas" />
+<StatItem value={jorbiter.likesReceived || 0} label="likes" />
+{jorbiter.badges && (
+    <StatItem value={jorbiter.badges.length} label="badges" />
+)}
+</div> */
+}
+// const StatItem = ({ value, label }: { value: number; label: string }) => (
+//     <div className="text-center">
+//         <p className="text-sm font-bold text-green-450 lg:text-xl">
+//             {value}
+//         </p>
+//         <p className="text-xs text-gray-500 dark:text-gray-400 lg:text-sm">
+//             {label}
+//         </p>
+//     </div>
+// );

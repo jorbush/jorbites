@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { MdVerified } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
+import getUserDisplayName from '@/app/utils/responsive';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -49,27 +50,6 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
 
-    const getDisplayName = () => {
-        if (!user?.name) return '';
-        const parts = user.name.split(' ');
-        const firstName = parts[0];
-        const lastName = parts[1] || '';
-        if (lastName.length === 0) return firstName;
-        const fullNameLength = user.name.length;
-        if (isMdOrSmaller) {
-            if (
-                isSmOrSmaller ||
-                fullNameLength > 20 ||
-                (lastName && /^[a-z]/.test(lastName))
-            ) {
-                return firstName;
-            } else {
-                return `${firstName} ${lastName}`;
-            }
-        }
-        return user.name;
-    };
-
     const parseBoldText = (text: string): React.ReactNode => {
         const parts = text.split(/(\*\*.*?\*\*)/g);
         return parts.map((part, index) => {
@@ -98,7 +78,11 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                         router.push('/profile/' + user.id)
                                     }
                                 >
-                                    {getDisplayName()}
+                                    {getUserDisplayName(
+                                        user,
+                                        isMdOrSmaller,
+                                        isSmOrSmaller
+                                    )}
                                 </div>
                                 {user.verified && (
                                     <MdVerified

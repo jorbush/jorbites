@@ -4,10 +4,8 @@ import axios from 'axios';
 import { useCallback, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-
 import useLoginModal from '@/app/hooks/useLoginModal';
 import { SafeComment, SafeRecipe, SafeUser } from '@/app/types';
-
 import Container from '@/app/components/Container';
 import { categories } from '@/app/components/navbar/Categories';
 import RecipeHead from '@/app/components/recipes/RecipeHead';

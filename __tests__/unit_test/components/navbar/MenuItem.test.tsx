@@ -28,12 +28,9 @@ describe('<MenuItem />', () => {
     it('has the correct CSS classes', () => {
         render(<MenuItem {...defaultProps} />);
         const menuItem = screen.getByText('Test Item');
-        expect(menuItem.className).contain('px-4');
-        expect(menuItem.className).contain('py-3');
-        expect(menuItem.className).contain('font-semibold');
-        expect(menuItem.className).contain('transition');
-        expect(menuItem.className).contain('hover:bg-neutral-100');
-        expect(menuItem.className).contain('hover:text-black');
+        expect(menuItem.className).contain('flex');
+        expect(menuItem.className).contain('items-center');
+        expect(menuItem.className).contain('justify-between');
     });
 
     it('applies custom label', () => {

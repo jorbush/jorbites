@@ -201,5 +201,10 @@
     "first_steps": "Primeres passes",
     "next_steps": "Passes següents",
     "final_steps": "Passes finals",
-    "error_validate_email": "El correu electrònic no és vàlid"
+    "error_validate_email": "El correu electrònic no és vàlid",
+    "top_jorbiters_description": "Els xefs més destacats de la nostra comunitat. Puja receptes per augmentar el teu nivell i uneix-te a l'elit!",
+    "call_to_action_ranked_title": "Vols aparèixer al rànquing?",
+    "call_to_action_ranked_subtitle": "Comparteix les teves millors receptes i guanya experiència per pujar de nivell",
+    "call_to_action_first_place_title": "Arriba al primer lloc!",
+    "call_to_action_first_place_subtitle": "Si aconsegueixes la primera posició podràs sol·licitar la teva verificació gratuïta"
 }
