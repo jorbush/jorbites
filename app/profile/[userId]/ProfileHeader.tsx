@@ -9,7 +9,7 @@ import Container from '@/app/components/Container';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import Image from 'next/image';
 import confetti from 'canvas-confetti';
-import getUserDisplayName from '@/app/utils/reponsive';
+import getUserDisplayName from '@/app/utils/responsive';
 
 interface ProfileHeaderProps {
     user?: SafeUser | null;

@@ -96,7 +96,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('post_recipe')}
-                                    props="sm:hidden"
+                                    extraClasses="sm:hidden"
                                 />
                                 <MenuItem
                                     onClick={() => {

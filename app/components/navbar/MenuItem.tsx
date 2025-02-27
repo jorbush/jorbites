@@ -4,7 +4,7 @@ import { MdFiberNew } from 'react-icons/md';
 interface MenuItemProps {
     onClick: () => void;
     label: string;
-    props?: string;
+    extraClasses?: string;
     isNew?: boolean;
     dataCy?: string;
 }
@@ -12,14 +12,14 @@ interface MenuItemProps {
 const MenuItem: React.FC<MenuItemProps> = ({
     onClick,
     label,
-    props,
+    extraClasses,
     isNew,
     dataCy,
 }) => {
     return (
         <div
             onClick={onClick}
-            className={`px-4 py-3 font-semibold transition hover:bg-neutral-100 hover:text-black ${props}`}
+            className={`px-4 py-3 font-semibold transition hover:bg-neutral-100 hover:text-black ${extraClasses}`}
             data-cy={dataCy}
         >
             <div className="flex items-center justify-between">

@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { MdVerified } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
-import getUserDisplayName from '@/app/utils/reponsive';
+import getUserDisplayName from '@/app/utils/responsive';
 
 interface RecipeInfoProps {
     user: SafeUser;

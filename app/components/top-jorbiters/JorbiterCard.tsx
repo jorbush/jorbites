@@ -6,7 +6,7 @@ import { MdVerified } from 'react-icons/md';
 import { SafeUser } from '@/app/types';
 import Avatar from '@/app/components/Avatar';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
-import getUserDisplayName from '@/app/utils/reponsive';
+import getUserDisplayName from '@/app/utils/responsive';
 import { useTranslation } from 'react-i18next';
 import RankIcon from '@/app/components/top-jorbiters/RankIcon';
 import StatItem from '@/app/components/top-jorbiters/StatItem';
@@ -58,7 +58,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                             onClick={() =>
                                 router.push('/profile/' + jorbiter.id)
                             }
-                            props="sm:h-[65px] sm:w-[65px] md:h-[70px] md:w-[70px]"
+                            extraClasses="sm:h-[65px] sm:w-[65px] md:h-[70px] md:w-[70px]"
                         />
                     </div>
                     <div className="flex flex-col">

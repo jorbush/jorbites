@@ -5,14 +5,14 @@ import Image from 'next/image';
 interface AvatarProps {
     src: string | null | undefined;
     size?: number;
-    props?: string;
+    extraClasses?: string;
     onClick?: () => void;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ src, size = 30, props, onClick }) => {
+const Avatar: React.FC<AvatarProps> = ({ src, size = 30, extraClasses, onClick }) => {
     return (
         <Image
-            className={`rounded-full ${onClick ? 'cursor-pointer' : ''} ${props}`}
+            className={`rounded-full ${onClick ? 'cursor-pointer' : ''} ${extraClasses}`}
             height={size}
             width={size}
             alt="Avatar"
