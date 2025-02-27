@@ -202,5 +202,10 @@
     "first_steps": "Primeros pasos",
     "next_steps": "Siguientes pasos",
     "final_steps": "Pasos finales",
-    "error_validate_email": "El correo electrónico no es válido"
+    "error_validate_email": "El correo electrónico no es válido",
+    "top_jorbiters_description": "Los chefs más destacados de nuestra comunidad. ¡Sube recetas para aumentar tu nivel y únete a la élite!",
+    "call_to_action_ranked_title": "¿Quieres aparecer en el ranking?",
+    "call_to_action_ranked_subtitle": "Comparte tus mejores recetas y gana experiencia para subir de nivel",
+    "call_to_action_first_place_title": "¡Llega al primer puesto!",
+    "call_to_action_first_place_subtitle": " Si alcanzas la primera posición podrás solicitar tu verificación gratuita"
 }

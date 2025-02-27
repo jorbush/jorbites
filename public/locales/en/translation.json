@@ -201,5 +201,10 @@
     "first_steps": "First steps",
     "next_steps": "Next steps",
     "final_steps": "Final steps",
-    "error_validate_email": "The email is not valid"
+    "error_validate_email": "The email is not valid",
+    "top_jorbiters_description": "The most outstanding chefs in our community. Upload recipes to increase your level and join the elite!",
+    "call_to_action_ranked_title": "Want to appear in the ranking?",
+    "call_to_action_ranked_subtitle": "Share your best recipes and gain experience to level up",
+    "call_to_action_first_place_title": "Reach first place!",
+    "call_to_action_first_place_subtitle": "If you reach the first position, you can request your free verification"
 }
