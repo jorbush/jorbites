@@ -9,7 +9,12 @@ interface AvatarProps {
     onClick?: () => void;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ src, size = 30, extraClasses, onClick }) => {
+const Avatar: React.FC<AvatarProps> = ({
+    src,
+    size = 30,
+    extraClasses,
+    onClick,
+}) => {
     return (
         <Image
             className={`rounded-full ${onClick ? 'cursor-pointer' : ''} ${extraClasses}`}
