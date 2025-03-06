@@ -12,7 +12,7 @@ interface IParams {
 
 const ProfilePage = async ({ params }: { params: IParams }) => {
     const recipes = await getRecipesByUserId(params);
-    const user = await getUserById(params);
+    const user = await getUserById({ userId: params.userId, withStats: true });
     const currentUser = await getCurrentUser();
 
     if (!user && recipes.length === 0) {
