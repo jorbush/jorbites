@@ -18,4 +18,9 @@ export type SafeUser = Omit<
     emailVerified: string | null;
     recipeCount?: number | null | undefined;
     likesReceived?: number | null | undefined;
+    recipesThisYear?: number | null | undefined;
+    totalCookingTime?: number | null | undefined;
+    avgLikesPerRecipe?: number | null | undefined;
+    mostUsedCategory?: string | null | undefined;
+    mostUsedMethod?: string | null | undefined;
 };

@@ -31,6 +31,54 @@ export default async function getUserById(params: IParams) {
                 0
             );
 
+            const currentYear = new Date().getFullYear();
+            const recipesThisYear = userRecipes.filter(
+                (recipe) =>
+                    new Date(recipe.createdAt).getFullYear() === currentYear
+            ).length;
+
+            const totalCookingTime = userRecipes.reduce(
+                (total, recipe) => total + recipe.minutes,
+                0
+            );
+
+            const avgLikesPerRecipe =
+                userRecipes.length > 0
+                    ? Math.round((totalLikes / userRecipes.length) * 10) / 10
+                    : 0;
+
+            const categoryCounts: Record<string, number> = {};
+            userRecipes.forEach((recipe) => {
+                categoryCounts[recipe.category] =
+                    (categoryCounts[recipe.category] || 0) + 1;
+            });
+
+            let mostUsedCategory = '';
+            let maxCategoryCount = 0;
+
+            Object.entries(categoryCounts).forEach(([category, count]) => {
+                if (count > maxCategoryCount) {
+                    mostUsedCategory = category;
+                    maxCategoryCount = count;
+                }
+            });
+
+            const methodCounts: Record<string, number> = {};
+            userRecipes.forEach((recipe) => {
+                methodCounts[recipe.method] =
+                    (methodCounts[recipe.method] || 0) + 1;
+            });
+
+            let mostUsedMethod = '';
+            let maxMethodCount = 0;
+
+            Object.entries(methodCounts).forEach(([method, count]) => {
+                if (count > maxMethodCount) {
+                    mostUsedMethod = method;
+                    maxMethodCount = count;
+                }
+            });
+
             return {
                 ...user,
                 createdAt: user.createdAt.toISOString(),
@@ -38,6 +86,11 @@ export default async function getUserById(params: IParams) {
                 emailVerified: user.emailVerified?.toISOString() || null,
                 recipeCount: userRecipes.length,
                 likesReceived: totalLikes,
+                recipesThisYear,
+                totalCookingTime,
+                avgLikesPerRecipe,
+                mostUsedCategory,
+                mostUsedMethod,
             };
         }
 

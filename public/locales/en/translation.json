@@ -208,5 +208,10 @@
     "call_to_action_first_place_title": "Reach first place!",
     "call_to_action_first_place_subtitle": "If you reach the first position, you can request your free verification",
     "favorites": "Favorites",
-    "badges": "Badges"
+    "badges": "Badges",
+    "recipes_this_year": "Recipes this year",
+    "avg_likes_per_recipe": "Average likes per recipe",
+    "total_cooking_time": "Cooking time",
+    "most_used_category": "Favorite category",
+    "most_used_method": "Favorite method"
 }

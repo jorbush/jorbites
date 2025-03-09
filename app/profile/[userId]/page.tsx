@@ -5,6 +5,7 @@ import ProfileClient from '@/app/profile/[userId]/ProfileClient';
 import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
 import getUserById from '@/app/actions/getUserById';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
+import UserOtherStats from '@/app/components/stats/UserOtherStats';
 
 interface IParams {
     userId?: string;
@@ -30,10 +31,13 @@ const ProfilePage = async ({ params }: { params: IParams }) => {
         <ClientOnly>
             <ProfileHeader user={user} />
             {recipes.length > 0 && (
-                <ProfileClient
-                    recipes={recipes}
-                    currentUser={currentUser}
-                />
+                <>
+                    <ProfileClient
+                        recipes={recipes}
+                        currentUser={currentUser}
+                    />
+                    <UserOtherStats user={user} />
+                </>
             )}
             {recipes.length === 0 && (
                 <EmptyState

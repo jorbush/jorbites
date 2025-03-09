@@ -9,7 +9,7 @@ import useMediaQuery from '@/app/hooks/useMediaQuery';
 import getUserDisplayName from '@/app/utils/responsive';
 import { useTranslation } from 'react-i18next';
 import RankIcon from '@/app/components/top-jorbiters/RankIcon';
-import StatItem from '@/app/components/utils/StatItem';
+import StatItem from '@/app/components/stats/StatItem';
 
 interface JorbiterCardProps {
     jorbiter: SafeUser;

@@ -209,5 +209,10 @@
     "call_to_action_first_place_title": "¡Llega al primer puesto!",
     "call_to_action_first_place_subtitle": " Si alcanzas la primera posición podrás solicitar tu verificación gratuita",
     "favorites": "Favoritos",
-    "badges": "Medallas"
+    "badges": "Medallas",
+    "recipes_this_year": "Recetas este año",
+    "avg_likes_per_recipe": "Media de likes por receta",
+    "total_cooking_time": "Tiempo de cocina",
+    "most_used_category": "Categoría más usada",
+    "most_used_method": "Método más usado"
 }
