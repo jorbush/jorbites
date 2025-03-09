@@ -9,7 +9,7 @@ import useMediaQuery from '@/app/hooks/useMediaQuery';
 import getUserDisplayName from '@/app/utils/responsive';
 import { useTranslation } from 'react-i18next';
 import RankIcon from '@/app/components/top-jorbiters/RankIcon';
-import StatItem from '@/app/components/top-jorbiters/StatItem';
+import StatItem from '@/app/components/stats/StatItem';
 
 interface JorbiterCardProps {
     jorbiter: SafeUser;
@@ -92,18 +92,18 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                 >
                     <StatItem
                         value={jorbiter.recipeCount || 0}
-                        label="Recipes"
+                        label={t('recipes')}
                         flexDirection={isSmOrSmaller ? 'row' : 'col'}
                     />
                     <StatItem
                         value={jorbiter.likesReceived || 0}
-                        label="Favorites"
+                        label={t('favorites')}
                         flexDirection={isSmOrSmaller ? 'row' : 'col'}
                     />
                     {jorbiter.badges && (
                         <StatItem
                             value={jorbiter.badges.length}
-                            label="Badges"
+                            label={t('badges')}
                             flexDirection={isSmOrSmaller ? 'row' : 'col'}
                         />
                     )}

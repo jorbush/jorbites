@@ -5,6 +5,7 @@ import ProfileClient from '@/app/profile/[userId]/ProfileClient';
 import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
 import getUserById from '@/app/actions/getUserById';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
+import UserStats from '@/app/components/stats/UserStats';
 
 interface IParams {
     userId?: string;
@@ -12,7 +13,7 @@ interface IParams {
 
 const ProfilePage = async ({ params }: { params: IParams }) => {
     const recipes = await getRecipesByUserId(params);
-    const user = await getUserById(params);
+    const user = await getUserById({ userId: params.userId, withStats: true });
     const currentUser = await getCurrentUser();
 
     if (!user && recipes.length === 0) {
@@ -29,6 +30,7 @@ const ProfilePage = async ({ params }: { params: IParams }) => {
     return (
         <ClientOnly>
             <ProfileHeader user={user} />
+            <UserStats user={user} />
             {recipes.length > 0 && (
                 <ProfileClient
                     recipes={recipes}

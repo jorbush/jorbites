@@ -82,23 +82,3 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
 };
 
 export default ProfileHeader;
-
-{
-    /* <div className="flex items-center justify-end gap-4 text-sm sm:gap-6">
-<StatItem value={jorbiter.recipeCount || 0} label="recetas" />
-<StatItem value={jorbiter.likesReceived || 0} label="likes" />
-{jorbiter.badges && (
-    <StatItem value={jorbiter.badges.length} label="badges" />
-)}
-</div> */
-}
-// const StatItem = ({ value, label }: { value: number; label: string }) => (
-//     <div className="text-center">
-//         <p className="text-sm font-bold text-green-450 lg:text-xl">
-//             {value}
-//         </p>
-//         <p className="text-xs text-gray-500 dark:text-gray-400 lg:text-sm">
-//             {label}
-//         </p>
-//     </div>
-// );

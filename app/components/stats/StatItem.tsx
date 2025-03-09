@@ -3,7 +3,7 @@
 import React from 'react';
 
 interface StatItemProps {
-    value: number;
+    value: number | string;
     label: string;
     flexDirection: 'row' | 'col';
 }

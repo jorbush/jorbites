@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { describe, it, expect, afterEach } from 'vitest';
-import StatItem from '@/app/components/top-jorbiters/StatItem';
+import StatItem from '@/app/components/stats/StatItem';
 
 describe('<StatItem />', () => {
     afterEach(() => {

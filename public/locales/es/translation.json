@@ -207,5 +207,17 @@
     "call_to_action_ranked_title": "¿Quieres aparecer en el ranking?",
     "call_to_action_ranked_subtitle": "Comparte tus mejores recetas y gana experiencia para subir de nivel",
     "call_to_action_first_place_title": "¡Llega al primer puesto!",
-    "call_to_action_first_place_subtitle": " Si alcanzas la primera posición podrás solicitar tu verificación gratuita"
+    "call_to_action_first_place_subtitle": " Si alcanzas la primera posición podrás solicitar tu verificación gratuita",
+    "favorites": "Favoritos",
+    "badges": "Medallas",
+    "this_year": "este año",
+    "avg": "Promedio",
+    "per_recipe": "por receta",
+    "cooking_time": "Tiempo cocinando",
+    "minutes_total": "minutos totales",
+    "of_all_recipes": "de todas las recetas",
+    "cooking_statistics": "Estadísticas de cocina",
+    "cooking_preferences": "Preferencias de cocina",
+    "most_used_category": "Categoría favorita",
+    "most_used_method": "Método favorito"
 }
