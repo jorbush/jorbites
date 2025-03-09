@@ -126,7 +126,7 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
                         <div className="flex items-start justify-between">
                             <div className="flex flex-col">
                                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    {t('this_year')}
+                                    {t('this_year').charAt(0).toUpperCase() + t('this_year').slice(1)}
                                 </p>
                                 <p className="mt-1 text-2xl font-bold text-green-450">
                                     {user?.recipesThisYear || 0}
