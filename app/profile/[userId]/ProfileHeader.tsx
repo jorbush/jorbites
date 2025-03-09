@@ -10,6 +10,7 @@ import useMediaQuery from '@/app/hooks/useMediaQuery';
 import Image from 'next/image';
 import confetti from 'canvas-confetti';
 import getUserDisplayName from '@/app/utils/responsive';
+import StatItem from '@/app/components/top-jorbiters/StatItem';
 
 interface ProfileHeaderProps {
     user?: SafeUser | null;
@@ -28,8 +29,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
             origin: { y: 0.6 },
         });
     };
-
-    console.log(user?.recipeCount, user?.likesReceived);
 
     return (
         <Container>
@@ -79,6 +78,18 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                         <hr className="mt-2" />
                     </>
                 )}
+            <div className="flex flex-row p-2 gap-4">
+                <StatItem
+                    value={user?.recipeCount || 0}
+                    label={t('recipes')}
+                    flexDirection='row'
+                />
+                <StatItem
+                    value={user?.likesReceived || 0}
+                    label={t('favorites')}
+                    flexDirection='row'
+                />
+            </div>
         </Container>
     );
 };

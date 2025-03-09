@@ -92,18 +92,18 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                 >
                     <StatItem
                         value={jorbiter.recipeCount || 0}
-                        label="Recipes"
+                        label={t('recipes')}
                         flexDirection={isSmOrSmaller ? 'row' : 'col'}
                     />
                     <StatItem
                         value={jorbiter.likesReceived || 0}
-                        label="Favorites"
+                        label={t('favorites')}
                         flexDirection={isSmOrSmaller ? 'row' : 'col'}
                     />
                     {jorbiter.badges && (
                         <StatItem
                             value={jorbiter.badges.length}
-                            label="Badges"
+                            label={t('badges')}
                             flexDirection={isSmOrSmaller ? 'row' : 'col'}
                         />
                     )}
