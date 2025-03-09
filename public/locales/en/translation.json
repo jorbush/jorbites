@@ -209,9 +209,14 @@
     "call_to_action_first_place_subtitle": "If you reach the first position, you can request your free verification",
     "favorites": "Favorites",
     "badges": "Badges",
-    "recipes_this_year": "Recipes this year",
-    "avg_likes_per_recipe": "Average likes per recipe",
-    "total_cooking_time": "Cooking time",
+    "this_year": "This year",
+    "avg": "Avg",
+    "per_recipe": "per recipe",
+    "cooking_time": "Cooking time",
+    "minutes_total": "minutes total",
+    "of_all_recipes": "of all recipes",
+    "cooking_statistics": "Cooking statistics",
+    "cooking_preferences": "Cooking preferences",
     "most_used_category": "Favorite category",
     "most_used_method": "Favorite method"
 }

@@ -209,9 +209,14 @@
     "call_to_action_first_place_subtitle": "Si aconsegueixes la primera posició podràs sol·licitar la teva verificació gratuïta",
     "favorites": "Favorits",
     "badges": "Medalles",
-    "recipes_this_year": "Receptes aquest any",
-    "avg_likes_per_recipe": "Mitjana de likes per recepta",
-    "total_cooking_time": "Temps de cuina",
+    "this_year": "Aquest any",
+    "avg": "Mitjana",
+    "per_recipe": "per recepta",
+    "cooking_time": "Temps cuinant",
+    "minutes_total": "minuts totals",
+    "of_all_recipes": "de totes les receptes",
+    "cooking_statistics": "Estadístiques de cuina",
+    "cooking_preferences": "Preferències de cuina",
     "most_used_category": "Categoria preferida",
     "most_used_method": "Mètode preferit"
 }
