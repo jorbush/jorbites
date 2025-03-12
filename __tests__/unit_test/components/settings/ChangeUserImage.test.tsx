@@ -133,7 +133,7 @@ describe('<ChangeUserImageSelector />', () => {
                     userImage: 'https://example.com/new-image.jpg',
                 }
             );
-            expect(toast.success).toHaveBeenCalledWith('Image updated!');
+            expect(toast.success).toHaveBeenCalledWith('image_updated');
         });
     });
 
@@ -151,7 +151,7 @@ describe('<ChangeUserImageSelector />', () => {
         });
 
         await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith('Something went wrong.');
+            expect(toast.error).toHaveBeenCalledWith('something_went_wrong');
         });
     });
 });

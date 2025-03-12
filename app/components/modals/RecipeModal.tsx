@@ -222,7 +222,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             .post(url, data)
             .then(async () => {
                 await deleteDraft();
-                toast.success('Recipe created!');
+                toast.success(t('recipe_posted') ?? 'Recipe posted!');
                 reset({
                     category: '',
                     method: '',
@@ -243,7 +243,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 router.refresh();
             })
             .catch(() => {
-                toast.error('Something went wrong.');
+                toast.error(
+                    t('something_went_wrong') ?? 'Something went wrong'
+                );
             })
             .finally(() => {
                 setIsLoading(false);

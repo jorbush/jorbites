@@ -40,16 +40,16 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                 userImage: newImage,
             })
             .then(() => {
-                toast.success('Image updated!');
+                toast.success(t('image_updated'));
             })
             .catch(() => {
-                toast.error('Something went wrong.');
+                toast.error(t('something_went_wrong'));
             })
             .finally(() => {
                 setCanSave(false);
                 router.refresh();
             });
-    }, [currentUser?.id, newImage, router]);
+    }, [currentUser?.id, newImage, router, t]);
 
     const handleUpload = useCallback((result: any) => {
         setNewImage(result.info.secure_url);

@@ -6,6 +6,7 @@ import { FiChevronLeft, FiChevronRight, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/Heading';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 interface RecipeHeadProps {
     title: string;
@@ -20,11 +21,12 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const router = useRouter();
+    const { t } = useTranslation();
 
     const copyToClipboard = () => {
         const currentURL = window.location.href;
         navigator.clipboard.writeText(currentURL);
-        toast.success('URL copied');
+        toast.success(t('link_copied'));
     };
 
     const share = () => {

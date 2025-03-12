@@ -41,10 +41,10 @@ const EmailNotificationsSelector: React.FC<EmailNotificationProps> = ({
         axios
             .put(`/api/emailNotifications/${currentUser?.id}`)
             .then(() => {
-                toast.success('Email notifications updated!');
+                toast.success(t('email_notifications_updated'));
             })
             .catch(() => {
-                toast.error('Something went wrong.');
+                toast.error(t('something_went_wrong'));
             })
             .finally(() => {
                 setIsLoading(false);

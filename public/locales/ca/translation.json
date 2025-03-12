@@ -218,5 +218,13 @@
     "cooking_statistics": "Estadístiques de cuina",
     "cooking_preferences": "Preferències de cuina",
     "most_used_category": "Categoria preferida",
-    "most_used_method": "Mètode preferit"
+    "most_used_method": "Mètode preferit",
+    "comment_deleted": "Comentari eliminat!",
+    "recipe_deleted": "Recepta eliminada!",
+    "recipe_posted": "Recepta publicada!",
+    "link_copied": "Enllaç copiat!",
+    "image_updated": "Imatge actualitzada!",
+    "email_notifications_updated": "Notificacions per correu actualitzades!",
+    "success": "Èxit!",
+    "comment_created": "Comentari creat!"
 }
