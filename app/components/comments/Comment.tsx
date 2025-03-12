@@ -45,11 +45,11 @@ const Comment: React.FC<CommentProps> = ({
         axios
             .delete(`/api/comments/${commentId}`)
             .then(() => {
-                toast.success('Comment deleted!');
+                toast.success(t('comment_deleted'));
                 router.refresh();
             })
             .catch(() => {
-                toast.error('Something went wrong.');
+                toast.error(t('something_went_wrong'));
             })
             .finally(() => {});
     };

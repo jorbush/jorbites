@@ -218,5 +218,13 @@
     "cooking_statistics": "Cooking statistics",
     "cooking_preferences": "Cooking preferences",
     "most_used_category": "Favorite category",
-    "most_used_method": "Favorite method"
+    "most_used_method": "Favorite method",
+    "comment_deleted": "Comment deleted!",
+    "recipe_deleted": "Recipe deleted!",
+    "recipe_posted": "Recipe posted!",
+    "link_copied": "Link copied!",
+    "image_updated": "Image updated!",
+    "email_notifications_updated": "Email notifications updated!",
+    "success": "Success!",
+    "comment_created": "Comment created!"
 }

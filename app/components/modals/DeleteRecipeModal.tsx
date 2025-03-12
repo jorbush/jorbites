@@ -43,12 +43,12 @@ const DeleteRecipeModal: React.FC<DeleteRecipeModalProps> = ({
         axios
             .delete(`/api/recipe/${id}`)
             .then(() => {
-                toast.success('Recipe deleted!');
+                toast.success(t('recipe_deleted'));
                 reset();
                 setIsOpen(false);
             })
             .catch(() => {
-                toast.error('Something went wrong.');
+                toast.error(t('something_went_wrong'));
             })
             .finally(() => {
                 router.push('/');

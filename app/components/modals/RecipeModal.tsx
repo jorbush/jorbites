@@ -222,7 +222,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             .post(url, data)
             .then(async () => {
                 await deleteDraft();
-                toast.success('Recipe created!');
+                toast.success(t('recipe_posted') ?? 'Recipe posted!');
                 reset({
                     category: '',
                     method: '',

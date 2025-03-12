@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast';
 import { SafeUser } from '@/app/types';
 
 import useLoginModal from '@/app/hooks/useLoginModal';
+import { useTranslation } from 'react-i18next';
 
 interface IUseFavorite {
     recipeId: string;
@@ -14,10 +15,9 @@ interface IUseFavorite {
 
 const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
     const router = useRouter();
-
     const [isLoading, setIsLoading] = useState(false);
-
     const loginModal = useLoginModal();
+    const { t } = useTranslation();
 
     const hasFavorited = useMemo(() => {
         const list = currentUser?.favoriteIds || [];
@@ -60,7 +60,7 @@ const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
                 await requestLike();
                 await request();
                 router.refresh();
-                toast.success('Success');
+                toast.success(t('success'));
             } catch (error) {
                 toast.error((error as Error).message);
             } finally {

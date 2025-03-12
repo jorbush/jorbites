@@ -13,6 +13,7 @@ import RecipeInfo from '@/app/components/recipes/RecipeInfo';
 import { preparationMethods } from '@/app/components/modals/RecipeModal';
 import Comments from '@/app/components/comments/Comments';
 import DeleteRecipeButton from '@/app/components/recipes/DeleteRecipeButton';
+import { useTranslation } from 'react-i18next';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
@@ -29,6 +30,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
 }) => {
     const loginModal = useLoginModal();
     const router = useRouter();
+    const { t } = useTranslation();
 
     const category = useMemo(() => {
         return categories.find((item) => item.label === recipe.category);
@@ -49,10 +51,10 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                     recipeId: recipe?.id,
                 })
                 .then(() => {
-                    toast.success('Recipe commented!');
+                    toast.success(t('comment_created'));
                 })
                 .catch(() => {
-                    toast.error('Something went wrong.');
+                    toast.error(t('something_went_wrong'));
                 })
                 .finally(() => {
                     router.refresh();
