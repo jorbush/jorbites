@@ -243,7 +243,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 router.refresh();
             })
             .catch(() => {
-                toast.error('Something went wrong.');
+                toast.error(
+                    t('something_went_wrong') ?? 'Something went wrong'
+                );
             })
             .finally(() => {
                 setIsLoading(false);

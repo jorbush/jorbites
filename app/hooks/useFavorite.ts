@@ -67,7 +67,7 @@ const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
                 setIsLoading(false);
             }
         },
-        [currentUser, hasFavorited, recipeId, loginModal, router, isLoading]
+        [currentUser, hasFavorited, recipeId, loginModal, router, isLoading, t]
     );
 
     return {

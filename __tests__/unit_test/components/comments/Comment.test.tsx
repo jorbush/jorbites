@@ -126,7 +126,7 @@ describe('Comment', () => {
             expect(axios.delete).toHaveBeenCalledWith(
                 '/api/comments/comment123'
             );
-            expect(toast.success).toHaveBeenCalledWith('Comment deleted!');
+            expect(toast.success).toHaveBeenCalledWith('comment_deleted');
         });
     });
 
@@ -147,7 +147,7 @@ describe('Comment', () => {
         });
 
         await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith('Something went wrong.');
+            expect(toast.error).toHaveBeenCalledWith('something_went_wrong');
         });
     });
 });

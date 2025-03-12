@@ -49,7 +49,7 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                 setCanSave(false);
                 router.refresh();
             });
-    }, [currentUser?.id, newImage, router]);
+    }, [currentUser?.id, newImage, router, t]);
 
     const handleUpload = useCallback((result: any) => {
         setNewImage(result.info.secure_url);

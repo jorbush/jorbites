@@ -70,7 +70,7 @@ describe('<EmailNotificationsSelector />', () => {
         await waitFor(() => {
             expect(axios.put).toHaveBeenCalledWith('/api/emailNotifications/1');
             expect(toast.success).toHaveBeenCalledWith(
-                'Email notifications updated!'
+                'email_notifications_updated'
             );
         });
     });
@@ -85,7 +85,7 @@ describe('<EmailNotificationsSelector />', () => {
 
         await waitFor(() => {
             expect(axios.put).toHaveBeenCalledWith('/api/emailNotifications/1');
-            expect(toast.error).toHaveBeenCalledWith('Something went wrong.');
+            expect(toast.error).toHaveBeenCalledWith('something_went_wrong');
         });
     });
 

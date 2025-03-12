@@ -60,7 +60,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                     router.refresh();
                 });
         },
-        [recipe?.id, router, currentUser, loginModal]
+        [recipe?.id, router, currentUser, loginModal, t]
     );
 
     return (
