@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import EmailNotificationsSelector from '@/app/components/settings/EmailNotificationsSelector';
 import { SafeUser } from '@/app/types';
 import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface SettingsProps {
     currentUser?: SafeUser | null;
@@ -39,9 +39,13 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
         </div>
     );
 
-    const handleSaveClick = () => {
+    const handleSaveClick = useCallback(() => {
+        if (!currentUser) {
+            settingsModal.onClose();
+            return;
+        }
         setSaveImage(true);
-    };
+    }, [settingsModal, currentUser]);
 
     return (
         <Modal
