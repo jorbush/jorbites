@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { MdVerified } from 'react-icons/md';
 import { SafeUser } from '@/app/types';
 import Avatar from '@/app/components/Avatar';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
@@ -10,6 +9,7 @@ import getUserDisplayName from '@/app/utils/responsive';
 import { useTranslation } from 'react-i18next';
 import RankIcon from '@/app/components/top-jorbiters/RankIcon';
 import StatItem from '@/app/components/stats/StatItem';
+import VerificationBadge from '@/app/components/VerificationBadge';
 
 interface JorbiterCardProps {
     jorbiter: SafeUser;
@@ -71,8 +71,10 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                                 )}
                             </div>
                             {jorbiter.verified && (
-                                <MdVerified
-                                    className={`text-green-450 ${isMdOrSmaller ? 'text-lg' : 'text-xl'}`}
+                                <VerificationBadge
+                                    className={
+                                        isMdOrSmaller ? 'text-lg' : 'text-xl'
+                                    }
                                 />
                             )}
                         </div>

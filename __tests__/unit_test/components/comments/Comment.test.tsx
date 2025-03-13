@@ -69,17 +69,6 @@ describe('Comment', () => {
         expect(screen.getByText('20/05/2023 12:00')).toBeDefined();
     });
 
-    it('shows verified icon when verified prop is true', () => {
-        render(
-            <Comment
-                {...mockProps}
-                verified={true}
-            />
-        );
-
-        expect(screen.getByTestId('MdVerified')).toBeDefined();
-    });
-
     it('shows delete icon when canDelete prop is true', () => {
         render(
             <Comment

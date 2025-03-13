@@ -226,5 +226,6 @@
     "image_updated": "Image updated!",
     "email_notifications_updated": "Email notifications updated!",
     "success": "Success!",
-    "comment_created": "Comment created!"
+    "comment_created": "Comment created!",
+    "verification_tooltip": "This is a nice Jorbiter"
 }

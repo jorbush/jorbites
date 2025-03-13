@@ -2,14 +2,14 @@
 
 import { IconType } from 'react-icons';
 import { SafeUser } from '@/app/types';
-import Avatar from '../Avatar';
+import Avatar from '@/app/components/Avatar';
 import RecipeCategoryAndMethod from '@/app/components/recipes/RecipeCategoryAndMethod';
-import HeartButton from '../HeartButton';
+import HeartButton from '@/app/components/HeartButton';
 import { useTranslation } from 'react-i18next';
-import { MdVerified } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import getUserDisplayName from '@/app/utils/responsive';
+import VerificationBadge from '@/app/components/VerificationBadge';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -85,10 +85,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                     )}
                                 </div>
                                 {user.verified && (
-                                    <MdVerified
-                                        data-testid="verified-icon"
-                                        className="ml-1 mt-1 text-green-450"
-                                    />
+                                    <VerificationBadge className="ml-1 mt-1" />
                                 )}
                             </div>
                             <div className="text-sm text-gray-400">{`${t('level')} ${user?.level}`}</div>
