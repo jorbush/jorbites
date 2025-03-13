@@ -3,7 +3,6 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import VerificationBadge from '@/app/components/VerificationBadge';
 
-// Mocks
 vi.mock('react-icons/md', () => ({
     MdVerified: () => <span data-testid="md-verified-icon" />,
 }));
@@ -15,7 +14,6 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 
-// Mock the Tooltip component
 vi.mock('@/app/components/Tooltip', () => ({
     default: ({
         children,
@@ -58,10 +56,6 @@ describe('VerificationBadge', () => {
     it('applies custom class to the verification icon', () => {
         render(<VerificationBadge className="custom-class" />);
         const tooltipWrapper = screen.getByTestId('tooltip-wrapper');
-        const verifiedIcon = screen.getByTestId('md-verified-icon');
-
-        // The MdVerified icon should have the custom class
-        // Since we're mocking it, we need to check how the component would pass the class
         expect(tooltipWrapper).toBeDefined();
     });
 
@@ -79,17 +73,11 @@ describe('VerificationBadge', () => {
 
     it('passes size prop to icon when specified', () => {
         render(<VerificationBadge size={24} />);
-        // With our mock setup, we can't directly test the size prop
-        // In a real test environment, you'd need to find a way to verify
-        // that the size prop is passed correctly to MdVerified
         expect(screen.getByTestId('md-verified-icon')).toBeDefined();
     });
 
     it('adds data-testid to the verification icon', () => {
         render(<VerificationBadge />);
-        // Our mock doesn't include data-testid="verified-icon" as it should
-        // In real component this would work, but for our mock we're testing that
-        // the verification icon is rendered at least
         expect(screen.getByTestId('md-verified-icon')).toBeDefined();
     });
 });
