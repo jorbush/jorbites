@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import Avatar from '@/app/components/Avatar';
-import { MdDelete, MdVerified } from 'react-icons/md';
+import { MdDelete } from 'react-icons/md';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import VerificationBadge from '@/app/components/VerificationBadge';
 
 interface CommentProps {
     userId: string;
@@ -72,12 +73,7 @@ const Comment: React.FC<CommentProps> = ({
                     >
                         {userName}
                     </p>
-                    {verified && (
-                        <MdVerified
-                            className="ml-1 mt-1 text-green-450"
-                            data-testid="MdVerified"
-                        />
-                    )}
+                    {verified && <VerificationBadge className="ml-1 mt-1" />}
                     <div className="ml-1.5 mt-0.5 text-sm text-gray-400">{`${t('level')} ${userLevel}`}</div>
                 </div>
                 <p

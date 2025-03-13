@@ -227,5 +227,6 @@
     "image_updated": "¡Imagen actualizada!",
     "email_notifications_updated": "¡Notificaciones de correo actualizadas!",
     "success": "¡Éxito!",
-    "comment_created": "¡Comentario creado!"
+    "comment_created": "¡Comentario creado!",
+    "verification_tooltip": "Este es un buen Jorbiter"
 }

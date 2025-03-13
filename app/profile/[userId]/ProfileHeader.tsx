@@ -3,13 +3,13 @@
 import Avatar from '@/app/components/Avatar';
 import { SafeUser } from '@/app/types';
 import { useRouter } from 'next/navigation';
-import { MdVerified } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import Container from '@/app/components/Container';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import Image from 'next/image';
 import confetti from 'canvas-confetti';
 import getUserDisplayName from '@/app/utils/responsive';
+import VerificationBadge from '@/app/components/VerificationBadge';
 
 interface ProfileHeaderProps {
     user?: SafeUser | null;
@@ -50,7 +50,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                             )}
                         </div>
                         {user?.verified && (
-                            <MdVerified className="ml-1 mt-1 text-green-450" />
+                            <VerificationBadge className="ml-1 mt-1" />
                         )}
                     </div>
                     <div className="text-lg text-gray-400 md:text-xl">{`${t('level')} ${user?.level}`}</div>

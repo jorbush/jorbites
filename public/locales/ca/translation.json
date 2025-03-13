@@ -226,5 +226,6 @@
     "image_updated": "Imatge actualitzada!",
     "email_notifications_updated": "Notificacions per correu actualitzades!",
     "success": "Èxit!",
-    "comment_created": "Comentari creat!"
+    "comment_created": "Comentari creat!",
+    "verification_tooltip": "Aquest és un bon Jorbiter"
 }
