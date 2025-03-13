@@ -40,10 +40,11 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
     );
 
     const handleSaveClick = useCallback(() => {
-        setSaveImage(true);
         if (!currentUser) {
             settingsModal.onClose();
+            return;
         }
+        setSaveImage(true);
     }, [settingsModal, currentUser]);
 
     return (
