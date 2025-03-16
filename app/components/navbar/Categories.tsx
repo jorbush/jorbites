@@ -11,43 +11,15 @@ import {
     GiCoffeeCup,
     GiMeat,
     GiBowlOfRice,
-    GiWheat,
     GiTrophyCup,
 } from 'react-icons/gi';
-import { FaFish, FaBan } from 'react-icons/fa';
-import { TbSoup, TbSalad, TbSalt } from 'react-icons/tb';
+import { FaFish } from 'react-icons/fa';
+import { TbSoup, TbSalad } from 'react-icons/tb';
 import { PiBowlFoodFill } from 'react-icons/pi';
 import { LuVegan } from 'react-icons/lu';
 import { IconPasta } from '@/app/components/icons/IconPasta';
-
-const BannedIcon = ({
-    Icon,
-    size,
-}: {
-    Icon: React.ElementType;
-    size: number;
-}) => (
-    <div className="relative">
-        <Icon size={size} />
-        <div className="absolute inset-0 -translate-x-2 -translate-y-2 opacity-50">
-            <FaBan size={size + 15} />
-        </div>
-    </div>
-);
-
-const UnsaltedIcon = (props: any) => (
-    <BannedIcon
-        Icon={TbSalt}
-        size={props.size}
-    />
-);
-
-const GlutenFreeIcon = (props: any) => (
-    <BannedIcon
-        Icon={GiWheat}
-        size={props.size}
-    />
-);
+import { UnsaltedIcon } from '@/app/components/icons/UnsaltedIcon';
+import { GlutenFreeIcon } from '@/app/components/icons/GlutenFreeIcon';
 
 export const categories = [
     {
