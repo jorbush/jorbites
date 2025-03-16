@@ -18,6 +18,7 @@ import { FaFish, FaBan } from 'react-icons/fa';
 import { TbSoup, TbSalad, TbSalt } from 'react-icons/tb';
 import { PiBowlFoodFill } from 'react-icons/pi';
 import { LuVegan } from 'react-icons/lu';
+import { IconPasta } from '@/app/components/icons/IconPasta';
 
 const BannedIcon = ({
     Icon,
@@ -70,9 +71,14 @@ export const categories = [
         description: 'Meat recipes',
     },
     {
-        label: 'Legumes',
+        label: 'Rice',
         icon: GiBowlOfRice,
-        description: 'Recipes with legumes',
+        description: 'Recipes with rice',
+    },
+    {
+        label: 'Pasta',
+        icon: IconPasta,
+        description: 'Recipes with pasta',
     },
     {
         label: 'Desserts',
