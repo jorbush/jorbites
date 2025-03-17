@@ -1,7 +1,8 @@
 import prisma from '@/app/libs/prismadb';
 import ratelimit from '@/app/libs/ratelimit';
 import { headers } from 'next/headers';
-import { SafeRecipe } from '../types';
+import { SafeRecipe } from '@/app/types';
+import getCurrentUser from '@/app/actions/getCurrentUser';
 
 export interface IRecipesParams {
     category?: string;
@@ -37,9 +38,11 @@ export default async function getRecipes(
         }
 
         if (process.env.ENV === 'production') {
-            const { success, reset } = await ratelimit.limit(
-                (await headers()).get('x-forwarded-for') ?? ''
-            );
+            const currentUser = await getCurrentUser();
+            const rateLimitKey = currentUser
+                ? currentUser.id
+                : ((await headers()).get('x-forwarded-for') ?? '');
+            const { success, reset } = await ratelimit.limit(rateLimitKey);
             if (!success) {
                 return {
                     data: null,
