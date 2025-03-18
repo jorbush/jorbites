@@ -10,10 +10,11 @@ import { headers } from 'next/headers';
 import ErrorDisplay from './components/ErrorDisplay';
 
 interface HomeProps {
-    searchParams: IRecipesParams;
+    searchParams: Promise<IRecipesParams>;
 }
 
-const Home = async ({ searchParams }: HomeProps) => {
+const Home = async (props: HomeProps) => {
+    const searchParams = await props.searchParams;
     const response = await getRecipes({
         ...(await Promise.resolve(searchParams)),
         limit: isMobile((await headers()).get('user-agent') || '') ? 6 : 10,

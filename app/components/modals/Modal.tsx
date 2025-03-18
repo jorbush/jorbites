@@ -11,15 +11,15 @@ interface ModalProps {
     onClose: () => void;
     onSubmit: () => void;
     title?: string;
-    body?: React.ReactElement;
-    footer?: React.ReactElement;
+    body?: React.ReactElement<any>;
+    footer?: React.ReactElement<any>;
     actionLabel: string;
     disabled?: boolean;
     isLoading?: boolean;
     secondaryAction?: () => void;
     secondaryActionLabel?: string;
     minHeight?: string;
-    topButton?: React.ReactElement;
+    topButton?: React.ReactElement<any>;
 }
 
 const Modal: React.FC<ModalProps> = ({
