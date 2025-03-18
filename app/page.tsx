@@ -16,7 +16,7 @@ interface HomeProps {
 const Home = async (props: HomeProps) => {
     const searchParams = await props.searchParams;
     const response = await getRecipes({
-        ...(await Promise.resolve(searchParams)),
+        ...searchParams,
         limit: isMobile((await headers()).get('user-agent') || '') ? 6 : 10,
     });
 
