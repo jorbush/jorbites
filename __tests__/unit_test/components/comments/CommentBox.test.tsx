@@ -84,7 +84,7 @@ describe('CommentBox', () => {
         fireEvent.click(submitButton);
 
         await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith('Comment cannot be empty');
+            expect(toast.error).toHaveBeenCalledWith('comment_empty');
         });
     });
 

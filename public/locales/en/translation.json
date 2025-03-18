@@ -228,5 +228,6 @@
     "email_notifications_updated": "Email notifications updated!",
     "success": "Success!",
     "comment_created": "Comment created!",
-    "verification_tooltip": "This is a nice Jorbiter"
+    "verification_tooltip": "This is a nice Jorbiter",
+    "comment_empty": "Comment cannot be empty"
 }

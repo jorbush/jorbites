@@ -52,7 +52,11 @@ export async function POST(request: Request) {
             },
         },
         include: {
-            comments: true,
+            comments: {
+                include: {
+                    user: true,
+                },
+            },
         },
     });
 

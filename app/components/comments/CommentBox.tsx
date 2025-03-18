@@ -6,18 +6,18 @@ import Avatar from '@/app/components/Avatar';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
-/* eslint-disable unused-imports/no-unused-vars */
 interface CommentBoxProps {
     userImage: string | undefined | null;
     onCreateComment: (comment: string) => void;
+    isSubmitting?: boolean;
 }
 
 const CommentBox: React.FC<CommentBoxProps> = ({
     userImage,
     onCreateComment,
+    isSubmitting = false,
 }) => {
     const [comment, setComment] = useState('');
-    const [isButtonDisabled, setButtonDisabled] = useState(false);
     const { t } = useTranslation();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -26,15 +26,13 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setButtonDisabled(true);
+        if (isSubmitting) return;
         if (comment.trim() === '') {
-            toast.error('Comment cannot be empty');
-        } else {
-            onCreateComment(comment);
+            toast.error(t('comment_empty') || 'Comment cannot be empty');
+            return;
         }
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        onCreateComment(comment);
         setComment('');
-        setButtonDisabled(false);
     };
 
     return (
@@ -53,6 +51,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                     value={comment}
                     onChange={handleInputChange}
                     data-cy="comment-input"
+                    disabled={isSubmitting}
                 />
             </form>
 
@@ -60,9 +59,9 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 type="submit"
                 data-testid="submit-comment"
                 onClick={handleSubmit}
-                disabled={isButtonDisabled}
+                disabled={isSubmitting}
                 className={`mb-4 ml-4 mt-4 text-green-450 ${
-                    isButtonDisabled ? 'cursor-not-allowed opacity-50' : ''
+                    isSubmitting ? 'cursor-not-allowed opacity-50' : ''
                 }`}
                 data-cy="submit-comment"
             >

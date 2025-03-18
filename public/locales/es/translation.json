@@ -229,5 +229,6 @@
     "email_notifications_updated": "¡Notificaciones de correo actualizadas!",
     "success": "¡Éxito!",
     "comment_created": "¡Comentario creado!",
-    "verification_tooltip": "Este es un buen Jorbiter"
+    "verification_tooltip": "Este es un buen Jorbiter",
+    "comment_empty": "El comentario no puede estar vacío"
 }

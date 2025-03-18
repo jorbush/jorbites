@@ -21,6 +21,7 @@ interface CommentProps {
     verified?: boolean;
     commentId: string;
     userLevel: number;
+    onDeleteComment?: (commentId: string) => void;
 }
 
 const Comment: React.FC<CommentProps> = ({
@@ -33,6 +34,7 @@ const Comment: React.FC<CommentProps> = ({
     verified,
     commentId,
     userLevel,
+    onDeleteComment,
 }) => {
     const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
     const words = comment.split(' ');
@@ -47,7 +49,11 @@ const Comment: React.FC<CommentProps> = ({
             .delete(`/api/comments/${commentId}`)
             .then(() => {
                 toast.success(t('comment_deleted'));
-                router.refresh();
+                if (onDeleteComment) {
+                    onDeleteComment(commentId);
+                } else {
+                    router.refresh();
+                }
             })
             .catch(() => {
                 toast.error(t('something_went_wrong'));

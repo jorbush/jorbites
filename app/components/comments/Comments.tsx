@@ -7,17 +7,20 @@ import Comment from '@/app/components/comments/Comment';
 import { useTranslation } from 'react-i18next';
 import ButtonSelector from '@/app/components/comments/ButtonSelector';
 
-/* eslint-disable unused-imports/no-unused-vars */
 interface CommentsProps {
     currentUser?: SafeUser | null;
     onCreateComment: (comment: string) => void;
     comments?: SafeComment[];
+    onDeleteComment?: (commentId: string) => void;
+    isSubmitting?: boolean;
 }
 
 const Comments: React.FC<CommentsProps> = ({
     currentUser,
     onCreateComment,
     comments = [],
+    onDeleteComment,
+    isSubmitting = false,
 }) => {
     const { t } = useTranslation();
     const [sortedComments, setSortedComments] =
@@ -50,10 +53,13 @@ const Comments: React.FC<CommentsProps> = ({
 
     const handleSortChange = (order: 'asc' | 'desc') => {
         setSortOrder(order);
-        console.log('order', order);
         localStorage.setItem('commentSortOrder', order);
         sortComments(order);
     };
+
+    const validComments = sortedComments.filter(
+        (comment) => comment && comment.user
+    );
 
     return (
         <div className="flex flex-col pl-2 pr-2">
@@ -71,26 +77,36 @@ const Comments: React.FC<CommentsProps> = ({
                 <CommentBox
                     userImage={currentUser?.image}
                     onCreateComment={onCreateComment}
+                    isSubmitting={isSubmitting}
                 />
-                {sortedComments.map((comment: SafeComment) => (
-                    <div
-                        key={comment.id}
-                        className="ml-2 mr-2"
-                    >
-                        <hr />
-                        <Comment
-                            userId={comment.user.id}
-                            userImage={comment.user.image}
-                            comment={comment.comment}
-                            createdAt={comment.createdAt}
-                            userName={comment.user.name ?? ''}
-                            verified={comment.user.verified}
-                            canDelete={currentUser?.id === comment.userId}
-                            commentId={comment.id}
-                            userLevel={comment.user.level}
-                        />
-                    </div>
-                ))}
+                {validComments.map((comment: SafeComment) => {
+                    const isOptimistic = comment.id
+                        .toString()
+                        .startsWith('temp_');
+                    return (
+                        <div
+                            key={comment.id}
+                            className={`ml-2 mr-2 ${isOptimistic ? 'opacity-70' : ''}`}
+                        >
+                            <hr />
+                            <Comment
+                                userId={comment.user?.id || ''}
+                                userImage={comment.user?.image}
+                                comment={comment.comment}
+                                createdAt={comment.createdAt}
+                                userName={comment.user?.name ?? ''}
+                                verified={comment.user?.verified}
+                                canDelete={
+                                    currentUser?.id === comment.userId &&
+                                    !isOptimistic
+                                }
+                                commentId={comment.id}
+                                userLevel={comment.user?.level || 0}
+                                onDeleteComment={onDeleteComment}
+                            />
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );

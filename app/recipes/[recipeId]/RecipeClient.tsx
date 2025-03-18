@@ -1,9 +1,8 @@
 'use client';
 
 import axios from 'axios';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import { SafeComment, SafeRecipe, SafeUser } from '@/app/types';
 import Container from '@/app/components/Container';
@@ -26,11 +25,12 @@ interface RecipeClientProps {
 const RecipeClient: React.FC<RecipeClientProps> = ({
     recipe,
     currentUser,
-    comments,
+    comments: initialComments = [],
 }) => {
     const loginModal = useLoginModal();
-    const router = useRouter();
     const { t } = useTranslation();
+    const [comments, setComments] = useState<SafeComment[]>(initialComments);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const category = useMemo(() => {
         return categories.find((item) => item.label === recipe.category);
@@ -41,27 +41,93 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     }, [recipe.method]);
 
     const onCreateComment = useCallback(
-        (comment: string) => {
+        (commentText: string) => {
             if (!currentUser) {
                 return loginModal.onOpen();
             }
+            if (isSubmitting) return;
+            setIsSubmitting(true);
+            const tempId = `temp_${Date.now()}`;
+            const optimisticComment: SafeComment = {
+                id: tempId,
+                comment: commentText,
+                createdAt: new Date().toISOString(),
+                userId: currentUser.id,
+                recipeId: recipe.id,
+                user: {
+                    ...currentUser,
+                    name: currentUser.name || '',
+                    email: currentUser.email || '',
+                },
+            };
+            setComments((prev) => [...prev, optimisticComment]);
             axios
                 .post('/api/comments', {
-                    comment: comment,
+                    comment: commentText,
                     recipeId: recipe?.id,
                 })
-                .then(() => {
+                .then((response) => {
                     toast.success(t('comment_created'));
+                    if (response.data && response.data.comments) {
+                        const newComments = response.data.comments;
+                        const userComments = newComments.filter(
+                            (comment: any) =>
+                                comment.userId === currentUser.id &&
+                                comment.comment === commentText
+                        );
+                        if (userComments.length > 0) {
+                            const latestUserComment = userComments.reduce(
+                                (latest: any, current: any) => {
+                                    return new Date(current.createdAt) >
+                                        new Date(latest.createdAt)
+                                        ? current
+                                        : latest;
+                                },
+                                userComments[0]
+                            );
+
+                            if (latestUserComment) {
+                                const realComment = {
+                                    ...latestUserComment,
+                                    user: {
+                                        id: currentUser.id,
+                                        name: currentUser.name || '',
+                                        email: currentUser.email || '',
+                                        image: currentUser.image,
+                                        level: currentUser.level || 0,
+                                        verified: currentUser.verified || false,
+                                        createdAt: currentUser.createdAt,
+                                        updatedAt: currentUser.updatedAt,
+                                    },
+                                };
+                                setComments((prev) =>
+                                    prev.map((comment) =>
+                                        comment.id === tempId
+                                            ? realComment
+                                            : comment
+                                    )
+                                );
+                            }
+                        }
+                    }
                 })
-                .catch(() => {
+                .catch((error) => {
                     toast.error(t('something_went_wrong'));
+                    console.error(error);
+                    setComments((prev) => prev.filter((c) => c.id !== tempId));
                 })
                 .finally(() => {
-                    router.refresh();
+                    setIsSubmitting(false);
                 });
         },
-        [recipe?.id, router, currentUser, loginModal, t]
+        [recipe?.id, currentUser, loginModal, t, isSubmitting]
     );
+
+    const onDeleteComment = useCallback((commentId: string) => {
+        setComments((prevComments) =>
+            prevComments.filter((comment) => comment.id !== commentId)
+        );
+    }, []);
 
     return (
         <Container>
@@ -89,6 +155,8 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                         currentUser={currentUser}
                         onCreateComment={onCreateComment}
                         comments={comments}
+                        onDeleteComment={onDeleteComment}
+                        isSubmitting={isSubmitting}
                     />
                     {currentUser?.id === recipe.userId && (
                         <DeleteRecipeButton id={recipe.id} />

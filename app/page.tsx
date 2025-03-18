@@ -60,7 +60,7 @@ const Home = async ({ searchParams }: HomeProps) => {
                     <Pagination
                         totalPages={recipesData?.totalPages || 1}
                         currentPage={recipesData?.currentPage || 1}
-                        searchParams={searchParams}
+                        searchParams={resolvedParams}
                     />
                 </nav>
             </Container>

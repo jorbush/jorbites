@@ -7,15 +7,13 @@ interface IParams {
 export default async function getCommentsByRecipeId(params: IParams) {
     try {
         const { recipeId } = params;
-
-        const query: any = {};
-
-        if (recipeId) {
-            query.recipeId = recipeId;
+        if (!recipeId) {
+            return null;
         }
-
         const comments = await prisma.comment.findMany({
-            where: query,
+            where: {
+                recipeId: recipeId,
+            },
             include: {
                 user: true,
             },
@@ -23,7 +21,9 @@ export default async function getCommentsByRecipeId(params: IParams) {
                 createdAt: 'desc',
             },
         });
-
+        if (!comments) {
+            return [];
+        }
         const safeComments = comments.map((comment) => ({
             ...comment,
             createdAt: comment.createdAt.toISOString(),
@@ -35,9 +35,9 @@ export default async function getCommentsByRecipeId(params: IParams) {
                     comment.user.emailVerified?.toISOString() || null,
             },
         }));
-
         return safeComments;
-    } catch (error: any) {
-        throw new Error(error);
+    } catch (error) {
+        console.error('Error in getCommentsByRecipeId:', error);
+        return [];
     }
 }
