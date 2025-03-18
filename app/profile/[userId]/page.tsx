@@ -11,7 +11,8 @@ interface IParams {
     userId?: string;
 }
 
-const ProfilePage = async ({ params }: { params: IParams }) => {
+const ProfilePage = async (props: { params: Promise<IParams> }) => {
+    const params = await props.params;
     const recipes = await getRecipesByUserId(params);
     const user = await getUserById({ userId: params.userId, withStats: true });
     const currentUser = await getCurrentUser();

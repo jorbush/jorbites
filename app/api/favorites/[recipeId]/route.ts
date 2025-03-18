@@ -7,7 +7,11 @@ interface IParams {
     recipeId?: string;
 }
 
-export async function POST(request: Request, { params }: { params: IParams }) {
+export async function POST(
+    request: Request,
+    props: { params: Promise<IParams> }
+) {
+    const params = await props.params;
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
@@ -38,8 +42,9 @@ export async function POST(request: Request, { params }: { params: IParams }) {
 
 export async function DELETE(
     request: Request,
-    { params }: { params: IParams }
+    props: { params: Promise<IParams> }
 ) {
+    const params = await props.params;
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
