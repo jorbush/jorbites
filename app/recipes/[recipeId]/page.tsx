@@ -14,7 +14,7 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
     const params = await props.params;
     const recipe = await getRecipeById(params);
     const currentUser = await getCurrentUser();
-    const comments = await getCommentsByRecipeId(params);
+    const comments = await getCommentsByRecipeId(params) || [];
 
     if (!recipe) {
         return (
