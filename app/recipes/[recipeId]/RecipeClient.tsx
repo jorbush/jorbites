@@ -47,7 +47,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
             }
             if (isSubmitting) return;
             setIsSubmitting(true);
-            const tempId = `temp_${Date.now()}`;
+            const tempId = `temp_${Date.now()}_${Math.random()}_${currentUser.id}`;
             const optimisticComment: SafeComment = {
                 id: tempId,
                 comment: commentText,
