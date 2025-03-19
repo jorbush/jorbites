@@ -47,7 +47,8 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
             }
             if (isSubmitting) return;
             setIsSubmitting(true);
-            const tempId = `temp_${Date.now()}_${Math.random()}_${currentUser.id}`;
+            const timestamp = Date.now();
+            const tempId = `temp_${timestamp}_${Math.random()}_${currentUser.id}`;
             const optimisticComment: SafeComment = {
                 id: tempId,
                 comment: commentText,
@@ -73,7 +74,9 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                         const userComments = newComments.filter(
                             (comment: any) =>
                                 comment.userId === currentUser.id &&
-                                comment.comment === commentText
+                                comment.comment === commentText &&
+                                new Date(comment.createdAt).getTime() >=
+                                    timestamp - 5000
                         );
                         if (userComments.length > 0) {
                             const latestUserComment = userComments.reduce(
