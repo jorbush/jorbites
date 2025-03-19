@@ -21,7 +21,7 @@ interface CommentProps {
     verified?: boolean;
     commentId: string;
     userLevel: number;
-    onDeleteComment?: (commentId: string) => void;
+    onDeleteComment?: (_commentId: string) => void;
 }
 
 const Comment: React.FC<CommentProps> = ({

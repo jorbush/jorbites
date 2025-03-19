@@ -9,9 +9,9 @@ import ButtonSelector from '@/app/components/comments/ButtonSelector';
 
 interface CommentsProps {
     currentUser?: SafeUser | null;
-    onCreateComment: (comment: string) => void;
+    onCreateComment: (_comment: string) => void;
     comments?: SafeComment[];
-    onDeleteComment?: (commentId: string) => void;
+    onDeleteComment?: (_commentId: string) => void;
     isSubmitting?: boolean;
 }
 

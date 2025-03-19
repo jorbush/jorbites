@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 interface CommentBoxProps {
     userImage: string | undefined | null;
-    onCreateComment: (comment: string) => void;
+    onCreateComment: (_comment: string) => void;
     isSubmitting?: boolean;
 }
 
