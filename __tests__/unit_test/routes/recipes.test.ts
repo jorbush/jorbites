@@ -270,7 +270,13 @@ describe('Recipes API Routes and Server Actions', () => {
             mockParams
         );
         const result = await response.json();
-        expect(result).toMatchObject(comment || {});
+        expect(result).toMatchObject({
+            id: comment.id,
+            comment: comment.comment,
+            createdAt: comment.createdAt,
+            recipeId: comment.recipeId,
+            userId: comment.userId,
+        });
     });
 
     it('should not return any comments by recipe id', async () => {
