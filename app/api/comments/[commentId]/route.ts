@@ -10,8 +10,9 @@ interface IParams {
 
 export async function DELETE(
     request: Request,
-    { params }: { params: IParams }
+    props: { params: Promise<IParams> }
 ) {
+    const params = await props.params;
     try {
         const currentUser = await getCurrentUser();
 
