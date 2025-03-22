@@ -14,6 +14,7 @@ import { preparationMethods } from '@/app/components/modals/RecipeModal';
 import Comments from '@/app/components/comments/Comments';
 import DeleteRecipeButton from '@/app/components/recipes/DeleteRecipeButton';
 import { useTranslation } from 'react-i18next';
+import { formatText } from '@/app/utils/textFormatting';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
@@ -63,6 +64,18 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
         [recipe?.id, router, currentUser, loginModal, t]
     );
 
+    const formattedDescription = useMemo(() => {
+        return formatText(recipe.description);
+    }, [recipe.description]);
+
+    const formattedIngredients = useMemo(() => {
+        return recipe.ingredients.map((ingredient) => formatText(ingredient));
+    }, [recipe.ingredients]);
+
+    const formattedSteps = useMemo(() => {
+        return recipe.steps.map((step) => formatText(step));
+    }, [recipe.steps]);
+
     return (
         <Container>
             <div className="mx-auto max-w-screen-lg">
@@ -80,9 +93,9 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             currentUser={currentUser}
                             category={category}
                             method={method}
-                            description={recipe.description}
-                            ingredients={recipe.ingredients}
-                            steps={recipe.steps}
+                            description={formattedDescription}
+                            ingredients={formattedIngredients}
+                            steps={formattedSteps}
                         />
                     </div>
                     <Comments
