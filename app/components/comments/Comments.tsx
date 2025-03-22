@@ -59,8 +59,13 @@ const Comments: React.FC<CommentsProps> = ({
         <div className="flex flex-col pl-2 pr-2">
             <hr />
             <div className="mb-4 mt-8 flex flex-row items-center justify-between">
-                <div className="text-xl font-semibold dark:text-neutral-100">
-                    {t('comments')}
+                <div className="flex flex-row items-center">
+                    <div className="text-xl font-semibold dark:text-neutral-100">
+                        {t('comments')}
+                    </div>
+                    <div className="text-md ml-2 text-neutral-500">
+                        {comments.length}
+                    </div>
                 </div>
                 <ButtonSelector
                     sortOrder={sortOrder}
