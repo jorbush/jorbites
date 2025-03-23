@@ -10,6 +10,7 @@ import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import VerificationBadge from '@/app/components/VerificationBadge';
+import { formatText } from '@/app/utils/textFormatting';
 
 interface CommentProps {
     userId: string;
@@ -82,7 +83,7 @@ const Comment: React.FC<CommentProps> = ({
                     }`}
                     data-cy="comment-text"
                 >
-                    {comment}
+                    {formatText(comment)}
                 </p>
                 <div className="flex flex-col items-end text-sm text-gray-400">
                     {formattedDate}

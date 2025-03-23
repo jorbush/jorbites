@@ -13,9 +13,9 @@ import VerificationBadge from '@/app/components/VerificationBadge';
 
 interface RecipeInfoProps {
     user: SafeUser;
-    description: string;
-    steps: string[];
-    ingredients: string[];
+    description: React.ReactNode;
+    ingredients: React.ReactNode[];
+    steps: React.ReactNode[];
     category:
         | {
               icon: IconType;
@@ -49,16 +49,6 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     const router = useRouter();
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
-
-    const parseBoldText = (text: string): React.ReactNode => {
-        const parts = text.split(/(\*\*.*?\*\*)/g);
-        return parts.map((part, index) => {
-            if (part.startsWith('**') && part.endsWith('**')) {
-                return <strong key={index}>{part.slice(2, -2)}</strong>;
-            }
-            return part;
-        });
-    };
 
     return (
         <div className="col-span-4 flex flex-col gap-8 pl-2 pr-2">
@@ -134,7 +124,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                     key={index}
                                     className="mb-2"
                                 >
-                                    {parseBoldText(ingredient)}
+                                    {ingredient}
                                 </li>
                             ))}
                         </ul>
@@ -154,7 +144,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                     key={index}
                                     className="mb-2"
                                 >
-                                    {parseBoldText(step)}
+                                    {step}
                                 </li>
                             ))}
                         </ol>
