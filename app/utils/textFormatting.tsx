@@ -11,13 +11,9 @@ export const formatText = (
     text: string,
     linkClassName = 'text-green-450 hover:underline'
 ) => {
-    // Split text into elements: normal text, bold, italic, and links
     const segments: React.ReactNode[] = [];
     let remainingText = text;
-
-    // Regex patterns to detect formatting
     const patterns = [
-        // Links - convert URLs to clickable anchors
         {
             regex: /(https?:\/\/[^\s]+)/g,
             render: (match: string) => (
@@ -31,26 +27,22 @@ export const formatText = (
                 </a>
             ),
         },
-        // Bold text with ** markers
         {
             regex: /\*\*(.*?)\*\*/g,
             render: (_match: string, content: string) => (
                 <strong>{content}</strong>
             ),
         },
-        // Bold text with __ markers
         {
             regex: /__(.*?)__/g,
             render: (_match: string, content: string) => (
                 <strong>{content}</strong>
             ),
         },
-        // Italic text with * markers
         {
             regex: /\*(.*?)\*/g,
             render: (_match: string, content: string) => <em>{content}</em>,
         },
-        // Italic text with _ markers
         {
             regex: /_(.*?)_/g,
             render: (_match: string, content: string) => <em>{content}</em>,
@@ -58,7 +50,6 @@ export const formatText = (
     ];
     type PatternType = (typeof patterns)[number];
 
-    // Find the earliest pattern match in the remaining text
     const findNextPattern = () => {
         let earliest: {
             index: number;
@@ -102,12 +93,10 @@ export const formatText = (
             // Continue with remaining text after this match
             remainingText = remainingText.substring(index + match[0].length);
         } else {
-            // No more patterns found, add remaining text as is
             segments.push(remainingText);
             break;
         }
     }
-
     return (
         <React.Fragment>
             {segments.map((segment, index) => (
