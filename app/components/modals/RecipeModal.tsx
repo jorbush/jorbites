@@ -99,6 +99,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const saveDraft = async () => {
         const data = {
+            currentStep: step,
             category: watch('category'),
             method: watch('method'),
             imageSrc: watch('imageSrc'),
@@ -130,14 +131,18 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             if (!data) {
                 return;
             }
-            reset(data);
-            setNumIngredients(data.ingredients.length || 1);
-            setNumSteps(data.steps.length || 1);
-            const ingredients = watch('ingredients') || [];
+            const { currentStep, ...formData } = data;
+            reset(formData);
+            if (currentStep !== undefined) {
+                setStep(currentStep);
+            }
+            setNumIngredients(data.ingredients?.length || 1);
+            setNumSteps(data.steps?.length || 1);
+            const ingredients = formData.ingredients || [];
             ingredients.forEach((ingredient: string, index: number) => {
                 setValue(`ingredient ${index}`, ingredient);
             });
-            const steps = watch('steps') || [];
+            const steps = formData.steps || [];
             steps.forEach((step: string, index: number) => {
                 setValue(`step ${index}`, step);
             });
@@ -147,7 +152,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         } finally {
             setIsLoading(false);
         }
-    }, [reset, setNumIngredients, setNumSteps, watch, setValue, t]);
+    }, [reset, setNumIngredients, setNumSteps, setValue, t]);
 
     const deleteDraft = async () => {
         try {

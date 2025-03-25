@@ -17,10 +17,10 @@ const Logo = () => {
             onClick={() => router.push('/')}
             alt="Logo"
             className="cursor-pointer md:block"
-            height="100"
-            width="100"
+            height="29"
+            width="128"
+            unoptimized
             src={logoImagePath}
-            style={{ width: 'auto', height: 'auto' }}
             data-cy="logo"
         />
     );
