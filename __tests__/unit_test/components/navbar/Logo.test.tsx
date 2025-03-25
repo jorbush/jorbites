@@ -71,7 +71,7 @@ describe('<Logo />', () => {
         const logo = screen.getByAltText('Logo');
         expect(logo.className).contain('cursor-pointer');
         expect(logo.className).contain('md:block');
-        expect(logo).toHaveProperty('width', 29);
-        expect(logo).toHaveProperty('height', 128);
+        expect(logo).toHaveProperty('width', 128);
+        expect(logo).toHaveProperty('height', 29);
     });
 });
