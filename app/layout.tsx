@@ -9,6 +9,8 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import RecipeModal from '@/app/components/modals/RecipeModal';
 import SettingsModal from '@/app/components/modals/SettingsModal';
 import Footer from '@/app/components/Footer';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/next';
 
 const font = Nunito({ subsets: ['latin'] });
 
@@ -50,6 +52,8 @@ export default async function RootLayout({
                 <ClientOnly>
                     <Footer />
                 </ClientOnly>
+                <SpeedInsights />
+                <Analytics />
             </body>
         </html>
     );
