@@ -9,7 +9,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import RecipeModal from '@/app/components/modals/RecipeModal';
 import SettingsModal from '@/app/components/modals/SettingsModal';
 import Footer from '@/app/components/Footer';
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const font = Nunito({ subsets: ['latin'] });
 
@@ -47,7 +47,6 @@ export default async function RootLayout({
                     className="pb-20 pt-28"
                 >
                     {children}
-
                 </main>
                 <ClientOnly>
                     <Footer />
