@@ -2,33 +2,41 @@
 
 import { SafeRecipe, SafeUser } from '@/app/types';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import HeartButton from '@/app/components/HeartButton';
 import { GiTrophyCup } from 'react-icons/gi';
 import { useTranslation } from 'react-i18next';
+import CloudinaryImage from '@/app/components/CloudinaryImage';
 
 interface RecipeCardProps {
     data: SafeRecipe;
     currentUser?: SafeUser | null;
+    isFirstCard?: boolean;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ data, currentUser }) => {
+const RecipeCard: React.FC<RecipeCardProps> = ({
+    data,
+    currentUser,
+    isFirstCard = false,
+}) => {
     const router = useRouter();
     const { t } = useTranslation();
     return (
         <div
             onClick={() => router.push(`/recipes/${data.id}`)}
             className="group col-span-1 cursor-pointer"
+            id={isFirstCard ? 'lcp-container' : undefined}
         >
             <div className="flex w-full flex-col gap-2">
                 <div className="relative aspect-square w-full overflow-hidden rounded-xl">
-                    <Image
-                        fill
-                        priority={true}
-                        className="h-full w-full object-cover transition group-hover:scale-110"
+                    <CloudinaryImage
                         src={data.imageSrc || '/advocado.webp'}
                         alt="recipe"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        fill
+                        priority={isFirstCard}
+                        className="h-full w-full object-cover transition group-hover:scale-110"
+                        width={400}
+                        height={400}
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px"
                     />
                     <div className="absolute right-3 top-3">
                         <HeartButton
@@ -36,7 +44,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ data, currentUser }) => {
                             currentUser={currentUser}
                         />
                     </div>
-                    {data.category.toLowerCase() === 'award-winning' && (
+                    {data.category?.toLowerCase() === 'award-winning' && (
                         <div className="absolute bottom-0 flex w-full items-center justify-center bg-gray-900/50 p-2 text-white">
                             <GiTrophyCup
                                 className="mr-1 inline-block"

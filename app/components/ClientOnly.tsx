@@ -1,23 +1,29 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { I18nextProvider } from 'react-i18next';
-import i18n from '../i18n';
+import { useEffect, useState } from 'react';
 
 interface ClientOnlyProps {
     children: React.ReactNode;
+    fallback?: React.ReactNode;
 }
 
-const ClientOnly: React.FC<ClientOnlyProps> = ({ children }) => {
+const ClientOnly: React.FC<ClientOnlyProps> = ({
+    children,
+    fallback = null,
+}) => {
     const [hasMounted, setHasMounted] = useState(false);
 
     useEffect(() => {
-        setHasMounted(true);
+        const frame = requestAnimationFrame(() => {
+            setHasMounted(true);
+        });
+
+        return () => cancelAnimationFrame(frame);
     }, []);
 
-    if (!hasMounted) return null;
+    if (!hasMounted) return <>{fallback}</>;
 
-    return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
+    return <>{children}</>;
 };
 
 export default ClientOnly;

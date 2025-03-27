@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import Footer from '@/app/components/Footer';
+import Footer from '@/app/components/footer/Footer';
 import { version } from '@/package.json';
 
 // Mock the react-i18next module
