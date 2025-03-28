@@ -19,11 +19,11 @@ export async function GET(request: NextRequest) {
         if (url.includes('cloudinary.com')) {
             try {
                 const cloudinaryRegex =
-                    /^(https?:\/\/res\.cloudinary\.com\/[^\/]+)\/image\/upload(?:\/([^\/]+))?\/(.+)$/;
+                    /^(https?:\/\/res\.cloudinary\.com\/[^/]+)\/image\/upload(?:\/([^/]+))?\/(.+)$/;
                 const matches = url.match(cloudinaryRegex);
 
                 if (matches) {
-                    const [, baseUrl, existingTransforms, imagePath] = matches;
+                    const [, baseUrl, _existingTransforms, imagePath] = matches;
 
                     let qualityParam = 'q_auto:good';
                     if (quality === 'low') {
