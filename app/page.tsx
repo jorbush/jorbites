@@ -33,6 +33,7 @@ const Home = async ({ searchParams }: HomeProps) => {
         limit: isMobile((await headers()).get('user-agent') || '') ? 6 : 10,
     });
     const firstImageUrl = getFirstRecipeImageUrl(response.data?.recipes);
+    const currentUser = await getCurrentUser();
     return (
         <ClientOnly
             fallback={
@@ -67,16 +68,14 @@ const Home = async ({ searchParams }: HomeProps) => {
                             className="min-h-[60vh]"
                         >
                             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                                {response.data?.recipes.map(
-                                    async (recipe, index) => (
-                                        <RecipeCard
-                                            key={recipe.id}
-                                            data={recipe}
-                                            currentUser={await getCurrentUser()}
-                                            isFirstCard={index === 0}
-                                        />
-                                    )
-                                )}
+                                {response.data?.recipes.map((recipe, index) => (
+                                    <RecipeCard
+                                        key={recipe.id}
+                                        data={recipe}
+                                        currentUser={currentUser}
+                                        isFirstCard={index === 0}
+                                    />
+                                ))}
                             </div>
                         </section>
                         <nav aria-label="Pagination">

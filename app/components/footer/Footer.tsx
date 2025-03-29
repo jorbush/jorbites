@@ -42,7 +42,10 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="w-full border-t border-neutral-200 bg-white px-4 py-8 dark:border-neutral-800 dark:bg-dark">
+        <footer
+            className="w-full border-t border-neutral-200 bg-white px-4 py-8 dark:border-neutral-800 dark:bg-dark"
+            data-testid="footer"
+        >
             <div className="mx-auto max-w-6xl">
                 <div className="flex flex-col items-center space-y-6">
                     <a

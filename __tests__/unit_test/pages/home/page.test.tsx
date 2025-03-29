@@ -94,12 +94,21 @@ describe('Home', () => {
         const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
         vi.mocked(getCurrentUserMock.default).mockResolvedValue({} as any);
 
-        const { findByTestId } = render(await Home({ searchParams: {} }));
+        const component = await Home({ searchParams: Promise.resolve({}) });
+        const { findByTestId } = render(component);
 
-        expect(await findByTestId('container')).toBeDefined();
-        expect(await findByTestId('recipe-card-1')).toBeDefined();
-        expect(await findByTestId('recipe-card-2')).toBeDefined();
-        expect(await findByTestId('pagination')).toBeDefined();
+        // Use findByTestId to wait for async elements to appear
+        const container = await findByTestId('container');
+        expect(container).toBeDefined();
+
+        const recipeCard1 = await findByTestId('recipe-card-1');
+        expect(recipeCard1).toBeDefined();
+
+        const recipeCard2 = await findByTestId('recipe-card-2');
+        expect(recipeCard2).toBeDefined();
+
+        const pagination = await findByTestId('pagination');
+        expect(pagination).toBeDefined();
     });
 
     it('renders empty state when no recipes', async () => {
@@ -117,7 +126,8 @@ describe('Home', () => {
         const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
         vi.mocked(getCurrentUserMock.default).mockResolvedValue(null);
 
-        const { findByTestId } = render(await Home({ searchParams: {} }));
+        const component = await Home({ searchParams: Promise.resolve({}) });
+        const { findByTestId } = render(component);
 
         expect(await findByTestId('empty-state')).toBeDefined();
     });
@@ -137,7 +147,7 @@ describe('Home', () => {
             error: null,
         });
 
-        await Home({ searchParams: {} });
+        await Home({ searchParams: Promise.resolve({}) });
 
         expect(getRecipesMock.default).toHaveBeenCalledWith(
             expect.objectContaining({ limit: 6 })
@@ -159,7 +169,7 @@ describe('Home', () => {
             error: null,
         });
 
-        await Home({ searchParams: {} });
+        await Home({ searchParams: Promise.resolve({}) });
 
         expect(getRecipesMock.default).toHaveBeenCalledWith(
             expect.objectContaining({ limit: 10 })
