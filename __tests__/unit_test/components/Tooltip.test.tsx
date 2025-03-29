@@ -7,7 +7,7 @@ import {
     cleanup,
 } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import Tooltip from '@/app/components/Tooltip';
+import Tooltip from '@/app/components/utils/Tooltip';
 
 describe('Tooltip', () => {
     beforeEach(() => {

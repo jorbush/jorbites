@@ -1,7 +1,7 @@
 'use client';
 
 import { AiFillDelete } from 'react-icons/ai';
-import Button from '@/app/components/Button';
+import Button from '@/app/components/buttons/Button';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import DeleteRecipeModal from '@/app/components/modals/DeleteRecipeModal';

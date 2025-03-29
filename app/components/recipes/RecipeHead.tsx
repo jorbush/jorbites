@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { FiChevronLeft, FiChevronRight, FiShare2 } from 'react-icons/fi';
-import Heading from '@/app/components/Heading';
+import Heading from '@/app/components/navigation/Heading';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';

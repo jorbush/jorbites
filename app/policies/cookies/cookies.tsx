@@ -1,5 +1,5 @@
 'use client';
-import Container from '@/app/components/Container';
+import Container from '@/app/components/utils/Container';
 import { JORBITES_URL } from '@/app/utils/constants';
 import Head from 'next/head';
 import Link from 'next/link';

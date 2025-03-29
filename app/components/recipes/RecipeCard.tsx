@@ -2,10 +2,10 @@
 
 import { SafeRecipe, SafeUser } from '@/app/types';
 import { useRouter } from 'next/navigation';
-import HeartButton from '@/app/components/HeartButton';
+import HeartButton from '@/app/components/buttons/HeartButton';
 import { GiTrophyCup } from 'react-icons/gi';
 import { useTranslation } from 'react-i18next';
-import CloudinaryImage from '@/app/components/CloudinaryImage';
+import CloudinaryImage from '@/app/components/optimization/CloudinaryImage';
 
 interface RecipeCardProps {
     data: SafeRecipe;

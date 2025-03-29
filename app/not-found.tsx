@@ -2,7 +2,7 @@
 
 import { FaHome } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
-import Button from '@/app/components/Button';
+import Button from '@/app/components/buttons/Button';
 
 export default function NotFound() {
     const router = useRouter();

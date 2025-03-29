@@ -13,8 +13,8 @@ import useLoginModal from '@/app/hooks/useLoginModal';
 
 import Modal from '@/app/components/modals/Modal';
 import Input from '@/app/components/inputs/Input';
-import Heading from '@/app/components/Heading';
-import Button from '@/app/components/Button';
+import Heading from '@/app/components/navigation/Heading';
+import Button from '@/app/components/buttons/Button';
 import { useTranslation } from 'react-i18next';
 import { validateEmail } from '@/app/utils/validation';
 

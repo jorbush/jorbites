@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 
-import Button from '@/app/components/Button';
-import Heading from '@/app/components/Heading';
+import Button from '@/app/components/buttons/Button';
+import Heading from '@/app/components/navigation/Heading';
 import { useTranslation } from 'react-i18next';
 
 interface EmptyStateProps {

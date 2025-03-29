@@ -27,7 +27,7 @@ vi.mock('@/app/components/modals/DeleteRecipeModal', () => ({
 }));
 
 // Mock the Button component
-vi.mock('@/app/components/Button', () => ({
+vi.mock('@/app/components/buttons/Button', () => ({
     default: ({ label, onClick }: { label: string; onClick: () => void }) => (
         <button
             onClick={onClick}

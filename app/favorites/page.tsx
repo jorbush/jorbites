@@ -1,5 +1,5 @@
-import EmptyState from '@/app/components/EmptyState';
-import ClientOnly from '@/app/components/ClientOnly';
+import EmptyState from '@/app/components/utils/EmptyState';
+import ClientOnly from '@/app/components/utils/ClientOnly';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getFavoriteRecipes from '@/app/actions/getFavoriteRecipes';

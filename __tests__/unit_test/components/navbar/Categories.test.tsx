@@ -11,7 +11,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 // Mock the Container component
-vi.mock('@/app/components/Container', () => ({
+vi.mock('@/app/components/utils/Container', () => ({
     default: ({ children }: { children: React.ReactNode }) => (
         <div data-testid="container">{children}</div>
     ),

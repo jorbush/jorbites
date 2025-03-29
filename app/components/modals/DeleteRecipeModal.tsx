@@ -1,7 +1,7 @@
 'use client';
 
 import Modal from '@/app/components/modals/Modal';
-import Heading from '@/app/components/Heading';
+import Heading from '@/app/components/navigation/Heading';
 import { useTranslation } from 'react-i18next';
 import { Dispatch, SetStateAction } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';

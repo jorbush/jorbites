@@ -2,9 +2,9 @@
 
 import { IconType } from 'react-icons';
 import { SafeUser } from '@/app/types';
-import Avatar from '@/app/components/Avatar';
+import Avatar from '@/app/components/utils/Avatar';
 import RecipeCategoryAndMethod from '@/app/components/recipes/RecipeCategoryAndMethod';
-import HeartButton from '@/app/components/HeartButton';
+import HeartButton from '@/app/components/buttons/HeartButton';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';

@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
-import Container from '@/app/components/Container';
+import Container from '@/app/components/utils/Container';
 import CategoryBox from '@/app/components/CategoryBox';
 import {
     GiLindenLeaf,

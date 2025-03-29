@@ -10,7 +10,7 @@ import {
     IoFlameOutline,
 } from 'react-icons/io5';
 import { FaArrowUp, FaHeart } from 'react-icons/fa';
-import Container from '@/app/components/Container';
+import Container from '@/app/components/utils/Container';
 import StatCard from '@/app/components/stats/StatCard';
 import PreferenceCard from '@/app/components/stats/PreferenceCard';
 

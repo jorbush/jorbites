@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import Pagination from '@/app/components/Pagination';
+import Pagination from '@/app/components/navigation/Pagination';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 

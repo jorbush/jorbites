@@ -3,11 +3,11 @@
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
-import Heading from '@/app/components/Heading';
+import Heading from '@/app/components/navigation/Heading';
 import { categories } from '@/app/components/navbar/Categories';
 import CategoryInput from '@/app/components/inputs/CategoryInput';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import Button from '@/app/components/Button';
+import Button from '@/app/components/buttons/Button';
 import { AiFillDelete } from 'react-icons/ai';
 import Input from '@/app/components/inputs/Input';
 import Counter from '@/app/components/inputs/Counter';

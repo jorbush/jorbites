@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Home from '@/app/page';
 
 // Mocks
-vi.mock('@/app/components/Container', () => ({
+vi.mock('@/app/components/utils/Container', () => ({
     default: ({ children }: { children: React.ReactNode }) => (
         <div data-testid="container">{children}</div>
     ),
@@ -16,15 +16,15 @@ vi.mock('@/app/components/recipes/RecipeCard', () => ({
     ),
 }));
 
-vi.mock('@/app/components/EmptyState', () => ({
+vi.mock('@/app/components/utils/EmptyState', () => ({
     default: () => <div data-testid="empty-state">Empty State</div>,
 }));
 
-vi.mock('@/app/components/Pagination', () => ({
+vi.mock('@/app/components/navigation/Pagination', () => ({
     default: () => <div data-testid="pagination">Pagination</div>,
 }));
 
-vi.mock('@/app/components/ClientOnly', () => ({
+vi.mock('@/app/components/utils/ClientOnly', () => ({
     default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 

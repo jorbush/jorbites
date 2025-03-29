@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import Container from '@/app/components/Container';
+import Container from '@/app/components/utils/Container';
 import Categories from '@/app/components/navbar/Categories';
 import Search from '@/app/components/navbar/Search';
 import UserMenu from '@/app/components/navbar/UserMenu';

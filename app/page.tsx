@@ -1,16 +1,16 @@
-import Container from '@/app/components/Container';
+import Container from '@/app/components/utils/Container';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import RecipeCardSkeleton from '@/app/components/recipes/RecipeCardSkeleton';
-import EmptyState from '@/app/components/EmptyState';
-import Pagination from '@/app/components/Pagination';
+import EmptyState from '@/app/components/utils/EmptyState';
+import Pagination from '@/app/components/navigation/Pagination';
 import { isMobile } from '@/app/utils/deviceDetector';
 import getRecipes, { IRecipesParams } from '@/app/actions/getRecipes';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import ClientOnly from '@/app/components/ClientOnly';
+import ClientOnly from '@/app/components/utils/ClientOnly';
 import { headers } from 'next/headers';
-import ErrorDisplay from './components/ErrorDisplay';
+import ErrorDisplay from './components/utils/ErrorDisplay';
 import { getFirstRecipeImageUrl } from './utils/imageOptimizer';
-import LcpPreloader from './components/LcpPreloader';
+import LcpPreloader from './components/optimization/LcpPreloader';
 
 interface HomeProps {
     searchParams: Promise<IRecipesParams>;

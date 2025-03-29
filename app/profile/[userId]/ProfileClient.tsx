@@ -1,7 +1,7 @@
 'use client';
 
 import { SafeRecipe, SafeUser } from '@/app/types';
-import Container from '@/app/components/Container';
+import Container from '@/app/components/utils/Container';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 
 interface ProfileClientProps {

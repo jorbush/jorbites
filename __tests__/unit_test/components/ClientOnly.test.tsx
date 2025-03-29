@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, act, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import ClientOnly from '@/app/components/ClientOnly';
+import ClientOnly from '@/app/components/utils/ClientOnly';
 
 // Create a test-only wrapper component
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (

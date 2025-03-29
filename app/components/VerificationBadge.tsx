@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MdVerified } from 'react-icons/md';
-import Tooltip from './Tooltip';
+import Tooltip from './utils/Tooltip';
 import { useTranslation } from 'react-i18next';
 
 interface VerificationBadgeProps {

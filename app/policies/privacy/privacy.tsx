@@ -1,6 +1,6 @@
 'use client';
 
-import Container from '@/app/components/Container';
+import Container from '@/app/components/utils/Container';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';

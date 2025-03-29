@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { SafeUser } from '@/app/types';
-import Container from '@/app/components/Container';
+import Container from '@/app/components/utils/Container';
 import LeaderboardHeader from '@/app/components/top-jorbiters/LeaderboardHeader';
 import JorbiterCard from '@/app/components/top-jorbiters/JorbiterCard';
 import CallToAction from '@/app/components/top-jorbiters/CallToAction';

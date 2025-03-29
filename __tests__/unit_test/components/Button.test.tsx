@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import Button from '@/app/components/Button';
+import Button from '@/app/components/buttons/Button';
 import { FaUser } from 'react-icons/fa';
 import React from 'react';
 import { act } from 'react';

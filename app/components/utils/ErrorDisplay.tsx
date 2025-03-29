@@ -2,7 +2,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import Button from '@/app/components/Button';
+import Button from '@/app/components/buttons/Button';
 
 interface ErrorDisplayProps {
     code: string;
