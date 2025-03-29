@@ -1,16 +1,18 @@
 import React from 'react';
 import { render, screen, act, cleanup } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import ClientOnly from '@/app/components/ClientOnly';
 
 // Create a test-only wrapper component
-const TestWrapper = ({ children }) => (
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
     <div data-testid="i18next-provider">{children}</div>
 );
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
-    I18nextProvider: ({ children }) => <TestWrapper>{children}</TestWrapper>,
+    I18nextProvider: ({ children }: { children: React.ReactNode }) => (
+        <TestWrapper>{children}</TestWrapper>
+    ),
     initReactI18next: {
         type: '3rdParty',
         init: () => {},
@@ -40,7 +42,7 @@ describe('<ClientOnly />', () => {
     it('should show fallback initially and then children after mounting', () => {
         // Mock requestAnimationFrame to capture callbacks
         const rAFMock = vi.fn();
-        let storedCallback;
+        let storedCallback: ((timestamp: number) => void) | undefined;
         global.requestAnimationFrame = (cb) => {
             storedCallback = cb;
             return rAFMock() as number;
@@ -60,7 +62,9 @@ describe('<ClientOnly />', () => {
 
         // Now manually trigger the rAF callback
         act(() => {
-            storedCallback(0); // Trigger the stored callback
+            if (storedCallback) {
+                storedCallback(0); // Trigger the stored callback
+            }
         });
 
         rerender(
