@@ -38,7 +38,7 @@ vi.mock('react-i18next', () => ({
     useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-vi.mock('@/app/components/Avatar', () => ({
+vi.mock('@/app/components/utils/Avatar', () => ({
     default: () => <div data-testid="mock-avatar">Avatar</div>,
 }));
 

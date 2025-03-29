@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import Avatar from '@/app/components/Avatar';
+import Avatar from '@/app/components/utils/Avatar';
 import React from 'react';
 
 describe('<Avatar/>', () => {

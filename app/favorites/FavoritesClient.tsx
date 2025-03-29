@@ -1,7 +1,7 @@
 import { SafeRecipe, SafeUser } from '@/app/types';
 
-import Heading from '@/app/components/Heading';
-import Container from '@/app/components/Container';
+import Heading from '@/app/components/navigation/Heading';
+import Container from '@/app/components/utils/Container';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 
 interface FavoritesClientProps {

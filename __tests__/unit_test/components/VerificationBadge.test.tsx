@@ -14,7 +14,7 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 
-vi.mock('@/app/components/Tooltip', () => ({
+vi.mock('@/app/components/utils/Tooltip', () => ({
     default: ({
         children,
         text,

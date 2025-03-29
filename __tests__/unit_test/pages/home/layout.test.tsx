@@ -12,7 +12,13 @@ vi.mock('@/app/components/navbar/Navbar', () => ({
     default: () => <div data-testid="navbar">Navbar</div>,
 }));
 
-vi.mock('@/app/components/ClientOnly', () => ({
+vi.mock('@/app/components/utils/Container', () => ({
+    default: ({ children }: { children: React.ReactNode }) => (
+        <div data-testid="client-only">{children}</div>
+    ),
+}));
+
+vi.mock('@/app/components/utils/ClientOnly', () => ({
     default: ({ children }: { children: React.ReactNode }) => (
         <div data-testid="client-only">{children}</div>
     ),
@@ -42,7 +48,7 @@ vi.mock('@/app/components/modals/SettingsModal', () => ({
     default: () => <div data-testid="settings-modal">SettingsModal</div>,
 }));
 
-vi.mock('@/app/components/Footer', () => ({
+vi.mock('@/app/components/footer/Footer', () => ({
     default: () => <div data-testid="footer">Footer</div>,
 }));
 

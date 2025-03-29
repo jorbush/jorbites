@@ -5,7 +5,7 @@ import Navbar from '@/app/components/navbar/Navbar';
 import { SafeUser } from '@/app/types';
 
 // Mock the components used in Navbar
-vi.mock('@/app/components/Container', () => ({
+vi.mock('@/app/components/utils/Container', () => ({
     default: ({ children }: { children: React.ReactNode }) => (
         <div data-testid="container">{children}</div>
     ),
@@ -88,6 +88,7 @@ describe('<Navbar />', () => {
             emailNotifications: false,
             level: 0,
             verified: false,
+            badges: [],
         };
         render(<Navbar currentUser={mockUser} />);
         expect(screen.getByText('UserMenu: Logged In')).toBeDefined();

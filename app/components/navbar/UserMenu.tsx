@@ -1,6 +1,6 @@
 'use client';
 
-import Avatar from '../Avatar';
+import Avatar from '../utils/Avatar';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import MenuItem from './MenuItem';
 import useRegisterModal from '@/app/hooks/useRegisterModal';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import HeartButton from '@/app/components/HeartButton';
+import HeartButton from '@/app/components/buttons/HeartButton';
 import { SafeUser } from '@/app/types';
 
 // Mock the useFavorite hook

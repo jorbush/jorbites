@@ -23,13 +23,13 @@ vi.mock('next/navigation', () => ({
     })),
 }));
 
-vi.mock('@/app/components/ClientOnly', () => ({
+vi.mock('@/app/components/utils/Container', () => ({
     default: ({ children }: { children: React.ReactNode }) => (
         <div data-testid="client-only">{children}</div>
     ),
 }));
 
-vi.mock('@/app/components/EmptyState', () => ({
+vi.mock('@/app/components/utils/EmptyState', () => ({
     default: () => <div data-testid="empty-state">Empty State</div>,
 }));
 
@@ -47,7 +47,7 @@ describe('RecipePage', () => {
         vi.mocked(getRecipeByIdMock.default).mockResolvedValue(null);
 
         const { findByTestId } = render(
-            await RecipePage({ params: { recipeId: '1' } })
+            await RecipePage({ params: Promise.resolve({ recipeId: '1' }) })
         );
 
         expect(await findByTestId('empty-state')).toBeDefined();
@@ -73,7 +73,7 @@ describe('RecipePage', () => {
         ] as any);
 
         const { findByTestId } = render(
-            await RecipePage({ params: { recipeId: '1' } })
+            await RecipePage({ params: Promise.resolve({ recipeId: '1' }) })
         );
 
         expect(await findByTestId('recipe-client')).toBeDefined();

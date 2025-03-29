@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
 
-import Button from '@/app/components/Button';
+import Button from '@/app/components/buttons/Button';
 import useTheme from '@/app/hooks/useTheme';
 
 interface ModalProps {

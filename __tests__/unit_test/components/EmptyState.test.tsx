@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import EmptyState from '@/app/components/EmptyState';
+import EmptyState from '@/app/components/utils/EmptyState';
 import React from 'react';
 
 const pushMock = vi.fn();

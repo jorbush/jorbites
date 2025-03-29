@@ -1,21 +1,38 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        remotePatterns: [
+      remotePatterns: [
+        {
+          protocol: "https",
+          hostname: "avatars.githubusercontent.com",
+        },
+        {
+          protocol: "https",
+          hostname: "lh3.googleusercontent.com",
+        },
+        {
+          protocol: "https",
+          hostname: "res.cloudinary.com",
+        },
+      ],
+      formats: ['image/avif', 'image/webp'],
+      minimumCacheTTL: 31536000,
+    },
+    async headers() {
+      return [
+        {
+          source: '/api/image-proxy',
+          headers: [
             {
-                protocol: "https",
-                hostname: "avatars.githubusercontent.com",
+              key: 'Cache-Control',
+              value: 'public, max-age=31536000, immutable',
             },
-            {
-                protocol: "https",
-                hostname: "lh3.googleusercontent.com",
-            },
-            {
-                protocol: "https",
-                hostname: "res.cloudinary.com",
-            },
-        ]
-    }
-}
+          ],
+        },
+      ];
+    },
+    compress: true,
+    poweredByHeader: false,
+  };
 
-module.exports = nextConfig
+  module.exports = nextConfig;

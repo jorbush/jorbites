@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import Avatar from '@/app/components/Avatar';
+import Avatar from '@/app/components/utils/Avatar';
 import { MdDelete } from 'react-icons/md';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
 import axios from 'axios';

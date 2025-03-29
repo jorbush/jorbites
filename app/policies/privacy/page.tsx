@@ -1,4 +1,4 @@
-import ClientOnly from '@/app/components/ClientOnly';
+import ClientOnly from '@/app/components/utils/ClientOnly';
 import PrivacyPolicy from '@/app/policies/privacy/privacy';
 
 const PrivacyPolicyPage: React.FC = () => {

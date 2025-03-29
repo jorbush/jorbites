@@ -1,18 +1,21 @@
 import '@/app/globals.css';
 import { Nunito } from 'next/font/google';
 import Navbar from '@/app/components/navbar/Navbar';
-import ClientOnly from '@/app/components/ClientOnly';
+import ClientOnly from '@/app/components/utils/ClientOnly';
 import RegisterModal from '@/app/components/modals/RegisterModal';
 import ToasterProvider from '@/app/providers/ToasterProvider';
 import LoginModal from '@/app/components/modals/LoginModal';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import RecipeModal from '@/app/components/modals/RecipeModal';
 import SettingsModal from '@/app/components/modals/SettingsModal';
-import Footer from '@/app/components/Footer';
+import SmartFooter from '@/app/components/footer/SmartFooter';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 
-const font = Nunito({ subsets: ['latin'] });
+const font = Nunito({
+    subsets: ['latin'],
+    display: 'swap',
+});
 
 export const metadata = {
     title: 'Jorbites',
@@ -34,7 +37,15 @@ export default async function RootLayout({
             lang="en"
             translate="no"
         >
-            <body className={`${font.className} dark:bg-dark`}>
+            <head>
+                <meta
+                    name="viewport"
+                    content="width=device-width, initial-scale=1"
+                />
+            </head>
+            <body
+                className={`${font.className} flex min-h-screen flex-col dark:bg-dark`}
+            >
                 <ClientOnly>
                     <ToasterProvider />
                     <LoginModal />
@@ -45,13 +56,11 @@ export default async function RootLayout({
                 </ClientOnly>
                 <main
                     id="main-content"
-                    className="pb-20 pt-28"
+                    className="flex-grow pb-20 pt-28"
                 >
                     {children}
                 </main>
-                <ClientOnly>
-                    <Footer />
-                </ClientOnly>
+                <SmartFooter />
                 <SpeedInsights />
                 <Analytics />
             </body>

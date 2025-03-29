@@ -1,8 +1,8 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getRecipeById from '@/app/actions/getRecipeById';
 
-import ClientOnly from '@/app/components/ClientOnly';
-import EmptyState from '@/app/components/EmptyState';
+import ClientOnly from '@/app/components/utils/ClientOnly';
+import EmptyState from '@/app/components/utils/EmptyState';
 import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
 

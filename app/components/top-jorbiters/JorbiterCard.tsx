@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { SafeUser } from '@/app/types';
-import Avatar from '@/app/components/Avatar';
+import Avatar from '@/app/components/utils/Avatar';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import getUserDisplayName from '@/app/utils/responsive';
 import { useTranslation } from 'react-i18next';

@@ -1,6 +1,6 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import ClientOnly from '@/app/components/ClientOnly';
-import EmptyState from '@/app/components/EmptyState';
+import ClientOnly from '@/app/components/utils/ClientOnly';
+import EmptyState from '@/app/components/utils/EmptyState';
 import getTopJorbiters from '../actions/getTopJorbiters';
 import TopJorbitersClient from './TopJorbitersClient';
 

@@ -22,6 +22,7 @@ const Logo = () => {
             unoptimized
             src={logoImagePath}
             data-cy="logo"
+            priority
         />
     );
 };

@@ -1,10 +1,10 @@
 'use client';
 
-import Avatar from '@/app/components/Avatar';
+import Avatar from '@/app/components/utils/Avatar';
 import { SafeUser } from '@/app/types';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import Container from '@/app/components/Container';
+import Container from '@/app/components/utils/Container';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import Image from 'next/image';
 import confetti from 'canvas-confetti';

@@ -20,7 +20,7 @@ vi.mock('react-i18next', () => ({
 vi.mock('react-hot-toast');
 
 // Mock Avatar component
-vi.mock('@/app/components/Avatar', () => ({
+vi.mock('@/app/components/utils/Avatar', () => ({
     default: ({ src }: { src: string }) => (
         <img
             src={src}

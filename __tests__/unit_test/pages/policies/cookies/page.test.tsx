@@ -3,7 +3,13 @@ import { render } from '@testing-library/react';
 import CookiesPolicyPage from '@/app/policies/cookies/page';
 
 // Mock the ClientOnly component
-vi.mock('@/app/components/ClientOnly', () => ({
+vi.mock('@/app/components/utils/Container', () => ({
+    default: ({ children }: { children: React.ReactNode }) => (
+        <div data-testid="client-only">{children}</div>
+    ),
+}));
+
+vi.mock('@/app/components/utils/ClientOnly', () => ({
     default: ({ children }: { children: React.ReactNode }) => (
         <div data-testid="client-only">{children}</div>
     ),

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
-import Avatar from '@/app/components/Avatar';
+import Avatar from '@/app/components/utils/Avatar';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
