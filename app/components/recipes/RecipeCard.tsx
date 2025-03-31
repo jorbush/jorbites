@@ -32,7 +32,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                         src={data.imageSrc || '/advocado.webp'}
                         alt="recipe"
                         fill
-                        priority={true}
+                        priority={isFirstCard}
                         className="h-full w-full object-cover transition group-hover:scale-110"
                         width={400}
                         height={400}
