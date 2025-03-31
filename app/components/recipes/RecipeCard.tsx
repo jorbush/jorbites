@@ -30,11 +30,13 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                 <div className="relative aspect-square w-full overflow-hidden rounded-xl">
                     <CloudinaryImage
                         src={data.imageSrc || '/advocado.webp'}
-                        alt={data.title || 'Recipe'}
+                        alt="recipe"
                         fill
-                        priority={isFirstCard}
+                        priority={true}
                         className="h-full w-full object-cover transition group-hover:scale-110"
-                        sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 768px) calc(50vw - 24px), (max-width: 1024px) calc(33vw - 22px), (max-width: 1280px) calc(25vw - 20px), calc(20vw - 20px)"
+                        width={400}
+                        height={400}
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px"
                     />
                     <div className="absolute right-3 top-3">
                         <HeartButton
