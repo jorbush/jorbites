@@ -10,49 +10,51 @@ export default function LcpPreloader({ imageUrl }: LcpPreloaderProps) {
     useEffect(() => {
         if (!imageUrl || typeof window === 'undefined') return;
 
-        const injectProxyPreload = () => {
+        const preloadLcpImage = () => {
             try {
+                // Clean up any existing preloads
                 document
-                    .querySelectorAll(
-                        `link[rel="preload"][as="image"][href*="api/image-proxy"]`
-                    )
-                    .forEach((el) => el.remove());
+                    .querySelectorAll('link[rel="preload"][as="image"]')
+                    .forEach((el) => {
+                        if (
+                            el.getAttribute('href')?.includes('api/image-proxy')
+                        ) {
+                            el.remove();
+                        }
+                    });
 
-                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(imageUrl)}&w=400&h=400&q=auto:good`;
+                // Create proxy URL with exact LCP dimensions (250x250)
+                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(imageUrl)}&w=250&h=250&q=auto:good`;
 
-                const preloadLink = document.createElement('link');
-                preloadLink.rel = 'preload';
-                preloadLink.as = 'image';
-                preloadLink.href = proxyUrl;
-                preloadLink.setAttribute('fetchpriority', 'high');
-                document.head.appendChild(preloadLink);
+                // Create and inject preload link with highest priority
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.as = 'image';
+                link.href = proxyUrl;
+                link.setAttribute('fetchpriority', 'high');
+                document.head.appendChild(link);
 
-                if (
-                    !document.querySelector(
-                        `link[rel="preconnect"][href="${window.location.origin}"]`
-                    )
-                ) {
-                    const preconnect = document.createElement('link');
-                    preconnect.rel = 'preconnect';
-                    preconnect.href = window.location.origin;
-                    document.head.appendChild(preconnect);
-                }
+                // Prefetch the image to warm the cache
+                const img = new Image();
+                img.src = proxyUrl;
+
+                console.log('[LCP] Preloaded:', proxyUrl);
             } catch (e) {
-                console.error('Error injecting preload:', e);
+                console.error('[LCP] Preload error:', e);
             }
         };
 
-        injectProxyPreload();
+        // Execute immediately
+        preloadLcpImage();
 
+        // Also try after DOM content is loaded
         if (document.readyState !== 'complete') {
-            window.addEventListener('DOMContentLoaded', injectProxyPreload);
+            window.addEventListener('DOMContentLoaded', preloadLcpImage);
             return () =>
-                window.removeEventListener(
-                    'DOMContentLoaded',
-                    injectProxyPreload
-                );
+                window.removeEventListener('DOMContentLoaded', preloadLcpImage);
         }
     }, [imageUrl]);
 
+    // This component doesn't render anything
     return null;
 }

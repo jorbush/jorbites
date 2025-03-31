@@ -1,41 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
+    // Extract query parameters
     const url = request.nextUrl.searchParams.get('url');
     const width = request.nextUrl.searchParams.get('w') || '400';
     const height = request.nextUrl.searchParams.get('h') || '400';
     const quality = request.nextUrl.searchParams.get('q') || 'auto:good';
 
     if (!url) {
-        console.error('[Image Proxy] Missing URL parameter');
         return new Response('URL parameter is required', { status: 400 });
     }
 
     try {
         let imageUrl = url;
+        const acceptHeader = request.headers.get('accept') || '';
+        const supportsWebp = acceptHeader.includes('image/webp');
+        const supportsAvif = acceptHeader.includes('image/avif');
 
+        // Select best format based on browser support
+        let format = 'auto';
+        if (supportsAvif) {
+            format = 'avif';
+        } else if (supportsWebp) {
+            format = 'webp';
+        }
+
+        // Process Cloudinary URLs
         if (url.includes('cloudinary.com')) {
             try {
                 const cloudinaryRegex =
-                    /^(https?:\/\/res\.cloudinary\.com\/[^/]+)\/image\/upload(?:\/([^/]+))?\/(.+)$/;
+                    /^(https?:\/\/res\.cloudinary\.com\/[^\/]+)\/image\/upload(?:\/([^\/]+))?\/(.+)$/;
                 const matches = url.match(cloudinaryRegex);
 
                 if (matches) {
-                    const [, baseUrl, _existingTransforms, imagePath] = matches;
+                    const [, baseUrl, _, imagePath] = matches;
 
-                    let qualityParam = 'q_auto:good';
-                    if (quality === 'low') {
-                        qualityParam = 'q_10,e_blur:800';
-                    } else if (quality !== 'auto:good') {
-                        qualityParam = `q_${quality}`;
-                    }
+                    // Create properly sized image URL with next-gen format
+                    imageUrl = `${baseUrl}/image/upload/f_${format},q_${quality},w_${width},h_${height},c_fill/${imagePath}`;
 
-                    imageUrl = `${baseUrl}/image/upload/f_auto,${qualityParam},w_${width},h_${height},c_fill/${imagePath}`;
-                } else {
-                    console.error(
-                        '[Image Proxy] Invalid Cloudinary URL format:',
-                        url
-                    );
+                    console.log(`[Image Proxy] Optimized URL: ${imageUrl}`);
                 }
             } catch (error) {
                 console.error(
@@ -45,11 +48,14 @@ export async function GET(request: NextRequest) {
             }
         }
 
-        console.log('[Image Proxy] Fetching from:', imageUrl);
+        // Cache header preparation
+        const cacheControl = 'public, max-age=31536000, immutable';
+
+        // Fetch the image directly from Cloudinary with our parameters
         const imageResponse = await fetch(imageUrl, {
             headers: {
                 'User-Agent': 'Jorbites Image Proxy',
-                Accept: 'image/webp,image/avif,image/*',
+                Accept: 'image/avif,image/webp,image/*',
             },
             cache: 'force-cache',
             next: {
@@ -59,7 +65,7 @@ export async function GET(request: NextRequest) {
 
         if (!imageResponse.ok) {
             console.error(
-                `[Image Proxy] Fetch error: ${imageResponse.status} ${imageResponse.statusText}`
+                `[Image Proxy] Failed to fetch: ${imageResponse.status} ${imageResponse.statusText}`
             );
             return new Response(
                 `Failed to fetch image: ${imageResponse.statusText}`,
@@ -69,6 +75,7 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        // Return optimized image with strong caching
         const imageData = await imageResponse.arrayBuffer();
         const contentType =
             imageResponse.headers.get('Content-Type') || 'image/jpeg';
@@ -77,14 +84,14 @@ export async function GET(request: NextRequest) {
             status: 200,
             headers: {
                 'Content-Type': contentType,
-                'Cache-Control': 'public, max-age=31536000, immutable',
+                'Cache-Control': cacheControl,
+                'CDN-Cache-Control': cacheControl,
+                'Vercel-CDN-Cache-Control': cacheControl,
                 'Access-Control-Allow-Origin': '*',
             },
         });
     } catch (error) {
         console.error('[Image Proxy] Unhandled error:', error);
-        return new Response('Internal Server Error in image proxy', {
-            status: 500,
-        });
+        return new Response('Internal Server Error', { status: 500 });
     }
 }
