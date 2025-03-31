@@ -1,6 +1,5 @@
 import Container from '@/app/components/utils/Container';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
-import RecipeCardSkeleton from '@/app/components/recipes/RecipeCardSkeleton';
 import EmptyState from '@/app/components/utils/EmptyState';
 import Pagination from '@/app/components/navigation/Pagination';
 import { isMobile } from '@/app/utils/deviceDetector';
@@ -8,23 +7,14 @@ import getRecipes, { IRecipesParams } from '@/app/actions/getRecipes';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import { headers } from 'next/headers';
-import ErrorDisplay from './components/utils/ErrorDisplay';
+import ErrorDisplay from '@/app/components/utils/ErrorDisplay';
 import { getFirstRecipeImageUrl } from './utils/imageOptimizer';
-import LcpPreloader from './components/optimization/LcpPreloader';
+import LcpPreloader from '@/app/components/optimization/LcpPreloader';
+import { RecipeGrid } from '@/app/components/recipes/RecipeGrid';
 
 interface HomeProps {
     searchParams: Promise<IRecipesParams>;
 }
-
-const RecipeGrid = () => (
-    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-        {Array(12)
-            .fill(0)
-            .map((_, i) => (
-                <RecipeCardSkeleton key={i} />
-            ))}
-    </div>
-);
 
 const Home = async ({ searchParams }: HomeProps) => {
     const resolvedParams = await searchParams;

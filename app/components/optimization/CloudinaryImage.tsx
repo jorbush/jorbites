@@ -11,6 +11,7 @@ interface CloudinaryImageProps {
     width?: number;
     height?: number;
     sizes?: string;
+    preloadViaProxy?: boolean;
 }
 
 export default function CloudinaryImage({
@@ -22,6 +23,7 @@ export default function CloudinaryImage({
     width = 400,
     height = 400,
     sizes = '(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px',
+    preloadViaProxy = false,
 }: CloudinaryImageProps) {
     const [isLoaded, setIsLoaded] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
@@ -43,27 +45,71 @@ export default function CloudinaryImage({
             return;
         }
 
-        try {
-            const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${width}&h=${height}&q=auto:good`;
-            const placeholderUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
+        if (src.includes('cloudinary.com')) {
+            try {
+                const viewportWidth =
+                    typeof window !== 'undefined' ? window.innerWidth : 1200;
+                const devicePixelRatio =
+                    typeof window !== 'undefined'
+                        ? window.devicePixelRatio || 1
+                        : 1;
 
-            setOptimizedSrc(proxyUrl);
-            setPlaceholderSrc(placeholderUrl);
+                const optimalWidth = Math.min(
+                    viewportWidth < 640
+                        ? viewportWidth - 40 // Full width on mobile minus padding
+                        : viewportWidth < 768
+                          ? (viewportWidth - 60) / 2 // Half width on small tablets
+                          : viewportWidth < 1024
+                            ? (viewportWidth - 80) / 3 // Third width on large tablets
+                            : viewportWidth < 1280
+                              ? (viewportWidth - 100) / 4 // Quarter width on small desktops
+                              : (viewportWidth - 120) / 5, // Fifth width on large desktops
+                    800 // Maximum reasonable size
+                );
 
-            if (priority && typeof window !== 'undefined') {
-                const link = document.createElement('link');
-                link.rel = 'preload';
-                link.href = proxyUrl;
-                link.as = 'image';
-                link.fetchPriority = 'high';
-                document.head.appendChild(link);
+                const calculatedWidth = Math.round(
+                    optimalWidth * devicePixelRatio
+                );
+                const calculatedHeight = fill
+                    ? calculatedWidth
+                    : Math.round((calculatedWidth / width) * height);
+
+                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${calculatedWidth}&h=${calculatedHeight}&q=auto:good`;
+
+                const placeholderUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
+
+                setOptimizedSrc(proxyUrl);
+                setPlaceholderSrc(placeholderUrl);
+
+                if (
+                    (priority || preloadViaProxy) &&
+                    typeof window !== 'undefined'
+                ) {
+                    document
+                        .querySelectorAll(
+                            `link[rel="preload"][href="${proxyUrl}"]`
+                        )
+                        .forEach((el) => el.remove());
+
+                    const link = document.createElement('link');
+                    link.rel = 'preload';
+                    link.href = proxyUrl;
+                    link.as = 'image';
+                    link.fetchPriority = 'high';
+                    document.head.appendChild(link);
+                }
+
+                return;
+            } catch (e) {
+                console.error('Error creating proxy URL:', e);
+                setOptimizedSrc(fallbackImage);
+                setPlaceholderSrc(fallbackImage);
             }
-        } catch (e) {
-            console.error('Error creating proxy URL:', e);
-            setOptimizedSrc(src);
-            setPlaceholderSrc(null);
         }
-    }, [src, width, height, priority]);
+
+        setOptimizedSrc(src);
+        setPlaceholderSrc(src);
+    }, [src, width, height, preloadViaProxy, priority, fill]);
 
     useEffect(() => {
         if (imgRef.current && priority) {
@@ -100,6 +146,7 @@ export default function CloudinaryImage({
         <div
             className={`${fill ? 'relative aspect-square' : ''} overflow-hidden bg-gray-200 dark:bg-gray-700 ${fill ? className : ''}`}
         >
+            {/* Blurry placeholder */}
             {!isLoaded && placeholderSrc && (
                 <div
                     style={{
@@ -113,6 +160,7 @@ export default function CloudinaryImage({
                     aria-hidden="true"
                 />
             )}
+            {/* Main image */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
                 ref={imgRef}
