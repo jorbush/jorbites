@@ -3,13 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
     // Get parameters from query string
     const url = request.nextUrl.searchParams.get('url');
-
-    // Fixed reasonable sizes for recipe cards
-    const width = 300; // Slightly larger than 245px to account for retina displays
-    const height = 300; // For square images
-
-    // Lower quality setting
-    const quality = 'auto:low'; // Use Cloudinary's auto:low quality which is good enough for thumbnails
+    const width = parseInt(request.nextUrl.searchParams.get('w') || '400', 10);
+    const height = parseInt(request.nextUrl.searchParams.get('h') || '400', 10);
+    const quality = request.nextUrl.searchParams.get('q') || 'auto:good';
 
     if (!url) {
         return new Response('URL parameter is required', { status: 400 });
@@ -28,8 +24,13 @@ export async function GET(request: NextRequest) {
                 if (matches) {
                     const [, baseUrl, _, imagePath] = matches;
 
-                    // Create simple optimized Cloudinary URL
-                    imageUrl = `${baseUrl}/image/upload/f_auto,q_${quality},w_${width},h_${height},c_fill/${imagePath}`;
+                    // Limit image dimensions to prevent unnecessarily large images
+                    // Cap at 1500px for any dimension as a safety measure
+                    const safeWidth = Math.min(width, 1500);
+                    const safeHeight = Math.min(height, 1500);
+
+                    // Create optimized Cloudinary URL with appropriate quality and format
+                    imageUrl = `${baseUrl}/image/upload/f_auto,q_${quality},w_${safeWidth},h_${safeHeight},c_fill/${imagePath}`;
                 }
             } catch (error) {
                 console.error(
@@ -39,15 +40,20 @@ export async function GET(request: NextRequest) {
             }
         }
 
+        // Log the dimensions for debugging
+        console.log(
+            `[Image Proxy] Requesting image: ${width}x${height} from ${url.substring(0, 100)}...`
+        );
+
         // Fetch the image from the source
         const imageResponse = await fetch(imageUrl, {
             headers: {
-                'User-Agent': 'Jorbites Image Proxy',
+                'User-Agent': 'Image Proxy',
                 Accept: 'image/webp,image/avif,image/*',
             },
             cache: 'force-cache',
             next: {
-                revalidate: 60 * 60 * 24 * 30, // Monthly revalidation
+                revalidate: 60 * 60 * 24 * 30, // Revalidate monthly
             },
         });
 
@@ -70,6 +76,7 @@ export async function GET(request: NextRequest) {
             headers: {
                 'Content-Type': contentType,
                 'Cache-Control': 'public, max-age=31536000, immutable',
+                'Content-Length': imageData.byteLength.toString(),
                 'Access-Control-Allow-Origin': '*',
             },
         });

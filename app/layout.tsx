@@ -42,6 +42,12 @@ export default async function RootLayout({
                     name="viewport"
                     content="width=device-width, initial-scale=1"
                 />
+                <link
+                    rel="preload"
+                    href="/images/logo-nobg.webp"
+                    as="image"
+                    type="image/webp"
+                />
             </head>
             <body
                 className={`${font.className} flex min-h-screen flex-col dark:bg-dark`}
