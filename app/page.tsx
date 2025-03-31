@@ -63,7 +63,7 @@ const Home = async ({ searchParams }: HomeProps) => {
                                         key={recipe.id}
                                         data={recipe}
                                         currentUser={currentUser}
-                                        isFirstCard={index === 0}
+                                        isFirstCard={true}
                                     />
                                 ))}
                             </div>
