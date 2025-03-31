@@ -18,7 +18,7 @@ export default function LcpPreloader({ imageUrl }: LcpPreloaderProps) {
                     )
                     .forEach((el) => el.remove());
 
-                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(imageUrl)}&w=400&h=400&q=auto:good`;
+                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(imageUrl)}&w=250&h=250&q=auto:good`;
 
                 const preloadLink = document.createElement('link');
                 preloadLink.rel = 'preload';
