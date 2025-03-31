@@ -39,16 +39,16 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 
     return (
         <div className="mb-4 flex items-center">
-            <div className="mb-4 mr-4 mt-4">
+            <div className="mt-4 mr-4 mb-4">
                 <Avatar src={userImage} />
             </div>
 
             <form
                 onSubmit={handleSubmit}
-                className="mt-2 flex-grow"
+                className="mt-2 grow"
             >
                 <textarea
-                    className="h-11 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 focus:outline-none focus:ring-0"
+                    className="h-11 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 focus:ring-0 focus:outline-hidden"
                     placeholder={t('write_comment') ?? 'Write a comment...'}
                     value={comment}
                     onChange={handleInputChange}
@@ -61,7 +61,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 data-testid="submit-comment"
                 onClick={handleSubmit}
                 disabled={isButtonDisabled}
-                className={`mb-4 ml-4 mt-4 text-green-450 ${
+                className={`text-green-450 mt-4 mb-4 ml-4 ${
                     isButtonDisabled ? 'cursor-not-allowed opacity-50' : ''
                 }`}
                 data-cy="submit-comment"

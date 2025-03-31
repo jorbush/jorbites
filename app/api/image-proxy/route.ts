@@ -11,8 +11,6 @@ export async function GET(request: NextRequest) {
         return new Response('URL parameter is required', { status: 400 });
     }
 
-    console.log('[Image Proxy] Processing URL:', url);
-
     try {
         let imageUrl = url;
 
@@ -33,7 +31,6 @@ export async function GET(request: NextRequest) {
                     }
 
                     imageUrl = `${baseUrl}/image/upload/f_auto,${qualityParam},w_${width},h_${height},c_fill/${imagePath}`;
-                    console.log('[Image Proxy] Transformed URL:', imageUrl);
                 } else {
                     console.error(
                         '[Image Proxy] Invalid Cloudinary URL format:',
@@ -56,7 +53,7 @@ export async function GET(request: NextRequest) {
             },
             cache: 'force-cache',
             next: {
-                revalidate: 60 * 60 * 24 * 7, // Revalidate every 7 days
+                revalidate: 60 * 60 * 24 * 30, // 30 days
             },
         });
 

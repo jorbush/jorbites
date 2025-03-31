@@ -36,14 +36,14 @@ describe('FooterSkeleton', () => {
 
     it('renders 2 navigation link placeholders', () => {
         const { container } = render(<FooterSkeleton />);
-        const navLinks = container.querySelectorAll('.h-4.w-24.rounded');
+        const navLinks = container.querySelectorAll('.h-4.w-24.rounded-sm');
         expect(navLinks.length).toBe(2);
         expect(navLinks[0].className).toContain('bg-neutral-200');
     });
 
     it('renders the copyright placeholder', () => {
         const { container } = render(<FooterSkeleton />);
-        const copyright = container.querySelector('.h-4.w-64.rounded');
+        const copyright = container.querySelector('.h-4.w-64.rounded-sm');
         expect(copyright).not.toBeNull();
         expect(copyright?.className).toContain('bg-neutral-200');
     });

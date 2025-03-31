@@ -78,7 +78,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
 
     return (
         <Container>
-            <div className="mx-auto max-w-screen-lg">
+            <div className="mx-auto max-w-(--breakpoint-lg)">
                 <div className="flex flex-col gap-6">
                     <RecipeHead
                         title={recipe.title}

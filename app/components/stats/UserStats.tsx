@@ -119,7 +119,7 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
                     />
                 </div>
 
-                <h2 className="mb-4 mt-6 px-2 text-xl font-semibold dark:text-neutral-100">
+                <h2 className="mt-6 mb-4 px-2 text-xl font-semibold dark:text-neutral-100">
                     {t('cooking_preferences')}{' '}
                 </h2>
 

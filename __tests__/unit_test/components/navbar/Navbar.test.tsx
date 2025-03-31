@@ -106,7 +106,7 @@ describe('<Navbar />', () => {
         expect(header.className).toContain('z-10');
         expect(header.className).toContain('w-full');
         expect(header.className).toContain('bg-white');
-        expect(header.className).toContain('shadow-sm');
+        expect(header.className).toContain('shadow-xs');
         expect(header.className).toContain('dark:bg-dark');
     });
 });

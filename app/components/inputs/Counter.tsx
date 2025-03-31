@@ -91,7 +91,7 @@ const Counter: React.FC<CounterProps> = ({
                     onMouseLeave={handleStop}
                     onTouchStart={handleDecrementStart}
                     onTouchEnd={handleStop}
-                    className="flex h-10 w-10 cursor-pointer select-none items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition hover:opacity-80 active:bg-neutral-100"
+                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition select-none hover:opacity-80 active:bg-neutral-100"
                 >
                     <AiOutlineMinus data-testid="AiOutlineMinus" />
                 </button>
@@ -106,7 +106,7 @@ const Counter: React.FC<CounterProps> = ({
                     onMouseLeave={handleStop}
                     onTouchStart={handleIncrementStart}
                     onTouchEnd={handleStop}
-                    className="flex h-10 w-10 cursor-pointer select-none items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition hover:opacity-80 active:bg-neutral-100"
+                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-[1px] border-neutral-400 text-neutral-600 transition select-none hover:opacity-80 active:bg-neutral-100"
                 >
                     <AiOutlinePlus data-testid="AiOutlinePlus" />
                 </button>

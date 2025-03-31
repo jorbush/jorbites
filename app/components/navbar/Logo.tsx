@@ -1,28 +1,27 @@
 'use client';
 
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 const Logo = () => {
     const router = useRouter();
 
-    let logoImagePath = '/images/logo-nobg.webp';
+    let logoPath = '/images/logo-nobg.webp';
 
     if (localStorage.getItem('theme') === 'dark') {
-        logoImagePath = '/images/no_bg_white.webp';
+        logoPath = '/images/no_bg_white.webp';
     }
 
     return (
-        <Image
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
             onClick={() => router.push('/')}
             alt="Logo"
-            className="cursor-pointer md:block"
+            className="h-auto w-32 cursor-pointer md:block"
             height="29"
             width="128"
-            unoptimized
-            src={logoImagePath}
+            src={logoPath}
             data-cy="logo"
-            priority
+            fetchPriority="high"
         />
     );
 };

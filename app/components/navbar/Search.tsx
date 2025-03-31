@@ -13,7 +13,7 @@ const Search: React.FC<SearchProps> = ({ onClick }) => {
         <div className="flex flex-row items-center gap-1 md:gap-3">
             <Logo />
             <div
-                className="max-w-[35px] cursor-pointer rounded-full bg-green-450 p-2 text-white shadow-sm transition hover:shadow-md dark:text-dark"
+                className="bg-green-450 dark:text-dark max-w-[35px] cursor-pointer rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
                 onClick={onClick}
             >
                 <BiSearch size={18} />

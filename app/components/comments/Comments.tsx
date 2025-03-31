@@ -56,9 +56,9 @@ const Comments: React.FC<CommentsProps> = ({
     };
 
     return (
-        <div className="flex flex-col pl-2 pr-2">
+        <div className="flex flex-col pr-2 pl-2">
             <hr />
-            <div className="mb-4 mt-8 flex flex-row items-center justify-between">
+            <div className="mt-8 mb-4 flex flex-row items-center justify-between">
                 <div className="flex flex-row items-center">
                     <div className="text-xl font-semibold dark:text-neutral-100">
                         {t('comments')}
@@ -72,7 +72,7 @@ const Comments: React.FC<CommentsProps> = ({
                     onSortChange={handleSortChange}
                 />
             </div>
-            <div className="ml-4 mr-4">
+            <div className="mr-4 ml-4">
                 <CommentBox
                     userImage={currentUser?.image}
                     onCreateComment={onCreateComment}
@@ -80,7 +80,7 @@ const Comments: React.FC<CommentsProps> = ({
                 {sortedComments.map((comment: SafeComment) => (
                     <div
                         key={comment.id}
-                        className="ml-2 mr-2"
+                        className="mr-2 ml-2"
                     >
                         <hr />
                         <Comment

@@ -13,7 +13,7 @@ const CookiesPolicy: React.FC = () => {
 
     return (
         <Container>
-            <div className="mx-auto max-w-screen-md dark:text-neutral-100">
+            <div className="mx-auto max-w-(--breakpoint-md) dark:text-neutral-100">
                 <Head>
                     <title>{t('cookies_policy')} | Jorbites</title>
                     <meta
@@ -24,7 +24,7 @@ const CookiesPolicy: React.FC = () => {
                 <div className="mx-auto max-w-[700px] gap-10 px-1 py-0 md:px-4 md:py-6">
                     <div className="mb-5 flex items-center justify-between">
                         <button
-                            className="flex items-center space-x-2 text-gray-600 focus:outline-none dark:text-neutral-100"
+                            className="flex items-center space-x-2 text-gray-600 focus:outline-hidden dark:text-neutral-100"
                             onClick={() => router.back()}
                         >
                             <FiChevronLeft className="text-xl" />
@@ -48,14 +48,14 @@ const CookiesPolicy: React.FC = () => {
                         </a>
                         {t('cookies_description_3')}
                     </p>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('what_are_cookies')}
                     </h2>
                     <p className="mb-4">{t('cookies_definition')}</p>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('types_of_cookies')}
                     </h2>
-                    <h3 className="mb-2 mt-4 text-xl font-semibold">
+                    <h3 className="mt-4 mb-2 text-xl font-semibold">
                         {t('essential_technical_cookies')}
                     </h3>
                     <p className="mb-4">
@@ -85,7 +85,7 @@ const CookiesPolicy: React.FC = () => {
                             .
                         </li>
                     </ul>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('third_party_services')}
                     </h2>
                     <p className="mb-4">
@@ -168,15 +168,15 @@ const CookiesPolicy: React.FC = () => {
                             </a>
                         </li>
                     </ul>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('how_to_manage_cookies')}
                     </h2>
                     <p className="mb-4">{t('manage_cookies_description')}</p>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('changes_in_cookies_policy')}
                     </h2>
                     <p className="mb-4">{t('policy_changes_description')}</p>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('contact')}
                     </h2>
                     <p>

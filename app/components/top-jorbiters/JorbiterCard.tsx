@@ -37,7 +37,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
 
     return (
         <div
-            className={`relative cursor-pointer overflow-hidden rounded-lg border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-gray-700 dark:bg-dark ${
+            className={`dark:bg-dark relative cursor-pointer overflow-hidden rounded-lg border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-gray-700 ${
                 index < 3
                     ? 'border-2 ' +
                       getMedalColor(index).replace('text', 'border')
@@ -63,7 +63,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                     </div>
                     <div className="flex flex-col">
                         <div className="flex flex-row items-center gap-1">
-                            <div className="text-base font-semibold dark:text-white sm:text-xl md:text-2xl">
+                            <div className="text-base font-semibold sm:text-xl md:text-2xl dark:text-white">
                                 {getUserDisplayName(
                                     jorbiter,
                                     isMdOrSmaller,

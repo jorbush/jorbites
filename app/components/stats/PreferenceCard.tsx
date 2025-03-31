@@ -20,7 +20,7 @@ const PreferenceCard: React.FC<PreferenceCardProps> = ({
     iconColor,
 }) => {
     return (
-        <div className="flex items-center gap-3 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
+        <div className="flex items-center gap-3 rounded-lg bg-white p-4 shadow-xs dark:bg-gray-800">
             <div
                 className={`rounded-full ${iconBgColor} p-3 ${iconDarkBgColor}`}
             >
@@ -30,7 +30,7 @@ const PreferenceCard: React.FC<PreferenceCardProps> = ({
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                     {title}
                 </p>
-                <p className="text-lg font-semibold text-green-450">{value}</p>
+                <p className="text-green-450 text-lg font-semibold">{value}</p>
             </div>
         </div>
     );

@@ -11,6 +11,7 @@ interface CloudinaryImageProps {
     width?: number;
     height?: number;
     sizes?: string;
+    preloadViaProxy?: boolean;
 }
 
 export default function CloudinaryImage({
@@ -22,11 +23,19 @@ export default function CloudinaryImage({
     width = 400,
     height = 400,
     sizes = '(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px',
+    preloadViaProxy = false,
 }: CloudinaryImageProps) {
     const [isLoaded, setIsLoaded] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
     const [optimizedSrc, setOptimizedSrc] = useState<string | null>(null);
     const [placeholderSrc, setPlaceholderSrc] = useState<string | null>(null);
+
+    const actualWidth = fill ? (sizes.includes('250px') ? 250 : width) : width;
+    const actualHeight = fill
+        ? sizes.includes('250px')
+            ? 250
+            : height
+        : height;
 
     useEffect(() => {
         const fallbackImage = '/advocado.webp';
@@ -43,27 +52,34 @@ export default function CloudinaryImage({
             return;
         }
 
-        try {
-            const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${width}&h=${height}&q=auto:good`;
-            const placeholderUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
+        if (src.includes('cloudinary.com')) {
+            try {
+                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${actualWidth}&h=${actualHeight}&q=auto:good`;
+                const placeholderUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
 
-            setOptimizedSrc(proxyUrl);
-            setPlaceholderSrc(placeholderUrl);
+                setOptimizedSrc(proxyUrl);
+                setPlaceholderSrc(placeholderUrl);
 
-            if (priority && typeof window !== 'undefined') {
-                const link = document.createElement('link');
-                link.rel = 'preload';
-                link.href = proxyUrl;
-                link.as = 'image';
-                link.fetchPriority = 'high';
-                document.head.appendChild(link);
+                if (preloadViaProxy && typeof window !== 'undefined') {
+                    const link = document.createElement('link');
+                    link.rel = 'preload';
+                    link.href = proxyUrl;
+                    link.as = 'image';
+                    link.fetchPriority = 'high';
+                    document.head.appendChild(link);
+                }
+
+                return;
+            } catch (e) {
+                console.error('Error creating proxy URL:', e);
+                setOptimizedSrc(fallbackImage);
+                setPlaceholderSrc(fallbackImage);
             }
-        } catch (e) {
-            console.error('Error creating proxy URL:', e);
-            setOptimizedSrc(src);
-            setPlaceholderSrc(null);
         }
-    }, [src, width, height, priority]);
+
+        setOptimizedSrc(src);
+        setPlaceholderSrc(src);
+    }, [src, actualWidth, actualHeight, preloadViaProxy, sizes]);
 
     useEffect(() => {
         if (imgRef.current && priority) {
@@ -83,15 +99,19 @@ export default function CloudinaryImage({
               objectFit: 'cover',
           } as React.CSSProperties)
         : {
-              width,
-              height,
+              width: actualWidth,
+              height: actualHeight,
           };
 
     if (!optimizedSrc) {
         return (
             <div
                 className={`${fill ? 'relative aspect-square' : ''} overflow-hidden bg-gray-200 dark:bg-gray-700 ${fill ? className : ''}`}
-                style={!fill ? { width, height } : undefined}
+                style={
+                    !fill
+                        ? { width: actualWidth, height: actualHeight }
+                        : undefined
+                }
             />
         );
     }
@@ -100,6 +120,7 @@ export default function CloudinaryImage({
         <div
             className={`${fill ? 'relative aspect-square' : ''} overflow-hidden bg-gray-200 dark:bg-gray-700 ${fill ? className : ''}`}
         >
+            {/* Blurry placeholder */}
             {!isLoaded && placeholderSrc && (
                 <div
                     style={{
@@ -113,13 +134,15 @@ export default function CloudinaryImage({
                     aria-hidden="true"
                 />
             )}
+
+            {/* Main image */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
                 ref={imgRef}
                 src={optimizedSrc}
                 alt={alt}
-                width={!fill ? width : undefined}
-                height={!fill ? height : undefined}
+                width={actualWidth}
+                height={actualHeight}
                 loading={priority ? 'eager' : 'lazy'}
                 onLoad={() => setIsLoaded(true)}
                 style={baseStyle}

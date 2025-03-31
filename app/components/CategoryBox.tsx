@@ -61,7 +61,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
                 size={26}
                 data-testid={`fa-${label.toLowerCase()}`}
             />
-            <div className="whitespace-nowrap text-sm font-medium">
+            <div className="text-sm font-medium whitespace-nowrap">
                 {t(label.toLocaleLowerCase())}
             </div>
         </div>

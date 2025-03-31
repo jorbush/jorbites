@@ -18,7 +18,7 @@ const TopJorbitersClient: React.FC<TopJorbitersClientProps> = ({
 }) => {
     return (
         <Container>
-            <div className="mx-auto max-w-screen-lg sm:px-2 md:px-4">
+            <div className="mx-auto max-w-(--breakpoint-lg) sm:px-2 md:px-4">
                 <LeaderboardHeader />
 
                 {/* Leaderboard Grid */}

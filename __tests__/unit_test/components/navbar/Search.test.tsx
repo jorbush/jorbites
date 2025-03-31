@@ -49,7 +49,7 @@ describe('<Search />', () => {
         expect(searchIconContainer?.className).contain('bg-green-450');
         expect(searchIconContainer?.className).contain('p-2');
         expect(searchIconContainer?.className).contain('text-white');
-        expect(searchIconContainer?.className).contain('shadow-sm');
+        expect(searchIconContainer?.className).contain('shadow-xs');
         expect(searchIconContainer?.className).contain('transition');
         expect(searchIconContainer?.className).contain('hover:shadow-md');
         expect(searchIconContainer?.className).contain('dark:text-dark');

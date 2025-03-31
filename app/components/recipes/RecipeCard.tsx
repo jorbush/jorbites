@@ -6,6 +6,7 @@ import HeartButton from '@/app/components/buttons/HeartButton';
 import { GiTrophyCup } from 'react-icons/gi';
 import { useTranslation } from 'react-i18next';
 import CloudinaryImage from '@/app/components/optimization/CloudinaryImage';
+import { memo } from 'react';
 
 interface RecipeCardProps {
     data: SafeRecipe;
@@ -13,13 +14,14 @@ interface RecipeCardProps {
     isFirstCard?: boolean;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({
+const RecipeCard = memo(function RecipeCard({
     data,
     currentUser,
     isFirstCard = false,
-}) => {
+}: RecipeCardProps) {
     const router = useRouter();
     const { t } = useTranslation();
+
     return (
         <div
             onClick={() => router.push(`/recipes/${data.id}`)}
@@ -34,11 +36,11 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                         fill
                         priority={isFirstCard}
                         className="h-full w-full object-cover transition group-hover:scale-110"
-                        width={400}
-                        height={400}
+                        width={250}
+                        height={250}
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px"
                     />
-                    <div className="absolute right-3 top-3">
+                    <div className="absolute top-3 right-3">
                         <HeartButton
                             recipeId={data.id}
                             currentUser={currentUser}
@@ -63,6 +65,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             </div>
         </div>
     );
-};
+});
 
 export default RecipeCard;

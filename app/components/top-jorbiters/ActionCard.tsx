@@ -17,18 +17,18 @@ const ActionCard: React.FC<ActionCardProps> = ({
 }) => {
     return (
         <div
-            className={`mt-8 rounded-lg bg-green-50 p-4 text-center dark:bg-gray-800 sm:p-6`}
+            className={`mt-8 rounded-lg bg-green-50 p-4 text-center sm:p-6 dark:bg-gray-800`}
         >
-            <h3 className="mb-2 text-lg font-semibold dark:text-white sm:text-xl">
+            <h3 className="mb-2 text-lg font-semibold sm:text-xl dark:text-white">
                 {title}
             </h3>
-            <p className="mb-4 text-sm text-gray-600 dark:text-gray-300 sm:text-base">
+            <p className="mb-4 text-sm text-gray-600 sm:text-base dark:text-gray-300">
                 {subtitle}
             </p>
             <button
                 data-testid="action-button"
                 onClick={onClick}
-                className="rounded-full bg-green-450 px-4 py-2 text-sm text-white transition-colors hover:bg-green-500 dark:text-black sm:px-6 sm:text-base"
+                className="bg-green-450 rounded-full px-4 py-2 text-sm text-white transition-colors hover:bg-green-500 sm:px-6 sm:text-base dark:text-black"
             >
                 {buttonText}
             </button>
