@@ -13,14 +13,14 @@ const FooterSkeleton = () => {
                         ))}
                     </div>
                     <div className="flex flex-wrap justify-center gap-6">
-                        <div className="h-4 w-24 rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                        <div className="h-4 w-24 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                        <div className="h-4 w-24 rounded-sm bg-neutral-200 dark:bg-neutral-700"></div>
+                        <div className="h-4 w-24 rounded-sm bg-neutral-200 dark:bg-neutral-700"></div>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <div className="h-6 w-6 rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                        <div className="h-4 w-20 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                        <div className="h-6 w-6 rounded-sm bg-neutral-200 dark:bg-neutral-700"></div>
+                        <div className="h-4 w-20 rounded-sm bg-neutral-200 dark:bg-neutral-700"></div>
                     </div>
-                    <div className="h-4 w-64 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="h-4 w-64 rounded-sm bg-neutral-200 dark:bg-neutral-700"></div>
                 </div>
             </div>
         </footer>

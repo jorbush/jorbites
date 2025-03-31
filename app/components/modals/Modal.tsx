@@ -93,13 +93,13 @@ const Modal: React.FC<ModalProps> = ({
 
     return (
         <>
-            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-neutral-800/70 outline-none focus:outline-none">
+            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-neutral-800/70 outline-hidden focus:outline-hidden">
                 <div className="relative mx-auto my-6 h-full w-full md:h-auto md:w-4/6 lg:h-auto lg:w-3/6 xl:w-2/5">
                     <div
                         className={`translate h-full duration-300 ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'} `}
                     >
                         <div
-                            className="translate relative flex h-full w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none dark:bg-dark md:h-auto lg:h-auto"
+                            className="translate relative flex h-full w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden dark:bg-dark md:h-auto lg:h-auto"
                             style={{
                                 minHeight: minHeight ? minHeight : '0px',
                             }}

@@ -10,7 +10,7 @@ export default function NotFound() {
     return (
         <div className="bg-background flex h-[90%] w-full flex-col items-center justify-center">
             <div className="space-y-5 text-center dark:text-white">
-                <h1 className="from-primary to-primary/50 bg-gradient-to-r bg-clip-text text-8xl font-bold text-transparent">
+                <h1 className="from-primary to-primary/50 bg-linear-to-r bg-clip-text text-8xl font-bold text-transparent">
                     404
                 </h1>
                 <div className="space-y-2">

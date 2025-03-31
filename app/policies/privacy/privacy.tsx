@@ -13,7 +13,7 @@ const PrivacyPolicy: React.FC = () => {
 
     return (
         <Container>
-            <div className="mx-auto max-w-screen-md dark:text-neutral-100">
+            <div className="mx-auto max-w-(--breakpoint-md) dark:text-neutral-100">
                 <Head>
                     <title>{t('privacy_policy')} | Jorbites</title>
                     <meta
@@ -24,7 +24,7 @@ const PrivacyPolicy: React.FC = () => {
                 <div className="mx-auto max-w-[700px] gap-10 px-1 py-0 md:px-4 md:py-6">
                     <div className="mb-5 flex items-center justify-between">
                         <button
-                            className="flex items-center space-x-2 text-gray-600 focus:outline-none dark:text-neutral-100"
+                            className="flex items-center space-x-2 text-gray-600 focus:outline-hidden dark:text-neutral-100"
                             onClick={() => router.back()}
                         >
                             <FiChevronLeft className="text-xl" />

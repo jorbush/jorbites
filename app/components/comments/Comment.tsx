@@ -58,13 +58,13 @@ const Comment: React.FC<CommentProps> = ({
 
     return (
         <div className="relative mb-2 ml-1 mr-1 mt-2 flex items-start">
-            <div className="mt-2 flex-shrink-0">
+            <div className="mt-2 shrink-0">
                 <Avatar
                     src={userImage}
                     onClick={() => router.push('/profile/' + userId)}
                 />
             </div>
-            <div className="ml-4 mt-2 flex-grow">
+            <div className="ml-4 mt-2 grow">
                 <div className="flex flex-row">
                     <p
                         className={`cursor-pointer truncate whitespace-normal text-justify font-bold text-gray-800 dark:text-neutral-100 ${

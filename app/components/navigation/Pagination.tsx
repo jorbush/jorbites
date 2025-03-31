@@ -33,7 +33,7 @@ const Pagination = ({
             aria-label="Pagination"
         >
             <button
-                className="cursor-pointer items-center rounded-md bg-green-450 px-3 py-2 text-white shadow-sm transition hover:shadow-md disabled:opacity-50 dark:text-dark"
+                className="cursor-pointer items-center rounded-md bg-green-450 px-3 py-2 text-white shadow-xs transition hover:shadow-md disabled:opacity-50 dark:text-dark"
                 onClick={() => handlePageChange(+currentPage - 1)}
                 disabled={currentPage <= 1}
                 aria-label="Previous page"
@@ -47,7 +47,7 @@ const Pagination = ({
                 {currentPage} {t('of')} {totalPages}
             </span>
             <button
-                className="cursor-pointer items-center rounded-md bg-green-450 px-3 py-2 text-white shadow-sm transition hover:shadow-md disabled:opacity-50 dark:text-dark"
+                className="cursor-pointer items-center rounded-md bg-green-450 px-3 py-2 text-white shadow-xs transition hover:shadow-md disabled:opacity-50 dark:text-dark"
                 onClick={() => handlePageChange(+currentPage + 1)}
                 disabled={currentPage >= totalPages}
                 aria-label="Next page"

@@ -283,9 +283,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     key={i}
                     className="relative flex w-full items-center gap-3 px-2"
                 >
-                    <div className="flex-shrink-0 text-base">{`${i + 1}.`}</div>
+                    <div className="shrink-0 text-base">{`${i + 1}.`}</div>
 
-                    <div className="flex-grow">
+                    <div className="grow">
                         <Input
                             id={'step ' + i}
                             label=""
@@ -296,7 +296,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                         />
                     </div>
                     {numSteps > 1 && i === numSteps - 1 ? (
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                             <AiFillDelete
                                 data-testid="remove-step-button"
                                 color="#F43F5F"
@@ -307,7 +307,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                             />
                         </div>
                     ) : (
-                        <div className="w-6 flex-shrink-0" />
+                        <div className="w-6 shrink-0" />
                     )}
                 </div>
             );
@@ -323,7 +323,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     key={i}
                     className="relative flex w-full items-center gap-3 px-2"
                 >
-                    <div className="flex-grow">
+                    <div className="grow">
                         <Input
                             id={'ingredient ' + i}
                             label=""
@@ -334,7 +334,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                         />
                     </div>
                     {numIngredients > 1 && i === numIngredients - 1 ? (
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                             <AiFillDelete
                                 data-testid="remove-ingredient-button"
                                 color="#F43F5F"
@@ -345,7 +345,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                             />
                         </div>
                     ) : (
-                        <div className="w-6 flex-shrink-0" />
+                        <div className="w-6 shrink-0" />
                     )}
                 </div>
             );

@@ -21,7 +21,7 @@ const LanguageSelector: React.FC = () => {
             <select
                 value={i18n.language}
                 onChange={handleChangeLanguage}
-                className="rounded-md border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-sm focus:border-green-450 focus:ring-green-450"
+                className="rounded-md border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-xs focus:border-green-450 focus:ring-green-450"
             >
                 <option value="es">Castellano</option>
                 <option value="en">English</option>

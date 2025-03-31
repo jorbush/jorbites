@@ -73,7 +73,7 @@ export default async function RootLayout({
                 </ClientOnly>
                 <main
                     id="main-content"
-                    className="flex-grow pb-20 pt-28"
+                    className="grow pb-20 pt-28"
                 >
                     {children}
                 </main>

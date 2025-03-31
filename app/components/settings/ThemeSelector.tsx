@@ -38,7 +38,7 @@ const ThemeSelector: React.FC = () => {
             <div className="flex items-center">
                 <button
                     onClick={toggleTheme}
-                    className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border border-gray-50 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-0"
+                    className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border border-gray-50 transition-colors duration-200 ease-in-out focus:outline-hidden focus:ring-0"
                 >
                     <span className="sr-only">Toggle</span>
                     <span

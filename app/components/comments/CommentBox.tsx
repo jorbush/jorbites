@@ -45,10 +45,10 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 
             <form
                 onSubmit={handleSubmit}
-                className="mt-2 flex-grow"
+                className="mt-2 grow"
             >
                 <textarea
-                    className="h-11 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 focus:outline-none focus:ring-0"
+                    className="h-11 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 focus:outline-hidden focus:ring-0"
                     placeholder={t('write_comment') ?? 'Write a comment...'}
                     value={comment}
                     onChange={handleInputChange}
