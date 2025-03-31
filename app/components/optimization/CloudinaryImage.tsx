@@ -30,7 +30,6 @@ export default function CloudinaryImage({
     const [optimizedSrc, setOptimizedSrc] = useState<string | null>(null);
     const [placeholderSrc, setPlaceholderSrc] = useState<string | null>(null);
 
-    // Calculate actual display dimensions based on container
     const actualWidth = fill ? (sizes.includes('250px') ? 250 : width) : width;
     const actualHeight = fill
         ? sizes.includes('250px')
@@ -38,7 +37,6 @@ export default function CloudinaryImage({
             : height
         : height;
 
-    // Convert Cloudinary URL to proxy URL with correct dimensions
     useEffect(() => {
         const fallbackImage = '/advocado.webp';
 
@@ -48,26 +46,20 @@ export default function CloudinaryImage({
             return;
         }
 
-        // For local images, use directly
         if (src.startsWith('/')) {
             setOptimizedSrc(src);
             setPlaceholderSrc(src);
             return;
         }
 
-        // For Cloudinary images, use the proxy with ACTUAL display dimensions
         if (src.includes('cloudinary.com')) {
             try {
-                // URL for the full image with actual dimensions
                 const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${actualWidth}&h=${actualHeight}&q=auto:good`;
-
-                // URL for the placeholder (smaller, blurry)
                 const placeholderUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
 
                 setOptimizedSrc(proxyUrl);
                 setPlaceholderSrc(placeholderUrl);
 
-                // Preload LCP image if needed
                 if (preloadViaProxy && typeof window !== 'undefined') {
                     const link = document.createElement('link');
                     link.rel = 'preload';
@@ -85,12 +77,10 @@ export default function CloudinaryImage({
             }
         }
 
-        // Fallback to original URL
         setOptimizedSrc(src);
         setPlaceholderSrc(src);
     }, [src, actualWidth, actualHeight, preloadViaProxy, sizes]);
 
-    // Set high fetch priority for LCP images
     useEffect(() => {
         if (imgRef.current && priority) {
             imgRef.current.setAttribute('fetchpriority', 'high');
@@ -100,7 +90,6 @@ export default function CloudinaryImage({
         }
     }, [priority]);
 
-    // Styling based on fill mode
     const baseStyle = fill
         ? ({
               position: 'absolute',
@@ -114,7 +103,6 @@ export default function CloudinaryImage({
               height: actualHeight,
           };
 
-    // Only render if we have a valid source
     if (!optimizedSrc) {
         return (
             <div

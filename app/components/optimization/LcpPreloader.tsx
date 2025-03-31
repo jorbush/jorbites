@@ -10,51 +10,49 @@ export default function LcpPreloader({ imageUrl }: LcpPreloaderProps) {
     useEffect(() => {
         if (!imageUrl || typeof window === 'undefined') return;
 
-        const preloadLcpImage = () => {
+        const injectProxyPreload = () => {
             try {
-                // Clean up any existing preloads
                 document
-                    .querySelectorAll('link[rel="preload"][as="image"]')
-                    .forEach((el) => {
-                        if (
-                            el.getAttribute('href')?.includes('api/image-proxy')
-                        ) {
-                            el.remove();
-                        }
-                    });
+                    .querySelectorAll(
+                        `link[rel="preload"][as="image"][href*="api/image-proxy"]`
+                    )
+                    .forEach((el) => el.remove());
 
-                // Create proxy URL with exact LCP dimensions (250x250)
-                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(imageUrl)}&w=250&h=250&q=auto:good`;
+                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(imageUrl)}&w=400&h=400&q=auto:good`;
 
-                // Create and inject preload link with highest priority
-                const link = document.createElement('link');
-                link.rel = 'preload';
-                link.as = 'image';
-                link.href = proxyUrl;
-                link.setAttribute('fetchpriority', 'high');
-                document.head.appendChild(link);
+                const preloadLink = document.createElement('link');
+                preloadLink.rel = 'preload';
+                preloadLink.as = 'image';
+                preloadLink.href = proxyUrl;
+                preloadLink.setAttribute('fetchpriority', 'high');
+                document.head.appendChild(preloadLink);
 
-                // Prefetch the image to warm the cache
-                const img = new Image();
-                img.src = proxyUrl;
-
-                console.log('[LCP] Preloaded:', proxyUrl);
+                if (
+                    !document.querySelector(
+                        `link[rel="preconnect"][href="${window.location.origin}"]`
+                    )
+                ) {
+                    const preconnect = document.createElement('link');
+                    preconnect.rel = 'preconnect';
+                    preconnect.href = window.location.origin;
+                    document.head.appendChild(preconnect);
+                }
             } catch (e) {
-                console.error('[LCP] Preload error:', e);
+                console.error('Error injecting preload:', e);
             }
         };
 
-        // Execute immediately
-        preloadLcpImage();
+        injectProxyPreload();
 
-        // Also try after DOM content is loaded
         if (document.readyState !== 'complete') {
-            window.addEventListener('DOMContentLoaded', preloadLcpImage);
+            window.addEventListener('DOMContentLoaded', injectProxyPreload);
             return () =>
-                window.removeEventListener('DOMContentLoaded', preloadLcpImage);
+                window.removeEventListener(
+                    'DOMContentLoaded',
+                    injectProxyPreload
+                );
         }
     }, [imageUrl]);
 
-    // This component doesn't render anything
     return null;
 }

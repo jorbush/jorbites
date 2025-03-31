@@ -7,7 +7,6 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import SmartFooter from '@/app/components/footer/SmartFooter';
 import { dynamicImport } from '@/app/utils/dynamicImport';
 
-// Dynamically import non-critical components
 const RegisterModal = dynamicImport(
     () => import('@/app/components/modals/RegisterModal')
 );
@@ -21,7 +20,6 @@ const SettingsModal = dynamicImport(
     () => import('@/app/components/modals/SettingsModal')
 );
 
-// Dynamically import analytics only in production
 const SpeedInsights = dynamicImport<{}>(() =>
     import('@vercel/speed-insights/next').then((mod) => ({
         default: mod.SpeedInsights,
