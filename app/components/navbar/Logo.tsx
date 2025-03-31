@@ -12,6 +12,7 @@ const Logo = () => {
     }
 
     return (
+        /* eslint-disable-next-line @next/next/no-img-element */
         <img
             onClick={() => router.push('/')}
             alt="Logo"

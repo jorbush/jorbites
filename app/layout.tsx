@@ -61,7 +61,7 @@ export default async function RootLayout({
                 />
             </head>
             <body
-                className={`${font.className} flex min-h-screen flex-col dark:bg-dark`}
+                className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
             >
                 <ClientOnly>
                     <ToasterProvider />
@@ -73,7 +73,7 @@ export default async function RootLayout({
                 </ClientOnly>
                 <main
                     id="main-content"
-                    className="grow pb-20 pt-28"
+                    className="grow pt-28 pb-20"
                 >
                     {children}
                 </main>

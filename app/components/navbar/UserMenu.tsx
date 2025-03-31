@@ -65,7 +65,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             <div className="flex flex-row items-center gap-2 md:gap-3">
                 <div
                     onClick={onPost}
-                    className="hidden cursor-pointer rounded-full border-[1px] px-3 py-2 text-xs font-semibold transition hover:bg-neutral-100 hover:text-black dark:text-neutral-100 sm:block sm:text-sm md:px-4 md:py-3"
+                    className="hidden cursor-pointer rounded-full border-[1px] px-3 py-2 text-xs font-semibold transition hover:bg-neutral-100 hover:text-black sm:block sm:text-sm md:px-4 md:py-3 dark:text-neutral-100"
                     data-cy="post-recipe"
                 >
                     <span className="whitespace-nowrap">
@@ -86,7 +86,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                 </div>
             </div>
             {isOpen && (
-                <div className="absolute right-0 top-14 w-[40vw] overflow-hidden rounded-xl bg-white text-sm shadow-md dark:bg-dark dark:text-neutral-100 md:w-3/4">
+                <div className="dark:bg-dark absolute top-14 right-0 w-[40vw] overflow-hidden rounded-xl bg-white text-sm shadow-md md:w-3/4 dark:text-neutral-100">
                     <div className="flex cursor-pointer flex-col">
                         {currentUser ? (
                             <>

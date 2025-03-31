@@ -49,7 +49,7 @@ const PrivacyPolicy: React.FC = () => {
                         </a>
                         {t('privacy_intro_3')}
                     </p>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('information_we_collect')}
                     </h2>
                     <p className="mb-4">{t('information_collect_intro')}</p>
@@ -96,7 +96,7 @@ const PrivacyPolicy: React.FC = () => {
                             {t('images_desc_2')}
                         </li>
                     </ul>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('how_we_use_info')}
                     </h2>
                     <p className="mb-4">{t('use_info_intro')}</p>
@@ -106,7 +106,7 @@ const PrivacyPolicy: React.FC = () => {
                         <li>{t('use_info_3')}</li>
                         <li>{t('use_info_4')}</li>
                     </ul>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('sharing_info')}
                     </h2>
                     <p className="mb-4">{t('sharing_info_intro')}</p>
@@ -169,11 +169,11 @@ const PrivacyPolicy: React.FC = () => {
                             {t('legal_requirements_desc')}
                         </li>
                     </ul>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('data_security')}
                     </h2>
                     <p className="mb-4">{t('data_security_desc')}</p>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('your_rights')}
                     </h2>
                     <p className="mb-4">{t('your_rights_intro')}</p>
@@ -204,15 +204,15 @@ const PrivacyPolicy: React.FC = () => {
                         </a>
                         .
                     </p>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('data_retention')}
                     </h2>
                     <p className="mb-4">{t('data_retention_desc')}</p>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         {t('policy_changes')}
                     </h2>
                     <p className="mb-4">{t('policy_changes_desc')}</p>
-                    <h2 className="mb-2 mt-4 text-2xl font-semibold">
+                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
                         8. {t('contact')}
                     </h2>
                     <p>

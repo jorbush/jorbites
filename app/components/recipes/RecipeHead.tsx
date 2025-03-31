@@ -61,9 +61,9 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
 
     return (
         <>
-            <div className="flex items-baseline justify-between sm:ml-4 sm:mr-4">
+            <div className="flex items-baseline justify-between sm:mr-4 sm:ml-4">
                 <button
-                    className="mr-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-hidden dark:text-neutral-100 md:translate-y-0"
+                    className="mr-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
                     onClick={() => router.back()}
                 >
                     <FiChevronLeft className="text-xl" />
@@ -74,7 +74,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                     center
                 />
                 <button
-                    className="ml-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-hidden dark:text-neutral-100 md:translate-y-0"
+                    className="ml-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
                     onClick={share}
                     aria-label="Share"
                 >
@@ -95,20 +95,20 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 {imagesSrc.length > 1 && (
                     <>
                         <div
-                            className="absolute bottom-0 left-0 top-0 flex w-1/4 items-center justify-center"
+                            className="absolute top-0 bottom-0 left-0 flex w-1/4 items-center justify-center"
                             onClick={goToPreviousImage}
                             data-testid="prev-button"
                         >
-                            <div className="absolute left-3 top-1/2 -translate-y-1/2 transform">
+                            <div className="absolute top-1/2 left-3 -translate-y-1/2 transform">
                                 <FiChevronLeft className="cursor-pointer text-2xl text-white" />
                             </div>
                         </div>
                         <div
-                            className="absolute bottom-0 right-0 top-0 flex w-1/4 items-center justify-center"
+                            className="absolute top-0 right-0 bottom-0 flex w-1/4 items-center justify-center"
                             onClick={goToNextImage}
                             data-testid="next-button"
                         >
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 transform">
+                            <div className="absolute top-1/2 right-3 -translate-y-1/2 transform">
                                 <FiChevronRight className="cursor-pointer text-2xl text-white" />
                             </div>
                         </div>

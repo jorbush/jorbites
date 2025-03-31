@@ -21,7 +21,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     }, []);
 
     return (
-        <header className="fixed z-10 w-full bg-white shadow-xs dark:bg-dark">
+        <header className="dark:bg-dark fixed z-10 w-full bg-white shadow-xs">
             <nav aria-label="Main navigation">
                 <div className="border-b-[1px] py-3 sm:py-4">
                     <Container>

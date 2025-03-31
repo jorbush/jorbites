@@ -43,7 +43,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
         >
             <AiOutlineHeart
                 size={28}
-                className="absolute -right-[2px] -top-[2px] fill-white"
+                className="absolute -top-[2px] -right-[2px] fill-white"
             />
             <AiFillHeart
                 data-testid="heart-button"

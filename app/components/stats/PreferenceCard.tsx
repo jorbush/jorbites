@@ -30,7 +30,7 @@ const PreferenceCard: React.FC<PreferenceCardProps> = ({
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                     {title}
                 </p>
-                <p className="text-lg font-semibold text-green-450">{value}</p>
+                <p className="text-green-450 text-lg font-semibold">{value}</p>
             </div>
         </div>
     );

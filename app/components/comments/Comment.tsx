@@ -57,28 +57,28 @@ const Comment: React.FC<CommentProps> = ({
     };
 
     return (
-        <div className="relative mb-2 ml-1 mr-1 mt-2 flex items-start">
+        <div className="relative mt-2 mr-1 mb-2 ml-1 flex items-start">
             <div className="mt-2 shrink-0">
                 <Avatar
                     src={userImage}
                     onClick={() => router.push('/profile/' + userId)}
                 />
             </div>
-            <div className="ml-4 mt-2 grow">
+            <div className="mt-2 ml-4 grow">
                 <div className="flex flex-row">
                     <p
-                        className={`cursor-pointer truncate whitespace-normal text-justify font-bold text-gray-800 dark:text-neutral-100 ${
+                        className={`cursor-pointer truncate text-justify font-bold whitespace-normal text-gray-800 dark:text-neutral-100 ${
                             isLongWord ? 'break-all' : ''
                         }`}
                         onClick={() => router.push('/profile/' + userId)}
                     >
                         {userName}
                     </p>
-                    {verified && <VerificationBadge className="ml-1 mt-1" />}
-                    <div className="ml-1.5 mt-0.5 text-sm text-gray-400">{`${t('level')} ${userLevel}`}</div>
+                    {verified && <VerificationBadge className="mt-1 ml-1" />}
+                    <div className="mt-0.5 ml-1.5 text-sm text-gray-400">{`${t('level')} ${userLevel}`}</div>
                 </div>
                 <p
-                    className={`truncate whitespace-normal text-justify text-gray-800 dark:text-neutral-100 ${
+                    className={`truncate text-justify whitespace-normal text-gray-800 dark:text-neutral-100 ${
                         isLongWord ? 'break-all' : ''
                     }`}
                     data-cy="comment-text"
@@ -91,7 +91,7 @@ const Comment: React.FC<CommentProps> = ({
                 {canDelete && (
                     <MdDelete
                         size={20}
-                        className="absolute right-1 top-2 text-rose-500"
+                        className="absolute top-2 right-1 text-rose-500"
                         onClick={() => setConfirmModalOpen(true)}
                         data-testid="MdDelete"
                     />

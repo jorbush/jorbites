@@ -51,7 +51,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
 
     return (
-        <div className="col-span-4 flex flex-col gap-8 pl-2 pr-2">
+        <div className="col-span-4 flex flex-col gap-8 pr-2 pl-2">
             <div className="flex flex-col gap-2">
                 <div className="grid grid-cols-3 gap-1">
                     <div className="col-span-2 flex flex-row items-center gap-2 text-xl font-semibold dark:text-neutral-100">
@@ -75,13 +75,13 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                     )}
                                 </div>
                                 {user.verified && (
-                                    <VerificationBadge className="ml-1 mt-1" />
+                                    <VerificationBadge className="mt-1 ml-1" />
                                 )}
                             </div>
                             <div className="text-sm text-gray-400">{`${t('level')} ${user?.level}`}</div>
                         </div>
                     </div>
-                    <div className="mb-5 ml-auto mr-4 flex flex-row items-end gap-2 text-xl">
+                    <div className="mr-4 mb-5 ml-auto flex flex-row items-end gap-2 text-xl">
                         <HeartButton
                             recipeId={id}
                             currentUser={currentUser}
@@ -118,7 +118,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         <div className="flex flex-row items-center gap-2 text-xl font-semibold">
                             {t('ingredients')}
                         </div>
-                        <ul className="list-disc pl-9 pt-4">
+                        <ul className="list-disc pt-4 pl-9">
                             {ingredients.map((ingredient, index) => (
                                 <li
                                     key={index}
@@ -138,7 +138,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         <div className="flex flex-row items-center gap-2 text-xl font-semibold">
                             {t('steps')}
                         </div>
-                        <ol className="list-decimal pl-9 pt-4">
+                        <ol className="list-decimal pt-4 pl-9">
                             {steps.map((step, index) => (
                                 <li
                                     key={index}

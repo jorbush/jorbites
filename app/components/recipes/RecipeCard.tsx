@@ -40,7 +40,7 @@ const RecipeCard = memo(function RecipeCard({
                         height={250}
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px"
                     />
-                    <div className="absolute right-3 top-3">
+                    <div className="absolute top-3 right-3">
                         <HeartButton
                             recipeId={data.id}
                             currentUser={currentUser}

@@ -43,7 +43,7 @@ const Footer = () => {
 
     return (
         <footer
-            className="w-full border-t border-neutral-200 bg-white px-4 py-8 dark:border-neutral-800 dark:bg-dark"
+            className="dark:bg-dark w-full border-t border-neutral-200 bg-white px-4 py-8 dark:border-neutral-800"
             data-testid="footer"
         >
             <div className="mx-auto max-w-6xl">

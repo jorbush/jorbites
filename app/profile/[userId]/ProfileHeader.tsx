@@ -50,7 +50,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                             )}
                         </div>
                         {user?.verified && (
-                            <VerificationBadge className="ml-1 mt-1" />
+                            <VerificationBadge className="mt-1 ml-1" />
                         )}
                     </div>
                     <div className="text-lg text-gray-400 md:text-xl">{`${t('level')} ${user?.level}`}</div>
