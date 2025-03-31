@@ -2,15 +2,34 @@ import '@/app/globals.css';
 import { Nunito } from 'next/font/google';
 import Navbar from '@/app/components/navbar/Navbar';
 import ClientOnly from '@/app/components/utils/ClientOnly';
-import RegisterModal from '@/app/components/modals/RegisterModal';
 import ToasterProvider from '@/app/providers/ToasterProvider';
-import LoginModal from '@/app/components/modals/LoginModal';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import RecipeModal from '@/app/components/modals/RecipeModal';
-import SettingsModal from '@/app/components/modals/SettingsModal';
 import SmartFooter from '@/app/components/footer/SmartFooter';
-import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/next';
+import { dynamicImport } from '@/app/utils/dynamicImport';
+
+// Dynamically import non-critical components
+const RegisterModal = dynamicImport(
+    () => import('@/app/components/modals/RegisterModal')
+);
+const LoginModal = dynamicImport(
+    () => import('@/app/components/modals/LoginModal')
+);
+const RecipeModal = dynamicImport(
+    () => import('@/app/components/modals/RecipeModal')
+);
+const SettingsModal = dynamicImport(
+    () => import('@/app/components/modals/SettingsModal')
+);
+
+// Dynamically import analytics only in production
+const SpeedInsights = dynamicImport<{}>(() =>
+    import('@vercel/speed-insights/next').then((mod) => ({
+        default: mod.SpeedInsights,
+    }))
+);
+const Analytics = dynamicImport<{}>(() =>
+    import('@vercel/analytics/next').then((mod) => ({ default: mod.Analytics }))
+);
 
 const font = Nunito({
     subsets: ['latin'],
@@ -61,8 +80,12 @@ export default async function RootLayout({
                     {children}
                 </main>
                 <SmartFooter />
-                <SpeedInsights />
-                <Analytics />
+                {process.env.NODE_ENV === 'production' && (
+                    <>
+                        <SpeedInsights />
+                        <Analytics />
+                    </>
+                )}
             </body>
         </html>
     );
