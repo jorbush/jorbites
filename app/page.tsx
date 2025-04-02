@@ -11,10 +11,15 @@ import ErrorDisplay from '@/app/components/utils/ErrorDisplay';
 import { getFirstRecipeImageUrl } from './utils/imageOptimizer';
 import LcpPreloader from '@/app/components/optimization/LcpPreloader';
 import { RecipeGrid } from '@/app/components/recipes/RecipeGrid';
+import { dynamicImport } from '@/app/utils/dynamicImport';
 
 interface HomeProps {
     searchParams: Promise<IRecipesParams>;
 }
+
+const TopScroller = dynamicImport(
+    () => import('@/app/components/utils/TopScroller')
+);
 
 const Home = async ({ searchParams }: HomeProps) => {
     const resolvedParams = await searchParams;
@@ -38,8 +43,8 @@ const Home = async ({ searchParams }: HomeProps) => {
             }
         >
             <Container>
+                <TopScroller />
                 {firstImageUrl && <LcpPreloader imageUrl={firstImageUrl} />}
-
                 {response.error ? (
                     <div className="min-h-[60vh]">
                         <ErrorDisplay
