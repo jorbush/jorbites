@@ -152,7 +152,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         {coCooks.map((cook) => (
                             <div
                                 key={cook.id}
-                                className="flex items-center gap-2 rounded-full bg-gray-100 px-2 py-1 dark:bg-gray-800"
+                                className="flex cursor-pointer items-center gap-2 rounded-full bg-gray-100 px-2 py-1 dark:bg-gray-800"
                                 onClick={() =>
                                     router.push(`/profile/${cook.id}`)
                                 }
