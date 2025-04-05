@@ -10,6 +10,9 @@ import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import getUserDisplayName from '@/app/utils/responsive';
 import VerificationBadge from '@/app/components/VerificationBadge';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import Image from 'next/image';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -32,6 +35,8 @@ interface RecipeInfoProps {
     currentUser?: SafeUser | null;
     id: string;
     likes: number;
+    coCooksIds?: string[];
+    linkedRecipeIds?: string[];
 }
 
 const RecipeInfo: React.FC<RecipeInfoProps> = ({
@@ -44,11 +49,44 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     likes,
     id,
     currentUser,
+    coCooksIds = [],
+    linkedRecipeIds = [],
 }) => {
     const { t } = useTranslation();
     const router = useRouter();
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
+
+    const [coCooks, setCoCooks] = useState<any[]>([]);
+    const [linkedRecipes, setLinkedRecipes] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchRelatedData = async () => {
+            if (coCooksIds.length > 0) {
+                try {
+                    const { data } = await axios.get(
+                        `/api/users/multiple?ids=${coCooksIds.join(',')}`
+                    );
+                    setCoCooks(data);
+                } catch (error) {
+                    console.error('Failed to load co-cooks', error);
+                }
+            }
+
+            if (linkedRecipeIds.length > 0) {
+                try {
+                    const { data } = await axios.get(
+                        `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
+                    );
+                    setLinkedRecipes(data);
+                } catch (error) {
+                    console.error('Failed to load linked recipes', error);
+                }
+            }
+        };
+
+        fetchRelatedData();
+    }, [coCooksIds, linkedRecipeIds]);
 
     return (
         <div className="col-span-4 flex flex-col gap-8 pr-2 pl-2">
@@ -103,6 +141,41 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                     </div>
                 </div>
             </div>
+
+            {/* Co-cooks section */}
+            {coCooks.length > 0 && (
+                <div className="flex flex-col gap-2">
+                    <h3 className="text-md font-semibold dark:text-neutral-100">
+                        {t('co_cooks') || 'Co-Cooks'}
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                        {coCooks.map((cook) => (
+                            <div
+                                key={cook.id}
+                                className="flex items-center gap-2 rounded-full bg-gray-100 px-2 py-1 dark:bg-gray-800"
+                                onClick={() =>
+                                    router.push(`/profile/${cook.id}`)
+                                }
+                            >
+                                <Avatar
+                                    src={cook.image}
+                                    size={24}
+                                />
+                                <span className="text-sm dark:text-neutral-100">
+                                    {cook.name}
+                                </span>
+                                {cook.verified && (
+                                    <VerificationBadge
+                                        className="ml-1"
+                                        size={16}
+                                    />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <RecipeCategoryAndMethod
                 category={category}
                 method={method}
@@ -148,6 +221,55 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                 </li>
                             ))}
                         </ol>
+                    </div>
+                </>
+            )}
+
+            {/* Linked recipes section */}
+            {linkedRecipes.length > 0 && (
+                <>
+                    <hr />
+                    <div className="dark:text-neutral-100">
+                        <div className="flex flex-row items-center gap-2 text-xl font-semibold">
+                            {t('linked_recipes') || 'Linked Recipes'}
+                        </div>
+                        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            {linkedRecipes.map((recipe) => (
+                                <div
+                                    key={recipe.id}
+                                    className="cursor-pointer overflow-hidden rounded-lg border shadow-sm transition hover:shadow-md dark:border-gray-700"
+                                    onClick={() =>
+                                        router.push(`/recipes/${recipe.id}`)
+                                    }
+                                >
+                                    <div className="relative h-32 w-full">
+                                        <Image
+                                            src={
+                                                recipe.imageSrc ||
+                                                '/advocado.webp'
+                                            }
+                                            fill
+                                            className="object-cover"
+                                            alt={recipe.title}
+                                        />
+                                    </div>
+                                    <div className="p-3">
+                                        <h4 className="mb-1 text-base font-medium">
+                                            {recipe.title}
+                                        </h4>
+                                        <div className="flex items-center gap-2">
+                                            <Avatar
+                                                src={recipe.user.image}
+                                                size={20}
+                                            />
+                                            <span className="text-xs text-gray-500">
+                                                {recipe.user.name}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </>
             )}
