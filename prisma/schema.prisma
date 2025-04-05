@@ -63,6 +63,8 @@ model Recipe {
   steps String[]
   extraImages String[]
   userId String @db.ObjectId
+  coCooksIds String[] @db.ObjectId @default([])
+  linkedRecipeIds String[] @db.ObjectId @default([])
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]

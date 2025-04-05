@@ -20,6 +20,8 @@ interface RecipeClientProps {
     comments?: SafeComment[];
     recipe: SafeRecipe & {
         user: SafeUser;
+        coCooksIds?: string[];
+        linkedRecipeIds?: string[];
     };
     currentUser?: SafeUser | null;
 }
@@ -96,6 +98,8 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             description={formattedDescription}
                             ingredients={formattedIngredients}
                             steps={formattedSteps}
+                            coCooksIds={recipe.coCooksIds || []}
+                            linkedRecipeIds={recipe.linkedRecipeIds || []}
                         />
                     </div>
                     <Comments

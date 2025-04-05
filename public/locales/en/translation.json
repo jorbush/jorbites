@@ -228,5 +228,19 @@
     "email_notifications_updated": "Email notifications updated!",
     "success": "Success!",
     "comment_created": "Comment created!",
-    "verification_tooltip": "This is a nice Jorbiter"
+    "verification_tooltip": "This is a nice Jorbiter",
+    "related_content": "Related Content",
+    "related_content_subtitle": "Add co-cooks and linked recipes",
+    "co_cooks": "Co-Cooks",
+    "linked_recipes": "Linked Recipes",
+    "search_users": "Search Users",
+    "search_recipes": "Search Recipes",
+    "no_users_found": "No users found",
+    "selected_co_cooks": "Selected Co-Cooks",
+    "selected_linked_recipes": "Selected Linked Recipes",
+    "search_failed": "Search failed",
+    "max_cooks_reached": "Maximum of 4 co-cooks allowed",
+    "cook_already_added": "This cook is already added",
+    "max_recipes_reached": "Maximum of 2 linked recipes allowed",
+    "recipe_already_added": "This recipe is already added"
 }
