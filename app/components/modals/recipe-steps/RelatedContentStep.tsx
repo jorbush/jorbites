@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -39,29 +39,43 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
         recipes: any[];
     }>({ users: [], recipes: [] });
 
-    const handleSearch = useCallback(
-        debounce(async (query: string) => {
-            if (query.length < 2) {
-                setSearchResults({ users: [], recipes: [] });
-                return;
-            }
+    const debouncedSearch = useRef(
+        debounce(
+            async (
+                query: string,
+                type: string,
+                tFunction: Function,
+                setResults: Function
+            ) => {
+                if (query.length < 2) {
+                    setResults({ users: [], recipes: [] });
+                    return;
+                }
 
-            try {
-                const response = await axios.get(
-                    `/api/search?q=${encodeURIComponent(query)}&type=${searchType}`
-                );
-                setSearchResults(response.data);
-            } catch (error) {
-                console.error('Search failed:', error);
-                toast.error(t('search_failed') || 'Search failed');
-            }
-        }, 300),
-        [searchType, t]
+                try {
+                    const response = await axios.get(
+                        `/api/search?q=${encodeURIComponent(query)}&type=${type}`
+                    );
+                    setResults(response.data);
+                } catch (error) {
+                    console.error('Search failed:', error);
+                    toast.error(tFunction('search_failed') || 'Search failed');
+                }
+            },
+            300
+        )
+    ).current;
+
+    const handleSearch = useCallback(
+        (query: string) => {
+            debouncedSearch(query, searchType, t, setSearchResults);
+        },
+        [debouncedSearch, searchType, t]
     );
 
     useEffect(() => {
         handleSearch(searchQuery);
-    }, [searchQuery, searchType, handleSearch]);
+    }, [searchQuery, handleSearch]);
 
     return (
         <div className="flex flex-col gap-8">
