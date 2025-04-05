@@ -229,5 +229,19 @@
     "email_notifications_updated": "¡Notificaciones de correo actualizadas!",
     "success": "¡Éxito!",
     "comment_created": "¡Comentario creado!",
-    "verification_tooltip": "Este es un buen Jorbiter"
+    "verification_tooltip": "Este es un buen Jorbiter",
+    "related_content": "Contenido Relacionado",
+    "related_content_subtitle": "Añade cocineros y recetas relacionadas",
+    "co_cooks": "Cocineros",
+    "linked_recipes": "Recetas Relacionadas",
+    "search_users": "Buscar Usuarios",
+    "search_recipes": "Buscar Recetas",
+    "no_users_found": "No se encontraron usuarios",
+    "selected_co_cooks": "Cocineros Seleccionados",
+    "selected_linked_recipes": "Recetas Relacionadas Seleccionadas",
+    "search_failed": "La búsqueda falló",
+    "max_cooks_reached": "Máximo 4 cocineros permitidos",
+    "cook_already_added": "Este cocinero ya está añadido",
+    "max_recipes_reached": "Máximo 2 recetas relacionadas permitidas",
+    "recipe_already_added": "Esta receta ya está añadida"
 }

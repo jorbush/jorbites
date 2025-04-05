@@ -22,6 +22,7 @@ import { CgSmartHomeCooker } from 'react-icons/cg';
 import { useTranslation } from 'react-i18next';
 import { FiUploadCloud } from 'react-icons/fi';
 import { SafeUser } from '@/app/types';
+import RelatedContentStep from '@/app/components/modals/recipe-steps/RelatedContentStep';
 
 /* eslint-disable unused-imports/no-unused-vars */
 enum STEPS {
@@ -30,7 +31,8 @@ enum STEPS {
     INGREDIENTS = 2,
     METHODS = 3,
     STEPS = 4,
-    IMAGES = 5,
+    RELATED_CONTENT = 5,
+    IMAGES = 6,
 }
 
 export const preparationMethods = [
@@ -69,6 +71,11 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const [numSteps, setNumSteps] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const hasLoadedDraft = useRef(false);
+    const [selectedCoCooks, setSelectedCoCooks] = useState<any[]>([]);
+    const [selectedLinkedRecipes, setSelectedLinkedRecipes] = useState<any[]>(
+        []
+    );
+
     const {
         register,
         handleSubmit,
@@ -89,6 +96,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             ingredients: [],
             steps: [],
             minutes: 30,
+            coCooksIds: [],
+            linkedRecipeIds: [],
         },
     });
 
@@ -96,6 +105,73 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const minutes = watch('minutes');
     const imageSrc = watch('imageSrc');
     const method = watch('method');
+
+    const addCoCook = (user: any) => {
+        if (selectedCoCooks.length >= 4) {
+            toast.error(
+                t('max_cooks_reached') || 'Maximum of 4 co-cooks allowed'
+            );
+            return;
+        }
+
+        if (selectedCoCooks.some((cook) => cook.id === user.id)) {
+            toast.error(
+                t('cook_already_added') || 'This cook is already added'
+            );
+            return;
+        }
+
+        setSelectedCoCooks([...selectedCoCooks, user]);
+        setValue('coCooksIds', [
+            ...selectedCoCooks.map((cook) => cook.id),
+            user.id,
+        ]);
+    };
+
+    const removeCoCook = (userId: string) => {
+        const updatedCooks = selectedCoCooks.filter(
+            (cook) => cook.id !== userId
+        );
+        setSelectedCoCooks(updatedCooks);
+        setValue(
+            'coCooksIds',
+            updatedCooks.map((cook) => cook.id)
+        );
+    };
+
+    const addLinkedRecipe = (recipe: any) => {
+        if (selectedLinkedRecipes.length >= 2) {
+            toast.error(
+                t('max_recipes_reached') ||
+                    'Maximum of 2 linked recipes allowed'
+            );
+            return;
+        }
+
+        if (selectedLinkedRecipes.some((r) => r.id === recipe.id)) {
+            toast.error(
+                t('recipe_already_added') || 'This recipe is already added'
+            );
+            return;
+        }
+
+        setSelectedLinkedRecipes([...selectedLinkedRecipes, recipe]);
+        setValue('linkedRecipeIds', [
+            ...selectedLinkedRecipes.map((r) => r.id),
+            recipe.id,
+        ]);
+    };
+
+    const removeLinkedRecipe = (recipeId: string) => {
+        const updatedRecipes = selectedLinkedRecipes.filter(
+            (recipe) => recipe.id !== recipeId
+        );
+        setSelectedLinkedRecipes(updatedRecipes);
+        setValue(
+            'linkedRecipeIds',
+            updatedRecipes.map((recipe) => recipe.id)
+        );
+    };
 
     const saveDraft = async () => {
         const data = {
@@ -111,6 +187,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             ingredients: watch('ingredients'),
             steps: watch('steps'),
             minutes: watch('minutes'),
+            coCooksIds: watch('coCooksIds'),
+            linkedRecipeIds: watch('linkedRecipeIds'),
         };
 
         try {
@@ -146,6 +224,28 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             steps.forEach((step: string, index: number) => {
                 setValue(`step ${index}`, step);
             });
+
+            if (formData.coCooksIds?.length > 0) {
+                try {
+                    const cooksResponse = await axios.get(
+                        `/api/users/multiple?ids=${formData.coCooksIds.join(',')}`
+                    );
+                    setSelectedCoCooks(cooksResponse.data);
+                } catch (error) {
+                    console.error('Failed to load co-cooks', error);
+                }
+            }
+
+            if (formData.linkedRecipeIds?.length > 0) {
+                try {
+                    const recipesResponse = await axios.get(
+                        `/api/recipes/multiple?ids=${formData.linkedRecipeIds.join(',')}`
+                    );
+                    setSelectedLinkedRecipes(recipesResponse.data);
+                } catch (error) {
+                    console.error('Failed to load linked recipes', error);
+                }
+            }
         } catch (error) {
             console.error(error);
             toast.error(t('error_loading_draft') ?? 'Failed to load draft.');
@@ -240,10 +340,14 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     ingredients: [],
                     steps: [],
                     minutes: 10,
+                    coCooksIds: [],
+                    linkedRecipeIds: [],
                 });
                 setStep(STEPS.CATEGORY);
                 setNumIngredients(1);
                 setNumSteps(1);
+                setSelectedCoCooks([]);
+                setSelectedLinkedRecipes([]);
                 recipeModal.onClose();
                 router.refresh();
             })
@@ -499,6 +603,20 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     ))}
                 </div>
             </div>
+        );
+    }
+
+    if (step === STEPS.RELATED_CONTENT) {
+        bodyContent = (
+            <RelatedContentStep
+                isLoading={isLoading}
+                selectedCoCooks={selectedCoCooks}
+                selectedLinkedRecipes={selectedLinkedRecipes}
+                onAddCoCook={addCoCook}
+                onRemoveCoCook={removeCoCook}
+                onAddLinkedRecipe={addLinkedRecipe}
+                onRemoveLinkedRecipe={removeLinkedRecipe}
+            />
         );
     }
 
