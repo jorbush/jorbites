@@ -213,7 +213,10 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                         <div className="flex items-center gap-2">
                                             <div className="relative h-10 w-10 overflow-hidden rounded-md">
                                                 <Image
-                                                    src={recipe.imageSrc}
+                                                    src={
+                                                        recipe.imageSrc ||
+                                                        '/advocado.webp'
+                                                    }
                                                     fill
                                                     className="object-cover"
                                                     alt={recipe.title}
