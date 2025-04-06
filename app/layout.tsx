@@ -39,7 +39,31 @@ export const metadata = {
     description: 'a web to share recipes',
     icons: {
         icon: '/advocado.webp',
-    },
+        apple: [
+          { url: '/apple-icon-180x180.png', sizes: '180x180', type: 'image/png' },
+          { url: '/apple-icon-152x152.png', sizes: '152x152', type: 'image/png' },
+          { url: '/apple-icon-120x120.png', sizes: '120x120', type: 'image/png' },
+        ],
+        other: [
+          {
+            rel: 'apple-touch-icon-precomposed',
+            url: '/apple-touch-icon-precomposed.png',
+          },
+        ],
+      },
+      appleWebApp: {
+        title: 'Jorbites',
+        statusBarStyle: 'black-translucent',
+        startupImage: [
+          '/apple-splash-2048-2732.png',
+          '/apple-splash-1668-2224.png',
+          '/apple-splash-1536-2048.png',
+          '/apple-splash-1125-2436.png',
+          '/apple-splash-750-1334.png',
+        ],
+        capable: true,
+      },
+      themeColor: '#ffffff',
 };
 
 export default async function RootLayout({
@@ -59,6 +83,7 @@ export default async function RootLayout({
                     name="viewport"
                     content="width=device-width, initial-scale=1"
                 />
+                <meta name="apple-mobile-web-app-title" content="Jorbites" />
             </head>
             <body
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
