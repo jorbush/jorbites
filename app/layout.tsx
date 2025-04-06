@@ -39,6 +39,8 @@ export const metadata = {
     description: 'a web to share recipes',
     icons: {
         icon: '/advocado.webp',
+        shortcut: '/advocado.webp',
+        apple: '/apple-icon.png',
     },
 };
 
