@@ -40,6 +40,9 @@ describe('Recipes', () => {
         cy.get('[data-cy="recipe-step-1"]').type('Test step');
         cy.task('log', 'Steps step filled');
         cy.get('[data-cy="modal-action-button"]').click();
+        // Skip related content step
+        cy.task('log', 'Related content step skipped');
+        cy.get('[data-cy="modal-action-button"]').click();
         // Skip images step and create the recipe
         cy.task('log', 'Images step skipped');
         cy.get('[data-cy="modal-action-button"]').click();

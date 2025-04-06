@@ -228,5 +228,19 @@
     "email_notifications_updated": "Notificacions per correu actualitzades!",
     "success": "Èxit!",
     "comment_created": "Comentari creat!",
-    "verification_tooltip": "Aquest és un bon Jorbiter"
+    "verification_tooltip": "Aquest és un bon Jorbiter",
+    "related_content": "Contingut Relacionat",
+    "related_content_subtitle": "Afegeix cuiners i receptes relacionades",
+    "co_cooks": "Cuiners",
+    "linked_recipes": "Receptes Relacionades",
+    "search_users": "Cercar Usuaris",
+    "search_recipes": "Cercar Receptes",
+    "no_users_found": "No s'han trobat usuaris",
+    "selected_co_cooks": "Cuiners Seleccionats",
+    "selected_linked_recipes": "Receptes Relacionades Seleccionades",
+    "search_failed": "La cerca ha fallat",
+    "max_cooks_reached": "Màxim 4 cuiners permesos",
+    "cook_already_added": "Aquest cuiner ja està afegit",
+    "max_recipes_reached": "Màxim 2 receptes relacionades permeses",
+    "recipe_already_added": "Aquesta recepta ja està afegida"
 }

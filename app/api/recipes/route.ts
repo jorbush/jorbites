@@ -25,10 +25,16 @@ export async function POST(request: Request) {
         imageSrc1,
         imageSrc2,
         imageSrc3,
+        coCooksIds,
+        linkedRecipeIds,
     } = body;
 
     Object.keys(body).forEach((value: any) => {
-        if (!body[value]) {
+        if (
+            !body[value] &&
+            value !== 'coCooksIds' &&
+            value !== 'linkedRecipeIds'
+        ) {
             NextResponse.error();
         }
     });
@@ -58,6 +64,14 @@ export async function POST(request: Request) {
         extraImages.push(imageSrc3);
     }
 
+    const finalCoCooksIds = Array.isArray(coCooksIds) ? coCooksIds : [];
+    const finalLinkedRecipeIds = Array.isArray(linkedRecipeIds)
+        ? linkedRecipeIds
+        : [];
+
+    const limitedCoCooksIds = finalCoCooksIds.slice(0, 4); // Max 4 co-cooks
+    const limitedLinkedRecipeIds = finalLinkedRecipeIds.slice(0, 2); // Max 2 linked recipes
+
     const recipe = await prisma.recipe.create({
         data: {
             title,
@@ -71,6 +85,8 @@ export async function POST(request: Request) {
             numLikes: 0,
             extraImages,
             userId: currentUser.id,
+            coCooksIds: limitedCoCooksIds,
+            linkedRecipeIds: limitedLinkedRecipeIds,
         },
     });
 
