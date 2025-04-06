@@ -121,11 +121,12 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             return;
         }
 
-        setSelectedCoCooks([...selectedCoCooks, user]);
-        setValue('coCooksIds', [
-            ...selectedCoCooks.map((cook) => cook.id),
-            user.id,
-        ]);
+        const newSelectedCoCooks = [...selectedCoCooks, user];
+        setSelectedCoCooks(newSelectedCoCooks);
+        setValue(
+            'coCooksIds',
+            newSelectedCoCooks.map((cook) => cook.id)
+        );
     };
 
     const removeCoCook = (userId: string) => {
@@ -155,11 +156,12 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             return;
         }
 
-        setSelectedLinkedRecipes([...selectedLinkedRecipes, recipe]);
-        setValue('linkedRecipeIds', [
-            ...selectedLinkedRecipes.map((r) => r.id),
-            recipe.id,
-        ]);
+        const newLinkedRecipes = [...selectedLinkedRecipes, recipe];
+        setSelectedLinkedRecipes(newLinkedRecipes);
+        setValue(
+            'linkedRecipeIds',
+            newLinkedRecipes.map((r) => r.id)
+        );
     };
 
     const removeLinkedRecipe = (recipeId: string) => {
