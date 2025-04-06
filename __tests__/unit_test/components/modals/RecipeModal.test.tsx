@@ -404,4 +404,65 @@ describe('<RecipeModal />', () => {
             { timeout: 4000 }
         );
     });
+
+    it('renders related content step when reached', () => {
+        renderComponent();
+        const nextButton = screen.getByRole('button', {
+            name: 'next',
+        });
+
+        waitFor(
+            () => {
+                act(() => {
+                    fireEvent.click(nextButton);
+                }); // Move to DESCRIPTION step
+                waitFor(
+                    () => {
+                        act(() => {
+                            fireEvent.click(nextButton);
+                        }); // Move to INGREDIENTS step
+                        waitFor(
+                            () => {
+                                act(() => {
+                                    fireEvent.click(nextButton);
+                                }); // Move to METHODS step
+                                waitFor(
+                                    () => {
+                                        act(() => {
+                                            fireEvent.click(nextButton);
+                                        }); // Move to STEPS step
+                                        waitFor(
+                                            () => {
+                                                act(() => {
+                                                    fireEvent.click(nextButton);
+                                                }); // Move to RELATED_CONTENT step
+                                                expect(
+                                                    screen.getByText(
+                                                        'related_content'
+                                                    )
+                                                ).toBeDefined();
+                                                expect(
+                                                    screen.getByText('co_cooks')
+                                                ).toBeDefined();
+                                                expect(
+                                                    screen.getByText(
+                                                        'linked_recipes'
+                                                    )
+                                                ).toBeDefined();
+                                            },
+                                            { timeout: 4000 }
+                                        );
+                                    },
+                                    { timeout: 4000 }
+                                );
+                            },
+                            { timeout: 4000 }
+                        );
+                    },
+                    { timeout: 4000 }
+                );
+            },
+            { timeout: 4000 }
+        );
+    }, 20000);
 });
