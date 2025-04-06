@@ -39,8 +39,9 @@ export const metadata = {
     description: 'a web to share recipes',
     icons: {
         icon: '/advocado.webp',
+        shortcut: '/advocado.webp',
+        apple: '/apple-icon.png',
     },
-    manifest: '/manifest.json',
 };
 
 export default async function RootLayout({
@@ -59,10 +60,6 @@ export default async function RootLayout({
                 <meta
                     name="viewport"
                     content="width=device-width, initial-scale=1"
-                />
-                <meta
-                    name="apple-mobile-web-app-title"
-                    content="Jorbites"
                 />
             </head>
             <body
