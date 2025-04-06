@@ -42,8 +42,6 @@ export const metadata = {
         shortcut: '/advocado.webp',
         apple: '/apple-icon.png',
     },
-    themeColor: '#ffffff',
-    manifest: '/manifest.json',
 };
 
 export default async function RootLayout({
