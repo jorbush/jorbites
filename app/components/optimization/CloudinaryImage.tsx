@@ -38,7 +38,7 @@ export default function CloudinaryImage({
         : height;
 
     useEffect(() => {
-        const fallbackImage = '/advocado.webp';
+        const fallbackImage = '/avocado.webp';
 
         if (!src || src === '') {
             setOptimizedSrc(fallbackImage);

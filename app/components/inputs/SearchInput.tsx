@@ -137,7 +137,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
                                                   <Image
                                                       src={
                                                           result.imageSrc ||
-                                                          '/advocado.webp'
+                                                          '/avocado.webp'
                                                       }
                                                       fill
                                                       className="object-cover"

@@ -38,8 +38,8 @@ export const metadata = {
     title: 'Jorbites',
     description: 'a web to share recipes',
     icons: {
-        icon: '/advocado.webp',
-        shortcut: '/advocado.webp',
+        icon: '/avocado.webp',
+        shortcut: '/avocado.webp',
         apple: '/apple-icon.png',
     },
 };

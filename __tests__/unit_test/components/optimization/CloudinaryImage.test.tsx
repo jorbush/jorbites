@@ -20,7 +20,7 @@ vi.mock('@/app/components/optimization/CloudinaryImage', () => ({
             ? src
             : src
               ? `/api/image-proxy?url=${encodeURIComponent(src)}&w=${width || 400}&h=${height || 400}&q=auto:good`
-              : '/advocado.webp';
+              : '/avocado.webp';
 
         // Aplicar estilos si fill es true
         const imgStyle = fill
@@ -131,7 +131,7 @@ describe('CloudinaryImage', () => {
         );
 
         const img = screen.getByTestId('cloudinary-image');
-        expect(img.getAttribute('src')).toBe('/advocado.webp');
+        expect(img.getAttribute('src')).toBe('/avocado.webp');
     });
 
     it('applies fill styles correctly when fill prop is true', () => {
