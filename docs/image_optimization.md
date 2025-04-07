@@ -135,7 +135,7 @@ export default function CloudinaryImage({
 
   // Convert Cloudinary URL to proxy URL
   useEffect(() => {
-    const fallbackImage = '/advocado.webp';
+    const fallbackImage = '/avocado.webp';
 
     if (!src || src === '') {
       setOptimizedSrc(fallbackImage);

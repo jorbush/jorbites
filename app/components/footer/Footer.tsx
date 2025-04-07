@@ -89,7 +89,7 @@ const Footer = () => {
                         className="group flex items-center space-x-2 opacity-80 transition-opacity hover:opacity-100"
                     >
                         <Image
-                            src="/advocado.webp"
+                            src="/avocado.webp"
                             alt="Jorbites Logo"
                             width={24}
                             height={24}

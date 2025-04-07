@@ -81,7 +81,7 @@ describe('<Footer />', () => {
         const brandName = screen.getByText('Jorbites');
 
         expect(logo).toBeDefined();
-        expect(logo.getAttribute('src')).toBe('/advocado.webp');
+        expect(logo.getAttribute('src')).toBe('/avocado.webp');
         expect(brandName).toBeDefined();
     });
 

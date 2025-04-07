@@ -246,7 +246,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                         <Image
                                             src={
                                                 recipe.imageSrc ||
-                                                '/advocado.webp'
+                                                '/avocado.webp'
                                             }
                                             fill
                                             className="object-cover"

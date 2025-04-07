@@ -31,7 +31,7 @@ const RecipeCard = memo(function RecipeCard({
             <div className="flex w-full flex-col gap-2">
                 <div className="relative aspect-square w-full overflow-hidden rounded-xl">
                     <CloudinaryImage
-                        src={data.imageSrc || '/advocado.webp'}
+                        src={data.imageSrc || '/avocado.webp'}
                         alt="recipe"
                         fill
                         priority={isFirstCard}

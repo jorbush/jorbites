@@ -83,7 +83,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
             </div>
             <div className="relative h-[60vh] w-full overflow-hidden rounded-xl">
                 <Image
-                    src={imagesSrc[currentImageIndex] || '/advocado.webp'}
+                    src={imagesSrc[currentImageIndex] || '/avocado.webp'}
                     fill
                     priority={true}
                     className="object-cover"

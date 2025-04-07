@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import avocadoLogo from '@/public/advocado.webp';
+import avocadoLogo from '@/public/avocado.webp';
 
 export default function Loading() {
     return (
