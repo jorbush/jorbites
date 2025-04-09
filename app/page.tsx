@@ -8,7 +8,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import { headers } from 'next/headers';
 import ErrorDisplay from '@/app/components/utils/ErrorDisplay';
-import { getFirstRecipeImageUrl } from './utils/imageOptimizer';
+import { getFirstRecipeImageUrl } from '@/app/utils/imageOptimizer';
 import LcpPreloader from '@/app/components/optimization/LcpPreloader';
 import { RecipeGrid } from '@/app/components/recipes/RecipeGrid';
 import { dynamicImport } from '@/app/utils/dynamicImport';

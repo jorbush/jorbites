@@ -25,9 +25,6 @@ const SpeedInsights = dynamicImport<{}>(() =>
         default: mod.SpeedInsights,
     }))
 );
-const Analytics = dynamicImport<{}>(() =>
-    import('@vercel/analytics/next').then((mod) => ({ default: mod.Analytics }))
-);
 
 const font = Nunito({
     subsets: ['latin'],
@@ -83,7 +80,6 @@ export default async function RootLayout({
                 {process.env.NODE_ENV === 'production' && (
                     <>
                         <SpeedInsights />
-                        <Analytics />
                     </>
                 )}
             </body>
