@@ -77,11 +77,7 @@ export default async function RootLayout({
                     {children}
                 </main>
                 <SmartFooter />
-                {process.env.NODE_ENV === 'production' && (
-                    <>
-                        <SpeedInsights />
-                    </>
-                )}
+                {process.env.NODE_ENV === 'production' && <SpeedInsights />}
             </body>
         </html>
     );
