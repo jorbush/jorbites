@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiRefreshCw } from 'react-icons/fi';
+import { motion } from 'framer-motion';
 
 interface PullToRefreshProps {
     threshold?: number; // Distance in px to trigger refresh
@@ -48,7 +49,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
                     setTimeout(() => {
                         router.refresh();
                         window.location.reload();
-                    }, 500);
+                    }, 800);
                 }
                 setStartY(null);
                 setPullDistance(0);
@@ -76,7 +77,6 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
                 <div
                     className="fixed left-0 z-20 flex w-full justify-center transition-transform"
                     style={{
-                        // Position below the navbar
                         top: '70px',
                         transform: `translateY(${Math.min(pullDistance / 2.5, threshold / 2)}px)`,
                         opacity: Math.min(pullDistance / threshold, 1),
@@ -84,26 +84,19 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
                 >
                     <div className="text-green-450 border-green-450 flex items-center justify-center rounded-full border bg-white p-3 shadow-lg dark:bg-gray-800">
                         {refreshing ? (
-                            <svg
-                                className="text-green-450 h-6 w-6 animate-spin"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
+                            <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{
+                                    duration: 1,
+                                    repeat: Infinity,
+                                    ease: 'linear',
+                                }}
                             >
-                                <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                ></circle>
-                                <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                ></path>
-                            </svg>
+                                <FiRefreshCw
+                                    size={24}
+                                    className="text-green-450"
+                                />
+                            </motion.div>
                         ) : (
                             <FiRefreshCw
                                 size={24}
