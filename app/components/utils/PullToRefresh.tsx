@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { FiRefreshCw } from 'react-icons/fi';
 
 interface PullToRefreshProps {
     threshold?: number; // Distance in px to trigger refresh
@@ -73,36 +74,45 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
         <>
             {(pullDistance > 0 || refreshing) && indicator && (
                 <div
-                    className="fixed top-0 left-0 z-50 flex w-full justify-center transition-transform"
+                    className="fixed left-0 z-20 flex w-full justify-center transition-transform"
                     style={{
+                        // Position below the navbar
+                        top: '70px',
                         transform: `translateY(${Math.min(pullDistance / 2.5, threshold / 2)}px)`,
                         opacity: Math.min(pullDistance / threshold, 1),
                     }}
                 >
-                    <div className="flex items-center rounded-full bg-gray-800 p-2 text-white shadow-lg dark:bg-gray-200 dark:text-gray-800">
-                        <svg
-                            className={`mr-2 h-5 w-5 animate-spin ${refreshing ? 'opacity-100' : 'opacity-0'}`}
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                            ></circle>
-                            <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                        </svg>
-                        <span>
-                            {refreshing ? 'Refreshing...' : 'Pull to refresh'}
-                        </span>
+                    <div className="text-green-450 border-green-450 flex items-center justify-center rounded-full border bg-white p-3 shadow-lg dark:bg-gray-800">
+                        {refreshing ? (
+                            <svg
+                                className="text-green-450 h-6 w-6 animate-spin"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                ></circle>
+                                <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                            </svg>
+                        ) : (
+                            <FiRefreshCw
+                                size={24}
+                                className="text-green-450"
+                                style={{
+                                    transform: `rotate(${Math.min((pullDistance / threshold) * 360, 360)}deg)`,
+                                }}
+                            />
+                        )}
                     </div>
                 </div>
             )}
