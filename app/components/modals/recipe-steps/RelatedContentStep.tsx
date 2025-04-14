@@ -88,12 +88,12 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
             />
 
             {/* Tab selection for co-cooks vs related recipes */}
-            <div className="flex border-b border-gray-200 dark:border-gray-700">
+            <div className="flex border-b border-gray-200 dark:border-neutral-600">
                 <button
                     className={`flex-1 px-4 py-2 text-center ${
                         searchType === 'users'
                             ? 'border-green-450 text-green-450 border-b-2 font-medium'
-                            : 'text-gray-500 hover:text-gray-700'
+                            : 'text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-100'
                     }`}
                     onClick={() => {
                         setSearchType('users');
@@ -106,7 +106,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                     className={`flex-1 px-4 py-2 text-center ${
                         searchType === 'recipes'
                             ? 'border-green-450 text-green-450 border-b-2 font-medium'
-                            : 'text-gray-500 hover:text-gray-700'
+                            : 'text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-100'
                     }`}
                     onClick={() => {
                         setSearchType('recipes');
@@ -162,9 +162,9 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                 {/* Selected co-cooks */}
                 {searchType === 'users' && selectedCoCooks.length > 0 && (
                     <div>
-                        <h3 className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <h3 className="mb-2 text-sm font-medium text-gray-500 dark:text-zinc-400">
                             {t('selected_co_cooks') || 'Selected Co-Cooks'}
-                            <span className="ml-1 text-xs text-gray-400">
+                            <span className="ml-1 text-xs text-gray-400 dark:text-zinc-500">
                                 ({selectedCoCooks.length}/4)
                             </span>
                         </h3>
@@ -172,18 +172,18 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                             {selectedCoCooks.map((user) => (
                                 <div
                                     key={user.id}
-                                    className="flex items-center gap-2 rounded-full bg-gray-100 py-1 pr-2 pl-1 dark:bg-gray-800"
+                                    className="flex items-center gap-2 rounded-full bg-gray-100 py-1 pr-2 pl-1 dark:bg-zinc-800"
                                 >
                                     <Avatar
                                         src={user.image}
                                         size={24}
                                     />
-                                    <span className="text-sm dark:text-neutral-100">
+                                    <span className="text-sm text-zinc-900 dark:text-zinc-100">
                                         {user.name}
                                     </span>
                                     <button
                                         onClick={() => onRemoveCoCook(user.id)}
-                                        className="ml-1 text-gray-500 hover:text-rose-500"
+                                        className="ml-1 text-gray-500 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-500"
                                     >
                                         <AiFillDelete size={16} />
                                     </button>
@@ -197,10 +197,10 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                 {searchType === 'recipes' &&
                     selectedLinkedRecipes.length > 0 && (
                         <div>
-                            <h3 className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+                            <h3 className="mb-2 text-sm font-medium text-gray-500 dark:text-zinc-400">
                                 {t('selected_linked_recipes') ||
                                     'Selected Linked Recipes'}
-                                <span className="ml-1 text-xs text-gray-400">
+                                <span className="ml-1 text-xs text-gray-400 dark:text-zinc-500">
                                     ({selectedLinkedRecipes.length}/2)
                                 </span>
                             </h3>
@@ -208,7 +208,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                 {selectedLinkedRecipes.map((recipe) => (
                                     <div
                                         key={recipe.id}
-                                        className="flex items-center justify-between rounded-lg border p-2 dark:border-gray-700"
+                                        className="flex items-center justify-between rounded-lg border border-neutral-300 bg-white p-2 dark:border-neutral-600 dark:bg-zinc-800"
                                     >
                                         <div className="flex items-center gap-2">
                                             <div className="relative h-10 w-10 overflow-hidden rounded-md">
@@ -223,10 +223,10 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                                 />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-medium dark:text-neutral-100">
+                                                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
                                                     {recipe.title}
                                                 </p>
-                                                <p className="text-xs text-gray-500">
+                                                <p className="text-xs text-gray-500 dark:text-zinc-400">
                                                     {recipe.user.name}
                                                 </p>
                                             </div>
@@ -235,7 +235,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                             onClick={() =>
                                                 onRemoveLinkedRecipe(recipe.id)
                                             }
-                                            className="text-gray-500 hover:text-rose-500"
+                                            className="text-gray-500 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-500"
                                         >
                                             <AiFillDelete size={20} />
                                         </button>
