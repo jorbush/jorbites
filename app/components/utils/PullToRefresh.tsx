@@ -21,6 +21,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
 
     useEffect(() => {
         const handleTouchStart = (e: TouchEvent) => {
+            // Verify if there is a modal open
             const modalOpen = document.querySelector('.z-50');
             if (modalOpen) {
                 let targetElement = e.target as Node;
@@ -76,7 +77,9 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
                     setRefreshing(true);
                     setTimeout(() => {
                         router.refresh();
-                        window.location.reload();
+                        setTimeout(() => {
+                            setRefreshing(false);
+                        }, 500);
                     }, 800);
                 }
                 setStartY(null);
