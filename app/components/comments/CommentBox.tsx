@@ -48,7 +48,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 className="mt-2 grow"
             >
                 <textarea
-                    className="h-11 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 focus:ring-0 focus:outline-hidden"
+                    className="h-11 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 font-light text-zinc-900 focus:ring-0 focus:outline-hidden dark:border-neutral-600 dark:bg-zinc-800 dark:text-zinc-100"
                     placeholder={t('write_comment') ?? 'Write a comment...'}
                     value={comment}
                     onChange={handleInputChange}
