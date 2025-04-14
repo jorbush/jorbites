@@ -11,14 +11,13 @@ const useTheme = () => {
 
             updateStatusBarStyle(cachedTheme === 'dark');
         }
-
-        document.addEventListener('themeChanged', (e) => {
+        const themeChangedListener = (e: Event) => {
             const isDark = (e as CustomEvent).detail.isDark;
             updateStatusBarStyle(isDark);
-        });
-
+        };
+        document.addEventListener('themeChanged', themeChangedListener);
         return () => {
-            document.removeEventListener('themeChanged', () => {});
+            document.removeEventListener('themeChanged', themeChangedListener);
         };
     }, []);
 
