@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiRefreshCw } from 'react-icons/fi';
 import { motion } from 'framer-motion';
@@ -14,56 +14,55 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
     threshold = 150,
     indicator = true,
 }) => {
-    const [startY, setStartY] = useState<number | null>(null);
-    const [pullDistance, setPullDistance] = useState(0);
+    const startYRef = useRef<number | null>(null);
+    const pullDistanceRef = useRef<number>(0);
     const [refreshing, setRefreshing] = useState(false);
+    const [displayPullDistance, setDisplayPullDistance] = useState(0);
     const router = useRouter();
+
+    // Helper function to check if the touch event is inside a modal
+    const isInsideModal = useCallback((target: Node): boolean => {
+        const modalOpen = document.querySelector('.z-50');
+        if (!modalOpen) return false;
+
+        let targetElement = target;
+        while (targetElement) {
+            if (
+                targetElement instanceof Element &&
+                targetElement.classList.contains('z-50')
+            ) {
+                return true;
+            }
+            targetElement = targetElement.parentNode as Node;
+        }
+        return false;
+    }, []);
 
     useEffect(() => {
         const handleTouchStart = (e: TouchEvent) => {
-            // Verify if there is a modal open
-            const modalOpen = document.querySelector('.z-50');
-            if (modalOpen) {
-                let targetElement = e.target as Node;
-                while (targetElement) {
-                    if (
-                        targetElement instanceof Element &&
-                        targetElement.classList.contains('z-50')
-                    ) {
-                        return; // We are inside the modal, ignore the event
-                    }
-                    targetElement = targetElement.parentNode as Node;
-                }
+            if (isInsideModal(e.target as Node)) {
+                return;
             }
+
             if (window.scrollY <= 0) {
-                setStartY(e.touches[0].clientY);
+                startYRef.current = e.touches[0].clientY;
             } else {
-                setStartY(null);
+                startYRef.current = null;
             }
         };
 
         const handleTouchMove = (e: TouchEvent) => {
-            const modalOpen = document.querySelector('.z-50');
-
-            if (modalOpen) {
-                let targetElement = e.target as Node;
-                while (targetElement) {
-                    if (
-                        targetElement instanceof Element &&
-                        targetElement.classList.contains('z-50')
-                    ) {
-                        return; // We are inside the modal, ignore the event
-                    }
-                    targetElement = targetElement.parentNode as Node;
-                }
+            if (isInsideModal(e.target as Node)) {
+                return;
             }
 
-            if (startY !== null) {
+            if (startYRef.current !== null) {
                 const currentY = e.touches[0].clientY;
-                const distance = currentY - startY;
+                const distance = currentY - startYRef.current;
 
                 if (distance > 0) {
-                    setPullDistance(distance);
+                    pullDistanceRef.current = distance;
+                    setDisplayPullDistance(distance);
                     if (distance > 10) {
                         e.preventDefault();
                     }
@@ -72,8 +71,8 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
         };
 
         const handleTouchEnd = () => {
-            if (startY !== null) {
-                if (pullDistance > threshold) {
+            if (startYRef.current !== null) {
+                if (pullDistanceRef.current > threshold) {
                     setRefreshing(true);
                     setTimeout(() => {
                         router.refresh();
@@ -82,8 +81,9 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
                         }, 500);
                     }, 800);
                 }
-                setStartY(null);
-                setPullDistance(0);
+                startYRef.current = null;
+                pullDistanceRef.current = 0;
+                setDisplayPullDistance(0);
             }
         };
 
@@ -100,17 +100,17 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             document.removeEventListener('touchmove', handleTouchMove);
             document.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [startY, pullDistance, threshold, router]);
+    }, [threshold, router, isInsideModal]);
 
     return (
         <>
-            {(pullDistance > 0 || refreshing) && indicator && (
+            {(displayPullDistance > 0 || refreshing) && indicator && (
                 <div
                     className="fixed left-0 z-20 flex w-full justify-center transition-transform"
                     style={{
                         top: '70px',
-                        transform: `translateY(${Math.min(pullDistance / 2.5, threshold / 2)}px)`,
-                        opacity: Math.min(pullDistance / threshold, 1),
+                        transform: `translateY(${Math.min(displayPullDistance / 2.5, threshold / 2)}px)`,
+                        opacity: Math.min(displayPullDistance / threshold, 1),
                     }}
                 >
                     <div className="text-green-450 border-green-450 flex items-center justify-center rounded-full border bg-white p-3 shadow-lg dark:bg-black">
@@ -133,7 +133,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
                                 size={24}
                                 className="text-green-450"
                                 style={{
-                                    transform: `rotate(${Math.min((pullDistance / threshold) * 360, 360)}deg)`,
+                                    transform: `rotate(${Math.min((displayPullDistance / threshold) * 360, 360)}deg)`,
                                 }}
                             />
                         )}
