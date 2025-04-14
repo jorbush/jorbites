@@ -6,8 +6,8 @@ import { FiRefreshCw } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
 interface PullToRefreshProps {
-    threshold?: number; // Distance in px to trigger refresh
-    indicator?: boolean; // Whether to show a loading indicator
+    threshold?: number;
+    indicator?: boolean;
 }
 
 const PullToRefresh: React.FC<PullToRefreshProps> = ({
@@ -21,6 +21,19 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
 
     useEffect(() => {
         const handleTouchStart = (e: TouchEvent) => {
+            const modalOpen = document.querySelector('.z-50');
+            if (modalOpen) {
+                let targetElement = e.target as Node;
+                while (targetElement) {
+                    if (
+                        targetElement instanceof Element &&
+                        targetElement.classList.contains('z-50')
+                    ) {
+                        return; // We are inside the modal, ignore the event
+                    }
+                    targetElement = targetElement.parentNode as Node;
+                }
+            }
             if (window.scrollY <= 0) {
                 setStartY(e.touches[0].clientY);
             } else {
@@ -29,6 +42,21 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
         };
 
         const handleTouchMove = (e: TouchEvent) => {
+            const modalOpen = document.querySelector('.z-50');
+
+            if (modalOpen) {
+                let targetElement = e.target as Node;
+                while (targetElement) {
+                    if (
+                        targetElement instanceof Element &&
+                        targetElement.classList.contains('z-50')
+                    ) {
+                        return; // We are inside the modal, ignore the event
+                    }
+                    targetElement = targetElement.parentNode as Node;
+                }
+            }
+
             if (startY !== null) {
                 const currentY = e.touches[0].clientY;
                 const distance = currentY - startY;
@@ -82,7 +110,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
                         opacity: Math.min(pullDistance / threshold, 1),
                     }}
                 >
-                    <div className="text-green-450 border-green-450 flex items-center justify-center rounded-full border bg-white p-3 shadow-lg dark:bg-gray-800">
+                    <div className="text-green-450 border-green-450 flex items-center justify-center rounded-full border bg-white p-3 shadow-lg dark:bg-black">
                         {refreshing ? (
                             <motion.div
                                 animate={{ rotate: 360 }}
