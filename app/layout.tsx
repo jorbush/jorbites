@@ -36,11 +36,33 @@ const font = Nunito({
 
 export const metadata = {
     title: 'Jorbites',
-    description: 'a web to share recipes',
+    description:
+        'Descubre y comparte recetas deliciosas creadas por una comunidad de amantes de la cocina',
+    keywords:
+        'recetas, recipes, receptes, cocina, cooking, cuina, gastronomía, food, jorbites',
     icons: {
         icon: '/avocado.webp',
         shortcut: '/avocado.webp',
         apple: '/apple-icon.png',
+    },
+    openGraph: {
+        title: 'Jorbites | Comparte tus mejores recetas',
+        description:
+            'Descubre y comparte recetas deliciosas creadas por una comunidad de amantes de la cocina',
+        url: 'https://jorbites.com',
+        siteName: 'Jorbites',
+        images: [
+            {
+                url: '/jorbites-social.jpg',
+                width: 1200,
+                height: 630,
+                alt: 'Jorbites - Comparte tus recetas',
+            },
+        ],
+        type: 'website',
+    },
+    alternates: {
+        canonical: 'https://jorbites.com',
     },
 };
 
@@ -53,7 +75,7 @@ export default async function RootLayout({
 
     return (
         <html
-            lang="en"
+            lang="es"
             translate="no"
         >
             <head>

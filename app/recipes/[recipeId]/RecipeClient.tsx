@@ -15,6 +15,7 @@ import Comments from '@/app/components/comments/Comments';
 import DeleteRecipeButton from '@/app/components/recipes/DeleteRecipeButton';
 import { useTranslation } from 'react-i18next';
 import { formatText } from '@/app/utils/textFormatting';
+import RecipeSchema from '@/app/components/recipes/RecipeSchema';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
@@ -80,6 +81,16 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
 
     return (
         <Container>
+            <RecipeSchema
+                title={recipe.title}
+                description={recipe.description}
+                imageSrc={recipe.imageSrc}
+                createdAt={recipe.createdAt}
+                userName={recipe.user?.name}
+                minutes={recipe.minutes}
+                ingredients={recipe.ingredients}
+                steps={recipe.steps}
+            />
             <div className="mx-auto max-w-(--breakpoint-lg)">
                 <div className="flex flex-col gap-6">
                     <RecipeHead
