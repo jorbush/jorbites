@@ -47,7 +47,6 @@ export async function generateMetadata(props: {
     }
 
     const ogImageUrl = createOGImageUrl(recipe.imageSrc);
-    console.log('OG Image URL:', ogImageUrl);
     return {
         title: `${recipe.title} | Jorbites`,
         description:
