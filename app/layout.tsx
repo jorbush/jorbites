@@ -41,8 +41,15 @@ export const metadata = {
     keywords:
         'recetas, recipes, receptes, cocina, cooking, cuina, gastronomía, food, jorbites',
     icons: {
-        icon: '/avocado.webp',
-        shortcut: '/avocado.webp',
+        icon: [
+            { url: '/favicon.ico', sizes: '32x32' },
+            { url: '/favicon.ico', sizes: '16x16' },
+            { url: '/favicon.svg', type: 'image/svg+xml' },
+            { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+            { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+            { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+        ],
+        shortcut: '/favicon.ico',
         apple: '/apple-icon.png',
     },
     openGraph: {
@@ -83,6 +90,7 @@ export default async function RootLayout({
                     name="viewport"
                     content="width=device-width, initial-scale=1"
                 />
+                <meta name="apple-mobile-web-app-title" content="Jorbites" />
             </head>
             <body
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
