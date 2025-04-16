@@ -90,7 +90,10 @@ export default async function RootLayout({
                     name="viewport"
                     content="width=device-width, initial-scale=1"
                 />
-                <meta name="apple-mobile-web-app-title" content="Jorbites" />
+                <meta
+                    name="apple-mobile-web-app-title"
+                    content="Jorbites"
+                />
             </head>
             <body
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
