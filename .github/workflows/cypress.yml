@@ -34,7 +34,7 @@ jobs:
           NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
           NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
           NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
-          REDIS_URL: ${{ secrets.REDIS_URL }}
+          REDIS_URL: "test"
 
       - name: Create cypress.env.json
         run: |
