@@ -312,6 +312,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         const url = `${window.location.origin}/api/recipes`;
 
         if (step !== STEPS.IMAGES) {
+            saveDraft();
             return onNext();
         }
 
