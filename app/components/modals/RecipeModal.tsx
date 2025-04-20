@@ -308,10 +308,11 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         setStep((value) => value + 1);
     };
 
-    const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         const url = `${window.location.origin}/api/recipes`;
 
         if (step !== STEPS.IMAGES) {
+            if (process.env.NODE_ENV === 'production') await saveDraft();
             return onNext();
         }
 
@@ -325,42 +326,38 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
         setIsLoading(true);
 
-        axios
-            .post(url, data)
-            .then(async () => {
-                await deleteDraft();
-                toast.success(t('recipe_posted') ?? 'Recipe posted!');
-                reset({
-                    category: '',
-                    method: '',
-                    imageSrc: '',
-                    imageSrc1: '',
-                    imageSrc2: '',
-                    imageSrc3: '',
-                    title: '',
-                    description: '',
-                    ingredients: [],
-                    steps: [],
-                    minutes: 10,
-                    coCooksIds: [],
-                    linkedRecipeIds: [],
-                });
-                setStep(STEPS.CATEGORY);
-                setNumIngredients(1);
-                setNumSteps(1);
-                setSelectedCoCooks([]);
-                setSelectedLinkedRecipes([]);
-                recipeModal.onClose();
-                router.refresh();
-            })
-            .catch(() => {
-                toast.error(
-                    t('something_went_wrong') ?? 'Something went wrong'
-                );
-            })
-            .finally(() => {
-                setIsLoading(false);
+        try {
+            await axios.post(url, data);
+            await deleteDraft();
+            toast.success(t('recipe_posted') ?? 'Recipe posted!');
+            reset({
+                category: '',
+                method: '',
+                imageSrc: '',
+                imageSrc1: '',
+                imageSrc2: '',
+                imageSrc3: '',
+                title: '',
+                description: '',
+                ingredients: [],
+                steps: [],
+                minutes: 10,
+                coCooksIds: [],
+                linkedRecipeIds: [],
             });
+            setStep(STEPS.CATEGORY);
+            setNumIngredients(1);
+            setNumSteps(1);
+            setSelectedCoCooks([]);
+            setSelectedLinkedRecipes([]);
+            recipeModal.onClose();
+            router.refresh();
+        } catch (error) {
+            console.error('Failed to post recipe', error);
+            toast.error(t('something_went_wrong') ?? 'Something went wrong');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const addIngredientInput = () => {

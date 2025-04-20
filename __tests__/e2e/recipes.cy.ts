@@ -11,6 +11,12 @@ describe('Recipes', () => {
         cy.get('[data-cy="modal-action-button"]').click();
         cy.get('[class^="go"]').should('be.visible');
         cy.wait(1000);
+
+        cy.request({
+            method: 'DELETE',
+            url: '/api/draft',
+            failOnStatusCode: false, // Don't fail the test if there's no draft to delete
+        });
     });
 
     it('should create and delete a recipe', () => {

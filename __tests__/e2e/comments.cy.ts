@@ -52,6 +52,12 @@ describe('Comments', () => {
         cy.get('.text-lg').eq(0).should('have.text', 'Test recipe').click();
         cy.task('log', 'Recipe opened');
         cy.wait(10000);
+
+        cy.request({
+            method: 'DELETE',
+            url: '/api/draft',
+            failOnStatusCode: false, // Don't fail the test if there's no draft to delete
+        });
     });
 
     afterEach(() => {
