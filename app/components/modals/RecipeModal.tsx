@@ -312,7 +312,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         const url = `${window.location.origin}/api/recipes`;
 
         if (step !== STEPS.IMAGES) {
-            await saveDraft();
+            if (process.env.NODE_ENV === 'production') await saveDraft();
             return onNext();
         }
 

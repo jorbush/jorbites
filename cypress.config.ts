@@ -15,5 +15,4 @@ export default defineConfig({
   retries: {
     runMode: 2,
   },
-  numTestsKeptInMemory: 0,
 })
