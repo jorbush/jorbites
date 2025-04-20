@@ -27,7 +27,7 @@ jobs:
         run: npm install
 
       - name: Build Next.js app
-        run: npm run dev
+        run: npm run dev &
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
@@ -35,6 +35,17 @@ jobs:
           NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
           NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
+
+      - name: Wait for Next.js app to start
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "Next.js app is running"
+              break
+            fi
+            echo "Waiting for Next.js app to start..."
+            sleep 5
+          done
 
       - name: Create cypress.env.json
         run: |
