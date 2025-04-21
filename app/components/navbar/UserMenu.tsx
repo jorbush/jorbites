@@ -120,7 +120,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label="Top Jorbiters"
-                                    isNew
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -143,7 +142,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label="Top Jorbiters"
-                                    isNew
                                 />
                                 <MenuItem
                                     onClick={() => {
