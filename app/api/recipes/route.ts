@@ -90,25 +90,13 @@ export async function POST(request: Request) {
         },
     });
 
-    const users = await prisma.user.findMany({
-        orderBy: {
-            createdAt: 'desc',
+    await sendEmail({
+        type: EmailType.NEW_RECIPE,
+        userEmail: currentUser.email,
+        params: {
+            recipeId: recipe.id,
         },
     });
-
-    await Promise.all(
-        users.map(async (user) => {
-            if (user.emailNotifications) {
-                await sendEmail({
-                    type: EmailType.NEW_RECIPE,
-                    userEmail: user.email,
-                    params: {
-                        recipeId: recipe.id,
-                    },
-                });
-            }
-        })
-    );
 
     await updateUserLevel({
         userId: currentUser.id,
