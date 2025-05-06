@@ -242,5 +242,6 @@
     "max_cooks_reached": "Màxim 4 cuiners permesos",
     "cook_already_added": "Aquest cuiner ja està afegit",
     "max_recipes_reached": "Màxim 2 receptes relacionades permeses",
-    "recipe_already_added": "Aquesta recepta ja està afegida"
+    "recipe_already_added": "Aquesta recepta ja està afegida",
+    "email_already_exists": "El correu electrònic ja existeix"
 }

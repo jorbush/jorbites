@@ -243,5 +243,6 @@
     "max_cooks_reached": "Máximo 4 cocineros permitidos",
     "cook_already_added": "Este cocinero ya está añadido",
     "max_recipes_reached": "Máximo 2 recetas relacionadas permitidas",
-    "recipe_already_added": "Esta receta ya está añadida"
+    "recipe_already_added": "Esta receta ya está añadida",
+    "email_already_exists": "El correo electrónico ya está en uso"
 }
