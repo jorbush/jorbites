@@ -109,7 +109,7 @@ describe('RegisterModal', () => {
     });
 
     it('displays error toast on failed registration', async () => {
-        (axios.post as any).mockRejectedValue('Registration error');
+        (axios.post as any).mockRejectedValue('something_went_wrong');
 
         render(<RegisterModal />);
 
@@ -126,7 +126,7 @@ describe('RegisterModal', () => {
         fireEvent.click(screen.getByText('continue'));
 
         await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith('Registration error');
+            expect(toast.error).toHaveBeenCalledWith('something_went_wrong');
         });
     });
 
