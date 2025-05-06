@@ -7,9 +7,7 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-
 import useRegisterModal from '@/app/hooks/useRegisterModal';
-
 import Modal from '@/app/components/modals/Modal';
 import Input from '@/app/components/inputs/Input';
 import Heading from '@/app/components/navigation/Heading';
@@ -66,7 +64,15 @@ const RegisterModal = () => {
                 });
             })
             .catch((error) => {
-                toast.error(error);
+                if (error.response?.data?.error === 'Email already exists') {
+                    toast.error(
+                        t('email_already_exists') || 'Email already exists'
+                    );
+                } else {
+                    toast.error(
+                        t('something_went_wrong') || 'Something went wrong'
+                    );
+                }
             })
             .finally(() => {
                 setIsLoading(false);
