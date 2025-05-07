@@ -17,11 +17,13 @@ import Heading from '@/app/components/navigation/Heading';
 import Button from '@/app/components/buttons/Button';
 import { useTranslation } from 'react-i18next';
 import { validateEmail } from '@/app/utils/validation';
+import useForgotPasswordModal from '@/app/hooks/useForgotPasswordModal';
 
 const LoginModal = () => {
     const router = useRouter();
     const loginModal = useLoginModal();
     const registerModal = useRegisterModal();
+    const forgotPasswordModal = useForgotPasswordModal();
     const [isLoading, setIsLoading] = useState(false);
     const { t } = useTranslation();
 
@@ -65,6 +67,11 @@ const LoginModal = () => {
         registerModal.onOpen();
     }, [loginModal, registerModal]);
 
+    const onForgotPassword = useCallback(() => {
+        loginModal.onClose();
+        forgotPasswordModal.onOpen();
+    }, [loginModal, forgotPasswordModal]);
+
     const bodyContent = (
         <div className="flex flex-col gap-4">
             <Heading
@@ -90,6 +97,15 @@ const LoginModal = () => {
                 required
                 dataCy="login-password"
             />
+            <div className="text-right">
+                <span
+                    onClick={onForgotPassword}
+                    className="cursor-pointer text-sm text-neutral-600 hover:underline"
+                >
+                    {t('forgot_password') ||
+                        'Have you forgotten your password?'}
+                </span>
+            </div>
         </div>
     );
 

@@ -244,5 +244,15 @@
     "cook_already_added": "Este cocinero ya está añadido",
     "max_recipes_reached": "Máximo 2 recetas relacionadas permitidas",
     "recipe_already_added": "Esta receta ya está añadida",
-    "email_already_exists": "El correo electrónico ya está en uso"
+    "email_already_exists": "El correo electrónico ya está en uso",
+    "forgot_password": "¿Olvidaste tu contraseña?",
+    "reset_password": "Restablecer contraseña",
+    "send_reset_link": "Enviar enlace de restablecimiento",
+    "forgot_password_desc": "Si has olvidado tu contraseña, puedes restablecerla aquí. Solo necesitamos tu correo electrónico.",
+    "error_sending_email": "Error al enviar el email",
+    "reset_link_sent": "¡Enlace de restablecimiento enviado!",
+    "reset_link_sent_desc": "Revisa tu correo electrónico para restablecer tu contraseña.",
+    "back_to_login": "Volver a iniciar sesión",
+    "check_your_email": "Revisa tu correo electrónico",
+    "ok": "Aceptar"
 }

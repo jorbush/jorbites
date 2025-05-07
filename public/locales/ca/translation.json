@@ -243,5 +243,15 @@
     "cook_already_added": "Aquest cuiner ja està afegit",
     "max_recipes_reached": "Màxim 2 receptes relacionades permeses",
     "recipe_already_added": "Aquesta recepta ja està afegida",
-    "email_already_exists": "El correu electrònic ja existeix"
+    "email_already_exists": "El correu electrònic ja existeix",
+    "forgot_password": "Has oblidat la contrasenya?",
+    "reset_password": "Restableix la contrasenya",
+    "send_reset_link": "Envia enllaç de restabliment",
+    "forgot_password_desc": "Si has oblidat la teva contrasenya, pots restablir-la aquí. Només necessitem el teu correu electrònic.",
+    "error_sending_email": "Error enviant l'email",
+    "reset_link_sent": "Enllaç de restabliment enviat!",
+    "reset_link_sent_desc": "Revisa la teva safata d'entrada per trobar el correu electrònic de restabliment de contrasenya.",
+    "back_to_login": "Tornar a iniciar sessió",
+    "check_your_email": "Revisa el teu correu electrònic",
+    "ok": "D'acord"
 }
