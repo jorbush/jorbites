@@ -263,5 +263,7 @@
     "invalid_or_expired_link": "Invalid or expired link",
     "invalid_link": "Invalid link",
     "link_expired_or_used": "The link has expired or has already been used. Please request a new reset link.",
-    "back_to_home": "Back to home page"
+    "back_to_home": "Back to home page",
+    "passwords_dont_match": "Passwords do not match",
+    "updating": "Updating..."
 }

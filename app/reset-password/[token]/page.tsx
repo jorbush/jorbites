@@ -1,165 +1,33 @@
-'use client';
+import { Metadata } from 'next';
+import ClientOnly from '@/app/components/utils/ClientOnly';
+import ResetPasswordClient from './ResetPasswordClient';
+import EmptyState from '@/app/components/utils/EmptyState';
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { toast } from 'react-hot-toast';
-import axios from 'axios';
-import Container from '@/app/components/utils/Container';
-import Heading from '@/app/components/navigation/Heading';
-import Input from '@/app/components/inputs/Input';
-import Button from '@/app/components/buttons/Button';
-import { useTranslation } from 'react-i18next';
+interface IParams {
+    token?: string;
+}
 
-const ResetPassword = () => {
-    const params = useParams();
-    const router = useRouter();
-    const { t } = useTranslation();
-    const [isLoading, setIsLoading] = useState(false);
-    const [isValid, setIsValid] = useState(true);
+export const metadata: Metadata = {
+    title: 'Reset Password',
+};
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        watch,
-    } = useForm<FieldValues>({
-        defaultValues: {
-            password: '',
-            confirmPassword: '',
-        },
-    });
+export const dynamic = 'force-dynamic';
 
-    const password = watch('password');
-    const token = params?.token as string;
-
-    useEffect(() => {
-        const validateToken = async () => {
-            try {
-                const response = await axios.get(
-                    `/api/password-reset/validate/${token}`
-                );
-                if (!response.data.valid) {
-                    setIsValid(false);
-                    toast.error(
-                        t('invalid_or_expired_link') ||
-                            'Invalid or expired link'
-                    );
-                }
-            } catch (error) {
-                setIsValid(false);
-                toast.error(
-                    t('invalid_or_expired_link') || 'Invalid or expired link'
-                );
-            }
-        };
-
-        validateToken();
-    }, [token, t]);
-
-    const onSubmit: SubmitHandler<FieldValues> = (data) => {
-        if (data.password !== data.confirmPassword) {
-            toast.error(t('passwords_dont_match') || "Passwords don't match");
-            return;
-        }
-
-        setIsLoading(true);
-
-        axios
-            .post('/api/password-reset/reset', {
-                token,
-                password: data.password,
-            })
-            .then(() => {
-                toast.success(
-                    t('password_reset_success') ||
-                        'Password updated successfully'
-                );
-                router.push('/');
-            })
-            .catch((error) => {
-                toast.error(
-                    error.response?.data?.error ||
-                        t('something_went_wrong') ||
-                        'Something went wrong'
-                );
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
-    };
-
-    if (!isValid) {
+const ResetPasswordPage = async (props: { params: Promise<IParams> }) => {
+    const { token } = await props.params;
+    if (!token) {
         return (
-            <Container>
-                <div className="mx-auto max-w-lg py-12">
-                    <Heading
-                        title={t('invalid_link') || 'Invalid Link'}
-                        subtitle={
-                            t('link_expired_or_used') ||
-                            'The link has expired or has already been used'
-                        }
-                        center
-                    />
-                    <div className="mt-6 text-center">
-                        <Button
-                            label={t('back_to_home') || 'Back to Home'}
-                            onClick={() => router.push('/')}
-                        />
-                    </div>
-                </div>
-            </Container>
+            <ClientOnly>
+                <EmptyState />
+            </ClientOnly>
         );
     }
 
     return (
-        <Container>
-            <div className="mx-auto max-w-lg py-12">
-                <Heading
-                    title={t('reset_your_password') || 'Reset Your Password'}
-                    subtitle={
-                        t('create_new_password') ||
-                        'Create a new secure password'
-                    }
-                    center
-                />
-                <div className="mt-8">
-                    <form
-                        onSubmit={handleSubmit(onSubmit)}
-                        className="space-y-4"
-                    >
-                        <Input
-                            id="password"
-                            label={t('new_password') || 'New Password'}
-                            type="password"
-                            disabled={isLoading}
-                            register={register}
-                            errors={errors}
-                            required
-                        />
-                        <Input
-                            id="confirmPassword"
-                            label={t('confirm_password') || 'Confirm Password'}
-                            type="password"
-                            disabled={isLoading}
-                            register={register}
-                            errors={errors}
-                            required
-                        />
-                        <Button
-                            label={
-                                isLoading
-                                    ? t('updating') || 'Updating...'
-                                    : t('update_password') || 'Update Password'
-                            }
-                            onClick={handleSubmit(onSubmit)}
-                            disabled={isLoading}
-                        />
-                    </form>
-                </div>
-            </div>
-        </Container>
+        <ClientOnly>
+            <ResetPasswordClient token={token} />
+        </ClientOnly>
     );
 };
 
-export default ResetPassword;
+export default ResetPasswordPage;

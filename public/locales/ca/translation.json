@@ -263,5 +263,7 @@
     "invalid_or_expired_link": "Enllaç invàlid o caducat",
     "invalid_link": "Enllaç invàlid",
     "link_expired_or_used": "L'enllaç ha caducat o ja s'ha utilitzat. Torna a sol·licitar un nou enllaç de restabliment.",
-    "back_to_home": "Tornar a la pàgina d'inici"
+    "back_to_home": "Tornar a la pàgina d'inici",
+    "passwords_dont_match": "Les contrasenyes no coincideixen",
+    "updating": "Actualitzant..."
 }

@@ -264,5 +264,7 @@
     "invalid_or_expired_link": "Enlace inválido o expirado",
     "invalid_link": "Enlace inválido",
     "link_expired_or_used": "El enlace ha expirado o ya ha sido utilizado. Solicita un nuevo enlace de restablecimiento.",
-    "back_to_home": "Volver a la página de inicio"
+    "back_to_home": "Volver a la página de inicio",
+    "passwords_dont_match": "Las contraseñas no coinciden",
+    "updating": "Actualizando..."
 }

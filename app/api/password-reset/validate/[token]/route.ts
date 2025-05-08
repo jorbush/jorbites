@@ -1,11 +1,16 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
 
+interface IParams {
+    token?: string;
+}
+
 export async function GET(
-    request: Request,
-    { params }: { params: { token: string } }
+    request: NextRequest,
+    props: { params: Promise<IParams> }
 ) {
     try {
+        const params = await props.params;
         const { token } = params;
 
         if (!token) {
