@@ -24,6 +24,8 @@ model User {
   level               Int       @default(0)
   verified            Boolean   @default(false)
   badges              String[]  @default([])
+  resetToken          String?
+  resetTokenExpiry    DateTime?
 
   accounts            Account[]
   recipes             Recipe[]

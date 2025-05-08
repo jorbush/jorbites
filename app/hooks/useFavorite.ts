@@ -2,9 +2,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
-
 import { SafeUser } from '@/app/types';
-
 import useLoginModal from '@/app/hooks/useLoginModal';
 import { useTranslation } from 'react-i18next';
 
