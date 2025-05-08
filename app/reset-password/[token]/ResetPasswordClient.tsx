@@ -53,6 +53,7 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
                 }
             } catch (error) {
                 handleInvalidToken();
+                console.error(error);
             }
         };
 
