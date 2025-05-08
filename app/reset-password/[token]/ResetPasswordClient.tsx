@@ -35,27 +35,29 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
 
     useEffect(() => {
         if (effectRan.current) return;
+
+        const handleInvalidToken = () => {
+            setIsValid(false);
+            toast.error(
+                t('invalid_or_expired_link') || 'Invalid or expired link'
+            );
+        };
+
         const validateToken = async () => {
             try {
                 const response = await axios.get(
                     `/api/password-reset/validate/${token}`
                 );
                 if (!response.data.valid) {
-                    setIsValid(false);
-                    toast.error(
-                        t('invalid_or_expired_link') ||
-                            'Invalid or expired link'
-                    );
+                    handleInvalidToken();
                 }
             } catch (error) {
-                setIsValid(false);
-                toast.error(
-                    t('invalid_or_expired_link') || 'Invalid or expired link'
-                );
-                console.error('Error validating token:', error);
+                handleInvalidToken();
             }
         };
+
         validateToken();
+
         effectRan.current = true;
     }, [token, t]);
 
