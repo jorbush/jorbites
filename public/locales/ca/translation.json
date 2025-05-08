@@ -253,5 +253,15 @@
     "reset_link_sent_desc": "Revisa la teva safata d'entrada per trobar el correu electrònic de restabliment de contrasenya.",
     "back_to_login": "Tornar a iniciar sessió",
     "check_your_email": "Revisa el teu correu electrònic",
-    "ok": "D'acord"
+    "ok": "D'acord",
+    "reset_your_password": "Restableix la teva contrasenya",
+    "create_new_password": "Crea una nova contrasenya",
+    "new_password": "Nova contrasenya",
+    "confirm_password": "Confirma la nova contrasenya",
+    "update_password": "Actualitza la contrasenya",
+    "password_reset_success": "La contrasenya s'ha restablert correctament!",
+    "invalid_or_expired_link": "Enllaç invàlid o caducat",
+    "invalid_link": "Enllaç invàlid",
+    "link_expired_or_used": "L'enllaç ha caducat o ja s'ha utilitzat. Torna a sol·licitar un nou enllaç de restabliment.",
+    "back_to_home": "Tornar a la pàgina d'inici"
 }

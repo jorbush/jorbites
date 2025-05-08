@@ -254,5 +254,15 @@
     "reset_link_sent_desc": "Revisa tu correo electrónico para restablecer tu contraseña.",
     "back_to_login": "Volver a iniciar sesión",
     "check_your_email": "Revisa tu correo electrónico",
-    "ok": "Aceptar"
+    "ok": "Aceptar",
+    "reset_your_password": "Restablece tu contraseña",
+    "create_new_password": "Crea una nueva contraseña",
+    "new_password": "Nueva contraseña",
+    "confirm_password": "Confirma la nueva contraseña",
+    "update_password": "Actualizar contraseña",
+    "password_reset_successful": "¡Contraseña restablecida con éxito!",
+    "invalid_or_expired_link": "Enlace inválido o expirado",
+    "invalid_link": "Enlace inválido",
+    "link_expired_or_used": "El enlace ha expirado o ya ha sido utilizado. Solicita un nuevo enlace de restablecimiento.",
+    "back_to_home": "Volver a la página de inicio"
 }
