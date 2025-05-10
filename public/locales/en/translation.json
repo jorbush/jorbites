@@ -265,5 +265,16 @@
     "link_expired_or_used": "The link has expired or has already been used. Please request a new reset link.",
     "back_to_home": "Back to home page",
     "passwords_dont_match": "Passwords do not match",
-    "updating": "Updating..."
+    "updating": "Updating...",
+    "events": "Events",
+    "current_events": "Current Events",
+    "upcoming_events": "Upcoming Events",
+    "past_events": "Past Events",
+    "no_current_events": "No current events",
+    "no_upcoming_events": "No upcoming events",
+    "no_past_events": "No past events",
+    "event_not_found_message": "The event you're looking for could not be found.",
+    "back_to_events": "Back to Events",
+    "date": "Date",
+    "location": "Location"
 }
