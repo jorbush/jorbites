@@ -56,34 +56,32 @@ const EventDetailClient: React.FC<EventDetailClientProps> = ({ slug }) => {
 
     return (
         <Container>
-            <div className="px-4 py-8">
-                {loading ? (
-                    <div className="animate-pulse">
-                        <div className="mb-4 h-10 w-3/4 rounded bg-neutral-200 dark:bg-neutral-800" />
-                        <div className="mb-2 h-6 w-1/2 rounded bg-neutral-200 dark:bg-neutral-800" />
-                        <div className="mb-6 h-6 w-1/3 rounded bg-neutral-200 dark:bg-neutral-800" />
-                        <div className="h-64 w-full rounded bg-neutral-200 dark:bg-neutral-800" />
-                    </div>
-                ) : error ? (
-                    <div className="py-10 text-center">
-                        <h2 className="mb-4 text-2xl font-bold text-red-500 dark:text-red-400">
-                            {error}
-                        </h2>
-                        <p className="mb-6 text-neutral-600 dark:text-neutral-400">
-                            {t('event_not_found_message') ||
-                                "The event you're looking for could not be found."}
-                        </p>
-                        <button
-                            onClick={() => router.push('/events')}
-                            className="bg-green-450 rounded-lg px-4 py-2 text-black"
-                        >
-                            {t('back_to_events') || 'Back to Events'}
-                        </button>
-                    </div>
-                ) : event ? (
-                    <EventDetail event={event} />
-                ) : null}
-            </div>
+            {loading ? (
+                <div className="animate-pulse">
+                    <div className="mb-4 h-10 w-3/4 rounded bg-neutral-200 dark:bg-neutral-800" />
+                    <div className="mb-2 h-6 w-1/2 rounded bg-neutral-200 dark:bg-neutral-800" />
+                    <div className="mb-6 h-6 w-1/3 rounded bg-neutral-200 dark:bg-neutral-800" />
+                    <div className="h-64 w-full rounded bg-neutral-200 dark:bg-neutral-800" />
+                </div>
+            ) : error ? (
+                <div className="py-10 text-center">
+                    <h2 className="mb-4 text-2xl font-bold text-red-500 dark:text-red-400">
+                        {error}
+                    </h2>
+                    <p className="mb-6 text-neutral-600 dark:text-neutral-400">
+                        {t('event_not_found_message') ||
+                            "The event you're looking for could not be found."}
+                    </p>
+                    <button
+                        onClick={() => router.push('/events')}
+                        className="bg-green-450 rounded-lg px-4 py-2 text-black"
+                    >
+                        {t('back_to_events') || 'Back to Events'}
+                    </button>
+                </div>
+            ) : event ? (
+                <EventDetail event={event} />
+            ) : null}
         </Container>
     );
 };
