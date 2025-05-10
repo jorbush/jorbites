@@ -3,7 +3,6 @@ title: Esdeveniment de Receptes Portugueses
 description: Un esdeveniment deliciós amb el millor de la cuina portuguesa
 date: 2024-05-01
 endDate: 2024-05-11
-location: Barcelona Food Hall
 ---
 
 # Esdeveniment de Receptes Portugueses

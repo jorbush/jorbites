@@ -4,6 +4,8 @@ import { Event } from '@/app/utils/markdownUtils';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import { FiCalendar } from 'react-icons/fi';
+import Image from 'next/image';
 
 interface EventCardProps {
     event: Event;
@@ -31,24 +33,23 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
     return (
         <div
-            className="dark:bg-dark cursor-pointer rounded-xl border-[1px] border-neutral-200 bg-white p-5 transition hover:shadow-md dark:border-neutral-700 dark:text-neutral-100"
+            className="dark:bg-dark cursor-pointer overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white transition hover:shadow-md dark:border-neutral-700 dark:text-neutral-100"
             onClick={handleClick}
         >
-            <div className="flex flex-col gap-2">
+            <div className="relative h-40 w-full">
+                <Image
+                    src={event.frontmatter.image || '/jorbites-social.jpg'}
+                    alt={event.frontmatter.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+            </div>
+            <div className="p-4">
                 <h3 className="text-xl font-bold">{event.frontmatter.title}</h3>
-                <p className="text-neutral-500 dark:text-neutral-400">
-                    {event.frontmatter.description}
-                </p>
-
-                <div className="mt-2 flex flex-col">
-                    <span className="flex items-center gap-1 text-sm">
-                        <span className="font-semibold">{t('date')}:</span>{' '}
-                        {dateDisplay}
-                    </span>
-                    <span className="flex items-center gap-1 text-sm">
-                        <span className="font-semibold">{t('location')}:</span>{' '}
-                        {event.frontmatter.location}
-                    </span>
+                <div className="mt-2 flex items-center text-sm text-neutral-500 dark:text-neutral-400">
+                    <FiCalendar className="mr-2" />
+                    <span>{dateDisplay}</span>
                 </div>
             </div>
         </div>

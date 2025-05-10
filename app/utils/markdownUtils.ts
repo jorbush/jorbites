@@ -5,7 +5,7 @@ export interface EventFrontmatter {
     description: string;
     date: string;
     endDate: string;
-    location: string;
+    image: string; // Mandatory image URL for the event
 }
 
 export interface Event {
@@ -37,7 +37,7 @@ export function parseMarkdown(markdown: string): {
                 description: 'Error loading event',
                 date: new Date().toISOString(),
                 endDate: new Date().toISOString(),
-                location: '',
+                image: '/images/events/default.jpg',
             },
             content: 'Error loading event content.',
         };

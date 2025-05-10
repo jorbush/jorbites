@@ -4,10 +4,11 @@ import { Event } from '@/app/utils/markdownUtils';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { FiChevronLeft, FiShare2 } from 'react-icons/fi';
+import { FiChevronLeft, FiShare2, FiCalendar } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 import Heading from '@/app/components/navigation/Heading';
 import { toast } from 'react-hot-toast';
+import Image from 'next/image';
 
 interface EventDetailProps {
     event: Event;
@@ -75,15 +76,19 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                 </button>
             </div>
 
-            <div className="mb-6 flex flex-col gap-2 text-neutral-500 dark:text-neutral-400">
-                <div className="flex items-center gap-2">
-                    <span className="font-semibold">{t('date')}:</span>
-                    <span>{dateDisplay}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <span className="font-semibold">{t('location')}:</span>
-                    <span>{event.frontmatter.location}</span>
-                </div>
+            <div className="relative mb-6 h-[300px] w-full overflow-hidden rounded-xl">
+                <Image
+                    src={event.frontmatter.image || '/jorbites-social.jpg'}
+                    alt={event.frontmatter.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
+                />
+            </div>
+
+            <div className="mb-6 flex items-center text-neutral-500 dark:text-neutral-400">
+                <FiCalendar className="mr-2" />
+                <span>{dateDisplay}</span>
             </div>
 
             <div className="prose dark:prose-invert max-w-none">
