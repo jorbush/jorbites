@@ -123,6 +123,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 <MenuItem
                                     onClick={() => {
+                                        router.push('/events');
+                                        toggleOpen();
+                                    }}
+                                    label={t('events') || 'Events'}
+                                    isNew
+                                />
+                                <MenuItem
+                                    onClick={() => {
                                         settingsModal.onOpen();
                                         toggleOpen();
                                     }}
@@ -142,6 +150,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label="Top Jorbiters"
+                                />
+                                <MenuItem
+                                    onClick={() => {
+                                        router.push('/events');
+                                        toggleOpen();
+                                    }}
+                                    label={t('events') || 'Events'}
+                                    isNew
                                 />
                                 <MenuItem
                                     onClick={() => {
