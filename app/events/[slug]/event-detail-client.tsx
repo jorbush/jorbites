@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { Event } from '@/app/utils/markdownUtils';
 import EventDetail from '@/app/components/events/EventDetail';
-import LanguageSwitcher from '@/app/components/events/LanguageSwitcher';
 import { useRouter } from 'next/navigation';
 import useTheme from '@/app/hooks/useTheme';
 
@@ -58,8 +57,6 @@ const EventDetailClient: React.FC<EventDetailClientProps> = ({ slug }) => {
     return (
         <Container>
             <div className="px-4 py-8">
-                <LanguageSwitcher />
-
                 {loading ? (
                     <div className="animate-pulse">
                         <div className="mb-4 h-10 w-3/4 rounded bg-neutral-200 dark:bg-neutral-800" />

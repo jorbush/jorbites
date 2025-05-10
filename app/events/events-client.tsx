@@ -9,7 +9,6 @@ import {
     sortEventsByDate,
 } from '@/app/utils/markdownUtils';
 import EventsList from '@/app/components/events/EventsList';
-import LanguageSwitcher from '@/app/components/events/LanguageSwitcher';
 import useTheme from '@/app/hooks/useTheme';
 
 const EventsClient = () => {
@@ -71,8 +70,6 @@ const EventsClient = () => {
                             'Discover culinary events, workshops, and meetups organized by the Jorbites community.'}
                     </p>
                 </div>
-
-                <LanguageSwitcher />
 
                 {loading ? (
                     <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
