@@ -62,9 +62,15 @@ const EventsClient = () => {
     return (
         <Container>
             <div className="px-4 py-8">
-                <h1 className="mb-6 text-3xl font-bold dark:text-neutral-100">
-                    {t('events')}
-                </h1>
+                <div className="mb-10 text-center">
+                    <h1 className="mb-3 text-3xl font-bold sm:text-4xl dark:text-neutral-100">
+                        {t('events')}
+                    </h1>
+                    <p className="text-sm text-gray-600 sm:text-base dark:text-gray-300">
+                        {t('events_description') ||
+                            'Discover culinary events, workshops, and meetups organized by the Jorbites community.'}
+                    </p>
+                </div>
 
                 <LanguageSwitcher />
 
