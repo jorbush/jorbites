@@ -4,8 +4,10 @@ import { Event } from '@/app/utils/markdownUtils';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { FiChevronLeft } from 'react-icons/fi';
+import { FiChevronLeft, FiShare2 } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
+import Heading from '@/app/components/navigation/Heading';
+import { toast } from 'react-hot-toast';
 
 interface EventDetailProps {
     event: Event;
@@ -27,21 +29,51 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
         dateDisplay = `${format(startDate, 'PPP')} - ${format(endDate, 'PPP')}`;
     }
 
+    const copyToClipboard = () => {
+        const currentURL = window.location.href;
+        navigator.clipboard.writeText(currentURL);
+        toast.success(t('link_copied'));
+    };
+
+    const share = () => {
+        if (navigator.share) {
+            navigator
+                .share({
+                    title: event.frontmatter.title,
+                    url: window.location.href,
+                })
+                .then(() => {
+                    console.log('Successfully shared');
+                })
+                .catch((error) => {
+                    console.error('Error sharing:', error);
+                });
+        } else {
+            copyToClipboard();
+        }
+    };
+
     return (
         <div className="mx-auto max-w-[800px] px-4 py-6 dark:text-neutral-100">
-            <div className="mb-5 flex items-center">
+            <div className="mb-6 flex items-baseline justify-between">
                 <button
-                    className="flex items-center space-x-2 text-gray-600 focus:outline-hidden dark:text-neutral-100"
+                    className="mr-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
                     onClick={() => router.back()}
                 >
                     <FiChevronLeft className="text-xl" />
-                    <span>{t('back')}</span>
+                </button>
+                <Heading
+                    title={event.frontmatter.title}
+                    center
+                />
+                <button
+                    className="ml-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    onClick={share}
+                    aria-label="Share"
+                >
+                    <FiShare2 className="text-xl" />
                 </button>
             </div>
-
-            <h1 className="mb-4 text-3xl font-bold">
-                {event.frontmatter.title}
-            </h1>
 
             <div className="mb-6 flex flex-col gap-2 text-neutral-500 dark:text-neutral-400">
                 <div className="flex items-center gap-2">
