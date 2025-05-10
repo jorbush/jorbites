@@ -25,7 +25,7 @@ function readMarkdownFile(filePath: string): {
                 description: 'Error loading event',
                 date: new Date().toISOString(),
                 endDate: new Date().toISOString(),
-                location: '',
+                image: '/jorbites-social.jpg',
             },
             content: 'Error loading event content.',
         };

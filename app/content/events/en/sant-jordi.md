@@ -3,7 +3,6 @@ title: Sant Jordi Culinary Event
 description: Celebrate Sant Jordi with special Catalan recipes
 date: 2024-04-23
 endDate: 2024-04-23
-location: Barcelona City Center
 ---
 
 # Sant Jordi Culinary Event
@@ -22,7 +21,6 @@ Celebrate Catalunya's most beloved tradition with a culinary twist! On Saint Geo
 
 **Date:** April 23rd, 2024
 **Time:** 11:00 AM - 8:00 PM
-**Location:** Barcelona City Center
 **Price:** €10 (includes tastings)
 
 A portion of proceeds will go to local literacy programs. Roses and books will be available for purchase!

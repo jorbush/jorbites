@@ -3,7 +3,6 @@ title: Summer Mediterranean Cooking Classes
 description: Learn to cook refreshing Mediterranean dishes perfect for summer
 date: 2024-06-15
 endDate: 2024-08-30
-location: Various locations in Barcelona
 ---
 
 # Summer Mediterranean Cooking Classes

@@ -59,15 +59,6 @@ describe('EventDetail', () => {
         language: 'en',
     };
 
-    const singleDayEvent: Event = {
-        ...mockEvent,
-        frontmatter: {
-            ...mockEvent.frontmatter,
-            date: '2024-05-01',
-            endDate: '2024-05-01',
-        },
-    };
-
     afterEach(() => {
         cleanup();
     });
