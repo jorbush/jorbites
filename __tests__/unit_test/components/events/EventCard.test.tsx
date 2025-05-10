@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import EventCard from '@/app/components/events/EventCard';
 import { Event } from '@/app/utils/markdownUtils';

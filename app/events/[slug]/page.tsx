@@ -6,23 +6,25 @@ interface IParams {
     slug: string;
 }
 
-export async function generateMetadata({
-    params,
-}: {
-    params: IParams;
+interface PageProps {
+    params: Promise<IParams>;
+}
+
+export async function generateMetadata(props: {
+    params: Promise<IParams>;
 }): Promise<Metadata> {
-    const { slug } = await params;
+    const params = await props.params;
     return {
-        title: `${slug} | Events | Jorbites`,
+        title: `${params.slug} | Events | Jorbites`,
         description: 'Event details',
     };
 }
 
-const EventPage = async ({ params }: { params: IParams }) => {
-    const { slug } = await params;
+const EventPage = async (props: PageProps) => {
+    const params = await props.params;
     return (
         <ClientOnly>
-            <EventDetailClient slug={slug} />
+            <EventDetailClient slug={params.slug} />
         </ClientOnly>
     );
 };
