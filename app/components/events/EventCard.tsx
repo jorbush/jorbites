@@ -3,7 +3,6 @@
 import { Event } from '@/app/utils/markdownUtils';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
 import { FiCalendar } from 'react-icons/fi';
 import Image from 'next/image';
 
@@ -13,7 +12,6 @@ interface EventCardProps {
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
     const router = useRouter();
-    const { t } = useTranslation();
 
     const startDate = new Date(event.frontmatter.date);
     const endDate = new Date(event.frontmatter.endDate);
