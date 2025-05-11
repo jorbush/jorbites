@@ -10,6 +10,21 @@ interface EventCardProps {
     event: Event;
 }
 
+export const EventCardSkeleton = () => {
+    return (
+        <div className="dark:bg-dark overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white dark:border-neutral-700">
+            <div className="relative h-40 w-full animate-pulse bg-neutral-200 dark:bg-neutral-700"></div>
+            <div className="p-4">
+                <div className="h-6 w-3/4 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="mt-2 flex items-center">
+                    <div className="mr-2 h-4 w-4 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="h-4 w-1/2 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
     const router = useRouter();
 

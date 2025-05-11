@@ -4,7 +4,9 @@ import Container from '@/app/components/utils/Container';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { Event } from '@/app/utils/markdownUtils';
-import EventDetail from '@/app/components/events/EventDetail';
+import EventDetail, {
+    EventDetailSkeleton,
+} from '@/app/components/events/EventDetail';
 import { useRouter } from 'next/navigation';
 import useTheme from '@/app/hooks/useTheme';
 
@@ -57,12 +59,7 @@ const EventDetailClient: React.FC<EventDetailClientProps> = ({ slug }) => {
     return (
         <Container>
             {loading ? (
-                <div className="animate-pulse">
-                    <div className="mb-4 h-10 w-3/4 rounded bg-neutral-200 dark:bg-neutral-800" />
-                    <div className="mb-2 h-6 w-1/2 rounded bg-neutral-200 dark:bg-neutral-800" />
-                    <div className="mb-6 h-6 w-1/3 rounded bg-neutral-200 dark:bg-neutral-800" />
-                    <div className="h-64 w-full rounded bg-neutral-200 dark:bg-neutral-800" />
-                </div>
+                <EventDetailSkeleton />
             ) : error ? (
                 <div className="py-10 text-center">
                     <h2 className="mb-4 text-2xl font-bold text-red-500 dark:text-red-400">

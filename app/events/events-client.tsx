@@ -9,6 +9,7 @@ import {
     sortEventsByDate,
 } from '@/app/utils/markdownUtils';
 import EventsList from '@/app/components/events/EventsList';
+import { EventCardSkeleton } from '@/app/components/events/EventCard';
 import useTheme from '@/app/hooks/useTheme';
 
 const EventsClient = () => {
@@ -72,13 +73,15 @@ const EventsClient = () => {
                 </div>
 
                 {loading ? (
-                    <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                        {[1, 2, 3, 4].map((i) => (
-                            <div
-                                key={i}
-                                className="h-48 animate-pulse rounded-xl bg-neutral-200 dark:bg-neutral-800"
-                            />
-                        ))}
+                    <div className="mb-10">
+                        <h2 className="mb-5 text-2xl font-bold dark:text-neutral-100">
+                            <div className="h-8 w-40 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                        </h2>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            {[1, 2, 3, 4].map((i) => (
+                                <EventCardSkeleton key={i} />
+                            ))}
+                        </div>
                     </div>
                 ) : (
                     <>

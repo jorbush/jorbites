@@ -98,4 +98,31 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
     );
 };
 
+export const EventDetailSkeleton = () => {
+    return (
+        <div className="mx-auto max-w-[800px] px-4 py-6">
+            <div className="mb-6 flex items-baseline justify-between">
+                <div className="h-6 w-6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="mx-auto h-8 w-2/3 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="h-6 w-6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+            </div>
+
+            <div className="relative mb-6 h-[300px] w-full animate-pulse overflow-hidden rounded-xl bg-neutral-200 dark:bg-neutral-700"></div>
+
+            <div className="mb-6 flex items-center">
+                <div className="mr-2 h-4 w-4 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="h-4 w-1/3 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+            </div>
+
+            <div className="space-y-4">
+                <div className="h-4 w-full animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="h-4 w-5/6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="h-4 w-4/5 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="h-4 w-full animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="h-4 w-3/4 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+            </div>
+        </div>
+    );
+};
+
 export default EventDetail;
