@@ -176,6 +176,22 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     };
 
     const saveDraft = async () => {
+        // Collect ingredients
+        const newIngredients: string[] = [];
+        for (let i = 0; i < numIngredients; i++) {
+            if (watch('ingredient ' + i) !== '') {
+                newIngredients.push(watch('ingredient ' + i));
+            }
+        }
+
+        // Collect steps
+        const newSteps: string[] = [];
+        for (let i = 0; i < numSteps; i++) {
+            if (watch('step ' + i) !== '') {
+                newSteps.push(watch('step ' + i));
+            }
+        }
+
         const data = {
             currentStep: step,
             category: watch('category'),
@@ -186,8 +202,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             imageSrc3: watch('imageSrc3'),
             title: watch('title'),
             description: watch('description'),
-            ingredients: watch('ingredients'),
-            steps: watch('steps'),
+            ingredients: newIngredients,
+            steps: newSteps,
             minutes: watch('minutes'),
             coCooksIds: watch('coCooksIds'),
             linkedRecipeIds: watch('linkedRecipeIds'),
