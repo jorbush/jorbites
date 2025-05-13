@@ -28,16 +28,20 @@ export const EventCardSkeleton = () => {
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
     const router = useRouter();
 
-    const startDate = new Date(event.frontmatter.date);
-    const endDate = new Date(event.frontmatter.endDate);
-
-    const isSameDay = startDate.toDateString() === endDate.toDateString();
+    // Don't process dates for permanent events
+    const isPermanent = event.frontmatter.permanent === true;
 
     let dateDisplay;
-    if (isSameDay) {
-        dateDisplay = format(startDate, 'PPP');
-    } else {
-        dateDisplay = `${format(startDate, 'PPP')} - ${format(endDate, 'PPP')}`;
+    if (!isPermanent) {
+        const startDate = new Date(event.frontmatter.date);
+        const endDate = new Date(event.frontmatter.endDate);
+        const isSameDay = startDate.toDateString() === endDate.toDateString();
+
+        if (isSameDay) {
+            dateDisplay = format(startDate, 'PPP');
+        } else {
+            dateDisplay = `${format(startDate, 'PPP')} - ${format(endDate, 'PPP')}`;
+        }
     }
 
     const handleClick = () => {
@@ -60,10 +64,12 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
             </div>
             <div className="p-4">
                 <h3 className="text-xl font-bold">{event.frontmatter.title}</h3>
-                <div className="mt-2 flex items-center text-sm text-neutral-500 dark:text-neutral-400">
-                    <FiCalendar className="mr-2" />
-                    <span>{dateDisplay}</span>
-                </div>
+                {!isPermanent && dateDisplay && (
+                    <div className="mt-2 flex items-center text-sm text-neutral-500 dark:text-neutral-400">
+                        <FiCalendar className="mr-2" />
+                        <span>{dateDisplay}</span>
+                    </div>
+                )}
             </div>
         </div>
     );

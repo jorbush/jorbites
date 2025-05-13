@@ -6,6 +6,7 @@ export interface EventFrontmatter {
     date: string;
     endDate: string;
     image: string; // Mandatory image URL for the event
+    permanent?: boolean; // Flag for permanent events
 }
 
 export interface Event {
@@ -45,17 +46,24 @@ export function parseMarkdown(markdown: string): {
 }
 
 /**
- * Categorize events by date: current, upcoming, and past
+ * Categorize events by date: current, upcoming, past, and permanent
  */
 export function categorizeEvents(events: Event[]): {
     current: Event[];
     upcoming: Event[];
     past: Event[];
+    permanent: Event[];
 } {
     const now = new Date();
 
     return events.reduce(
         (acc, event) => {
+            // Handle permanent events separately
+            if (event.frontmatter.permanent === true) {
+                acc.permanent.push(event);
+                return acc;
+            }
+
             const startDate = new Date(event.frontmatter.date);
             const endDate = new Date(event.frontmatter.endDate);
 
@@ -74,7 +82,12 @@ export function categorizeEvents(events: Event[]): {
 
             return acc;
         },
-        { current: [] as Event[], upcoming: [] as Event[], past: [] as Event[] }
+        {
+            current: [] as Event[],
+            upcoming: [] as Event[],
+            past: [] as Event[],
+            permanent: [] as Event[],
+        }
     );
 }
 

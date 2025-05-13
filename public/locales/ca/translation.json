@@ -274,6 +274,8 @@
     "no_current_events": "No hi ha esdeveniments actuals",
     "no_upcoming_events": "No hi ha propers esdeveniments",
     "no_past_events": "No hi ha esdeveniments passats",
+    "permanent_events": "Esdeveniments Permanents",
+    "no_permanent_events": "No hi ha esdeveniments permanents",
     "event_not_found_message": "L'esdeveniment que estàs cercant no s'ha trobat.",
     "back_to_events": "Tornar a Esdeveniments",
     "date": "Data",

@@ -1,29 +1,24 @@
 ---
-title: Evento de Recetas Portuguesas
-description: Un delicioso evento con lo mejor de la cocina portuguesa
-date: 2024-05-01
-endDate: 2024-05-11
-location: Barcelona Food Hall
+title: 🇵🇹 Recetas de Portugal 🇵🇹
+date: 2025-04-30
+endDate: 2025-05-11
+image: /images/events/portuguese_event.webp
 ---
 
-# Evento de Recetas Portuguesas
 
-Únete a nosotros para un increíble viaje culinario a través del rico patrimonio gastronómico de Portugal. Este evento presentará recetas tradicionales portuguesas, técnicas de cocina e ingredientes.
+### 🇵🇹✨ ¡Nuevo evento en Jorbites: Recetas de Portugal! ✨🇵🇹
 
-## Qué esperar
+Del 30 de abril al 11 de mayo, ¡nos transportamos a tierras portuguesas con todo el sabor y la pasión que merece!
+Y esta vez no viajamos solos… ¡Paltín se va de viaje de negocios a Portugal! 🥑✈️
 
-- Demostraciones de cocina en vivo por chefs portugueses
-- Sesiones de degustación de varias delicias portuguesas
-- Maridaje con vinos portugueses
-- Firma de libros de cocina por famosos autores portugueses
+Para apoyarlo en su misión internacional, queremos llenar Jorbites de recetas portuguesas: bacalao, pastéis de nata, francesinhas… ¡todo vale mientras huela a Portugal! 🥘🍮
 
-¡No te pierdas esta oportunidad de descubrir los secretos de la cocina portuguesa y llevarte a casa algunas recetas increíbles!
+Publica tu receta inspirada en Portugal durante el evento y consigue la medalla especial Recetas de Portugal 🏅, exclusiva de esta semana.
 
-## Detalles del Evento
+¡Hagamos que Paltín se sienta como en casa, allá donde vaya!
+Mãos à obra, jorbiteros! (¡Manos a la obra!)
 
-**Fecha:** 1-11 de mayo de 2024
-**Hora:** 10:00 - 20:00
-**Lugar:** Barcelona Food Hall
-**Entrada:** 15€ (incluye degustación)
+### Mejores recetas del evento
 
-¡Regístrate ahora en nuestra web para asegurar tu plaza!
+- [Bacalao a la Portuguesa](https://jorbites.com/recipes/68165a38ee13a78468f16625)
+- [Pastéis de Nata](https://jorbites.com/recipes/6816564ca8c60818c96860ac)

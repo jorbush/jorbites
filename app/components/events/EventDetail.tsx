@@ -9,6 +9,8 @@ import ReactMarkdown from 'react-markdown';
 import Heading from '@/app/components/navigation/Heading';
 import { toast } from 'react-hot-toast';
 import Image from 'next/image';
+import Link from 'next/link';
+import { Components } from 'react-markdown';
 
 interface EventDetailProps {
     event: Event;
@@ -18,16 +20,20 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
     const { t } = useTranslation();
     const router = useRouter();
 
-    const startDate = new Date(event.frontmatter.date);
-    const endDate = new Date(event.frontmatter.endDate);
-
-    const isSameDay = startDate.toDateString() === endDate.toDateString();
+    // Don't process dates for permanent events
+    const isPermanent = event.frontmatter.permanent === true;
 
     let dateDisplay;
-    if (isSameDay) {
-        dateDisplay = format(startDate, 'PPP');
-    } else {
-        dateDisplay = `${format(startDate, 'PPP')} - ${format(endDate, 'PPP')}`;
+    if (!isPermanent) {
+        const startDate = new Date(event.frontmatter.date);
+        const endDate = new Date(event.frontmatter.endDate);
+        const isSameDay = startDate.toDateString() === endDate.toDateString();
+
+        if (isSameDay) {
+            dateDisplay = format(startDate, 'PPP');
+        } else {
+            dateDisplay = `${format(startDate, 'PPP')} - ${format(endDate, 'PPP')}`;
+        }
     }
 
     const copyToClipboard = () => {
@@ -52,6 +58,70 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
         } else {
             copyToClipboard();
         }
+    };
+
+    const markdownComponents: Components = {
+        h1: ({ node, ...props }) => (
+            <h1
+                className="mt-6 mb-4 text-3xl font-bold"
+                {...props}
+            />
+        ),
+        h2: ({ node, ...props }) => (
+            <h2
+                className="mt-5 mb-3 text-2xl font-bold"
+                {...props}
+            />
+        ),
+        h3: ({ node, ...props }) => (
+            <h3
+                className="mt-4 mb-2 text-xl font-bold"
+                {...props}
+            />
+        ),
+        p: ({ node, ...props }) => (
+            <p
+                className="mb-4"
+                {...props}
+            />
+        ),
+        a: ({ node, href, ...props }) => (
+            <Link
+                href={href || '#'}
+                className="text-green-450 hover:underline"
+                {...props}
+            />
+        ),
+        ul: ({ node, ...props }) => (
+            <ul
+                className="mb-4 ml-6 list-disc"
+                {...props}
+            />
+        ),
+        ol: ({ node, ...props }) => (
+            <ol
+                className="mb-4 ml-6 list-decimal"
+                {...props}
+            />
+        ),
+        li: ({ node, ...props }) => (
+            <li
+                className="mb-1"
+                {...props}
+            />
+        ),
+        strong: ({ node, ...props }) => (
+            <strong
+                className="font-bold"
+                {...props}
+            />
+        ),
+        em: ({ node, ...props }) => (
+            <em
+                className="italic"
+                {...props}
+            />
+        ),
     };
 
     return (
@@ -84,16 +154,21 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                     height={600}
                     className="w-full object-contain"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
+                    priority
                 />
             </div>
 
-            <div className="mb-6 flex items-center text-neutral-500 dark:text-neutral-400">
-                <FiCalendar className="mr-2" />
-                <span>{dateDisplay}</span>
-            </div>
+            {!isPermanent && dateDisplay && (
+                <div className="mb-6 flex items-center text-neutral-500 dark:text-neutral-400">
+                    <FiCalendar className="mr-2 text-lg" />
+                    <span>{dateDisplay}</span>
+                </div>
+            )}
 
             <div className="prose dark:prose-invert max-w-none">
-                <ReactMarkdown>{event.content}</ReactMarkdown>
+                <ReactMarkdown components={markdownComponents}>
+                    {event.content}
+                </ReactMarkdown>
             </div>
         </div>
     );

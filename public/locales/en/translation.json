@@ -274,6 +274,8 @@
     "no_current_events": "No current events found",
     "no_upcoming_events": "No upcoming events found",
     "no_past_events": "No past events found",
+    "permanent_events": "Permanent Events",
+    "no_permanent_events": "No permanent events found",
     "event_not_found_message": "The event you're looking for could not be found.",
     "back_to_events": "Back to Events",
     "date": "Date",

@@ -18,14 +18,15 @@ const EventsClient = () => {
         current: Event[];
         upcoming: Event[];
         past: Event[];
+        permanent: Event[];
     }>({
         current: [],
         upcoming: [],
         past: [],
+        permanent: [],
     });
     const [loading, setLoading] = useState(true);
 
-    // Initialize theme
     useTheme();
 
     useEffect(() => {
@@ -48,6 +49,7 @@ const EventsClient = () => {
                     current: sortEventsByDate(categorized.current),
                     upcoming: sortEventsByDate(categorized.upcoming),
                     past: sortEventsByDate(categorized.past),
+                    permanent: categorized.permanent,
                 });
             } catch (error) {
                 console.error('Error loading events:', error);
@@ -91,6 +93,15 @@ const EventsClient = () => {
                             emptyMessage={
                                 t('no_current_events') ||
                                 'No current events found'
+                            }
+                        />
+
+                        <EventsList
+                            events={events.permanent}
+                            title={t('permanent_events') || 'Permanent Events'}
+                            emptyMessage={
+                                t('no_permanent_events') ||
+                                'No permanent events found'
                             }
                         />
 
