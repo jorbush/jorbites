@@ -61,62 +61,62 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
     };
 
     const markdownComponents: Components = {
-        h1: ({ node, ...props }) => (
+        h1: (props) => (
             <h1
                 className="mt-6 mb-4 text-3xl font-bold"
                 {...props}
             />
         ),
-        h2: ({ node, ...props }) => (
+        h2: (props) => (
             <h2
                 className="mt-5 mb-3 text-2xl font-bold"
                 {...props}
             />
         ),
-        h3: ({ node, ...props }) => (
+        h3: (props) => (
             <h3
                 className="mt-4 mb-2 text-xl font-bold"
                 {...props}
             />
         ),
-        p: ({ node, ...props }) => (
+        p: (props) => (
             <p
                 className="mb-4"
                 {...props}
             />
         ),
-        a: ({ node, href, ...props }) => (
+        a: ({ href, ...props }) => (
             <Link
                 href={href || '#'}
                 className="text-green-450 hover:underline"
                 {...props}
             />
         ),
-        ul: ({ node, ...props }) => (
+        ul: (props) => (
             <ul
                 className="mb-4 ml-6 list-disc"
                 {...props}
             />
         ),
-        ol: ({ node, ...props }) => (
+        ol: (props) => (
             <ol
                 className="mb-4 ml-6 list-decimal"
                 {...props}
             />
         ),
-        li: ({ node, ...props }) => (
+        li: (props) => (
             <li
                 className="mb-1"
                 {...props}
             />
         ),
-        strong: ({ node, ...props }) => (
+        strong: (props) => (
             <strong
                 className="font-bold"
                 {...props}
             />
         ),
-        em: ({ node, ...props }) => (
+        em: (props) => (
             <em
                 className="italic"
                 {...props}
