@@ -4,6 +4,7 @@ description: A delicious event featuring the best of Portuguese cuisine
 date: 2024-05-01
 endDate: 2024-05-11
 location: Barcelona Food Hall
+image: /images/events/portuguese_event.webp
 ---
 
 # Portuguese Recipes Event
