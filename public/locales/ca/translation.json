@@ -265,5 +265,19 @@
     "link_expired_or_used": "L'enllaç ha caducat o ja s'ha utilitzat. Torna a sol·licitar un nou enllaç de restabliment.",
     "back_to_home": "Tornar a la pàgina d'inici",
     "passwords_dont_match": "Les contrasenyes no coincideixen",
-    "updating": "Actualitzant..."
+    "updating": "Actualitzant...",
+    "events": "Esdeveniments",
+    "events_description": "Descobreix esdeveniments on podràs guanyar recompenses increïbles.",
+    "current_events": "Esdeveniments Actuals",
+    "upcoming_events": "Propers Esdeveniments",
+    "past_events": "Esdeveniments Passats",
+    "no_current_events": "No hi ha esdeveniments actuals",
+    "no_upcoming_events": "No hi ha propers esdeveniments",
+    "no_past_events": "No hi ha esdeveniments passats",
+    "permanent_events": "Esdeveniments Permanents",
+    "no_permanent_events": "No hi ha esdeveniments permanents",
+    "event_not_found_message": "L'esdeveniment que estàs cercant no s'ha trobat.",
+    "back_to_events": "Tornar a Esdeveniments",
+    "date": "Data",
+    "location": "Ubicació"
 }

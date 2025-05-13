@@ -266,5 +266,19 @@
     "link_expired_or_used": "El enlace ha expirado o ya ha sido utilizado. Solicita un nuevo enlace de restablecimiento.",
     "back_to_home": "Volver a la página de inicio",
     "passwords_dont_match": "Las contraseñas no coinciden",
-    "updating": "Actualizando..."
+    "updating": "Actualizando...",
+    "events": "Eventos",
+    "events_description": "Descubre eventos en los que podrás ganar increíbles recompensas.",
+    "current_events": "Eventos Actuales",
+    "upcoming_events": "Próximos Eventos",
+    "past_events": "Eventos Pasados",
+    "no_current_events": "No hay eventos actuales",
+    "no_upcoming_events": "No hay próximos eventos",
+    "no_past_events": "No hay eventos pasados",
+    "permanent_events": "Eventos Permanentes",
+    "no_permanent_events": "No hay eventos permanentes",
+    "event_not_found_message": "El evento que estás buscando no pudo ser encontrado.",
+    "back_to_events": "Volver a Eventos",
+    "date": "Fecha",
+    "location": "Ubicación"
 }
