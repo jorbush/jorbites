@@ -127,12 +127,21 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
     return (
         <div className="mx-auto max-w-[800px] px-4 py-6 dark:text-neutral-100">
             <div className="mb-6 flex items-baseline justify-between">
-                <button
+                <Link
+                    href="/events"
                     className="mr-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
-                    onClick={() => router.back()}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        // Force a focus update before navigating back
+                        document.getElementById('main-content')?.focus();
+                        // Small delay to ensure the focus is processed
+                        setTimeout(() => {
+                            router.back();
+                        }, 10);
+                    }}
                 >
                     <FiChevronLeft className="text-xl" />
-                </button>
+                </Link>
                 <Heading
                     title={event.frontmatter.title}
                     center

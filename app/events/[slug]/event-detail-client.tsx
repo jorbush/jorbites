@@ -2,7 +2,7 @@
 
 import Container from '@/app/components/utils/Container';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Event } from '@/app/utils/markdownUtils';
 import EventDetail, {
     EventDetailSkeleton,
@@ -20,9 +20,42 @@ const EventDetailClient: React.FC<EventDetailClientProps> = ({ slug }) => {
     const [event, setEvent] = useState<Event | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     // Initialize theme
     useTheme();
+
+    // Focus management for PWA
+    useEffect(() => {
+        // Set focus to the container when component mounts
+        if (containerRef.current) {
+            containerRef.current.focus();
+        }
+
+        // Register visibility change handler for PWA
+        const handleVisibilityChange = () => {
+            if (
+                document.visibilityState === 'visible' &&
+                containerRef.current
+            ) {
+                containerRef.current.focus();
+                // Force a repaint to fix blank screen issues
+                document.body.style.display = 'none';
+                // Reading this property forces a repaint
+                void document.body.offsetHeight;
+                document.body.style.display = '';
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener(
+                'visibilitychange',
+                handleVisibilityChange
+            );
+        };
+    }, []);
 
     useEffect(() => {
         const loadEvent = async () => {

@@ -17,5 +17,11 @@
   ],
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
-  "display": "standalone"
+  "display": "standalone",
+  "start_url": "/",
+  "orientation": "portrait",
+  "scope": "/",
+  "display_override": ["standalone", "minimal-ui"],
+  "categories": ["food", "lifestyle", "social"],
+  "description": "Discover and share delicious recipes with a community of cooking enthusiasts"
 }
