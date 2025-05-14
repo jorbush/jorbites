@@ -70,7 +70,7 @@ const EventsClient = () => {
                     </h1>
                     <p className="text-sm text-gray-600 sm:text-base dark:text-gray-300">
                         {t('events_description') ||
-                            'Discover culinary events, workshops, and meetups organized by the Jorbites community.'}
+                            'Discover events where you can earn amazing rewards.'}
                     </p>
                 </div>
 

@@ -4,8 +4,7 @@ import EventsClient from './events-client';
 
 export const metadata: Metadata = {
     title: 'Events | Jorbites',
-    description:
-        'Discover culinary events, workshops, and meetups organized by Jorbites.',
+    description: 'Discover events where you can earn amazing rewards.',
 };
 
 const EventsPage = () => {
