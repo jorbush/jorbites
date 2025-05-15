@@ -3,13 +3,13 @@ import ClientOnly from '@/app/components/utils/ClientOnly';
 import EventsClient from './events-client';
 
 export const metadata: Metadata = {
-    title: 'Events | Jorbites',
+    title: 'Eventos | Jorbites',
     description:
-        'Discover cooking events and challenges where you can earn amazing rewards on Jorbites.',
+        'Descubre eventos de cocina y desafíos donde puedes ganar increíbles recompensas en Jorbites.',
     openGraph: {
-        title: 'Cooking Events and Challenges | Jorbites',
+        title: 'Eventos de Cocina y Desafíos | Jorbites',
         description:
-            'Participate in cooking events, challenges and contests to earn exclusive badges and rewards on Jorbites.',
+            'Participa en eventos de cocina, desafíos y concursos para ganar insignias y recompensas exclusivas en Jorbites.',
         type: 'website',
         url: 'https://jorbites.com/events',
     },

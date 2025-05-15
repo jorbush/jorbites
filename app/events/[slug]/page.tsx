@@ -19,14 +19,14 @@ export async function generateMetadata(props: {
 
     if (!event) {
         return {
-            title: `Event Not Found | Jorbites`,
-            description: 'The requested event could not be found',
+            title: `Evento No Encontrado | Jorbites`,
+            description: 'El evento solicitado no pudo ser encontrado',
         };
     }
 
     return {
-        title: `${event.frontmatter.title} | Events | Jorbites`,
-        description: event.frontmatter.description || 'Event details',
+        title: `${event.frontmatter.title} | Eventos | Jorbites`,
+        description: event.frontmatter.description || 'Detalles del evento',
         openGraph: {
             title: `${event.frontmatter.title} | Jorbites`,
             description: event.frontmatter.description,
