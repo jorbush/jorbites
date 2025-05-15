@@ -3,6 +3,7 @@ title: 🇵🇹 Portuguese Recipes 🇵🇹
 date: 2025-04-30
 endDate: 2025-05-11
 image: /images/events/portuguese_event.webp
+description: Portuguese Recipes Event
 ---
 
 

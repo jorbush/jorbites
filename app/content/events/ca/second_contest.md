@@ -3,6 +3,7 @@ title: 🎄 Concurs Jorbites 2 🎄
 date: 2024-12-22
 endDate: 2024-12-22
 image: /images/events/second_contest.webp
+description: Concurs Jorbites 2
 ---
 
 # 🎄 Concurs Jorbites 2

@@ -3,6 +3,7 @@ title: 🥂 Two Years of Jorbites 🥂
 date: 2025-06-13
 endDate: 2025-06-13
 image: /images/events/two_years_contest.webp
+description: Two Years of Jorbites
 ---
 
 # 🥂 Two Years of Jorbites 🥂

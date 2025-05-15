@@ -3,6 +3,7 @@ title: 🇵🇹 Recetas de Portugal 🇵🇹
 date: 2025-04-30
 endDate: 2025-05-11
 image: /images/events/portuguese_event.webp
+description: Evento de Recetas de Portugal
 ---
 
 

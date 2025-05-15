@@ -2,6 +2,7 @@
 title: Insignias de Mejores Recetas
 image: /images/events/top_recipe_badges/top_recipe_badges.webp
 permanent: true
+description: Insignias de Mejores Recetas
 ---
 
 ### 🔥🏅 ¡Insignias de Mejores Recetas en Jorbites! 🏅🔥

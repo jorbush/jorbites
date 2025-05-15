@@ -2,6 +2,7 @@
 title: Top Recipe Badges
 image: /images/events/top_recipe_badges/top_recipe_badges.webp
 permanent: true
+description: Top Recipe Badges
 ---
 
 ### 🔥🏅 Top Recipes Badges in Jorbites! 🏅🔥
