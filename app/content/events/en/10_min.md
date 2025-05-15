@@ -2,7 +2,6 @@
 title: ⏱️🔥 10 MINUTES 🔥⏱️
 date: 2025-05-15
 endDate: 2025-06-01
-description: Event of 10 minutes recipes
 image: /images/events/10_min_event.webp
 description: Event of 10 minutes recipes
 ---
