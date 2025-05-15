@@ -10,10 +10,43 @@ vi.mock('next/navigation', () => ({
     }),
 }));
 
+// Mock i18n-related modules
+vi.mock('i18next', () => ({
+    default: {
+        use: () => ({
+            use: () => ({
+                use: () => ({
+                    init: () => ({}),
+                }),
+            }),
+        }),
+        language: 'en',
+    },
+}));
+
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => key,
+        i18n: {
+            language: 'en',
+        },
     }),
+    initReactI18next: {},
+}));
+
+vi.mock('i18next-http-backend', () => ({
+    default: {},
+}));
+
+vi.mock('i18next-browser-languagedetector', () => ({
+    default: {},
+}));
+
+// Mock date-utils to avoid i18n dependency
+vi.mock('@/app/utils/date-utils', () => ({
+    formatDateRange: (start: string, end: string) => {
+        return `May 1, 2024${start !== end ? ' - May 2, 2024' : ''}`;
+    },
 }));
 
 vi.mock('react-markdown', () => ({
