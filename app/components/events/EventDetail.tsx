@@ -2,7 +2,6 @@
 
 import { Event } from '@/app/utils/markdownUtils';
 import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { FiChevronLeft, FiShare2, FiCalendar } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
@@ -11,6 +10,7 @@ import { toast } from 'react-hot-toast';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Components } from 'react-markdown';
+import { formatDateRange } from '@/app/utils/date-utils';
 
 interface EventDetailProps {
     event: Event;
@@ -25,15 +25,10 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
 
     let dateDisplay;
     if (!isPermanent) {
-        const startDate = new Date(event.frontmatter.date);
-        const endDate = new Date(event.frontmatter.endDate);
-        const isSameDay = startDate.toDateString() === endDate.toDateString();
-
-        if (isSameDay) {
-            dateDisplay = format(startDate, 'PPP');
-        } else {
-            dateDisplay = `${format(startDate, 'PPP')} - ${format(endDate, 'PPP')}`;
-        }
+        dateDisplay = formatDateRange(
+            event.frontmatter.date,
+            event.frontmatter.endDate
+        );
     }
 
     const copyToClipboard = () => {

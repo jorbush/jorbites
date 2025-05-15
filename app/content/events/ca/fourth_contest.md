@@ -3,6 +3,7 @@ title: 🇯🇵 Concurs Jorbites 4 🇯🇵
 date: 2025-04-12
 endDate: 2025-04-12
 image: /images/events/fourth_contest/fourth_contest.webp
+description: Concurs Jorbites 4
 ---
 
 # 🥢 Quarta Edició del Concurs Jorbites: Japó 🇯🇵

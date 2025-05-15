@@ -2,8 +2,8 @@
 title: ⏱️🔥 10 MINUTS 🔥⏱️
 date: 2025-05-15
 endDate: 2025-06-01
-description: Event de receptes en 10 minuts
 image: /images/events/10_min_event.webp
+description: Event de receptes en 10 minuts
 ---
 
 ### ⏱️🔥 Arriba l'esdeveniment 10 MINUTS a Jorbites! 🔥⏱️

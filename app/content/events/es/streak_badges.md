@@ -2,6 +2,7 @@
 title: Insignias de Racha
 image: /images/events/streak_badges/streak_badges.webp
 permanent: true
+description: Insignias de Racha
 ---
 
 ### 🔥🏅 ¡Nuevas Insignias de Racha en Jorbites! 🏅🔥

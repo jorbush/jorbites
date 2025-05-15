@@ -3,6 +3,7 @@ title: Sant Jordi 2025 🌹🐉
 date: 2025-04-23
 endDate: 2025-04-23
 image: /images/events/sant_jordi_2025.webp
+description: Sant Jordi 2025
 ---
 
 ### 🐉🌹 Special Sant Jordi 2025 🌹🐉

@@ -3,6 +3,7 @@ title: 🥑 Concurs Jorbites 3 🥑
 date: 2025-03-15
 endDate: 2025-03-15
 image: /images/events/third_contest.webp
+description: Concurs Jorbites 3
 ---
 
 # 🥑 Concurs Jorbites 3: L'Origen de Paltín 🍽️

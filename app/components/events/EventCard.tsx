@@ -1,10 +1,10 @@
 'use client';
 
 import { Event } from '@/app/utils/markdownUtils';
-import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { FiCalendar } from 'react-icons/fi';
 import Image from 'next/image';
+import { formatDateRange } from '@/app/utils/date-utils';
 
 interface EventCardProps {
     event: Event;
@@ -33,15 +33,10 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
     let dateDisplay;
     if (!isPermanent) {
-        const startDate = new Date(event.frontmatter.date);
-        const endDate = new Date(event.frontmatter.endDate);
-        const isSameDay = startDate.toDateString() === endDate.toDateString();
-
-        if (isSameDay) {
-            dateDisplay = format(startDate, 'PPP');
-        } else {
-            dateDisplay = `${format(startDate, 'PPP')} - ${format(endDate, 'PPP')}`;
-        }
+        dateDisplay = formatDateRange(
+            event.frontmatter.date,
+            event.frontmatter.endDate
+        );
     }
 
     const handleClick = () => {

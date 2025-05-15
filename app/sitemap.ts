@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next';
 import prisma from '@/app/libs/prismadb';
+import fs from 'fs';
+import path from 'path';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://jorbites.com';
@@ -16,11 +18,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: new Date(recipe.createdAt),
     }));
 
+    const eventsDirectory = path.join(process.cwd(), 'app/content/events/es');
+    const eventEntries: MetadataRoute.Sitemap = [];
+
+    if (fs.existsSync(eventsDirectory)) {
+        const eventFiles = fs
+            .readdirSync(eventsDirectory)
+            .filter((file) => file.endsWith('.md'));
+
+        eventFiles.forEach((file) => {
+            const slug = file.replace('.md', '');
+            eventEntries.push({
+                url: `${baseUrl}/events/${slug}`,
+                lastModified: new Date(),
+                priority: 0.8,
+            });
+        });
+    }
+
     return [
         {
             url: baseUrl,
             lastModified: new Date(),
+            priority: 1.0,
         },
         ...recipeEntries,
+        ...eventEntries,
     ];
 }

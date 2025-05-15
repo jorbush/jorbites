@@ -2,6 +2,7 @@
 title: Insígnies per a les Millors Receptes
 image: /images/events/top_recipe_badges/top_recipe_badges.webp
 permanent: true
+description: Les insígnies per a les millors receptes de Jorbites
 ---
 
 ### 🔥🏅 Insígnies per a les Millors Receptes a Jorbites! 🏅🔥

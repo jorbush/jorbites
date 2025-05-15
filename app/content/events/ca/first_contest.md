@@ -2,6 +2,7 @@
 title: 🥑 Concurs Jorbites 1 🥑
 date: 2024-01-15
 endDate: 2024-01-15
+description: Concurs Jorbites 1
 ---
 
 # 🥑 Concurs Jorbites 1

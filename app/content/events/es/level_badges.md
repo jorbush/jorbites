@@ -2,6 +2,7 @@
 title: Insignias de Nivel
 image: /images/events/level_badges/level_badges.webp
 permanent: true
+description: Insignias de Nivel
 ---
 
 ### 🔥🏅 ¡Nuevas Insignias por Nivel en Jorbites! 🏅🔥

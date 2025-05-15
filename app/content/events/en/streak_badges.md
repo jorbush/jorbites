@@ -2,6 +2,7 @@
 title: Streak Badges
 image: /images/events/streak_badges/streak_badges.webp
 permanent: true
+description: Streak Badges
 ---
 
 ### 🔥🏅 New Streak Badges in Jorbites! 🏅🔥

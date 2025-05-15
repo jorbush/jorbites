@@ -2,6 +2,7 @@
 title: Level Badges
 image: /images/events/level_badges/level_badges.webp
 permanent: true
+description: Level Badges
 ---
 
 ### 🔥🏅 New Badges per Level in Jorbites! 🏅🔥

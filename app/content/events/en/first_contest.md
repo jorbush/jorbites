@@ -2,6 +2,7 @@
 title: 🥑 Jorbites Contest 1 🥑
 date: 2024-01-15
 endDate: 2024-01-15
+description: First Jorbites Contest
 ---
 
 # 🥑 Jorbites Contest 1

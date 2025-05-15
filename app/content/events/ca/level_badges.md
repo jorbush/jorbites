@@ -2,6 +2,7 @@
 title: Insígnies de Nivell
 image: /images/events/level_badges/level_badges.webp
 permanent: true
+description: Insígnies de Nivell
 ---
 
 ### 🔥🏅 Noves Insígnies per Nivell a Jorbites! 🏅🔥
