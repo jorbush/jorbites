@@ -45,8 +45,7 @@ export const metadata = {
         'recetas, recipes, receptes, cocina, cooking, cuina, gastronomía, food, jorbites',
     icons: {
         icon: [
-            { url: '/favicon.ico', sizes: '32x32' },
-            { url: '/favicon.ico', sizes: '16x16' },
+            { url: '/favicon.ico', sizes: '48x48' },
             { url: '/favicon.svg', type: 'image/svg+xml' },
             { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
             { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
