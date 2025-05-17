@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import Avatar from '@/app/components/utils/Avatar';
 import { toast } from 'react-hot-toast';
@@ -37,22 +37,14 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 
         onCreateComment(comment);
 
-        // Only reset comment if not using external loading state
         if (!isLoading) {
             await new Promise((resolve) => setTimeout(resolve, 2000));
             setComment('');
             setButtonDisabled(false);
-        } else {
-            // When using external loading state, we'll reset when isLoading becomes false
-            if (!isLoading) {
-                setComment('');
-                setButtonDisabled(false);
-            }
         }
     };
 
-    // Reset button state when loading finishes
-    React.useEffect(() => {
+    useEffect(() => {
         if (!isLoading && isButtonDisabled) {
             setComment('');
             setButtonDisabled(false);
