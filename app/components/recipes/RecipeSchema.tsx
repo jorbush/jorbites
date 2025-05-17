@@ -10,6 +10,7 @@ interface RecipeSchemaProps {
     minutes?: number;
     ingredients?: string[];
     steps?: string[];
+    category?: string;
 }
 
 export default function RecipeSchema({
@@ -21,6 +22,7 @@ export default function RecipeSchema({
     minutes,
     ingredients,
     steps,
+    category,
 }: RecipeSchemaProps) {
     const schemaData = {
         '@context': 'https://schema.org',
@@ -33,13 +35,17 @@ export default function RecipeSchema({
             '@type': 'Person',
             name: userName || 'Usuario de Jorbites',
         },
+        prepTime: `PT${minutes || 30}M`,
         cookTime: `PT${minutes || 30}M`,
+        totalTime: `PT${minutes || 30}M`,
+        recipeCategory: category || 'Main Course',
         recipeIngredient: ingredients || [],
         recipeInstructions:
             steps?.map((step, index) => ({
                 '@type': 'HowToStep',
                 position: index + 1,
                 text: step,
+                image: imageSrc || '',
             })) || [],
     };
 
