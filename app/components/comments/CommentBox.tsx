@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import Avatar from '@/app/components/utils/Avatar';
 import { toast } from 'react-hot-toast';
@@ -37,19 +37,9 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 
         onCreateComment(comment);
 
-        if (!isLoading) {
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-            setComment('');
-            setButtonDisabled(false);
-        }
+        setComment('');
+        setButtonDisabled(false);
     };
-
-    useEffect(() => {
-        if (!isLoading && isButtonDisabled) {
-            setComment('');
-            setButtonDisabled(false);
-        }
-    }, [isLoading, isButtonDisabled]);
 
     return (
         <div className="mb-4 flex items-center">
