@@ -95,6 +95,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 minutes={recipe.minutes}
                 ingredients={recipe.ingredients}
                 steps={recipe.steps}
+                category={recipe.category}
             />
             <div className="mx-auto max-w-(--breakpoint-lg)">
                 <div className="flex flex-col gap-6">
