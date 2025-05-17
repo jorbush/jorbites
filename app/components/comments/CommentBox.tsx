@@ -10,11 +10,13 @@ import { useTranslation } from 'react-i18next';
 interface CommentBoxProps {
     userImage: string | undefined | null;
     onCreateComment: (comment: string) => void;
+    isLoading?: boolean;
 }
 
 const CommentBox: React.FC<CommentBoxProps> = ({
     userImage,
     onCreateComment,
+    isLoading = false,
 }) => {
     const [comment, setComment] = useState('');
     const [isButtonDisabled, setButtonDisabled] = useState(false);
@@ -29,10 +31,12 @@ const CommentBox: React.FC<CommentBoxProps> = ({
         setButtonDisabled(true);
         if (comment.trim() === '') {
             toast.error('Comment cannot be empty');
-        } else {
-            onCreateComment(comment);
+            setButtonDisabled(false);
+            return;
         }
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        onCreateComment(comment);
+
         setComment('');
         setButtonDisabled(false);
     };
@@ -53,6 +57,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                     value={comment}
                     onChange={handleInputChange}
                     data-cy="comment-input"
+                    disabled={isLoading || isButtonDisabled}
                 />
             </form>
 
@@ -60,9 +65,11 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 type="submit"
                 data-testid="submit-comment"
                 onClick={handleSubmit}
-                disabled={isButtonDisabled}
+                disabled={isLoading || isButtonDisabled}
                 className={`text-green-450 mt-4 mb-4 ml-4 ${
-                    isButtonDisabled ? 'cursor-not-allowed opacity-50' : ''
+                    isLoading || isButtonDisabled
+                        ? 'cursor-not-allowed opacity-50'
+                        : ''
                 }`}
                 data-cy="submit-comment"
             >

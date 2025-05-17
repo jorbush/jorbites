@@ -12,12 +12,14 @@ interface CommentsProps {
     currentUser?: SafeUser | null;
     onCreateComment: (comment: string) => void;
     comments?: SafeComment[];
+    isLoading?: boolean;
 }
 
 const Comments: React.FC<CommentsProps> = ({
     currentUser,
     onCreateComment,
     comments = [],
+    isLoading = false,
 }) => {
     const { t } = useTranslation();
     const [sortedComments, setSortedComments] =
@@ -76,6 +78,7 @@ const Comments: React.FC<CommentsProps> = ({
                 <CommentBox
                     userImage={currentUser?.image}
                     onCreateComment={onCreateComment}
+                    isLoading={isLoading}
                 />
                 {sortedComments.map((comment: SafeComment) => (
                     <div
