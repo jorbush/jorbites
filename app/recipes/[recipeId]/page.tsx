@@ -5,6 +5,7 @@ import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
+import RecipeClientSkeleton from '@/app/components/recipes/RecipeClientSkeleton';
 
 interface IParams {
     recipeId?: string;
@@ -85,7 +86,7 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
     }
 
     return (
-        <ClientOnly>
+        <ClientOnly fallback={<RecipeClientSkeleton />}>
             <RecipeClient
                 recipe={recipe}
                 currentUser={currentUser}

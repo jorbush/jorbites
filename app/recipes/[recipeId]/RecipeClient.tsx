@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useLoginModal from '@/app/hooks/useLoginModal';
@@ -35,6 +35,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const loginModal = useLoginModal();
     const router = useRouter();
     const { t } = useTranslation();
+    const [isLoading, setIsLoading] = useState(false);
 
     const category = useMemo(() => {
         return categories.find((item) => item.label === recipe.category);
@@ -49,6 +50,9 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
             if (!currentUser) {
                 return loginModal.onOpen();
             }
+
+            setIsLoading(true);
+
             axios
                 .post('/api/comments', {
                     comment: comment,
@@ -61,6 +65,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                     toast.error(t('something_went_wrong'));
                 })
                 .finally(() => {
+                    setIsLoading(false);
                     router.refresh();
                 });
         },
@@ -117,6 +122,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                         currentUser={currentUser}
                         onCreateComment={onCreateComment}
                         comments={comments}
+                        isLoading={isLoading}
                     />
                     {currentUser?.id === recipe.userId && (
                         <DeleteRecipeButton id={recipe.id} />

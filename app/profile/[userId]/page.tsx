@@ -6,6 +6,9 @@ import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
 import getUserById from '@/app/actions/getUserById';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
 import UserStats from '@/app/components/stats/UserStats';
+import ProfileHeaderSkeleton from '@/app/components/profile/ProfileHeaderSkeleton';
+import UserStatsSkeleton from '@/app/components/stats/UserStatsSkeleton';
+import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
 
 interface IParams {
     userId?: string;
@@ -29,22 +32,33 @@ const ProfilePage = async (props: { params: Promise<IParams> }) => {
     }
 
     return (
-        <ClientOnly>
-            <ProfileHeader user={user} />
-            <UserStats user={user} />
+        <>
+            <ClientOnly fallback={<ProfileHeaderSkeleton />}>
+                <ProfileHeader user={user} />
+            </ClientOnly>
+
+            <ClientOnly fallback={<UserStatsSkeleton />}>
+                <UserStats user={user} />
+            </ClientOnly>
+
             {recipes.length > 0 && (
-                <ProfileClient
-                    recipes={recipes}
-                    currentUser={currentUser}
-                />
+                <ClientOnly fallback={<ProfileClientSkeleton />}>
+                    <ProfileClient
+                        recipes={recipes}
+                        currentUser={currentUser}
+                    />
+                </ClientOnly>
             )}
+
             {recipes.length === 0 && (
-                <EmptyState
-                    title="No recipes found"
-                    subtitle="Looks like this user has not created recipes."
-                />
+                <ClientOnly>
+                    <EmptyState
+                        title="No recipes found"
+                        subtitle="Looks like this user has not created recipes."
+                    />
+                </ClientOnly>
             )}
-        </ClientOnly>
+        </>
     );
 };
 
