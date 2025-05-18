@@ -11,6 +11,17 @@ import useRecipeModal from '@/app/hooks/useRecipeModal';
 import useSettingsModal from '@/app/hooks/useSettingsModal';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
+import {
+    FcAddImage,
+    FcManager,
+    FcLike,
+    FcPositiveDynamic,
+    FcCalendar,
+    FcSettings,
+    FcExport,
+    FcImport,
+    FcPortraitMode,
+} from 'react-icons/fc';
 
 interface UserMenuProps {
     currentUser?: SafeUser | null;
@@ -86,8 +97,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                 </div>
             </div>
             {isOpen && (
-                <div className="dark:bg-dark absolute top-14 right-0 w-[40vw] overflow-hidden rounded-xl bg-white text-sm shadow-md md:w-3/4 dark:text-neutral-100">
-                    <div className="flex cursor-pointer flex-col">
+                <div className="dark:bg-dark absolute top-14 right-0 w-auto overflow-hidden rounded-xl bg-white text-sm shadow-md dark:text-neutral-100">
+                    <div className="flex w-max cursor-pointer flex-col">
                         {currentUser ? (
                             <>
                                 <MenuItem
@@ -97,6 +108,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('post_recipe')}
                                     extraClasses="sm:hidden"
+                                    icon={FcAddImage}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -106,6 +118,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('my_profile')}
+                                    icon={FcManager}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -113,6 +126,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('my_favorites')}
+                                    icon={FcLike}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -120,6 +134,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label="Top Jorbiters"
+                                    icon={FcPositiveDynamic}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -128,6 +143,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('events') || 'Events'}
                                     isNew
+                                    icon={FcCalendar}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -135,11 +151,13 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('settings')}
+                                    icon={FcSettings}
                                 />
                                 <MenuItem
                                     onClick={() => signOut()}
                                     label={t('logout')}
                                     dataCy="user-menu-logout"
+                                    icon={FcExport}
                                 />
                             </>
                         ) : (
@@ -150,6 +168,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label="Top Jorbiters"
+                                    icon={FcPositiveDynamic}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -158,6 +177,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('events') || 'Events'}
                                     isNew
+                                    icon={FcCalendar}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -165,6 +185,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('settings')}
+                                    icon={FcSettings}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -173,6 +194,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('login')}
                                     dataCy="user-menu-login"
+                                    icon={FcImport}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -180,6 +202,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('sign_up')}
+                                    icon={FcPortraitMode}
                                 />
                             </>
                         )}
