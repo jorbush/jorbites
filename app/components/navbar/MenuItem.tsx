@@ -33,11 +33,13 @@ const MenuItem: React.FC<MenuItemProps> = ({
                             className="flex-shrink-0"
                         />
                     )}
-                    <span>{label}</span>
+                    <span className="flex items-center justify-between whitespace-nowrap">
+                        {label}
+                    </span>
                 </div>
                 {isNew && (
                     <MdFiberNew
-                        className="text-green-450 ml-2"
+                        className="text-green-450 ml-2 flex-shrink-0"
                         size={25}
                     />
                 )}
