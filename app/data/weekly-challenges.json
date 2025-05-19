@@ -1,0 +1,229 @@
+{
+  "ingredientChallenges": [
+    {
+      "title": "Ingredient Spotlight",
+      "description": "Create a recipe featuring {ingredient} as the star ingredient",
+      "type": "ingredient",
+      "ingredients": [
+        "avocado",
+        "quinoa",
+        "sweet potato",
+        "chickpeas",
+        "kale",
+        "mushrooms",
+        "tofu",
+        "lentils",
+        "spinach",
+        "cauliflower",
+        "eggplant",
+        "zucchini",
+        "bell peppers",
+        "broccoli",
+        "asparagus",
+        "butternut squash",
+        "beets",
+        "brussels sprouts",
+        "artichoke",
+        "pumpkin"
+      ]
+    },
+    {
+      "title": "Protein Power",
+      "description": "Create a protein-rich recipe using {ingredient}",
+      "type": "ingredient",
+      "ingredients": [
+        "tempeh",
+        "seitan",
+        "edamame",
+        "black beans",
+        "kidney beans",
+        "chickpeas",
+        "lentils",
+        "tofu",
+        "quinoa",
+        "hemp seeds"
+      ]
+    },
+    {
+      "title": "Seasonal Special",
+      "description": "Create a recipe highlighting {ingredient} in season",
+      "type": "ingredient",
+      "ingredients": [
+        "strawberries",
+        "asparagus",
+        "rhubarb",
+        "cherries",
+        "peaches",
+        "corn",
+        "tomatoes",
+        "apples",
+        "pumpkin",
+        "cranberries"
+      ]
+    }
+  ],
+  "cuisineChallenges": [
+    {
+      "title": "Global Cuisine",
+      "description": "Create a recipe inspired by {cuisine} cuisine",
+      "type": "cuisine",
+      "cuisines": [
+        "Mediterranean",
+        "Asian",
+        "Mexican",
+        "Indian",
+        "Italian",
+        "Middle Eastern",
+        "Thai",
+        "Japanese",
+        "Greek",
+        "Spanish",
+        "Vietnamese",
+        "Korean",
+        "Chinese",
+        "French",
+        "Caribbean",
+        "African",
+        "Brazilian",
+        "Peruvian",
+        "Turkish",
+        "Lebanese"
+      ]
+    },
+    {
+      "title": "Street Food",
+      "description": "Recreate a popular {cuisine} street food dish",
+      "type": "cuisine",
+      "cuisines": [
+        "Mexican",
+        "Thai",
+        "Indian",
+        "Vietnamese",
+        "Korean",
+        "Chinese",
+        "Japanese",
+        "Turkish",
+        "Greek",
+        "Spanish"
+      ]
+    },
+    {
+      "title": "Regional Specialties",
+      "description": "Create a traditional dish from {cuisine} region",
+      "type": "cuisine",
+      "cuisines": [
+        "Sicilian",
+        "Andalusian",
+        "Sichuan",
+        "Kerala",
+        "Okinawan",
+        "Northern Thai",
+        "Tuscan",
+        "Provençal",
+        "Yucatecan",
+        "Cantonese"
+      ]
+    }
+  ],
+  "recipeChallenges": [
+    {
+      "title": "Recipe Remix",
+      "description": "Put your own twist on a classic {recipe}",
+      "type": "recipe",
+      "recipes": [
+        "pizza",
+        "pasta",
+        "burger",
+        "salad",
+        "soup",
+        "sandwich",
+        "tacos",
+        "stir-fry",
+        "curry",
+        "bowl",
+        "lasagna",
+        "risotto",
+        "paella",
+        "sushi",
+        "ramen",
+        "pad thai",
+        "enchiladas",
+        "falafel",
+        "dumplings",
+        "casserole"
+      ]
+    },
+    {
+      "title": "Breakfast Innovation",
+      "description": "Create a unique take on {recipe} for breakfast",
+      "type": "recipe",
+      "recipes": [
+        "pancakes",
+        "waffles",
+        "french toast",
+        "omelette",
+        "smoothie bowl",
+        "breakfast burrito",
+        "avocado toast",
+        "breakfast sandwich",
+        "granola",
+        "breakfast bowl"
+      ]
+    },
+    {
+      "title": "Dessert Delight",
+      "description": "Create a plant-based version of {recipe}",
+      "type": "recipe",
+      "recipes": [
+        "cheesecake",
+        "ice cream",
+        "chocolate cake",
+        "apple pie",
+        "tiramisu",
+        "pudding",
+        "cookies",
+        "brownies",
+        "mousse",
+        "tart"
+      ]
+    }
+  ],
+  "techniqueChallenges": [
+    {
+      "title": "Cooking Technique",
+      "description": "Create a recipe showcasing the {technique} cooking method",
+      "type": "technique",
+      "techniques": [
+        "braising",
+        "roasting",
+        "steaming",
+        "grilling",
+        "sautéing",
+        "stir-frying",
+        "baking",
+        "poaching",
+        "pickling",
+        "fermenting"
+      ]
+    }
+  ],
+  "dietaryChallenges": [
+    {
+      "title": "Dietary Focus",
+      "description": "Create a recipe that's {dietary} friendly",
+      "type": "dietary",
+      "dietary": [
+        "gluten-free",
+        "nut-free",
+        "soy-free",
+        "oil-free",
+        "raw",
+        "low-carb",
+        "high-protein",
+        "low-fat",
+        "sugar-free",
+        "whole-food"
+      ]
+    }
+  ]
+}

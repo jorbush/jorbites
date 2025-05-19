@@ -11,6 +11,7 @@ import {
 import EventsList from '@/app/components/events/EventsList';
 import { EventCardSkeleton } from '@/app/components/events/EventCard';
 import useTheme from '@/app/hooks/useTheme';
+import WeeklyChallenge from '@/app/components/events/WeeklyChallenge';
 
 const EventsClient = () => {
     const { t, i18n } = useTranslation();
@@ -73,6 +74,8 @@ const EventsClient = () => {
                             'Discover events where you can earn amazing rewards.'}
                     </p>
                 </div>
+
+                <WeeklyChallenge />
 
                 {loading ? (
                     <div className="mb-10">
