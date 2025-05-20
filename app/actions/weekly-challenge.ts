@@ -43,15 +43,6 @@ export interface WeeklyChallenge {
 }
 
 /**
- * Checks if a challenge is still active based on its end date
- */
-export async function isChallengeActive(
-    challenge: WeeklyChallenge
-): Promise<boolean> {
-    return isBefore(new Date(), challenge.endDate);
-}
-
-/**
  * Gets the current active challenge or generates a new one if none exists
  */
 export async function getCurrentChallenge(): Promise<WeeklyChallenge> {
