@@ -87,7 +87,7 @@ model WeeklyChallenge {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
-  type        String   // "ingredient", "cuisine", "recipe"
+  type        String   // "ingredient", "cuisine", "recipe", "technique", "dietary"
   value       String   // The specific ingredient, cuisine, or recipe name
   startDate   DateTime @default(now())
   endDate     DateTime
