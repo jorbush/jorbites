@@ -67,7 +67,17 @@
         "japanese",
         "vietnamese",
         "middle_eastern",
-        "african"
+        "african",
+        "galician",
+        "andalusian",
+        "catalan",
+        "basque",
+        "valencian",
+        "asturian",
+        "cantabrian",
+        "aragonese",
+        "navarrese",
+        "castilian"
       ]
     },
     {
@@ -75,16 +85,21 @@
       "description": "Recreate a popular {cuisine} street food dish",
       "type": "cuisine",
       "cuisines": [
-        "Mexican",
-        "Thai",
-        "Indian",
-        "Vietnamese",
-        "Korean",
-        "Chinese",
-        "Japanese",
-        "Turkish",
-        "Greek",
-        "Spanish"
+        "mexican",
+        "thai",
+        "indian",
+        "vietnamese",
+        "korean",
+        "chinese",
+        "japanese",
+        "turkish",
+        "greek",
+        "spanish",
+        "galician",
+        "andalusian",
+        "catalan",
+        "basque",
+        "valencian"
       ]
     },
     {
@@ -92,16 +107,26 @@
       "description": "Create a traditional dish from {cuisine} region",
       "type": "cuisine",
       "cuisines": [
-        "Sicilian",
-        "Andalusian",
-        "Sichuan",
-        "Kerala",
-        "Okinawan",
-        "Northern Thai",
-        "Tuscan",
-        "Provençal",
-        "Yucatecan",
-        "Cantonese"
+        "sicilian",
+        "andalusian",
+        "sichuan",
+        "kerala",
+        "okinawan",
+        "northern_thai",
+        "tuscan",
+        "provençal",
+        "yucatecan",
+        "cantonese",
+        "galician",
+        "catalan",
+        "basque",
+        "valencian",
+        "asturian",
+        "cantabrian",
+        "aragonese",
+        "navarrese",
+        "castilian",
+        "balearic"
       ]
     }
   ],

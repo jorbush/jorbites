@@ -371,5 +371,16 @@
     "challenge_value_dietary_high_protein": "High-protein",
     "challenge_value_dietary_low_fat": "Low-fat",
     "challenge_value_dietary_sugar_free": "Sugar-free",
-    "challenge_value_dietary_whole_food": "Whole-food"
+    "challenge_value_dietary_whole_food": "Whole-food",
+    "challenge_value_cuisine_galician": "Galician",
+    "challenge_value_cuisine_andalusian": "Andalusian",
+    "challenge_value_cuisine_catalan": "Catalan",
+    "challenge_value_cuisine_basque": "Basque",
+    "challenge_value_cuisine_valencian": "Valencian",
+    "challenge_value_cuisine_asturian": "Asturian",
+    "challenge_value_cuisine_cantabrian": "Cantabrian",
+    "challenge_value_cuisine_aragonese": "Aragonese",
+    "challenge_value_cuisine_navarrese": "Navarrese",
+    "challenge_value_cuisine_castilian": "Castilian",
+    "challenge_value_cuisine_balearic": "Balearic"
 }
