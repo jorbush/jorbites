@@ -2,7 +2,16 @@
 
 import prisma from '@/app/libs/prismadb';
 import challenges from '@/app/content/events/weekly-challenges.json';
-import { addDays, isBefore } from 'date-fns';
+import {
+    addDays,
+    isBefore,
+    startOfWeek,
+    endOfWeek,
+    setHours,
+    setMinutes,
+    setSeconds,
+    setMilliseconds,
+} from 'date-fns';
 
 export type ChallengeType =
     | 'ingredient'
@@ -129,8 +138,21 @@ async function generateNewChallenge(): Promise<WeeklyChallenge> {
     }
 
     // Create the challenge
-    const startDate = new Date();
-    const endDate = addDays(startDate, 7);
+    const now = new Date();
+    const startDate = startOfWeek(now, { weekStartsOn: 1 }); // 1 = Monday
+    const endDate = setMilliseconds(
+        setSeconds(
+            setMinutes(
+                setHours(
+                    endOfWeek(now, { weekStartsOn: 1 }), // 1 = Monday
+                    23
+                ),
+                59
+            ),
+            59
+        ),
+        999
+    );
 
     const challenge = await prisma.weeklyChallenge.create({
         data: {
