@@ -61,7 +61,9 @@ const WeeklyChallenge = () => {
                 </h3>
                 <p className="mb-4 text-neutral-600 dark:text-neutral-400">
                     {t(`challenge_description_${challenge.type}`, {
-                        [challenge.type]: challenge.value,
+                        [challenge.type]: t(
+                            `challenge_value_${challenge.type}_${challenge.value.toLowerCase().replace(/\s+/g, '_')}`
+                        ),
                     })}
                 </p>
                 <div className="text-sm text-neutral-500 dark:text-neutral-400">

@@ -92,40 +92,45 @@ async function generateNewChallenge(): Promise<WeeklyChallenge> {
     let value: string;
     switch (randomType) {
         case 'ingredient':
-            value =
-                template.ingredients![
+            value = template
+                .ingredients![
                     Math.floor(Math.random() * template.ingredients!.length)
-                ];
+                ].toLowerCase()
+                .replace(/\s+/g, '_');
             break;
         case 'cuisine':
-            value =
-                template.cuisines![
+            value = template
+                .cuisines![
                     Math.floor(Math.random() * template.cuisines!.length)
-                ];
+                ].toLowerCase()
+                .replace(/\s+/g, '_');
             break;
         case 'recipe':
-            value =
-                template.recipes![
+            value = template
+                .recipes![
                     Math.floor(Math.random() * template.recipes!.length)
-                ];
+                ].toLowerCase()
+                .replace(/\s+/g, '_');
             break;
         case 'technique':
-            value =
-                template.techniques![
+            value = template
+                .techniques![
                     Math.floor(Math.random() * template.techniques!.length)
-                ];
+                ].toLowerCase()
+                .replace(/\s+/g, '_');
             break;
         case 'dietary':
-            value =
-                template.dietary![
+            value = template
+                .dietary![
                     Math.floor(Math.random() * template.dietary!.length)
-                ];
+                ].toLowerCase()
+                .replace(/\s+/g, '_');
             break;
     }
 
     // Create the challenge
     const startDate = new Date();
-    const endDate = addDays(startDate, 7); // Challenge lasts for 7 days
+    const endDate = addDays(startDate, 7);
 
     const challenge = await prisma.weeklyChallenge.create({
         data: {

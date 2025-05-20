@@ -1,30 +1,20 @@
 {
   "ingredientChallenges": [
     {
-      "title": "Ingredient Spotlight",
-      "description": "Create a recipe featuring {ingredient} as the star ingredient",
+      "title": "Ingredient Challenge",
+      "description": "Create a recipe featuring as the star ingredient: {ingredient}",
       "type": "ingredient",
       "ingredients": [
         "avocado",
         "quinoa",
-        "sweet potato",
-        "chickpeas",
-        "kale",
-        "mushrooms",
+        "sweet_potato",
         "tofu",
-        "lentils",
-        "spinach",
-        "cauliflower",
+        "chickpeas",
+        "mushrooms",
         "eggplant",
-        "zucchini",
-        "bell peppers",
-        "broccoli",
-        "asparagus",
-        "butternut squash",
-        "beets",
-        "brussels sprouts",
-        "artichoke",
-        "pumpkin"
+        "lentils",
+        "tempeh",
+        "seitan"
       ]
     },
     {
@@ -64,30 +54,20 @@
   ],
   "cuisineChallenges": [
     {
-      "title": "Global Cuisine",
+      "title": "Cuisine Challenge",
       "description": "Create a recipe inspired by {cuisine} cuisine",
       "type": "cuisine",
       "cuisines": [
-        "Mediterranean",
-        "Asian",
-        "Mexican",
-        "Indian",
-        "Italian",
-        "Middle Eastern",
-        "Thai",
-        "Japanese",
-        "Greek",
-        "Spanish",
-        "Vietnamese",
-        "Korean",
-        "Chinese",
-        "French",
-        "Caribbean",
-        "African",
-        "Brazilian",
-        "Peruvian",
-        "Turkish",
-        "Lebanese"
+        "mediterranean",
+        "asian",
+        "mexican",
+        "indian",
+        "italian",
+        "thai",
+        "japanese",
+        "vietnamese",
+        "middle_eastern",
+        "african"
       ]
     },
     {
@@ -127,8 +107,8 @@
   ],
   "recipeChallenges": [
     {
-      "title": "Recipe Remix",
-      "description": "Put your own twist on a classic {recipe}",
+      "title": "Recipe Challenge",
+      "description": "Create a {recipe} recipe",
       "type": "recipe",
       "recipes": [
         "pizza",
@@ -136,21 +116,11 @@
         "burger",
         "salad",
         "soup",
-        "sandwich",
-        "tacos",
-        "stir-fry",
+        "stir_fry",
         "curry",
-        "bowl",
-        "lasagna",
-        "risotto",
-        "paella",
-        "sushi",
-        "ramen",
-        "pad thai",
-        "enchiladas",
-        "falafel",
-        "dumplings",
-        "casserole"
+        "tacos",
+        "sandwich",
+        "bowl"
       ]
     },
     {
@@ -190,8 +160,8 @@
   ],
   "techniqueChallenges": [
     {
-      "title": "Cooking Technique",
-      "description": "Create a recipe showcasing the {technique} cooking method",
+      "title": "Technique Challenge",
+      "description": "Create a recipe using the {technique} technique",
       "type": "technique",
       "techniques": [
         "braising",
@@ -199,7 +169,7 @@
         "steaming",
         "grilling",
         "sautéing",
-        "stir-frying",
+        "stir_frying",
         "baking",
         "poaching",
         "pickling",
@@ -209,20 +179,20 @@
   ],
   "dietaryChallenges": [
     {
-      "title": "Dietary Focus",
-      "description": "Create a recipe that's {dietary} friendly",
+      "title": "Dietary Challenge",
+      "description": "Create a {dietary} recipe",
       "type": "dietary",
       "dietary": [
-        "gluten-free",
-        "nut-free",
-        "soy-free",
-        "oil-free",
+        "gluten_free",
+        "nut_free",
+        "soy_free",
+        "low_carb",
+        "high_protein",
+        "low_fat",
+        "sugar_free",
         "raw",
-        "low-carb",
-        "high-protein",
-        "low-fat",
-        "sugar-free",
-        "whole-food"
+        "keto",
+        "paleo"
       ]
     }
   ]
