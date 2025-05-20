@@ -421,5 +421,7 @@
     "challenge_value_dietary_high_protein": "Alt en Proteïnes",
     "challenge_value_dietary_low_fat": "Baix en Greixos",
     "challenge_value_dietary_sugar_free": "Sense Sucre",
-    "challenge_value_dietary_whole_food": "Aliments Integrals"
+    "challenge_value_dietary_whole_food": "Aliments Integrals",
+    "challenge_value_dietary_keto": "Cetogènica",
+    "challenge_value_dietary_paleo": "Paleo"
 }
