@@ -359,6 +359,9 @@
     "challenge_value_cuisine_navarrese": "Navarra",
     "challenge_value_cuisine_castilian": "Castellana",
     "challenge_value_cuisine_balearic": "Balear",
+    "challenge_value_cuisine_provencal": "Provençal",
+    "challenge_value_cuisine_yucatecan": "Yucateca",
+    "challenge_value_cuisine_cantonese": "Cantonès",
 
     "challenge_value_recipe_pizza": "Pizza",
     "challenge_value_recipe_pasta": "Pasta",
