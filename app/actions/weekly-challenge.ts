@@ -3,7 +3,6 @@
 import prisma from '@/app/libs/prismadb';
 import challenges from '@/app/content/events/weekly-challenges.json';
 import {
-    isBefore,
     startOfWeek,
     endOfWeek,
     setHours,
