@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '@/app/libs/prismadb';
-import challenges from '@/app/data/weekly-challenges.json';
+import challenges from '@/app/content/events/weekly-challenges.json';
 import { addDays, isBefore } from 'date-fns';
 
 export type ChallengeType =
