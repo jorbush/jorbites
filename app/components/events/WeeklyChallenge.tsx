@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
 import { FiAward } from 'react-icons/fi';
 import {
     getCurrentChallenge,
     WeeklyChallenge as WeeklyChallengeType,
 } from '@/app/actions/weekly-challenge';
 import Link from 'next/link';
+import { formatDateLanguage } from '@/app/utils/date-utils';
 
 const WeeklyChallenge = () => {
     const { t } = useTranslation();
@@ -68,7 +68,7 @@ const WeeklyChallenge = () => {
                 </p>
                 <div className="text-sm text-neutral-500 dark:text-neutral-400">
                     {t('challenge_ends')}:{' '}
-                    {format(new Date(challenge.endDate), 'MMMM d, yyyy')}
+                    {formatDateLanguage(new Date(challenge.endDate), 'PPP')}
                 </div>
             </div>
         </Link>

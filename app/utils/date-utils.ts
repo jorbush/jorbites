@@ -4,7 +4,7 @@ import i18n from '@/app/i18n';
 
 type LocaleType = 'es' | 'en' | 'ca';
 
-const locales = {
+export const locales = {
     es,
     en: enUS,
     ca,
@@ -29,4 +29,11 @@ export const formatDateRange = (
     } else {
         return `${format(start, 'PPP', { locale })} - ${format(end, 'PPP', { locale })}`;
     }
+};
+
+export const formatDateLanguage = (date: Date | string, formatString: string) => {
+    const currentLocale = (i18n.language as LocaleType) || 'es';
+    const locale = locales[currentLocale];
+    const parsedDate = date instanceof Date ? date : new Date(date);
+    return format(parsedDate, formatString, { locale });
 };
