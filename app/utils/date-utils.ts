@@ -31,7 +31,10 @@ export const formatDateRange = (
     }
 };
 
-export const formatDateLanguage = (date: Date | string, formatString: string) => {
+export const formatDateLanguage = (
+    date: Date | string,
+    formatString: string
+) => {
     const currentLocale = (i18n.language as LocaleType) || 'es';
     const locale = locales[currentLocale];
     const parsedDate = date instanceof Date ? date : new Date(date);
