@@ -288,9 +288,9 @@
     "challenge_recipe": "Reto de Receta",
     "challenge_technique": "Reto de Técnica",
     "challenge_dietary": "Reto Dietético",
-    "challenge_description_ingredient": "¡Crea una receta que tenga a {{ingredient}} como ingrediente estrella!",
-    "challenge_description_cuisine": "¡Demuestra tus habilidades en la cocina {{cuisine}}!",
-    "challenge_description_recipe": "¡Dale tu toque personal a la clásica {{recipe}}!",
-    "challenge_description_technique": "¡Domina el arte de {{technique}} en tu receta!",
-    "challenge_description_dietary": "¡Crea una deliciosa receta {{dietary}} que a todos les encantará!"
+    "challenge_description_ingredient": "Crea una receta que tenga como ingrediente estrella: {{ingredient}}",
+    "challenge_description_cuisine": "Demuestra tus habilidades en la cocina: {{cuisine}}",
+    "challenge_description_recipe": "Dale tu toque personal a la receta clásica: {{recipe}}",
+    "challenge_description_technique": "Domina el arte de la técnica: {{technique}}",
+    "challenge_description_dietary": "Crea una deliciosa receta apta para: {{dietary}}"
 }

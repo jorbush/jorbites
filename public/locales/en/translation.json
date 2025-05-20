@@ -287,9 +287,9 @@
     "challenge_recipe": "Recipe Challenge",
     "challenge_technique": "Technique Challenge",
     "challenge_dietary": "Dietary Challenge",
-    "challenge_description_ingredient": "Create a recipe featuring {{ingredient}} as the star ingredient!",
-    "challenge_description_cuisine": "Showcase your skills in {{cuisine}} cuisine!",
-    "challenge_description_recipe": "Put your own spin on the classic {{recipe}}!",
-    "challenge_description_technique": "Master the art of {{technique}} in your recipe!",
-    "challenge_description_dietary": "Create a delicious {{dietary}} recipe that everyone will love!"
+    "challenge_description_ingredient": "Create a recipe featuring as the star ingredient: {{ingredient}}",
+    "challenge_description_cuisine": "Showcase your skills in the cuisine: {{cuisine}}",
+    "challenge_description_recipe": "Put your own twist on the classic recipe: {{recipe}}",
+    "challenge_description_technique": "Master the art of the technique: {{technique}}",
+    "challenge_description_dietary": "Create a delicious recipe suitable for: {{dietary}}"
 }

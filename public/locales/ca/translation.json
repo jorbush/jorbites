@@ -287,9 +287,9 @@
     "challenge_recipe": "Repte de Recepta",
     "challenge_technique": "Repte de Tècnica",
     "challenge_dietary": "Repte Dietètic",
-    "challenge_description_ingredient": "Crea una recepta que tingui a {{ingredient}} com a ingredient estrella!",
-    "challenge_description_cuisine": "Mostra les teves habilitats en la cuina {{cuisine}}!",
-    "challenge_description_recipe": "Dona el teu toc personal a la clàssica {{recipe}}!",
-    "challenge_description_technique": "Domina l'art de {{technique}} a la teva recepta!",
-    "challenge_description_dietary": "Crea una deliciosa recepta {{dietary}} que a tothom li encantarà!"
+    "challenge_description_ingredient": "Crea una recepta que tingui com a ingredient estrella: {{ingredient}}",
+    "challenge_description_cuisine": "Mostra les teves habilitats en la cuina: {{cuisine}}",
+    "challenge_description_recipe": "Dona el teu toc personal a la recepta clàssica: {{recipe}}",
+    "challenge_description_technique": "Domina l'art de la tècnica: {{technique}}",
+    "challenge_description_dietary": "Crea una deliciosa recepta adequada per a: {{dietary}}"
 }
