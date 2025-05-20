@@ -2,7 +2,7 @@
 
 import prisma from '@/app/libs/prismadb';
 import challenges from '@/app/data/weekly-challenges.json';
-import { addDays } from 'date-fns';
+import { addDays, isBefore } from 'date-fns';
 
 export type ChallengeType =
     | 'ingredient'
@@ -34,6 +34,16 @@ export interface WeeklyChallenge {
     updatedAt: Date;
 }
 
+/**
+ * Checks if a challenge is still active based on its end date
+ */
+export async function isChallengeActive(challenge: WeeklyChallenge): Promise<boolean> {
+    return isBefore(new Date(), challenge.endDate);
+}
+
+/**
+ * Gets the current active challenge or generates a new one if none exists
+ */
 export async function getCurrentChallenge(): Promise<WeeklyChallenge> {
     const now = new Date();
 
@@ -53,6 +63,9 @@ export async function getCurrentChallenge(): Promise<WeeklyChallenge> {
     return generateNewChallenge();
 }
 
+/**
+ * Generates a new weekly challenge with random type and value
+ */
 async function generateNewChallenge(): Promise<WeeklyChallenge> {
     // Delete any existing challenges
     await prisma.weeklyChallenge.deleteMany({});
