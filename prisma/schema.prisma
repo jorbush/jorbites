@@ -82,3 +82,15 @@ model Comment {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
+
+model WeeklyChallenge {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  type        String   // "ingredient", "cuisine", "recipe", "technique", "dietary"
+  value       String   // The specific ingredient, cuisine, or recipe name
+  startDate   DateTime @default(now())
+  endDate     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

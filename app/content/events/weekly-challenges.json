@@ -1,0 +1,224 @@
+{
+  "ingredientChallenges": [
+    {
+      "title": "Ingredient Challenge",
+      "description": "Create a recipe featuring as the star ingredient: {ingredient}",
+      "type": "ingredient",
+      "ingredients": [
+        "avocado",
+        "quinoa",
+        "sweet_potato",
+        "tofu",
+        "chickpeas",
+        "mushrooms",
+        "eggplant",
+        "lentils",
+        "tempeh",
+        "seitan"
+      ]
+    },
+    {
+      "title": "Protein Power",
+      "description": "Create a protein-rich recipe using {ingredient}",
+      "type": "ingredient",
+      "ingredients": [
+        "tempeh",
+        "seitan",
+        "edamame",
+        "black beans",
+        "kidney beans",
+        "chickpeas",
+        "lentils",
+        "tofu",
+        "quinoa",
+        "hemp seeds"
+      ]
+    },
+    {
+      "title": "Seasonal Special",
+      "description": "Create a recipe highlighting {ingredient} in season",
+      "type": "ingredient",
+      "ingredients": [
+        "strawberries",
+        "asparagus",
+        "rhubarb",
+        "cherries",
+        "peaches",
+        "corn",
+        "tomatoes",
+        "apples",
+        "pumpkin",
+        "cranberries"
+      ]
+    }
+  ],
+  "cuisineChallenges": [
+    {
+      "title": "Cuisine Challenge",
+      "description": "Create a recipe inspired by {cuisine} cuisine",
+      "type": "cuisine",
+      "cuisines": [
+        "mediterranean",
+        "asian",
+        "mexican",
+        "indian",
+        "italian",
+        "thai",
+        "japanese",
+        "vietnamese",
+        "middle_eastern",
+        "african",
+        "galician",
+        "andalusian",
+        "catalan",
+        "basque",
+        "valencian",
+        "asturian",
+        "cantabrian",
+        "aragonese",
+        "navarrese",
+        "castilian"
+      ]
+    },
+    {
+      "title": "Street Food",
+      "description": "Recreate a popular {cuisine} street food dish",
+      "type": "cuisine",
+      "cuisines": [
+        "mexican",
+        "thai",
+        "indian",
+        "vietnamese",
+        "korean",
+        "chinese",
+        "japanese",
+        "turkish",
+        "greek",
+        "spanish",
+        "galician",
+        "andalusian",
+        "catalan",
+        "basque",
+        "valencian"
+      ]
+    },
+    {
+      "title": "Regional Specialties",
+      "description": "Create a traditional dish from {cuisine} region",
+      "type": "cuisine",
+      "cuisines": [
+        "sicilian",
+        "andalusian",
+        "sichuan",
+        "kerala",
+        "okinawan",
+        "northern_thai",
+        "tuscan",
+        "provencal",
+        "yucatecan",
+        "cantonese",
+        "galician",
+        "catalan",
+        "basque",
+        "valencian",
+        "asturian",
+        "cantabrian",
+        "aragonese",
+        "navarrese",
+        "castilian",
+        "balearic"
+      ]
+    }
+  ],
+  "recipeChallenges": [
+    {
+      "title": "Recipe Challenge",
+      "description": "Create a {recipe} recipe",
+      "type": "recipe",
+      "recipes": [
+        "pizza",
+        "pasta",
+        "burger",
+        "salad",
+        "soup",
+        "stir_fry",
+        "curry",
+        "tacos",
+        "sandwich",
+        "bowl"
+      ]
+    },
+    {
+      "title": "Breakfast Innovation",
+      "description": "Create a unique take on {recipe} for breakfast",
+      "type": "recipe",
+      "recipes": [
+        "pancakes",
+        "waffles",
+        "french toast",
+        "omelette",
+        "smoothie bowl",
+        "breakfast burrito",
+        "avocado toast",
+        "breakfast sandwich",
+        "granola",
+        "breakfast bowl"
+      ]
+    },
+    {
+      "title": "Dessert Delight",
+      "description": "Create a plant-based version of {recipe}",
+      "type": "recipe",
+      "recipes": [
+        "cheesecake",
+        "ice cream",
+        "chocolate cake",
+        "apple pie",
+        "tiramisu",
+        "pudding",
+        "cookies",
+        "brownies",
+        "mousse",
+        "tart"
+      ]
+    }
+  ],
+  "techniqueChallenges": [
+    {
+      "title": "Technique Challenge",
+      "description": "Create a recipe using the {technique} technique",
+      "type": "technique",
+      "techniques": [
+        "braising",
+        "roasting",
+        "steaming",
+        "grilling",
+        "sauteing",
+        "stir_frying",
+        "baking",
+        "poaching",
+        "pickling",
+        "fermenting"
+      ]
+    }
+  ],
+  "dietaryChallenges": [
+    {
+      "title": "Dietary Challenge",
+      "description": "Create a {dietary} recipe",
+      "type": "dietary",
+      "dietary": [
+        "gluten_free",
+        "nut_free",
+        "soy_free",
+        "low_carb",
+        "high_protein",
+        "low_fat",
+        "sugar_free",
+        "raw",
+        "keto",
+        "paleo"
+      ]
+    }
+  ]
+}
