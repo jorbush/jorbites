@@ -118,7 +118,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('my_profile')}
-                                    avatarSrc={currentUser?.image}
+                                    icon={FcManager}
+                                    avatarSrc={currentUser?.image || undefined}
                                 />
                                 <MenuItem
                                     onClick={() => {

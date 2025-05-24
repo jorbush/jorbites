@@ -30,6 +30,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
         >
             <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-3">
+                    {/* Render Avatar if avatarSrc is provided, otherwise fall back to Icon if available */}
                     {avatarSrc ? (
                         <Avatar
                             src={avatarSrc}
