@@ -40,6 +40,15 @@ const Input: React.FC<InputProps> = ({
         }
     }, [id]);
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (maxLength && value.length > maxLength) {
+            e.target.value = value.slice(0, maxLength);
+        }
+        onChange(e);
+        setCharCount(e.target.value.length);
+    };
+
     return (
         <div className="relative w-full">
             {formatPrice && (
@@ -53,10 +62,7 @@ const Input: React.FC<InputProps> = ({
                 id={id}
                 disabled={disabled}
                 {...rest}
-                onChange={(e) => {
-                    onChange(e);
-                    setCharCount(e.target.value.length);
-                }}
+                onChange={handleChange}
                 placeholder=" "
                 type={type}
                 maxLength={maxLength}
@@ -82,8 +88,11 @@ const Input: React.FC<InputProps> = ({
                 {label}
             </label>
             {maxLength && (
-                <div className="absolute top-2 right-2 text-xs text-neutral-500 dark:text-neutral-400">
-                    <span id={`${id}-char-count`}>{charCount}</span>/{maxLength}
+                <div
+                    className="absolute top-2 right-2 text-xs text-neutral-500 dark:text-neutral-400"
+                    data-testid="char-count"
+                >
+                    {charCount}/{maxLength}
                 </div>
             )}
         </div>

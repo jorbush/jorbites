@@ -4,7 +4,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ResetPasswordClient from '@/app/reset-password/[token]/ResetPasswordClient';
 import axios from 'axios';
 
-// Mocks
 vi.mock('axios');
 vi.mock('react-hot-toast', () => ({
     toast: {
@@ -23,15 +22,6 @@ vi.mock('next/navigation', () => ({
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => key,
-    }),
-}));
-
-// Mock react-hook-form
-vi.mock('react-hook-form', () => ({
-    useForm: () => ({
-        register: vi.fn(),
-        handleSubmit: (callback: any) => (data: any) => callback(data),
-        formState: { errors: {} },
     }),
 }));
 

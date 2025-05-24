@@ -1,15 +1,25 @@
 import React from 'react';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import Input from '@/app/components/inputs/Input';
 import { UseFormRegister, FieldValues, FieldErrors } from 'react-hook-form';
+import { RECIPE_TITLE_MAX_LENGTH } from '@/app/utils/constants';
 
 describe('Input', () => {
-    const mockRegister: UseFormRegister<FieldValues> = vi.fn();
+    const mockOnChange = vi.fn();
+    const mockRegister: UseFormRegister<FieldValues> = vi
+        .fn()
+        .mockImplementation((id: string) => ({
+            onChange: mockOnChange,
+            onBlur: vi.fn(),
+            name: id,
+            ref: vi.fn(),
+        }));
     const mockErrors: FieldErrors = {};
 
     afterEach(() => {
         cleanup();
+        vi.clearAllMocks();
     });
 
     it('renders correctly with basic props', () => {
@@ -107,5 +117,86 @@ describe('Input', () => {
         expect(mockRegister).toHaveBeenCalledWith('test', {
             required: true,
         });
+    });
+
+    it('displays character count when maxLength is provided', () => {
+        render(
+            <Input
+                id="test"
+                label="Test Input"
+                register={mockRegister}
+                errors={mockErrors}
+                maxLength={RECIPE_TITLE_MAX_LENGTH}
+            />
+        );
+
+        const charCount = screen.getByTestId('char-count');
+        expect(charCount.textContent).toBe(`0/${RECIPE_TITLE_MAX_LENGTH}`);
+    });
+
+    it('updates character count when input changes', () => {
+        render(
+            <Input
+                id="test"
+                label="Test Input"
+                register={mockRegister}
+                errors={mockErrors}
+                maxLength={RECIPE_TITLE_MAX_LENGTH}
+            />
+        );
+
+        const input = screen.getByRole('textbox');
+        fireEvent.change(input, { target: { value: 'Hello' } });
+
+        // Call the onChange handler with the new value
+        mockOnChange({ target: { value: 'Hello' } });
+
+        const charCount = screen.getByTestId('char-count');
+        expect(charCount.textContent).toBe(`5/${RECIPE_TITLE_MAX_LENGTH}`);
+    });
+
+    it('enforces maxLength limit', () => {
+        render(
+            <Input
+                id="test"
+                label="Test Input"
+                register={mockRegister}
+                errors={mockErrors}
+                maxLength={5}
+            />
+        );
+
+        const input = screen.getByRole('textbox') as HTMLInputElement;
+        fireEvent.change(input, { target: { value: 'Hello World' } });
+
+        // Call the onChange handler with the truncated value
+        mockOnChange({ target: { value: 'Hello' } });
+
+        expect(input.value).toBe('Hello');
+    });
+
+    it('initializes character count with existing value', () => {
+        const mockRegisterWithValue = vi
+            .fn()
+            .mockImplementation((id: string) => ({
+                onChange: vi.fn(),
+                onBlur: vi.fn(),
+                name: id,
+                ref: vi.fn(),
+                value: 'Initial',
+            }));
+
+        render(
+            <Input
+                id="test"
+                label="Test Input"
+                register={mockRegisterWithValue}
+                errors={mockErrors}
+                maxLength={RECIPE_TITLE_MAX_LENGTH}
+            />
+        );
+
+        const charCount = screen.getByTestId('char-count');
+        expect(charCount.textContent).toBe(`7/${RECIPE_TITLE_MAX_LENGTH}`);
     });
 });
