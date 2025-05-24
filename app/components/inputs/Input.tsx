@@ -2,7 +2,7 @@
 
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 import { BiDollar } from 'react-icons/bi';
-import { useEffect, useState } from 'react';
+import { useState, useRef } from 'react';
 
 interface InputProps {
     id: string;
@@ -30,15 +30,13 @@ const Input: React.FC<InputProps> = ({
     maxLength,
 }) => {
     const [charCount, setCharCount] = useState(0);
+    const inputRef = useRef<HTMLInputElement>(null);
 
-    const { onChange, ...rest } = register(id, { required, maxLength });
-
-    useEffect(() => {
-        const input = document.getElementById(id) as HTMLInputElement;
-        if (input) {
-            setCharCount(input.value.length);
-        }
-    }, [id]);
+    const {
+        onChange,
+        ref: registerRef,
+        ...rest
+    } = register(id, { required, maxLength });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -60,6 +58,13 @@ const Input: React.FC<InputProps> = ({
             )}
             <input
                 id={id}
+                ref={(e) => {
+                    registerRef(e);
+                    inputRef.current = e;
+                    if (e) {
+                        setCharCount(e.value.length);
+                    }
+                }}
                 disabled={disabled}
                 {...rest}
                 onChange={handleChange}
