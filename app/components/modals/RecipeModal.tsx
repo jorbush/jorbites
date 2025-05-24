@@ -23,6 +23,12 @@ import { useTranslation } from 'react-i18next';
 import { FiUploadCloud } from 'react-icons/fi';
 import { SafeUser } from '@/app/types';
 import RelatedContentStep from '@/app/components/modals/recipe-steps/RelatedContentStep';
+import {
+    RECIPE_TITLE_MAX_LENGTH,
+    RECIPE_DESCRIPTION_MAX_LENGTH,
+    RECIPE_INGREDIENT_MAX_LENGTH,
+    RECIPE_STEP_MAX_LENGTH,
+} from '@/app/utils/constants';
 
 /* eslint-disable unused-imports/no-unused-vars */
 enum STEPS {
@@ -411,6 +417,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                             register={register}
                             errors={errors}
                             required={numSteps === 1}
+                            maxLength={RECIPE_STEP_MAX_LENGTH}
                             dataCy={`recipe-step-${i}`}
                         />
                     </div>
@@ -449,6 +456,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                             register={register}
                             errors={errors}
                             required={numIngredients === 1}
+                            maxLength={RECIPE_INGREDIENT_MAX_LENGTH}
                             dataCy={`recipe-ingredient-${i}`}
                         />
                     </div>
@@ -569,6 +577,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     register={register}
                     errors={errors}
                     required
+                    maxLength={RECIPE_TITLE_MAX_LENGTH}
                     dataCy="recipe-title"
                 />
                 <hr />
@@ -579,6 +588,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     register={register}
                     errors={errors}
                     required
+                    maxLength={RECIPE_DESCRIPTION_MAX_LENGTH}
                     dataCy="recipe-description"
                 />
                 <hr />

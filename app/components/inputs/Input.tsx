@@ -2,6 +2,7 @@
 
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 import { BiDollar } from 'react-icons/bi';
+import { useState, useRef } from 'react';
 
 interface InputProps {
     id: string;
@@ -13,6 +14,7 @@ interface InputProps {
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
     dataCy?: string;
+    maxLength?: number;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -25,7 +27,26 @@ const Input: React.FC<InputProps> = ({
     required,
     errors,
     dataCy,
+    maxLength,
 }) => {
+    const [charCount, setCharCount] = useState(0);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const {
+        onChange,
+        ref: registerRef,
+        ...rest
+    } = register(id, { required, maxLength });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (maxLength && value.length > maxLength) {
+            e.target.value = value.slice(0, maxLength);
+        }
+        onChange(e);
+        setCharCount(e.target.value.length);
+    };
+
     return (
         <div className="relative w-full">
             {formatPrice && (
@@ -37,10 +58,19 @@ const Input: React.FC<InputProps> = ({
             )}
             <input
                 id={id}
+                ref={(e) => {
+                    registerRef(e);
+                    inputRef.current = e;
+                    if (e) {
+                        setCharCount(e.value.length);
+                    }
+                }}
                 disabled={disabled}
-                {...register(id, { required })}
+                {...rest}
+                onChange={handleChange}
                 placeholder=" "
                 type={type}
+                maxLength={maxLength}
                 className={`peer w-full rounded-md border-2 bg-white p-4 pt-6 font-light text-zinc-900 outline-hidden transition disabled:cursor-not-allowed disabled:opacity-70 dark:bg-zinc-800 dark:text-zinc-100 ${formatPrice ? 'pl-9' : 'pl-4'} ${
                     errors[id]
                         ? 'border-rose-500'
@@ -62,6 +92,14 @@ const Input: React.FC<InputProps> = ({
             >
                 {label}
             </label>
+            {maxLength && (
+                <div
+                    className="absolute top-2 right-2 text-xs text-neutral-500 dark:text-neutral-400"
+                    data-testid="char-count"
+                >
+                    {charCount}/{maxLength}
+                </div>
+            )}
         </div>
     );
 };

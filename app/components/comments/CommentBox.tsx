@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
-import { HiOutlinePaperAirplane } from 'react-icons/hi';
-import Avatar from '@/app/components/utils/Avatar';
-import { toast } from 'react-hot-toast';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { HiOutlinePaperAirplane } from 'react-icons/hi';
+import { toast } from 'react-hot-toast';
+import Avatar from '@/app/components/utils/Avatar';
+import { COMMENT_MAX_LENGTH } from '@/app/utils/constants';
 
-/* eslint-disable unused-imports/no-unused-vars */
 interface CommentBoxProps {
     userImage: string | undefined | null;
     onCreateComment: (comment: string) => void;
@@ -51,14 +51,20 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 onSubmit={handleSubmit}
                 className="mt-2 grow"
             >
-                <textarea
-                    className="h-11 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 font-light text-zinc-900 focus:ring-0 focus:outline-hidden dark:border-neutral-600 dark:bg-zinc-800 dark:text-zinc-100"
-                    placeholder={t('write_comment') ?? 'Write a comment...'}
-                    value={comment}
-                    onChange={handleInputChange}
-                    data-cy="comment-input"
-                    disabled={isLoading || isButtonDisabled}
-                />
+                <div className="relative">
+                    <textarea
+                        className="h-12 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 font-light text-zinc-900 focus:ring-0 focus:outline-hidden dark:border-neutral-600 dark:bg-zinc-800 dark:text-zinc-100"
+                        placeholder={t('write_comment') ?? 'Write a comment...'}
+                        value={comment}
+                        onChange={handleInputChange}
+                        data-cy="comment-input"
+                        disabled={isLoading || isButtonDisabled}
+                        maxLength={COMMENT_MAX_LENGTH}
+                    />
+                    <div className="absolute right-2 bottom-2 text-xs text-neutral-500 dark:text-neutral-400">
+                        {comment.length}/{COMMENT_MAX_LENGTH}
+                    </div>
+                </div>
             </form>
 
             <button

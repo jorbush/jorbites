@@ -13,6 +13,13 @@ import { POST as CommentPOST } from '@/app/api/comments/route';
 import { DELETE as CommentDELETE } from '@/app/api/comments/[commentId]/route';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
 import getCommentById from '@/app/actions/getCommentById';
+import { NextRequest } from 'next/server';
+import {
+    RECIPE_TITLE_MAX_LENGTH,
+    RECIPE_DESCRIPTION_MAX_LENGTH,
+    RECIPE_INGREDIENT_MAX_LENGTH,
+    RECIPE_STEP_MAX_LENGTH,
+} from '@/app/utils/constants';
 
 let mockedSession: Session | null = null;
 
@@ -178,7 +185,9 @@ describe('Recipes API Routes and Server Actions', () => {
     });
 
     it('should like the recipe', async () => {
-        const mockParams = { params: { recipeId: publishedRecipe?.id } };
+        const mockParams = {
+            params: Promise.resolve({ recipeId: publishedRecipe?.id }),
+        };
         const responseFav = await FavoritePOST(
             {} as unknown as Request,
             mockParams
@@ -201,7 +210,9 @@ describe('Recipes API Routes and Server Actions', () => {
     });
 
     it('should undo the like of the recipe', async () => {
-        const mockParams = { params: { recipeId: publishedRecipe?.id } };
+        const mockParams = {
+            params: Promise.resolve({ recipeId: publishedRecipe?.id }),
+        };
         const responseFav = await FavoriteDELETE(
             {} as unknown as Request,
             mockParams
@@ -264,7 +275,9 @@ describe('Recipes API Routes and Server Actions', () => {
         if (!comment) {
             throw new Error('comment is not defined');
         }
-        const mockParams = { params: { commentId: comment.id } };
+        const mockParams = {
+            params: Promise.resolve({ commentId: comment.id }),
+        };
         const response = await CommentDELETE(
             {} as unknown as Request,
             mockParams
@@ -287,7 +300,9 @@ describe('Recipes API Routes and Server Actions', () => {
         if (!publishedRecipe?.id) {
             throw new Error('publishedRecipe id is not defined');
         }
-        const mockParams = { params: { recipeId: publishedRecipe.id } };
+        const mockParams = {
+            params: Promise.resolve({ recipeId: publishedRecipe.id }),
+        };
         const response = await RecipeDELETE(
             {} as unknown as Request,
             mockParams
@@ -308,5 +323,107 @@ describe('Recipes API Routes and Server Actions', () => {
             throw new Error('currentUser or initialUser is not defined');
         }
         expect(currentUser.level).toBe(initialUser.level);
+    });
+});
+
+describe('Recipes API Error Handling', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should return 400 when title exceeds max length', async () => {
+        const request = new NextRequest('http://localhost:3000/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'a'.repeat(RECIPE_TITLE_MAX_LENGTH + 1),
+                description: 'Test description',
+                imageSrc: 'test.jpg',
+                category: 'test',
+                method: 'test',
+                ingredients: ['test'],
+                steps: ['test'],
+                minutes: 30,
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe(
+            `Title must be ${RECIPE_TITLE_MAX_LENGTH} characters or less`
+        );
+    });
+
+    it('should return 400 when description exceeds max length', async () => {
+        const request = new NextRequest('http://localhost:3000/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'Test title',
+                description: 'a'.repeat(RECIPE_DESCRIPTION_MAX_LENGTH + 1),
+                imageSrc: 'test.jpg',
+                category: 'test',
+                method: 'test',
+                ingredients: ['test'],
+                steps: ['test'],
+                minutes: 30,
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe(
+            `Description must be ${RECIPE_DESCRIPTION_MAX_LENGTH} characters or less`
+        );
+    });
+
+    it('should return 400 when ingredient exceeds max length', async () => {
+        const request = new NextRequest('http://localhost:3000/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'Test title',
+                description: 'Test description',
+                imageSrc: 'test.jpg',
+                category: 'test',
+                method: 'test',
+                ingredients: ['a'.repeat(RECIPE_INGREDIENT_MAX_LENGTH + 1)],
+                steps: ['test'],
+                minutes: 30,
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe(
+            `Each ingredient must be ${RECIPE_INGREDIENT_MAX_LENGTH} characters or less`
+        );
+    });
+
+    it('should return 400 when step exceeds max length', async () => {
+        const request = new NextRequest('http://localhost:3000/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'Test title',
+                description: 'Test description',
+                imageSrc: 'test.jpg',
+                category: 'test',
+                method: 'test',
+                ingredients: ['test'],
+                steps: ['a'.repeat(RECIPE_STEP_MAX_LENGTH + 1)],
+                minutes: 30,
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe(
+            `Each step must be ${RECIPE_STEP_MAX_LENGTH} characters or less`
+        );
     });
 });
