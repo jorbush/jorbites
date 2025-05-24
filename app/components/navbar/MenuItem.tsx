@@ -1,6 +1,7 @@
 'use client';
 import { MdFiberNew } from 'react-icons/md';
 import { IconType } from 'react-icons';
+import Avatar from '../utils/Avatar';
 
 interface MenuItemProps {
     onClick: () => void;
@@ -9,6 +10,7 @@ interface MenuItemProps {
     isNew?: boolean;
     dataCy?: string;
     icon?: IconType;
+    avatarSrc?: string | null;
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({
@@ -18,6 +20,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
     isNew,
     dataCy,
     icon: Icon,
+    avatarSrc,
 }) => {
     return (
         <div
@@ -27,12 +30,18 @@ const MenuItem: React.FC<MenuItemProps> = ({
         >
             <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-3">
-                    {Icon && (
+                    {/* Render Avatar if avatarSrc is provided, otherwise fall back to Icon if available */}
+                    {avatarSrc ? (
+                        <Avatar
+                            src={avatarSrc}
+                            size={20}
+                        />
+                    ) : Icon ? (
                         <Icon
                             size={20}
                             className="flex-shrink-0"
                         />
-                    )}
+                    ) : null}
                     <span className="flex items-center justify-between whitespace-nowrap">
                         {label}
                     </span>
