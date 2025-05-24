@@ -4,6 +4,7 @@ import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import { EmailType } from '@/app/types/email';
+import { COMMENT_MAX_LENGTH } from '@/app/utils/constants';
 
 export async function POST(request: Request) {
     const currentUser = await getCurrentUser();
@@ -17,6 +18,15 @@ export async function POST(request: Request) {
 
     if (!recipeId || !comment) {
         return NextResponse.error();
+    }
+
+    if (comment.length > COMMENT_MAX_LENGTH) {
+        return NextResponse.json(
+            {
+                error: `Comment must be ${COMMENT_MAX_LENGTH} characters or less`,
+            },
+            { status: 400 }
+        );
     }
 
     const currentRecipe = await prisma.recipe.findUnique({

@@ -2,6 +2,7 @@
 
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 import { BiDollar } from 'react-icons/bi';
+import { useEffect, useState } from 'react';
 
 interface InputProps {
     id: string;
@@ -13,6 +14,7 @@ interface InputProps {
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
     dataCy?: string;
+    maxLength?: number;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -25,7 +27,19 @@ const Input: React.FC<InputProps> = ({
     required,
     errors,
     dataCy,
+    maxLength,
 }) => {
+    const [charCount, setCharCount] = useState(0);
+
+    const { onChange, ...rest } = register(id, { required, maxLength });
+
+    useEffect(() => {
+        const input = document.getElementById(id) as HTMLInputElement;
+        if (input) {
+            setCharCount(input.value.length);
+        }
+    }, [id]);
+
     return (
         <div className="relative w-full">
             {formatPrice && (
@@ -38,9 +52,14 @@ const Input: React.FC<InputProps> = ({
             <input
                 id={id}
                 disabled={disabled}
-                {...register(id, { required })}
+                {...rest}
+                onChange={(e) => {
+                    onChange(e);
+                    setCharCount(e.target.value.length);
+                }}
                 placeholder=" "
                 type={type}
+                maxLength={maxLength}
                 className={`peer w-full rounded-md border-2 bg-white p-4 pt-6 font-light text-zinc-900 outline-hidden transition disabled:cursor-not-allowed disabled:opacity-70 dark:bg-zinc-800 dark:text-zinc-100 ${formatPrice ? 'pl-9' : 'pl-4'} ${
                     errors[id]
                         ? 'border-rose-500'
@@ -62,6 +81,11 @@ const Input: React.FC<InputProps> = ({
             >
                 {label}
             </label>
+            {maxLength && (
+                <div className="absolute top-2 right-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    <span id={`${id}-char-count`}>{charCount}</span>/{maxLength}
+                </div>
+            )}
         </div>
     );
 };

@@ -5,6 +5,7 @@ import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import Avatar from '@/app/components/utils/Avatar';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { COMMENT_MAX_LENGTH } from '@/app/utils/constants';
 
 /* eslint-disable unused-imports/no-unused-vars */
 interface CommentBoxProps {
@@ -58,7 +59,13 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                     onChange={handleInputChange}
                     data-cy="comment-input"
                     disabled={isLoading || isButtonDisabled}
+                    maxLength={COMMENT_MAX_LENGTH}
                 />
+                {comment.length > 0 && (
+                    <div className="mt-1 text-right text-xs text-neutral-500 dark:text-neutral-400">
+                        {comment.length}/{COMMENT_MAX_LENGTH}
+                    </div>
+                )}
             </form>
 
             <button
