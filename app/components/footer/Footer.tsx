@@ -9,8 +9,8 @@ import { FaGithub, FaTwitter, FaInstagram, FaEnvelope } from 'react-icons/fa';
 import { RiGitRepositoryLine } from 'react-icons/ri';
 
 const Footer = () => {
-    const { t } = useTranslation();
     useTheme();
+    const { t } = useTranslation();
     const currentYear = new Date().getFullYear();
 
     const socialLinks = [
