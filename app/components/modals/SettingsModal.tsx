@@ -10,6 +10,7 @@ import EmailNotificationsSelector from '@/app/components/settings/EmailNotificat
 import { SafeUser } from '@/app/types';
 import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
 import { useCallback, useState } from 'react';
+import { FcSettings } from 'react-icons/fc';
 
 interface SettingsProps {
     currentUser?: SafeUser | null;
@@ -56,6 +57,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
             onSubmit={handleSaveClick}
             body={bodyContent}
             footer={<div></div>}
+            icon={FcSettings}
         />
     );
 };

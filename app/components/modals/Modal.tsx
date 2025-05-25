@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
+import { IconType } from 'react-icons';
 
 import Button from '@/app/components/buttons/Button';
 import useTheme from '@/app/hooks/useTheme';
@@ -20,6 +21,7 @@ interface ModalProps {
     secondaryActionLabel?: string;
     minHeight?: string;
     topButton?: React.ReactElement<object>;
+    icon?: IconType;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -36,6 +38,7 @@ const Modal: React.FC<ModalProps> = ({
     secondaryActionLabel,
     minHeight,
     topButton,
+    icon: Icon,
 }) => {
     const [showModal, setShowModal] = useState(isOpen);
 
@@ -114,8 +117,9 @@ const Modal: React.FC<ModalProps> = ({
                                 </button>
                                 <div
                                     data-testid="modal-title"
-                                    className="text-lg font-semibold text-black dark:text-neutral-100"
+                                    className="flex items-center justify-center text-lg font-semibold text-black dark:text-neutral-100"
                                 >
+                                    {Icon && <Icon className="mr-2 text-xl" />}
                                     {title}
                                 </div>
                                 <div className="absolute right-9 p-1">
