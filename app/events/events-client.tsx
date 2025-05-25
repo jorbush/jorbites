@@ -69,7 +69,7 @@ const EventsClient = () => {
                 <div className="mb-10 text-center">
                     <h1 className="mb-3 flex items-center justify-center text-3xl font-bold sm:text-4xl dark:text-neutral-100">
                         <FcCalendar className="mr-2 text-3xl sm:text-4xl" />
-                        {t('events')}
+                        {t('events')} 🏆
                     </h1>
                     <p className="text-sm text-gray-600 sm:text-base dark:text-gray-300">
                         {t('events_description') ||
