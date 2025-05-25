@@ -38,7 +38,10 @@ export async function POST(request: Request) {
         },
     });
 
-    if (currentRecipe?.user.emailNotifications) {
+    if (
+        currentRecipe?.user.emailNotifications &&
+        currentRecipe?.user.email !== currentUser.email
+    ) {
         await sendEmail({
             type: EmailType.NEW_COMMENT,
             userEmail: currentRecipe?.user.email,
