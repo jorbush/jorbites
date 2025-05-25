@@ -12,6 +12,7 @@ import EventsList from '@/app/components/events/EventsList';
 import { EventCardSkeleton } from '@/app/components/events/EventCard';
 import useTheme from '@/app/hooks/useTheme';
 import WeeklyChallenge from '@/app/components/events/WeeklyChallenge';
+import { FcCalendar } from 'react-icons/fc';
 
 const EventsClient = () => {
     const { t, i18n } = useTranslation();
@@ -66,7 +67,8 @@ const EventsClient = () => {
         <Container>
             <div className="px-4 py-8">
                 <div className="mb-10 text-center">
-                    <h1 className="mb-3 text-3xl font-bold sm:text-4xl dark:text-neutral-100">
+                    <h1 className="mb-3 flex items-center justify-center text-3xl font-bold sm:text-4xl dark:text-neutral-100">
+                        <FcCalendar className="mr-2 text-3xl sm:text-4xl" />
                         {t('events')}
                     </h1>
                     <p className="text-sm text-gray-600 sm:text-base dark:text-gray-300">
