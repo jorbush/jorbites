@@ -483,7 +483,7 @@ describe('Recipes API Error Handling', () => {
 
         expect(response.status).toBe(400);
         expect(data.error).toBe(
-            'Missing required fields: title, description, imageSrc, category, method, ingredients, steps, and minutes are required'
+            'Missing required fields: title and description are required'
         );
         expect(data.code).toBe('BAD_REQUEST');
         expect(data.timestamp).toBeDefined();

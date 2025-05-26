@@ -46,18 +46,9 @@ export async function POST(request: Request) {
         } = body;
 
         // Validate required fields
-        if (
-            !title ||
-            !description ||
-            !imageSrc ||
-            !category ||
-            !method ||
-            !ingredients ||
-            !steps ||
-            !minutes
-        ) {
+        if (!title || !description) {
             return badRequest(
-                'Missing required fields: title, description, imageSrc, category, method, ingredients, steps, and minutes are required'
+                'Missing required fields: title and description are required'
             );
         }
 
