@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-        return NextResponse.error();
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -81,15 +81,25 @@ export async function POST(request: Request) {
         }
     }
 
-    Object.keys(body).forEach((value: any) => {
-        if (
-            !body[value] &&
-            value !== 'coCooksIds' &&
-            value !== 'linkedRecipeIds'
-        ) {
-            NextResponse.error();
+    const requiredFields = [
+        'title',
+        'description',
+        'imageSrc',
+        'category',
+        'method',
+        'ingredients',
+        'steps',
+        'minutes',
+    ];
+
+    for (const field of requiredFields) {
+        if (!body[field]) {
+            return NextResponse.json(
+                { error: `Missing required field: ${field}` },
+                { status: 400 }
+            );
         }
-    });
+    }
 
     const recipeExist =
         (await prisma.recipe.findFirst({
@@ -99,7 +109,10 @@ export async function POST(request: Request) {
         })) ?? null;
 
     if (recipeExist !== null) {
-        return NextResponse.error();
+        return NextResponse.json(
+            { error: 'Recipe with this image already exists' },
+            { status: 409 }
+        );
     }
 
     const extraImages: string[] = [];

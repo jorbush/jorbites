@@ -324,6 +324,142 @@ describe('Recipes API Routes and Server Actions', () => {
         }
         expect(currentUser.level).toBe(initialUser.level);
     });
+
+    // Mock getCurrentUser for error handling tests
+    const mockedGetCurrentUser = getCurrentUser as jest.MockedFunction<
+        typeof getCurrentUser
+    >;
+
+    // Mock prisma for error handling tests
+    const mockPrisma = {
+        recipe: {
+            findFirst: jest.fn(),
+            create: jest.fn(),
+        },
+    };
+    jest.mock('@/app/libs/prismadb', () => ({
+        __esModule: true,
+        default: mockPrisma,
+    }));
+
+    beforeEach(() => {
+        // Reset mocks before each test in this describe block
+        mockedGetCurrentUser.mockClear();
+        mockPrisma.recipe.findFirst.mockClear();
+        mockPrisma.recipe.create.mockClear();
+
+        // Default to authenticated user for tests that don't specifically test auth
+        mockedSession = {
+            expires: 'expires',
+            user: {
+                name: 'testuser',
+                email: 'testuser@example.com',
+                id: 'testuserid',
+            },
+        };
+        mockedGetCurrentUser.mockResolvedValue(mockedSession.user as any);
+    });
+
+    it('should return 401 if user is not authenticated', async () => {
+        mockedGetCurrentUser.mockResolvedValue(null); // Simulate no user logged in
+
+        const request = new NextRequest('http://localhost/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'Test Recipe',
+                description: 'Test Description',
+                imageSrc: 'test.jpg',
+                category: 'Test Category',
+                method: 'Test Method',
+                ingredients: ['Test Ingredient'],
+                steps: ['Test Step'],
+                minutes: 30,
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        const responseBody = await response.json();
+
+        expect(response.status).toBe(401);
+        expect(responseBody).toEqual({ error: 'Unauthorized' });
+    });
+
+    const requiredFields = [
+        'title',
+        'description',
+        'imageSrc',
+        'category',
+        'method',
+        'ingredients',
+        'steps',
+        'minutes',
+    ];
+
+    requiredFields.forEach((field) => {
+        it(`should return 400 if ${field} is missing`, async () => {
+            const fullRequestBody: { [key: string]: any } = {
+                title: 'Test Recipe',
+                description: 'Test Description',
+                imageSrc: 'test.jpg',
+                category: 'Test Category',
+                method: 'Test Method',
+                ingredients: ['Test Ingredient'],
+                steps: ['Test Step'],
+                minutes: 30,
+            };
+            delete fullRequestBody[field]; // Remove the specific field
+
+            const request = new NextRequest('http://localhost/api/recipes', {
+                method: 'POST',
+                body: JSON.stringify(fullRequestBody),
+            });
+
+            const response = await RecipePOST(request);
+            const responseBody = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(responseBody).toEqual({
+                error: `Missing required field: ${field}`,
+            });
+        });
+    });
+
+    it('should return 409 if recipe with the same imageSrc already exists', async () => {
+        // Simulate that a recipe with this imageSrc already exists
+        mockPrisma.recipe.findFirst.mockResolvedValue({
+            id: 'existingRecipeId',
+            imageSrc: 'duplicate.jpg',
+            // ...other recipe fields
+        });
+
+        const requestBody = {
+            title: 'Test Recipe',
+            description: 'Test Description',
+            imageSrc: 'duplicate.jpg', // This imageSrc should cause a conflict
+            category: 'Test Category',
+            method: 'Test Method',
+            ingredients: ['Test Ingredient'],
+            steps: ['Test Step'],
+            minutes: 30,
+        };
+        const request = new NextRequest('http://localhost/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify(requestBody),
+        });
+
+        const response = await RecipePOST(request);
+        const responseBody = await response.json();
+
+        expect(response.status).toBe(409);
+        expect(responseBody).toEqual({
+            error: 'Recipe with this image already exists',
+        });
+        expect(mockPrisma.recipe.findFirst).toHaveBeenCalledWith({
+            where: { imageSrc: 'duplicate.jpg' },
+        });
+        // Ensure prisma.create was not called
+        expect(mockPrisma.recipe.create).not.toHaveBeenCalled();
+    });
 });
 
 describe('Recipes API Error Handling', () => {

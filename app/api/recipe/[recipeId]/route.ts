@@ -22,13 +22,13 @@ export async function POST(
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-        return NextResponse.error();
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { recipeId } = params;
 
     if (!recipeId || typeof recipeId !== 'string') {
-        throw new Error('Invalid ID');
+        return NextResponse.json({ error: "Invalid recipe ID" }, { status: 400 });
     }
 
     const currentRecipe = await prisma.recipe.findUnique({
@@ -40,11 +40,11 @@ export async function POST(
         },
     });
 
-    let numLikes = currentRecipe?.numLikes;
-
-    if (!numLikes && numLikes !== 0) {
-        throw Error();
+    if (!currentRecipe) {
+        return NextResponse.json({ error: "Recipe not found" }, { status: 404 });
     }
+
+    let numLikes = currentRecipe.numLikes;
 
     if (operation === 'increment') {
         numLikes++;
@@ -88,19 +88,23 @@ export async function DELETE(
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-        return NextResponse.error();
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { recipeId } = params;
 
     if (!recipeId || typeof recipeId !== 'string') {
-        throw new Error('Invalid ID');
+        return NextResponse.json({ error: "Invalid recipe ID" }, { status: 400 });
     }
 
     const recipe = await getRecipeById({ recipeId });
 
-    if (recipe?.userId !== currentUser.id) {
-        return NextResponse.error();
+    if (!recipe) {
+        return NextResponse.json({ error: "Recipe not found" }, { status: 404 });
+    }
+
+    if (recipe.userId !== currentUser.id) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const deletedRecipe = await prisma.recipe.delete({
