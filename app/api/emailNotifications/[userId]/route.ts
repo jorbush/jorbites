@@ -3,29 +3,37 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/libs/prismadb';
 import sendEmail from '@/app/actions/sendEmail';
 import { EmailType } from '@/app/types/email';
+import { unauthorized, internalServerError } from '@/app/utils/apiErrors';
 
 export async function PUT(_request: Request) {
-    const currentUser = await getCurrentUser();
+    try {
+        const currentUser = await getCurrentUser();
 
-    if (!currentUser) {
-        return NextResponse.error();
-    }
+        if (!currentUser) {
+            return unauthorized(
+                'User authentication required to update email notifications'
+            );
+        }
 
-    const user = await prisma.user.update({
-        where: {
-            id: currentUser.id,
-        },
-        data: {
-            emailNotifications: !currentUser.emailNotifications,
-        },
-    });
-
-    if (user.emailNotifications) {
-        await sendEmail({
-            type: EmailType.NOTIFICATIONS_ACTIVATED,
-            userEmail: user.email,
+        const user = await prisma.user.update({
+            where: {
+                id: currentUser.id,
+            },
+            data: {
+                emailNotifications: !currentUser.emailNotifications,
+            },
         });
-    }
 
-    return NextResponse.json(user);
+        if (user.emailNotifications) {
+            await sendEmail({
+                type: EmailType.NOTIFICATIONS_ACTIVATED,
+                userEmail: user.email,
+            });
+        }
+
+        return NextResponse.json(user);
+    } catch (error) {
+        console.error('Error updating email notifications:', error);
+        return internalServerError('Failed to update email notifications');
+    }
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
+import { internalServerError } from '@/app/utils/apiErrors';
 
 export async function GET(request: Request) {
     try {
@@ -39,6 +40,6 @@ export async function GET(request: Request) {
         return NextResponse.json(recipes);
     } catch (error) {
         console.error('Error fetching recipes:', error);
-        return NextResponse.error();
+        return internalServerError('Failed to fetch recipes');
     }
 }
