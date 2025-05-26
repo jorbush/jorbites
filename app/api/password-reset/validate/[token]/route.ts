@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
+import { badRequest, internalServerError } from '@/app/utils/apiErrors';
 
 interface IParams {
     token?: string;
@@ -14,7 +15,7 @@ export async function GET(
         const { token } = params;
 
         if (!token) {
-            return NextResponse.json({ valid: false }, { status: 400 });
+            return badRequest('Token is required');
         }
 
         const user = await prisma.user.findFirst({
@@ -33,6 +34,6 @@ export async function GET(
         return NextResponse.json({ valid: true });
     } catch (error) {
         console.error('Error validating token:', error);
-        return NextResponse.json({ valid: false }, { status: 500 });
+        return internalServerError('Failed to validate token');
     }
 }

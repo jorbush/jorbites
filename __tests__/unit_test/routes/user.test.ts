@@ -1,3 +1,4 @@
+import { expect } from '@jest/globals';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getUserById from '@/app/actions/getUserById';
 import { Session } from 'next-auth';
@@ -69,6 +70,10 @@ describe('User API Routes and Server Actions', () => {
         const responseData = await response.json();
 
         expect(response.status).toBe(409);
-        expect(responseData).toEqual({ error: 'Email already exists' });
+        expect(responseData).toEqual({
+            error: 'Email already exists',
+            code: 'CONFLICT',
+            timestamp: expect.any(String),
+        });
     });
 });

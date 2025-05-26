@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
 import bcrypt from 'bcrypt';
+import { badRequest, internalServerError } from '@/app/utils/apiErrors';
 
 export async function POST(request: Request) {
     try {
@@ -8,10 +9,11 @@ export async function POST(request: Request) {
         const { token, password } = body;
 
         if (!token || !password) {
-            return NextResponse.json(
-                { error: 'Missing token or password' },
-                { status: 400 }
-            );
+            return badRequest('Token and password are required');
+        }
+
+        if (password.length < 6) {
+            return badRequest('Password must be at least 6 characters long');
         }
 
         const user = await prisma.user.findFirst({
@@ -24,10 +26,7 @@ export async function POST(request: Request) {
         });
 
         if (!user) {
-            return NextResponse.json(
-                { error: 'Invalid or expired token' },
-                { status: 400 }
-            );
+            return badRequest('Invalid or expired token');
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
@@ -46,9 +45,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Error resetting password:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return internalServerError('Failed to reset password');
     }
 }
