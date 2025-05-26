@@ -4,9 +4,7 @@ import {
     GET as DraftGET,
     DELETE as DraftDELETE,
 } from '@/app/api/draft/route';
-import getCurrentUser from '@/app/actions/getCurrentUser';
 import { Session } from 'next-auth';
-import { NextRequest } from 'next/server';
 
 let mockedSession: Session | null = null;
 
