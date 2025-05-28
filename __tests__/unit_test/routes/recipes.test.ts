@@ -426,4 +426,100 @@ describe('Recipes API Error Handling', () => {
             `Each step must be ${RECIPE_STEP_MAX_LENGTH} characters or less`
         );
     });
+
+    it('should return 401 when user is not authenticated', async () => {
+        mockedSession = null;
+
+        const request = new NextRequest('http://localhost:3000/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'Test title',
+                description: 'Test description',
+                imageSrc: 'test.jpg',
+                category: 'test',
+                method: 'test',
+                ingredients: ['test'],
+                steps: ['test'],
+                minutes: 30,
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(401);
+        expect(data.error).toBe(
+            'User authentication required to create recipe'
+        );
+        expect(data.code).toBe('UNAUTHORIZED');
+        expect(data.timestamp).toBeDefined();
+    });
+
+    it('should return 400 when required fields are missing', async () => {
+        mockedSession = {
+            expires: 'expires',
+            user: {
+                name: 'test',
+                email: 'test@a.com',
+            },
+        };
+
+        const request = new NextRequest('http://localhost:3000/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'Test title',
+                // description missing
+                imageSrc: 'test.jpg',
+                category: 'test',
+                method: 'test',
+                ingredients: ['test'],
+                steps: ['test'],
+                minutes: 30,
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe(
+            'Missing required fields: title and description are required'
+        );
+        expect(data.code).toBe('BAD_REQUEST');
+        expect(data.timestamp).toBeDefined();
+    });
+
+    it('should return validation error with proper error structure', async () => {
+        mockedSession = {
+            expires: 'expires',
+            user: {
+                name: 'test',
+                email: 'test@a.com',
+            },
+        };
+
+        const request = new NextRequest('http://localhost:3000/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'a'.repeat(RECIPE_TITLE_MAX_LENGTH + 1),
+                description: 'Test description',
+                imageSrc: 'test.jpg',
+                category: 'test',
+                method: 'test',
+                ingredients: ['test'],
+                steps: ['test'],
+                minutes: 30,
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe(
+            `Title must be ${RECIPE_TITLE_MAX_LENGTH} characters or less`
+        );
+        expect(data.code).toBe('VALIDATION_ERROR');
+        expect(data.timestamp).toBeDefined();
+    });
 });

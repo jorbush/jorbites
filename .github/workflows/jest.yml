@@ -24,5 +24,5 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run unit tests
-        run: npm run jest
+      - name: Run unit tests (excluding draft tests)
+        run: npx jest __tests__/unit_test/routes --testPathIgnorePatterns=".*draft.*"

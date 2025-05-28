@@ -2,33 +2,48 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 
 import prisma from '@/app/libs/prismadb';
+import {
+    badRequest,
+    conflict,
+    internalServerError,
+} from '@/app/utils/apiErrors';
 
 export async function POST(request: Request) {
-    const body = await request.json();
-    const { email, name, password } = body;
+    try {
+        const body = await request.json();
+        const { email, name, password } = body;
 
-    const existingUser = await prisma.user.findUnique({
-        where: {
-            email,
-        },
-    });
+        if (!email || !name || !password) {
+            return badRequest('Email, name, and password are required');
+        }
 
-    if (existingUser) {
-        return NextResponse.json(
-            { error: 'Email already exists' },
-            { status: 409 }
-        );
+        if (password.length < 6) {
+            return badRequest('Password must be at least 6 characters long');
+        }
+
+        const existingUser = await prisma.user.findUnique({
+            where: {
+                email,
+            },
+        });
+
+        if (existingUser) {
+            return conflict('Email already exists');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        const user = await prisma.user.create({
+            data: {
+                email,
+                name,
+                hashedPassword,
+            },
+        });
+
+        return NextResponse.json(user);
+    } catch (error) {
+        console.error('Error creating user:', error);
+        return internalServerError('Failed to create user account');
     }
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    const user = await prisma.user.create({
-        data: {
-            email,
-            name,
-            hashedPassword,
-        },
-    });
-
-    return NextResponse.json(user);
 }

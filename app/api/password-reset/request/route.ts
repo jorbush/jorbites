@@ -4,6 +4,7 @@ import prisma from '@/app/libs/prismadb';
 import { JORBITES_URL } from '@/app/utils/constants';
 import sendEmail from '@/app/actions/sendEmail';
 import { EmailType } from '@/app/types/email';
+import { badRequest, internalServerError } from '@/app/utils/apiErrors';
 
 export async function POST(request: Request) {
     try {
@@ -11,10 +12,7 @@ export async function POST(request: Request) {
         const { email } = body;
 
         if (!email) {
-            return NextResponse.json(
-                { error: 'Email is required' },
-                { status: 400 }
-            );
+            return badRequest('Email is required');
         }
 
         const user = await prisma.user.findUnique({
@@ -53,9 +51,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Error in reset request:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return internalServerError('Failed to process password reset request');
     }
 }

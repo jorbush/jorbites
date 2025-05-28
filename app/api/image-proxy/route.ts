@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { badRequest, internalServerError } from '@/app/utils/apiErrors';
 
 export async function GET(request: NextRequest) {
     const url = request.nextUrl.searchParams.get('url');
@@ -8,7 +9,7 @@ export async function GET(request: NextRequest) {
 
     if (!url) {
         console.error('[Image Proxy] Missing URL parameter');
-        return new Response('URL parameter is required', { status: 400 });
+        return badRequest('URL parameter is required');
     }
 
     try {
@@ -61,11 +62,8 @@ export async function GET(request: NextRequest) {
             console.error(
                 `[Image Proxy] Fetch error: ${imageResponse.status} ${imageResponse.statusText}`
             );
-            return new Response(
-                `Failed to fetch image: ${imageResponse.statusText}`,
-                {
-                    status: imageResponse.status,
-                }
+            return badRequest(
+                `Failed to fetch image: ${imageResponse.statusText}`
             );
         }
 
@@ -83,8 +81,6 @@ export async function GET(request: NextRequest) {
         });
     } catch (error) {
         console.error('[Image Proxy] Unhandled error:', error);
-        return new Response('Internal Server Error in image proxy', {
-            status: 500,
-        });
+        return internalServerError('Failed to process image request');
     }
 }

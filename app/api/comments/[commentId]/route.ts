@@ -3,6 +3,13 @@ import { NextResponse } from 'next/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/libs/prismadb';
 import getCommentById from '@/app/actions/getCommentById';
+import {
+    unauthorized,
+    invalidInput,
+    notFound,
+    forbidden,
+    internalServerError,
+} from '@/app/utils/apiErrors';
 
 interface IParams {
     commentId?: string;
@@ -12,40 +19,32 @@ export async function DELETE(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
-    const params = await props.params;
     try {
+        const params = await props.params;
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return NextResponse.json(
-                { error: 'Not authenticated' },
-                { status: 401 }
+            return unauthorized(
+                'User authentication required to delete comment'
             );
         }
 
         const { commentId } = params;
 
         if (!commentId || typeof commentId !== 'string') {
-            return NextResponse.json(
-                { error: 'Invalid comment ID' },
-                { status: 400 }
+            return invalidInput(
+                'Comment ID is required and must be a valid string'
             );
         }
 
         const comment = await getCommentById({ commentId });
 
         if (!comment) {
-            return NextResponse.json(
-                { error: 'Comment not found' },
-                { status: 404 }
-            );
+            return notFound('Comment not found');
         }
 
         if (comment.userId !== currentUser.id) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 403 }
-            );
+            return forbidden('You can only delete your own comments');
         }
 
         const deletedComment = await prisma.comment.delete({
@@ -57,9 +56,6 @@ export async function DELETE(
         return NextResponse.json(deletedComment);
     } catch (error) {
         console.error('Error deleting comment:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return internalServerError('Failed to delete comment');
     }
 }
