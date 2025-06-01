@@ -172,7 +172,7 @@ describe('Home', () => {
         await Home({ searchParams: Promise.resolve({}) });
 
         expect(getRecipesMock.default).toHaveBeenCalledWith(
-            expect.objectContaining({ limit: 10 })
+            expect.objectContaining({ limit: 12 })
         );
     });
 });

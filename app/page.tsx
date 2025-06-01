@@ -12,6 +12,10 @@ import { getFirstRecipeImageUrl } from '@/app/utils/imageOptimizer';
 import LcpPreloader from '@/app/components/optimization/LcpPreloader';
 import { RecipeGrid } from '@/app/components/recipes/RecipeGrid';
 import { dynamicImport } from '@/app/utils/dynamicImport';
+import {
+    MOBILE_RECIPES_LIMIT,
+    DESKTOP_RECIPES_LIMIT,
+} from '@/app/utils/constants';
 
 interface HomeProps {
     searchParams: Promise<IRecipesParams>;
@@ -25,7 +29,9 @@ const Home = async ({ searchParams }: HomeProps) => {
     const resolvedParams = await searchParams;
     const response = await getRecipes({
         ...resolvedParams,
-        limit: isMobile((await headers()).get('user-agent') || '') ? 6 : 10,
+        limit: isMobile((await headers()).get('user-agent') || '')
+            ? MOBILE_RECIPES_LIMIT
+            : DESKTOP_RECIPES_LIMIT,
     });
     const firstImageUrl = getFirstRecipeImageUrl(response.data?.recipes);
     const currentUser = await getCurrentUser();
@@ -73,13 +79,11 @@ const Home = async ({ searchParams }: HomeProps) => {
                                 ))}
                             </div>
                         </section>
-                        <nav aria-label="Pagination">
-                            <Pagination
-                                totalPages={response.data?.totalPages || 1}
-                                currentPage={response.data?.currentPage || 1}
-                                searchParams={resolvedParams}
-                            />
-                        </nav>
+                        <Pagination
+                            totalPages={response.data?.totalPages || 1}
+                            currentPage={response.data?.currentPage || 1}
+                            searchParams={resolvedParams}
+                        />
                     </>
                 )}
             </Container>

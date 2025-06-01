@@ -22,12 +22,11 @@ const Pagination = ({
         const newSearchParams = { ...searchParams, page };
         const queryString = new URLSearchParams(newSearchParams).toString();
         const newUrl = `?${queryString}`;
-
         router.push(newUrl);
     };
 
     return (
-        <div
+        <nav
             className="mt-10 flex justify-center pt-10"
             role="navigation"
             aria-label="Pagination"
@@ -57,7 +56,7 @@ const Pagination = ({
                     aria-hidden="true"
                 />
             </button>
-        </div>
+        </nav>
     );
 };
 
