@@ -97,7 +97,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 steps={recipe.steps}
                 category={recipe.category}
             />
-            <div className="mx-auto max-w-(--breakpoint-lg)">
+            <div className="mx-auto max-w-[800px]">
                 <div className="flex flex-col gap-6">
                     <RecipeHead
                         title={recipe.title}
