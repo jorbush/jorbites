@@ -58,6 +58,27 @@ describe('Favorite', () => {
             url: '/api/draft',
             failOnStatusCode: false, // Don't fail the test if there's no draft to delete
         });
+
+        // delete a test recipe if exists
+        cy.get('body').then(($body) => {
+            // Check if there are any recipes with "Test recipe" title
+            if ($body.find('.text-lg:contains("Test recipe")').length > 0) {
+                cy.get('.text-lg:contains("Test recipe")').first().click();
+                cy.wait(2000); // Wait for the recipe page to load
+                cy.get('[data-cy="delete-recipe"]').click();
+                cy.task('log', 'Delete button clicked');
+                cy.get('.text-start > .mt-2').then(($el) => {
+                    cy.get('[data-cy="delete-confirmation-text"]').type(
+                        $el.text().slice(1, -1)
+                    );
+                });
+                cy.task('log', 'Confirm Text filled');
+                cy.get('[data-cy="modal-action-button"]').click();
+                cy.task('log', 'Delete button clicked');
+                cy.get('[class^="go"]').should('be.visible');
+                cy.wait(1000);
+            }
+        });
     });
 
     afterEach(() => {
