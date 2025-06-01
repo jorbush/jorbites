@@ -25,7 +25,7 @@ const Home = async ({ searchParams }: HomeProps) => {
     const resolvedParams = await searchParams;
     const response = await getRecipes({
         ...resolvedParams,
-        limit: isMobile((await headers()).get('user-agent') || '') ? 6 : 10,
+        limit: isMobile((await headers()).get('user-agent') || '') ? 6 : 12,
     });
     const firstImageUrl = getFirstRecipeImageUrl(response.data?.recipes);
     const currentUser = await getCurrentUser();
