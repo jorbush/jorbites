@@ -22,43 +22,40 @@ const Pagination = ({
         const newSearchParams = { ...searchParams, page };
         const queryString = new URLSearchParams(newSearchParams).toString();
         const newUrl = `?${queryString}`;
-
         router.push(newUrl);
     };
 
     return (
-        <nav aria-label="Pagination">
-            <div
-                className="mt-10 flex justify-center pt-10"
-                role="navigation"
-                aria-label="Pagination"
+        <nav
+            className="mt-10 flex justify-center pt-10"
+            role="navigation"
+            aria-label="Pagination"
+        >
+            <button
+                className="bg-green-450 dark:text-dark cursor-pointer items-center rounded-md px-3 py-2 text-white shadow-xs transition hover:shadow-md disabled:opacity-50"
+                onClick={() => handlePageChange(+currentPage - 1)}
+                disabled={currentPage <= 1}
+                aria-label="Previous page"
             >
-                <button
-                    className="bg-green-450 dark:text-dark cursor-pointer items-center rounded-md px-3 py-2 text-white shadow-xs transition hover:shadow-md disabled:opacity-50"
-                    onClick={() => handlePageChange(+currentPage - 1)}
-                    disabled={currentPage <= 1}
-                    aria-label="Previous page"
-                >
-                    <FiChevronLeft
-                        className="text-xl"
-                        aria-hidden="true"
-                    />
-                </button>
-                <span className="px-4 py-2 dark:text-gray-600">
-                    {currentPage} {t('of')} {totalPages}
-                </span>
-                <button
-                    className="bg-green-450 dark:text-dark cursor-pointer items-center rounded-md px-3 py-2 text-white shadow-xs transition hover:shadow-md disabled:opacity-50"
-                    onClick={() => handlePageChange(+currentPage + 1)}
-                    disabled={currentPage >= totalPages}
-                    aria-label="Next page"
-                >
-                    <FiChevronRight
-                        className="text-xl"
-                        aria-hidden="true"
-                    />
-                </button>
-            </div>
+                <FiChevronLeft
+                    className="text-xl"
+                    aria-hidden="true"
+                />
+            </button>
+            <span className="px-4 py-2 dark:text-gray-600">
+                {currentPage} {t('of')} {totalPages}
+            </span>
+            <button
+                className="bg-green-450 dark:text-dark cursor-pointer items-center rounded-md px-3 py-2 text-white shadow-xs transition hover:shadow-md disabled:opacity-50"
+                onClick={() => handlePageChange(+currentPage + 1)}
+                disabled={currentPage >= totalPages}
+                aria-label="Next page"
+            >
+                <FiChevronRight
+                    className="text-xl"
+                    aria-hidden="true"
+                />
+            </button>
         </nav>
     );
 };
