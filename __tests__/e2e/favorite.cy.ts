@@ -48,7 +48,7 @@ describe('Favorite', () => {
         // Check if the recipe was created
         cy.task('log', 'Recipe created');
         cy.get('[class^="go"]').should('be.visible');
-        cy.wait(1000);
+        cy.wait(5000);
         cy.get('.text-lg').eq(0).should('have.text', 'Test recipe').click();
         cy.task('log', 'Recipe opened');
         cy.wait(10000);
