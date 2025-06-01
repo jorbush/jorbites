@@ -3,7 +3,7 @@ import Container from '@/app/components/utils/Container';
 const RecipeClientSkeleton = () => {
     return (
         <Container>
-            <div className="mx-auto max-w-(--breakpoint-lg)">
+            <div className="mx-auto max-w-[800px]">
                 <div className="flex flex-col gap-6">
                     {/* Recipe Head Skeleton */}
                     <div>
