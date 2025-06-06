@@ -123,7 +123,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
         <div className="mx-auto max-w-[800px] px-4 py-6 dark:text-neutral-100">
             <div className="mb-6 flex items-baseline justify-between">
                 <button
-                    className="mr-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    className="mr-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100 cursor-pointer"
                     onClick={() => router.back()}
                 >
                     <FiChevronLeft className="text-xl" />
@@ -133,7 +133,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                     center
                 />
                 <button
-                    className="ml-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    className="ml-4 flex translate-y-3 items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100 cursor-pointer"
                     onClick={share}
                     aria-label="Share"
                 >
