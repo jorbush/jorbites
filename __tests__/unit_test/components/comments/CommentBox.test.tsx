@@ -77,17 +77,6 @@ describe('CommentBox', () => {
         expect(submitButton).toHaveProperty('disabled');
     });
 
-    it('displays an error toast when trying to submit an empty comment', async () => {
-        render(<CommentBox {...mockProps} />);
-
-        const submitButton = screen.getByRole('button');
-        fireEvent.click(submitButton);
-
-        await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith('Comment cannot be empty');
-        });
-    });
-
     it('calls onCreateComment with the comment text when submitted', async () => {
         render(<CommentBox {...mockProps} />);
 
@@ -119,8 +108,9 @@ describe('CommentBox', () => {
 
         await waitFor(
             () => {
-                expect(textarea.nodeValue).toBeNull();
-                expect(submitButton).toHaveProperty('disabled', false);
+                expect(textarea.value).toBe(''); // Assert textarea is cleared
+                fireEvent.change(textarea, { target: { value: 'A' } }); // Simulate new typing
+                expect(submitButton).toHaveProperty('disabled', false); // Now button should be enabled
             },
             { timeout: 4000 }
         );

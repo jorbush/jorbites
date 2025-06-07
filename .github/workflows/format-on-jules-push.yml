@@ -5,7 +5,7 @@ on:
 
 jobs:
   format_code:
-    if: github.actor == 'google-labs-jules[bot]' # Condition for the actor
+#    if: github.actor == 'google-labs-jules[bot]' # Condition for the actor
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -15,6 +15,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+
+      - name: Debug GitHub Context
+        run: |
+          echo "github.actor: ${{ github.actor }}"
+          echo "github.triggering_actor: ${{ github.triggering_actor }}"
+          echo "github.event.pusher.name: ${{ github.event.pusher.name }}"
 
       - name: Install dependencies
         run: npm ci
