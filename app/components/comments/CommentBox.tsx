@@ -71,7 +71,9 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 type="submit"
                 data-testid="submit-comment"
                 onClick={handleSubmit}
-                disabled={isLoading || isButtonDisabled || comment.trim() === ''}
+                disabled={
+                    isLoading || isButtonDisabled || comment.trim() === ''
+                }
                 className={`text-green-450 mt-4 mb-4 ml-4 ${isLoading || isButtonDisabled || comment.trim() === '' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                 data-cy="submit-comment"
             >

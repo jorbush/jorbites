@@ -132,12 +132,18 @@ describe('EventDetail', () => {
         render(<EventDetail event={mockEvent} />);
         // The back button is the first button element in the rendered output of EventDetail
         const backButton = screen.getAllByRole('button')[0];
-        expect(backButton).toHaveProperty('className', expect.stringContaining('cursor-pointer'));
+        expect(backButton).toHaveProperty(
+            'className',
+            expect.stringContaining('cursor-pointer')
+        );
     });
 
     it('should have cursor-pointer class on share button', () => {
         render(<EventDetail event={mockEvent} />);
         const shareButton = screen.getByLabelText('Share');
-        expect(shareButton).toHaveProperty('className', expect.stringContaining('cursor-pointer'));
+        expect(shareButton).toHaveProperty(
+            'className',
+            expect.stringContaining('cursor-pointer')
+        );
     });
 });

@@ -71,7 +71,7 @@ const EventDetailClient: React.FC<EventDetailClientProps> = ({ slug }) => {
                     </p>
                     <button
                         onClick={() => router.push('/events')}
-                        className="bg-green-450 rounded-lg px-4 py-2 text-black cursor-pointer"
+                        className="bg-green-450 cursor-pointer rounded-lg px-4 py-2 text-black"
                     >
                         {t('back_to_events') || 'Back to Events'}
                     </button>

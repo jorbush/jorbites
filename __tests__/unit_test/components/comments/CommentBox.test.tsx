@@ -116,7 +116,12 @@ describe('CommentBox', () => {
     });
 
     it('has cursor-pointer style when enabled and not loading', async () => {
-        render(<CommentBox {...mockProps} isLoading={false} />);
+        render(
+            <CommentBox
+                {...mockProps}
+                isLoading={false}
+            />
+        );
         const textarea = screen.getByPlaceholderText('write_comment');
         fireEvent.change(textarea, { target: { value: 'Test comment' } });
 
@@ -125,27 +130,52 @@ describe('CommentBox', () => {
             // Ensure the button is enabled by checking the disabled attribute directly
             // and also by class, as per the component's logic
             expect(submitButton).toHaveProperty('disabled', false);
-            expect(submitButton).toHaveProperty('className', expect.stringContaining('cursor-pointer'));
+            expect(submitButton).toHaveProperty(
+                'className',
+                expect.stringContaining('cursor-pointer')
+            );
             expect(submitButton.className).not.toContain('cursor-not-allowed');
             expect(submitButton.className).not.toContain('opacity-50');
         });
     });
 
     it('has cursor-not-allowed style when disabled', () => {
-        render(<CommentBox {...mockProps} isLoading={false} />); // Initially empty, so button is disabled
+        render(
+            <CommentBox
+                {...mockProps}
+                isLoading={false}
+            />
+        ); // Initially empty, so button is disabled
         const submitButton = screen.getByTestId('submit-comment');
         expect(submitButton).toHaveProperty('disabled', true);
-        expect(submitButton).toHaveProperty('className', expect.stringContaining('cursor-not-allowed'));
-        expect(submitButton).toHaveProperty('className', expect.stringContaining('opacity-50'));
+        expect(submitButton).toHaveProperty(
+            'className',
+            expect.stringContaining('cursor-not-allowed')
+        );
+        expect(submitButton).toHaveProperty(
+            'className',
+            expect.stringContaining('opacity-50')
+        );
         expect(submitButton.className).not.toContain('cursor-pointer');
     });
 
     it('has cursor-not-allowed style when loading', () => {
-        render(<CommentBox {...mockProps} isLoading={true} />);
+        render(
+            <CommentBox
+                {...mockProps}
+                isLoading={true}
+            />
+        );
         const submitButton = screen.getByTestId('submit-comment');
         expect(submitButton).toHaveProperty('disabled', true);
-        expect(submitButton).toHaveProperty('className', expect.stringContaining('cursor-not-allowed'));
-        expect(submitButton).toHaveProperty('className', expect.stringContaining('opacity-50'));
+        expect(submitButton).toHaveProperty(
+            'className',
+            expect.stringContaining('cursor-not-allowed')
+        );
+        expect(submitButton).toHaveProperty(
+            'className',
+            expect.stringContaining('opacity-50')
+        );
         expect(submitButton.className).not.toContain('cursor-pointer');
     });
 });

@@ -118,6 +118,9 @@ describe('<ButtonSelector />', () => {
             />
         );
         const buttonElement = screen.getByRole('button');
-        expect(buttonElement).toHaveProperty('className', expect.stringContaining('cursor-pointer'));
+        expect(buttonElement).toHaveProperty(
+            'className',
+            expect.stringContaining('cursor-pointer')
+        );
     });
 });
