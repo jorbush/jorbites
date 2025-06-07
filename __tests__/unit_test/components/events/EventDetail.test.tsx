@@ -127,4 +127,17 @@ describe('EventDetail', () => {
         const shareButton = screen.getByLabelText('Share');
         expect(shareButton).toBeDefined();
     });
+
+    it('should have cursor-pointer class on back button', () => {
+        render(<EventDetail event={mockEvent} />);
+        // The back button is the first button element in the rendered output of EventDetail
+        const backButton = screen.getAllByRole('button')[0];
+        expect(backButton).toHaveClass('cursor-pointer');
+    });
+
+    it('should have cursor-pointer class on share button', () => {
+        render(<EventDetail event={mockEvent} />);
+        const shareButton = screen.getByLabelText('Share');
+        expect(shareButton).toHaveClass('cursor-pointer');
+    });
 });
