@@ -109,4 +109,15 @@ describe('<ButtonSelector />', () => {
         // Verify the button now shows 'Newest First'
         expect(screen.getByText('Newest First')).toBeDefined();
     });
+
+    it('should have cursor-pointer style', () => {
+        render(
+            <ButtonSelector
+                sortOrder="asc"
+                onSortChange={mockOnSortChange}
+            />
+        );
+        const buttonElement = screen.getByRole('button');
+        expect(buttonElement).toHaveProperty('className', expect.stringContaining('cursor-pointer'));
+    });
 });
