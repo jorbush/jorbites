@@ -38,6 +38,7 @@ const font = Nunito({
 });
 
 export const metadata = {
+    metadataBase: new URL('https://jorbites.com'),
     title: 'Jorbites',
     description:
         'Descubre y comparte recetas deliciosas creadas por una comunidad de amantes de la cocina',
