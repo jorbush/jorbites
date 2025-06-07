@@ -72,11 +72,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 data-testid="submit-comment"
                 onClick={handleSubmit}
                 disabled={isLoading || isButtonDisabled}
-                className={`text-green-450 mt-4 mb-4 ml-4 ${
-                    isLoading || isButtonDisabled
-                        ? 'cursor-not-allowed opacity-50'
-                        : ''
-                }`}
+                className={`text-green-450 mt-4 mb-4 ml-4 ${isLoading || isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                 data-cy="submit-comment"
             >
                 <HiOutlinePaperAirplane size={20} />
