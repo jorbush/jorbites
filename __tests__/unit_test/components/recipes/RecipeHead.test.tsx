@@ -88,4 +88,22 @@ describe('<RecipeHead />', () => {
             window.location.href
         );
     });
+
+    it('should have cursor-pointer class on back button', () => {
+        render(<RecipeHead {...mockProps} />);
+        const backButton = screen.getAllByRole('button')[0];
+        expect(backButton).toHaveProperty(
+            'className',
+            expect.stringContaining('cursor-pointer')
+        );
+    });
+
+    it('should have cursor-pointer class on share button', () => {
+        render(<RecipeHead {...mockProps} />);
+        const shareButton = screen.getByLabelText('Share');
+        expect(shareButton).toHaveProperty(
+            'className',
+            expect.stringContaining('cursor-pointer')
+        );
+    });
 });

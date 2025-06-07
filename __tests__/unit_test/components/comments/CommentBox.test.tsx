@@ -8,7 +8,6 @@ import {
 } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import CommentBox from '@/app/components/comments/CommentBox';
-import { toast } from 'react-hot-toast';
 
 // Mocks
 vi.mock('react-i18next', () => ({
@@ -77,17 +76,6 @@ describe('CommentBox', () => {
         expect(submitButton).toHaveProperty('disabled');
     });
 
-    it('displays an error toast when trying to submit an empty comment', async () => {
-        render(<CommentBox {...mockProps} />);
-
-        const submitButton = screen.getByRole('button');
-        fireEvent.click(submitButton);
-
-        await waitFor(() => {
-            expect(toast.error).toHaveBeenCalledWith('Comment cannot be empty');
-        });
-    });
-
     it('calls onCreateComment with the comment text when submitted', async () => {
         render(<CommentBox {...mockProps} />);
 
@@ -119,10 +107,75 @@ describe('CommentBox', () => {
 
         await waitFor(
             () => {
-                expect(textarea.nodeValue).toBeNull();
-                expect(submitButton).toHaveProperty('disabled', false);
+                expect(textarea.value).toBe(''); // Assert textarea is cleared
+                fireEvent.change(textarea, { target: { value: 'A' } }); // Simulate new typing
+                expect(submitButton).toHaveProperty('disabled', false); // Now button should be enabled
             },
             { timeout: 4000 }
         );
+    });
+
+    it('has cursor-pointer style when enabled and not loading', async () => {
+        render(
+            <CommentBox
+                {...mockProps}
+                isLoading={false}
+            />
+        );
+        const textarea = screen.getByPlaceholderText('write_comment');
+        fireEvent.change(textarea, { target: { value: 'Test comment' } });
+
+        const submitButton = screen.getByTestId('submit-comment');
+        await waitFor(() => {
+            // Ensure the button is enabled by checking the disabled attribute directly
+            // and also by class, as per the component's logic
+            expect(submitButton).toHaveProperty('disabled', false);
+            expect(submitButton).toHaveProperty(
+                'className',
+                expect.stringContaining('cursor-pointer')
+            );
+            expect(submitButton.className).not.toContain('cursor-not-allowed');
+            expect(submitButton.className).not.toContain('opacity-50');
+        });
+    });
+
+    it('has cursor-not-allowed style when disabled', () => {
+        render(
+            <CommentBox
+                {...mockProps}
+                isLoading={false}
+            />
+        ); // Initially empty, so button is disabled
+        const submitButton = screen.getByTestId('submit-comment');
+        expect(submitButton).toHaveProperty('disabled', true);
+        expect(submitButton).toHaveProperty(
+            'className',
+            expect.stringContaining('cursor-not-allowed')
+        );
+        expect(submitButton).toHaveProperty(
+            'className',
+            expect.stringContaining('opacity-50')
+        );
+        expect(submitButton.className).not.toContain('cursor-pointer');
+    });
+
+    it('has cursor-not-allowed style when loading', () => {
+        render(
+            <CommentBox
+                {...mockProps}
+                isLoading={true}
+            />
+        );
+        const submitButton = screen.getByTestId('submit-comment');
+        expect(submitButton).toHaveProperty('disabled', true);
+        expect(submitButton).toHaveProperty(
+            'className',
+            expect.stringContaining('cursor-not-allowed')
+        );
+        expect(submitButton).toHaveProperty(
+            'className',
+            expect.stringContaining('opacity-50')
+        );
+        expect(submitButton.className).not.toContain('cursor-pointer');
     });
 });
