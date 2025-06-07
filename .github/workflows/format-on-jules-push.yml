@@ -5,7 +5,7 @@ on:
 
 jobs:
   format_code:
-    if: github.actor == 'google-labs-jules' # Condition for the actor
+    if: github.actor == 'google-labs-jules[bot]' # Condition for the actor
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
