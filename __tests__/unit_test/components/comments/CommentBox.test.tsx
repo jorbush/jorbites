@@ -8,7 +8,6 @@ import {
 } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import CommentBox from '@/app/components/comments/CommentBox';
-import { toast } from 'react-hot-toast';
 
 // Mocks
 vi.mock('react-i18next', () => ({
