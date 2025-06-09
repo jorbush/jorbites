@@ -72,6 +72,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                                     height={50}
                                     className="flex-shrink-0 cursor-pointer"
                                     onClick={handleBadgeClick}
+                                    aria-label={`${badge} badge`}
                                 />
                             ))}
                         </ScrollableContainer>
