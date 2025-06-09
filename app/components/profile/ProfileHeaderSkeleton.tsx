@@ -1,4 +1,5 @@
 import Container from '@/app/components/utils/Container';
+import ScrollableContainer from '@/app/components/utils/ScrollableContainer';
 
 const ProfileHeaderSkeleton = () => {
     return (
@@ -19,14 +20,14 @@ const ProfileHeaderSkeleton = () => {
             <hr className="mt-2" />
 
             {/* Badges skeleton */}
-            <div className="mt-2 flex flex-wrap gap-2">
+            <ScrollableContainer className="mt-2">
                 {[1, 2, 3].map((index) => (
                     <div
                         key={index}
-                        className="h-[50px] w-[50px] animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"
+                        className="h-[50px] w-[50px] flex-shrink-0 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"
                     ></div>
                 ))}
-            </div>
+            </ScrollableContainer>
             <hr className="mt-2" />
         </Container>
     );
