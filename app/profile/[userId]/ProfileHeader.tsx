@@ -10,6 +10,7 @@ import Image from 'next/image';
 import confetti from 'canvas-confetti';
 import getUserDisplayName from '@/app/utils/responsive';
 import VerificationBadge from '@/app/components/VerificationBadge';
+import ScrollableContainer from '@/app/components/utils/ScrollableContainer';
 
 interface ProfileHeaderProps {
     user?: SafeUser | null;
@@ -61,7 +62,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                 Array.isArray(user?.badges) &&
                 user.badges.length > 0 && (
                     <>
-                        <div className="mt-2 flex flex-wrap gap-2">
+                        <ScrollableContainer className="mt-2">
                             {user.badges.map((badge, index) => (
                                 <Image
                                     key={index}
@@ -69,11 +70,12 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                                     alt={`${badge} badge`}
                                     width={50}
                                     height={50}
-                                    className="cursor-pointer"
+                                    className="flex-shrink-0 cursor-pointer"
                                     onClick={handleBadgeClick}
+                                    aria-label={`${badge} badge`}
                                 />
                             ))}
-                        </div>
+                        </ScrollableContainer>
                         <hr className="mt-2" />
                     </>
                 )}
