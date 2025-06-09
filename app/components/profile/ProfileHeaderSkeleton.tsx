@@ -19,13 +19,19 @@ const ProfileHeaderSkeleton = () => {
             <hr className="mt-2" />
 
             {/* Badges skeleton */}
-            <div className="mt-2 flex flex-wrap gap-2">
-                {[1, 2, 3].map((index) => (
-                    <div
-                        key={index}
-                        className="h-[50px] w-[50px] animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"
-                    ></div>
-                ))}
+            <div className="relative mt-2">
+                <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-2">
+                    {[1, 2, 3].map((index) => (
+                        <div
+                            key={index}
+                            className="h-[50px] w-[50px] flex-shrink-0 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"
+                        ></div>
+                    ))}
+                </div>
+                {/* Left fade overlay */}
+                <div className="pointer-events-none absolute top-0 left-0 h-full w-2 bg-gradient-to-r from-white to-transparent dark:from-neutral-900" />
+                {/* Right fade overlay */}
+                <div className="pointer-events-none absolute top-0 right-0 h-full w-2 bg-gradient-to-l from-white to-transparent dark:from-neutral-900" />
             </div>
             <hr className="mt-2" />
         </Container>

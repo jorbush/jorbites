@@ -61,18 +61,24 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                 Array.isArray(user?.badges) &&
                 user.badges.length > 0 && (
                     <>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                            {user.badges.map((badge, index) => (
-                                <Image
-                                    key={index}
-                                    src={`/badges/${badge}.webp`}
-                                    alt={`${badge} badge`}
-                                    width={50}
-                                    height={50}
-                                    className="cursor-pointer"
-                                    onClick={handleBadgeClick}
-                                />
-                            ))}
+                        <div className="relative mt-2">
+                            <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-2">
+                                {user.badges.map((badge, index) => (
+                                    <Image
+                                        key={index}
+                                        src={`/badges/${badge}.webp`}
+                                        alt={`${badge} badge`}
+                                        width={50}
+                                        height={50}
+                                        className="flex-shrink-0 cursor-pointer"
+                                        onClick={handleBadgeClick}
+                                    />
+                                ))}
+                            </div>
+                            {/* Left fade overlay */}
+                            <div className="pointer-events-none absolute top-0 left-0 h-full w-2 bg-gradient-to-r from-white to-transparent dark:from-neutral-900" />
+                            {/* Right fade overlay */}
+                            <div className="pointer-events-none absolute top-0 right-0 h-full w-2 bg-gradient-to-l from-white to-transparent dark:from-neutral-900" />
                         </div>
                         <hr className="mt-2" />
                     </>
