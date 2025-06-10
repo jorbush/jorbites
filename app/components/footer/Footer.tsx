@@ -74,12 +74,14 @@ const Footer = () => {
                         <Link
                             href="/policies/privacy"
                             className="text-neutral-500 transition-colors duration-200 hover:text-neutral-700 dark:text-gray-400 dark:hover:text-gray-300"
+                            prefetch={false}
                         >
                             {t('privacy_policy')}
                         </Link>
                         <Link
                             href="/policies/cookies"
                             className="text-neutral-500 transition-colors duration-200 hover:text-neutral-700 dark:text-gray-400 dark:hover:text-gray-300"
+                            prefetch={false}
                         >
                             {t('cookies_policy')}
                         </Link>
