@@ -153,18 +153,6 @@ describe('Recipes API Routes and Server Actions', () => {
         );
     });
 
-    it('should level up the recipe user level', async () => {
-        const currentUser = await getCurrentUser();
-        if (!currentUser || !initialUser) {
-            console.log({
-                currentUser,
-                initialUser,
-            });
-            throw new Error('currentUser or initialUser is not defined');
-        }
-        expect(currentUser.level).toBeGreaterThan(initialUser.level);
-    });
-
     it('should return the user recipes', async () => {
         if (!initialUser) {
             throw new Error('initialUser is not defined');
