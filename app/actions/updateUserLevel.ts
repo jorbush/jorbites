@@ -1,6 +1,3 @@
-import prisma from '@/app/libs/prismadb';
-import { calculateLevel } from '@/app/utils/calculateLevel';
-
 interface IParams {
     userId?: string;
 }
@@ -9,40 +6,29 @@ export default async function updateUserLevel(params: IParams) {
     try {
         const { userId } = params;
 
-        const user = await prisma.user.findUnique({
-            where: {
-                id: userId,
-            },
-        });
+        const badgeForgePayload = {
+            user_id: userId,
+        };
 
-        if (!user) {
-            throw new Error('El usuario no existe.');
-        }
-
-        const userRecipes = await prisma.recipe.findMany({
-            where: {
-                userId: userId,
-            },
-        });
-
-        const totalLikes = userRecipes.reduce(
-            (total, recipe) => total + (recipe.numLikes || 0),
-            0
+        const badgeForgeResponse = await fetch(
+            `${process.env.BADGE_FORGE_URL}/update`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Key': process.env.BADGE_FORGE_API_KEY || '',
+                },
+                body: JSON.stringify(badgeForgePayload),
+            }
         );
 
-        const newLevel = calculateLevel(userRecipes.length, totalLikes);
-
-        const updatedUser = await prisma.user.update({
-            where: {
-                id: userId,
-            },
-            data: {
-                level: newLevel,
-            },
-        });
-
-        return updatedUser;
+        if (!badgeForgeResponse.ok) {
+            const errorData = await badgeForgeResponse.json().catch(() => ({}));
+            throw new Error(
+                `Badge Forge service responded with status ${badgeForgeResponse.status}: ${JSON.stringify(errorData)}`
+            );
+        }
     } catch (error: any) {
-        throw new Error(error);
+        console.error('Error updating user level:', error);
     }
 }

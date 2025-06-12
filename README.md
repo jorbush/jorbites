@@ -12,7 +12,7 @@
 
 ## Architecture
 
-![architecture](/architecture/architecture.png)
+![architecture](/docs/architecture/architecture.png)
 
 - **Fullstack APP:** [Next.js](https://nextjs.org/) (React with Server Side Rendering), TypeScript and Tailwind CSS. Deployed on Vercel.
 - **Database:** [MongoDB](https://www.mongodb.com/). Deployed on MongoDB Atlas (AWS under the hood). The NextJS APP uses [Prisma ORM](https://www.prisma.io/) to interact with the database.
