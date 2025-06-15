@@ -57,7 +57,7 @@ This document provides a comprehensive overview of all features available in Jor
 - Based on the user level.
 
 **Recognition Features**
-- If you are a top jorbiter, you will be rewarded with the verfication badge.
+- If you are a top jorbiter, you will be rewarded with the verification badge.
 
 ## Social Features
 
