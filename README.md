@@ -2,6 +2,14 @@
 
 **Jorbites** is a modern web platform for sharing and discovering delicious recipes. Users can post their own recipes, interact with the community through likes and comments, participate in events and earn badges for their contributions.
 
+<div align="center">
+
+  **🌐 [Visit Jorbites.com](https://jorbites.com)**
+
+  *Join our community of food lovers and discover amazing recipes!*
+
+</div>
+
 ## ✨ Features
 
 - **Recipe Management:** Full CRUD operations with rich text editing and image optimization
