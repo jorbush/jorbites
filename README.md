@@ -1,78 +1,53 @@
-# Jorbites
+# Jorbites 🥑
 
-**Jorbites** is a web platform for sharing and discovering delicious recipes. Users can post their own recipes, like and comment on others.
+**Jorbites** is a modern web platform for sharing and discovering delicious recipes. Users can post their own recipes, interact with the community through likes and comments, participate in events and earn badges for their contributions.
 
-## Features
-- **CRUD Operations:** Create, Read, Update and Delete.
-- **Authentication:** SSO via Google and GitHub using NextAuth.
-- **Image Handling:** Image optimization with Next Image, storage via Cloudinary.
-- **User Interactions:** Pagination, recipe filtering by category, dark theme, email notifications and multi-language support (English, Spanish, Catalan).
-- **Gamification:** User leveling and verification.
-- **Notifications:** Receive emails for comments, likes, and new recipes.
+<div align="center">
 
-## Architecture
+  **🌐 [Visit Jorbites.com](https://jorbites.com)**
 
-![architecture](/docs/architecture/architecture.png)
+  *Join our community of food lovers and discover amazing recipes!*
 
-- **Fullstack APP:** [Next.js](https://nextjs.org/) (React with Server Side Rendering), TypeScript and Tailwind CSS. Deployed on Vercel.
-- **Database:** [MongoDB](https://www.mongodb.com/). Deployed on MongoDB Atlas (AWS under the hood). The NextJS APP uses [Prisma ORM](https://www.prisma.io/) to interact with the database.
-- **Authentication:** [NextAuth](https://next-auth.js.org/) with Google and GitHub providers for SSO.
-- **Image Handling:** [Cloudinary](https://cloudinary.com/) for image storage and optimization. It is used for recipe images and user avatars.
+</div>
 
-## Getting Started
+## ✨ Features
 
-### Prerequisites
+- **Recipe Management:** Full CRUD operations with rich text editing and image optimization
+- **Social Features:** Like, comment, and share recipes with the community
+- **User System:** Leveling, badges, verification, and top jorbiters leaderboard
+- **Events:** Participate in cooking challenges and community events
+- **Authentication:** Secure SSO via Google and GitHub using NextAuth
+- **Image Optimization:** Custom image proxy with Cloudinary integration
+- **Security:** Rate limiting with Upstash Redis for API protection
+- **Notifications:** Real-time email notifications for user interactions
+- **Internationalization:** Multi-language support (English, Spanish, Catalan)
+- **Modern UI:** Dark theme support with responsive design
 
-To run Jorbites locally, you will need to set up a MongoDB database and create a `.env` file with the following content:
+## 🏗️ Architecture
 
-```bash
-DATABASE_URL=your_mongodb_url
-NEXTAUTH_SECRET=your_nextauth_secret
-GITHUB_ID=your_github_id
-GITHUB_SECRET=your_github_secret
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_cloudinary_upload_preset
-```
+Jorbites follows a modern microservices architecture for scalability and performance:
 
-### Running Locally
-Use the following command to start the development server:
-```bash
-npm run dev
-```
+![Architecture Diagram](docs/architecture/architecture.png)
 
-## Testing
+### Core Platform
+- **Main App:** Next.js with TypeScript, deployed on Vercel
+- **Database:** MongoDB Atlas with Prisma ORM
+- **Authentication:** NextAuth with Google/GitHub providers
+- **Images:** Cloudinary with custom proxy implementation
+- **Redis:** Recipe draft storage.
+- **Rate Limiting:** Upstash Redis for API protection
 
-Jorbites is thoroughly tested to ensure a robust experience.
+### Microservices
+- **[Jorbites Notifier](https://github.com/jorbush/jorbites-notifier)** (Go): Lightweight notification service with FIFO queue
+- **[Badge Forge](https://github.com/jorbush/badge_forge)** (Rust): High-performance badge and level calculation system
+- **[Pantry Keeper](https://github.com/jorbush/pantry_keeper)** (Python): Automated database backup system
 
-- **Component & Page Testing:** [Vitest](https://vitest.dev/).
+> **Why Microservices?** This architecture overcomes Vercel's 10-second API function limitation, enabling better scalability and performance for compute-intensive operations.
 
-    ```bash
-    npm run vitest
-    ```
-- **API & Server Actions Testing:** [Jest](https://jestjs.io/).
+## 📚 Documentation
 
-    ```bash
-    npm run jest
-    ```
-- **End-to-End Testing:** [Cypress](https://www.cypress.io/).
-
-    ```bash
-    npm run cypress
-    npm run cypress:open # to open the Cypress GUI
-    ```
-
-## Linting & Formatting
-
-Jorbites uses Next Lint and Oxlint for linting:
-```bash
-npm run lint # Next Lint
-npx run oxlint # Oxlint
-```
-
-And Prettier for code formatting:
-```bash
-npm run format
-npm run check-format # check for formatting issues
-```
+- **[Development Setup](docs/development.md)** - Local development guide
+- **[Architecture Details](docs/architecture.md)** - Detailed system architecture
+- **[API Documentation](docs/api-error-handling.md)** - API endpoints and error handling
+- **[Image Optimization](docs/image_optimization.md)** - Image proxy and optimization techniques
+- **[Rate Limiting](docs/rate_limit.md)** - Security and rate limiting implementation

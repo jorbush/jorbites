@@ -1,19 +1,41 @@
 # Image Optimization
 
-This documentation explains the implementation of advanced image optimization techniques used in Jorbites, including image proxying to avoid third-party cookies, efficient caching strategies and skeleton loading patterns for improved user experience.
+This documentation explains the implementation of advanced image optimization techniques used in Jorbites, including our custom image proxy system that replaces Next.js Image component to avoid limitations and third-party cookies.
 
 ## Table of Contents
 
 1. [Image Proxy Implementation](#image-proxy-implementation)
-2. [Caching Strategy](#caching-strategy)
-3. [Skeleton Loading Components](#skeleton-loading-components)
-4. [LCP Optimization](#lcp-optimization)
+2. [Migration from Next.js Image](#migration-from-nextjs-image)
+3. [Caching Strategy](#caching-strategy)
+4. [Skeleton Loading Components](#skeleton-loading-components)
+5. [LCP Optimization](#lcp-optimization)
 
 ## Image Proxy Implementation
 
-### Problem Addressed
+### Problems Addressed
 
-When using third-party image services like Cloudinary directly, browsers may set third-party cookies, causing privacy concerns and failing Lighthouse's Best Practices audit. Additionally, Next.js Image component has limitations in the Hobby plan (1,000 image limit).
+The custom image proxy system was developed to address several limitations:
+
+1. **Next.js Image Limitations:** Vercel Hobby plan has a 1,000 optimized image limit per month
+2. **Third-party Cookies:** Direct Cloudinary usage sets third-party cookies, failing Lighthouse audits
+3. **Performance:** Better control over caching and optimization parameters
+4. **Cost Efficiency:** Avoiding Vercel's image optimization costs
+
+## Migration from Next.js Image
+
+We are actively migrating away from Next.js Image component to our custom solution:
+
+**Current Status:**
+- ✅ Recipe images: Fully migrated to CloudinaryImage component
+- ✅ User avatars: Fully migrated to CloudinaryImage component
+- 🔄 Some legacy components: Still using Next.js Image (being migrated)
+- ✅ New features: All use CloudinaryImage component
+
+**Migration Benefits:**
+- No monthly image optimization limits
+- Improved Lighthouse scores (eliminates third-party cookies)
+- Better caching control
+- Reduced costs on Vercel platform
 
 ### Solution
 
