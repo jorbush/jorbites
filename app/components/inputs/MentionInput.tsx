@@ -178,55 +178,139 @@ const MentionInput: React.FC<MentionInputProps> = ({
             document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Position dropdown near the cursor
-    const getDropdownPosition = () => {
-        if (!textareaRef.current || mentionStartIndex === -1) return {};
+    // Detect if we're on a mobile device
+    const isMobile = () => {
+        return (
+            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                navigator.userAgent
+            ) ||
+            'ontouchstart' in window ||
+            navigator.maxTouchPoints > 0
+        );
+    };
+
+    // Get cursor position with mobile-optimized approach
+    const getCursorCoordinates = () => {
+        if (!textareaRef.current || mentionStartIndex === -1)
+            return { x: 0, y: 0 };
 
         const textarea = textareaRef.current;
         const rect = textarea.getBoundingClientRect();
 
-        // Create a temporary element to measure text width up to the @ symbol
-        const tempDiv = document.createElement('div');
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.visibility = 'hidden';
-        tempDiv.style.fontSize = window.getComputedStyle(textarea).fontSize;
-        tempDiv.style.fontFamily = window.getComputedStyle(textarea).fontFamily;
-        tempDiv.style.padding = window.getComputedStyle(textarea).padding;
-        tempDiv.style.border = window.getComputedStyle(textarea).border;
-        tempDiv.style.whiteSpace = 'pre-wrap';
-        tempDiv.style.wordWrap = 'break-word';
-        tempDiv.style.width = textarea.offsetWidth + 'px';
+        // Use simpler approach for mobile devices
+        if (isMobile()) {
+            // For mobile, position dropdown at the start of the textarea
+            // and slightly below to avoid keyboard interference
+            return {
+                x: rect.left,
+                y: rect.bottom + 10, // Position below textarea
+            };
+        }
 
-        // Get text up to the mention start
+        // Desktop approach with mirror div for precise positioning
+        const mirrorDiv = document.createElement('div');
+        const computedStyle = window.getComputedStyle(textarea);
+
+        // Copy all text-related styles
+        mirrorDiv.style.position = 'absolute';
+        mirrorDiv.style.visibility = 'hidden';
+        mirrorDiv.style.left = '-9999px';
+        mirrorDiv.style.top = '-9999px';
+        mirrorDiv.style.width = textarea.clientWidth + 'px';
+        mirrorDiv.style.height = textarea.clientHeight + 'px';
+        mirrorDiv.style.font = computedStyle.font;
+        mirrorDiv.style.fontSize = computedStyle.fontSize;
+        mirrorDiv.style.fontFamily = computedStyle.fontFamily;
+        mirrorDiv.style.fontWeight = computedStyle.fontWeight;
+        mirrorDiv.style.lineHeight = computedStyle.lineHeight;
+        mirrorDiv.style.letterSpacing = computedStyle.letterSpacing;
+        mirrorDiv.style.padding = computedStyle.padding;
+        mirrorDiv.style.border = computedStyle.border;
+        mirrorDiv.style.margin = computedStyle.margin;
+        mirrorDiv.style.whiteSpace = 'pre-wrap';
+        mirrorDiv.style.wordWrap = 'break-word';
+        mirrorDiv.style.overflow = 'hidden';
+        mirrorDiv.style.boxSizing = computedStyle.boxSizing;
+
+        document.body.appendChild(mirrorDiv);
+
+        // Add text before the @ symbol
         const textBeforeMention = value.substring(0, mentionStartIndex);
-        tempDiv.textContent = textBeforeMention;
+        mirrorDiv.textContent = textBeforeMention;
 
-        document.body.appendChild(tempDiv);
+        // Create a span to mark the cursor position (where @ is)
+        const cursorMarker = document.createElement('span');
+        cursorMarker.textContent = '@';
+        cursorMarker.style.position = 'relative';
+        mirrorDiv.appendChild(cursorMarker);
 
-        // Calculate position
-        const lines = textBeforeMention.split('\n');
-        const currentLine = lines.length - 1;
-        const currentLineText = lines[currentLine] || '';
+        // Get the position of the cursor marker
+        const markerRect = cursorMarker.getBoundingClientRect();
+        const mirrorRect = mirrorDiv.getBoundingClientRect();
 
-        // Rough estimation of line height and character position
-        const lineHeight =
-            parseInt(window.getComputedStyle(textarea).lineHeight) || 20;
+        // Calculate relative position within the textarea
+        const relativeX = markerRect.left - mirrorRect.left;
+        const relativeY = markerRect.top - mirrorRect.top;
 
-        document.body.removeChild(tempDiv);
+        document.body.removeChild(mirrorDiv);
 
-        // Position dropdown
-        const top = rect.top + currentLine * lineHeight + lineHeight + 5;
-        const left = rect.left + currentLineText.length * 8; // Approximate char width
+        // Convert to screen coordinates
+        return {
+            x: rect.left + relativeX,
+            y: rect.top + relativeY + 20, // Add 20px below the cursor
+        };
+    };
 
-        // Ensure dropdown stays within viewport
-        const maxLeft = window.innerWidth - 300; // 300px is approximate dropdown width
-        const finalLeft = Math.min(left, maxLeft);
+    // Position dropdown with mobile-optimized logic
+    const getDropdownPosition = () => {
+        if (!textareaRef.current || mentionStartIndex === -1) return {};
+
+        const cursorPos = getCursorCoordinates();
+        const mobile = isMobile();
+
+        // Different sizing for mobile vs desktop
+        const dropdownWidth = mobile
+            ? Math.min(320, window.innerWidth - 20)
+            : 320;
+        const dropdownHeight = 200;
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        let left = cursorPos.x;
+        let top = cursorPos.y;
+
+        // Mobile-specific adjustments
+        if (mobile) {
+            // On mobile, center the dropdown horizontally and position below textarea
+            left = Math.max(10, (viewportWidth - dropdownWidth) / 2);
+
+            // Ensure dropdown doesn't get hidden by mobile keyboard
+            const maxTop = viewportHeight * 0.6; // Use only top 60% of screen
+            if (top > maxTop) {
+                top = maxTop;
+            }
+        } else {
+            // Desktop positioning logic
+            if (left + dropdownWidth > viewportWidth) {
+                left = viewportWidth - dropdownWidth - 10;
+            }
+
+            if (top + dropdownHeight > viewportHeight) {
+                // Show above cursor instead
+                top = cursorPos.y - dropdownHeight - 25;
+            }
+        }
+
+        // Ensure minimum distance from screen edges
+        left = Math.max(10, left);
+        top = Math.max(10, top);
 
         return {
             position: 'fixed' as const,
-            top: Math.min(top, window.innerHeight - 200), // Ensure it doesn't go below viewport
-            left: finalLeft,
+            top: top,
+            left: left,
             zIndex: 9999,
+            width: mobile ? dropdownWidth : undefined,
         };
     };
 
@@ -247,19 +331,26 @@ const MentionInput: React.FC<MentionInputProps> = ({
             {showDropdown && users.length > 0 && (
                 <div
                     ref={dropdownRef}
-                    className="w-80 max-w-sm rounded-md border border-gray-200 bg-white shadow-lg dark:border-neutral-600 dark:bg-zinc-800"
+                    className={`rounded-md border border-gray-200 bg-white shadow-lg dark:border-neutral-600 dark:bg-zinc-800 ${
+                        isMobile() ? 'w-full max-w-none' : 'w-auto max-w-sm'
+                    }`}
                     style={getDropdownPosition()}
                 >
                     <div className="max-h-48 overflow-y-auto">
                         {users.map((user, index) => (
                             <div
                                 key={user.id}
-                                className={`flex cursor-pointer items-center gap-2 p-3 hover:bg-gray-50 dark:hover:bg-zinc-700 ${
+                                className={`flex cursor-pointer items-center gap-2 pr-5 hover:bg-gray-50 dark:hover:bg-zinc-700 ${
+                                    isMobile() ? 'p-4' : 'p-3'
+                                } ${
                                     index === selectedIndex
                                         ? 'bg-gray-50 dark:bg-zinc-700'
                                         : ''
                                 }`}
                                 onClick={() => selectUser(user)}
+                                style={{
+                                    minHeight: isMobile() ? '48px' : 'auto', // Minimum touch target size on mobile
+                                }}
                             >
                                 <Avatar
                                     src={user.image}
@@ -273,9 +364,6 @@ const MentionInput: React.FC<MentionInputProps> = ({
                                         <VerificationBadge className="ml-1" />
                                     )}
                                 </div>
-                                <span className="text-xs text-gray-500 dark:text-zinc-400">
-                                    Level {user.level}
-                                </span>
                             </div>
                         ))}
                     </div>
