@@ -28,6 +28,19 @@ vi.mock('@/app/components/utils/Avatar', () => ({
     ),
 }));
 
+// Mock MentionInput component
+vi.mock('@/app/components/inputs/MentionInput', () => ({
+    default: ({ value, onChange, placeholder, dataCy, ...props }: any) => (
+        <textarea
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            data-cy={dataCy}
+            {...props}
+        />
+    ),
+}));
+
 describe('CommentBox', () => {
     const mockProps = {
         userImage: 'https://example.com/avatar.jpg',
@@ -107,7 +120,7 @@ describe('CommentBox', () => {
 
         await waitFor(
             () => {
-                expect(textarea.value).toBe(''); // Assert textarea is cleared
+                expect((textarea as HTMLTextAreaElement).value).toBe(''); // Assert textarea is cleared
                 fireEvent.change(textarea, { target: { value: 'A' } }); // Simulate new typing
                 expect(submitButton).toHaveProperty('disabled', false); // Now button should be enabled
             },

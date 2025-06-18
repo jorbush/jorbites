@@ -30,6 +30,11 @@ vi.mock('@/app/components/comments/CommentBox', () => ({
                 src={userImage}
                 alt="avatar"
             />
+            <textarea
+                placeholder="write_comment"
+                onChange={() => {}}
+                data-testid="comment-input"
+            />
             <button onClick={() => onCreateComment('This is a new comment')}>
                 Submit
             </button>
@@ -60,6 +65,9 @@ describe('Comments', () => {
         emailNotifications: false,
         level: 1,
         verified: false,
+        badges: [],
+        resetToken: null,
+        resetTokenExpiry: null,
     };
 
     const mockComments: SafeComment[] = [
