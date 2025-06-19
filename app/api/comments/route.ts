@@ -61,19 +61,6 @@ export async function POST(request: Request) {
             });
         }
 
-        const mentionedUserIds = extractMentionedUserIds(comment);
-        if (mentionedUserIds.length > 0) {
-            await sendEmail({
-                type: EmailType.MENTION_IN_COMMENT,
-                userEmail: currentUser.email,
-                params: {
-                    userName: currentUser.name,
-                    recipeId: recipeId,
-                    mentionedUsers: mentionedUserIds,
-                },
-            });
-        }
-
         const recipeAndComment = await prisma.recipe.update({
             where: {
                 id: recipeId,
@@ -90,6 +77,19 @@ export async function POST(request: Request) {
                 comments: true,
             },
         });
+
+        const mentionedUserIds = extractMentionedUserIds(comment);
+        if (mentionedUserIds.length > 0) {
+            await sendEmail({
+                type: EmailType.MENTION_IN_COMMENT,
+                userEmail: currentUser.email,
+                params: {
+                    userName: currentUser.name,
+                    recipeId: recipeId,
+                    mentionedUsers: mentionedUserIds,
+                },
+            });
+        }
 
         return NextResponse.json(recipeAndComment);
     } catch (error) {

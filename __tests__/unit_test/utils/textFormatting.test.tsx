@@ -14,7 +14,7 @@ describe('formatText', () => {
         const link = container.querySelector('a[href="/profile/user123"]');
         expect(link).toBeDefined();
         expect(link?.textContent).toBe('@John Doe');
-        expect(link?.className).toContain('text-blue-500');
+        expect(link?.className).toContain('text-green-450');
         expect(link?.className).toContain('hover:underline');
     });
 
