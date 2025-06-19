@@ -61,34 +61,17 @@ export async function POST(request: Request) {
             });
         }
 
-        // Extract mentioned user IDs and send notifications
         const mentionedUserIds = extractMentionedUserIds(comment);
-
-        // Get mentioned users who have email notifications enabled
         if (mentionedUserIds.length > 0) {
-            const mentionedUsers = await prisma.user.findMany({
-                where: {
-                    id: { in: mentionedUserIds },
-                    emailNotifications: true,
-                    email: { not: currentUser.email }, // Don't notify the commenter
-                },
-                select: {
-                    id: true,
-                    email: true,
+            await sendEmail({
+                type: EmailType.MENTION_IN_COMMENT,
+                userEmail: currentUser.email,
+                params: {
+                    userName: currentUser.name,
+                    recipeId: recipeId,
+                    mentionedUsers: mentionedUserIds,
                 },
             });
-
-            // Send mention notifications
-            for (const mentionedUser of mentionedUsers) {
-                await sendEmail({
-                    type: EmailType.MENTION_IN_COMMENT,
-                    userEmail: mentionedUser.email,
-                    params: {
-                        userName: currentUser.name,
-                        recipeId: recipeId,
-                    },
-                });
-            }
         }
 
         const recipeAndComment = await prisma.recipe.update({

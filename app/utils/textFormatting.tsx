@@ -37,7 +37,6 @@ export const formatText = (
                         className="text-green-450 cursor-pointer hover:underline"
                         onClick={(e) => {
                             e.preventDefault();
-                            // Use Next.js router for client-side navigation
                             window.location.href = `/profile/${userId}`;
                         }}
                     >
@@ -99,13 +98,10 @@ export const formatText = (
     while (remainingText.length > 0) {
         const { index, pattern, match } = findNextPattern();
         if (pattern && match) {
-            // Add any plain text before the pattern
             if (index > 0) {
                 segments.push(remainingText.substring(0, index));
             }
-            // Render the matched pattern using captured groups
             segments.push(pattern.render(match[0], ...match.slice(1)));
-            // Continue with remaining text after this match
             remainingText = remainingText.substring(index + match[0].length);
         } else {
             segments.push(remainingText);
