@@ -65,13 +65,11 @@ const MentionInput: React.FC<MentionInputProps> = ({
 
         onChange(newValue);
 
-        // Check if we're typing a mention
         const beforeCursor = newValue.substring(0, cursorPosition);
         const lastAtIndex = beforeCursor.lastIndexOf('@');
 
         if (lastAtIndex !== -1) {
             const afterAt = beforeCursor.substring(lastAtIndex + 1);
-            // Check if there's no space after @ (which would end the mention)
             if (!afterAt.includes(' ') && !afterAt.includes('\n')) {
                 setMentionStartIndex(lastAtIndex);
                 setShowDropdown(true);
@@ -160,7 +158,6 @@ const MentionInput: React.FC<MentionInputProps> = ({
         }
     };
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -178,7 +175,6 @@ const MentionInput: React.FC<MentionInputProps> = ({
             document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Detect if we're on a mobile device
     const isMobile = () => {
         return (
             /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -189,7 +185,6 @@ const MentionInput: React.FC<MentionInputProps> = ({
         );
     };
 
-    // Get cursor position with mobile-optimized approach
     const getCursorCoordinates = () => {
         if (!textareaRef.current || mentionStartIndex === -1)
             return { x: 0, y: 0 };
@@ -197,21 +192,16 @@ const MentionInput: React.FC<MentionInputProps> = ({
         const textarea = textareaRef.current;
         const rect = textarea.getBoundingClientRect();
 
-        // Use simpler approach for mobile devices
         if (isMobile()) {
-            // For mobile, position dropdown at the start of the textarea
-            // and slightly below to avoid keyboard interference
             return {
                 x: rect.left,
                 y: rect.bottom + 10, // Position below textarea
             };
         }
 
-        // Desktop approach with mirror div for precise positioning
         const mirrorDiv = document.createElement('div');
         const computedStyle = window.getComputedStyle(textarea);
 
-        // Copy all text-related styles
         mirrorDiv.style.position = 'absolute';
         mirrorDiv.style.visibility = 'hidden';
         mirrorDiv.style.left = '-9999px';
@@ -261,7 +251,6 @@ const MentionInput: React.FC<MentionInputProps> = ({
         };
     };
 
-    // Position dropdown with mobile-optimized logic
     const getDropdownPosition = () => {
         if (!textareaRef.current || mentionStartIndex === -1) return {};
 
@@ -279,7 +268,6 @@ const MentionInput: React.FC<MentionInputProps> = ({
         let left = cursorPos.x;
         let top = cursorPos.y;
 
-        // Mobile-specific adjustments
         if (mobile) {
             // On mobile, center the dropdown horizontally and position below textarea
             left = Math.max(10, (viewportWidth - dropdownWidth) / 2);
@@ -349,7 +337,7 @@ const MentionInput: React.FC<MentionInputProps> = ({
                                 }`}
                                 onClick={() => selectUser(user)}
                                 style={{
-                                    minHeight: isMobile() ? '48px' : 'auto', // Minimum touch target size on mobile
+                                    minHeight: isMobile() ? '48px' : 'auto',
                                 }}
                             >
                                 <Avatar
