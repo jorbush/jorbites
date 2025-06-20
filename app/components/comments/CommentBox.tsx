@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import Avatar from '@/app/components/utils/Avatar';
+import MentionInput from '@/app/components/inputs/MentionInput';
 import { COMMENT_MAX_LENGTH } from '@/app/utils/constants';
 
 interface CommentBoxProps {
@@ -22,8 +23,8 @@ const CommentBox: React.FC<CommentBoxProps> = ({
     const [isButtonDisabled, setButtonDisabled] = useState(false);
     const { t } = useTranslation();
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setComment(e.target.value);
+    const handleInputChange = (value: string) => {
+        setComment(value);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -52,14 +53,14 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 className="mt-2 grow"
             >
                 <div className="relative">
-                    <textarea
-                        className="h-12 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 font-light text-zinc-900 focus:ring-0 focus:outline-hidden dark:border-neutral-600 dark:bg-zinc-800 dark:text-zinc-100"
-                        placeholder={t('write_comment') ?? 'Write a comment...'}
+                    <MentionInput
                         value={comment}
                         onChange={handleInputChange}
-                        data-cy="comment-input"
+                        placeholder={t('write_comment') ?? 'Write a comment...'}
+                        className="h-12 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 font-light text-zinc-900 focus:ring-0 focus:outline-hidden dark:border-neutral-600 dark:bg-zinc-800 dark:text-zinc-100"
                         disabled={isLoading || isButtonDisabled}
                         maxLength={COMMENT_MAX_LENGTH}
+                        dataCy="comment-input"
                     />
                     <div className="absolute right-2 bottom-2 text-xs text-neutral-500 dark:text-neutral-400">
                         {comment.length}/{COMMENT_MAX_LENGTH}

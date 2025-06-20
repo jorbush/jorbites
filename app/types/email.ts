@@ -5,6 +5,7 @@ export enum EmailType {
     NEW_RECIPE = 'NEW_RECIPE',
     NOTIFICATIONS_ACTIVATED = 'NOTIFICATIONS_ACTIVATED',
     FORGOT_PASSWORD = 'FORGOT_PASSWORD',
+    MENTION_IN_COMMENT = 'MENTION_IN_COMMENT',
 }
 
 export interface EmailTemplateParams {

@@ -8,6 +8,7 @@ interface SendEmailParams {
         recipeId?: string;
         recipeName?: string;
         resetUrl?: string;
+        mentionedUsers?: string[];
     };
 }
 
@@ -24,6 +25,8 @@ const sendEmail = async ({ type, userEmail, params = {} }: SendEmailParams) => {
         if (params.recipeId) metadata.recipeId = params.recipeId;
         if (params.recipeName) metadata.recipeName = params.recipeName;
         if (params.resetUrl) metadata.resetUrl = params.resetUrl;
+        if (params.mentionedUsers)
+            metadata.mentionedUsers = params.mentionedUsers.join(',');
 
         if (type === EmailType.NEW_LIKE && params.userName) {
             metadata.likedBy = params.userName;

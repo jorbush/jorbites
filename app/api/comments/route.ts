@@ -5,6 +5,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import { EmailType } from '@/app/types/email';
 import { COMMENT_MAX_LENGTH } from '@/app/utils/constants';
+import { extractMentionedUserIds } from '@/app/utils/mentionUtils';
 import {
     unauthorized,
     badRequest,
@@ -76,6 +77,19 @@ export async function POST(request: Request) {
                 comments: true,
             },
         });
+
+        const mentionedUserIds = extractMentionedUserIds(comment);
+        if (mentionedUserIds.length > 0) {
+            await sendEmail({
+                type: EmailType.MENTION_IN_COMMENT,
+                userEmail: currentUser.email,
+                params: {
+                    userName: currentUser.name,
+                    recipeId: recipeId,
+                    mentionedUsers: mentionedUserIds,
+                },
+            });
+        }
 
         return NextResponse.json(recipeAndComment);
     } catch (error) {

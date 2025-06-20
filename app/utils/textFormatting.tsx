@@ -16,7 +16,7 @@ export const formatText = (
     const patterns = [
         {
             regex: /(https?:\/\/[^\s]+)/g,
-            render: (match: string) => (
+            render: (match: string, ..._args: string[]) => (
                 <a
                     href={match}
                     target="_blank"
@@ -28,24 +28,42 @@ export const formatText = (
             ),
         },
         {
+            regex: /@([^[\]]+)\[([^\]]+)\]/g,
+            render: (_match: string, ...args: string[]) => {
+                const [username, userId] = args;
+                return (
+                    <a
+                        href={`/profile/${userId}`}
+                        className="text-green-450 cursor-pointer hover:underline"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            window.location.href = `/profile/${userId}`;
+                        }}
+                    >
+                        @{username}
+                    </a>
+                );
+            },
+        },
+        {
             regex: /\*\*(.*?)\*\*/g,
-            render: (_match: string, content: string) => (
-                <strong>{content}</strong>
+            render: (_match: string, ...args: string[]) => (
+                <strong>{args[0]}</strong>
             ),
         },
         {
             regex: /__(.*?)__/g,
-            render: (_match: string, content: string) => (
-                <strong>{content}</strong>
+            render: (_match: string, ...args: string[]) => (
+                <strong>{args[0]}</strong>
             ),
         },
         {
             regex: /\*(.*?)\*/g,
-            render: (_match: string, content: string) => <em>{content}</em>,
+            render: (_match: string, ...args: string[]) => <em>{args[0]}</em>,
         },
         {
             regex: /_(.*?)_/g,
-            render: (_match: string, content: string) => <em>{content}</em>,
+            render: (_match: string, ...args: string[]) => <em>{args[0]}</em>,
         },
     ];
     type PatternType = (typeof patterns)[number];
@@ -80,17 +98,10 @@ export const formatText = (
     while (remainingText.length > 0) {
         const { index, pattern, match } = findNextPattern();
         if (pattern && match) {
-            // Add any plain text before the pattern
             if (index > 0) {
                 segments.push(remainingText.substring(0, index));
             }
-            // Render the matched pattern differently based on type
-            if (pattern.regex.source.includes('https?')) {
-                segments.push(pattern.render(match[0], ''));
-            } else {
-                segments.push(pattern.render(match[0], match[1]));
-            }
-            // Continue with remaining text after this match
+            segments.push(pattern.render(match[0], ...match.slice(1)));
             remainingText = remainingText.substring(index + match[0].length);
         } else {
             segments.push(remainingText);
