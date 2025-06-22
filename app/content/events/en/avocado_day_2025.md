@@ -2,7 +2,7 @@
 title: 🥑 International Avocado Day 2025 🥑
 date: 2025-07-31
 endDate: 2025-07-31
-image: /images/events/avocado_day_2025.webp
+image: /images/events/avocado_day.webp
 description: International Avocado Day 2025 event
 ---
 

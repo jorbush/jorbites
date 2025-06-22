@@ -2,7 +2,7 @@
 title: 🥑 Día Internacional del Aguacate 2025 🥑
 date: 2025-07-31
 endDate: 2025-07-31
-image: /images/events/avocado_day_2025.webp
+image: /images/events/avocado_day.webp
 description: Evento del Día Internacional del Aguacate 2025
 ---
 
