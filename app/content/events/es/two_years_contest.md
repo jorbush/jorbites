@@ -20,7 +20,7 @@ Piensa en celebraciones, en picoteo elegante, en esa receta que te hace decir: "
 
 ## 📆 Fecha
 
-Sábado, 28 de julio de 2025 – Hora del vermut
+Sábado, 28 de junio de 2025 – Hora del vermut
 
 ## 🏆 Premio
 - Un regalo sorpresa de Jorbites (sí, edición limitada)
