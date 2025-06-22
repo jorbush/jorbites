@@ -44,7 +44,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                     size={100}
                     onClick={() => router.push('/profile/' + user?.id)}
                 />
-                <div className="flex flex-col gap-3 text-2xl md:text-3xl">
+                <div className="flex flex-col gap-2 text-2xl md:text-3xl">
                     <div className="flex flex-row gap-2">
                         <div
                             className="cursor-pointer"
@@ -62,7 +62,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                     </div>
                     <div className="text-lg text-gray-400 md:text-xl">{`${t('level')} ${user?.level}`}</div>
                     {user?.createdAt && (
-                        <div className="flex items-center gap-0.5 text-xs text-gray-500">
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
                             <FiCalendar className="h-3 w-3" />
                             <span>
                                 {t('since')} {formatMemberSince(user.createdAt)}
