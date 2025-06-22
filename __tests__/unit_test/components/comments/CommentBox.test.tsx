@@ -8,6 +8,10 @@ import {
 } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import CommentBox from '@/app/components/comments/CommentBox';
+import {
+    COMMENT_MAX_LENGTH,
+    CHAR_COUNT_WARNING_THRESHOLD,
+} from '@/app/utils/constants';
 
 // Mocks
 vi.mock('react-i18next', () => ({
@@ -204,7 +208,10 @@ describe('CommentBox', () => {
         render(<CommentBox {...mockProps} />);
 
         const textarea = screen.getByPlaceholderText('write_comment');
-        const longComment = 'a'.repeat(400); // 400 chars out of 500 = 80%
+        const thresholdLength = Math.ceil(
+            COMMENT_MAX_LENGTH * CHAR_COUNT_WARNING_THRESHOLD
+        ); // 400 chars = 80% of 500
+        const longComment = 'a'.repeat(thresholdLength);
         fireEvent.change(textarea, { target: { value: longComment } });
 
         await waitFor(() => {

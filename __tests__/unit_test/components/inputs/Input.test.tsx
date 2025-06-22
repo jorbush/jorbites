@@ -3,7 +3,10 @@ import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import Input from '@/app/components/inputs/Input';
 import { UseFormRegister, FieldValues, FieldErrors } from 'react-hook-form';
-import { RECIPE_TITLE_MAX_LENGTH } from '@/app/utils/constants';
+import {
+    RECIPE_TITLE_MAX_LENGTH,
+    CHAR_COUNT_WARNING_THRESHOLD,
+} from '@/app/utils/constants';
 
 describe('Input', () => {
     const mockOnChange = vi.fn();
@@ -150,6 +153,10 @@ describe('Input', () => {
     });
 
     it('shows character count when at or above 80% threshold', () => {
+        const testMaxLength = 10;
+        const thresholdValue = Math.ceil(
+            testMaxLength * CHAR_COUNT_WARNING_THRESHOLD
+        ); // 8 chars = 80% of 10
         const mockRegisterWithValue = vi
             .fn()
             .mockImplementation((id: string) => ({
@@ -157,7 +164,7 @@ describe('Input', () => {
                 onBlur: vi.fn(),
                 name: id,
                 ref: vi.fn(),
-                value: '12345678', // 8 chars out of 10 = 80%
+                value: 'a'.repeat(thresholdValue), // Use threshold value
             }));
 
         render(
@@ -166,7 +173,7 @@ describe('Input', () => {
                 label="Test Input"
                 register={mockRegisterWithValue}
                 errors={mockErrors}
-                maxLength={10}
+                maxLength={testMaxLength}
             />
         );
 

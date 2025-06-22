@@ -6,7 +6,10 @@ import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import Avatar from '@/app/components/utils/Avatar';
 import MentionInput from '@/app/components/inputs/MentionInput';
-import { COMMENT_MAX_LENGTH } from '@/app/utils/constants';
+import {
+    COMMENT_MAX_LENGTH,
+    CHAR_COUNT_WARNING_THRESHOLD,
+} from '@/app/utils/constants';
 
 interface CommentBoxProps {
     userImage: string | undefined | null;
@@ -64,7 +67,8 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                     />
                     <div
                         className={`absolute right-2 bottom-2 text-xs transition-opacity duration-200 ${
-                            comment.length >= COMMENT_MAX_LENGTH * 0.8
+                            comment.length >=
+                            COMMENT_MAX_LENGTH * CHAR_COUNT_WARNING_THRESHOLD
                                 ? 'text-neutral-500 opacity-100 dark:text-neutral-400'
                                 : 'opacity-0'
                         }`}
