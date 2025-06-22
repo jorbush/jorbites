@@ -134,6 +134,46 @@ describe('Input', () => {
         expect(charCount.textContent).toBe(`0/${RECIPE_TITLE_MAX_LENGTH}`);
     });
 
+    it('hides character count when below 80% threshold', () => {
+        render(
+            <Input
+                id="test"
+                label="Test Input"
+                register={mockRegister}
+                errors={mockErrors}
+                maxLength={10}
+            />
+        );
+
+        const charCount = screen.getByTestId('char-count');
+        expect(charCount.className).toContain('opacity-0');
+    });
+
+    it('shows character count when at or above 80% threshold', () => {
+        const mockRegisterWithValue = vi
+            .fn()
+            .mockImplementation((id: string) => ({
+                onChange: vi.fn(),
+                onBlur: vi.fn(),
+                name: id,
+                ref: vi.fn(),
+                value: '12345678', // 8 chars out of 10 = 80%
+            }));
+
+        render(
+            <Input
+                id="test"
+                label="Test Input"
+                register={mockRegisterWithValue}
+                errors={mockErrors}
+                maxLength={10}
+            />
+        );
+
+        const charCount = screen.getByTestId('char-count');
+        expect(charCount.className).toContain('opacity-100');
+    });
+
     it('updates character count when input changes', () => {
         render(
             <Input

@@ -62,7 +62,13 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                         maxLength={COMMENT_MAX_LENGTH}
                         dataCy="comment-input"
                     />
-                    <div className="absolute right-2 bottom-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    <div
+                        className={`absolute right-2 bottom-2 text-xs transition-opacity duration-200 ${
+                            comment.length >= COMMENT_MAX_LENGTH * 0.8
+                                ? 'text-neutral-500 opacity-100 dark:text-neutral-400'
+                                : 'opacity-0'
+                        }`}
+                    >
                         {comment.length}/{COMMENT_MAX_LENGTH}
                     </div>
                 </div>

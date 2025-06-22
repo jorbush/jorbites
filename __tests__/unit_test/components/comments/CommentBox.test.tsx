@@ -191,4 +191,27 @@ describe('CommentBox', () => {
         );
         expect(submitButton.className).not.toContain('cursor-pointer');
     });
+
+    it('hides character count when comment length is below 80% threshold', () => {
+        render(<CommentBox {...mockProps} />);
+
+        // Character count should be hidden when comment is empty (0% of 500)
+        const commentBox = document.querySelector('.absolute.right-2.bottom-2');
+        expect(commentBox?.className).toContain('opacity-0');
+    });
+
+    it('shows character count when comment length is at or above 80% threshold', async () => {
+        render(<CommentBox {...mockProps} />);
+
+        const textarea = screen.getByPlaceholderText('write_comment');
+        const longComment = 'a'.repeat(400); // 400 chars out of 500 = 80%
+        fireEvent.change(textarea, { target: { value: longComment } });
+
+        await waitFor(() => {
+            const commentBox = document.querySelector(
+                '.absolute.right-2.bottom-2'
+            );
+            expect(commentBox?.className).toContain('opacity-100');
+        });
+    });
 });

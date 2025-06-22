@@ -94,7 +94,11 @@ const Input: React.FC<InputProps> = ({
             </label>
             {maxLength && (
                 <div
-                    className="absolute top-2 right-2 text-xs text-neutral-500 dark:text-neutral-400"
+                    className={`absolute top-2 right-2 text-xs transition-opacity duration-200 ${
+                        charCount >= maxLength * 0.8
+                            ? 'text-neutral-500 opacity-100 dark:text-neutral-400'
+                            : 'opacity-0'
+                    }`}
                     data-testid="char-count"
                 >
                     {charCount}/{maxLength}
