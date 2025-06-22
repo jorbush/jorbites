@@ -44,8 +44,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                     size={100}
                     onClick={() => router.push('/profile/' + user?.id)}
                 />
-                <div className="flex flex-col gap-2">
-                    <div className="flex flex-col gap-3 text-2xl md:text-3xl">
+                <div className="flex flex-col gap-3 text-2xl md:text-3xl">
+                    <div className="flex flex-row gap-2">
                         <div
                             className="cursor-pointer"
                             onClick={() => router.push('/profile/' + user?.id)}
