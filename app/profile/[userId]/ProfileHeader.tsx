@@ -11,6 +11,8 @@ import confetti from 'canvas-confetti';
 import getUserDisplayName from '@/app/utils/responsive';
 import VerificationBadge from '@/app/components/VerificationBadge';
 import ScrollableContainer from '@/app/components/utils/ScrollableContainer';
+import { formatDateLanguage } from '@/app/utils/date-utils';
+import { FiCalendar } from 'react-icons/fi';
 
 interface ProfileHeaderProps {
     user?: SafeUser | null;
@@ -30,6 +32,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
         });
     };
 
+    const formatMemberSince = (createdAt: string) => {
+        return formatDateLanguage(new Date(createdAt), 'yyyy');
+    };
+
     return (
         <Container>
             <div className="col-span-2 flex flex-row items-center gap-4 p-2 text-xl font-semibold dark:text-neutral-100">
@@ -38,10 +44,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                     size={100}
                     onClick={() => router.push('/profile/' + user?.id)}
                 />
-                <div className="flex flex-col gap-3 text-2xl md:text-3xl">
+                <div className="flex flex-col gap-2">
                     <div className="flex flex-row gap-2">
                         <div
-                            className="cursor-pointer"
+                            className="cursor-pointer text-3xl md:text-4xl"
                             onClick={() => router.push('/profile/' + user?.id)}
                         >
                             {getUserDisplayName(
@@ -55,6 +61,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                         )}
                     </div>
                     <div className="text-lg text-gray-400 md:text-xl">{`${t('level')} ${user?.level}`}</div>
+                    {user?.createdAt && (
+                        <div className="flex items-center gap-0.5 text-xs text-gray-500">
+                            <FiCalendar className="h-3 w-3" />
+                            <span>
+                                {t('since')} {formatMemberSince(user.createdAt)}
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
             <hr className="mt-2" />
