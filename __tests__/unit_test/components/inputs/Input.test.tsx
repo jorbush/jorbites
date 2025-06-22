@@ -3,7 +3,10 @@ import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import Input from '@/app/components/inputs/Input';
 import { UseFormRegister, FieldValues, FieldErrors } from 'react-hook-form';
-import { RECIPE_TITLE_MAX_LENGTH } from '@/app/utils/constants';
+import {
+    RECIPE_TITLE_MAX_LENGTH,
+    CHAR_COUNT_WARNING_THRESHOLD,
+} from '@/app/utils/constants';
 
 describe('Input', () => {
     const mockOnChange = vi.fn();
@@ -132,6 +135,50 @@ describe('Input', () => {
 
         const charCount = screen.getByTestId('char-count');
         expect(charCount.textContent).toBe(`0/${RECIPE_TITLE_MAX_LENGTH}`);
+    });
+
+    it('hides character count when below 80% threshold', () => {
+        render(
+            <Input
+                id="test"
+                label="Test Input"
+                register={mockRegister}
+                errors={mockErrors}
+                maxLength={10}
+            />
+        );
+
+        const charCount = screen.getByTestId('char-count');
+        expect(charCount.className).toContain('opacity-0');
+    });
+
+    it('shows character count when at or above 80% threshold', () => {
+        const testMaxLength = 10;
+        const thresholdValue = Math.ceil(
+            testMaxLength * CHAR_COUNT_WARNING_THRESHOLD
+        ); // 8 chars = 80% of 10
+        const mockRegisterWithValue = vi
+            .fn()
+            .mockImplementation((id: string) => ({
+                onChange: vi.fn(),
+                onBlur: vi.fn(),
+                name: id,
+                ref: vi.fn(),
+                value: 'a'.repeat(thresholdValue), // Use threshold value
+            }));
+
+        render(
+            <Input
+                id="test"
+                label="Test Input"
+                register={mockRegisterWithValue}
+                errors={mockErrors}
+                maxLength={testMaxLength}
+            />
+        );
+
+        const charCount = screen.getByTestId('char-count');
+        expect(charCount.className).toContain('opacity-100');
     });
 
     it('updates character count when input changes', () => {

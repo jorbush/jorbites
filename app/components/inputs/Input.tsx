@@ -3,6 +3,7 @@
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 import { BiDollar } from 'react-icons/bi';
 import { useState, useRef } from 'react';
+import { CHAR_COUNT_WARNING_THRESHOLD } from '@/app/utils/constants';
 
 interface InputProps {
     id: string;
@@ -94,7 +95,11 @@ const Input: React.FC<InputProps> = ({
             </label>
             {maxLength && (
                 <div
-                    className="absolute top-2 right-2 text-xs text-neutral-500 dark:text-neutral-400"
+                    className={`absolute top-2 right-2 text-xs transition-opacity duration-200 ${
+                        charCount >= maxLength * CHAR_COUNT_WARNING_THRESHOLD
+                            ? 'text-neutral-500 opacity-100 dark:text-neutral-400'
+                            : 'opacity-0'
+                    }`}
                     data-testid="char-count"
                 >
                     {charCount}/{maxLength}
