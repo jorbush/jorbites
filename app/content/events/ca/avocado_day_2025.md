@@ -1,7 +1,7 @@
 ---
 title: 🥑 Dia Internacional de l'Alvocat 2025 🥑
 date: 2025-07-31
-endDate: 2025-07-31
+endDate: 2025-07-31T21:59:59
 image: /images/events/avocado_day.webp
 description: Esdeveniment del Dia Internacional de l'Alvocat 2025
 ---

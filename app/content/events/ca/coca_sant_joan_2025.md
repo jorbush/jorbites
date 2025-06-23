@@ -1,7 +1,7 @@
 ---
 title: 🥧 Coca de Sant Joan 2025 🥧
 date: 2025-06-23
-endDate: 2025-06-23
+endDate: 2025-06-23T21:59:59
 image: /images/events/coca_sant_joan_2025.webp
 description: Event de Coca de Sant Joan 2025
 ---
