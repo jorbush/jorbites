@@ -17,12 +17,15 @@ const mockUser: SafeUser = {
     emailVerified: null,
     image: '/test-image.jpg',
     hashedPassword: null,
-    createdAt: new Date().toISOString(),
+    createdAt: '2023-01-01T00:00:00.000Z',
     updatedAt: new Date().toISOString(),
     favoriteIds: [],
     emailNotifications: false,
     level: 5,
     verified: true,
+    badges: [],
+    resetToken: null,
+    resetTokenExpiry: null,
 };
 
 // Mock the router and translation
@@ -32,29 +35,64 @@ vi.mock('next/navigation', () => ({
         query: {},
     })),
 }));
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (key: string) => key,
-    }),
+
+vi.mock('react-i18next', async (importOriginal) => {
+    const actual = (await importOriginal()) as any;
+    return {
+        ...actual,
+        useTranslation: () => ({
+            t: (key: string) => {
+                const translations: Record<string, string> = {
+                    level: 'Lv.',
+                    since: 'Since',
+                };
+                return translations[key] || key;
+            },
+        }),
+        initReactI18next: {
+            type: '3rdParty',
+            init: vi.fn(),
+        },
+    };
+});
+
+// Mock react-icons
+vi.mock('react-icons/fi', () => ({
+    FiCalendar: () =>
+        React.createElement('div', { 'data-testid': 'calendar-icon' }),
+}));
+
+// Mock date-fns
+vi.mock('date-fns', () => ({
+    format: vi.fn(() => '2023'),
+}));
+
+// Mock date-fns/locale
+vi.mock('date-fns/locale', () => ({
+    es: {},
+    enUS: {},
+    ca: {},
 }));
 
 describe('ProfileHeader', () => {
     afterEach(() => {
         cleanup();
     });
+
     it('renders correctly with user data', () => {
         const router = { push: vi.fn() };
         (useRouter as any).mockReturnValue(router);
 
-        const { getByText, getByAltText } = render(
+        const { getByText, getByAltText, getByTestId } = render(
             <ProfileHeader user={mockUser} />
         );
 
         // Assert user details
         expect(getByText('Test User')).toBeDefined();
-        expect(getByText('level 5')).toBeDefined();
+        expect(getByText('Lv. 5')).toBeDefined();
         expect(getByAltText('Avatar')).toBeDefined();
-        expect(getByText('Test User').closest('svg')).toBeDefined();
+        expect(getByText('Since 2023')).toBeDefined();
+        expect(getByTestId('calendar-icon')).toBeDefined();
     });
 
     it('calls router.push on user name click', () => {
@@ -84,9 +122,26 @@ describe('ProfileHeader', () => {
 
         // Assert user details
         expect(getByText('Test User')).toBeDefined();
-        expect(getByText('level 5')).toBeDefined();
+        expect(getByText('Lv. 5')).toBeDefined();
 
         // Assert verified icon is not rendered
         expect(queryByTestId('MdVerified')).toBeNull();
+    });
+
+    it('does not render member since when createdAt is not provided', () => {
+        const userWithoutCreatedAt: SafeUser = {
+            ...mockUser,
+            createdAt: '',
+        };
+        const router = { push: vi.fn() };
+        (useRouter as any).mockReturnValue(router);
+
+        const { queryByText, queryByTestId } = render(
+            <ProfileHeader user={userWithoutCreatedAt} />
+        );
+
+        // Assert member since is not rendered when createdAt is empty
+        expect(queryByText('Since 2023')).toBeNull();
+        expect(queryByTestId('calendar-icon')).toBeNull();
     });
 });
