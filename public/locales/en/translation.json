@@ -421,5 +421,6 @@
     "challenge_value_cuisine_balearic": "Balearic",
     "challenge_value_cuisine_provencal": "Provençal",
     "challenge_value_cuisine_yucatecan": "Yucatecan",
-    "challenge_value_cuisine_cantonese": "Cantonese"
+    "challenge_value_cuisine_cantonese": "Cantonese",
+    "since": "Since"
 }

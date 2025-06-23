@@ -426,5 +426,6 @@
     "challenge_value_dietary_sugar_free": "Sense Sucre",
     "challenge_value_dietary_whole_food": "Aliments Integrals",
     "challenge_value_dietary_keto": "Cetogènica",
-    "challenge_value_dietary_paleo": "Paleo"
+    "challenge_value_dietary_paleo": "Paleo",
+    "since": "Des de"
 }
