@@ -38,6 +38,6 @@ Jorbites is more than just a recipe platform - it's a community of passionate fo
 
 ### 📅 Event Duration
 
-This event runs from **July 1st to July 31th, 2025**. Don't miss out on this opportunity to share the love for cooking!
+This event runs from **July 1st to July 31st, 2025**. Don't miss out on this opportunity to share the love for cooking!
 
 **Ready to Pass the Bite? Start inviting today! 🚀**
