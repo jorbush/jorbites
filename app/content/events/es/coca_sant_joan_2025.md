@@ -16,6 +16,6 @@ Todos los Jorbiters que publiquen una receta de Coca de Sant Joan ese día será
 
 🍰 **Coca de Sant Joan**
 
-Las dos versiones en una misma receta. Tanto la version con verduras confitadas como la version de piñones con crema. Detallada al máximo y deliciosa.
+Las dos versiones en una misma receta. Tanto la versión con verduras confitadas como la versión de piñones con crema. Detallada al máximo y deliciosa.
 
 📎 [Coca de Sant Joan](https://jorbites.com/recipes/6859bf2aeb80806d29cee918)
