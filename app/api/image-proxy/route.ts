@@ -44,6 +44,40 @@ export async function GET(request: NextRequest) {
                     error
                 );
             }
+        } else if (url.includes('googleusercontent.com')) {
+            try {
+                // For Google images, we can add size parameters
+                // Google supports s parameter for size (s=96 for 96x96 pixels)
+                const size = Math.max(parseInt(width), parseInt(height));
+
+                // If the URL already has parameters, add size parameter
+                if (url.includes('=')) {
+                    // Replace existing size parameter or add new one
+                    if (url.includes('=s')) {
+                        imageUrl = url.replace(/=s\d+/, `=s${size}`);
+                    } else {
+                        imageUrl = `${url}-s${size}`;
+                    }
+                } else {
+                    // Add size parameter for basic URLs
+                    imageUrl = `${url}=s${size}`;
+                }
+            } catch (error) {
+                console.error('[Image Proxy] Error parsing Google URL:', error);
+            }
+        } else if (url.includes('githubusercontent.com')) {
+            try {
+                // For GitHub images, we can add size parameters
+                // GitHub supports s parameter for size (&s=96 for 96x96 pixels)
+                const size = Math.max(parseInt(width), parseInt(height));
+
+                // Parse the URL to add or replace size parameter
+                const urlObj = new URL(url);
+                urlObj.searchParams.set('s', size.toString());
+                imageUrl = urlObj.toString();
+            } catch (error) {
+                console.error('[Image Proxy] Error parsing GitHub URL:', error);
+            }
         }
 
         console.log('[Image Proxy] Fetching from:', imageUrl);

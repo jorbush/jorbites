@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import HeartButton from '@/app/components/buttons/HeartButton';
 import { GiTrophyCup } from 'react-icons/gi';
 import { useTranslation } from 'react-i18next';
-import CloudinaryImage from '@/app/components/optimization/CloudinaryImage';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { memo } from 'react';
 
 interface RecipeCardProps {
@@ -30,7 +30,7 @@ const RecipeCard = memo(function RecipeCard({
         >
             <div className="flex w-full flex-col gap-2">
                 <div className="relative aspect-square w-full overflow-hidden rounded-xl">
-                    <CloudinaryImage
+                    <CustomProxyImage
                         src={data.imageSrc || '/avocado.webp'}
                         alt="recipe"
                         fill

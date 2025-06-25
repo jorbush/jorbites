@@ -35,6 +35,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
                         <Avatar
                             src={avatarSrc}
                             size={20}
+                            quality="auto:eco"
                         />
                     ) : Icon ? (
                         <Icon

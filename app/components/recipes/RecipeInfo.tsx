@@ -97,6 +97,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                             src={user?.image}
                             size={40}
                             onClick={() => router.push('/profile/' + user.id)}
+                            quality="auto:eco"
                         />
                         <div className="flex flex-col">
                             <div className="flex flex-row">

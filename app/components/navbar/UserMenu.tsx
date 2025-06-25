@@ -88,12 +88,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                     className="flex min-h-[40px] min-w-[40px] cursor-pointer flex-row items-center justify-center gap-3 rounded-full border-[1px] border-neutral-200 p-1 transition hover:shadow-md"
                     data-cy="user-menu"
                 >
-                    <div className="md:block">
-                        <Avatar
-                            src={currentUser?.image}
-                            size={35}
-                        />
-                    </div>
+                    <Avatar
+                        src={currentUser?.image}
+                        size={35}
+                    />
                 </div>
             </div>
             {isOpen && (

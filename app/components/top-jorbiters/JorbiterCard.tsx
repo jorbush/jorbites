@@ -51,16 +51,13 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                     <div className="flex items-center justify-center">
                         <RankIcon rank={index} />
                     </div>
-                    <div className="relative">
-                        <Avatar
-                            src={jorbiter.image}
-                            size={50}
-                            onClick={() =>
-                                router.push('/profile/' + jorbiter.id)
-                            }
-                            extraClasses="sm:h-[65px] sm:w-[65px] md:h-[70px] md:w-[70px]"
-                        />
-                    </div>
+                    <Avatar
+                        src={jorbiter.image}
+                        size={50}
+                        onClick={() => router.push('/profile/' + jorbiter.id)}
+                        extraClasses="sm:h-[65px] sm:w-[65px] md:h-[70px] md:w-[70px]"
+                        quality="auto:best"
+                    />
                     <div className="flex flex-col">
                         <div className="flex flex-row items-center gap-1">
                             <div className="text-base font-semibold sm:text-xl md:text-2xl dark:text-white">

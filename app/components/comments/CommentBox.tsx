@@ -48,7 +48,10 @@ const CommentBox: React.FC<CommentBoxProps> = ({
     return (
         <div className="mb-4 flex items-center">
             <div className="mt-4 mr-4 mb-4">
-                <Avatar src={userImage} />
+                <Avatar
+                    src={userImage}
+                    quality="auto:eco"
+                />
             </div>
 
             <form

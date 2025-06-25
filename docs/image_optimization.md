@@ -26,10 +26,10 @@ The custom image proxy system was developed to address several limitations:
 We are actively migrating away from Next.js Image component to our custom solution:
 
 **Current Status:**
-- ✅ Recipe images: Fully migrated to CloudinaryImage component
-- ✅ User avatars: Fully migrated to CloudinaryImage component
+- ✅ Recipe images: Fully migrated to CustomProxyImage component
+- ✅ User avatars: Fully migrated to CustomProxyImage component
 - 🔄 Some legacy components: Still using Next.js Image (being migrated)
-- ✅ New features: All use CloudinaryImage component
+- ✅ New features: All use CustomProxyImage component
 
 **Migration Benefits:**
 - No monthly image optimization limits
@@ -120,14 +120,14 @@ export async function GET(request: NextRequest) {
 
 ### Client Component Integration
 
-The CloudinaryImage component uses this proxy to load images:
+The CustomProxyImage component uses this proxy to load images:
 
-```typescript name=app/components/ui/CloudinaryImage.tsx
+```typescript name=app/components/ui/CustomProxyImage.tsx
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
 
-interface CloudinaryImageProps {
+interface CustomProxyImageProps {
   src: string;
   alt: string;
   fill?: boolean;
@@ -139,7 +139,7 @@ interface CloudinaryImageProps {
   preloadViaProxy?: boolean;
 }
 
-export default function CloudinaryImage({
+export default function CustomProxyImage({
   src,
   alt,
   fill = false,
@@ -149,7 +149,7 @@ export default function CloudinaryImage({
   height = 400,
   sizes = "(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px",
   preloadViaProxy = false
-}: CloudinaryImageProps) {
+}: CustomProxyImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
   const [optimizedSrc, setOptimizedSrc] = useState<string | null>(null);
