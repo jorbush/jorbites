@@ -89,7 +89,7 @@ export default function CustomProxyImage({
 
         setOptimizedSrc(src);
         setPlaceholderSrc(src);
-    }, [src, actualWidth, actualHeight, preloadViaProxy, sizes]);
+    }, [src, actualWidth, actualHeight, preloadViaProxy, sizes, quality]);
 
     useEffect(() => {
         if (imgRef.current && priority) {
