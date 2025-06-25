@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor, cleanup } from '@testing-library/react';
-import CloudinaryImage from '@/app/components/optimization/CloudinaryImage';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 
-// Mock del componente CloudinaryImage
-vi.mock('@/app/components/optimization/CloudinaryImage', () => ({
+// Mock del componente CustomProxyImage
+vi.mock('@/app/components/optimization/CustomProxyImage', () => ({
     default: ({
         src = '',
         alt = '',
-        width,
-        height,
+        width = 400,
+        height = 400,
         priority = false,
         fill = false,
         className = '',
@@ -55,7 +55,7 @@ vi.mock('@/app/components/optimization/CloudinaryImage', () => ({
                     loading={priority ? 'eager' : 'lazy'}
                     style={imgStyle}
                     {...props}
-                    data-testid="cloudinary-image"
+                    data-testid="custom-proxy-image"
                     onLoad={(e) => {
                         // Simular transición de opacidad
                         e.currentTarget.className = `${className} transition-opacity duration-500 opacity-100`;
@@ -67,7 +67,7 @@ vi.mock('@/app/components/optimization/CloudinaryImage', () => ({
     },
 }));
 
-describe('CloudinaryImage', () => {
+describe('CustomProxyImage', () => {
     beforeEach(() => {
         vi.resetAllMocks();
     });
@@ -79,7 +79,7 @@ describe('CloudinaryImage', () => {
 
     it('renders a placeholder when loading', () => {
         render(
-            <CloudinaryImage
+            <CustomProxyImage
                 src="https://example.com/image.jpg"
                 alt="Test image"
             />
@@ -92,7 +92,7 @@ describe('CloudinaryImage', () => {
 
     it('renders the image with correct attributes', () => {
         render(
-            <CloudinaryImage
+            <CustomProxyImage
                 src="https://example.com/image.jpg"
                 alt="Test image"
                 width={500}
@@ -100,7 +100,7 @@ describe('CloudinaryImage', () => {
             />
         );
 
-        const img = screen.getByTestId('cloudinary-image');
+        const img = screen.getByTestId('custom-proxy-image');
         expect(img).toBeDefined();
         expect(img.getAttribute('src')).toContain('api/image-proxy');
         expect(img.getAttribute('width')).toBe('500');
@@ -111,39 +111,39 @@ describe('CloudinaryImage', () => {
 
     it('uses eager loading when priority is true', () => {
         render(
-            <CloudinaryImage
+            <CustomProxyImage
                 src="https://example.com/image.jpg"
                 alt="Test image"
                 priority={true}
             />
         );
 
-        const img = screen.getByTestId('cloudinary-image');
+        const img = screen.getByTestId('custom-proxy-image');
         expect(img.getAttribute('loading')).toBe('eager');
     });
 
     it('uses fallback image when src is empty', () => {
         render(
-            <CloudinaryImage
+            <CustomProxyImage
                 src=""
                 alt="Empty source"
             />
         );
 
-        const img = screen.getByTestId('cloudinary-image');
+        const img = screen.getByTestId('custom-proxy-image');
         expect(img.getAttribute('src')).toBe('/avocado.webp');
     });
 
     it('applies fill styles correctly when fill prop is true', () => {
         render(
-            <CloudinaryImage
+            <CustomProxyImage
                 src="https://example.com/image.jpg"
                 alt="Fill image"
                 fill={true}
             />
         );
 
-        const img = screen.getByTestId('cloudinary-image');
+        const img = screen.getByTestId('custom-proxy-image');
         const imgStyle = img.style;
         expect(imgStyle.position).toBe('absolute');
         expect(imgStyle.width).toBe('100%');
@@ -157,13 +157,13 @@ describe('CloudinaryImage', () => {
 
     it('sets image to visible after loading', async () => {
         const { getByTestId } = render(
-            <CloudinaryImage
+            <CustomProxyImage
                 src="https://example.com/image.jpg"
                 alt="Test image"
             />
         );
 
-        const img = getByTestId('cloudinary-image');
+        const img = getByTestId('custom-proxy-image');
         expect(img.className).toContain('opacity-0');
 
         // Simular evento de carga
@@ -177,13 +177,13 @@ describe('CloudinaryImage', () => {
 
     it('handles local paths correctly', () => {
         const { getByTestId } = render(
-            <CloudinaryImage
+            <CustomProxyImage
                 src="/local/image.jpg"
                 alt="Local image"
             />
         );
 
-        const img = getByTestId('cloudinary-image');
+        const img = getByTestId('custom-proxy-image');
         expect(img.getAttribute('src')).toBe('/local/image.jpg');
         expect(img.getAttribute('src')).not.toContain('api/image-proxy');
     });

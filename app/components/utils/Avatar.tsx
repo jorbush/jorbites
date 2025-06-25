@@ -1,12 +1,13 @@
 'use client';
 
-import Image from 'next/image';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 
 interface AvatarProps {
     src: string | null | undefined;
     size?: number;
     extraClasses?: string;
     onClick?: () => void;
+    quality?: 'auto:eco' | 'auto:good' | 'auto:best';
 }
 
 const Avatar: React.FC<AvatarProps> = ({
@@ -14,20 +15,28 @@ const Avatar: React.FC<AvatarProps> = ({
     size = 30,
     extraClasses,
     onClick,
+    quality = 'auto:good',
 }) => {
     return (
-        <Image
-            className={`rounded-full ${onClick ? 'cursor-pointer' : ''} ${extraClasses}`}
-            height={size}
-            width={size}
-            alt="Avatar"
+        <div
+            className={`inline-block ${onClick ? 'cursor-pointer' : ''}`}
             onClick={onClick}
-            src={src || '/images/placeholder.webp'}
-            style={{
-                objectFit: 'cover',
-                aspectRatio: '1/1',
-            }}
-        />
+        >
+            <CustomProxyImage
+                className={`rounded-full ${extraClasses || ''}`}
+                width={size * 2}
+                height={size * 2}
+                alt="Avatar"
+                src={src || '/images/placeholder.webp'}
+                removeBackground={true}
+                quality={quality}
+                style={{
+                    width: extraClasses ? undefined : size,
+                    height: extraClasses ? undefined : size,
+                    objectFit: 'cover',
+                }}
+            />
+        </div>
     );
 };
 

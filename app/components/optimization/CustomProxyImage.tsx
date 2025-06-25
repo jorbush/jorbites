@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-interface CloudinaryImageProps {
+interface CustomProxyImageProps {
     src: string;
     alt: string;
     fill?: boolean;
@@ -12,9 +12,12 @@ interface CloudinaryImageProps {
     height?: number;
     sizes?: string;
     preloadViaProxy?: boolean;
+    removeBackground?: boolean;
+    quality?: 'auto:eco' | 'auto:good' | 'auto:best';
+    style?: React.CSSProperties;
 }
 
-export default function CloudinaryImage({
+export default function CustomProxyImage({
     src,
     alt,
     fill = false,
@@ -24,7 +27,10 @@ export default function CloudinaryImage({
     height = 400,
     sizes = '(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px',
     preloadViaProxy = false,
-}: CloudinaryImageProps) {
+    removeBackground = false,
+    quality = 'auto:good',
+    style,
+}: CustomProxyImageProps) {
     const [isLoaded, setIsLoaded] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
     const [optimizedSrc, setOptimizedSrc] = useState<string | null>(null);
@@ -52,9 +58,13 @@ export default function CloudinaryImage({
             return;
         }
 
-        if (src.includes('cloudinary.com')) {
+        if (
+            src.includes('cloudinary.com') ||
+            src.includes('googleusercontent.com') ||
+            src.includes('githubusercontent.com')
+        ) {
             try {
-                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${actualWidth}&h=${actualHeight}&q=auto:good`;
+                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${actualWidth}&h=${actualHeight}&q=${quality}`;
                 const placeholderUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
 
                 setOptimizedSrc(proxyUrl);
@@ -79,7 +89,7 @@ export default function CloudinaryImage({
 
         setOptimizedSrc(src);
         setPlaceholderSrc(src);
-    }, [src, actualWidth, actualHeight, preloadViaProxy, sizes]);
+    }, [src, actualWidth, actualHeight, preloadViaProxy, sizes, quality]);
 
     useEffect(() => {
         if (imgRef.current && priority) {
@@ -97,20 +107,22 @@ export default function CloudinaryImage({
               height: '100%',
               inset: 0,
               objectFit: 'cover',
+              ...style,
           } as React.CSSProperties)
         : {
               width: actualWidth,
               height: actualHeight,
+              ...style,
           };
 
     if (!optimizedSrc) {
         return (
             <div
-                className={`${fill ? 'relative aspect-square' : ''} overflow-hidden bg-gray-200 dark:bg-gray-700 ${fill ? className : ''}`}
+                className={`${fill ? 'relative aspect-square' : ''} overflow-hidden ${removeBackground ? '' : 'bg-gray-200 dark:bg-gray-700'} ${fill ? className : ''}`}
                 style={
                     !fill
-                        ? { width: actualWidth, height: actualHeight }
-                        : undefined
+                        ? { width: actualWidth, height: actualHeight, ...style }
+                        : style
                 }
             />
         );
@@ -118,10 +130,15 @@ export default function CloudinaryImage({
 
     return (
         <div
-            className={`${fill ? 'relative aspect-square' : ''} overflow-hidden bg-gray-200 dark:bg-gray-700 ${fill ? className : ''}`}
+            className={`${fill ? 'relative aspect-square' : ''} overflow-hidden ${removeBackground ? '' : 'bg-gray-200 dark:bg-gray-700'} ${fill ? className : ''}`}
+            style={
+                !fill
+                    ? { width: actualWidth, height: actualHeight, ...style }
+                    : style
+            }
         >
             {/* Blurry placeholder */}
-            {!isLoaded && placeholderSrc && (
+            {!isLoaded && placeholderSrc && !removeBackground && (
                 <div
                     style={{
                         ...baseStyle,

@@ -62,6 +62,7 @@ const Comment: React.FC<CommentProps> = ({
                 <Avatar
                     src={userImage}
                     onClick={() => router.push('/profile/' + userId)}
+                    quality="auto:eco"
                 />
             </div>
             <div className="mt-2 ml-4 grow">
