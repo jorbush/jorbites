@@ -77,9 +77,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                 user.badges.length > 0 && (
                     <>
                         <ScrollableContainer className="mt-2">
-                            {user.badges.map((badge, index) => (
+                            {user.badges.map((badge) => (
                                 <Badge
-                                    key={index}
+                                    key={badge}
                                     src={`/badges/${badge}.webp`}
                                     alt={`${badge} badge`}
                                     onClick={handleBadgeClick}

@@ -120,6 +120,5 @@ describe('Badge Component', () => {
 
         const image = screen.getByRole('img');
         expect(image.getAttribute('alt')).toBe('Test badge');
-        expect(image.getAttribute('aria-label')).toBe('Test badge');
     });
 });

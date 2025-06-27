@@ -56,7 +56,6 @@ const Badge: React.FC<BadgeProps> = ({
                     }`}
                     onLoad={handleLoad}
                     onError={handleError}
-                    aria-label={alt}
                 />
             )}
 
