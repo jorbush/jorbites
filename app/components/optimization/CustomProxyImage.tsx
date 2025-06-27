@@ -12,9 +12,9 @@ interface CustomProxyImageProps {
     height?: number;
     sizes?: string;
     preloadViaProxy?: boolean;
-    removeBackground?: boolean;
     quality?: 'auto:eco' | 'auto:good' | 'auto:best';
     style?: React.CSSProperties;
+    circular?: boolean;
 }
 
 export default function CustomProxyImage({
@@ -27,9 +27,9 @@ export default function CustomProxyImage({
     height = 400,
     sizes = '(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px',
     preloadViaProxy = false,
-    removeBackground = false,
     quality = 'auto:good',
     style,
+    circular = false,
 }: CustomProxyImageProps) {
     const [isLoaded, setIsLoaded] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
@@ -118,9 +118,9 @@ export default function CustomProxyImage({
     if (!optimizedSrc) {
         return (
             <div
-                className={`${fill ? 'relative aspect-square' : ''} overflow-hidden ${removeBackground ? '' : 'bg-gray-200 dark:bg-gray-700'} ${fill ? className : ''}`}
+                className={`${fill || circular ? 'relative aspect-square' : ''} overflow-hidden bg-neutral-200 dark:bg-neutral-700 ${circular ? 'rounded-full' : ''} ${fill || circular ? className : ''}`}
                 style={
-                    !fill
+                    !fill && !circular
                         ? { width: actualWidth, height: actualHeight, ...style }
                         : style
                 }
@@ -130,15 +130,15 @@ export default function CustomProxyImage({
 
     return (
         <div
-            className={`${fill ? 'relative aspect-square' : ''} overflow-hidden ${removeBackground ? '' : 'bg-gray-200 dark:bg-gray-700'} ${fill ? className : ''}`}
+            className={`${fill || circular ? 'relative aspect-square' : ''} overflow-hidden bg-neutral-200 dark:bg-neutral-700 ${circular ? 'rounded-full' : ''} ${fill || circular ? className : ''}`}
             style={
-                !fill
+                !fill && !circular
                     ? { width: actualWidth, height: actualHeight, ...style }
                     : style
             }
         >
-            {/* Blurry placeholder */}
-            {!isLoaded && placeholderSrc && !removeBackground && (
+            {/* Blurry placeholder - only for non-circular images */}
+            {placeholderSrc && !circular && (
                 <div
                     style={{
                         ...baseStyle,
@@ -146,8 +146,8 @@ export default function CustomProxyImage({
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         filter: 'blur(8px)',
-                        transform: 'scale(1.05)',
                     }}
+                    className={`transition-opacity duration-300 ${isLoaded ? 'opacity-0' : 'opacity-100'}`}
                     aria-hidden="true"
                 />
             )}
@@ -160,7 +160,6 @@ export default function CustomProxyImage({
                 alt={alt}
                 width={actualWidth}
                 height={actualHeight}
-                loading={priority ? 'eager' : 'lazy'}
                 onLoad={() => setIsLoaded(true)}
                 style={baseStyle}
                 sizes={sizes}

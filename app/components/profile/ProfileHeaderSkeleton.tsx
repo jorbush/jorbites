@@ -23,7 +23,7 @@ const ProfileHeaderSkeleton = () => {
 
             {/* Badges skeleton */}
             <ScrollableContainer className="mt-2">
-                {[1, 2, 3].map((index) => (
+                {[1, 2, 3, 4, 5, 6].map((index) => (
                     <div
                         key={index}
                         className="h-[50px] w-[50px] flex-shrink-0 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"

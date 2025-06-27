@@ -3,7 +3,7 @@ import Container from '@/app/components/utils/Container';
 const ProfileClientSkeleton = () => {
     return (
         <Container>
-            <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+            <div className="mt-9 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                 {/* Recipe Card Skeletons */}
                 {[1, 2, 3, 4, 5, 6].map((index) => (
                     <div

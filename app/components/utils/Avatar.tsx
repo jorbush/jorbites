@@ -23,13 +23,13 @@ const Avatar: React.FC<AvatarProps> = ({
             onClick={onClick}
         >
             <CustomProxyImage
-                className={`rounded-full ${extraClasses || ''}`}
+                className={extraClasses || ''}
                 width={size * 2}
                 height={size * 2}
                 alt="Avatar"
                 src={src || '/images/placeholder.webp'}
-                removeBackground={true}
                 quality={quality}
+                circular={true}
                 style={{
                     width: extraClasses ? undefined : size,
                     height: extraClasses ? undefined : size,
