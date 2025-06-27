@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import Container from '@/app/components/utils/Container';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
-import Image from 'next/image';
+import Badge from '@/app/components/utils/Badge';
 import confetti from 'canvas-confetti';
 import getUserDisplayName from '@/app/utils/responsive';
 import VerificationBadge from '@/app/components/VerificationBadge';
@@ -78,15 +78,12 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                     <>
                         <ScrollableContainer className="mt-2">
                             {user.badges.map((badge, index) => (
-                                <Image
+                                <Badge
                                     key={index}
                                     src={`/badges/${badge}.webp`}
                                     alt={`${badge} badge`}
-                                    width={50}
-                                    height={50}
-                                    className="flex-shrink-0 cursor-pointer"
                                     onClick={handleBadgeClick}
-                                    aria-label={`${badge} badge`}
+                                    size={50}
                                 />
                             ))}
                         </ScrollableContainer>
