@@ -427,5 +427,7 @@
     "challenge_value_dietary_whole_food": "Aliments Integrals",
     "challenge_value_dietary_keto": "Cetogènica",
     "challenge_value_dietary_paleo": "Paleo",
-    "since": "Des de"
+    "since": "Des de",
+    "max_ingredients_reached": "Màxim de 30 ingredients permesos",
+    "max_steps_reached": "Màxim de 30 passos permesos"
 }

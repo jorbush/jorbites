@@ -9,6 +9,8 @@ import {
     RECIPE_DESCRIPTION_MAX_LENGTH,
     RECIPE_INGREDIENT_MAX_LENGTH,
     RECIPE_STEP_MAX_LENGTH,
+    RECIPE_MAX_INGREDIENTS,
+    RECIPE_MAX_STEPS,
 } from '@/app/utils/constants';
 import {
     unauthorized,
@@ -65,7 +67,20 @@ export async function POST(request: Request) {
             );
         }
 
-        // Validate ingredients and steps
+        // Validate ingredients and steps count
+        if (ingredients && ingredients.length > RECIPE_MAX_INGREDIENTS) {
+            return validationError(
+                `Recipe cannot have more than ${RECIPE_MAX_INGREDIENTS} ingredients`
+            );
+        }
+
+        if (steps && steps.length > RECIPE_MAX_STEPS) {
+            return validationError(
+                `Recipe cannot have more than ${RECIPE_MAX_STEPS} steps`
+            );
+        }
+
+        // Validate ingredients and steps length
         if (ingredients) {
             for (const ingredient of ingredients) {
                 if (ingredient.length > RECIPE_INGREDIENT_MAX_LENGTH) {

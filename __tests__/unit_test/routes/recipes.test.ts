@@ -19,6 +19,8 @@ import {
     RECIPE_DESCRIPTION_MAX_LENGTH,
     RECIPE_INGREDIENT_MAX_LENGTH,
     RECIPE_STEP_MAX_LENGTH,
+    RECIPE_MAX_INGREDIENTS,
+    RECIPE_MAX_STEPS,
 } from '@/app/utils/constants';
 
 let mockedSession: Session | null = null;
@@ -506,6 +508,80 @@ describe('Recipes API Error Handling', () => {
         expect(response.status).toBe(400);
         expect(data.error).toBe(
             `Title must be ${RECIPE_TITLE_MAX_LENGTH} characters or less`
+        );
+        expect(data.code).toBe('VALIDATION_ERROR');
+        expect(data.timestamp).toBeDefined();
+    });
+
+    it('should return 400 when too many ingredients are provided', async () => {
+        mockedSession = {
+            expires: 'expires',
+            user: {
+                name: 'test',
+                email: 'test@a.com',
+            },
+        };
+
+        const tooManyIngredients = Array(RECIPE_MAX_INGREDIENTS + 1).fill(
+            'test ingredient'
+        );
+
+        const request = new NextRequest('http://localhost:3000/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'Test title',
+                description: 'Test description',
+                imageSrc: 'test.jpg',
+                category: 'test',
+                method: 'test',
+                ingredients: tooManyIngredients,
+                steps: ['test'],
+                minutes: 30,
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe(
+            `Recipe cannot have more than ${RECIPE_MAX_INGREDIENTS} ingredients`
+        );
+        expect(data.code).toBe('VALIDATION_ERROR');
+        expect(data.timestamp).toBeDefined();
+    });
+
+    it('should return 400 when too many steps are provided', async () => {
+        mockedSession = {
+            expires: 'expires',
+            user: {
+                name: 'test',
+                email: 'test@a.com',
+            },
+        };
+
+        const tooManySteps = Array(RECIPE_MAX_STEPS + 1).fill('test step');
+
+        const request = new NextRequest('http://localhost:3000/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'Test title',
+                description: 'Test description',
+                imageSrc: 'test.jpg',
+                category: 'test',
+                method: 'test',
+                ingredients: ['test'],
+                steps: tooManySteps,
+                minutes: 30,
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe(
+            `Recipe cannot have more than ${RECIPE_MAX_STEPS} steps`
         );
         expect(data.code).toBe('VALIDATION_ERROR');
         expect(data.timestamp).toBeDefined();
