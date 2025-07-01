@@ -28,6 +28,8 @@ import {
     RECIPE_DESCRIPTION_MAX_LENGTH,
     RECIPE_INGREDIENT_MAX_LENGTH,
     RECIPE_STEP_MAX_LENGTH,
+    RECIPE_MAX_INGREDIENTS,
+    RECIPE_MAX_STEPS,
 } from '@/app/utils/constants';
 
 /* eslint-disable unused-imports/no-unused-vars */
@@ -383,6 +385,13 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     };
 
     const addIngredientInput = () => {
+        if (numIngredients >= RECIPE_MAX_INGREDIENTS) {
+            toast.error(
+                t('max_ingredients_reached') ||
+                    `Maximum of ${RECIPE_MAX_INGREDIENTS} ingredients allowed`
+            );
+            return;
+        }
         setNumIngredients((value) => value + 1);
     };
 
@@ -392,6 +401,13 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     };
 
     const addStepInput = () => {
+        if (numSteps >= RECIPE_MAX_STEPS) {
+            toast.error(
+                t('max_steps_reached') ||
+                    `Maximum of ${RECIPE_MAX_STEPS} steps allowed`
+            );
+            return;
+        }
         setNumSteps((value) => value + 1);
     };
 

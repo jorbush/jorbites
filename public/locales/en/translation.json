@@ -422,5 +422,7 @@
     "challenge_value_cuisine_provencal": "Provençal",
     "challenge_value_cuisine_yucatecan": "Yucatecan",
     "challenge_value_cuisine_cantonese": "Cantonese",
-    "since": "Since"
+    "since": "Since",
+    "max_ingredients_reached": "Maximum of 30 ingredients allowed",
+    "max_steps_reached": "Maximum of 30 steps allowed"
 }
