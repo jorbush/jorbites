@@ -114,4 +114,42 @@ describe('<Button />', () => {
         expect(button.className).toContain('border-rose-500');
         expect(button.className).toContain('bg-rose-500');
     });
+
+    it('applies cursor-pointer by default', () => {
+        render(
+            <Button
+                label="Normal Button"
+                onClick={mockOnClick}
+            />
+        );
+        const button = screen.getByText('Normal Button');
+        expect(button.className).toContain('cursor-pointer');
+    });
+
+    it('applies cursor-not-allowed when disabled', () => {
+        render(
+            <Button
+                label="Disabled Button"
+                onClick={mockOnClick}
+                disabled
+            />
+        );
+        const button = screen.getByText('Disabled Button');
+        expect(button.className).toContain('disabled:cursor-not-allowed');
+    });
+
+    it('maintains cursor-pointer when not disabled', () => {
+        render(
+            <Button
+                label="Enabled Button"
+                onClick={mockOnClick}
+                outline
+            />
+        );
+        const button = screen.getByText('Enabled Button');
+        expect(button.className).toContain('cursor-pointer');
+        // The disabled:cursor-not-allowed class is always present but only active when button is disabled
+        expect(button.className).toContain('disabled:cursor-not-allowed');
+        expect(button.hasAttribute('disabled')).toBe(false);
+    });
 });
