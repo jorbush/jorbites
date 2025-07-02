@@ -12,7 +12,7 @@ import getUserDisplayName from '@/app/utils/responsive';
 import VerificationBadge from '@/app/components/VerificationBadge';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Image from 'next/image';
+import RecipeCard from '@/app/components/recipes/RecipeCard';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -234,41 +234,14 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         <div className="flex flex-row items-center gap-2 text-xl font-semibold">
                             {t('linked_recipes') || 'Linked Recipes'}
                         </div>
-                        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {linkedRecipes.map((recipe) => (
-                                <div
+                                <RecipeCard
                                     key={recipe.id}
-                                    className="cursor-pointer overflow-hidden rounded-lg border shadow-sm transition hover:shadow-md dark:border-gray-700"
-                                    onClick={() =>
-                                        router.push(`/recipes/${recipe.id}`)
-                                    }
-                                >
-                                    <div className="relative h-32 w-full">
-                                        <Image
-                                            src={
-                                                recipe.imageSrc ||
-                                                '/avocado.webp'
-                                            }
-                                            fill
-                                            className="object-cover"
-                                            alt={recipe.title}
-                                        />
-                                    </div>
-                                    <div className="p-3">
-                                        <h4 className="mb-1 text-base font-medium">
-                                            {recipe.title}
-                                        </h4>
-                                        <div className="flex items-center gap-2">
-                                            <Avatar
-                                                src={recipe.user.image}
-                                                size={20}
-                                            />
-                                            <span className="text-xs text-gray-500">
-                                                {recipe.user.name}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                                    data={recipe}
+                                    currentUser={currentUser}
+                                    user={recipe.user} // TODO: add this to the recipe card
+                                />
                             ))}
                         </div>
                     </div>

@@ -15,6 +15,7 @@ interface CustomProxyImageProps {
     quality?: 'auto:eco' | 'auto:good' | 'auto:best';
     style?: React.CSSProperties;
     circular?: boolean;
+    maxQuality?: boolean;
 }
 
 export default function CustomProxyImage({
@@ -30,11 +31,14 @@ export default function CustomProxyImage({
     quality = 'auto:good',
     style,
     circular = false,
+    maxQuality = false,
 }: CustomProxyImageProps) {
     const [isLoaded, setIsLoaded] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
     const [optimizedSrc, setOptimizedSrc] = useState<string | null>(null);
     const [placeholderSrc, setPlaceholderSrc] = useState<string | null>(null);
+
+    const useMaxQuality = maxQuality || quality === 'auto:best';
 
     const actualWidth = fill ? (sizes.includes('250px') ? 250 : width) : width;
     const actualHeight = fill
@@ -64,7 +68,13 @@ export default function CustomProxyImage({
             src.includes('githubusercontent.com')
         ) {
             try {
-                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${actualWidth}&h=${actualHeight}&q=${quality}`;
+                let proxyUrl;
+                if (useMaxQuality) {
+                    proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&q=auto:best`;
+                } else {
+                    proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${actualWidth}&h=${actualHeight}&q=${quality}`;
+                }
+
                 const placeholderUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
 
                 setOptimizedSrc(proxyUrl);
@@ -89,7 +99,15 @@ export default function CustomProxyImage({
 
         setOptimizedSrc(src);
         setPlaceholderSrc(src);
-    }, [src, actualWidth, actualHeight, preloadViaProxy, sizes, quality]);
+    }, [
+        src,
+        actualWidth,
+        actualHeight,
+        preloadViaProxy,
+        sizes,
+        quality,
+        useMaxQuality,
+    ]);
 
     useEffect(() => {
         if (imgRef.current && priority) {
@@ -130,7 +148,7 @@ export default function CustomProxyImage({
 
     return (
         <div
-            className={`${fill || circular ? 'relative aspect-square' : ''} overflow-hidden bg-neutral-200 dark:bg-neutral-700 ${circular ? 'rounded-full' : ''} ${fill || circular ? className : ''}`}
+            className={`${(fill && !maxQuality) || circular ? 'relative aspect-square' : ''} overflow-hidden bg-neutral-200 dark:bg-neutral-700 ${circular ? 'rounded-full' : ''} ${fill || circular ? className : ''} ${useMaxQuality && !fill ? 'flex items-center justify-center' : ''}`}
             style={
                 !fill && !circular
                     ? { width: actualWidth, height: actualHeight, ...style }

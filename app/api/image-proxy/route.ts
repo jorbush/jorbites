@@ -3,8 +3,8 @@ import { badRequest, internalServerError } from '@/app/utils/apiErrors';
 
 export async function GET(request: NextRequest) {
     const url = request.nextUrl.searchParams.get('url');
-    const width = request.nextUrl.searchParams.get('w') || '400';
-    const height = request.nextUrl.searchParams.get('h') || '400';
+    const width = request.nextUrl.searchParams.get('w');
+    const height = request.nextUrl.searchParams.get('h');
     const quality = request.nextUrl.searchParams.get('q') || 'auto:good';
 
     if (!url) {
@@ -31,7 +31,15 @@ export async function GET(request: NextRequest) {
                         qualityParam = `q_${quality}`;
                     }
 
-                    imageUrl = `${baseUrl}/image/upload/f_auto,${qualityParam},w_${width},h_${height},c_fill/${imagePath}`;
+                    // For maximum quality without dimensions, only apply format and quality transformations
+                    if (quality === 'auto:best' && !width && !height) {
+                        imageUrl = `${baseUrl}/image/upload/f_auto,${qualityParam}/${imagePath}`;
+                    } else {
+                        // Use provided dimensions or defaults
+                        const w = width || '400';
+                        const h = height || '400';
+                        imageUrl = `${baseUrl}/image/upload/f_auto,${qualityParam},w_${w},h_${h},c_fill/${imagePath}`;
+                    }
                 } else {
                     console.error(
                         '[Image Proxy] Invalid Cloudinary URL format:',
@@ -48,20 +56,26 @@ export async function GET(request: NextRequest) {
             try {
                 // For Google images, we can add size parameters
                 // Google supports s parameter for size (s=96 for 96x96 pixels)
-                const size = Math.max(parseInt(width), parseInt(height));
+                if (width || height) {
+                    const size = Math.max(
+                        parseInt(width || '400'),
+                        parseInt(height || '400')
+                    );
 
-                // If the URL already has parameters, add size parameter
-                if (url.includes('=')) {
-                    // Replace existing size parameter or add new one
-                    if (url.includes('=s')) {
-                        imageUrl = url.replace(/=s\d+/, `=s${size}`);
+                    // If the URL already has parameters, add size parameter
+                    if (url.includes('=')) {
+                        // Replace existing size parameter or add new one
+                        if (url.includes('=s')) {
+                            imageUrl = url.replace(/=s\d+/, `=s${size}`);
+                        } else {
+                            imageUrl = `${url}-s${size}`;
+                        }
                     } else {
-                        imageUrl = `${url}-s${size}`;
+                        // Add size parameter for basic URLs
+                        imageUrl = `${url}=s${size}`;
                     }
-                } else {
-                    // Add size parameter for basic URLs
-                    imageUrl = `${url}=s${size}`;
                 }
+                // If no dimensions specified, use original URL for maximum quality
             } catch (error) {
                 console.error('[Image Proxy] Error parsing Google URL:', error);
             }
@@ -69,12 +83,18 @@ export async function GET(request: NextRequest) {
             try {
                 // For GitHub images, we can add size parameters
                 // GitHub supports s parameter for size (&s=96 for 96x96 pixels)
-                const size = Math.max(parseInt(width), parseInt(height));
+                if (width || height) {
+                    const size = Math.max(
+                        parseInt(width || '400'),
+                        parseInt(height || '400')
+                    );
 
-                // Parse the URL to add or replace size parameter
-                const urlObj = new URL(url);
-                urlObj.searchParams.set('s', size.toString());
-                imageUrl = urlObj.toString();
+                    // Parse the URL to add or replace size parameter
+                    const urlObj = new URL(url);
+                    urlObj.searchParams.set('s', size.toString());
+                    imageUrl = urlObj.toString();
+                }
+                // If no dimensions specified, use original URL for maximum quality
             } catch (error) {
                 console.error('[Image Proxy] Error parsing GitHub URL:', error);
             }

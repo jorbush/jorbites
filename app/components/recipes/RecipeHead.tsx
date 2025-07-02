@@ -1,12 +1,12 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
 import { FiChevronLeft, FiChevronRight, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/navigation/Heading';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 
 interface RecipeHeadProps {
     title: string;
@@ -82,15 +82,16 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 </button>
             </div>
             <div className="relative h-[60vh] w-full overflow-hidden rounded-xl">
-                <Image
+                <CustomProxyImage
                     src={imagesSrc[currentImageIndex] || '/avocado.webp'}
                     fill
                     priority={true}
                     className="object-cover"
-                    alt="Image"
-                    sizes="(max-width: 768px) 100vw,
-                 (max-width: 1200px) 50vw,
-                 33vw"
+                    alt="Recipe Image"
+                    maxQuality={true}
+                    quality="auto:best"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                    preloadViaProxy={true}
                 />
                 {imagesSrc.length > 1 && (
                     <>

@@ -7,17 +7,20 @@ import { GiTrophyCup } from 'react-icons/gi';
 import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { memo } from 'react';
+import Avatar from '../utils/Avatar';
 
 interface RecipeCardProps {
     data: SafeRecipe;
     currentUser?: SafeUser | null;
     isFirstCard?: boolean;
+    user?: SafeUser | null;
 }
 
 const RecipeCard = memo(function RecipeCard({
     data,
     currentUser,
     isFirstCard = false,
+    user,
 }: RecipeCardProps) {
     const router = useRouter();
     const { t } = useTranslation();
@@ -59,9 +62,19 @@ const RecipeCard = memo(function RecipeCard({
                 <div className="text-lg font-semibold dark:text-neutral-100">
                     {data.title}
                 </div>
-                <div className="font-light text-neutral-500">
-                    {data.minutes} min
-                </div>
+                {user ? (
+                    <div className="flex flex-row items-center gap-2">
+                        <Avatar
+                            src={user.image}
+                            size={20}
+                        />
+                        <div className="text-sm font-medium">{user.name}</div>
+                    </div>
+                ) : (
+                    <div className="font-light text-neutral-500">
+                        {data.minutes} min
+                    </div>
+                )}
             </div>
         </div>
     );

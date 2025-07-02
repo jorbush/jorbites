@@ -51,7 +51,7 @@ describe('<RecipeHead />', () => {
     it('changes image when next button is clicked', () => {
         render(<RecipeHead {...mockProps} />);
         const nextButton = screen.getByTestId('next-button');
-        const image = screen.getByAltText('Image');
+        const image = screen.getByAltText('Recipe Image');
         expect(image).toHaveProperty(
             'src',
             expect.stringContaining('image1.jpg')
@@ -66,7 +66,7 @@ describe('<RecipeHead />', () => {
     it('changes image when previous button is clicked', () => {
         render(<RecipeHead {...mockProps} />);
         const prevButton = screen.getByTestId('prev-button');
-        const image = screen.getByAltText('Image');
+        const image = screen.getByAltText('Recipe Image');
         fireEvent.click(prevButton);
         expect(image).toHaveProperty(
             'src',

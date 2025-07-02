@@ -15,6 +15,19 @@ vi.mock('@/app/components/HeartButton', () => ({
     default: () => <button data-testid="heart-button">Heart</button>,
 }));
 
+// Mock the Avatar component
+vi.mock('@/app/components/utils/Avatar', () => ({
+    default: ({ src, size }: { src: string | null; size: number }) => (
+        <div
+            data-testid="avatar"
+            data-src={src}
+            data-size={size}
+        >
+            Avatar
+        </div>
+    ),
+}));
+
 describe('<RecipeCard />', () => {
     const mockRecipe: SafeRecipe = {
         id: '1',
@@ -30,6 +43,8 @@ describe('<RecipeCard />', () => {
         extraImages: [],
         userId: '1',
         createdAt: '2022-01-01',
+        coCooksIds: [],
+        linkedRecipeIds: [],
     };
 
     const mockUser: SafeUser = {
@@ -45,6 +60,9 @@ describe('<RecipeCard />', () => {
         emailNotifications: false,
         level: 0,
         verified: false,
+        badges: [],
+        resetToken: null,
+        resetTokenExpiry: null,
     };
 
     const mockRouter = {
@@ -87,5 +105,78 @@ describe('<RecipeCard />', () => {
     it('navigates to the recipe page when clicked', () => {
         fireEvent.click(screen.getByText('Test Recipe'));
         expect(mockRouter.push).toHaveBeenCalledWith('/recipes/1');
+    });
+
+    describe('user parameter logic', () => {
+        const mockRecipeUser: SafeUser = {
+            id: '2',
+            name: 'Recipe Author',
+            email: 'author@example.com',
+            emailVerified: null,
+            image: '/author-image.jpg',
+            hashedPassword: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            favoriteIds: [],
+            emailNotifications: false,
+            level: 5,
+            verified: true,
+            badges: [],
+            resetToken: null,
+            resetTokenExpiry: null,
+        };
+
+        beforeEach(() => {
+            cleanup();
+        });
+
+        it('shows user avatar and name when user prop is provided', () => {
+            render(
+                <RecipeCard
+                    data={mockRecipe}
+                    currentUser={mockUser}
+                    user={mockRecipeUser}
+                />
+            );
+
+            // Should show avatar and user name
+            expect(screen.getByTestId('avatar')).toBeDefined();
+            expect(screen.getByText('Recipe Author')).toBeDefined();
+
+            // Should NOT show cooking time
+            expect(screen.queryByText('30 min')).toBeNull();
+        });
+
+        it('shows cooking time when user prop is not provided', () => {
+            render(
+                <RecipeCard
+                    data={mockRecipe}
+                    currentUser={mockUser}
+                />
+            );
+
+            // Should show cooking time
+            expect(screen.getByText('30 min')).toBeDefined();
+
+            // Should NOT show avatar or user name
+            expect(screen.queryByTestId('avatar')).toBeNull();
+            expect(screen.queryByText('Recipe Author')).toBeNull();
+        });
+
+        it('shows cooking time when user prop is null', () => {
+            render(
+                <RecipeCard
+                    data={mockRecipe}
+                    currentUser={mockUser}
+                    user={null}
+                />
+            );
+
+            // Should show cooking time
+            expect(screen.getByText('30 min')).toBeDefined();
+
+            // Should NOT show avatar
+            expect(screen.queryByTestId('avatar')).toBeNull();
+        });
     });
 });
