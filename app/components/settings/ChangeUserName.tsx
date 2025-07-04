@@ -117,7 +117,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                             type="text"
                             value={newUserName}
                             onChange={handleUserNameChange}
-                            className="focus:ring-green-450 w-24 rounded border border-gray-300 px-2 py-1 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+                            className="focus:ring-green-450 w-24 rounded border border-gray-300 px-2 py-1 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                             placeholder={t('username') || 'Username'}
                             disabled={isLoading}
                             maxLength={USERNAME_MAX_LENGTH}
@@ -144,7 +144,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                     </>
                 ) : (
                     <>
-                        <span className="text-sm font-medium text-gray-700 dark:text-zinc-300">
+                        <span className="text-base font-medium text-gray-700 dark:text-zinc-300">
                             {currentUser?.name ||
                                 t('no_username') ||
                                 'No username'}
