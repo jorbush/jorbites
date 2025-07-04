@@ -27,6 +27,7 @@ const Tabs: React.FC<TabsProps> = ({
         <div
             className={`flex border-b border-gray-200 dark:border-neutral-600 ${className}`}
             data-testid={dataTestId}
+            role="tablist"
         >
             {tabs.map((tab) => (
                 <button

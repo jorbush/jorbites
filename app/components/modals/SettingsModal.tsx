@@ -2,7 +2,6 @@
 
 import useSettingsModal from '@/app/hooks/useSettingsModal';
 import Modal from '@/app/components/modals/Modal';
-import Heading from '@/app/components/navigation/Heading';
 import ThemeSelector from '@/app/components/settings/ThemeSelector';
 import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import { useTranslation } from 'react-i18next';
