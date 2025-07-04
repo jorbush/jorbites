@@ -67,7 +67,7 @@ describe('ChangeUserNameSelector', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockedAxios.put.mockResolvedValue({
+        mockedAxios.patch.mockResolvedValue({
             data: { ...mockUser, name: 'NewUser' },
         });
     });
@@ -237,7 +237,7 @@ describe('ChangeUserNameSelector', () => {
         fireEvent.click(screen.getByTestId('save-username-icon'));
 
         await waitFor(() => {
-            expect(mockedAxios.put).toHaveBeenCalledWith('/api/userName/1', {
+            expect(mockedAxios.patch).toHaveBeenCalledWith('/api/userName/1', {
                 userName: 'NewUser',
             });
         });
@@ -253,7 +253,7 @@ describe('ChangeUserNameSelector', () => {
                 },
             },
         };
-        mockedAxios.put.mockRejectedValueOnce(errorResponse);
+        mockedAxios.patch.mockRejectedValueOnce(errorResponse);
 
         render(<ChangeUserNameSelector {...defaultProps} />);
 
@@ -265,7 +265,7 @@ describe('ChangeUserNameSelector', () => {
         fireEvent.click(screen.getByTestId('save-username-icon'));
 
         await waitFor(() => {
-            expect(mockedAxios.put).toHaveBeenCalled();
+            expect(mockedAxios.patch).toHaveBeenCalled();
         });
 
         // Should reset to original username on error
@@ -292,7 +292,7 @@ describe('ChangeUserNameSelector', () => {
         );
 
         await waitFor(() => {
-            expect(mockedAxios.put).toHaveBeenCalledWith('/api/userName/1', {
+            expect(mockedAxios.patch).toHaveBeenCalledWith('/api/userName/1', {
                 userName: 'NewUser',
             });
         });
@@ -314,7 +314,7 @@ describe('ChangeUserNameSelector', () => {
             />
         );
 
-        expect(mockedAxios.put).not.toHaveBeenCalled();
+        expect(mockedAxios.patch).not.toHaveBeenCalled();
         expect(mockSetSaveUserName).toHaveBeenCalledWith(false);
         expect(mockOnSave).toHaveBeenCalled();
     });
@@ -332,7 +332,7 @@ describe('ChangeUserNameSelector', () => {
         const delayedPromise = new Promise((resolve) => {
             resolvePromise = resolve;
         });
-        mockedAxios.put.mockReturnValueOnce(delayedPromise);
+        mockedAxios.patch.mockReturnValueOnce(delayedPromise);
 
         fireEvent.click(screen.getByTestId('save-username-icon'));
 

@@ -110,7 +110,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                 </p>
                 <p className="text-xs text-gray-500 dark:text-zinc-400">
                     {t('username_requirements') ||
-                        `Max ${USERNAME_MAX_LENGTH} characters, no spaces`}
+                        `Max ${USERNAME_MAX_LENGTH} characters, letters and numbers only`}
                 </p>
             </div>
             <div className="flex items-center gap-2">
