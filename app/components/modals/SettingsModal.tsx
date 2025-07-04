@@ -11,6 +11,8 @@ import { SafeUser } from '@/app/types';
 import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
 import { useCallback, useState } from 'react';
 import { FcSettings } from 'react-icons/fc';
+import Tabs, { Tab } from '@/app/components/utils/Tabs';
+import { FiSettings, FiUser } from 'react-icons/fi';
 
 interface SettingsProps {
     currentUser?: SafeUser | null;
@@ -20,23 +22,60 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
     const settingsModal = useSettingsModal();
     const { t } = useTranslation();
     const [saveImage, setSaveImage] = useState(false);
+    const [activeTab, setActiveTab] = useState('preferences');
+
+    const tabs: Tab[] = [
+        {
+            id: 'preferences',
+            label: t('preferences') || 'Preferences',
+            icon: <FiSettings />,
+        },
+        ...(currentUser
+            ? [
+                  {
+                      id: 'account',
+                      label: t('account') || 'Account',
+                      icon: <FiUser />,
+                  },
+              ]
+            : []),
+    ];
+
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case 'preferences':
+                return (
+                    <div className="flex flex-col gap-4">
+                        <ThemeSelector />
+                        <LanguageSelector />
+                    </div>
+                );
+            case 'account':
+                return currentUser ? (
+                    <div className="flex flex-col gap-4">
+                        <EmailNotificationsSelector currentUser={currentUser} />
+                        <ChangeUserImageSelector
+                            currentUser={currentUser}
+                            saveImage={saveImage}
+                            setSaveImage={setSaveImage}
+                            onSave={() => settingsModal.onClose()}
+                        />
+                    </div>
+                ) : null;
+            default:
+                return null;
+        }
+    };
 
     const bodyContent = (
-        <div className="flex flex-col gap-4">
-            <Heading title={t('set_your_preferences')} />
-            <ThemeSelector />
-            <LanguageSelector />
-            {currentUser && (
-                <>
-                    <EmailNotificationsSelector currentUser={currentUser} />
-                    <ChangeUserImageSelector
-                        currentUser={currentUser}
-                        saveImage={saveImage}
-                        setSaveImage={setSaveImage}
-                        onSave={() => settingsModal.onClose()}
-                    />
-                </>
-            )}
+        <div className="flex flex-col gap-6">
+            <Tabs
+                tabs={tabs}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                data-testid="settings-tabs"
+            />
+            <div className="min-h-[200px]">{renderTabContent()}</div>
         </div>
     );
 

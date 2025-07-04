@@ -12,23 +12,16 @@ import axios from 'axios';
 
 // Mocks for dependencies
 vi.mock('axios');
-vi.mock('react-hot-toast', () => ({
-    default: {
-        error: vi.fn(),
-        success: vi.fn(),
-    },
-}));
+const mockedAxios = axios as any;
+
+// Mock react-i18next
 vi.mock('react-i18next', () => ({
     useTranslation: vi.fn(() => ({
         t: (key: string) => key, // Return the key itself instead of the translated string
     })),
 }));
-vi.mock('next/image', () => ({
-    default: (props: any) => <img {...props} />, // Simple img element replacement for Next.js Image
-}));
-vi.mock('@/app/components/utils/Avatar', () => ({
-    default: (props: any) => <div data-testid="avatar">{props.children}</div>, // Mock Avatar component
-}));
+
+// Mock Heading component
 vi.mock('@/app/components/navigation/Heading', () => ({
     default: ({ title, subtitle }: { title: string; subtitle?: string }) => (
         <div data-testid="heading">
@@ -37,6 +30,26 @@ vi.mock('@/app/components/navigation/Heading', () => ({
         </div>
     ), // Mock Heading component with testid
 }));
+
+// Mock the new Tabs component
+vi.mock('@/app/components/utils/Tabs', () => ({
+    default: ({ tabs, activeTab, onTabChange, ...props }: any) => (
+        <div data-testid={props['data-testid']}>
+            {tabs.map((tab: any) => (
+                <button
+                    key={tab.id}
+                    data-testid={`tab-${tab.id}`}
+                    onClick={() => onTabChange(tab.id)}
+                    className={activeTab === tab.id ? 'active' : ''}
+                >
+                    {tab.icon && <span>{tab.icon}</span>}
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+    ),
+}));
+
 vi.mock('@/app/components/inputs/SearchInput', () => ({
     default: ({
         label,
@@ -85,24 +98,22 @@ describe('<RelatedContentStep />', () => {
     };
 
     beforeEach(() => {
-        vi.clearAllMocks(); // Reset all mocks before each test
-        // Mock API response for axios get
-        vi.mocked(axios.get).mockResolvedValue({
+        // Clear all mocks before each test
+        vi.clearAllMocks();
+
+        // Setup default axios mock responses
+        mockedAxios.get.mockResolvedValue({
             data: {
                 users: [
                     {
                         id: 'user1',
                         name: 'User 1',
                         image: '/user1.jpg',
-                        level: 5,
-                        verified: true,
                     },
                     {
                         id: 'user2',
                         name: 'User 2',
                         image: '/user2.jpg',
-                        level: 3,
-                        verified: false,
                     },
                 ],
                 recipes: [
@@ -133,9 +144,17 @@ describe('<RelatedContentStep />', () => {
         // Check that all essential elements are rendered
         expect(screen.getByTestId('heading')).toBeDefined();
         expect(screen.getByText('related_content')).toBeDefined();
+        expect(screen.getByTestId('related-content-tabs')).toBeDefined();
+        expect(screen.getByTestId('tab-users')).toBeDefined();
+        expect(screen.getByTestId('tab-recipes')).toBeDefined();
+        expect(screen.getByTestId('search-input')).toBeDefined();
+    });
+
+    it('renders tab labels correctly', () => {
+        render(<RelatedContentStep {...mockProps} />);
+
         expect(screen.getByText('co_cooks')).toBeDefined();
         expect(screen.getByText('linked_recipes')).toBeDefined();
-        expect(screen.getByTestId('search-input')).toBeDefined();
     });
 
     it('switches between users and recipes tabs', async () => {
@@ -144,19 +163,47 @@ describe('<RelatedContentStep />', () => {
         // Should be on users tab by default
         expect(screen.getByText('search_users')).toBeDefined();
 
-        // Switch to recipes tab
-        fireEvent.click(screen.getByText('linked_recipes'));
+        // Switch to recipes tab using the new tab component
+        fireEvent.click(screen.getByTestId('tab-recipes'));
 
         await waitFor(() => {
             expect(screen.getByText('search_recipes')).toBeDefined();
         });
 
         // Switch back to users tab
-        fireEvent.click(screen.getByText('co_cooks'));
+        fireEvent.click(screen.getByTestId('tab-users'));
 
         await waitFor(() => {
             expect(screen.getByText('search_users')).toBeDefined();
         });
+    });
+
+    it('shows users tab as active by default', () => {
+        render(<RelatedContentStep {...mockProps} />);
+
+        const usersTab = screen.getByTestId('tab-users');
+        const recipesTab = screen.getByTestId('tab-recipes');
+
+        expect(usersTab.className).toContain('active');
+        expect(recipesTab.className).not.toContain('active');
+    });
+
+    it('updates active tab styling when switching tabs', () => {
+        render(<RelatedContentStep {...mockProps} />);
+
+        const usersTab = screen.getByTestId('tab-users');
+        const recipesTab = screen.getByTestId('tab-recipes');
+
+        // Initially users tab should be active
+        expect(usersTab.className).toContain('active');
+        expect(recipesTab.className).not.toContain('active');
+
+        // Click recipes tab
+        fireEvent.click(recipesTab);
+
+        // Now recipes tab should be active
+        expect(recipesTab.className).toContain('active');
+        expect(usersTab.className).not.toContain('active');
     });
 
     it('adds a co-cook when selecting from search results', async () => {
@@ -176,7 +223,7 @@ describe('<RelatedContentStep />', () => {
         render(<RelatedContentStep {...mockProps} />);
 
         // Switch to recipes tab
-        fireEvent.click(screen.getByText('linked_recipes'));
+        fireEvent.click(screen.getByTestId('tab-recipes'));
 
         await waitFor(() => {
             // Select a recipe from search results
@@ -223,7 +270,7 @@ describe('<RelatedContentStep />', () => {
         render(<RelatedContentStep {...propsWithSelectedRecipes} />);
 
         // Switch to recipes tab
-        fireEvent.click(screen.getByText('linked_recipes'));
+        fireEvent.click(screen.getByTestId('tab-recipes'));
 
         await waitFor(() => {
             // Should display the selected linked recipes section
@@ -272,7 +319,7 @@ describe('<RelatedContentStep />', () => {
         render(<RelatedContentStep {...propsWithSelectedRecipes} />);
 
         // Switch to recipes tab
-        fireEvent.click(screen.getByText('linked_recipes'));
+        fireEvent.click(screen.getByTestId('tab-recipes'));
 
         await waitFor(() => {
             // Find and click the remove button
@@ -306,5 +353,47 @@ describe('<RelatedContentStep />', () => {
         expect(axios.get).toHaveBeenCalledWith(
             expect.stringContaining('test%20query')
         );
+    });
+
+    it('clears search query when switching tabs', async () => {
+        render(<RelatedContentStep {...mockProps} />);
+
+        const searchInput = screen.getByTestId(
+            'search-input-field'
+        ) as HTMLInputElement;
+
+        // Type something in search
+        act(() => {
+            fireEvent.change(searchInput, { target: { value: 'test query' } });
+        });
+
+        expect(searchInput.value).toBe('test query');
+
+        // Switch to recipes tab
+        fireEvent.click(screen.getByTestId('tab-recipes'));
+
+        await waitFor(() => {
+            // Search input should be cleared
+            expect(searchInput.value).toBe('');
+        });
+
+        // Switch back to users tab
+        fireEvent.click(screen.getByTestId('tab-users'));
+
+        await waitFor(() => {
+            // Search input should still be cleared
+            expect(searchInput.value).toBe('');
+        });
+    });
+
+    it('renders tabs component with correct props', () => {
+        render(<RelatedContentStep {...mockProps} />);
+
+        const tabsComponent = screen.getByTestId('related-content-tabs');
+        expect(tabsComponent).toBeDefined();
+
+        // Check that both tabs are rendered with correct test IDs
+        expect(screen.getByTestId('tab-users')).toBeDefined();
+        expect(screen.getByTestId('tab-recipes')).toBeDefined();
     });
 });

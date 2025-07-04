@@ -2,7 +2,6 @@
     "greeting": "¡Hola!",
     "welcome": "Bienvenido/a",
     "button": "Enviar",
-    "set_your_preferences": "Establece tus preferencias",
     "select_your_language": "Selecciona tu idioma",
     "light_theme": "Activar el tema claro",
     "dark_theme": "Activar el tema oscuro",
@@ -425,5 +424,7 @@
     "challenge_value_cuisine_cantonese": "Cantonés",
     "since": "Desde",
     "max_ingredients_reached": "Máximo de 30 ingredientes permitidos",
-    "max_steps_reached": "Máximo de 30 pasos permitidos"
+    "max_steps_reached": "Máximo de 30 pasos permitidos",
+    "preferences": "Preferencias",
+    "account": "Cuenta"
 }
