@@ -2,7 +2,6 @@
     "greeting": "Hello!",
     "welcome": "Welcome",
     "button": "Submit",
-    "set_your_preferences": "Set your preferences",
     "select_your_language": "Select your language",
     "light_theme": "Enable light theme",
     "dark_theme": "Enable dark theme",
@@ -424,5 +423,7 @@
     "challenge_value_cuisine_cantonese": "Cantonese",
     "since": "Since",
     "max_ingredients_reached": "Maximum of 30 ingredients allowed",
-    "max_steps_reached": "Maximum of 30 steps allowed"
+    "max_steps_reached": "Maximum of 30 steps allowed",
+    "preferences": "Preferences",
+    "account": "Account"
 }

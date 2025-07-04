@@ -7,8 +7,10 @@ import { toast } from 'react-hot-toast';
 import Heading from '@/app/components/navigation/Heading';
 import SearchInput from '@/app/components/inputs/SearchInput';
 import Avatar from '@/app/components/utils/Avatar';
-import { FiSearch } from 'react-icons/fi';
+import Tabs, { Tab } from '@/app/components/utils/Tabs';
+import { FiSearch, FiUsers } from 'react-icons/fi';
 import { AiFillDelete } from 'react-icons/ai';
+import { IoRestaurantOutline } from 'react-icons/io5';
 import Image from 'next/image';
 import debounce from 'lodash/debounce';
 
@@ -38,6 +40,20 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
         users: any[];
         recipes: any[];
     }>({ users: [], recipes: [] });
+
+    // Define tabs for the component
+    const tabs: Tab[] = [
+        {
+            id: 'users',
+            label: t('co_cooks') || 'Co-Cooks',
+            icon: <FiUsers />,
+        },
+        {
+            id: 'recipes',
+            label: t('linked_recipes') || 'Linked Recipes',
+            icon: <IoRestaurantOutline />,
+        },
+    ];
 
     const debouncedSearch = useRef(
         debounce(
@@ -73,6 +89,11 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
         [debouncedSearch, searchType, t]
     );
 
+    const handleTabChange = (tabId: string) => {
+        setSearchType(tabId as 'users' | 'recipes');
+        setSearchQuery('');
+    };
+
     useEffect(() => {
         handleSearch(searchQuery);
     }, [searchQuery, handleSearch]);
@@ -88,34 +109,12 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
             />
 
             {/* Tab selection for co-cooks vs related recipes */}
-            <div className="flex border-b border-gray-200 dark:border-neutral-600">
-                <button
-                    className={`flex-1 px-4 py-2 text-center ${
-                        searchType === 'users'
-                            ? 'border-green-450 text-green-450 border-b-2 font-medium'
-                            : 'text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-100'
-                    }`}
-                    onClick={() => {
-                        setSearchType('users');
-                        setSearchQuery('');
-                    }}
-                >
-                    {t('co_cooks') || 'Co-Cooks'}
-                </button>
-                <button
-                    className={`flex-1 px-4 py-2 text-center ${
-                        searchType === 'recipes'
-                            ? 'border-green-450 text-green-450 border-b-2 font-medium'
-                            : 'text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-100'
-                    }`}
-                    onClick={() => {
-                        setSearchType('recipes');
-                        setSearchQuery('');
-                    }}
-                >
-                    {t('linked_recipes') || 'Linked Recipes'}
-                </button>
-            </div>
+            <Tabs
+                tabs={tabs}
+                activeTab={searchType}
+                onTabChange={handleTabChange}
+                data-testid="related-content-tabs"
+            />
 
             {/* Search input with integrated dropdown */}
             <div className="relative">
