@@ -431,8 +431,8 @@
     "max_steps_reached": "Màxim de 30 passos permesos",
     "preferences": "Preferències",
     "account": "Compte",
-    "update_username": "Actualitzar nom d'usuari",
-    "username_requirements": "Màxim 15 caràcters, només lletres, números i guions baixos",
+    "update_username": "Nom d'usuari",
+    "username_requirements": "Només lletres, números o guions baixos",
     "username": "Nom d'usuari",
     "username_updated": "Nom d'usuari actualitzat!"
 }

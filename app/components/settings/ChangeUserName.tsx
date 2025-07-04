@@ -105,12 +105,9 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
     return (
         <div className="flex items-center">
             <div className="flex-1">
-                <p className="text-left">
-                    {t('update_username') || 'Update Username'}
-                </p>
+                <p className="text-left">{t('update_username')}</p>
                 <p className="text-xs text-gray-500 dark:text-zinc-400">
-                    {t('username_requirements') ||
-                        `Max ${USERNAME_MAX_LENGTH} characters, letters and numbers only`}
+                    {t('username_requirements')}
                 </p>
             </div>
             <div className="flex items-center gap-2">

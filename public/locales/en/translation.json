@@ -426,8 +426,8 @@
     "max_steps_reached": "Maximum of 30 steps allowed",
     "preferences": "Preferences",
     "account": "Account",
-    "update_username": "Update username",
-    "username_requirements": "Maximum 15 characters, letters, numbers, and underscores only",
+    "update_username": "Username",
+    "username_requirements": "Letters, numbers or underscores only",
     "username": "Username",
     "username_updated": "Username updated!"
 }
