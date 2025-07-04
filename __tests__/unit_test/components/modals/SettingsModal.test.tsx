@@ -43,6 +43,14 @@ vi.mock('@/app/components/settings/ChangeUserImage', () => ({
     ),
 }));
 
+vi.mock('@/app/components/settings/ChangeUserName', () => ({
+    default: () => (
+        <div data-testid="change-user-name-selector">
+            ChangeUserNameSelector
+        </div>
+    ),
+}));
+
 // Mock the Tabs component
 vi.mock('@/app/components/utils/Tabs', () => ({
     default: ({ tabs, activeTab, onTabChange, ...props }: any) => (
@@ -118,6 +126,7 @@ describe('SettingsModal', () => {
         expect(screen.getByTestId('language-selector')).toBeDefined();
 
         // Account settings should not be visible
+        expect(screen.queryByTestId('change-user-name-selector')).toBeNull();
         expect(screen.queryByTestId('email-notifications-selector')).toBeNull();
         expect(screen.queryByTestId('change-user-image-selector')).toBeNull();
     });
@@ -139,6 +148,9 @@ describe('SettingsModal', () => {
 
         await waitFor(() => {
             // Should now show account content
+            expect(
+                screen.getByTestId('change-user-name-selector')
+            ).toBeDefined();
             expect(
                 screen.getByTestId('email-notifications-selector')
             ).toBeDefined();
@@ -165,6 +177,9 @@ describe('SettingsModal', () => {
 
         await waitFor(() => {
             expect(
+                screen.getByTestId('change-user-name-selector')
+            ).toBeDefined();
+            expect(
                 screen.getByTestId('email-notifications-selector')
             ).toBeDefined();
         });
@@ -178,6 +193,9 @@ describe('SettingsModal', () => {
             expect(screen.getByTestId('language-selector')).toBeDefined();
 
             // Account content should not be visible
+            expect(
+                screen.queryByTestId('change-user-name-selector')
+            ).toBeNull();
             expect(
                 screen.queryByTestId('email-notifications-selector')
             ).toBeNull();
