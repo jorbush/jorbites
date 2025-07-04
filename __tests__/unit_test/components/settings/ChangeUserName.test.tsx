@@ -269,8 +269,12 @@ describe('ChangeUserNameSelector', () => {
         });
 
         // Should reset to original username on error
-        const input = screen.getByTestId('username-input') as HTMLInputElement;
-        expect(input.value).toBe('TestUser');
+        await waitFor(() => {
+            const input = screen.getByTestId(
+                'username-input'
+            ) as HTMLInputElement;
+            expect(input.value).toBe('TestUser');
+        });
     });
 
     it('triggers save when saveUserName prop changes', async () => {
