@@ -425,5 +425,9 @@
     "max_ingredients_reached": "Maximum of 30 ingredients allowed",
     "max_steps_reached": "Maximum of 30 steps allowed",
     "preferences": "Preferences",
-    "account": "Account"
+    "account": "Account",
+    "update_username": "Update username",
+    "username_requirements": "Maximum 10 characters, letters and numbers only",
+    "username": "Username",
+    "username_updated": "Username updated!"
 }

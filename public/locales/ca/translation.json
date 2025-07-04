@@ -2,7 +2,6 @@
     "greeting": "Hola!",
     "welcome": "Benvingut/da",
     "button": "Enviar",
-    "set_your_preferences": "Estableix les teves preferences",
     "select_your_language": "Selecciona el teu idioma",
     "light_theme": "Activar el tema clar",
     "dark_theme": "Activar el tema fosc",
@@ -431,5 +430,9 @@
     "max_ingredients_reached": "Màxim de 30 ingredients permesos",
     "max_steps_reached": "Màxim de 30 passos permesos",
     "preferences": "Preferències",
-    "account": "Compte"
+    "account": "Compte",
+    "update_username": "Actualitzar nom d'usuari",
+    "username_requirements": "Màxim 10 caràcters, només lletres i números",
+    "username": "Nom d'usuari",
+    "username_updated": "Nom d'usuari actualitzat!"
 }

@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import EmailNotificationsSelector from '@/app/components/settings/EmailNotificationsSelector';
 import { SafeUser } from '@/app/types';
 import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
+import ChangeUserNameSelector from '@/app/components/settings/ChangeUserName';
 import { useCallback, useState } from 'react';
 import { FcSettings } from 'react-icons/fc';
 import Tabs, { Tab } from '@/app/components/utils/Tabs';
@@ -21,6 +22,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
     const settingsModal = useSettingsModal();
     const { t } = useTranslation();
     const [saveImage, setSaveImage] = useState(false);
+    const [saveUserName, setSaveUserName] = useState(false);
     const [activeTab, setActiveTab] = useState('preferences');
 
     const tabs: Tab[] = [
@@ -59,6 +61,12 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
                             setSaveImage={setSaveImage}
                             onSave={() => settingsModal.onClose()}
                         />
+                        <ChangeUserNameSelector
+                            currentUser={currentUser}
+                            saveUserName={saveUserName}
+                            setSaveUserName={setSaveUserName}
+                            onSave={() => settingsModal.onClose()}
+                        />
                     </div>
                 ) : null;
             default:
@@ -84,6 +92,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
             return;
         }
         setSaveImage(true);
+        setSaveUserName(true);
     }, [settingsModal, currentUser]);
 
     return (
