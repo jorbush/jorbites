@@ -100,7 +100,7 @@ describe('PATCH /api/userName/[userId]', () => {
 
         expect(response.status).toBe(400);
         expect(data.error).toBe(
-            'Username must contain only letters and numbers'
+            'Username must contain only letters, numbers, and underscores'
         );
     });
 
@@ -111,7 +111,7 @@ describe('PATCH /api/userName/[userId]', () => {
 
         expect(response.status).toBe(400);
         expect(data.error).toBe(
-            'Username must contain only letters and numbers'
+            'Username must contain only letters, numbers, and underscores'
         );
     });
 
@@ -122,19 +122,19 @@ describe('PATCH /api/userName/[userId]', () => {
 
         expect(response.status).toBe(400);
         expect(data.error).toBe(
-            'Username must contain only letters and numbers'
+            'Username must contain only letters, numbers, and underscores'
         );
     });
 
-    it('should reject username with underscores', async () => {
+    it('should accept username with underscores', async () => {
         const request = createRequest('User_Name');
         const response = await PATCH(request);
-        const data = await response.json();
 
-        expect(response.status).toBe(400);
-        expect(data.error).toBe(
-            'Username must contain only letters and numbers'
-        );
+        expect(response.status).toBe(200);
+        expect(mockPrisma.user.update).toHaveBeenCalledWith({
+            where: { id: 'user123' },
+            data: { name: 'User_Name' },
+        });
     });
 
     it('should reject username with dots', async () => {
@@ -144,7 +144,7 @@ describe('PATCH /api/userName/[userId]', () => {
 
         expect(response.status).toBe(400);
         expect(data.error).toBe(
-            'Username must contain only letters and numbers'
+            'Username must contain only letters, numbers, and underscores'
         );
     });
 
@@ -178,6 +178,61 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: '123456' },
+        });
+    });
+
+    it('should accept username with multiple underscores', async () => {
+        const request = createRequest('user__name__123');
+        const response = await PATCH(request);
+
+        expect(response.status).toBe(200);
+        expect(mockPrisma.user.update).toHaveBeenCalledWith({
+            where: { id: 'user123' },
+            data: { name: 'user__name__123' },
+        });
+    });
+
+    it('should accept username starting with underscore', async () => {
+        const request = createRequest('_username');
+        const response = await PATCH(request);
+
+        expect(response.status).toBe(200);
+        expect(mockPrisma.user.update).toHaveBeenCalledWith({
+            where: { id: 'user123' },
+            data: { name: '_username' },
+        });
+    });
+
+    it('should accept username ending with underscore', async () => {
+        const request = createRequest('username_');
+        const response = await PATCH(request);
+
+        expect(response.status).toBe(200);
+        expect(mockPrisma.user.update).toHaveBeenCalledWith({
+            where: { id: 'user123' },
+            data: { name: 'username_' },
+        });
+    });
+
+    it('should accept username with only underscores', async () => {
+        const request = createRequest('___');
+        const response = await PATCH(request);
+
+        expect(response.status).toBe(200);
+        expect(mockPrisma.user.update).toHaveBeenCalledWith({
+            where: { id: 'user123' },
+            data: { name: '___' },
+        });
+    });
+
+    it('should accept complex alphanumeric with underscores', async () => {
+        const request = createRequest('test_user_123');
+        const response = await PATCH(request);
+
+        expect(response.status).toBe(200);
+        expect(mockPrisma.user.update).toHaveBeenCalledWith({
+            where: { id: 'user123' },
+            data: { name: 'test_user_123' },
         });
     });
 

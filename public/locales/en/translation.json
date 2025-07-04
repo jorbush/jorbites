@@ -427,7 +427,7 @@
     "preferences": "Preferences",
     "account": "Account",
     "update_username": "Update username",
-    "username_requirements": "Maximum 10 characters, letters and numbers only",
+    "username_requirements": "Maximum 15 characters, letters, numbers, and underscores only",
     "username": "Username",
     "username_updated": "Username updated!"
 }

@@ -428,7 +428,7 @@
     "preferences": "Preferencias",
     "account": "Cuenta",
     "update_username": "Actualizar nombre de usuario",
-    "username_requirements": "Máximo 10 caracteres, solo letras y números",
+    "username_requirements": "Máximo 15 caracteres, solo letras, números y guiones bajos",
     "username": "Nombre de usuario",
     "username_updated": "Nombre de usuario actualizado!"
 }

@@ -104,7 +104,7 @@ describe('ChangeUserNameSelector', () => {
 
         expect(screen.getByTestId('username-input')).toBeDefined();
         expect(screen.getByTestId('cancel-edit-button')).toBeDefined();
-        expect(screen.getByText('8/10')).toBeDefined(); // Character counter shows length of "TestUser"
+        expect(screen.getByText('8/15')).toBeDefined(); // Character counter shows length of "TestUser"
     });
 
     it('populates input with current username when editing', () => {
@@ -130,9 +130,9 @@ describe('ChangeUserNameSelector', () => {
         fireEvent.change(input, { target: { value: 'User@123' } });
         expect(input.value).toBe('User123');
 
-        // Test hyphens and underscores
+        // Test hyphens and underscores (hyphens removed, underscores allowed)
         fireEvent.change(input, { target: { value: 'User-Name_123' } });
-        expect(input.value).toBe('UserName12'); // Truncated to 10 chars
+        expect(input.value).toBe('UserName_123'); // Hyphens removed, underscores kept
 
         // Test dots and other symbols
         fireEvent.change(input, { target: { value: 'User.Name!#$' } });
@@ -159,7 +159,7 @@ describe('ChangeUserNameSelector', () => {
 
         // Test uppercase and lowercase
         fireEvent.change(input, { target: { value: 'UserNAME123' } });
-        expect(input.value).toBe('UserNAME12'); // Truncated to 10 chars
+        expect(input.value).toBe('UserNAME123'); // No truncation, within 15 chars
     });
 
     it('limits input to maximum length', () => {
@@ -172,8 +172,8 @@ describe('ChangeUserNameSelector', () => {
             target: { value: 'ThisIsAVeryLongUsername' },
         });
 
-        expect(input.value).toBe('ThisIsAVer'); // Should be truncated to 10 characters
-        expect(screen.getByText('10/10')).toBeDefined();
+        expect(input.value).toBe('ThisIsAVeryLong'); // Should be truncated to 15 characters
+        expect(screen.getByText('15/15')).toBeDefined();
     });
 
     it('shows save icon when username is changed', () => {
@@ -369,9 +369,31 @@ describe('ChangeUserNameSelector', () => {
         const input = screen.getByTestId('username-input') as HTMLInputElement;
 
         fireEvent.change(input, { target: { value: 'Test' } });
-        expect(screen.getByText('4/10')).toBeDefined();
+        expect(screen.getByText('4/15')).toBeDefined();
 
         fireEvent.change(input, { target: { value: 'TestUser1' } });
-        expect(screen.getByText('9/10')).toBeDefined();
+        expect(screen.getByText('9/15')).toBeDefined();
+
+        fireEvent.change(input, { target: { value: 'VeryLongUsernam' } });
+        expect(screen.getByText('15/15')).toBeDefined();
+    });
+
+    it('allows underscores in username', () => {
+        render(<ChangeUserNameSelector {...defaultProps} />);
+
+        fireEvent.click(screen.getByTestId('edit-username-icon'));
+        const input = screen.getByTestId('username-input') as HTMLInputElement;
+
+        // Test underscores
+        fireEvent.change(input, { target: { value: 'user_name' } });
+        expect(input.value).toBe('user_name');
+
+        // Test mixed alphanumeric and underscores
+        fireEvent.change(input, { target: { value: 'test_user_123' } });
+        expect(input.value).toBe('test_user_123');
+
+        // Test multiple underscores
+        fireEvent.change(input, { target: { value: 'user__name' } });
+        expect(input.value).toBe('user__name');
     });
 });

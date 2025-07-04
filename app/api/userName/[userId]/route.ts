@@ -40,9 +40,11 @@ export async function PATCH(request: Request) {
             );
         }
 
-        // Check that username contains only alphanumeric characters (letters and numbers)
-        if (!/^[a-zA-Z0-9]+$/.test(trimmedUserName)) {
-            return badRequest('Username must contain only letters and numbers');
+        // Check that username contains only alphanumeric characters and underscores
+        if (!/^[a-zA-Z0-9_]+$/.test(trimmedUserName)) {
+            return badRequest(
+                'Username must contain only letters, numbers, and underscores'
+            );
         }
 
         // Check if username is already taken by another user

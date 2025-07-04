@@ -432,7 +432,7 @@
     "preferences": "Preferències",
     "account": "Compte",
     "update_username": "Actualitzar nom d'usuari",
-    "username_requirements": "Màxim 10 caràcters, només lletres i números",
+    "username_requirements": "Màxim 15 caràcters, només lletres, números i guions baixos",
     "username": "Nom d'usuari",
     "username_updated": "Nom d'usuari actualitzat!"
 }

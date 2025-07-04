@@ -67,8 +67,8 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
     const handleUserNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
 
-        // Only allow alphanumeric characters (letters and numbers)
-        const cleanValue = value.replace(/[^a-zA-Z0-9]/g, '');
+        // Only allow alphanumeric characters and underscores
+        const cleanValue = value.replace(/[^a-zA-Z0-9_]/g, '');
 
         // Limit to max length
         const limitedValue = cleanValue.slice(0, USERNAME_MAX_LENGTH);
