@@ -427,8 +427,8 @@
     "max_steps_reached": "Máximo de 30 pasos permitidos",
     "preferences": "Preferencias",
     "account": "Cuenta",
-    "update_username": "Actualizar nombre de usuario",
-    "username_requirements": "Máximo 15 caracteres, solo letras, números y guiones bajos",
+    "update_username": "Nombre de usuario",
+    "username_requirements": "Solo letras, números o guiones bajos",
     "username": "Nombre de usuario",
     "username_updated": "Nombre de usuario actualizado!"
 }

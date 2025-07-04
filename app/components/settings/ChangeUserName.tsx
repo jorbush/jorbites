@@ -105,12 +105,9 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
     return (
         <div className="flex items-center">
             <div className="flex-1">
-                <p className="text-left">
-                    {t('update_username') || 'Update Username'}
-                </p>
+                <p className="text-left">{t('update_username')}</p>
                 <p className="text-xs text-gray-500 dark:text-zinc-400">
-                    {t('username_requirements') ||
-                        `Max ${USERNAME_MAX_LENGTH} characters, letters and numbers only`}
+                    {t('username_requirements')}
                 </p>
             </div>
             <div className="flex items-center gap-2">
@@ -120,7 +117,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                             type="text"
                             value={newUserName}
                             onChange={handleUserNameChange}
-                            className="focus:ring-green-450 w-24 rounded border border-gray-300 px-2 py-1 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+                            className="focus:ring-green-450 w-24 rounded border border-gray-300 px-2 py-1 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                             placeholder={t('username') || 'Username'}
                             disabled={isLoading}
                             maxLength={USERNAME_MAX_LENGTH}
@@ -147,7 +144,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                     </>
                 ) : (
                     <>
-                        <span className="text-sm font-medium text-gray-700 dark:text-zinc-300">
+                        <span className="text-base font-medium text-gray-700 dark:text-zinc-300">
                             {currentUser?.name ||
                                 t('no_username') ||
                                 'No username'}
