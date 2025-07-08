@@ -16,6 +16,7 @@ interface WriteToDeleteModalProps {
     description?: string;
     requiredText?: string;
     actionLabel?: string;
+    insideModal?: boolean;
 }
 
 const WriteToDeleteModal: React.FC<WriteToDeleteModalProps> = ({
@@ -26,6 +27,7 @@ const WriteToDeleteModal: React.FC<WriteToDeleteModalProps> = ({
     description,
     requiredText,
     actionLabel,
+    insideModal,
 }) => {
     const { t } = useTranslation();
     const {
@@ -92,6 +94,7 @@ const WriteToDeleteModal: React.FC<WriteToDeleteModalProps> = ({
             }}
             body={bodyContent}
             footer={<div></div>}
+            insideModal={insideModal}
         />
     );
 };

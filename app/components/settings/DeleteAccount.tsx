@@ -87,6 +87,7 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
                     t('delete_account_warning') ||
                     'This action cannot be undone. All your recipes and data will be permanently deleted.'
                 }
+                insideModal={true}
             />
         </>
     );
