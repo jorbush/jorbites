@@ -36,6 +36,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         });
     }
 
+    const users = await prisma.user.findMany({
+        select: {
+            id: true,
+            updatedAt: true,
+            createdAt: true,
+        },
+    });
+
+    const userEntries = users.map((user) => ({
+        url: `${baseUrl}/profile/${user.id}`,
+        lastModified: user.updatedAt || user.createdAt || new Date(),
+        priority: 0.6,
+    }));
+
     return [
         {
             url: baseUrl,
@@ -44,5 +58,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
         ...recipeEntries,
         ...eventEntries,
+        ...userEntries,
     ];
 }
