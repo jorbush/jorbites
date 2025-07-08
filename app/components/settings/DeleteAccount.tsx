@@ -59,8 +59,8 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
                         {t('delete_account') || 'Delete Account'}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-zinc-400">
-                        {t('delete_account_warning') ||
-                            'This action cannot be undone. All your recipes and data will be permanently deleted.'}
+                        {t('action_cannot_be_undone') ||
+                            'This action cannot be undone.'}
                     </p>
                 </div>
                 <div className="flex items-center">
@@ -82,6 +82,10 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
                 open={showConfirmModal}
                 setIsOpen={setShowConfirmModal}
                 onConfirm={handleDeleteAccount}
+                description={
+                    t('delete_account_warning') ||
+                    'This action cannot be undone. All your recipes and data will be permanently deleted.'
+                }
             />
         </>
     );

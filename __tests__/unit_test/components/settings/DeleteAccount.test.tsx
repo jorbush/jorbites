@@ -20,6 +20,7 @@ vi.mock('react-i18next', () => ({
                 delete_account: 'Delete Account',
                 delete_account_warning:
                     'This action cannot be undone. All your recipes and data will be permanently deleted.',
+                action_cannot_be_undone: 'This action cannot be undone.',
                 account_deleted_successfully: 'Account deleted successfully',
                 deleting: 'Deleting...',
                 delete: 'Delete',
@@ -106,11 +107,7 @@ describe('DeleteAccount', () => {
 
         expect(screen.getByTestId('delete-account-selector')).toBeDefined();
         expect(screen.getByText('Delete Account')).toBeDefined();
-        expect(
-            screen.getByText(
-                'This action cannot be undone. All your recipes and data will be permanently deleted.'
-            )
-        ).toBeDefined();
+        expect(screen.getByText('This action cannot be undone.')).toBeDefined();
         expect(screen.getByTestId('delete-account-button')).toBeDefined();
     });
 

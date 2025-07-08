@@ -437,6 +437,7 @@
     "username_updated": "Nom d'usuari actualitzat!",
     "delete_account": "Eliminar Compte",
     "delete_account_warning": "Aquesta acció no es pot desfer. Totes les teves receptes i dades s'eliminaran permanentment.",
+    "action_cannot_be_undone": "Aquesta acció no es pot desfer.",
     "account_deleted_successfully": "Compte eliminat correctament",
     "deleting": "Eliminant..."
 }
