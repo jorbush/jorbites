@@ -19,6 +19,13 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 
+vi.mock('next/navigation', () => ({
+    useRouter: () => ({
+        push: vi.fn(),
+        refresh: vi.fn(),
+    }),
+}));
+
 vi.mock('@/app/components/settings/ThemeSelector', () => ({
     default: () => <div data-testid="theme-selector">ThemeSelector</div>,
 }));

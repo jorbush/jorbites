@@ -9,12 +9,14 @@ interface ConfirmModalProps {
     open: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
     onConfirm: () => void;
+    description?: string;
 }
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
     open,
     setIsOpen,
     onConfirm,
+    description,
 }) => {
     const { t } = useTranslation();
 
@@ -26,6 +28,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     const bodyContent = (
         <div className="flex flex-col gap-4">
             <Heading title={t('confirm_title')} />
+            {description && (
+                <p className="text-sm text-gray-600 dark:text-zinc-400">
+                    {description}
+                </p>
+            )}
         </div>
     );
 

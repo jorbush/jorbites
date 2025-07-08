@@ -429,5 +429,10 @@
     "update_username": "Username",
     "username_requirements": "Letters, numbers or underscores only",
     "username": "Username",
-    "username_updated": "Username updated!"
+    "username_updated": "Username updated!",
+    "delete_account": "Delete Account",
+    "delete_account_warning": "This action cannot be undone. All your recipes and data will be permanently deleted.",
+    "action_cannot_be_undone": "This action cannot be undone.",
+    "account_deleted_successfully": "Account deleted successfully",
+    "deleting": "Deleting..."
 }

@@ -430,5 +430,10 @@
     "update_username": "Nombre de usuario",
     "username_requirements": "Solo letras, números o guiones bajos",
     "username": "Nombre de usuario",
-    "username_updated": "Nombre de usuario actualizado!"
+    "username_updated": "Nombre de usuario actualizado!",
+    "delete_account": "Eliminar Cuenta",
+    "delete_account_warning": "Esta acción no se puede deshacer. Todas tus recetas y datos se eliminarán permanentemente.",
+    "action_cannot_be_undone": "Esta acción no se puede deshacer.",
+    "account_deleted_successfully": "Cuenta eliminada exitosamente",
+    "deleting": "Eliminando..."
 }

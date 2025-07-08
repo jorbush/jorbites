@@ -9,6 +9,7 @@ import EmailNotificationsSelector from '@/app/components/settings/EmailNotificat
 import { SafeUser } from '@/app/types';
 import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
 import ChangeUserNameSelector from '@/app/components/settings/ChangeUserName';
+import DeleteAccount from '@/app/components/settings/DeleteAccount';
 import { useCallback, useState } from 'react';
 import { FcSettings } from 'react-icons/fc';
 import Tabs, { Tab } from '@/app/components/utils/Tabs';
@@ -67,6 +68,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
                             setSaveUserName={setSaveUserName}
                             onSave={() => settingsModal.onClose()}
                         />
+                        <DeleteAccount currentUser={currentUser} />
                     </div>
                 ) : null;
             default:
