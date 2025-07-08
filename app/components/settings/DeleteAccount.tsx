@@ -8,7 +8,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { signOut } from 'next-auth/react';
 import { FiTrash2 } from 'react-icons/fi';
-import ConfirmModal from '@/app/components/modals/ConfirmModal';
+import WriteToDeleteModal from '@/app/components/modals/WriteToDeleteModal';
 
 interface DeleteAccountProps {
     currentUser?: SafeUser | null;
@@ -78,10 +78,11 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
                 </div>
             </div>
 
-            <ConfirmModal
+            <WriteToDeleteModal
                 open={showConfirmModal}
                 setIsOpen={setShowConfirmModal}
                 onConfirm={handleDeleteAccount}
+                title={t('delete_account') || 'Delete Account'}
                 description={
                     t('delete_account_warning') ||
                     'This action cannot be undone. All your recipes and data will be permanently deleted.'

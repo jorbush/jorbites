@@ -25,6 +25,10 @@ vi.mock('react-i18next', () => ({
                 deleting: 'Deleting...',
                 delete: 'Delete',
                 something_went_wrong: 'Something went wrong',
+                write_this_to_delete: 'Write this to delete',
+                text_delete: 'Delete',
+                text_does_not_match: 'The text does not match.',
+                cancel: 'Cancel',
             };
             return translations[key] || key;
         },
@@ -51,20 +55,24 @@ vi.mock('next-auth/react', () => ({
 
 vi.mock('axios');
 
-vi.mock('@/app/components/modals/ConfirmModal', () => ({
+vi.mock('@/app/components/modals/WriteToDeleteModal', () => ({
     default: ({ open, setIsOpen, onConfirm }: any) => (
         <div
-            data-testid="confirm-modal"
+            data-testid="write-to-delete-modal"
             style={{ display: open ? 'block' : 'none' }}
         >
+            <input
+                data-testid="delete-confirmation-text"
+                placeholder="Type 'Delete' to confirm"
+            />
             <button
-                data-testid="confirm-modal-confirm"
+                data-testid="write-to-delete-modal-confirm"
                 onClick={onConfirm}
             >
                 Confirm
             </button>
             <button
-                data-testid="confirm-modal-cancel"
+                data-testid="write-to-delete-modal-cancel"
                 onClick={() => setIsOpen(false)}
             >
                 Cancel
@@ -121,33 +129,33 @@ describe('DeleteAccount', () => {
         expect(deleteButton.className).toContain('text-red-700');
     });
 
-    it('opens confirm modal when delete button is clicked', () => {
+    it('opens write to delete modal when delete button is clicked', () => {
         render(<DeleteAccount currentUser={mockCurrentUser} />);
 
-        const confirmModal = screen.getByTestId('confirm-modal');
-        expect(confirmModal.style.display).toBe('none');
+        const writeToDeleteModal = screen.getByTestId('write-to-delete-modal');
+        expect(writeToDeleteModal.style.display).toBe('none');
 
         const deleteButton = screen.getByTestId('delete-account-button');
         fireEvent.click(deleteButton);
 
-        expect(confirmModal.style.display).toBe('block');
+        expect(writeToDeleteModal.style.display).toBe('block');
     });
 
-    it('closes confirm modal when cancel is clicked', () => {
+    it('closes write to delete modal when cancel is clicked', () => {
         render(<DeleteAccount currentUser={mockCurrentUser} />);
 
         // Open modal
         const deleteButton = screen.getByTestId('delete-account-button');
         fireEvent.click(deleteButton);
 
-        const confirmModal = screen.getByTestId('confirm-modal');
-        expect(confirmModal.style.display).toBe('block');
+        const writeToDeleteModal = screen.getByTestId('write-to-delete-modal');
+        expect(writeToDeleteModal.style.display).toBe('block');
 
         // Close modal
-        const cancelButton = screen.getByTestId('confirm-modal-cancel');
+        const cancelButton = screen.getByTestId('write-to-delete-modal-cancel');
         fireEvent.click(cancelButton);
 
-        expect(confirmModal.style.display).toBe('none');
+        expect(writeToDeleteModal.style.display).toBe('none');
     });
 
     it('calls delete API and signs out user on confirmation', async () => {
@@ -160,7 +168,9 @@ describe('DeleteAccount', () => {
         const deleteButton = screen.getByTestId('delete-account-button');
         fireEvent.click(deleteButton);
 
-        const confirmButton = screen.getByTestId('confirm-modal-confirm');
+        const confirmButton = screen.getByTestId(
+            'write-to-delete-modal-confirm'
+        );
         fireEvent.click(confirmButton);
 
         await waitFor(() => {
@@ -180,7 +190,9 @@ describe('DeleteAccount', () => {
         const deleteButton = screen.getByTestId('delete-account-button');
         fireEvent.click(deleteButton);
 
-        const confirmButton = screen.getByTestId('confirm-modal-confirm');
+        const confirmButton = screen.getByTestId(
+            'write-to-delete-modal-confirm'
+        );
         fireEvent.click(confirmButton);
 
         // Check loading state
@@ -202,7 +214,9 @@ describe('DeleteAccount', () => {
         const deleteButton = screen.getByTestId('delete-account-button');
         fireEvent.click(deleteButton);
 
-        const confirmButton = screen.getByTestId('confirm-modal-confirm');
+        const confirmButton = screen.getByTestId(
+            'write-to-delete-modal-confirm'
+        );
         fireEvent.click(confirmButton);
 
         await waitFor(() => {
@@ -221,7 +235,9 @@ describe('DeleteAccount', () => {
         const deleteButton = screen.getByTestId('delete-account-button');
         fireEvent.click(deleteButton);
 
-        const confirmButton = screen.getByTestId('confirm-modal-confirm');
+        const confirmButton = screen.getByTestId(
+            'write-to-delete-modal-confirm'
+        );
         fireEvent.click(confirmButton);
 
         await waitFor(() => {
@@ -247,7 +263,9 @@ describe('DeleteAccount', () => {
         const deleteButton = screen.getByTestId('delete-account-button');
         fireEvent.click(deleteButton);
 
-        const confirmButton = screen.getByTestId('confirm-modal-confirm');
+        const confirmButton = screen.getByTestId(
+            'write-to-delete-modal-confirm'
+        );
 
         // Click confirm button multiple times
         fireEvent.click(confirmButton);
@@ -272,7 +290,9 @@ describe('DeleteAccount', () => {
         const deleteButton = screen.getByTestId('delete-account-button');
         fireEvent.click(deleteButton);
 
-        const confirmButton = screen.getByTestId('confirm-modal-confirm');
+        const confirmButton = screen.getByTestId(
+            'write-to-delete-modal-confirm'
+        );
         fireEvent.click(confirmButton);
 
         await waitFor(() => {
