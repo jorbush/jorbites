@@ -9,9 +9,53 @@ import UserStats from '@/app/components/stats/UserStats';
 import ProfileHeaderSkeleton from '@/app/components/profile/ProfileHeaderSkeleton';
 import UserStatsSkeleton from '@/app/components/stats/UserStatsSkeleton';
 import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
+import { Metadata } from 'next';
 
 interface IParams {
     userId?: string;
+}
+
+export async function generateMetadata(props: {
+    params: Promise<IParams>;
+}): Promise<Metadata> {
+    const params = await props.params;
+    const user = await getUserById({ userId: params.userId, withStats: true });
+
+    if (!user) {
+        return {
+            title: 'Usuario no encontrado | Jorbites',
+            description:
+                'El usuario solicitado no pudo ser encontrado en Jorbites.',
+        };
+    }
+
+    const displayName = user.name || 'Usuario';
+    const level = user && user.level ? user.level : 1;
+    const title = `${displayName} | Perfil de usuario | Jorbites`;
+    const description = `${displayName} es un usuario de Jorbites con nivel ${level}. Descubre sus recetas y logros en la comunidad de cocina Jorbites.`;
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            images: [
+                {
+                    url: user.image || '/jorbites-social.jpg',
+                    width: 400,
+                    height: 400,
+                    alt: displayName,
+                },
+            ],
+            type: 'profile',
+        },
+        twitter: {
+            card: 'summary',
+            title,
+            description,
+            images: [user.image || '/jorbites-social.jpg'],
+        },
+    };
 }
 
 const ProfilePage = async (props: { params: Promise<IParams> }) => {
