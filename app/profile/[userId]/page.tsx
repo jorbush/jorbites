@@ -30,17 +30,15 @@ export async function generateMetadata(props: {
     }
 
     const displayName = user.name || 'Usuario';
-    const recipeCount = user && 'recipeCount' in user ? user.recipeCount : 0;
-    const likesReceived =
-        user && 'likesReceived' in user ? user.likesReceived : 0;
     const level = user && user.level ? user.level : 1;
-
+    const title = `${displayName} | Perfil de usuario | Jorbites`;
+    const description = `${displayName} es un usuario de Jorbites con nivel ${level}. Descubre sus recetas y logros en la comunidad de cocina Jorbites.`;
     return {
-        title: `${displayName} | Perfil de usuario | Jorbites`,
-        description: `${displayName} es un usuario de Jorbites con nivel ${level}, ${recipeCount} recetas y ${likesReceived} likes recibidos. Descubre sus recetas y logros en la comunidad de cocina Jorbites.`,
+        title,
+        description,
         openGraph: {
-            title: `${displayName} | Perfil de usuario | Jorbites`,
-            description: `${displayName} es un usuario de Jorbites con nivel ${level}, ${recipeCount} recetas y ${likesReceived} likes recibidos. Descubre sus recetas y logros en la comunidad de cocina Jorbites.`,
+            title,
+            description,
             images: [
                 {
                     url: user.image || '/jorbites-social.jpg',
@@ -53,8 +51,8 @@ export async function generateMetadata(props: {
         },
         twitter: {
             card: 'summary',
-            title: `${displayName} | Perfil de usuario | Jorbites`,
-            description: `${displayName} es un usuario de Jorbites con nivel ${level}, ${recipeCount} recetas y ${likesReceived} likes recibidos.`,
+            title,
+            description,
             images: [user.image || '/jorbites-social.jpg'],
         },
     };

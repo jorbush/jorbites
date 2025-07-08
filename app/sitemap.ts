@@ -42,6 +42,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             updatedAt: true,
             createdAt: true,
         },
+        orderBy: {
+            updatedAt: 'desc',
+        },
+        take: 100,
     });
 
     const userEntries = users.map((user) => ({
