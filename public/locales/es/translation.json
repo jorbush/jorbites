@@ -435,5 +435,16 @@
     "delete_account_warning": "Esta acción no se puede deshacer. Todas tus recetas y datos se eliminarán permanentemente.",
     "action_cannot_be_undone": "Esta acción no se puede deshacer.",
     "account_deleted_successfully": "Cuenta eliminada exitosamente",
-    "deleting": "Eliminando..."
+    "deleting": "Eliminando...",
+    "change_password": "Cambiar Contraseña",
+    "password_requirements": "La contraseña debe tener al menos 6 caracteres",
+    "current_password": "Contraseña Actual",
+    "enter_current_password": "Ingresa tu contraseña actual",
+    "enter_new_password": "Ingresa tu nueva contraseña",
+    "confirm_new_password": "Confirma tu nueva contraseña",
+    "password_too_short": "La contraseña debe tener al menos 6 caracteres",
+    "new_password_must_be_different": "La nueva contraseña debe ser diferente a la actual",
+    "save_password": "Guardar Contraseña",
+    "saving": "Guardando...",
+    "password_updated": "Contraseña actualizada exitosamente"
 }

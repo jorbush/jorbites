@@ -439,5 +439,16 @@
     "delete_account_warning": "Aquesta acció no es pot desfer. Totes les teves receptes i dades s'eliminaran permanentment.",
     "action_cannot_be_undone": "Aquesta acció no es pot desfer.",
     "account_deleted_successfully": "Compte eliminat correctament",
-    "deleting": "Eliminant..."
+    "deleting": "Eliminant...",
+    "change_password": "Canviar Contrasenya",
+    "password_requirements": "La contrasenya ha de tenir almenys 6 caràcters",
+    "current_password": "Contrasenya Actual",
+    "enter_current_password": "Introdueix la teva contrasenya actual",
+    "enter_new_password": "Introdueix la teva nova contrasenya",
+    "confirm_new_password": "Confirma la teva nova contrasenya",
+    "password_too_short": "La contrasenya ha de tenir almenys 6 caràcters",
+    "new_password_must_be_different": "La nova contrasenya ha de ser diferent de l'actual",
+    "save_password": "Guardar Contrasenya",
+    "saving": "Guardant...",
+    "password_updated": "Contrasenya actualitzada correctament"
 }
