@@ -19,7 +19,6 @@ interface ModalProps {
     isLoading?: boolean;
     secondaryAction?: () => void;
     secondaryActionLabel?: string;
-    minHeight?: string;
     topButton?: React.ReactElement<object>;
     icon?: IconType;
     insideModal?: boolean;
@@ -37,7 +36,6 @@ const Modal: React.FC<ModalProps> = ({
     isLoading,
     secondaryAction,
     secondaryActionLabel,
-    minHeight,
     topButton,
     icon: Icon,
     insideModal,
@@ -105,12 +103,7 @@ const Modal: React.FC<ModalProps> = ({
                     <div
                         className={`translate h-full duration-300 ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'} `}
                     >
-                        <div
-                            className="translate dark:bg-dark relative flex h-full w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto"
-                            style={{
-                                minHeight: minHeight ? minHeight : '0px',
-                            }}
-                        >
+                        <div className="translate dark:bg-dark relative flex h-full w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto">
                             <div className="relative flex flex-shrink-0 items-center justify-center rounded-t border-b-[1px] p-6">
                                 <button
                                     className="absolute left-9 border-0 p-1 text-black transition hover:opacity-70 dark:text-neutral-100"
