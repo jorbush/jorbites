@@ -85,7 +85,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 
     useEffect(() => {
         setCanSave(validatePasswords());
-    }, [currentPassword, newPassword, confirmPassword]);
+    }, [currentPassword, newPassword, confirmPassword, validatePasswords]);
 
     const handleEditClick = () => {
         setIsEditing(true);
