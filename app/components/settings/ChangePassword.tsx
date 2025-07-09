@@ -9,6 +9,7 @@ import React, {
     useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -30,89 +31,96 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 }) => {
     const router = useRouter();
     const { t } = useTranslation();
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [canSave, setCanSave] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const updatePassword = useCallback(() => {
-        if (isLoading) return;
+    const {
+        register,
+        handleSubmit,
+        formState: { isValid },
+        watch,
+        reset,
+    } = useForm<FieldValues>({
+        defaultValues: {
+            currentPassword: '',
+            newPassword: '',
+            confirmPassword: '',
+        },
+        mode: 'onChange',
+    });
 
-        setIsLoading(true);
-        axios
-            .patch(`/api/password/${currentUser?.id}`, {
-                currentPassword,
-                newPassword,
-            })
-            .then(() => {
-                toast.success(
-                    t('password_updated') || 'Password updated successfully'
-                );
-                setIsEditing(false);
-                setCurrentPassword('');
-                setNewPassword('');
-                setConfirmPassword('');
-            })
-            .catch((error) => {
-                const errorMessage =
-                    error.response?.data?.error || t('something_went_wrong');
-                toast.error(errorMessage);
-            })
-            .finally(() => {
-                setCanSave(false);
-                setIsLoading(false);
-                router.refresh();
-            });
-    }, [currentUser?.id, currentPassword, newPassword, router, t, isLoading]);
+    const watchedFields = watch();
+    const { currentPassword, newPassword, confirmPassword } = watchedFields;
 
-    const validatePasswords = () => {
-        const isCurrentPasswordValid = currentPassword.length > 0;
-        const isNewPasswordValid = newPassword.length >= 6;
-        const isConfirmPasswordValid = confirmPassword === newPassword;
+    const updatePassword: SubmitHandler<FieldValues> = useCallback(
+        (data) => {
+            if (isLoading) return;
 
-        return (
-            isCurrentPasswordValid &&
-            isNewPasswordValid &&
-            isConfirmPasswordValid &&
-            newPassword !== currentPassword
-        );
-    };
+            setIsLoading(true);
+            axios
+                .patch(`/api/password/${currentUser?.id}`, {
+                    currentPassword: data.currentPassword,
+                    newPassword: data.newPassword,
+                })
+                .then(() => {
+                    toast.success(
+                        t('password_updated') || 'Password updated successfully'
+                    );
+                    setIsEditing(false);
+                    reset();
+                })
+                .catch((error) => {
+                    const errorMessage =
+                        error.response?.data?.error ||
+                        t('something_went_wrong');
+                    toast.error(errorMessage);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                    router.refresh();
+                });
+        },
+        [currentUser?.id, router, t, isLoading, reset]
+    );
 
-    useEffect(() => {
-        setCanSave(validatePasswords());
-    }, [currentPassword, newPassword, confirmPassword, validatePasswords]);
+    // Check if form is valid and has actual changes
+    const canSave =
+        isValid &&
+        currentPassword &&
+        newPassword &&
+        confirmPassword &&
+        newPassword !== currentPassword;
 
     const handleEditClick = () => {
         setIsEditing(true);
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        setCanSave(false);
+        reset();
     };
 
     const handleCancelEdit = () => {
         setIsEditing(false);
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        setCanSave(false);
+        reset();
     };
 
     useEffect(() => {
         if (savePassword && canSave) {
-            updatePassword();
+            handleSubmit(updatePassword)();
             setSavePassword(false);
             onSave();
         } else if (savePassword) {
             setSavePassword(false);
             onSave();
         }
-    }, [savePassword, canSave, setSavePassword, onSave, updatePassword]);
+    }, [
+        savePassword,
+        canSave,
+        setSavePassword,
+        onSave,
+        handleSubmit,
+        updatePassword,
+    ]);
 
     return (
         <div
@@ -159,10 +167,10 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                         <div className="relative">
                             <input
                                 type={showCurrentPassword ? 'text' : 'password'}
-                                value={currentPassword}
-                                onChange={(e) =>
-                                    setCurrentPassword(e.target.value)
-                                }
+                                {...register('currentPassword', {
+                                    required: true,
+                                    minLength: 1,
+                                })}
                                 className="focus:ring-green-450 w-full rounded border border-gray-300 px-3 py-2 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                                 placeholder={
                                     t('enter_current_password') ||
@@ -196,8 +204,14 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                         <div className="relative">
                             <input
                                 type={showNewPassword ? 'text' : 'password'}
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
+                                {...register('newPassword', {
+                                    required: true,
+                                    minLength: 6,
+                                    validate: (value) =>
+                                        value !== currentPassword ||
+                                        t('new_password_must_be_different') ||
+                                        'New password must be different from current password',
+                                })}
                                 className="focus:ring-green-450 w-full rounded border border-gray-300 px-3 py-2 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                                 placeholder={
                                     t('enter_new_password') ||
@@ -237,10 +251,13 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                         <div className="relative">
                             <input
                                 type={showConfirmPassword ? 'text' : 'password'}
-                                value={confirmPassword}
-                                onChange={(e) =>
-                                    setConfirmPassword(e.target.value)
-                                }
+                                {...register('confirmPassword', {
+                                    required: true,
+                                    validate: (value) =>
+                                        value === newPassword ||
+                                        t('passwords_dont_match') ||
+                                        'Passwords do not match',
+                                })}
                                 className="focus:ring-green-450 w-full rounded border border-gray-300 px-3 py-2 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                                 placeholder={
                                     t('confirm_new_password') ||
@@ -284,7 +301,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                     {canSave && (
                         <div className="flex justify-end">
                             <button
-                                onClick={updatePassword}
+                                onClick={handleSubmit(updatePassword)}
                                 disabled={isLoading}
                                 className="flex items-center gap-2 rounded-md bg-green-50 px-3 py-2 text-sm font-medium text-green-700 transition-colors hover:bg-green-100 disabled:opacity-50 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30"
                                 data-testid="save-password-button"
