@@ -303,7 +303,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                             <button
                                 onClick={handleSubmit(updatePassword)}
                                 disabled={isLoading}
-                                className="flex items-center gap-2 rounded-md bg-green-50 px-3 py-2 text-sm font-medium text-green-700 transition-colors hover:bg-green-100 disabled:opacity-50 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30"
+                                className="bg-green-450 flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white transition-colors hover:opacity-80 disabled:opacity-50 dark:text-black dark:hover:opacity-100"
                                 data-testid="save-password-button"
                             >
                                 <FaRegSave className="h-4 w-4" />
