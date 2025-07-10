@@ -715,7 +715,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             title={t('post_recipe') ?? 'Post a recipe!'}
             body={bodyContent}
             isLoading={isLoading}
-            minHeight="753px"
             topButton={
                 <FiUploadCloud
                     onClick={saveDraft}

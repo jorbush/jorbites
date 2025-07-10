@@ -9,6 +9,7 @@ import EmailNotificationsSelector from '@/app/components/settings/EmailNotificat
 import { SafeUser } from '@/app/types';
 import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
 import ChangeUserNameSelector from '@/app/components/settings/ChangeUserName';
+import ChangePassword from '@/app/components/settings/ChangePassword';
 import DeleteAccount from '@/app/components/settings/DeleteAccount';
 import { useCallback, useState } from 'react';
 import { FcSettings } from 'react-icons/fc';
@@ -24,6 +25,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
     const { t } = useTranslation();
     const [saveImage, setSaveImage] = useState(false);
     const [saveUserName, setSaveUserName] = useState(false);
+    const [savePassword, setSavePassword] = useState(false);
     const [activeTab, setActiveTab] = useState('preferences');
 
     const tabs: Tab[] = [
@@ -68,6 +70,12 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
                             setSaveUserName={setSaveUserName}
                             onSave={() => settingsModal.onClose()}
                         />
+                        <ChangePassword
+                            currentUser={currentUser}
+                            savePassword={savePassword}
+                            setSavePassword={setSavePassword}
+                            onSave={() => settingsModal.onClose()}
+                        />
                         <DeleteAccount currentUser={currentUser} />
                     </div>
                 ) : null;
@@ -84,7 +92,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
                 onTabChange={setActiveTab}
                 data-testid="settings-tabs"
             />
-            <div className="min-h-[200px]">{renderTabContent()}</div>
+            <div>{renderTabContent()}</div>
         </div>
     );
 
@@ -95,6 +103,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
         }
         setSaveImage(true);
         setSaveUserName(true);
+        setSavePassword(true);
     }, [settingsModal, currentUser]);
 
     return (

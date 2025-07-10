@@ -103,7 +103,6 @@ const ForgotPasswordModal = () => {
                     : handleSubmit(onSubmit)
             }
             body={bodyContent}
-            minHeight="400px"
         />
     );
 };

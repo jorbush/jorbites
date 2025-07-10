@@ -235,14 +235,4 @@ describe('SettingsModal', () => {
         expect(screen.getByText('preferences')).toBeDefined();
         expect(screen.getByText('account')).toBeDefined();
     });
-
-    it('renders minimum height container for tab content', () => {
-        render(<SettingsModal currentUser={null} />);
-
-        // The content container should have min-height class
-        const contentContainer = screen
-            .getByTestId('theme-selector')
-            .closest('.min-h-\\[200px\\]');
-        expect(contentContainer).toBeTruthy();
-    });
 });

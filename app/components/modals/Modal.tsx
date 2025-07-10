@@ -19,7 +19,6 @@ interface ModalProps {
     isLoading?: boolean;
     secondaryAction?: () => void;
     secondaryActionLabel?: string;
-    minHeight?: string;
     topButton?: React.ReactElement<object>;
     icon?: IconType;
     insideModal?: boolean;
@@ -37,7 +36,6 @@ const Modal: React.FC<ModalProps> = ({
     isLoading,
     secondaryAction,
     secondaryActionLabel,
-    minHeight,
     topButton,
     icon: Icon,
     insideModal,
@@ -100,18 +98,13 @@ const Modal: React.FC<ModalProps> = ({
         <>
             <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-neutral-800/70 outline-hidden focus:outline-hidden">
                 <div
-                    className={`relative mx-auto my-6 h-full w-full md:h-auto lg:h-auto ${insideModal ? 'md:w-5/6' : 'md:w-4/6 lg:w-3/6 xl:w-2/5'}`}
+                    className={`relative mx-auto my-6 h-full max-h-[calc(100vh-3rem)] w-full md:h-auto md:max-h-[calc(100vh-6rem)] lg:h-auto ${insideModal ? 'md:w-5/6' : 'md:w-4/6 lg:w-3/6 xl:w-2/5'}`}
                 >
                     <div
                         className={`translate h-full duration-300 ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'} `}
                     >
-                        <div
-                            className="translate dark:bg-dark relative flex h-full w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto"
-                            style={{
-                                minHeight: minHeight ? minHeight : '0px',
-                            }}
-                        >
-                            <div className="relative flex items-center justify-center rounded-t border-b-[1px] p-6">
+                        <div className="translate dark:bg-dark relative flex h-full w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto">
+                            <div className="relative flex flex-shrink-0 items-center justify-center rounded-t border-b-[1px] p-6">
                                 <button
                                     className="absolute left-9 border-0 p-1 text-black transition hover:opacity-70 dark:text-neutral-100"
                                     onClick={handleClose}
@@ -130,10 +123,10 @@ const Modal: React.FC<ModalProps> = ({
                                     {topButton}
                                 </div>
                             </div>
-                            <div className="relative flex-auto p-6 text-black dark:text-neutral-100">
+                            <div className="relative min-h-0 flex-auto overflow-y-auto p-6 text-black dark:text-neutral-100">
                                 {body}
                             </div>
-                            <div className="flex flex-col gap-2 p-6">
+                            <div className="flex flex-shrink-0 flex-col gap-2 border-t border-gray-200 p-6 dark:border-neutral-600">
                                 <div className="flex w-full flex-row items-center gap-4">
                                     {secondaryAction &&
                                         secondaryActionLabel && (
