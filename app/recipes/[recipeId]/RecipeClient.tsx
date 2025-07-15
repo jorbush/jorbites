@@ -10,7 +10,7 @@ import Container from '@/app/components/utils/Container';
 import { categories } from '@/app/components/navbar/Categories';
 import RecipeHead from '@/app/components/recipes/RecipeHead';
 import RecipeInfo from '@/app/components/recipes/RecipeInfo';
-import { preparationMethods } from '@/app/components/modals/RecipeModal';
+import { preparationMethods } from '@/app/components/modals/recipe-steps/MethodsStep';
 import Comments from '@/app/components/comments/Comments';
 import DeleteRecipeButton from '@/app/components/recipes/DeleteRecipeButton';
 import { useTranslation } from 'react-i18next';

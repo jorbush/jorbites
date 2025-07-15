@@ -3,31 +3,21 @@
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
-import Heading from '@/app/components/navigation/Heading';
-import { categories } from '@/app/components/navbar/Categories';
-import CategoryInput from '@/app/components/inputs/CategoryInput';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import Button from '@/app/components/buttons/Button';
-import { AiFillDelete } from 'react-icons/ai';
-import Input from '@/app/components/inputs/Input';
-import Counter from '@/app/components/inputs/Counter';
-import ImageUpload from '@/app/components/inputs/ImageUpload';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import { GiCookingPot, GiPressureCooker } from 'react-icons/gi';
-import { MdMicrowave } from 'react-icons/md';
-import { TbCooker } from 'react-icons/tb';
-import { CgSmartHomeCooker } from 'react-icons/cg';
 import { useTranslation } from 'react-i18next';
 import { FiUploadCloud } from 'react-icons/fi';
 import { SafeUser } from '@/app/types';
 import RelatedContentStep from '@/app/components/modals/recipe-steps/RelatedContentStep';
+import CategoryStep from '@/app/components/modals/recipe-steps/CategoryStep';
+import DescriptionStep from '@/app/components/modals/recipe-steps/DescriptionStep';
+import IngredientsStep from '@/app/components/modals/recipe-steps/IngredientsStep';
+import MethodsStep from '@/app/components/modals/recipe-steps/MethodsStep';
+import RecipeStepsStep from '@/app/components/modals/recipe-steps/RecipeStepsStep';
+import ImagesStep from '@/app/components/modals/recipe-steps/ImagesStep';
 import {
-    RECIPE_TITLE_MAX_LENGTH,
-    RECIPE_DESCRIPTION_MAX_LENGTH,
-    RECIPE_INGREDIENT_MAX_LENGTH,
-    RECIPE_STEP_MAX_LENGTH,
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
 } from '@/app/utils/constants';
@@ -42,29 +32,6 @@ enum STEPS {
     RELATED_CONTENT = 5,
     IMAGES = 6,
 }
-
-export const preparationMethods = [
-    {
-        label: 'Frying pan',
-        icon: GiCookingPot,
-    },
-    {
-        label: 'Microwave',
-        icon: MdMicrowave,
-    },
-    {
-        label: 'Air fryer',
-        icon: GiPressureCooker,
-    },
-    {
-        label: 'Deep fryer',
-        icon: CgSmartHomeCooker,
-    },
-    {
-        label: 'Oven',
-        icon: TbCooker,
-    },
-];
 
 interface RecipeModalProps {
     currentUser?: SafeUser | null;
@@ -187,16 +154,16 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         // Collect ingredients
         const newIngredients: string[] = [];
         for (let i = 0; i < numIngredients; i++) {
-            if (watch('ingredient ' + i) !== '') {
-                newIngredients.push(watch('ingredient ' + i));
+            if (watch(`ingredient-${i}`) !== '') {
+                newIngredients.push(watch(`ingredient-${i}`));
             }
         }
 
         // Collect steps
         const newSteps: string[] = [];
         for (let i = 0; i < numSteps; i++) {
-            if (watch('step ' + i) !== '') {
-                newSteps.push(watch('step ' + i));
+            if (watch(`step-${i}`) !== '') {
+                newSteps.push(watch(`step-${i}`));
             }
         }
 
@@ -244,11 +211,11 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             setNumSteps(data.steps?.length || 1);
             const ingredients = formData.ingredients || [];
             ingredients.forEach((ingredient: string, index: number) => {
-                setValue(`ingredient ${index}`, ingredient);
+                setValue(`ingredient-${index}`, ingredient);
             });
             const steps = formData.steps || [];
             steps.forEach((step: string, index: number) => {
-                setValue(`step ${index}`, step);
+                setValue(`step-${index}`, step);
             });
 
             if (formData.coCooksIds?.length > 0) {
@@ -314,8 +281,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         if (step === STEPS.INGREDIENTS) {
             const newIngredients: string[] = [];
             for (let i = 0; i < numIngredients; i++) {
-                if (watch('ingredient ' + i) !== '') {
-                    newIngredients.push(watch('ingredient ' + i));
+                if (watch(`ingredient-${i}`) !== '') {
+                    newIngredients.push(watch(`ingredient-${i}`));
                 }
             }
             setCustomValue('ingredients', newIngredients);
@@ -323,8 +290,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         if (step === STEPS.STEPS) {
             const newSteps: string[] = [];
             for (let i = 0; i < numSteps; i++) {
-                if (watch('step ' + i) !== '') {
-                    newSteps.push(watch('step ' + i));
+                if (watch(`step-${i}`) !== '') {
+                    newSteps.push(watch(`step-${i}`));
                 }
             }
             setCustomValue('steps', newSteps);
@@ -397,7 +364,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const removeIngredientInput = (index: number) => {
         setNumIngredients((value) => value - 1);
-        setCustomValue('ingredient ' + index, '');
+        setCustomValue(`ingredient-${index}`, '');
     };
 
     const addStepInput = () => {
@@ -413,87 +380,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const removeStepInput = (index: number) => {
         setNumSteps((value) => value - 1);
-        setCustomValue('step ' + index, '');
-    };
-
-    const renderStepsInput = () => {
-        const components = [];
-        for (let i = 0; i < numSteps; i++) {
-            components.push(
-                <div
-                    key={i}
-                    className="relative flex w-full items-center gap-3 px-2"
-                >
-                    <div className="shrink-0 text-base">{`${i + 1}.`}</div>
-
-                    <div className="grow">
-                        <Input
-                            id={'step ' + i}
-                            label=""
-                            register={register}
-                            errors={errors}
-                            required={numSteps === 1}
-                            maxLength={RECIPE_STEP_MAX_LENGTH}
-                            dataCy={`recipe-step-${i}`}
-                        />
-                    </div>
-                    {numSteps > 1 && i === numSteps - 1 ? (
-                        <div className="shrink-0">
-                            <AiFillDelete
-                                data-testid="remove-step-button"
-                                color="#F43F5F"
-                                onClick={() => {
-                                    removeStepInput(i);
-                                }}
-                                size={24}
-                            />
-                        </div>
-                    ) : (
-                        <div className="w-6 shrink-0" />
-                    )}
-                </div>
-            );
-        }
-        return components;
-    };
-
-    const renderIngredientInput = () => {
-        const components = [];
-        for (let i = 0; i < numIngredients; i++) {
-            components.push(
-                <div
-                    key={i}
-                    className="relative flex w-full items-center gap-3 px-2"
-                >
-                    <div className="grow">
-                        <Input
-                            id={'ingredient ' + i}
-                            label=""
-                            register={register}
-                            errors={errors}
-                            required={numIngredients === 1}
-                            maxLength={RECIPE_INGREDIENT_MAX_LENGTH}
-                            dataCy={`recipe-ingredient-${i}`}
-                        />
-                    </div>
-                    {numIngredients > 1 && i === numIngredients - 1 ? (
-                        <div className="shrink-0">
-                            <AiFillDelete
-                                data-testid="remove-ingredient-button"
-                                color="#F43F5F"
-                                onClick={() => {
-                                    removeIngredientInput(i);
-                                }}
-                                size={24}
-                            />
-                        </div>
-                    ) : (
-                        <div className="w-6 shrink-0" />
-                    )}
-                </div>
-            );
-        }
-        return components;
+        setCustomValue(`step-${index}`, '');
     };
 
     const actionLabel = useMemo(() => {
@@ -511,139 +398,58 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     }, [step, t]);
 
     let bodyContent = (
-        <div className="flex flex-col gap-8">
-            <Heading
-                title={t('title_category_recipe')}
-                subtitle={t('subtitle_category_recipe') ?? ''}
-            />
-            <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-y-auto">
-                {categories
-                    .filter(
-                        (item) => item.label.toLowerCase() !== 'award-winning'
-                    )
-                    .map((item) => (
-                        <div
-                            key={item.label}
-                            className="col-span-1"
-                        >
-                            <CategoryInput
-                                onClick={(category) =>
-                                    setCustomValue('category', category)
-                                }
-                                selected={category === item.label}
-                                label={item.label}
-                                icon={item.icon}
-                                dataCy={`category-box-${item.label}`}
-                            />
-                        </div>
-                    ))}
-            </div>
-        </div>
+        <CategoryStep
+            selectedCategory={category}
+            onCategorySelect={(selectedCategory) =>
+                setCustomValue('category', selectedCategory)
+            }
+        />
     );
 
     if (step === STEPS.INGREDIENTS) {
         bodyContent = (
-            <div className="flex flex-col gap-8">
-                <Heading title={t('title_ingredients')} />
-                <div className="flex max-h-[50vh] flex-col gap-3 overflow-y-auto">
-                    {renderIngredientInput()}
-                </div>
-                <Button
-                    outline={true}
-                    label="+"
-                    onClick={() => {
-                        addIngredientInput();
-                    }}
-                    dataCy="add-ingredient-button"
-                />
-            </div>
+            <IngredientsStep
+                numIngredients={numIngredients}
+                register={register}
+                errors={errors}
+                onAddIngredient={addIngredientInput}
+                onRemoveIngredient={removeIngredientInput}
+            />
         );
     }
 
     if (step === STEPS.STEPS) {
         bodyContent = (
-            <div className="flex flex-col gap-8">
-                <Heading title={t('title_steps')} />
-                <div className="flex max-h-[50vh] flex-col gap-3 overflow-y-auto">
-                    {renderStepsInput()}
-                </div>
-                <Button
-                    outline={true}
-                    label="+"
-                    onClick={() => {
-                        addStepInput();
-                    }}
-                    dataCy="add-step-button"
-                />
-            </div>
+            <RecipeStepsStep
+                numSteps={numSteps}
+                register={register}
+                errors={errors}
+                onAddStep={addStepInput}
+                onRemoveStep={removeStepInput}
+            />
         );
     }
 
     if (step === STEPS.DESCRIPTION) {
         bodyContent = (
-            <div className="flex flex-col gap-8">
-                <Heading
-                    title={t('title_description')}
-                    subtitle={t('subtitle_description') ?? ''}
-                />
-                <Input
-                    id="title"
-                    label={t('title')}
-                    disabled={isLoading}
-                    register={register}
-                    errors={errors}
-                    required
-                    maxLength={RECIPE_TITLE_MAX_LENGTH}
-                    dataCy="recipe-title"
-                />
-                <hr />
-                <Input
-                    id="description"
-                    label={t('description')}
-                    disabled={isLoading}
-                    register={register}
-                    errors={errors}
-                    required
-                    maxLength={RECIPE_DESCRIPTION_MAX_LENGTH}
-                    dataCy="recipe-description"
-                />
-                <hr />
-                <Counter
-                    title={t('minutes')}
-                    subtitle={t('minutes_subtitle')}
-                    value={minutes}
-                    onChange={(value) => setCustomValue('minutes', value)}
-                />
-            </div>
+            <DescriptionStep
+                isLoading={isLoading}
+                register={register}
+                errors={errors}
+                minutes={minutes}
+                onMinutesChange={(value) => setCustomValue('minutes', value)}
+            />
         );
     }
 
     if (step == STEPS.METHODS) {
         bodyContent = (
-            <div className="flex flex-col gap-8">
-                <Heading
-                    title={t('methods_title')}
-                    subtitle={t('methods_subtitle') ?? ''}
-                />
-                <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-y-auto">
-                    {preparationMethods.map((item) => (
-                        <div
-                            key={item.label}
-                            className="col-span-1"
-                        >
-                            <CategoryInput
-                                onClick={(method) =>
-                                    setCustomValue('method', method)
-                                }
-                                selected={method === item.label}
-                                label={item.label}
-                                icon={item.icon}
-                                dataCy={`method-box-${item.label}`}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <MethodsStep
+                selectedMethod={method}
+                onMethodSelect={(selectedMethod) =>
+                    setCustomValue('method', selectedMethod)
+                }
+            />
         );
     }
 
@@ -663,44 +469,13 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     if (step === STEPS.IMAGES) {
         bodyContent = (
-            <div className="flex flex-col gap-8">
-                <Heading
-                    title={t('images')}
-                    subtitle={t('images_subtitle') ?? ''}
-                />
-                <div className="grid grid-cols-2 gap-4">
-                    <ImageUpload
-                        data-testid="image-upload"
-                        value={imageSrc}
-                        onChange={(value) => setCustomValue('imageSrc', value)}
-                        canRemove={watch('imageSrc1') === ''}
-                        text={t('finished_recipe') ?? 'Finished recipe'}
-                    />
-                    <ImageUpload
-                        data-testid="image-upload-2"
-                        value={watch('imageSrc1')}
-                        onChange={(value) => setCustomValue('imageSrc1', value)}
-                        disabled={imageSrc === ''}
-                        canRemove={watch('imageSrc2') === ''}
-                        text={t('first_steps') ?? 'First steps'}
-                    />
-                    <ImageUpload
-                        data-testid="image-upload-3"
-                        value={watch('imageSrc2')}
-                        onChange={(value) => setCustomValue('imageSrc2', value)}
-                        disabled={watch('imageSrc1') === ''}
-                        canRemove={watch('imageSrc3') === ''}
-                        text={t('next_steps') ?? 'Next steps'}
-                    />
-                    <ImageUpload
-                        data-testid="image-upload-4"
-                        value={watch('imageSrc3')}
-                        onChange={(value) => setCustomValue('imageSrc3', value)}
-                        disabled={watch('imageSrc2') === ''}
-                        text={t('final_steps') ?? 'Final steps'}
-                    />
-                </div>
-            </div>
+            <ImagesStep
+                imageSrc={imageSrc}
+                imageSrc1={watch('imageSrc1')}
+                imageSrc2={watch('imageSrc2')}
+                imageSrc3={watch('imageSrc3')}
+                onImageChange={(field, value) => setCustomValue(field, value)}
+            />
         );
     }
 
