@@ -9,7 +9,7 @@ import {
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RecipeModal from '@/app/components/modals/RecipeModal';
 import { categories } from '@/app/components/navbar/Categories';
-import { preparationMethods } from '@/app/components/modals/RecipeModal';
+import { preparationMethods } from '@/app/components/modals/recipe-steps/MethodsStep';
 import {
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
