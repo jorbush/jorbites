@@ -50,7 +50,7 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
                 >
                     <div className="grow">
                         <Input
-                            id={'ingredient ' + i}
+                            id={`ingredient-${i}`}
                             label=""
                             register={register}
                             errors={errors}

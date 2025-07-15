@@ -136,7 +136,7 @@ describe('<RecipeStepsStep />', () => {
         render(<RecipeStepsStep {...mockProps} />);
 
         const firstStepField = screen.getByTestId(
-            'step 0-field'
+            'step-0-field'
         ) as HTMLInputElement;
         expect(firstStepField.required).toBe(true);
     });
@@ -150,10 +150,10 @@ describe('<RecipeStepsStep />', () => {
         render(<RecipeStepsStep {...propsWithMultipleSteps} />);
 
         const firstStepField = screen.getByTestId(
-            'step 0-field'
+            'step-0-field'
         ) as HTMLInputElement;
         const secondStepField = screen.getByTestId(
-            'step 1-field'
+            'step-1-field'
         ) as HTMLInputElement;
 
         expect(firstStepField.required).toBe(false);
@@ -239,7 +239,7 @@ describe('<RecipeStepsStep />', () => {
         render(<RecipeStepsStep {...mockProps} />);
 
         const stepField = screen.getByTestId(
-            'step 0-field'
+            'step-0-field'
         ) as HTMLInputElement;
         expect(stepField.maxLength).toBe(500);
     });

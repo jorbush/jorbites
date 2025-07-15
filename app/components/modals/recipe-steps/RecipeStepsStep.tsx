@@ -52,7 +52,7 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
 
                     <div className="grow">
                         <Input
-                            id={'step ' + i}
+                            id={`step-${i}`}
                             label=""
                             register={register}
                             errors={errors}
