@@ -154,16 +154,16 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         // Collect ingredients
         const newIngredients: string[] = [];
         for (let i = 0; i < numIngredients; i++) {
-            if (watch('ingredient ' + i) !== '') {
-                newIngredients.push(watch('ingredient ' + i));
+            if (watch(`ingredient-${i}`) !== '') {
+                newIngredients.push(watch(`ingredient-${i}`));
             }
         }
 
         // Collect steps
         const newSteps: string[] = [];
         for (let i = 0; i < numSteps; i++) {
-            if (watch('step ' + i) !== '') {
-                newSteps.push(watch('step ' + i));
+            if (watch(`step-${i}`) !== '') {
+                newSteps.push(watch(`step-${i}`));
             }
         }
 
@@ -211,11 +211,11 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             setNumSteps(data.steps?.length || 1);
             const ingredients = formData.ingredients || [];
             ingredients.forEach((ingredient: string, index: number) => {
-                setValue(`ingredient ${index}`, ingredient);
+                setValue(`ingredient-${index}`, ingredient);
             });
             const steps = formData.steps || [];
             steps.forEach((step: string, index: number) => {
-                setValue(`step ${index}`, step);
+                setValue(`step-${index}`, step);
             });
 
             if (formData.coCooksIds?.length > 0) {
@@ -281,8 +281,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         if (step === STEPS.INGREDIENTS) {
             const newIngredients: string[] = [];
             for (let i = 0; i < numIngredients; i++) {
-                if (watch('ingredient ' + i) !== '') {
-                    newIngredients.push(watch('ingredient ' + i));
+                if (watch(`ingredient-${i}`) !== '') {
+                    newIngredients.push(watch(`ingredient-${i}`));
                 }
             }
             setCustomValue('ingredients', newIngredients);
@@ -290,8 +290,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         if (step === STEPS.STEPS) {
             const newSteps: string[] = [];
             for (let i = 0; i < numSteps; i++) {
-                if (watch('step ' + i) !== '') {
-                    newSteps.push(watch('step ' + i));
+                if (watch(`step-${i}`) !== '') {
+                    newSteps.push(watch(`step-${i}`));
                 }
             }
             setCustomValue('steps', newSteps);
@@ -364,7 +364,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const removeIngredientInput = (index: number) => {
         setNumIngredients((value) => value - 1);
-        setCustomValue('ingredient ' + index, '');
+        setCustomValue(`ingredient-${index}`, '');
     };
 
     const addStepInput = () => {
@@ -380,7 +380,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const removeStepInput = (index: number) => {
         setNumSteps((value) => value - 1);
-        setCustomValue('step ' + index, '');
+        setCustomValue(`step-${index}`, '');
     };
 
     const actionLabel = useMemo(() => {

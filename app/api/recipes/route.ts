@@ -47,14 +47,12 @@ export async function POST(request: Request) {
             linkedRecipeIds,
         } = body;
 
-        // Validate required fields
         if (!title || !description) {
             return badRequest(
                 'Missing required fields: title and description are required'
             );
         }
 
-        // Validate field lengths
         if (title && title.length > RECIPE_TITLE_MAX_LENGTH) {
             return validationError(
                 `Title must be ${RECIPE_TITLE_MAX_LENGTH} characters or less`
@@ -67,7 +65,6 @@ export async function POST(request: Request) {
             );
         }
 
-        // Validate ingredients and steps count
         if (ingredients && ingredients.length > RECIPE_MAX_INGREDIENTS) {
             return validationError(
                 `Recipe cannot have more than ${RECIPE_MAX_INGREDIENTS} ingredients`
@@ -80,7 +77,6 @@ export async function POST(request: Request) {
             );
         }
 
-        // Validate ingredients and steps length
         if (ingredients) {
             for (const ingredient of ingredients) {
                 if (ingredient.length > RECIPE_INGREDIENT_MAX_LENGTH) {
