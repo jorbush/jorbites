@@ -450,5 +450,7 @@
     "new_password_must_be_different": "La nova contrasenya ha de ser diferent de l'actual",
     "save_password": "Guardar Contrasenya",
     "saving": "Guardant...",
-    "password_updated": "Contrasenya actualitzada correctament"
+    "password_updated": "Contrasenya actualitzada correctament",
+    "edit_recipe": "Editar Recepta",
+    "update": "Actualitzar"
 }

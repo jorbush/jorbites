@@ -445,5 +445,7 @@
     "new_password_must_be_different": "New password must be different from current password",
     "save_password": "Save Password",
     "saving": "Saving...",
-    "password_updated": "Password updated successfully"
+    "password_updated": "Password updated successfully",
+    "edit_recipe": "Edit Recipe",
+    "update": "Update"
 }

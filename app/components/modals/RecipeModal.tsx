@@ -1,6 +1,6 @@
 'use client';
 
-import useRecipeModal from '@/app/hooks/useRecipeModal';
+import useRecipeModal, { EditRecipeData } from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
@@ -46,6 +46,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const [numSteps, setNumSteps] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const hasLoadedDraft = useRef(false);
+    const hasLoadedEditData = useRef(false);
     const [selectedCoCooks, setSelectedCoCooks] = useState<any[]>([]);
     const [selectedLinkedRecipes, setSelectedLinkedRecipes] = useState<any[]>(
         []
@@ -256,14 +257,116 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
     };
 
+    const loadEditData = useCallback(
+        async (editData: EditRecipeData) => {
+            setIsLoading(true);
+            try {
+                reset({
+                    category: editData.category,
+                    method: editData.method,
+                    imageSrc: editData.imageSrc,
+                    imageSrc1: editData.imageSrc1 || '',
+                    imageSrc2: editData.imageSrc2 || '',
+                    imageSrc3: editData.imageSrc3 || '',
+                    title: editData.title,
+                    description: editData.description,
+                    ingredients: editData.ingredients,
+                    steps: editData.steps,
+                    minutes: editData.minutes,
+                    coCooksIds: editData.coCooksIds || [],
+                    linkedRecipeIds: editData.linkedRecipeIds || [],
+                });
+
+                setNumIngredients(editData.ingredients.length || 1);
+                setNumSteps(editData.steps.length || 1);
+
+                // Pre-populate ingredient and step fields
+                editData.ingredients.forEach(
+                    (ingredient: string, index: number) => {
+                        setValue(`ingredient-${index}`, ingredient);
+                    }
+                );
+                editData.steps.forEach((step: string, index: number) => {
+                    setValue(`step-${index}`, step);
+                });
+
+                // Set co-cooks and linked recipes if available
+                if (editData.coCooks) {
+                    setSelectedCoCooks(editData.coCooks);
+                }
+                if (editData.linkedRecipes) {
+                    setSelectedLinkedRecipes(editData.linkedRecipes);
+                }
+
+                setStep(STEPS.CATEGORY);
+            } catch (error) {
+                console.error('Failed to load edit data', error);
+                toast.error(
+                    t('error_loading_edit_data') ??
+                        'Failed to load recipe data.'
+                );
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        [reset, setValue, t]
+    );
+
     useEffect(() => {
-        if (currentUser && !hasLoadedDraft.current) {
+        if (!recipeModal.isOpen) {
+            // Reset form when modal closes to ensure clean state on next open
+            reset({
+                category: '',
+                method: '',
+                imageSrc: '',
+                imageSrc1: '',
+                imageSrc2: '',
+                imageSrc3: '',
+                title: '',
+                description: '',
+                ingredients: [],
+                steps: [],
+                minutes: 30,
+                coCooksIds: [],
+                linkedRecipeIds: [],
+            });
+            setStep(STEPS.CATEGORY);
+            setNumIngredients(1);
+            setNumSteps(1);
+            setSelectedCoCooks([]);
+            setSelectedLinkedRecipes([]);
+            hasLoadedDraft.current = false;
+            hasLoadedEditData.current = false;
+        } else if (
+            recipeModal.isOpen &&
+            recipeModal.isEditMode &&
+            recipeModal.editRecipeData &&
+            !hasLoadedEditData.current
+        ) {
+            // Load edit data when opening in edit mode
+            hasLoadedEditData.current = true;
+            loadEditData(recipeModal.editRecipeData);
+        } else if (
+            recipeModal.isOpen &&
+            !recipeModal.isEditMode &&
+            currentUser &&
+            !hasLoadedDraft.current
+        ) {
+            // Load draft when opening in create mode
             hasLoadedDraft.current = true;
             loadDraft().then(() => {
                 console.log('Draft loaded');
             });
         }
-    }, [currentUser, loadDraft]);
+    }, [
+        recipeModal.isOpen,
+        recipeModal.isEditMode,
+        recipeModal.editRecipeData,
+        currentUser,
+        loadDraft,
+        loadEditData,
+        reset,
+    ]);
 
     const setCustomValue = (id: string, value: any) => {
         setValue(id, value, {
@@ -300,10 +403,14 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     };
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-        const url = `${window.location.origin}/api/recipes`;
-
         if (step !== STEPS.IMAGES) {
-            if (process.env.NODE_ENV === 'production') await saveDraft();
+            // Only save draft on recipe creation in production
+            if (
+                process.env.NODE_ENV === 'production' &&
+                !recipeModal.isEditMode
+            ) {
+                await saveDraft();
+            }
             return onNext();
         }
 
@@ -318,9 +425,19 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         setIsLoading(true);
 
         try {
-            await axios.post(url, data);
-            await deleteDraft();
-            toast.success(t('recipe_posted') ?? 'Recipe posted!');
+            if (recipeModal.isEditMode && recipeModal.editRecipeData) {
+                // Edit existing recipe
+                const url = `${window.location.origin}/api/recipe/${recipeModal.editRecipeData.id}`;
+                await axios.patch(url, data);
+                toast.success(t('recipe_updated') ?? 'Recipe updated!');
+            } else {
+                // Create new recipe
+                const url = `${window.location.origin}/api/recipes`;
+                await axios.post(url, data);
+                await deleteDraft();
+                toast.success(t('recipe_posted') ?? 'Recipe posted!');
+            }
+
             reset({
                 category: '',
                 method: '',
@@ -344,7 +461,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             recipeModal.onClose();
             router.refresh();
         } catch (error) {
-            console.error('Failed to post recipe', error);
+            console.error('Failed to save recipe', error);
             toast.error(t('something_went_wrong') ?? 'Something went wrong');
         } finally {
             setIsLoading(false);
@@ -385,10 +502,10 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const actionLabel = useMemo(() => {
         if (step === STEPS.IMAGES) {
-            return t('create');
+            return recipeModal.isEditMode ? t('update') : t('create');
         }
         return t('next');
-    }, [step, t]);
+    }, [step, t, recipeModal.isEditMode]);
 
     const secondaryActionLabel = useMemo(() => {
         if (step === STEPS.CATEGORY) {
@@ -487,15 +604,21 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             actionLabel={actionLabel}
             secondaryActionLabel={secondaryActionLabel}
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
-            title={t('post_recipe') ?? 'Post a recipe!'}
+            title={
+                recipeModal.isEditMode
+                    ? (t('edit_recipe') ?? 'Edit recipe')
+                    : (t('post_recipe') ?? 'Post a recipe')
+            }
             body={bodyContent}
             isLoading={isLoading}
             topButton={
-                <FiUploadCloud
-                    onClick={saveDraft}
-                    className="cursor-pointer text-2xl text-black transition hover:opacity-70 dark:text-neutral-100"
-                    data-testid="load-draft-button"
-                />
+                !recipeModal.isEditMode ? (
+                    <FiUploadCloud
+                        onClick={saveDraft}
+                        className="cursor-pointer text-2xl text-black transition hover:opacity-70 dark:text-neutral-100"
+                        data-testid="load-draft-button"
+                    />
+                ) : undefined
             }
         />
     );
