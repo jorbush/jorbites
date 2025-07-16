@@ -446,5 +446,7 @@
     "new_password_must_be_different": "La nueva contraseña debe ser diferente a la actual",
     "save_password": "Guardar Contraseña",
     "saving": "Guardando...",
-    "password_updated": "Contraseña actualizada exitosamente"
+    "password_updated": "Contraseña actualizada exitosamente",
+    "edit_recipe": "Editar Receta",
+    "update": "Actualizar"
 }

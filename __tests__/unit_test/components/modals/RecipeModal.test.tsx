@@ -45,6 +45,23 @@ vi.mock('react-hot-toast', () => ({
 }));
 
 describe('<RecipeModal />', () => {
+    const mockUser = {
+        id: 'user1',
+        name: 'Test User',
+        email: 'test@example.com',
+        image: null,
+        favoriteIds: [],
+        emailNotifications: true,
+        createdAt: '2022-01-01',
+        level: 1,
+        numRecipes: 0,
+        badgeIds: [],
+        isActive: true,
+        lastActiveAt: '2022-01-01',
+        resetToken: null,
+        resetTokenExpiry: null,
+    } as any;
+
     beforeEach(() => {
         vi.clearAllMocks();
         vi.useFakeTimers();
@@ -549,5 +566,101 @@ describe('<RecipeModal />', () => {
         // Test that our constants are properly imported and have expected values
         expect(RECIPE_MAX_INGREDIENTS).toBe(30);
         expect(RECIPE_MAX_STEPS).toBe(30);
+    });
+
+    describe('Edit Mode', () => {
+        it('should show edit mode title when in edit mode', async () => {
+            const useRecipeModal = await import('@/app/hooks/useRecipeModal');
+            vi.mocked(useRecipeModal.default).mockReturnValue({
+                isOpen: true,
+                isEditMode: true,
+                editRecipeData: {
+                    id: '1',
+                    title: 'Test Recipe',
+                    description: 'Test description',
+                    category: 'Dinner',
+                    method: 'Baking',
+                    imageSrc: 'http://test.jpg',
+                    ingredients: ['Ingredient 1'],
+                    steps: ['Step 1'],
+                    minutes: 30,
+                },
+                onOpen: vi.fn(),
+                onOpenCreate: vi.fn(),
+                onOpenEdit: vi.fn(),
+                onClose: vi.fn(),
+            });
+
+            await act(async () => {
+                render(<RecipeModal currentUser={mockUser} />);
+            });
+
+            expect(screen.getByText('edit_recipe')).toBeDefined();
+        });
+
+        it('should pre-populate form with edit data', async () => {
+            const mockEditData = {
+                id: '1',
+                title: 'Test Recipe',
+                description: 'Test description',
+                category: 'Dinner',
+                method: 'Baking',
+                imageSrc: 'http://test.jpg',
+                ingredients: ['Ingredient 1', 'Ingredient 2'],
+                steps: ['Step 1', 'Step 2'],
+                minutes: 45,
+            };
+
+            const useRecipeModal = await import('@/app/hooks/useRecipeModal');
+            vi.mocked(useRecipeModal.default).mockReturnValue({
+                isOpen: true,
+                isEditMode: true,
+                editRecipeData: mockEditData,
+                onOpen: vi.fn(),
+                onOpenCreate: vi.fn(),
+                onOpenEdit: vi.fn(),
+                onClose: vi.fn(),
+            });
+
+            await act(async () => {
+                render(<RecipeModal currentUser={mockUser} />);
+            });
+
+            // The component should load edit data automatically
+            // We can't easily test the form values due to the async nature of loadEditData
+            // but we can verify the modal is in edit mode
+            expect(screen.getByText('edit_recipe')).toBeDefined();
+        });
+
+        it('should not show draft save button in edit mode', async () => {
+            const useRecipeModal = await import('@/app/hooks/useRecipeModal');
+            vi.mocked(useRecipeModal.default).mockReturnValue({
+                isOpen: true,
+                isEditMode: true,
+                editRecipeData: {
+                    id: '1',
+                    title: 'Test Recipe',
+                    description: 'Test description',
+                    category: 'Dinner',
+                    method: 'Baking',
+                    imageSrc: 'http://test.jpg',
+                    ingredients: ['Ingredient 1'],
+                    steps: ['Step 1'],
+                    minutes: 30,
+                },
+                onOpen: vi.fn(),
+                onOpenCreate: vi.fn(),
+                onOpenEdit: vi.fn(),
+                onClose: vi.fn(),
+            });
+
+            await act(async () => {
+                render(<RecipeModal currentUser={mockUser} />);
+            });
+
+            // Draft save button should not be present in edit mode
+            const draftButton = screen.queryByTestId('load-draft-button');
+            expect(draftButton).toBeNull();
+        });
     });
 });

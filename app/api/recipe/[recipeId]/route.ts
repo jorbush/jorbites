@@ -12,7 +12,16 @@ import {
     forbidden,
     notFound,
     internalServerError,
+    validationError,
 } from '@/app/utils/apiErrors';
+import {
+    RECIPE_TITLE_MAX_LENGTH,
+    RECIPE_DESCRIPTION_MAX_LENGTH,
+    RECIPE_INGREDIENT_MAX_LENGTH,
+    RECIPE_STEP_MAX_LENGTH,
+    RECIPE_MAX_INGREDIENTS,
+    RECIPE_MAX_STEPS,
+} from '@/app/utils/constants';
 
 interface IParams {
     recipeId?: string;
@@ -103,6 +112,131 @@ export async function POST(
     } catch (error) {
         console.error('Error updating recipe likes:', error);
         return internalServerError('Failed to update recipe likes');
+    }
+}
+
+export async function PATCH(
+    request: Request,
+    props: { params: Promise<IParams> }
+) {
+    try {
+        const params = await props.params;
+        const currentUser = await getCurrentUser();
+
+        if (!currentUser) {
+            return unauthorized('User authentication required to edit recipe');
+        }
+
+        const { recipeId } = params;
+
+        if (!recipeId || typeof recipeId !== 'string') {
+            return invalidInput(
+                'Recipe ID is required and must be a valid string'
+            );
+        }
+
+        const recipe = await getRecipeById({ recipeId });
+
+        if (!recipe) {
+            return notFound('Recipe not found');
+        }
+
+        if (recipe.userId !== currentUser.id) {
+            return forbidden('You can only edit your own recipes');
+        }
+
+        const body = await request.json();
+        const {
+            title,
+            description,
+            imageSrc,
+            category,
+            method,
+            ingredients,
+            steps,
+            minutes,
+            imageSrc1,
+            imageSrc2,
+            imageSrc3,
+            coCooksIds,
+            linkedRecipeIds,
+        } = body;
+
+        if (!title || !description) {
+            return badRequest(
+                'Missing required fields: title and description are required'
+            );
+        }
+
+        if (title && title.length > RECIPE_TITLE_MAX_LENGTH) {
+            return validationError(
+                `Title must be ${RECIPE_TITLE_MAX_LENGTH} characters or less`
+            );
+        }
+
+        if (description && description.length > RECIPE_DESCRIPTION_MAX_LENGTH) {
+            return validationError(
+                `Description must be ${RECIPE_DESCRIPTION_MAX_LENGTH} characters or less`
+            );
+        }
+
+        if (ingredients && ingredients.length > RECIPE_MAX_INGREDIENTS) {
+            return validationError(
+                `Recipe cannot have more than ${RECIPE_MAX_INGREDIENTS} ingredients`
+            );
+        }
+
+        if (steps && steps.length > RECIPE_MAX_STEPS) {
+            return validationError(
+                `Recipe cannot have more than ${RECIPE_MAX_STEPS} steps`
+            );
+        }
+
+        if (ingredients) {
+            for (const ingredient of ingredients) {
+                if (ingredient.length > RECIPE_INGREDIENT_MAX_LENGTH) {
+                    return validationError(
+                        `Each ingredient must be ${RECIPE_INGREDIENT_MAX_LENGTH} characters or less`
+                    );
+                }
+            }
+        }
+
+        if (steps) {
+            for (const step of steps) {
+                if (step.length > RECIPE_STEP_MAX_LENGTH) {
+                    return validationError(
+                        `Each step must be ${RECIPE_STEP_MAX_LENGTH} characters or less`
+                    );
+                }
+            }
+        }
+
+        const extraImages = [imageSrc1, imageSrc2, imageSrc3].filter(Boolean);
+
+        const updatedRecipe = await prisma.recipe.update({
+            where: {
+                id: recipeId,
+            },
+            data: {
+                title,
+                description,
+                imageSrc,
+                category,
+                method,
+                ingredients,
+                steps,
+                minutes,
+                extraImages,
+                coCooksIds: coCooksIds || [],
+                linkedRecipeIds: linkedRecipeIds || [],
+            },
+        });
+
+        return NextResponse.json(updatedRecipe);
+    } catch (error) {
+        console.error('Error updating recipe:', error);
+        return internalServerError('Failed to update recipe');
     }
 }
 
