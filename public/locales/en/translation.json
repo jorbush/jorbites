@@ -447,5 +447,6 @@
     "saving": "Saving...",
     "password_updated": "Password updated successfully",
     "edit_recipe": "Edit Recipe",
-    "update": "Update"
+    "update": "Update",
+    "recipe_updated": "Recipe updated!"
 }

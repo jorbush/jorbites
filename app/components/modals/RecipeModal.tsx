@@ -429,13 +429,13 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 // Edit existing recipe
                 const url = `${window.location.origin}/api/recipe/${recipeModal.editRecipeData.id}`;
                 await axios.patch(url, data);
-                toast.success(t('recipe_updated') ?? 'Recipe updated!');
+                toast.success(t('recipe_updated'));
             } else {
                 // Create new recipe
                 const url = `${window.location.origin}/api/recipes`;
                 await axios.post(url, data);
                 await deleteDraft();
-                toast.success(t('recipe_posted') ?? 'Recipe posted!');
+                toast.success(t('recipe_posted'));
             }
 
             reset({

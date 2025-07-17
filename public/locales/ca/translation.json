@@ -452,5 +452,6 @@
     "saving": "Guardant...",
     "password_updated": "Contrasenya actualitzada correctament",
     "edit_recipe": "Editar Recepta",
-    "update": "Actualitzar"
+    "update": "Actualitzar",
+    "recipe_updated": "Recepta actualitzada!"
 }

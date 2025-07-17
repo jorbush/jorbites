@@ -448,5 +448,6 @@
     "saving": "Guardando...",
     "password_updated": "Contraseña actualizada exitosamente",
     "edit_recipe": "Editar Receta",
-    "update": "Actualizar"
+    "update": "Actualizar",
+    "recipe_updated": "Receta actualizada!"
 }
