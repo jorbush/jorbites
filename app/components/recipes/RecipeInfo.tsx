@@ -240,7 +240,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                     key={recipe.id}
                                     data={recipe}
                                     currentUser={currentUser}
-                                    user={recipe.user} // TODO: add this to the recipe card
+                                    user={recipe.user}
                                 />
                             ))}
                         </div>
