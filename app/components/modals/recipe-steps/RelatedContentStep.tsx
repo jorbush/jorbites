@@ -11,7 +11,7 @@ import Tabs, { Tab } from '@/app/components/utils/Tabs';
 import { FiSearch, FiUsers } from 'react-icons/fi';
 import { AiFillDelete } from 'react-icons/ai';
 import { IoRestaurantOutline } from 'react-icons/io5';
-import Image from 'next/image';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import debounce from 'lodash/debounce';
 
 interface RelatedContentStepProps {
@@ -211,7 +211,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                     >
                                         <div className="flex items-center gap-2">
                                             <div className="relative h-10 w-10 overflow-hidden rounded-md">
-                                                <Image
+                                                <CustomProxyImage
                                                     src={
                                                         recipe.imageSrc ||
                                                         '/avocado.webp'
@@ -219,6 +219,9 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                                     fill
                                                     className="object-cover"
                                                     alt={recipe.title}
+                                                    quality="auto:eco"
+                                                    width={40}
+                                                    height={40}
                                                 />
                                             </div>
                                             <div>
