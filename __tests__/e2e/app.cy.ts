@@ -20,7 +20,9 @@ describe('Jorbites E2E Tests', () => {
         cy.get('[data-cy="user-menu"]').click();
         cy.get('[data-cy="user-menu-login"]').should('be.visible').click();
         cy.get('[data-cy="login-email"]').type(Cypress.env('userTestEmail'));
-        cy.get('[data-cy="login-password"]').type(Cypress.env('userTestPassword'));
+        cy.get('[data-cy="login-password"]').type(
+            Cypress.env('userTestPassword')
+        );
         cy.get('[data-cy="modal-action-button"]').click();
         cy.get('body').should('not.contain', 'Invalid credentials');
         cy.get('[data-cy="login-modal"]').should('not.exist');
@@ -38,7 +40,9 @@ describe('Jorbites E2E Tests', () => {
 
         // Fill description step
         cy.get('[data-cy="recipe-title"]').type('E2E Test Recipe');
-        cy.get('[data-cy="recipe-description"]').type('E2E Test description for consolidated testing');
+        cy.get('[data-cy="recipe-description"]').type(
+            'E2E Test description for consolidated testing'
+        );
         cy.task('log', 'Description step filled');
         cy.get('[data-cy="modal-action-button"]').click();
 
@@ -85,24 +89,35 @@ describe('Jorbites E2E Tests', () => {
         cy.get('[data-cy="heart-button"]').click();
         cy.get('[class^="go"]').should('be.visible');
         cy.wait(2000);
-        cy.get('[data-testid="heart-button"]').should('have.class', 'fill-green-450');
+        cy.get('[data-testid="heart-button"]').should(
+            'have.class',
+            'fill-green-450'
+        );
         cy.get('[data-cy="recipe-num-likes"]').should('have.text', '1');
 
         // Unlike the recipe
         cy.wait(2000);
         cy.get('[data-cy="heart-button"]').click();
         cy.wait(2000);
-        cy.get('[data-testid="heart-button"]').should('not.have.class', 'fill-green-450');
+        cy.get('[data-testid="heart-button"]').should(
+            'not.have.class',
+            'fill-green-450'
+        );
         cy.get('[data-cy="recipe-num-likes"]').should('have.text', '0');
 
         // Test 5: Comments functionality
         cy.log('=== Testing Comments ===');
         // Add a comment
-        cy.get('[data-cy="comment-input"]').type('E2E test comment for verification');
+        cy.get('[data-cy="comment-input"]').type(
+            'E2E test comment for verification'
+        );
         cy.get('[data-cy="submit-comment"]').click();
         cy.get('[class^="go"]').should('be.visible');
         cy.wait(2000);
-        cy.get('[data-cy="comment-text"]').should('have.text', 'E2E test comment for verification');
+        cy.get('[data-cy="comment-text"]').should(
+            'have.text',
+            'E2E test comment for verification'
+        );
 
         // Delete the comment
         cy.get('[data-testid="MdDelete"]').click();
@@ -121,13 +136,19 @@ describe('Jorbites E2E Tests', () => {
         cy.get('[data-cy="modal-action-button"]').click(); // Next from category
 
         // Edit the title and description
-        cy.get('[data-cy="recipe-title"]').clear().type('E2E Edited Recipe Title');
-        cy.get('[data-cy="recipe-description"]').clear().type('E2E Edited description for testing');
+        cy.get('[data-cy="recipe-title"]')
+            .clear()
+            .type('E2E Edited Recipe Title');
+        cy.get('[data-cy="recipe-description"]')
+            .clear()
+            .type('E2E Edited description for testing');
         cy.task('log', 'Title and description edited');
         cy.get('[data-cy="modal-action-button"]').click(); // Next from description
 
         // Edit ingredients
-        cy.get('[data-cy="recipe-ingredient-0"]').clear().type('E2E Edited ingredient 1');
+        cy.get('[data-cy="recipe-ingredient-0"]')
+            .clear()
+            .type('E2E Edited ingredient 1');
         cy.task('log', 'Ingredients edited');
         cy.get('[data-cy="modal-action-button"]').click(); // Next from ingredients
 
@@ -157,7 +178,9 @@ describe('Jorbites E2E Tests', () => {
         cy.get('[data-cy="delete-recipe"]').click();
         cy.task('log', 'Delete button clicked');
         cy.get('.text-start > .mt-2').then(($el) => {
-            cy.get('[data-cy="delete-confirmation-text"]').type($el.text().slice(1, -1));
+            cy.get('[data-cy="delete-confirmation-text"]').type(
+                $el.text().slice(1, -1)
+            );
         });
         cy.task('log', 'Confirm Text filled');
         cy.get('[data-cy="modal-action-button"]').click();
