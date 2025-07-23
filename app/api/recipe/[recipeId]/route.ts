@@ -4,6 +4,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import getRecipeById from '@/app/actions/getRecipeById';
 import updateUserLevel from '@/app/actions/updateUserLevel';
+import { deleteMultipleFromCloudinary } from '@/app/utils/cloudinary';
 import { EmailType } from '@/app/types/email';
 import {
     unauthorized,
@@ -214,6 +215,40 @@ export async function PATCH(
 
         const extraImages = [imageSrc1, imageSrc2, imageSrc3].filter(Boolean);
 
+        const imagesToDelete: string[] = [];
+        if (recipe.imageSrc && recipe.imageSrc !== imageSrc) {
+            imagesToDelete.push(recipe.imageSrc);
+        }
+        const oldExtraImages = recipe.extraImages || [];
+        const newExtraImages = extraImages;
+        for (const oldImage of oldExtraImages) {
+            if (!newExtraImages.includes(oldImage)) {
+                imagesToDelete.push(oldImage);
+            }
+        }
+        if (imagesToDelete.length > 0) {
+            try {
+                const { successful, failed } =
+                    await deleteMultipleFromCloudinary(imagesToDelete);
+                if (successful.length > 0) {
+                    console.log(
+                        `Successfully deleted ${successful.length} old images from Cloudinary for recipe ${recipeId}`
+                    );
+                }
+                if (failed.length > 0) {
+                    console.warn(
+                        `Failed to delete ${failed.length} old images from Cloudinary for recipe ${recipeId}:`,
+                        failed
+                    );
+                }
+            } catch (error) {
+                console.error(
+                    'Error deleting old images from Cloudinary:',
+                    error
+                );
+            }
+        }
+
         const updatedRecipe = await prisma.recipe.update({
             where: {
                 id: recipeId,
@@ -270,6 +305,33 @@ export async function DELETE(
 
         if (recipe.userId !== currentUser.id) {
             return forbidden('You can only delete your own recipes');
+        }
+
+        const imageUrls: string[] = [];
+        if (recipe.imageSrc) {
+            imageUrls.push(recipe.imageSrc);
+        }
+        if (recipe.extraImages && recipe.extraImages.length > 0) {
+            imageUrls.push(...recipe.extraImages);
+        }
+        if (imageUrls.length > 0) {
+            try {
+                const { successful, failed } =
+                    await deleteMultipleFromCloudinary(imageUrls);
+                if (successful.length > 0) {
+                    console.log(
+                        `Successfully deleted ${successful.length} images from Cloudinary for recipe ${recipeId}`
+                    );
+                }
+                if (failed.length > 0) {
+                    console.warn(
+                        `Failed to delete ${failed.length} images from Cloudinary for recipe ${recipeId}:`,
+                        failed
+                    );
+                }
+            } catch (error) {
+                console.error('Error deleting images from Cloudinary:', error);
+            }
         }
 
         const deletedRecipe = await prisma.recipe.delete({
