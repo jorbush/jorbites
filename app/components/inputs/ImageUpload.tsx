@@ -62,14 +62,18 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                         )}
                         {value && (
                             <>
-                                <div className="absolute inset-0 h-full w-full">
+                                <div className="absolute inset-0 h-full w-full overflow-hidden rounded-lg">
                                     <CustomProxyImage
                                         fill
-                                        style={{
-                                            objectFit: 'cover',
-                                        }}
                                         src={value}
                                         alt="Upload"
+                                        className="!aspect-auto"
+                                        style={{
+                                            objectFit: 'cover',
+                                            width: '100%',
+                                            height: '100%',
+                                        }}
+                                        quality="auto:best"
                                     />
                                 </div>
 
