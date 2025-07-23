@@ -14,7 +14,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { CldUploadWidget } from 'next-cloudinary';
 import { FaRegSave } from 'react-icons/fa';
-import Image from 'next/image';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 
 interface ChangeUserImageProps {
     currentUser?: SafeUser | null;
@@ -87,21 +87,27 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                             <>
                                 {
                                     <div className="flex flex-row">
-                                        <Image
-                                            className="rounded-full"
-                                            style={{
-                                                objectFit: 'cover',
-                                                aspectRatio: '1/1',
-                                            }}
-                                            height="30"
-                                            width="30"
-                                            alt="Upload"
-                                            src={
-                                                newImage ||
-                                                '/images/placeholder.webp'
-                                            }
+                                        <div
+                                            className="cursor-pointer"
                                             onClick={() => open?.()}
-                                        />
+                                        >
+                                            <CustomProxyImage
+                                                src={
+                                                    newImage ||
+                                                    '/images/placeholder.webp'
+                                                }
+                                                alt="Upload"
+                                                width={60}
+                                                height={60}
+                                                circular
+                                                quality="auto:good"
+                                                style={{
+                                                    width: 30,
+                                                    height: 30,
+                                                    objectFit: 'cover',
+                                                }}
+                                            />
+                                        </div>
 
                                         {canSave && (
                                             <FaRegSave

@@ -81,7 +81,7 @@ describe('<ChangeUserImageSelector />', () => {
         const image = screen.getByAltText('Upload');
         expect(image).toHaveProperty(
             'src',
-            'http://localhost:3000/_next/image?url=https%3A%2F%2Fexample.com%2Fcurrent-image.jpg&w=64&q=75'
+            'https://example.com/current-image.jpg'
         );
     });
 
@@ -97,7 +97,7 @@ describe('<ChangeUserImageSelector />', () => {
         const image = screen.getByAltText('Upload');
         expect(image).toHaveProperty(
             'src',
-            'http://localhost:3000/_next/image?url=%2Fimages%2Fplaceholder.webp&w=64&q=75'
+            'http://localhost:3000/images/placeholder.webp'
         );
     });
 

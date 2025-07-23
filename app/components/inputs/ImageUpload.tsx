@@ -1,7 +1,7 @@
 'use client';
 
 import { CldUploadWidget } from 'next-cloudinary';
-import Image from 'next/image';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { useCallback } from 'react';
 import { TbPhotoPlus } from 'react-icons/tb';
 import { AiFillDelete } from 'react-icons/ai';
@@ -63,7 +63,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                         {value && (
                             <>
                                 <div className="absolute inset-0 h-full w-full">
-                                    <Image
+                                    <CustomProxyImage
                                         fill
                                         style={{
                                             objectFit: 'cover',

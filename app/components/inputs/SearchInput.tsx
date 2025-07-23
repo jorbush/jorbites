@@ -3,7 +3,7 @@
 import { IconType } from 'react-icons';
 import { Fragment } from 'react';
 import Avatar from '@/app/components/utils/Avatar';
-import Image from 'next/image';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { AiOutlinePlus } from 'react-icons/ai';
 import VerificationBadge from '@/app/components/VerificationBadge';
 
@@ -134,7 +134,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
                                       <Fragment>
                                           <div className="flex items-center gap-3">
                                               <div className="relative h-10 w-10 overflow-hidden rounded-md">
-                                                  <Image
+                                                  <CustomProxyImage
                                                       src={
                                                           result.imageSrc ||
                                                           '/avocado.webp'
@@ -145,6 +145,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
                                                           result.title ||
                                                           'Recipe'
                                                       }
+                                                      quality="auto:eco"
                                                   />
                                               </div>
                                               <div className="flex flex-col">
