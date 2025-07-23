@@ -44,6 +44,8 @@ GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
 # Cloudinary (Image Storage)
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_cloudinary_upload_preset
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
 # Upstash Redis (Rate Limiting & Draft Storage)
 UPSTASH_REDIS_REST_URL=your_upstash_redis_url
