@@ -98,7 +98,7 @@ const Modal: React.FC<ModalProps> = ({
         <>
             <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-neutral-800/70 outline-hidden focus:outline-hidden">
                 <div
-                    className={`relative mx-auto my-6 h-full max-h-[calc(100vh-3rem)] w-full md:h-auto md:max-h-[calc(100vh-6rem)] lg:h-auto ${insideModal ? 'md:w-5/6' : 'md:w-4/6 lg:w-3/6 xl:w-2/5'}`}
+                    className={`relative mx-auto h-full max-h-[100vh] w-full md:h-auto md:max-h-[calc(100vh-6rem)] lg:h-auto ${insideModal ? 'md:w-5/6' : 'md:w-4/6 lg:w-3/6 xl:w-2/5'}`}
                 >
                     <div
                         className={`translate h-full duration-300 ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'} `}
