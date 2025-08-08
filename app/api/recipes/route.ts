@@ -16,6 +16,7 @@ import {
     unauthorized,
     validationError,
     badRequest,
+    forbidden,
     conflict,
     internalServerError,
 } from '@/app/utils/apiErrors';
@@ -46,6 +47,15 @@ export async function POST(request: Request) {
             coCooksIds,
             linkedRecipeIds,
         } = body;
+
+        if (
+            typeof category === 'string' &&
+            category.toLowerCase() === 'award-winning'
+        ) {
+            return forbidden(
+                'The Award-winning category cannot be set via API'
+            );
+        }
 
         if (!title || !description) {
             return badRequest(
