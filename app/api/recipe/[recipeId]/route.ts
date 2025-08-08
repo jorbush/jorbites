@@ -166,7 +166,7 @@ export async function PATCH(
         if (
             typeof category === 'string' &&
             category.toLowerCase() === 'award-winning' &&
-            recipe.category.toLowerCase() !== 'award-winning'
+            recipe.category?.toLowerCase() !== 'award-winning'
         ) {
             return forbidden(
                 'The Award-winning category cannot be set via API'
