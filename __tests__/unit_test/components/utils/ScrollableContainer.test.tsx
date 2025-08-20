@@ -72,7 +72,7 @@ describe('<ScrollableContainer />', () => {
         expect(leftOverlay.className).toContain('top-0');
         expect(leftOverlay.className).toContain('left-0');
         expect(leftOverlay.className).toContain('h-full');
-        expect(leftOverlay.className).toContain('w-2');
+        expect(leftOverlay.className).toContain('w-1.5');
         expect(leftOverlay.className).toContain('bg-gradient-to-r');
         expect(leftOverlay.className).toContain('from-white');
         expect(leftOverlay.className).toContain('to-transparent');
@@ -84,7 +84,7 @@ describe('<ScrollableContainer />', () => {
         expect(rightOverlay.className).toContain('top-0');
         expect(rightOverlay.className).toContain('right-0');
         expect(rightOverlay.className).toContain('h-full');
-        expect(rightOverlay.className).toContain('w-2');
+        expect(rightOverlay.className).toContain('w-1.5');
         expect(rightOverlay.className).toContain('bg-gradient-to-l');
         expect(rightOverlay.className).toContain('from-white');
         expect(rightOverlay.className).toContain('to-transparent');
