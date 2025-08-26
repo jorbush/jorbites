@@ -10,7 +10,7 @@ description: Celebra l'Any Nou Xinès 2026 a Jorbites
 
 Celebrem l'Any Nou Xinès a Jorbites!
 
-Del 17 de febrer al 3 de març de 2026, uneix-te a la festa compartint receptes inspirades en les traditions del Nou Any Lunar. Des d'aliments simbòlics fins a dolços festius, mostra la teva creativitat culinària!
+Del 17 de febrer al 3 de març de 2026, uneix-te a la festa compartint receptes inspirades en les tradicions del Nou Any Lunar. Des d'aliments simbòlics fins a dolços festius, mostra la teva creativitat culinària!
 
 ### 🏮 Aconsegueix una medalla especial
 
