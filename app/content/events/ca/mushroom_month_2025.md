@@ -19,7 +19,7 @@ Tots els Jorbiters que publiquin una recepta que inclogui bolets com a ingredien
 ### 🍄 Idees de receptes per inspirar-te:
 
 - **Risotto de bolets silvestres**: Sabors terrosos en perfecció cremosa
-- **Estofat de bolets**: Menjar reconfortant a base de plantes en la seva màxima expressió
+- **Stroganoff de bolets**: Menjar reconfortant a base de plantes en la seva màxima expressió
 - **Portobellos farcits**: Tapes versàtils per farcits infinits
 - **Sopa de bolets**: Saborosa i reconfortant per dies més freds
 - **Tacos de bolets**: Menjar de carrer ple d'umami
