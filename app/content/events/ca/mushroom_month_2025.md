@@ -1,12 +1,12 @@
 ---
-title: 🍄 Repte del Mes dels Bolets 2025 🍄
+title: 🍄 Mes dels Bolets 2025 🍄
 date: 2025-09-01
 endDate: 2025-09-30T21:59:59
 image: /images/events/mushroom_month.webp
 description: Celebra el Mes Nacional dels Bolets amb receptes creatives de bolets
 ---
 
-# 🍄 Repte del Mes dels Bolets 2025 🍄
+# 🍄 Mes dels Bolets 2025 🍄
 
 Celebrem el Mes Nacional dels Bolets a Jorbites!
 

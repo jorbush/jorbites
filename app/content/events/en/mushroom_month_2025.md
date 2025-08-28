@@ -1,12 +1,12 @@
 ---
-title: 🍄 Mushroom Month Challenge 2025 🍄
+title: 🍄 Mushroom Month 2025 🍄
 date: 2025-09-01
 endDate: 2025-09-30T21:59:59
 image: /images/events/mushroom_month.webp
 description: Celebrate National Mushroom Month with creative mushroom recipes
 ---
 
-# 🍄 Mushroom Month Challenge 2025 🍄
+# 🍄 Mushroom Month 2025 🍄
 
 Celebrate National Mushroom Month on Jorbites!
 

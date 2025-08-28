@@ -1,12 +1,12 @@
 ---
-title: 🍄 Desafío del Mes de las Setas 2025 🍄
+title: 🍄 Mes de las Setas 2025 🍄
 date: 2025-09-01
 endDate: 2025-09-30T21:59:59
 image: /images/events/mushroom_month.webp
 description: Celebra el Mes Nacional de las Setas con recetas creativas de setas
 ---
 
-# 🍄 Desafío del Mes de las Setas 2025 🍄
+# 🍄 Mes de las Setas 2025 🍄
 
 ¡Celebremos el Mes Nacional de las Setas en Jorbites!
 
