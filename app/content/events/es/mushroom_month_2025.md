@@ -19,7 +19,7 @@ Todos los Jorbiters que publiquen una receta que incluya setas como ingrediente 
 ### 🍄 Ideas de recetas para inspirarte:
 
 - **Risotto de setas silvestres**: Sabores terrosos en perfección cremosa
-- **Estofado de setas**: Comida reconfortante a base de plantas en su máxima expresión
+- **Stroganoff de setas**: Comida reconfortante a base de plantas en su máxima expresión
 - **Portobellos rellenos**: Tapas versátiles para rellenos infinitos
 - **Sopa de setas**: Sabrosa y reconfortante para días más fríos
 - **Tacos de setas**: Comida callejera llena de umami
