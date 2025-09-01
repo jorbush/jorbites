@@ -1,7 +1,7 @@
 ---
 title: 🍔 Campionat de Hamburgueses Jorbites 1 🍔
-date: 2025-10-14
-endDate: 2025-10-14T21:59:59
+date: 2025-09-27
+endDate: 2025-09-27T20:59:59
 image: /images/events/first_burger_championship.webp
 description: Campionat de Hamburgueses Jorbites 1
 ---
