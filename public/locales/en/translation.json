@@ -448,5 +448,6 @@
     "password_updated": "Password updated successfully",
     "edit_recipe": "Edit Recipe",
     "update": "Update",
-    "recipe_updated": "Recipe updated!"
+    "recipe_updated": "Recipe updated!",
+    "text_does_not_match": "The text does not match"
 }

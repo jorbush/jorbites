@@ -449,5 +449,6 @@
     "password_updated": "Contraseña actualizada exitosamente",
     "edit_recipe": "Editar Receta",
     "update": "Actualizar",
-    "recipe_updated": "Receta actualizada!"
+    "recipe_updated": "Receta actualizada!",
+    "text_does_not_match": "El texto no coincide"
 }

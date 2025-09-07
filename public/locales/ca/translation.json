@@ -453,5 +453,6 @@
     "password_updated": "Contrasenya actualitzada correctament",
     "edit_recipe": "Editar Recepta",
     "update": "Actualitzar",
-    "recipe_updated": "Recepta actualitzada!"
+    "recipe_updated": "Recepta actualitzada!",
+    "text_does_not_match": "El text no coincideix"
 }
