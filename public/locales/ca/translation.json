@@ -361,7 +361,6 @@
     "challenge_value_cuisine_provencal": "Provençal",
     "challenge_value_cuisine_yucatecan": "Yucateca",
     "challenge_value_cuisine_cantonese": "Cantonès",
-
     "challenge_value_recipe_pizza": "Pizza",
     "challenge_value_recipe_pasta": "Pasta",
     "challenge_value_recipe_burger": "Hamburguesa",
@@ -454,6 +453,7 @@
     "edit_recipe": "Editar Recepta",
     "update": "Actualitzar",
     "recipe_updated": "Recepta actualitzada!",
+    "text_does_not_match": "El text no coincideix",
     "top_jorbiters": "Top Jorbiters",
     "about": "Quant a",
     "about_subtitle": "Descobreix més sobre Jorbites i la nostra missió",
