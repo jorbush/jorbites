@@ -10,6 +10,16 @@
 
 </div>
 
+## Why Jorbites?
+
+A user posted this recipe that indirectly answers the question:
+
+<div align="center">
+
+  **🥑 [Why Jorbites?](https://jorbites.com/recipes/68b194a84e84cb9eabfb4350)**
+
+</div>
+
 ## ✨ Features
 
 - **Recipe Management:** Full CRUD operations with rich text editing and image optimization

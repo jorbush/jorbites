@@ -21,6 +21,26 @@ vi.mock('next/image', () => ({
     default: (props: any) => <img {...props} />,
 }));
 
+// Mock FooterMenu component
+vi.mock('@/app/components/footer/FooterMenu', () => ({
+    default: () => (
+        <div data-testid="footer-menu">
+            <a
+                href="/top-jorbiters"
+                data-testid="footer-menu-top-jorbiters"
+            >
+                Top Jorbiters
+            </a>
+            <a
+                href="/about"
+                data-testid="footer-menu-about"
+            >
+                About
+            </a>
+        </div>
+    ),
+}));
+
 describe('<Footer />', () => {
     beforeEach(() => {
         // Clear all mocks before each test
@@ -115,6 +135,54 @@ describe('<Footer />', () => {
         externalLinks.forEach((link) => {
             expect(link.getAttribute('target')).toBe('_blank');
             expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+        });
+    });
+
+    describe('FooterMenu Integration', () => {
+        it('renders the FooterMenu component', () => {
+            render(<Footer />);
+            expect(screen.getByTestId('footer-menu')).toBeDefined();
+        });
+
+        it('renders FooterMenu links for Top Jorbiters and About', () => {
+            render(<Footer />);
+
+            const topJorbitersLink = screen.getByTestId(
+                'footer-menu-top-jorbiters'
+            );
+            const aboutLink = screen.getByTestId('footer-menu-about');
+
+            expect(topJorbitersLink).toBeDefined();
+            expect(topJorbitersLink.getAttribute('href')).toBe(
+                '/top-jorbiters'
+            );
+            expect(topJorbitersLink.textContent).toBe('Top Jorbiters');
+
+            expect(aboutLink).toBeDefined();
+            expect(aboutLink.getAttribute('href')).toBe('/about');
+            expect(aboutLink.textContent).toBe('About');
+        });
+
+        it('places FooterMenu at the top of the footer content', () => {
+            render(<Footer />);
+
+            const footerContent =
+                screen.getByTestId('footer-menu').parentElement;
+            const footerMenu = screen.getByTestId('footer-menu');
+
+            // FooterMenu should be the first child in the flex container
+            expect(footerContent?.children[0]).toBe(footerMenu);
+        });
+
+        it('maintains correct footer structure with FooterMenu', () => {
+            render(<Footer />);
+
+            // All the original footer elements should still be present
+            expect(screen.getByTestId('footer-menu')).toBeDefined();
+            expect(screen.getByText(`version ${version}`)).toBeDefined();
+            expect(screen.getByText('privacy_policy')).toBeDefined();
+            expect(screen.getByText('cookies_policy')).toBeDefined();
+            expect(screen.getByAltText('Jorbites Logo')).toBeDefined();
         });
     });
 });
