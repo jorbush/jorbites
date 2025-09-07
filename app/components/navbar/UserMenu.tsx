@@ -15,7 +15,6 @@ import {
     FcAddImage,
     FcManager,
     FcLike,
-    FcPositiveDynamic,
     FcCalendar,
     FcSettings,
     FcExport,
@@ -129,14 +128,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 <MenuItem
                                     onClick={() => {
-                                        router.push('/top-jorbiters');
-                                        toggleOpen();
-                                    }}
-                                    label="Top Jorbiters"
-                                    icon={FcPositiveDynamic}
-                                />
-                                <MenuItem
-                                    onClick={() => {
                                         router.push('/events');
                                         toggleOpen();
                                     }}
@@ -160,14 +151,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                             </>
                         ) : (
                             <>
-                                <MenuItem
-                                    onClick={() => {
-                                        router.push('/top-jorbiters');
-                                        toggleOpen();
-                                    }}
-                                    label="Top Jorbiters"
-                                    icon={FcPositiveDynamic}
-                                />
                                 <MenuItem
                                     onClick={() => {
                                         router.push('/events');

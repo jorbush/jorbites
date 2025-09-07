@@ -7,6 +7,7 @@ import Image from 'next/image';
 import packageJson from '@/package.json';
 import { FaGithub, FaTwitter, FaInstagram, FaEnvelope } from 'react-icons/fa';
 import { RiGitRepositoryLine } from 'react-icons/ri';
+import FooterMenu from './FooterMenu';
 
 const Footer = () => {
     useTheme();
@@ -48,6 +49,7 @@ const Footer = () => {
         >
             <div className="mx-auto max-w-6xl">
                 <div className="flex flex-col items-center space-y-6">
+                    <FooterMenu />
                     <a
                         href={`https://github.com/jorbush/jorbites/releases/tag/v${packageJson.version}`}
                         className="inline-flex items-center rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-600 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
