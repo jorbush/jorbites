@@ -37,7 +37,6 @@ vi.mock('next/navigation', () => ({
 }));
 
 describe('ChangePassword', () => {
-    const mockOnSave = vi.fn();
     const mockSetSavePassword = vi.fn();
 
     const mockUser: SafeUser = {
@@ -62,7 +61,6 @@ describe('ChangePassword', () => {
         currentUser: mockUser,
         savePassword: false,
         setSavePassword: mockSetSavePassword,
-        onSave: mockOnSave,
     };
 
     beforeEach(() => {
@@ -271,7 +269,6 @@ describe('ChangePassword', () => {
             expect(mockedAxios.patch).toHaveBeenCalled();
         });
         expect(mockSetSavePassword).toHaveBeenCalledWith(false);
-        expect(mockOnSave).toHaveBeenCalled();
     });
 
     it('does not trigger save when savePassword prop becomes true but validation fails', async () => {
@@ -291,7 +288,6 @@ describe('ChangePassword', () => {
         );
         expect(mockedAxios.patch).not.toHaveBeenCalled();
         expect(mockSetSavePassword).toHaveBeenCalledWith(false);
-        expect(mockOnSave).toHaveBeenCalled();
     });
 
     it('clears form when password is successfully updated', async () => {

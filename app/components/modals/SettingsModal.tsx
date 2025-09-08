@@ -62,19 +62,16 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
                             currentUser={currentUser}
                             saveImage={saveImage}
                             setSaveImage={setSaveImage}
-                            onSave={() => settingsModal.onClose()}
                         />
                         <ChangeUserNameSelector
                             currentUser={currentUser}
                             saveUserName={saveUserName}
                             setSaveUserName={setSaveUserName}
-                            onSave={() => settingsModal.onClose()}
                         />
                         <ChangePassword
                             currentUser={currentUser}
                             savePassword={savePassword}
                             setSavePassword={setSavePassword}
-                            onSave={() => settingsModal.onClose()}
                         />
                         <DeleteAccount currentUser={currentUser} />
                     </div>
@@ -104,6 +101,11 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
         setSaveImage(true);
         setSaveUserName(true);
         setSavePassword(true);
+
+        // Close modal after a short delay to allow components to save
+        setTimeout(() => {
+            settingsModal.onClose();
+        }, 100);
     }, [settingsModal, currentUser]);
 
     return (

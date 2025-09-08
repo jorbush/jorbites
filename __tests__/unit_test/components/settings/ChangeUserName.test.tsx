@@ -37,7 +37,6 @@ vi.mock('next/navigation', () => ({
 }));
 
 describe('ChangeUserNameSelector', () => {
-    const mockOnSave = vi.fn();
     const mockSetSaveUserName = vi.fn();
 
     const mockUser: SafeUser = {
@@ -62,7 +61,6 @@ describe('ChangeUserNameSelector', () => {
         currentUser: mockUser,
         saveUserName: false,
         setSaveUserName: mockSetSaveUserName,
-        onSave: mockOnSave,
     };
 
     beforeEach(() => {
@@ -302,7 +300,6 @@ describe('ChangeUserNameSelector', () => {
         });
 
         expect(mockSetSaveUserName).toHaveBeenCalledWith(false);
-        expect(mockOnSave).toHaveBeenCalled();
     });
 
     it('handles save trigger when no changes made', () => {
@@ -320,7 +317,6 @@ describe('ChangeUserNameSelector', () => {
 
         expect(mockedAxios.patch).not.toHaveBeenCalled();
         expect(mockSetSaveUserName).toHaveBeenCalledWith(false);
-        expect(mockOnSave).toHaveBeenCalled();
     });
 
     it('disables input and buttons during loading', async () => {

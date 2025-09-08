@@ -20,14 +20,12 @@ interface ChangePasswordProps {
     currentUser?: SafeUser | null;
     savePassword: boolean;
     setSavePassword: Dispatch<SetStateAction<boolean>>;
-    onSave: () => void;
 }
 
 const ChangePassword: React.FC<ChangePasswordProps> = ({
     currentUser,
     savePassword,
     setSavePassword,
-    onSave,
 }) => {
     const router = useRouter();
     const { t } = useTranslation();
@@ -108,19 +106,10 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
         if (savePassword && canSave) {
             handleSubmit(updatePassword)();
             setSavePassword(false);
-            onSave();
         } else if (savePassword) {
             setSavePassword(false);
-            onSave();
         }
-    }, [
-        savePassword,
-        canSave,
-        setSavePassword,
-        onSave,
-        handleSubmit,
-        updatePassword,
-    ]);
+    }, [savePassword, canSave, setSavePassword, handleSubmit, updatePassword]);
 
     return (
         <div
