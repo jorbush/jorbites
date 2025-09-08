@@ -58,6 +58,18 @@ vi.mock('@/app/components/settings/ChangeUserName', () => ({
     ),
 }));
 
+vi.mock('@/app/components/settings/ChangePassword', () => ({
+    default: () => (
+        <div data-testid="change-password-selector">ChangePassword</div>
+    ),
+}));
+
+vi.mock('@/app/components/settings/DeleteAccount', () => ({
+    default: () => (
+        <div data-testid="delete-account-selector">DeleteAccount</div>
+    ),
+}));
+
 // Mock the Tabs component
 vi.mock('@/app/components/utils/Tabs', () => ({
     default: ({ tabs, activeTab, onTabChange, ...props }: any) => (
@@ -72,6 +84,36 @@ vi.mock('@/app/components/utils/Tabs', () => ({
                     {tab.label}
                 </button>
             ))}
+        </div>
+    ),
+}));
+
+// Mock the Modal component
+vi.mock('@/app/components/modals/Modal', () => ({
+    default: ({
+        isOpen,
+        onClose,
+        onSubmit,
+        title,
+        body,
+        actionLabel,
+        ...props
+    }: any) => (
+        <div data-testid="modal">
+            <div data-testid="modal-title">{title}</div>
+            <div data-testid="modal-body">{body}</div>
+            <button
+                data-testid="action-button"
+                onClick={onSubmit}
+            >
+                {actionLabel}
+            </button>
+            <button
+                data-testid="close-modal-button"
+                onClick={onClose}
+            >
+                Close
+            </button>
         </div>
     ),
 }));
@@ -234,5 +276,80 @@ describe('SettingsModal', () => {
         // Check that both tab labels are present
         expect(screen.getByText('preferences')).toBeDefined();
         expect(screen.getByText('account')).toBeDefined();
+    });
+
+    it('closes modal when save button is clicked with no current user', async () => {
+        render(<SettingsModal currentUser={null} />);
+
+        // Find and click the save button
+        const saveButton = screen.getByTestId('action-button');
+        fireEvent.click(saveButton);
+
+        // Modal should close immediately for users without account
+        expect(mockSettingsModalClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('closes modal when save button is clicked with current user', async () => {
+        vi.useFakeTimers();
+
+        const currentUser = {
+            id: '1',
+            name: 'Test User',
+        } as SafeUser;
+
+        render(<SettingsModal currentUser={currentUser} />);
+
+        // Find and click the save button
+        const saveButton = screen.getByTestId('action-button');
+        fireEvent.click(saveButton);
+
+        // Initially not called
+        expect(mockSettingsModalClose).not.toHaveBeenCalled();
+
+        // Fast-forward time by 100ms to trigger the setTimeout
+        vi.advanceTimersByTime(100);
+
+        // Now it should be called
+        expect(mockSettingsModalClose).toHaveBeenCalledTimes(1);
+
+        vi.useRealTimers();
+    });
+
+    it('displays save action button with correct label', () => {
+        render(<SettingsModal currentUser={null} />);
+
+        const saveButton = screen.getByTestId('action-button');
+        expect(saveButton).toBeDefined();
+        expect(saveButton.textContent).toBe('save');
+    });
+
+    it('does not close modal when clicking account tab after save button', async () => {
+        vi.useFakeTimers();
+
+        const currentUser = {
+            id: '1',
+            name: 'Test User',
+        } as SafeUser;
+
+        render(<SettingsModal currentUser={currentUser} />);
+
+        // Click save button to trigger save flags
+        const saveButton = screen.getByTestId('action-button');
+        fireEvent.click(saveButton);
+
+        // Before the timeout, click the account tab
+        const accountTab = screen.getByTestId('tab-account');
+        fireEvent.click(accountTab);
+
+        // Modal should not close immediately when clicking account tab
+        expect(mockSettingsModalClose).not.toHaveBeenCalled();
+
+        // Advance time to when save timeout should trigger
+        vi.advanceTimersByTime(100);
+
+        // Now modal should close due to save timeout, not account tab click
+        expect(mockSettingsModalClose).toHaveBeenCalledTimes(1);
+
+        vi.useRealTimers();
     });
 });

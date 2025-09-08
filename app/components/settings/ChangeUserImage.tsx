@@ -20,14 +20,12 @@ interface ChangeUserImageProps {
     currentUser?: SafeUser | null;
     saveImage: boolean;
     setSaveImage: Dispatch<SetStateAction<boolean>>;
-    onSave: () => void;
 }
 
 const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
     currentUser,
     saveImage,
     setSaveImage,
-    onSave,
 }) => {
     const router = useRouter();
     const { t } = useTranslation();
@@ -60,12 +58,10 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
         if (saveImage && canSave) {
             updateUserProfile();
             setSaveImage(false);
-            onSave();
         } else if (saveImage) {
             setSaveImage(false);
-            onSave();
         }
-    }, [saveImage, canSave, setSaveImage, onSave, updateUserProfile]);
+    }, [saveImage, canSave, setSaveImage, updateUserProfile]);
 
     return (
         <div className="flex items-center">

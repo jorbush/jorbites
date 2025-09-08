@@ -20,14 +20,12 @@ interface ChangeUserNameProps {
     currentUser?: SafeUser | null;
     saveUserName: boolean;
     setSaveUserName: Dispatch<SetStateAction<boolean>>;
-    onSave: () => void;
 }
 
 const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
     currentUser,
     saveUserName,
     setSaveUserName,
-    onSave,
 }) => {
     const router = useRouter();
     const { t } = useTranslation();
@@ -95,12 +93,10 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
         if (saveUserName && canSave) {
             updateUserName();
             setSaveUserName(false);
-            onSave();
         } else if (saveUserName) {
             setSaveUserName(false);
-            onSave();
         }
-    }, [saveUserName, canSave, setSaveUserName, onSave, updateUserName]);
+    }, [saveUserName, canSave, setSaveUserName, updateUserName]);
 
     return (
         <div className="flex items-center">
