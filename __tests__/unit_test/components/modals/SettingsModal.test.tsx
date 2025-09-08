@@ -91,13 +91,13 @@ vi.mock('@/app/components/utils/Tabs', () => ({
 // Mock the Modal component
 vi.mock('@/app/components/modals/Modal', () => ({
     default: ({
-        isOpen,
+        isOpen: _isOpen,
         onClose,
         onSubmit,
         title,
         body,
         actionLabel,
-        ...props
+        ..._props
     }: any) => (
         <div data-testid="modal">
             <div data-testid="modal-title">{title}</div>
