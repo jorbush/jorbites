@@ -158,6 +158,59 @@ describe('Draft API Error Handling', () => {
 
             expect(response.status).toBe(200);
         });
+
+        it('should reset currentStep to 0 when step equals STEPS_LENGTH', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'test',
+                    email: 'test@a.com',
+                },
+            };
+
+            // Import STEPS_LENGTH to test the exact boundary
+            const { STEPS_LENGTH } = require('@/app/utils/constants');
+
+            const invalidDraft = {
+                title: 'Test Draft',
+                currentStep: STEPS_LENGTH, // Exactly at the boundary (invalid)
+            };
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue(invalidDraft),
+            } as unknown as Request;
+
+            const response = await DraftPOST(mockRequest);
+
+            expect(response.status).toBe(200);
+            // The currentStep should have been reset to 0 in the backend
+        });
+
+        it('should allow valid steps within STEPS_LENGTH boundary', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'test',
+                    email: 'test@a.com',
+                },
+            };
+
+            // Import STEPS_LENGTH to test just below the boundary
+            const { STEPS_LENGTH } = require('@/app/utils/constants');
+
+            const validDraft = {
+                title: 'Test Draft',
+                currentStep: STEPS_LENGTH - 1, // Valid max step
+            };
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue(validDraft),
+            } as unknown as Request;
+
+            const response = await DraftPOST(mockRequest);
+
+            expect(response.status).toBe(200);
+        });
     });
 
     describe('GET /api/draft', () => {
