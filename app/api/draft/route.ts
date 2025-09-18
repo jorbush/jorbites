@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { redis } from '@/app/libs/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { unauthorized, internalServerError } from '@/app/utils/apiErrors';
+import { STEPS_LENGTH } from '@/app/utils/constants';
 
 export async function POST(request: Request) {
     try {
@@ -10,6 +11,14 @@ export async function POST(request: Request) {
             return unauthorized('User authentication required to save draft');
         }
         const body = await request.json();
+
+        if (
+            body.currentStep !== undefined &&
+            body.currentStep >= STEPS_LENGTH
+        ) {
+            body.currentStep = 0;
+        }
+
         await redis.set(currentUser.id, JSON.stringify(body));
         return NextResponse.json(null);
     } catch (error) {
