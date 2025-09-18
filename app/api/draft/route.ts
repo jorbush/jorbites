@@ -14,7 +14,11 @@ export async function POST(request: Request) {
 
         if (
             body.currentStep !== undefined &&
-            body.currentStep >= STEPS_LENGTH
+            (
+                typeof body.currentStep !== 'number' ||
+                body.currentStep < 0 ||
+                body.currentStep >= STEPS_LENGTH
+            )
         ) {
             body.currentStep = 0;
         }
