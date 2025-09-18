@@ -65,6 +65,99 @@ describe('Draft API Error Handling', () => {
 
             expect(response.status).toBe(200);
         });
+
+        it('should reset currentStep to 0 when step is above maximum (6)', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'test',
+                    email: 'test@a.com',
+                },
+            };
+
+            const invalidDraft = {
+                title: 'Test Draft',
+                currentStep: 10, // Invalid step
+            };
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue(invalidDraft),
+            } as unknown as Request;
+
+            const response = await DraftPOST(mockRequest);
+
+            expect(response.status).toBe(200);
+            // The currentStep should have been reset to 0 in the backend
+        });
+
+        it('should reset currentStep to 0 when step is below minimum (0)', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'test',
+                    email: 'test@a.com',
+                },
+            };
+
+            const invalidDraft = {
+                title: 'Test Draft',
+                currentStep: -5, // Invalid step
+            };
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue(invalidDraft),
+            } as unknown as Request;
+
+            const response = await DraftPOST(mockRequest);
+
+            expect(response.status).toBe(200);
+        });
+
+        it('should reset currentStep to 0 when step is not a number', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'test',
+                    email: 'test@a.com',
+                },
+            };
+
+            const invalidDraft = {
+                title: 'Test Draft',
+                currentStep: 'invalid', // Non-numeric step
+            };
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue(invalidDraft),
+            } as unknown as Request;
+
+            const response = await DraftPOST(mockRequest);
+
+            expect(response.status).toBe(200);
+        });
+
+        it('should preserve valid currentStep values', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'test',
+                    email: 'test@a.com',
+                },
+            };
+
+            const validDraft = {
+                title: 'Test Draft',
+                currentStep: 3, // Valid step
+            };
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue(validDraft),
+            } as unknown as Request;
+
+            const response = await DraftPOST(mockRequest);
+
+            expect(response.status).toBe(200);
+        });
     });
 
     describe('GET /api/draft', () => {

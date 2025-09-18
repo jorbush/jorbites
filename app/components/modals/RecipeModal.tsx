@@ -20,18 +20,9 @@ import ImagesStep from '@/app/components/modals/recipe-steps/ImagesStep';
 import {
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
+    STEPS,
+    STEPS_LENGTH,
 } from '@/app/utils/constants';
-
-/* eslint-disable unused-imports/no-unused-vars */
-enum STEPS {
-    CATEGORY = 0,
-    DESCRIPTION = 1,
-    INGREDIENTS = 2,
-    METHODS = 3,
-    STEPS = 4,
-    RELATED_CONTENT = 5,
-    IMAGES = 6,
-}
 
 interface RecipeModalProps {
     currentUser?: SafeUser | null;
@@ -206,7 +197,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             const { currentStep, ...formData } = data;
             reset(formData);
             if (currentStep !== undefined) {
-                setStep(currentStep);
+                // Validate and clamp the currentStep to valid range
+                setStep(Math.max(0, Math.min(currentStep, STEPS_LENGTH - 1)));
             }
             setNumIngredients(data.ingredients?.length || 1);
             setNumSteps(data.steps?.length || 1);
@@ -377,10 +369,14 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     };
 
     const onBack = () => {
-        setStep((value) => value - 1);
+        setStep((value) => Math.max(value - 1, 0));
     };
 
     const onNext = () => {
+        if (step >= STEPS_LENGTH - 1) {
+            return;
+        }
+
         if (step === STEPS.INGREDIENTS) {
             const newIngredients: string[] = [];
             for (let i = 0; i < numIngredients; i++) {
