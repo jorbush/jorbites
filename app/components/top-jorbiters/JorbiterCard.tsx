@@ -47,7 +47,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
         >
             <div className="flex items-center justify-between">
                 {/* Left section - Avatar and Basic Info */}
-                <div className="flex items-center space-x-2 sm:space-x-4">
+                <div className="flex min-w-0 items-center space-x-2 sm:space-x-4">
                     <div className="flex items-center justify-center">
                         <RankIcon rank={index} />
                     </div>
@@ -58,9 +58,9 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                         extraClasses="sm:h-[65px] sm:w-[65px] md:h-[70px] md:w-[70px]"
                         quality="auto:best"
                     />
-                    <div className="flex flex-col">
+                    <div className="flex min-w-0 flex-col">
                         <div className="flex flex-row items-center gap-1">
-                            <div className="text-base font-semibold sm:text-xl md:text-2xl dark:text-white">
+                            <div className="max-w-[50vw] truncate text-base font-semibold sm:max-w-[45vw] sm:text-xl md:max-w-[35vw] md:text-2xl lg:max-w-[30vw] dark:text-white">
                                 {getUserDisplayName(
                                     jorbiter,
                                     isMdOrSmaller,
