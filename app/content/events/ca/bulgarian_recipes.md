@@ -28,4 +28,4 @@ Tots els Jorbiters que publiquin una recepta inspirada en Bulgària durant la fi
 
 ### 🌿 Què la fa especial
 
-La cuina búlgara celebra el producte fresc, les traditions làcties, els pebrots, els tomàquets i les herbes. És reconfortant, de temporada i perfecta per compartir. Porta la teva versió i gaudeix! 🇧🇬
+La cuina búlgara celebra el producte fresc, les tradicions làcties, els pebrots, els tomàquets i les herbes. És reconfortant, de temporada i perfecta per compartir. Porta la teva versió i gaudeix! 🇧🇬
