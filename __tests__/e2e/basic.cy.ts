@@ -1,4 +1,4 @@
-describe('Recipes', () => {
+describe('Basic E2E', () => {
     beforeEach(() => {
         cy.visit('http://localhost:3000/');
         // Login
@@ -19,7 +19,7 @@ describe('Recipes', () => {
         });
     });
 
-    it('should create and delete a recipe', () => {
+    it('should create a recipe', () => {
         cy.get('[data-cy="post-recipe"]').click();
         // Fill category step
         cy.get('[data-cy="category-box-Fruits"]').click();
@@ -55,63 +55,80 @@ describe('Recipes', () => {
         // Check if the recipe was created
         cy.task('log', 'Recipe created');
         cy.get('[class^="go"]').should('be.visible');
-        cy.wait(10000);
+        cy.wait(5000);
         cy.get('.text-lg').eq(0).should('have.text', 'Test recipe').click();
         cy.task('log', 'Recipe opened');
-        cy.wait(10000);
-        // Delete the recipe
-        cy.get('[data-cy="delete-recipe"]').click();
-        cy.task('log', 'Delete button clicked');
-        cy.get('.text-start > .mt-2').then(($el) => {
-            cy.get('[data-cy="delete-confirmation-text"]').type(
-                $el.text().slice(1, -1)
-            );
-        });
-        cy.task('log', 'Confirm Text filled');
-        cy.get('[data-cy="modal-action-button"]').click();
-        cy.task('log', 'Delete button clicked');
-        cy.get('[class^="go"]').should('be.visible');
-        cy.wait(10000);
-        // Check if the recipe was deleted
-        // cy.get('.text-lg').eq(0).should('not.have.text', 'Test recipe');
+        // TODO: Add more checks for the recipe creation (title, description, ingredients and steps)
     });
 
-    it('should create, edit, and delete a recipe', () => {
-        // First, create a recipe
-        cy.get('[data-cy="post-recipe"]').click();
-        // Fill category step
-        cy.get('[data-cy="category-box-Fruits"]').click();
-        cy.task('log', 'Category step filled');
-        cy.get('[data-cy="modal-action-button"]').click();
-        // Fill description step
-        cy.get('[data-cy="recipe-title"]').type('Original Recipe Title');
-        cy.get('[data-cy="recipe-description"]').type('Original description');
-        cy.task('log', 'Description step filled');
-        cy.get('[data-cy="modal-action-button"]').click();
-        // Fill ingredients step
-        cy.get('[data-cy="recipe-ingredient-0"]').type('Original ingredient');
-        cy.task('log', 'Ingredients step filled');
-        cy.get('[data-cy="modal-action-button"]').click();
-        // Fill methods step
-        cy.get('[data-cy="method-box-Oven"]').click();
-        cy.task('log', 'Methods step filled');
-        cy.get('[data-cy="modal-action-button"]').click();
-        // Fill steps step
-        cy.get('[data-cy="recipe-step-0"]').type('Original step');
-        cy.task('log', 'Steps step filled');
-        cy.get('[data-cy="modal-action-button"]').click();
-        // Skip related content step
-        cy.task('log', 'Related content step skipped');
-        cy.get('[data-cy="modal-action-button"]').click();
-        // Skip images step and create the recipe
-        cy.task('log', 'Images step skipped');
-        cy.get('[data-cy="modal-action-button"]').click();
-        // Check if the recipe was created - wait for success toast and page reload
-        cy.task('log', 'Recipe created');
+    it('should like a recipe', () => {
+        cy.contains('.text-lg', 'Test recipe', { timeout: 15000 })
+            .should('be.visible')
+            .scrollIntoView()
+            .click({ force: true });
+        cy.task('log', 'Recipe opened');
+        cy.get('[data-cy="heart-button"]').click();
+        cy.task('log', 'Recipe liked button clicked');
+        cy.get('[class^="go"]').should('be.visible');
+        cy.wait(2000);
+        cy.get('[data-testid="heart-button"]').should(
+            'have.class',
+            'fill-green-450'
+        );
+        cy.get('[data-cy="recipe-num-likes"]').should('have.text', '1');
+        cy.task('log', 'Recipe liked successfully');
+    });
 
-        // Aggressively ensure modal is closed
-        cy.wait(2000); // Initial wait for modal animation
+    it('should undo the like of a recipe', () => {
+        cy.contains('.text-lg', 'Test recipe', { timeout: 15000 })
+            .should('be.visible')
+            .scrollIntoView()
+            .click({ force: true });
+        cy.task('log', 'Recipe opened');
+        // Unlike the recipe
+        cy.wait(3000);
+        cy.get('[data-cy="heart-button"]').click();
+        cy.task('log', 'Recipe unliked button clicked');
+        cy.wait(2000);
+        cy.get('[data-testid="heart-button"]').should(
+            'not.have.class',
+            'fill-green-450'
+        );
+        cy.get('[data-cy="recipe-num-likes"]').should('have.text', '0');
+        cy.task('log', 'Recipe unliked successfully');
+    });
 
+    it('should comment a recipe', () => {
+        cy.contains('.text-lg', 'Test recipe', { timeout: 15000 })
+            .should('be.visible')
+            .scrollIntoView()
+            .click({ force: true });
+        cy.task('log', 'Recipe opened');
+        cy.scrollTo('bottom');
+        cy.get('[data-cy="comment-input"]').type('Test comment');
+        cy.task('log', 'Comment input filled');
+        cy.get('[data-cy="submit-comment"]').click();
+        cy.get('[class^="go"]').should('be.visible');
+        cy.wait(1000);
+        cy.get('[data-cy="comment-text"]').should('have.text', 'Test comment');
+        cy.task('log', 'Recipe commented successfully');
+    });
+
+    it('should delete the comment', () => {
+        cy.contains('.text-lg', 'Test recipe', { timeout: 15000 })
+            .should('be.visible')
+            .scrollIntoView()
+            .click({ force: true });
+        cy.task('log', 'Recipe opened');
+        cy.get('[data-testid="MdDelete"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+        cy.get('[class^="go"]').should('be.visible');
+        cy.wait(1000);
+        cy.get('[data-cy="comment-text"]').should('not.exist');
+        cy.task('log', 'Comment deleted successfully');
+    });
+
+    it('should edit a recipe', () => {
         // Try multiple methods to close modal if still open
         cy.get('body').then(($body) => {
             if ($body.find('.fixed.inset-0.z-50').length > 0) {
@@ -148,7 +165,7 @@ describe('Recipes', () => {
         cy.url().should('eq', 'http://localhost:3000/');
 
         // Navigate to the created recipe - use force click to bypass any remaining overlay
-        cy.contains('.text-lg', 'Original Recipe Title', { timeout: 15000 })
+        cy.contains('.text-lg', 'Test recipe', { timeout: 15000 })
             .should('be.visible')
             .scrollIntoView()
             .click({ force: true });
@@ -201,8 +218,17 @@ describe('Recipes', () => {
         // Verify the recipe was updated
         cy.get('.text-2xl').should('contain', 'Edited Recipe Title');
         cy.task('log', 'Recipe title updated successfully');
+        // TODO: Add more checks for the recipe update (title, description, ingredients and steps)
+    });
 
-        // Clean up - delete the recipe
+    it('should delete a recipe', () => {
+        cy.contains('.text-lg', 'Edited Recipe Title', { timeout: 15000 })
+            .should('be.visible')
+            .scrollIntoView()
+            .click({ force: true });
+        cy.task('log', 'Recipe opened');
+        cy.scrollTo('bottom');
+        // Delete the recipe
         cy.get('[data-cy="delete-recipe"]').click();
         cy.task('log', 'Delete button clicked');
         cy.get('.text-start > .mt-2').then(($el) => {
@@ -215,5 +241,7 @@ describe('Recipes', () => {
         cy.task('log', 'Recipe deleted');
         cy.get('[class^="go"]').should('be.visible');
         cy.wait(5000);
+        // Check if the recipe was deleted
+        // cy.get('.text-lg').eq(0).should('not.have.text', 'Test recipe');
     });
 });
