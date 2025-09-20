@@ -15,6 +15,7 @@ const Heading: React.FC<HeadingProps> = ({ title, subtitle, center }) => {
                 className={`text-center text-2xl font-bold whitespace-pre-wrap dark:text-neutral-100 ${
                     isLongWord ? 'break-words' : ''
                 }`}
+                data-cy="recipe-title-display"
             >
                 {title}
             </div>

@@ -28,6 +28,7 @@ const RecipeCategoryAndMethod: React.FC<RecipeInfoProps> = ({
             {(category || method) && <hr />}
             <div
                 data-testid="recipe-category-and-method"
+                data-cy="cooking-methods"
                 className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 dark:text-neutral-100"
             >
                 {category && (

@@ -141,6 +141,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('settings')}
                                     icon={FcSettings}
+                                    dataCy="user-menu-settings"
                                 />
                                 <MenuItem
                                     onClick={() => signOut()}
@@ -167,6 +168,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('settings')}
                                     icon={FcSettings}
+                                    dataCy="user-menu-settings"
                                 />
                                 <MenuItem
                                     onClick={() => {

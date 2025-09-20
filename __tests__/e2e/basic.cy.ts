@@ -17,6 +17,50 @@ describe('Basic E2E', () => {
             url: '/api/draft',
             failOnStatusCode: false, // Don't fail the test if there's no draft to delete
         });
+
+        // Set language to English to ensure consistent test results
+        cy.task('log', 'Setting language to English...');
+        cy.get('[data-cy="user-menu"]').click();
+        cy.wait(500);
+
+        // Click on settings in the user menu using the new data-cy attribute
+        cy.get('.absolute.top-14.right-0').should('be.visible');
+        cy.get('[data-cy="user-menu-settings"]').click();
+        cy.wait(1000);
+
+        // Settings modal should be open, wait for it to fully load using data-cy selectors
+        cy.get('[data-cy="settings-modal-content"]', { timeout: 10000 }).should(
+            'be.visible'
+        );
+        cy.wait(500);
+
+        // Look for the language selector using the new data-cy attribute
+        cy.get('[data-cy="language-dropdown"]', { timeout: 5000 })
+            .should('be.visible')
+            .then(($select) => {
+                // Check if we're not already on English
+                const currentLang = $select.val();
+                cy.task('log', `Current language: ${currentLang}`);
+
+                if (currentLang !== 'en') {
+                    cy.wrap($select).select('en');
+                    cy.wait(500);
+
+                    // Save settings to persist the language change
+                    cy.get('[data-cy="modal-action-button"]')
+                        .should('be.visible')
+                        .click();
+                    cy.wait(1500);
+                    cy.task('log', 'Language changed to English and saved');
+                } else {
+                    // Already in English, just close the modal
+                    cy.get('[data-testid="close-modal-button"]')
+                        .should('be.visible')
+                        .click();
+                    cy.wait(500);
+                    cy.task('log', 'Language already set to English');
+                }
+            });
     });
 
     it('complete recipe lifecycle - create, like, unlike, comment, delete comment, edit, and delete', () => {
@@ -62,7 +106,46 @@ describe('Basic E2E', () => {
         cy.wait(5000);
         cy.get('.text-lg').eq(0).should('have.text', recipeName).click();
         cy.task('log', '🧪 Recipe creation completed');
-        // TODO: Add more checks for the recipe creation (title, description, ingredients and steps)
+
+        // Verify recipe creation details
+        cy.task('log', 'Verifying recipe creation details...');
+        cy.url().should('include', '/recipes/');
+
+        // Check recipe title
+        cy.get('[data-cy="recipe-title-display"]').should(
+            'contain',
+            recipeName
+        );
+        cy.task('log', '✓ Recipe title verified');
+
+        // Check recipe description
+        cy.get('[data-cy="recipe-description-display"]').should(
+            'contain',
+            'Test description'
+        );
+        cy.task('log', '✓ Recipe description verified');
+
+        // Check ingredients
+        cy.get('[data-cy="ingredients-section"]').within(() => {
+            cy.get('li').should('have.length.at.least', 2);
+            cy.get('li').eq(0).should('contain', 'Test ingredient');
+            cy.get('li').eq(1).should('contain', 'Test ingredient');
+        });
+        cy.task('log', '✓ Recipe ingredients verified');
+
+        // Check cooking method
+        cy.get('[data-cy="cooking-methods"]').should('contain', 'Oven');
+        cy.task('log', '✓ Cooking method verified');
+
+        // Check recipe steps
+        cy.get('[data-cy="steps-section"]').within(() => {
+            cy.get('[data-cy^="step-"]').should('have.length.at.least', 2);
+            cy.get('[data-cy="step-0"]').should('contain', 'Test step');
+            cy.get('[data-cy="step-1"]').should('contain', 'Test step');
+        });
+        cy.task('log', '✓ Recipe steps verified');
+
+        cy.task('log', '🎉 All recipe creation details verified successfully');
 
         // STEP 2: Like the recipe
         cy.task('log', '=== STEP 2: Liking recipe ===');
@@ -180,9 +263,46 @@ describe('Basic E2E', () => {
         // Scroll to the recipe title
         cy.scrollTo('top');
         // Verify the recipe was updated
-        cy.get('.text-2xl').should('contain', 'Edited Recipe Title');
+        cy.task('log', 'Verifying recipe update details...');
+
+        // Check updated recipe title
+        cy.get('[data-cy="recipe-title-display"]').should(
+            'contain',
+            'Edited Recipe Title'
+        );
+        cy.task('log', '✓ Updated recipe title verified');
+
+        // Check updated recipe description
+        cy.get('[data-cy="recipe-description-display"]').should(
+            'contain',
+            'Edited description'
+        );
+        cy.task('log', '✓ Updated recipe description verified');
+
+        // Check updated ingredients
+        cy.get('[data-cy="ingredients-section"]').within(() => {
+            cy.get('li').should('have.length.at.least', 2);
+            cy.get('li').eq(0).should('contain', 'Edited ingredient');
+            // Second ingredient should still be the original one
+            cy.get('li').eq(1).should('contain', 'Test ingredient');
+        });
+        cy.task('log', '✓ Updated recipe ingredients verified');
+
+        // Check cooking method (should remain the same)
+        cy.get('[data-cy="cooking-methods"]').should('contain', 'Oven');
+        cy.task('log', '✓ Cooking method maintained');
+
+        // Check updated recipe steps
+        cy.get('[data-cy="steps-section"]').within(() => {
+            cy.get('[data-cy^="step-"]').should('have.length.at.least', 2);
+            cy.get('[data-cy="step-0"]').should('contain', 'Edited step');
+            // Second step should still be the original one
+            cy.get('[data-cy="step-1"]').should('contain', 'Test step');
+        });
+        cy.task('log', '✓ Updated recipe steps verified');
+
+        cy.task('log', '🎉 All recipe update details verified successfully');
         cy.task('log', '🧪 Recipe edit completed');
-        // TODO: Add more checks for the recipe update (title, description, ingredients and steps)
 
         // STEP 7: Delete the recipe
         cy.task('log', '=== STEP 7: Deleting recipe ===');
