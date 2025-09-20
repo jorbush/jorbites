@@ -114,7 +114,9 @@ describe('Basic E2E', () => {
         cy.task('log', '=== STEP 6: Editing recipe ===');
         cy.get('body').then(($body) => {
             if ($body.find('.fixed.inset-0.z-50').length > 0) {
-                cy.get('[data-testid="close-modal-button"]').click({ force: true });
+                cy.get('[data-testid="close-modal-button"]').click({
+                    force: true,
+                });
                 cy.wait(1000);
             }
         });
