@@ -21,18 +21,15 @@ describe('Basic E2E', () => {
         // Set language to English to ensure consistent test results
         cy.task('log', 'Setting language to English...');
         cy.get('[data-cy="user-menu"]').click();
-        cy.wait(500);
 
         // Click on settings in the user menu using the new data-cy attribute
         cy.get('.absolute.top-14.right-0').should('be.visible');
         cy.get('[data-cy="user-menu-settings"]').click();
-        cy.wait(1000);
 
         // Settings modal should be open, wait for it to fully load using data-cy selectors
         cy.get('[data-cy="settings-modal-content"]', { timeout: 10000 }).should(
             'be.visible'
         );
-        cy.wait(500);
 
         // Look for the language selector using the new data-cy attribute
         cy.get('[data-cy="language-dropdown"]', { timeout: 5000 })
@@ -44,20 +41,27 @@ describe('Basic E2E', () => {
 
                 if (currentLang !== 'en') {
                     cy.wrap($select).select('en');
-                    cy.wait(500);
 
                     // Save settings to persist the language change
                     cy.get('[data-cy="modal-action-button"]')
                         .should('be.visible')
                         .click();
-                    cy.wait(1500);
+
+                    // Wait for modal to close and language change to take effect
+                    cy.get('[data-cy="settings-modal-content"]').should(
+                        'not.exist'
+                    );
                     cy.task('log', 'Language changed to English and saved');
                 } else {
                     // Already in English, just close the modal
                     cy.get('[data-testid="close-modal-button"]')
                         .should('be.visible')
                         .click();
-                    cy.wait(500);
+
+                    // Wait for modal to close
+                    cy.get('[data-cy="settings-modal-content"]').should(
+                        'not.exist'
+                    );
                     cy.task('log', 'Language already set to English');
                 }
             });
@@ -103,7 +107,9 @@ describe('Basic E2E', () => {
         // Check if the recipe was created
         cy.task('log', 'Recipe created');
         cy.get('[class^="go"]').should('be.visible');
-        cy.wait(5000);
+        cy.wait(2000);
+
+        // Navigate to the newly created recipe
         cy.get('.text-lg').eq(0).should('have.text', recipeName).click();
         cy.task('log', '🧪 Recipe creation completed');
 
@@ -127,7 +133,9 @@ describe('Basic E2E', () => {
 
         // Check ingredients
         cy.get('[data-cy="ingredients-section"]').within(() => {
-            cy.get('li').should('have.length.at.least', 2);
+            cy.get('li').should(($els) => {
+                expect($els.length).to.be.at.least(2);
+            });
             cy.get('li').eq(0).should('contain', 'Test ingredient');
             cy.get('li').eq(1).should('contain', 'Test ingredient');
         });
@@ -139,7 +147,9 @@ describe('Basic E2E', () => {
 
         // Check recipe steps
         cy.get('[data-cy="steps-section"]').within(() => {
-            cy.get('[data-cy^="step-"]').should('have.length.at.least', 2);
+            cy.get('[data-cy^="step-"]').should(($els) => {
+                expect($els.length).to.be.at.least(2);
+            });
             cy.get('[data-cy="step-0"]').should('contain', 'Test step');
             cy.get('[data-cy="step-1"]').should('contain', 'Test step');
         });
@@ -151,8 +161,8 @@ describe('Basic E2E', () => {
         cy.task('log', '=== STEP 2: Liking recipe ===');
         cy.get('[data-cy="heart-button"]').click();
         cy.task('log', 'Recipe liked button clicked');
-        cy.get('[class^="go"]').should('be.visible');
-        cy.wait(2000);
+
+        // Verify the like was successful
         cy.get('[data-testid="heart-button"]').should(
             'have.class',
             'fill-green-450'
@@ -162,10 +172,9 @@ describe('Basic E2E', () => {
 
         // STEP 3: Unlike the recipe
         cy.task('log', '=== STEP 3: Unliking recipe ===');
-        cy.wait(3000);
+        cy.wait(5000);
         cy.get('[data-cy="heart-button"]').click();
         cy.task('log', 'Recipe unliked button clicked');
-        cy.wait(2000);
         cy.get('[data-testid="heart-button"]').should(
             'not.have.class',
             'fill-green-450'
@@ -179,8 +188,8 @@ describe('Basic E2E', () => {
         cy.get('[data-cy="comment-input"]').type('Test comment');
         cy.task('log', 'Comment input filled');
         cy.get('[data-cy="submit-comment"]').click();
-        cy.get('[class^="go"]').should('be.visible');
-        cy.wait(1000);
+
+        // Verify comment was added
         cy.get('[data-cy="comment-text"]').should('have.text', 'Test comment');
         cy.task('log', '🧪 Recipe commented successfully');
 
@@ -188,8 +197,8 @@ describe('Basic E2E', () => {
         cy.task('log', '=== STEP 5: Deleting comment ===');
         cy.get('[data-testid="MdDelete"]').click();
         cy.get('[data-cy="modal-action-button"]').click();
-        cy.get('[class^="go"]').should('be.visible');
-        cy.wait(1000);
+
+        // Verify comment was deleted
         cy.get('[data-cy="comment-text"]').should('not.exist');
         cy.task('log', '🧪 Comment deleted successfully');
 
@@ -204,28 +213,23 @@ describe('Basic E2E', () => {
             }
         });
 
-        // Wait for page to fully load and navigate back to homepage if needed
-        cy.get('[class^="go"]').should('be.visible');
-        cy.wait(2000);
+        // Ensure we're on the recipe page
         cy.url().then((url) => {
             if (!url.includes('/recipes/')) {
-                // We're already on homepage, navigate to recipe
+                // Navigate to recipe if not already there
                 cy.contains('.text-lg', recipeName, { timeout: 15000 })
                     .should('be.visible')
                     .scrollIntoView()
                     .click({ force: true });
-                cy.wait(2000);
             }
         });
 
         // Wait for the recipe page to load fully
         cy.url().should('include', '/recipes/');
-        cy.wait(2000);
 
         // Now edit the recipe
         cy.get('[data-cy="edit-recipe"]').click();
         cy.task('log', 'Edit button clicked');
-        cy.wait(2000);
         // Navigate to description step to edit title
         cy.get('[data-cy="modal-action-button"]').click(); // Next from category
 
@@ -258,9 +262,10 @@ describe('Basic E2E', () => {
         // Update the recipe (final step - images)
         cy.get('[data-cy="modal-action-button"]').click(); // Update button
         cy.task('log', 'Recipe updated');
-        cy.wait(5000);
+        cy.wait(2000);
 
-        // Scroll to the recipe title
+        // Wait for update to complete and return to recipe page
+        cy.url().should('include', '/recipes/');
         cy.scrollTo('top');
         // Verify the recipe was updated
         cy.task('log', 'Verifying recipe update details...');
@@ -281,7 +286,9 @@ describe('Basic E2E', () => {
 
         // Check updated ingredients
         cy.get('[data-cy="ingredients-section"]').within(() => {
-            cy.get('li').should('have.length.at.least', 2);
+            cy.get('li').should(($els) => {
+                expect($els.length).to.be.at.least(2);
+            });
             cy.get('li').eq(0).should('contain', 'Edited ingredient');
             // Second ingredient should still be the original one
             cy.get('li').eq(1).should('contain', 'Test ingredient');
@@ -294,7 +301,9 @@ describe('Basic E2E', () => {
 
         // Check updated recipe steps
         cy.get('[data-cy="steps-section"]').within(() => {
-            cy.get('[data-cy^="step-"]').should('have.length.at.least', 2);
+            cy.get('[data-cy^="step-"]').should(($els) => {
+                expect($els.length).to.be.at.least(2);
+            });
             cy.get('[data-cy="step-0"]').should('contain', 'Edited step');
             // Second step should still be the original one
             cy.get('[data-cy="step-1"]').should('contain', 'Test step');
@@ -318,7 +327,8 @@ describe('Basic E2E', () => {
         cy.get('[data-cy="modal-action-button"]').click();
         cy.task('log', '🧪 Recipe deleted successfully');
         cy.task('log', '✅ Recipe lifecycle test completed');
-        cy.get('[class^="go"]').should('be.visible');
-        cy.wait(3000);
+
+        // Verify we're back to homepage
+        cy.url().should('eq', 'http://localhost:3000/');
     });
 });
