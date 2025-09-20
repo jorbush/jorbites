@@ -182,13 +182,19 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 method={method}
             />
             <hr />
-            <div className="text-justify text-lg font-light text-neutral-500 dark:text-neutral-100">
+            <div
+                className="text-justify text-lg font-light text-neutral-500 dark:text-neutral-100"
+                data-cy="recipe-description-display"
+            >
                 {description}
             </div>
             {ingredients.length > 0 && (
                 <>
                     <hr />
-                    <div className="dark:text-neutral-100">
+                    <div
+                        className="dark:text-neutral-100"
+                        data-cy="ingredients-section"
+                    >
                         <div className="flex flex-row items-center gap-2 text-xl font-semibold">
                             {t('ingredients')}
                         </div>
@@ -208,7 +214,10 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
             {steps.length > 0 && (
                 <>
                     <hr />
-                    <div className="dark:text-neutral-100">
+                    <div
+                        className="dark:text-neutral-100"
+                        data-cy="steps-section"
+                    >
                         <div className="flex flex-row items-center gap-2 text-xl font-semibold">
                             {t('steps')}
                         </div>
@@ -217,6 +226,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                 <li
                                     key={index}
                                     className="mb-2"
+                                    data-cy={`step-${index}`}
                                 >
                                     {step}
                                 </li>

@@ -49,7 +49,10 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
         switch (activeTab) {
             case 'preferences':
                 return (
-                    <div className="flex flex-col gap-4">
+                    <div
+                        className="flex flex-col gap-4"
+                        data-cy="preferences-content"
+                    >
                         <ThemeSelector />
                         <LanguageSelector />
                     </div>
@@ -82,14 +85,18 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
     };
 
     const bodyContent = (
-        <div className="flex flex-col gap-6">
+        <div
+            className="flex flex-col gap-6"
+            data-cy="settings-modal-content"
+        >
             <Tabs
                 tabs={tabs}
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
                 data-testid="settings-tabs"
+                data-cy="settings-tabs"
             />
-            <div>{renderTabContent()}</div>
+            <div data-cy="settings-tab-content">{renderTabContent()}</div>
         </div>
     );
 
