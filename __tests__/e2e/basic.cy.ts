@@ -23,7 +23,7 @@ describe('Basic E2E', () => {
         cy.get('[data-cy="user-menu"]').click();
 
         // Click on settings in the user menu using the new data-cy attribute
-        cy.get('.absolute.top-14.right-0').should('be.visible');
+        cy.get('[data-cy="user-menu-panel"]').should('be.visible');
         cy.get('[data-cy="user-menu-settings"]').click();
 
         // Settings modal should be open, wait for it to fully load using data-cy selectors
@@ -110,7 +110,10 @@ describe('Basic E2E', () => {
         cy.wait(2000);
 
         // Navigate to the newly created recipe
-        cy.get('.text-lg').eq(0).should('have.text', recipeName).click();
+        cy.get('[data-cy="recipe-card-title"]')
+            .contains(recipeName)
+            .should('be.visible')
+            .click();
         cy.task('log', '🧪 Recipe creation completed');
 
         // Verify recipe creation details
@@ -217,7 +220,8 @@ describe('Basic E2E', () => {
         cy.url().then((url) => {
             if (!url.includes('/recipes/')) {
                 // Navigate to recipe if not already there
-                cy.contains('.text-lg', recipeName, { timeout: 15000 })
+                cy.get('[data-cy="recipe-card-title"]')
+                    .contains(recipeName)
                     .should('be.visible')
                     .scrollIntoView()
                     .click({ force: true });

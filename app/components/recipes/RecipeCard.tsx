@@ -59,7 +59,10 @@ const RecipeCard = memo(function RecipeCard({
                         </div>
                     )}
                 </div>
-                <div className="text-lg font-semibold dark:text-neutral-100">
+                <div
+                    className="text-lg font-semibold dark:text-neutral-100"
+                    data-cy="recipe-card-title"
+                >
                     {data.title}
                 </div>
                 {user ? (
