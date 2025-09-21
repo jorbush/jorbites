@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import Button from '@/app/components/buttons/Button';
 import Heading from '@/app/components/navigation/Heading';
@@ -18,20 +18,43 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     showReset,
 }) => {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { t } = useTranslation();
+
+    const searchQuery = searchParams?.get('search');
+    const category = searchParams?.get('category');
+
+    // Customize messages based on current filters
+    let displayTitle = title;
+    let displaySubtitle = subtitle;
+    let buttonLabel = t('remove_all_filters');
+
+    if (searchQuery && !category) {
+        displayTitle = t('no_recipes_found') || 'No recipes found';
+        displaySubtitle =
+            t('no_search_results_subtitle') ||
+            'Try searching with different keywords or check your spelling.';
+        buttonLabel = t('clear_search') || 'Clear search';
+    } else if (searchQuery && category) {
+        displayTitle = t('no_recipes_found') || 'No recipes found';
+        displaySubtitle =
+            t('no_search_category_results') ||
+            'Try removing the category filter or changing your search terms.';
+        buttonLabel = t('remove_all_filters') || 'Remove all filters';
+    }
 
     return (
         <div className="flex h-[60vh] flex-col items-center justify-center gap-2">
             <Heading
                 center
-                title={String(t(title.toLowerCase().replace(/ /g, '_')))}
-                subtitle={String(t(subtitle.toLowerCase().replace(/ /g, '_')))}
+                title={displayTitle}
+                subtitle={displaySubtitle}
             />
             <div className="mt-4 w-48">
                 {showReset && (
                     <Button
                         outline
-                        label={t('remove_all_filters')}
+                        label={buttonLabel}
                         onClick={() => router.push('/')}
                     />
                 )}

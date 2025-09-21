@@ -31,7 +31,7 @@
     "eslint": "^9.23.0",
     "eslint-config-next": "15.2.3",
     "eslint-plugin-unused-imports": "^4.1.4",
-    "framer-motion": "^12.4.2",
+    "framer-motion": "^12.23.16",
     "gray-matter": "^4.0.3",
     "i18next": "^22.5.1",
     "i18next-browser-languagedetector": "^7.0.2",

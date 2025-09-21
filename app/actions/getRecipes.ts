@@ -6,6 +6,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 
 export interface IRecipesParams {
     category?: string;
+    search?: string;
     page?: number;
     limit?: number;
 }
@@ -29,12 +30,19 @@ export default async function getRecipes(
     params: IRecipesParams
 ): Promise<ServerResponse<RecipesResponse>> {
     try {
-        const { category, page = 1, limit = 10 } = params;
+        const { category, search, page = 1, limit = 10 } = params;
 
         let query: any = {};
 
         if (typeof category === 'string') {
             query.category = category;
+        }
+
+        if (typeof search === 'string' && search.trim()) {
+            query.title = {
+                contains: search.trim(),
+                mode: 'insensitive',
+            };
         }
 
         if (process.env.ENV === 'production') {
