@@ -235,7 +235,7 @@ const Search: React.FC<SearchProps> = ({ onSearchModeChange }) => {
                                         handleSearchChange(e.target.value)
                                     }
                                     onKeyDown={handleKeyDown}
-                                    className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 min-h-[40px] w-full rounded-full border border-neutral-300 bg-white py-2 pr-10 pl-4 text-sm transition-all outline-none focus:ring-2 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+                                    className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 text-md min-h-[40px] w-full rounded-full border border-neutral-300 bg-white py-2 pr-10 pl-4 transition-all outline-none focus:ring-2 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                                 />
                                 {searchQuery && (
                                     <button
