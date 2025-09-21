@@ -233,7 +233,7 @@
     "co_cooks": "Cuiners",
     "linked_recipes": "Receptes Relacionades",
     "search_users": "Cercar Usuaris",
-    "search_recipes": "Cercar Receptes",
+    "search_recipes": "Cercar receptes",
     "no_users_found": "No s'han trobat usuaris",
     "selected_co_cooks": "Cuiners Seleccionats",
     "selected_linked_recipes": "Receptes Relacionades Seleccionades",
@@ -473,5 +473,9 @@
     "developer_description": "Jorbites va ser creat amb passió per la tecnologia i les arts culinàries. Construït utilitzant tecnologies web modernes per proporcionar la millor experiència d'usuari possible.",
     "get_started": "Començar",
     "get_started_description": "Llest per unir-te a la nostra comunitat culinària? Comença explorant receptes o crea el teu compte per començar a compartir les teves pròpies creacions.",
-    "explore_recipes": "Explorar Receptes"
+    "explore_recipes": "Explorar Receptes",
+    "search_and_filter": "Cercar i filtrar",
+    "no_search_results_subtitle": "Prova de cercar amb paraules clau diferents o verifica l'ortografia.",
+    "no_search_category_results": "Prova de treure el filtre de categoria o canviar els teus termes de cerca.",
+    "clear_search": "Netejar cerca"
 }

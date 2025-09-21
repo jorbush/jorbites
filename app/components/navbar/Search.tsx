@@ -157,7 +157,7 @@ const Search: React.FC<SearchProps> = ({ onSearchModeChange }) => {
                                 ref={inputRef}
                                 type="text"
                                 placeholder={
-                                    t('search_recipes_placeholder') ||
+                                    t('search_recipes') + '...' ||
                                     'Search recipes...'
                                 }
                                 value={searchQuery}
@@ -227,7 +227,7 @@ const Search: React.FC<SearchProps> = ({ onSearchModeChange }) => {
                                     ref={inputRef}
                                     type="text"
                                     placeholder={
-                                        t('search_recipes_placeholder') ||
+                                        t('search_recipes') + '...' ||
                                         'Search recipes...'
                                     }
                                     value={searchQuery}
