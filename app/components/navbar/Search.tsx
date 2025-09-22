@@ -100,15 +100,12 @@ const Search: React.FC<SearchProps> = ({
 
             if (value.trim()) {
                 params.set('search', value.trim());
-                params.delete('category'); // Clear category when searching
             } else {
-                // Keep search mode active even with empty input
-                // Only remove search param when explicitly exiting search mode
                 params.delete('search');
             }
 
             const newUrl = params.toString() ? `/?${params.toString()}` : '/';
-            router.replace(newUrl); // Use replace instead of push for live search
+            router.replace(newUrl);
         }, 300)
     ).current;
 
