@@ -1,5 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import {
+    render,
+    screen,
+    fireEvent,
+    cleanup,
+    waitFor,
+} from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Navbar from '@/app/components/navbar/Navbar';
 import { SafeUser } from '@/app/types';
@@ -97,7 +103,10 @@ describe('<Navbar />', () => {
         const search = screen.getByTestId('search');
 
         fireEvent.click(search);
-        expect(screen.getByTestId('categories')).toBeDefined();
+        waitFor(() => {
+            fireEvent.click(screen.getByTestId('filter-button'));
+            expect(screen.getByTestId('categories')).toBeDefined();
+        });
     });
 
     it('shows Categories only on main page when search mode is active', () => {
@@ -106,8 +115,11 @@ describe('<Navbar />', () => {
         const search = screen.getByTestId('search');
 
         fireEvent.click(search);
-        // On main page (mocked as '/'), categories should show
-        expect(screen.getByTestId('categories')).toBeDefined();
+        waitFor(() => {
+            // On main page (mocked as '/'), categories should show
+            fireEvent.click(screen.getByTestId('filter-button'));
+            expect(screen.getByTestId('categories')).toBeDefined();
+        });
     });
 
     it('passes currentUser to UserMenu', () => {

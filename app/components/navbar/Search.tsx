@@ -190,6 +190,7 @@ const Search: React.FC<SearchProps> = ({
                                 t('filter_categories') || 'Filter by categories'
                             }
                             aria-expanded={isFilterOpen}
+                            data-testid="filter-button"
                         >
                             <FiFilter size={18} />
                             {isFiltering && (
@@ -278,6 +279,7 @@ const Search: React.FC<SearchProps> = ({
                                 t('filter_categories') || 'Filter by categories'
                             }
                             aria-expanded={isFilterOpen}
+                            data-testid="filter-button"
                         >
                             <FiFilter size={18} />
                             {isFiltering && (

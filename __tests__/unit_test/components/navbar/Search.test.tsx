@@ -24,6 +24,7 @@ vi.mock('react-icons/fi', () => ({
     FiChevronLeft: () => (
         <div data-testid="mock-chevron-left">Chevron Left</div>
     ),
+    FiFilter: () => <div data-testid="mock-filter-icon">Filter Icon</div>,
 }));
 
 // Mock useMediaQuery hook
