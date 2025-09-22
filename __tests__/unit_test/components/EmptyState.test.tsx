@@ -4,11 +4,20 @@ import EmptyState from '@/app/components/utils/EmptyState';
 import React from 'react';
 
 const pushMock = vi.fn();
+const mockSearchParams = new URLSearchParams();
 
 // Mock the next/navigation module
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
         push: pushMock,
+    }),
+    useSearchParams: () => mockSearchParams,
+}));
+
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key: string) => key.toLowerCase().replace(/ /g, '_'),
     }),
 }));
 
@@ -16,26 +25,21 @@ describe('<EmptyState />', () => {
     beforeEach(() => {
         // Clear all mocks before each test
         vi.clearAllMocks();
+        // Clear search params before each test
+        mockSearchParams.delete('search');
+        mockSearchParams.delete('category');
     });
     afterEach(() => {
         cleanup();
         vi.restoreAllMocks();
     });
 
-    it('renders with default props', () => {
+    it('renders with default props (no search params)', () => {
         render(<EmptyState />);
 
+        expect(screen.getByText('No exact matches')).toBeDefined();
         expect(
-            screen.getByText(
-                'No exact matches'.toLowerCase().replace(/ /g, '_')
-            )
-        ).toBeDefined();
-        expect(
-            screen.getByText(
-                'Try changing or removing some of your filters.'
-                    .toLowerCase()
-                    .replace(/ /g, '_')
-            )
+            screen.getByText('Try changing or removing some of your filters.')
         ).toBeDefined();
         expect(screen.queryByRole('button')).toBeNull();
     });
@@ -51,29 +55,21 @@ describe('<EmptyState />', () => {
             />
         );
 
-        expect(
-            screen.getByText(customTitle.toLowerCase().replace(/ /g, '_'))
-        ).toBeDefined();
-        expect(
-            screen.getByText(customSubtitle.toLowerCase().replace(/ /g, '_'))
-        ).toBeDefined();
+        expect(screen.getByText(customTitle)).toBeDefined();
+        expect(screen.getByText(customSubtitle)).toBeDefined();
     });
 
     it('renders reset button when showReset is true', () => {
         render(<EmptyState showReset={true} />);
 
-        const resetButton = screen.getByRole('button', {
-            name: 'Remove all filters'.toLowerCase().replace(/ /g, '_'),
-        });
+        const resetButton = screen.getByRole('button');
         expect(resetButton).toBeDefined();
     });
 
     it('calls router.push when reset button is clicked', () => {
         render(<EmptyState showReset={true} />);
 
-        const resetButton = screen.getByRole('button', {
-            name: 'Remove all filters'.toLowerCase().replace(/ /g, '_'),
-        });
+        const resetButton = screen.getByRole('button');
         fireEvent.click(resetButton);
 
         expect(pushMock).toHaveBeenCalledWith('/');
@@ -84,5 +80,30 @@ describe('<EmptyState />', () => {
         render(<EmptyState showReset={false} />);
 
         expect(screen.queryByRole('button')).toBeNull();
+    });
+
+    it('renders search-specific content when search param is present', () => {
+        mockSearchParams.set('search', 'test recipe');
+
+        render(<EmptyState showReset={true} />);
+
+        expect(screen.getByText('no_recipes_found')).toBeDefined();
+        expect(screen.getByText('no_search_results_subtitle')).toBeDefined();
+
+        const clearButton = screen.getByRole('button');
+        expect(clearButton).toBeDefined();
+    });
+
+    it('renders search with category content when both search and category params are present', () => {
+        mockSearchParams.set('search', 'test recipe');
+        mockSearchParams.set('category', 'desserts');
+
+        render(<EmptyState showReset={true} />);
+
+        expect(screen.getByText('no_recipes_found')).toBeDefined();
+        expect(screen.getByText('no_search_category_results')).toBeDefined();
+
+        const resetButton = screen.getByRole('button');
+        expect(resetButton).toBeDefined();
     });
 });

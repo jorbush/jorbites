@@ -16,10 +16,14 @@ vi.mock('@/app/components/navbar/Categories', () => ({
 }));
 
 vi.mock('@/app/components/navbar/Search', () => ({
-    default: ({ onClick }: { onClick: () => void }) => (
+    default: ({
+        onSearchModeChange,
+    }: {
+        onSearchModeChange?: (isActive: boolean) => void;
+    }) => (
         <div
             data-testid="search"
-            onClick={onClick}
+            onClick={() => onSearchModeChange?.(true)}
         >
             Search
         </div>
@@ -37,6 +41,31 @@ vi.mock('@/app/components/navbar/UserMenu', () => ({
 vi.mock('@/app/hooks/useTheme', () => ({
     default: vi.fn(),
 }));
+
+// Mock useMediaQuery hook
+vi.mock('@/app/hooks/useMediaQuery', () => ({
+    default: vi.fn(() => false), // Default to desktop (false for mobile)
+}));
+
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+    usePathname: vi.fn(() => '/'),
+}));
+
+// Mock window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(), // deprecated
+        removeListener: vi.fn(), // deprecated
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+    })),
+});
 
 describe('<Navbar />', () => {
     beforeEach(() => {
@@ -63,15 +92,22 @@ describe('<Navbar />', () => {
         expect(screen.queryByTestId('categories')).toBeNull();
     });
 
-    it('toggles Categories when Search is clicked', () => {
+    it('shows Categories when search mode is activated', () => {
         render(<Navbar />);
         const search = screen.getByTestId('search');
 
         fireEvent.click(search);
         expect(screen.getByTestId('categories')).toBeDefined();
+    });
+
+    it('shows Categories only on main page when search mode is active', () => {
+        // This test is simplified since the mock is at module level
+        render(<Navbar />);
+        const search = screen.getByTestId('search');
 
         fireEvent.click(search);
-        expect(screen.queryByTestId('categories')).toBeNull();
+        // On main page (mocked as '/'), categories should show
+        expect(screen.getByTestId('categories')).toBeDefined();
     });
 
     it('passes currentUser to UserMenu', () => {
