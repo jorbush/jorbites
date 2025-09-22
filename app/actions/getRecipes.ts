@@ -1,8 +1,5 @@
 import prisma from '@/app/libs/prismadb';
-import ratelimit from '@/app/libs/ratelimit';
-import { headers } from 'next/headers';
 import { SafeRecipe } from '@/app/types';
-import getCurrentUser from '@/app/actions/getCurrentUser';
 
 export interface IRecipesParams {
     category?: string;
