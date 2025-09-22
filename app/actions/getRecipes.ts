@@ -45,22 +45,24 @@ export default async function getRecipes(
             };
         }
 
-        if (process.env.ENV === 'production') {
-            const currentUser = await getCurrentUser();
-            const rateLimitKey = currentUser
-                ? currentUser.id
-                : ((await headers()).get('x-forwarded-for') ?? '');
-            const { success, reset } = await ratelimit.limit(rateLimitKey);
-            if (!success) {
-                return {
-                    data: null,
-                    error: {
-                        code: 'RATE_LIMIT_EXCEEDED',
-                        message: `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`,
-                    },
-                };
-            }
-        }
+        // Commenting because of Search implementation
+        // TODO: Re-enable rate limiting somehow
+        // if (process.env.ENV === 'production') {
+        //     const currentUser = await getCurrentUser();
+        //     const rateLimitKey = currentUser
+        //         ? currentUser.id
+        //         : ((await headers()).get('x-forwarded-for') ?? '');
+        //     const { success, reset } = await ratelimit.limit(rateLimitKey);
+        //     if (!success) {
+        //         return {
+        //             data: null,
+        //             error: {
+        //                 code: 'RATE_LIMIT_EXCEEDED',
+        //                 message: `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`,
+        //             },
+        //         };
+        //     }
+        // }
 
         const recipes = await prisma.recipe.findMany({
             where: query,
