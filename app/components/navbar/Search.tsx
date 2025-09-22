@@ -56,8 +56,8 @@ const Search: React.FC<SearchProps> = ({ onSearchModeChange }) => {
             // Exit search mode - set flag to prevent useEffect from interfering
             setIsExplicitlyExiting(true);
             setSearchQuery('');
-            // Always clear search from URL when exiting search mode
-            if (isMainPage) {
+            // Always clear search from URL when exiting search mode and search content is present
+            if (isMainPage && searchQuery.trim()) {
                 const params = new URLSearchParams(
                     searchParams?.toString() || ''
                 );
@@ -261,7 +261,7 @@ const Search: React.FC<SearchProps> = ({ onSearchModeChange }) => {
                             duration: 0.3,
                             ease: 'easeInOut',
                         }}
-                        className="flex w-full flex-row items-center justify-between"
+                        className="flex w-full flex-row items-center gap-1 md:gap-3"
                     >
                         <Logo />
                         <button

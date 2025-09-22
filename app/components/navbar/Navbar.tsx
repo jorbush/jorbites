@@ -40,7 +40,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                             />
                             {/* Animated UserMenu - hide during search mode on both mobile and desktop */}
                             <AnimatePresence mode="wait">
-                                {(!isMobile && !isSearchModeActive) ||
+                                {!isMobile ||
+                                !isMainPage ||
                                 (isMobile && !isMobileSearchActive) ? (
                                     <motion.div
                                         key="user-menu"
