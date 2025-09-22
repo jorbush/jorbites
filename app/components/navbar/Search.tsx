@@ -5,7 +5,7 @@ import debounce from 'lodash/debounce';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BiSearch, BiX } from 'react-icons/bi';
-import { FiChevronLeft } from 'react-icons/fi';
+import { FiChevronLeft, FiFilter } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import Logo from '@/app/components/navbar/Logo';
@@ -16,7 +16,11 @@ interface SearchProps {
     onSearchModeChange?: (isSearchMode: boolean) => void;
 }
 
-const Search: React.FC<SearchProps> = ({ onSearchModeChange }) => {
+const Search: React.FC<SearchProps> = ({
+    onSearchModeChange,
+    onFilterToggle,
+    isFilterOpen,
+}) => {
     const { t } = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -177,6 +181,20 @@ const Search: React.FC<SearchProps> = ({ onSearchModeChange }) => {
                                 </button>
                             )}
                         </div>
+                        <button
+                            onClick={onFilterToggle}
+                            className={`rounded-full p-2 shadow-xs transition hover:shadow-md ${
+                                isFilterOpen
+                                    ? 'bg-green-450 dark:text-dark text-white'
+                                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
+                            }`}
+                            aria-label={
+                                t('filter_categories') || 'Filter by categories'
+                            }
+                            aria-expanded={isFilterOpen}
+                        >
+                            <FiFilter size={18} />
+                        </button>
                     </motion.form>
                 ) : (
                     // Desktop button mode - only search button
@@ -205,7 +223,7 @@ const Search: React.FC<SearchProps> = ({ onSearchModeChange }) => {
                         exit={{ x: '100%', opacity: 0 }}
                         transition={{
                             type: 'tween',
-                            duration: 0.3,
+                            duration: 0.1,
                             ease: 'easeInOut',
                         }}
                         className="flex w-full items-center gap-3"
@@ -248,6 +266,20 @@ const Search: React.FC<SearchProps> = ({ onSearchModeChange }) => {
                                 )}
                             </div>
                         </form>
+                        <button
+                            onClick={onFilterToggle}
+                            className={`rounded-full p-2 shadow-xs transition hover:shadow-md ${
+                                isFilterOpen
+                                    ? 'bg-green-450 dark:text-dark text-white'
+                                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
+                            }`}
+                            aria-label={
+                                t('filter_categories') || 'Filter by categories'
+                            }
+                            aria-expanded={isFilterOpen}
+                        >
+                            <FiFilter size={18} />
+                        </button>
                     </motion.div>
                 ) : (
                     // Mobile normal mode

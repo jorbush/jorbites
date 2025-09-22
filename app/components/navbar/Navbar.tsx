@@ -17,6 +17,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     const [isSearchModeActive, setIsSearchModeActive] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
     const isMobile = useMediaQuery('(max-width: 768px)');
     const pathname = usePathname();
     useTheme();
@@ -29,6 +30,10 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
         setIsSearchModeActive(isActive);
     }, []);
 
+    const toggleFilter = useCallback(() => {
+        setIsFilterOpen((value) => !value);
+    }, []);
+
     return (
         <header className="dark:bg-dark fixed z-10 w-full bg-white shadow-xs">
             <nav aria-label="Main navigation">
@@ -37,6 +42,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                         <div className="flex min-h-[48px] flex-row items-center justify-between gap-3 md:gap-0">
                             <Search
                                 onSearchModeChange={handleSearchModeChange}
+                                onFilterToggle={toggleFilter}
+                                isFilterOpen={isFilterOpen}
                             />
                             {/* Animated UserMenu - hide during search mode on both mobile and desktop */}
                             <AnimatePresence mode="wait">
@@ -65,7 +72,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                 </div>
                 {/* Show categories below navbar */}
                 <AnimatePresence>
-                    {isMainPage && isSearchModeActive && (
+                    {isMainPage && isFilterOpen && (
                         <motion.div
                             key="categories"
                             initial={{ height: 0, opacity: 0 }}

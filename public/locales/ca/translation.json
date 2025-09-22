@@ -477,5 +477,6 @@
     "search_and_filter": "Cercar i filtrar",
     "no_search_results_subtitle": "Prova de cercar amb paraules clau diferents o verifica l'ortografia.",
     "no_search_category_results": "Prova de treure el filtre de categoria o canviar els teus termes de cerca.",
-    "clear_search": "Netejar cerca"
+    "clear_search": "Netejar cerca",
+    "filter_categories": "Filtrar categories"
 }
