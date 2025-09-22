@@ -33,6 +33,7 @@ const Search: React.FC<SearchProps> = ({
 
     const isMainPage = pathname === '/';
     const currentSearch = searchParams?.get('search') || '';
+    const isFiltering = searchParams?.get('category') || '';
 
     // Initialize search query from URL - but don't automatically exit search mode
     useEffect(() => {
@@ -183,7 +184,7 @@ const Search: React.FC<SearchProps> = ({
                         </div>
                         <button
                             onClick={onFilterToggle}
-                            className={`rounded-full p-2 shadow-xs transition hover:shadow-md ${
+                            className={`relative rounded-full p-2 shadow-xs transition hover:shadow-md ${
                                 isFilterOpen
                                     ? 'bg-green-450 dark:text-dark text-white'
                                     : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
@@ -194,6 +195,9 @@ const Search: React.FC<SearchProps> = ({
                             aria-expanded={isFilterOpen}
                         >
                             <FiFilter size={18} />
+                            {isFiltering && (
+                                <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
+                            )}
                         </button>
                     </motion.form>
                 ) : (
@@ -268,7 +272,7 @@ const Search: React.FC<SearchProps> = ({
                         </form>
                         <button
                             onClick={onFilterToggle}
-                            className={`rounded-full p-2 shadow-xs transition hover:shadow-md ${
+                            className={`relative rounded-full p-2 shadow-xs transition hover:shadow-md ${
                                 isFilterOpen
                                     ? 'bg-green-450 dark:text-dark text-white'
                                     : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
@@ -279,6 +283,9 @@ const Search: React.FC<SearchProps> = ({
                             aria-expanded={isFilterOpen}
                         >
                             <FiFilter size={18} />
+                            {isFiltering && (
+                                <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
+                            )}
                         </button>
                     </motion.div>
                 ) : (
