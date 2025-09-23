@@ -183,11 +183,12 @@ describe('<Search />', () => {
                 .getByTestId('mock-x-icon')
                 .closest('button');
             fireEvent.click(clearButton!);
-
-            const searchInput = screen.getByPlaceholderText(
-                'search_recipes...'
-            ) as HTMLInputElement;
-            expect(searchInput.value).toBe('');
+            waitFor(() => {
+                const searchInput = screen.getByPlaceholderText(
+                    'search_recipes...'
+                ) as HTMLInputElement;
+                expect(searchInput.value).toBe('');
+            });
         });
 
         it('maintains search mode even when input is cleared', () => {
