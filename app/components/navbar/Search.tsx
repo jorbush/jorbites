@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -114,7 +114,7 @@ const Search: React.FC<SearchProps> = ({
 
     const handleSearchChange = (value: string) => {
         setSearchQuery(value);
-        debouncedUrlUpdate.current(value);
+        debouncedUrlUpdate.current?.(value);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
