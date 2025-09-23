@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import debounce from 'lodash/debounce';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,8 +35,21 @@ const Search: React.FC<SearchProps> = ({
     const currentSearch = searchParams?.get('search') || '';
     const isFiltering = searchParams?.get('category') || '';
 
-    // Initialize search query from URL - but don't automatically exit search mode
+    const debouncedUrlUpdate = useRef<ReturnType<typeof debounce> | null>(null);
+
     useEffect(() => {
+        debouncedUrlUpdate.current = debounce((value: string) => {
+            if (!isMainPage) return;
+            const params = new URLSearchParams(searchParams?.toString() || '');
+            if (value.trim()) {
+                params.set('search', value.trim());
+            } else {
+                params.delete('search');
+            }
+            router.replace(params.toString() ? `/?${params.toString()}` : '/');
+        }, 1000); // 1 second debounce on URL update in order to avoid request and typing conflicts
+
+        // Initialize search query from URL - but don't automatically exit search mode
         if (currentSearch) {
             setSearchQuery(currentSearch);
             // If we have a search query, enter search mode (but not if we're explicitly exiting)
@@ -54,7 +67,15 @@ const Search: React.FC<SearchProps> = ({
                 setIsExplicitlyExiting(false);
             }
         }
-    }, [currentSearch, isSearchMode, onSearchModeChange, isExplicitlyExiting]);
+    }, [
+        searchParams,
+        isMainPage,
+        router,
+        currentSearch,
+        isSearchMode,
+        onSearchModeChange,
+        isExplicitlyExiting,
+    ]);
 
     const handleSearchToggle = () => {
         if (isSearchMode) {
@@ -91,28 +112,9 @@ const Search: React.FC<SearchProps> = ({
         // Search results update automatically via URL changes in handleSearchChange
     };
 
-    // Debounced URL update for live search
-    const debouncedUrlUpdate = useRef(
-        debounce((value: string) => {
-            if (!isMainPage) return;
-
-            const params = new URLSearchParams(searchParams?.toString() || '');
-
-            if (value.trim()) {
-                params.set('search', value.trim());
-            } else {
-                params.delete('search');
-            }
-
-            const newUrl = params.toString() ? `/?${params.toString()}` : '/';
-            router.replace(newUrl);
-        }, 300)
-    ).current;
-
     const handleSearchChange = (value: string) => {
         setSearchQuery(value);
-        // Trigger debounced URL update for live search
-        debouncedUrlUpdate(value);
+        debouncedUrlUpdate.current(value);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
