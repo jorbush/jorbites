@@ -1,7 +1,7 @@
 export const JORBITES_URL = 'https://jorbites.com';
 export const RECIPE_TITLE_MAX_LENGTH = 35;
 export const RECIPE_DESCRIPTION_MAX_LENGTH = 500;
-export const RECIPE_INGREDIENT_MAX_LENGTH = 100;
+export const RECIPE_INGREDIENT_MAX_LENGTH = 135;
 export const RECIPE_STEP_MAX_LENGTH = 500;
 export const RECIPE_MAX_INGREDIENTS = 30;
 export const RECIPE_MAX_STEPS = 30;
