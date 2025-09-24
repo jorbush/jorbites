@@ -233,7 +233,7 @@
     "co_cooks": "Co-Cooks",
     "linked_recipes": "Linked Recipes",
     "search_users": "Search Users",
-    "search_recipes": "Search Recipes",
+    "search_recipes": "Search recipes",
     "no_users_found": "No users found",
     "selected_co_cooks": "Selected Co-Cooks",
     "selected_linked_recipes": "Selected Linked Recipes",
@@ -469,5 +469,10 @@
     "developer_description": "Jorbites was created with passion for both technology and culinary arts. Built using modern web technologies to provide the best user experience possible.",
     "get_started": "Get Started",
     "get_started_description": "Ready to join our culinary community? Start exploring recipes or create your account to begin sharing your own creations.",
-    "explore_recipes": "Explore Recipes"
+    "explore_recipes": "Explore Recipes",
+    "search_and_filter": "Search and filter",
+    "no_search_results_subtitle": "Try searching with different keywords or check your spelling.",
+    "no_search_category_results": "Try removing the category filter or changing your search terms.",
+    "clear_search": "Clear search",
+    "filter_categories": "Filter categories"
 }

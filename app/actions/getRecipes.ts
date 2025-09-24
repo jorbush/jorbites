@@ -1,11 +1,9 @@
 import prisma from '@/app/libs/prismadb';
-import ratelimit from '@/app/libs/ratelimit';
-import { headers } from 'next/headers';
 import { SafeRecipe } from '@/app/types';
-import getCurrentUser from '@/app/actions/getCurrentUser';
 
 export interface IRecipesParams {
     category?: string;
+    search?: string;
     page?: number;
     limit?: number;
 }
@@ -29,7 +27,7 @@ export default async function getRecipes(
     params: IRecipesParams
 ): Promise<ServerResponse<RecipesResponse>> {
     try {
-        const { category, page = 1, limit = 10 } = params;
+        const { category, search, page = 1, limit = 10 } = params;
 
         let query: any = {};
 
@@ -37,22 +35,31 @@ export default async function getRecipes(
             query.category = category;
         }
 
-        if (process.env.ENV === 'production') {
-            const currentUser = await getCurrentUser();
-            const rateLimitKey = currentUser
-                ? currentUser.id
-                : ((await headers()).get('x-forwarded-for') ?? '');
-            const { success, reset } = await ratelimit.limit(rateLimitKey);
-            if (!success) {
-                return {
-                    data: null,
-                    error: {
-                        code: 'RATE_LIMIT_EXCEEDED',
-                        message: `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`,
-                    },
-                };
-            }
+        if (typeof search === 'string' && search.trim()) {
+            query.title = {
+                contains: search.trim(),
+                mode: 'insensitive',
+            };
         }
+
+        // Commenting because of Search implementation
+        // TODO: Re-enable rate limiting somehow
+        // if (process.env.ENV === 'production') {
+        //     const currentUser = await getCurrentUser();
+        //     const rateLimitKey = currentUser
+        //         ? currentUser.id
+        //         : ((await headers()).get('x-forwarded-for') ?? '');
+        //     const { success, reset } = await ratelimit.limit(rateLimitKey);
+        //     if (!success) {
+        //         return {
+        //             data: null,
+        //             error: {
+        //                 code: 'RATE_LIMIT_EXCEEDED',
+        //                 message: `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`,
+        //             },
+        //         };
+        //     }
+        // }
 
         const recipes = await prisma.recipe.findMany({
             where: query,

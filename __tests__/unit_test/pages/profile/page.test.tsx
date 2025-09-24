@@ -17,6 +17,7 @@ vi.mock('next/navigation', () => ({
         push: vi.fn(),
         query: {},
     })),
+    useSearchParams: vi.fn(() => new URLSearchParams()),
 }));
 
 vi.mock('react-i18next', () => ({
@@ -84,9 +85,9 @@ describe('ProfilePage', () => {
         const { getByText } = render(profilePage);
 
         await waitFor(() => {
-            expect(getByText('no_recipes_found')).toBeDefined();
+            expect(getByText('No recipes found')).toBeDefined();
             expect(
-                getByText('looks_like_this_user_has_not_created_recipes.')
+                getByText('Looks like this user has not created recipes.')
             ).toBeDefined();
         });
     });
@@ -188,9 +189,9 @@ describe('ProfilePage', () => {
 
         await waitFor(() => {
             expect(getByText('Test User')).toBeDefined();
-            expect(getByText('no_recipes_found')).toBeDefined();
+            expect(getByText('No recipes found')).toBeDefined();
             expect(
-                getByText('looks_like_this_user_has_not_created_recipes.')
+                getByText('Looks like this user has not created recipes.')
             ).toBeDefined();
         });
     });

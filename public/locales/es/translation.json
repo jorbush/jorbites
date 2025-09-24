@@ -234,7 +234,7 @@
     "co_cooks": "Cocineros",
     "linked_recipes": "Recetas Relacionadas",
     "search_users": "Buscar Usuarios",
-    "search_recipes": "Buscar Recetas",
+    "search_recipes": "Buscar recetas",
     "no_users_found": "No se encontraron usuarios",
     "selected_co_cooks": "Cocineros Seleccionados",
     "selected_linked_recipes": "Recetas Relacionadas Seleccionadas",
@@ -470,5 +470,10 @@
     "developer_description": "Jorbites fue creado con pasión por la tecnología y las artes culinarias. Construido usando tecnologías web modernas para proporcionar la mejor experiencia de usuario posible.",
     "get_started": "Empezar",
     "get_started_description": "¿Listo para unirte a nuestra comunidad culinaria? Comienza explorando recetas o crea tu cuenta para empezar a compartir tus propias creaciones.",
-    "explore_recipes": "Explorar Recetas"
+    "explore_recipes": "Explorar Recetas",
+    "search_and_filter": "Buscar y filtrar",
+    "no_search_results_subtitle": "Intenta buscar con palabras clave diferentes o verifica tu ortografía.",
+    "no_search_category_results": "Intenta quitar el filtro de categoría o cambiar tus términos de búsqueda.",
+    "clear_search": "Limpiar búsqueda",
+    "filter_categories": "Filtrar categorías"
 }

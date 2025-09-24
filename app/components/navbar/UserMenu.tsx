@@ -161,7 +161,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('events') || 'Events'}
-                                    isNew
                                     icon={FcCalendar}
                                 />
                                 <MenuItem

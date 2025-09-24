@@ -12,6 +12,7 @@ vi.mock('next/navigation', () => ({
         push: vi.fn(),
         query: {},
     })),
+    useSearchParams: vi.fn(() => new URLSearchParams()),
 }));
 
 vi.mock('next/headers', () => ({
@@ -35,9 +36,9 @@ describe('FavoritesPage', () => {
         const page = await FavoritesPage();
         const { findByText } = render(page);
 
-        const noFavText = await findByText('no_favorites_found');
+        const noFavText = await findByText('No favorites found');
         const noFavDesc = await findByText(
-            'looks_like_you_have_no_favorite_recipes.'
+            'Looks like you have no favorite recipes.'
         );
 
         expect(noFavText).toBeDefined();
