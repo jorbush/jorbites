@@ -174,7 +174,7 @@ const Search: React.FC<SearchProps> = ({
                             {searchQuery && (
                                 <button
                                     type="button"
-                                    onClick={() => setSearchQuery('')}
+                                    onClick={() => handleSearchChange('')}
                                     className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
                                 >
                                     <BiX size={16} />
@@ -262,7 +262,7 @@ const Search: React.FC<SearchProps> = ({
                                 {searchQuery && (
                                     <button
                                         type="button"
-                                        onClick={() => setSearchQuery('')}
+                                        onClick={() => handleSearchChange('')}
                                         className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
                                     >
                                         <BiX size={16} />
