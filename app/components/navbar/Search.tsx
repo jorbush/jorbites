@@ -88,10 +88,7 @@ const Search: React.FC<SearchProps> = ({
                     searchParams?.toString() || ''
                 );
                 params.delete('search');
-                const newUrl = params.toString()
-                    ? `/?${params.toString()}`
-                    : '/';
-                router.push(newUrl); // This will trigger useEffect which will complete the exit
+                router.push(params.toString() ? `/?${params.toString()}` : '/');
             } else {
                 // If not on main page, exit immediately
                 setIsSearchMode(false);
@@ -160,10 +157,7 @@ const Search: React.FC<SearchProps> = ({
                             <input
                                 ref={inputRef}
                                 type="text"
-                                placeholder={
-                                    t('search_recipes') + '...' ||
-                                    'Search recipes...'
-                                }
+                                placeholder={t('search_recipes') + '...'}
                                 value={searchQuery}
                                 onChange={(e) =>
                                     handleSearchChange(e.target.value)
@@ -248,10 +242,7 @@ const Search: React.FC<SearchProps> = ({
                                 <input
                                     ref={inputRef}
                                     type="text"
-                                    placeholder={
-                                        t('search_recipes') + '...' ||
-                                        'Search recipes...'
-                                    }
+                                    placeholder={t('search_recipes') + '...'}
                                     value={searchQuery}
                                     onChange={(e) =>
                                         handleSearchChange(e.target.value)
