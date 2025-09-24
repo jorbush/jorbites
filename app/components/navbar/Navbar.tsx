@@ -18,12 +18,10 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     const [isSearchModeActive, setIsSearchModeActive] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const isMobile = useMediaQuery('(max-width: 768px)');
+    const isMobile = useMediaQuery('(max-width: 807px)');
     const pathname = usePathname();
     useTheme();
-
     const isMainPage = pathname === '/';
-    // Check if search mode is active (search mode is active, regardless of content)
     const isMobileSearchActive = isMobile && isMainPage && isSearchModeActive;
 
     const handleSearchModeChange = useCallback((isActive: boolean) => {
@@ -45,7 +43,6 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                                 onFilterToggle={toggleFilter}
                                 isFilterOpen={isFilterOpen}
                             />
-                            {/* Animated UserMenu - hide during search mode on both mobile and desktop */}
                             <AnimatePresence mode="wait">
                                 {!isMobile ||
                                 !isMainPage ||
@@ -70,7 +67,6 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                         </div>
                     </Container>
                 </div>
-                {/* Show categories below navbar */}
                 <AnimatePresence>
                     {isMainPage && isFilterOpen && (
                         <motion.div
