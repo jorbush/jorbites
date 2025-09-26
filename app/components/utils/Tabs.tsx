@@ -23,6 +23,9 @@ const Tabs: React.FC<TabsProps> = ({
     className = '',
     'data-testid': dataTestId,
 }) => {
+    if (tabs.length <= 1) {
+        return null;
+    }
     return (
         <div
             className={`flex border-b border-gray-200 dark:border-neutral-600 ${className}`}

@@ -129,7 +129,7 @@ describe('<Tabs />', () => {
 
         // Should render the container but no tab buttons
         const tabsContainer = document.querySelector('.flex.border-b');
-        expect(tabsContainer).toBeTruthy();
+        expect(tabsContainer).toBeNull();
         expect(screen.queryByRole('button')).toBeNull();
     });
 
@@ -150,12 +150,10 @@ describe('<Tabs />', () => {
             />
         );
 
-        expect(screen.getByText('Only Tab')).toBeDefined();
-        expect(screen.getByTestId('only-tab-icon')).toBeDefined();
-
-        const tab = screen.getByTestId('tab-only-tab');
-        expect(tab.className).toContain('border-green-450');
-        expect(tab.className).toContain('font-medium');
+        // Should not render anything when there's only one tab
+        expect(screen.queryByText('Only Tab')).toBeNull();
+        expect(screen.queryByTestId('only-tab-icon')).toBeNull();
+        expect(screen.queryByRole('tablist')).toBeNull();
     });
 
     it('maintains flex-1 layout for all tabs regardless of content', () => {
