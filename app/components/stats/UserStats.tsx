@@ -69,88 +69,90 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
 
     return (
         <Container>
-            <div className="py-4">
-                <h2 className="mb-4 px-2 text-xl font-semibold dark:text-neutral-100">
-                    {t('cooking_statistics')}{' '}
-                </h2>
+            {recipeCount !== 0 && (
+                <div className="py-4">
+                    <h2 className="mb-4 px-2 text-xl font-semibold dark:text-neutral-100">
+                        {t('cooking_statistics')}{' '}
+                    </h2>
 
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-                    <StatCard
-                        title={t('recipes')}
-                        value={formatNumber(recipeCount)}
-                        icon={<IoFastFoodOutline />}
-                        iconBgColor="bg-green-100"
-                        iconDarkBgColor="dark:bg-green-900/30"
-                        iconColor="text-green-450"
-                        footer={recipesTrendFooter}
-                    />
+                    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                        <StatCard
+                            title={t('recipes')}
+                            value={formatNumber(recipeCount)}
+                            icon={<IoFastFoodOutline />}
+                            iconBgColor="bg-green-100"
+                            iconDarkBgColor="dark:bg-green-900/30"
+                            iconColor="text-green-450"
+                            footer={recipesTrendFooter}
+                        />
 
-                    <StatCard
-                        title={t('favorites')}
-                        value={formatNumber(user?.likesReceived || 0)}
-                        icon={<FaHeart />}
-                        iconBgColor="bg-red-100"
-                        iconDarkBgColor="dark:bg-red-900/30"
-                        iconColor="text-red-500"
-                        footer={likesFooter}
-                    />
+                        <StatCard
+                            title={t('favorites')}
+                            value={formatNumber(user?.likesReceived || 0)}
+                            icon={<FaHeart />}
+                            iconBgColor="bg-red-100"
+                            iconDarkBgColor="dark:bg-red-900/30"
+                            iconColor="text-red-500"
+                            footer={likesFooter}
+                        />
 
-                    <StatCard
-                        title={t('cooking_time')}
-                        value={`${cookingTimeInHours}h`}
-                        icon={<IoTimeOutline />}
-                        iconBgColor="bg-blue-100"
-                        iconDarkBgColor="dark:bg-blue-900/30"
-                        iconColor="text-blue-500"
-                        footer={cookingTimeFooter}
-                    />
+                        <StatCard
+                            title={t('cooking_time')}
+                            value={`${cookingTimeInHours}h`}
+                            icon={<IoTimeOutline />}
+                            iconBgColor="bg-blue-100"
+                            iconDarkBgColor="dark:bg-blue-900/30"
+                            iconColor="text-blue-500"
+                            footer={cookingTimeFooter}
+                        />
 
-                    <StatCard
-                        title={
-                            t('this_year').charAt(0).toUpperCase() +
-                            t('this_year').slice(1)
-                        }
-                        value={user?.recipesThisYear || 0}
-                        icon={<IoStarOutline />}
-                        iconBgColor="bg-purple-100"
-                        iconDarkBgColor="dark:bg-purple-900/30"
-                        iconColor="text-purple-500"
-                        footer={thisYearFooter}
-                    />
+                        <StatCard
+                            title={
+                                t('this_year').charAt(0).toUpperCase() +
+                                t('this_year').slice(1)
+                            }
+                            value={user?.recipesThisYear || 0}
+                            icon={<IoStarOutline />}
+                            iconBgColor="bg-purple-100"
+                            iconDarkBgColor="dark:bg-purple-900/30"
+                            iconColor="text-purple-500"
+                            footer={thisYearFooter}
+                        />
+                    </div>
+
+                    <h2 className="mt-6 mb-4 px-2 text-xl font-semibold dark:text-neutral-100">
+                        {t('cooking_preferences')}{' '}
+                    </h2>
+
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <PreferenceCard
+                            title={t('most_used_category')}
+                            value={
+                                user?.mostUsedCategory
+                                    ? t(user.mostUsedCategory.toLowerCase())
+                                    : '-'
+                            }
+                            icon={<IoRestaurantOutline />}
+                            iconBgColor="bg-amber-100"
+                            iconDarkBgColor="dark:bg-amber-900/30"
+                            iconColor="text-amber-500"
+                        />
+
+                        <PreferenceCard
+                            title={t('most_used_method')}
+                            value={
+                                user?.mostUsedMethod
+                                    ? t(user.mostUsedMethod.toLowerCase())
+                                    : '-'
+                            }
+                            icon={<IoFlameOutline />}
+                            iconBgColor="bg-teal-100"
+                            iconDarkBgColor="dark:bg-teal-900/30"
+                            iconColor="text-teal-500"
+                        />
+                    </div>
                 </div>
-
-                <h2 className="mt-6 mb-4 px-2 text-xl font-semibold dark:text-neutral-100">
-                    {t('cooking_preferences')}{' '}
-                </h2>
-
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <PreferenceCard
-                        title={t('most_used_category')}
-                        value={
-                            user?.mostUsedCategory
-                                ? t(user.mostUsedCategory.toLowerCase())
-                                : '-'
-                        }
-                        icon={<IoRestaurantOutline />}
-                        iconBgColor="bg-amber-100"
-                        iconDarkBgColor="dark:bg-amber-900/30"
-                        iconColor="text-amber-500"
-                    />
-
-                    <PreferenceCard
-                        title={t('most_used_method')}
-                        value={
-                            user?.mostUsedMethod
-                                ? t(user.mostUsedMethod.toLowerCase())
-                                : '-'
-                        }
-                        icon={<IoFlameOutline />}
-                        iconBgColor="bg-teal-100"
-                        iconDarkBgColor="dark:bg-teal-900/30"
-                        iconColor="text-teal-500"
-                    />
-                </div>
-            </div>
+            )}
         </Container>
     );
 };
