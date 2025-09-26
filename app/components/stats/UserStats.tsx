@@ -69,7 +69,7 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
 
     return (
         <Container>
-            {recipeCount !== 0 && (
+            {recipeCount > 0 && (
                 <div className="py-4">
                     <h2 className="mb-4 px-2 text-xl font-semibold dark:text-neutral-100">
                         {t('cooking_statistics')}{' '}
