@@ -27,7 +27,8 @@ export const formatDateRange = (
     if (isSameDay) {
         return format(start, 'PPP', { locale });
     } else {
-        return `${format(start, 'PPP', { locale })} - ${format(end, 'PPP', { locale })}`;
+        const dateFormat = currentLocale === 'en' ? 'yyyy/MM/dd' : 'dd/MM/yyyy';
+        return `${format(start, dateFormat, { locale })} - ${format(end, dateFormat, { locale })}`;
     }
 };
 
