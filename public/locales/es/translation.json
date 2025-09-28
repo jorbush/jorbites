@@ -478,5 +478,6 @@
     "filter_categories": "Filtrar categorías",
     "title_a_z": "Título (A-Z)",
     "title_z_a": "Título (Z-A)",
-    "most_liked": "Más gustadas"
+    "most_liked": "Más gustadas",
+    "order_by": "Ordenar por"
 }

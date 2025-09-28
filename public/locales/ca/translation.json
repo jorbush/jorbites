@@ -481,5 +481,6 @@
     "filter_categories": "Filtrar categories",
     "title_a_z": "Títol (A-Z)",
     "title_z_a": "Títol (Z-A)",
-    "most_liked": "Més gustades"
+    "most_liked": "Més gustades",
+    "order_by": "Ordenar per"
 }
