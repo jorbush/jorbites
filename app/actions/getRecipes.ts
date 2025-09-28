@@ -6,6 +6,13 @@ export interface IRecipesParams {
     search?: string;
     page?: number;
     limit?: number;
+    orderBy?:
+        | 'newest'
+        | 'oldest'
+        | 'title_asc'
+        | 'title_desc'
+        | 'most_liked'
+        | 'most_commented';
 }
 
 export interface ServerResponse<T> {
@@ -27,7 +34,13 @@ export default async function getRecipes(
     params: IRecipesParams
 ): Promise<ServerResponse<RecipesResponse>> {
     try {
-        const { category, search, page = 1, limit = 10 } = params;
+        const {
+            category,
+            search,
+            page = 1,
+            limit = 10,
+            orderBy = 'newest',
+        } = params;
 
         let query: any = {};
 
@@ -61,11 +74,30 @@ export default async function getRecipes(
         //     }
         // }
 
+        // Determine order by criteria
+        let orderByClause: any;
+        switch (orderBy) {
+            case 'oldest':
+                orderByClause = { createdAt: 'asc' };
+                break;
+            case 'title_asc':
+                orderByClause = { title: 'asc' };
+                break;
+            case 'title_desc':
+                orderByClause = { title: 'desc' };
+                break;
+            case 'most_liked':
+                orderByClause = { numLikes: 'desc' };
+                break;
+            case 'newest':
+            default:
+                orderByClause = { createdAt: 'desc' };
+                break;
+        }
+
         const recipes = await prisma.recipe.findMany({
             where: query,
-            orderBy: {
-                createdAt: 'desc',
-            },
+            orderBy: orderByClause,
             skip: (page - 1) * limit,
             take: limit,
         });
