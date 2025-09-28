@@ -18,7 +18,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     const [isSearchModeActive, setIsSearchModeActive] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const isMobile = useMediaQuery('(max-width: 807px)');
+    const isMobile = useMediaQuery('(max-width: 850px)');
     const pathname = usePathname();
     useTheme();
     const isMainPage = pathname === '/';

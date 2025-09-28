@@ -475,5 +475,8 @@
     "no_search_results_subtitle": "Intenta buscar con palabras clave diferentes o verifica tu ortografía.",
     "no_search_category_results": "Intenta quitar el filtro de categoría o cambiar tus términos de búsqueda.",
     "clear_search": "Limpiar búsqueda",
-    "filter_categories": "Filtrar categorías"
+    "filter_categories": "Filtrar categorías",
+    "title_a_z": "Título (A-Z)",
+    "title_z_a": "Título (Z-A)",
+    "most_liked": "Más gustadas"
 }
