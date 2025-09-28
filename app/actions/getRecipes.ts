@@ -1,18 +1,13 @@
 import prisma from '@/app/libs/prismadb';
 import { SafeRecipe } from '@/app/types';
+import { OrderByType, getPrismaOrderByClause } from '@/app/utils/order-by';
 
 export interface IRecipesParams {
     category?: string;
     search?: string;
     page?: number;
     limit?: number;
-    orderBy?:
-        | 'newest'
-        | 'oldest'
-        | 'title_asc'
-        | 'title_desc'
-        | 'most_liked'
-        | 'most_commented';
+    orderBy?: OrderByType;
 }
 
 export interface ServerResponse<T> {
@@ -39,7 +34,7 @@ export default async function getRecipes(
             search,
             page = 1,
             limit = 10,
-            orderBy = 'newest',
+            orderBy = OrderByType.NEWEST,
         } = params;
 
         let query: any = {};
@@ -74,30 +69,9 @@ export default async function getRecipes(
         //     }
         // }
 
-        // Determine order by criteria
-        let orderByClause: any;
-        switch (orderBy) {
-            case 'oldest':
-                orderByClause = { createdAt: 'asc' };
-                break;
-            case 'title_asc':
-                orderByClause = { title: 'asc' };
-                break;
-            case 'title_desc':
-                orderByClause = { title: 'desc' };
-                break;
-            case 'most_liked':
-                orderByClause = { numLikes: 'desc' };
-                break;
-            case 'newest':
-            default:
-                orderByClause = { createdAt: 'desc' };
-                break;
-        }
-
         const recipes = await prisma.recipe.findMany({
             where: query,
-            orderBy: orderByClause,
+            orderBy: getPrismaOrderByClause(orderBy),
             skip: (page - 1) * limit,
             take: limit,
         });

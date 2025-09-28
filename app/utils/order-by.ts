@@ -1,0 +1,47 @@
+export enum OrderByType {
+    NEWEST = 'newest',
+    OLDEST = 'oldest',
+    TITLE_ASC = 'title_asc',
+    TITLE_DESC = 'title_desc',
+    MOST_LIKED = 'most_liked',
+}
+
+export const ORDER_BY_OPTIONS = [
+    OrderByType.NEWEST,
+    OrderByType.OLDEST,
+    OrderByType.TITLE_ASC,
+    OrderByType.TITLE_DESC,
+    OrderByType.MOST_LIKED,
+] as const;
+
+export const ORDER_BY_LABELS = {
+    [OrderByType.NEWEST]: 'newest_first',
+    [OrderByType.OLDEST]: 'oldest_first',
+    [OrderByType.TITLE_ASC]: 'title_a_z',
+    [OrderByType.TITLE_DESC]: 'title_z_a',
+    [OrderByType.MOST_LIKED]: 'most_liked',
+} as const;
+
+export const ORDER_BY_FALLBACK_LABELS = {
+    [OrderByType.NEWEST]: 'Newest first',
+    [OrderByType.OLDEST]: 'Oldest first',
+    [OrderByType.TITLE_ASC]: 'Title A-Z',
+    [OrderByType.TITLE_DESC]: 'Title Z-A',
+    [OrderByType.MOST_LIKED]: 'Most liked',
+} as const;
+
+export const getPrismaOrderByClause = (orderBy: OrderByType) => {
+    switch (orderBy) {
+        case OrderByType.OLDEST:
+            return { createdAt: 'asc' } as const;
+        case OrderByType.TITLE_ASC:
+            return { title: 'asc' } as const;
+        case OrderByType.TITLE_DESC:
+            return { title: 'desc' } as const;
+        case OrderByType.MOST_LIKED:
+            return { numLikes: 'desc' } as const;
+        case OrderByType.NEWEST:
+        default:
+            return { createdAt: 'desc' } as const;
+    }
+};

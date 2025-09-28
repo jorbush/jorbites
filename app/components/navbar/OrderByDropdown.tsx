@@ -5,6 +5,12 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiChevronDown } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
+import {
+    OrderByType,
+    ORDER_BY_OPTIONS,
+    ORDER_BY_LABELS,
+    ORDER_BY_FALLBACK_LABELS,
+} from '@/app/utils/order-by';
 
 interface OrderByDropdownProps {
     isMobile?: boolean;
@@ -21,7 +27,8 @@ const OrderByDropdown: React.FC<OrderByDropdownProps> = ({
     const orderDropdownRef = useRef<HTMLDivElement>(null);
 
     const isMainPage = pathname === '/';
-    const currentOrderBy = searchParams?.get('orderBy') || 'newest';
+    const currentOrderBy =
+        (searchParams?.get('orderBy') as OrderByType) || OrderByType.NEWEST;
 
     // Close order dropdown when clicking outside
     useEffect(() => {
@@ -55,29 +62,11 @@ const OrderByDropdown: React.FC<OrderByDropdownProps> = ({
         setIsOrderDropdownOpen(false);
     };
 
-    const getOrderLabel = (orderBy: string) => {
-        switch (orderBy) {
-            case 'oldest':
-                return t('oldest_first') || 'Oldest first';
-            case 'title_asc':
-                return t('title_a_z') || 'Title A-Z';
-            case 'title_desc':
-                return t('title_z_a') || 'Title Z-A';
-            case 'most_liked':
-                return t('most_liked') || 'Most liked';
-            case 'newest':
-            default:
-                return t('newest_first') || 'Newest first';
-        }
+    const getOrderLabel = (orderBy: OrderByType) => {
+        const translationKey = ORDER_BY_LABELS[orderBy];
+        const fallbackLabel = ORDER_BY_FALLBACK_LABELS[orderBy];
+        return t(translationKey) || fallbackLabel;
     };
-
-    const orderOptions = [
-        'newest',
-        'oldest',
-        'title_asc',
-        'title_desc',
-        'most_liked',
-    ];
 
     return (
         <div
@@ -119,7 +108,7 @@ const OrderByDropdown: React.FC<OrderByDropdownProps> = ({
                             isMobile ? 'w-40' : 'w-48'
                         }`}
                     >
-                        {orderOptions.map((orderBy) => (
+                        {ORDER_BY_OPTIONS.map((orderBy) => (
                             <button
                                 key={orderBy}
                                 onClick={() => handleOrderChange(orderBy)}
