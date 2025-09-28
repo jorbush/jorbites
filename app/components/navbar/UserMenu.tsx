@@ -95,7 +95,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             </div>
             {isOpen && (
                 <div
-                    className="dark:bg-dark absolute top-14 right-0 overflow-hidden rounded-xl bg-white text-sm shadow-md dark:text-neutral-100"
+                    className="dark:bg-dark absolute top-14 right-0 overflow-hidden rounded-xl border border-neutral-200 bg-white text-sm shadow-md dark:border-neutral-700 dark:text-neutral-100"
                     data-cy="user-menu-panel"
                 >
                     <div className="w-max cursor-pointer">

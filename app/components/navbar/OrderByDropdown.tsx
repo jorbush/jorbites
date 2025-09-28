@@ -50,10 +50,10 @@ const OrderByDropdown: React.FC<OrderByDropdownProps> = ({
         };
     }, [isOrderDropdownOpen]);
 
-    const handleOrderChange = (orderBy: string) => {
+    const handleOrderChange = (orderBy: OrderByType) => {
         if (!isMainPage) return;
         const params = new URLSearchParams(searchParams?.toString() || '');
-        if (orderBy === 'newest') {
+        if (orderBy === OrderByType.NEWEST) {
             params.delete('orderBy');
         } else {
             params.set('orderBy', orderBy);
@@ -104,27 +104,25 @@ const OrderByDropdown: React.FC<OrderByDropdownProps> = ({
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className={`absolute top-full right-0 z-50 mt-2 rounded-lg border border-neutral-200 bg-white py-2 shadow-lg dark:border-neutral-700 dark:bg-neutral-800 ${
-                            isMobile ? 'w-40' : 'w-48'
-                        }`}
+                        className="dark:bg-dark absolute top-full right-0 z-50 mt-2 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:text-neutral-100"
                     >
-                        {ORDER_BY_OPTIONS.map((orderBy) => (
-                            <button
-                                key={orderBy}
-                                onClick={() => handleOrderChange(orderBy)}
-                                className={`w-full text-left transition hover:bg-neutral-100 dark:hover:bg-neutral-700 ${
-                                    isMobile
-                                        ? 'px-3 py-2 text-xs'
-                                        : 'px-4 py-2 text-sm'
-                                } ${
-                                    currentOrderBy === orderBy
-                                        ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400'
-                                        : 'text-neutral-700 dark:text-neutral-300'
-                                }`}
-                            >
-                                {getOrderLabel(orderBy)}
-                            </button>
-                        ))}
+                        <div className="w-max cursor-pointer">
+                            {ORDER_BY_OPTIONS.map((orderBy) => (
+                                <div
+                                    key={orderBy}
+                                    onClick={() => handleOrderChange(orderBy)}
+                                    className={`flex w-full cursor-pointer items-center px-4 py-3 text-left text-sm transition hover:bg-neutral-100 dark:hover:bg-neutral-700 ${
+                                        currentOrderBy === orderBy
+                                            ? 'bg-green-450/10 text-green-450 dark:bg-green-450/20 dark:text-green-450'
+                                            : 'text-neutral-700 dark:text-neutral-300'
+                                    }`}
+                                >
+                                    <span className="whitespace-nowrap">
+                                        {getOrderLabel(orderBy)}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
