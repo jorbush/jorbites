@@ -474,5 +474,9 @@
     "no_search_results_subtitle": "Try searching with different keywords or check your spelling.",
     "no_search_category_results": "Try removing the category filter or changing your search terms.",
     "clear_search": "Clear search",
-    "filter_categories": "Filter categories"
+    "filter_categories": "Filter categories",
+    "title_a_z": "Title (A-Z)",
+    "title_z_a": "Title (Z-A)",
+    "most_liked": "Most Liked",
+    "order_by": "Order by"
 }

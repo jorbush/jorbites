@@ -9,6 +9,7 @@ import { FiChevronLeft, FiFilter } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import Logo from '@/app/components/navbar/Logo';
+import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
 
 interface SearchProps {
     onFilterToggle?: () => void;
@@ -175,6 +176,9 @@ const Search: React.FC<SearchProps> = ({
                                 </button>
                             )}
                         </div>
+
+                        <OrderByDropdown />
+
                         <button
                             onClick={onFilterToggle}
                             className={`relative rounded-full p-2 shadow-xs transition hover:shadow-md ${
@@ -261,6 +265,9 @@ const Search: React.FC<SearchProps> = ({
                                 )}
                             </div>
                         </form>
+
+                        <OrderByDropdown />
+
                         <button
                             onClick={onFilterToggle}
                             className={`relative rounded-full p-2 shadow-xs transition hover:shadow-md ${

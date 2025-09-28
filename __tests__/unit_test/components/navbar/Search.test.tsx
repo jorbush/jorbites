@@ -21,10 +21,48 @@ vi.mock('react-icons/bi', () => ({
 }));
 
 vi.mock('react-icons/fi', () => ({
-    FiChevronLeft: () => (
-        <div data-testid="mock-chevron-left">Chevron Left</div>
-    ),
-    FiFilter: () => <div data-testid="mock-filter-icon">Filter Icon</div>,
+    FiChevronLeft: () => <div data-testid="chevron-left-icon" />,
+    FiFilter: () => <div data-testid="filter-icon" />,
+    FiChevronDown: () => <div data-testid="chevron-down-icon" />,
+}));
+
+vi.mock('react-icons/io5', () => ({
+    IoReorderThree: () => <div data-testid="reorder-icon" />,
+}));
+
+vi.mock('@/app/components/navbar/OrderByDropdown', () => ({
+    default: () => <div data-testid="order-by-dropdown" />,
+}));
+
+vi.mock('@/app/utils/order-by', () => ({
+    OrderByType: {
+        NEWEST: 'newest',
+        OLDEST: 'oldest',
+        TITLE_ASC: 'title_asc',
+        TITLE_DESC: 'title_desc',
+        MOST_LIKED: 'most_liked',
+    },
+    ORDER_BY_OPTIONS: [
+        'newest',
+        'oldest',
+        'title_asc',
+        'title_desc',
+        'most_liked',
+    ],
+    ORDER_BY_LABELS: {
+        newest: 'newest_first',
+        oldest: 'oldest_first',
+        title_asc: 'title_a_z',
+        title_desc: 'title_z_a',
+        most_liked: 'most_liked',
+    },
+    ORDER_BY_FALLBACK_LABELS: {
+        newest: 'Newest first',
+        oldest: 'Oldest first',
+        title_asc: 'Title A-Z',
+        title_desc: 'Title Z-A',
+        most_liked: 'Most liked',
+    },
 }));
 
 // Mock useMediaQuery hook
@@ -106,7 +144,7 @@ describe('<Search />', () => {
 
             render(<Search onSearchModeChange={mockOnSearchModeChange} />);
 
-            expect(screen.getByTestId('mock-chevron-left')).toBeDefined();
+            expect(screen.getByTestId('chevron-left-icon')).toBeDefined();
             expect(
                 screen.getByPlaceholderText('search_recipes...')
             ).toBeDefined();
@@ -142,7 +180,7 @@ describe('<Search />', () => {
             render(<Search onSearchModeChange={mockOnSearchModeChange} />);
 
             const backButton = screen
-                .getByTestId('mock-chevron-left')
+                .getByTestId('chevron-left-icon')
                 .closest('button');
             fireEvent.click(backButton!);
 
@@ -201,7 +239,7 @@ describe('<Search />', () => {
             fireEvent.change(searchInput, { target: { value: '' } });
 
             // Search mode should still be active
-            expect(screen.getByTestId('mock-chevron-left')).toBeDefined();
+            expect(screen.getByTestId('chevron-left-icon')).toBeDefined();
         });
     });
 });

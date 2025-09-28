@@ -1,11 +1,13 @@
 import prisma from '@/app/libs/prismadb';
 import { SafeRecipe } from '@/app/types';
+import { OrderByType, getPrismaOrderByClause } from '@/app/utils/order-by';
 
 export interface IRecipesParams {
     category?: string;
     search?: string;
     page?: number;
     limit?: number;
+    orderBy?: OrderByType;
 }
 
 export interface ServerResponse<T> {
@@ -27,7 +29,13 @@ export default async function getRecipes(
     params: IRecipesParams
 ): Promise<ServerResponse<RecipesResponse>> {
     try {
-        const { category, search, page = 1, limit = 10 } = params;
+        const {
+            category,
+            search,
+            page = 1,
+            limit = 10,
+            orderBy = OrderByType.NEWEST,
+        } = params;
 
         let query: any = {};
 
@@ -63,9 +71,7 @@ export default async function getRecipes(
 
         const recipes = await prisma.recipe.findMany({
             where: query,
-            orderBy: {
-                createdAt: 'desc',
-            },
+            orderBy: getPrismaOrderByClause(orderBy),
             skip: (page - 1) * limit,
             take: limit,
         });
