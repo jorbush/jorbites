@@ -12,13 +12,7 @@ import {
     ORDER_BY_FALLBACK_LABELS,
 } from '@/app/utils/order-by';
 
-interface OrderByDropdownProps {
-    isMobile?: boolean;
-}
-
-const OrderByDropdown: React.FC<OrderByDropdownProps> = ({
-    isMobile = false,
-}) => {
+const OrderByDropdown: React.FC = () => {
     const { t } = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -75,24 +69,18 @@ const OrderByDropdown: React.FC<OrderByDropdownProps> = ({
         >
             <button
                 onClick={() => setIsOrderDropdownOpen(!isOrderDropdownOpen)}
-                className={`flex items-center gap-1 rounded-full bg-neutral-100 text-sm text-neutral-600 shadow-xs transition hover:bg-neutral-200 hover:shadow-md dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 ${
-                    isMobile ? 'px-2 py-2' : 'px-3 py-2'
-                }`}
+                className="flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-2 text-sm text-neutral-600 shadow-xs transition hover:bg-neutral-200 hover:shadow-md dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 sm:px-3"
                 aria-label={t('order_by') || 'Order by'}
                 aria-expanded={isOrderDropdownOpen}
             >
-                {isMobile ? (
-                    <span className="text-xs">Sort</span>
-                ) : (
-                    <>
-                        <span className="hidden sm:inline">
-                            {getOrderLabel(currentOrderBy)}
-                        </span>
-                        <span className="sm:hidden">Sort</span>
-                    </>
-                )}
+                <span className="text-xs sm:text-sm">
+                    <span className="hidden sm:inline">
+                        {getOrderLabel(currentOrderBy)}
+                    </span>
+                    <span className="sm:hidden">Sort</span>
+                </span>
                 <FiChevronDown
-                    size={isMobile ? 12 : 14}
+                    size={14}
                     className={`transition-transform ${isOrderDropdownOpen ? 'rotate-180' : ''}`}
                 />
             </button>
@@ -104,7 +92,7 @@ const OrderByDropdown: React.FC<OrderByDropdownProps> = ({
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="dark:bg-dark absolute top-full right-0 z-50 mt-2 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:text-neutral-100"
+                        className="dark:bg-dark absolute top-full right-0 z-50 mt-2 w-40 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:text-neutral-100"
                     >
                         <div className="w-max cursor-pointer">
                             {ORDER_BY_OPTIONS.map((orderBy) => (

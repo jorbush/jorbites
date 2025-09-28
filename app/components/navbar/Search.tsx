@@ -266,7 +266,7 @@ const Search: React.FC<SearchProps> = ({
                             </div>
                         </form>
 
-                        <OrderByDropdown isMobile />
+                        <OrderByDropdown />
 
                         <button
                             onClick={onFilterToggle}
