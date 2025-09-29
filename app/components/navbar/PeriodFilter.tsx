@@ -27,20 +27,9 @@ const PeriodFilter: React.FC = () => {
     const hasDateFilter = currentStartDate || currentEndDate;
 
     useEffect(() => {
-        // Initialize temp dates from URL params
         setTempStartDate(currentStartDate);
         setTempEndDate(currentEndDate);
-    }, [currentStartDate, currentEndDate]);
 
-    // Reset temp state when dropdown opens
-    useEffect(() => {
-        if (isOpen) {
-            setTempStartDate(currentStartDate);
-            setTempEndDate(currentEndDate);
-        }
-    }, [isOpen, currentStartDate, currentEndDate]);
-
-    useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
                 dropdownRef.current &&
@@ -57,7 +46,7 @@ const PeriodFilter: React.FC = () => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isOpen]);
+    }, [isOpen, currentStartDate, currentEndDate]);
 
     const updateUrlWithDates = (startDate: string, endDate: string) => {
         if (!isMainPage) return;
