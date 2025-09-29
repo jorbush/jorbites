@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import Logo from '@/app/components/navbar/Logo';
 import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
+import PeriodFilter from '@/app/components/navbar/PeriodFilter';
 
 interface SearchProps {
     onFilterToggle?: () => void;
@@ -179,6 +180,8 @@ const Search: React.FC<SearchProps> = ({
 
                         <OrderByDropdown />
 
+                        <PeriodFilter />
+
                         <button
                             onClick={onFilterToggle}
                             className={`relative rounded-full p-2 shadow-xs transition hover:shadow-md ${
@@ -267,6 +270,8 @@ const Search: React.FC<SearchProps> = ({
                         </form>
 
                         <OrderByDropdown />
+
+                        <PeriodFilter />
 
                         <button
                             onClick={onFilterToggle}

@@ -479,5 +479,10 @@
     "title_a_z": "Título (A-Z)",
     "title_z_a": "Título (Z-A)",
     "most_liked": "Más gustadas",
-    "order_by": "Ordenar por"
+    "order_by": "Ordenar por",
+    "filter_by_date": "Filtrar por fecha",
+    "clear_date_filter": "Limpiar filtro de fecha",
+    "from_date": "Fecha desde",
+    "to_date": "Fecha hasta",
+    "apply": "Aplicar"
 }

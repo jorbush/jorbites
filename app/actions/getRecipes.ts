@@ -1,6 +1,10 @@
 import prisma from '@/app/libs/prismadb';
 import { SafeRecipe } from '@/app/types';
-import { OrderByType, getPrismaOrderByClause } from '@/app/utils/order-by';
+import {
+    OrderByType,
+    getPrismaOrderByClause,
+    getDateRangeFilter,
+} from '@/app/utils/filter';
 
 export interface IRecipesParams {
     category?: string;
@@ -8,6 +12,8 @@ export interface IRecipesParams {
     page?: number;
     limit?: number;
     orderBy?: OrderByType;
+    startDate?: string;
+    endDate?: string;
 }
 
 export interface ServerResponse<T> {
@@ -35,6 +41,8 @@ export default async function getRecipes(
             page = 1,
             limit = 10,
             orderBy = OrderByType.NEWEST,
+            startDate,
+            endDate,
         } = params;
 
         let query: any = {};
@@ -48,6 +56,11 @@ export default async function getRecipes(
                 contains: search.trim(),
                 mode: 'insensitive',
             };
+        }
+
+        const dateRangeFilter = getDateRangeFilter(startDate, endDate);
+        if (Object.keys(dateRangeFilter).length > 0) {
+            query = { ...query, ...dateRangeFilter };
         }
 
         // Commenting because of Search implementation
