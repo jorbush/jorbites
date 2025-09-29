@@ -21,7 +21,9 @@ vi.mock('react-icons/bi', () => ({
 }));
 
 vi.mock('react-icons/fi', () => ({
-    FiChevronLeft: () => <div data-testid="chevron-left-icon">FiChevronLeft</div>,
+    FiChevronLeft: () => (
+        <div data-testid="chevron-left-icon">FiChevronLeft</div>
+    ),
     FiFilter: () => <div data-testid="filter-icon">FiFilter</div>,
     FiCalendar: () => <div data-testid="calendar-icon">FiCalendar</div>,
     FiX: () => <div data-testid="fi-x-icon">FiX</div>,
@@ -223,9 +225,7 @@ describe('<Search />', () => {
 
             render(<Search onSearchModeChange={mockOnSearchModeChange} />);
 
-            const clearButton = screen
-                .getByTestId('x-icon')
-                .closest('button');
+            const clearButton = screen.getByTestId('x-icon').closest('button');
             fireEvent.click(clearButton!);
             waitFor(() => {
                 const searchInput = screen.getByPlaceholderText(

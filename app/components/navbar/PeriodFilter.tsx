@@ -32,6 +32,14 @@ const PeriodFilter: React.FC = () => {
         setTempEndDate(currentEndDate);
     }, [currentStartDate, currentEndDate]);
 
+    // Reset temp state when dropdown opens
+    useEffect(() => {
+        if (isOpen) {
+            setTempStartDate(currentStartDate);
+            setTempEndDate(currentEndDate);
+        }
+    }, [isOpen, currentStartDate, currentEndDate]);
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -79,7 +87,9 @@ const PeriodFilter: React.FC = () => {
     const handleClear = () => {
         setTempStartDate('');
         setTempEndDate('');
-        updateUrlWithDates('', '');
+        if (isMainPage) {
+            updateUrlWithDates('', '');
+        }
         setIsOpen(false);
     };
 
@@ -89,7 +99,7 @@ const PeriodFilter: React.FC = () => {
         const formatDate = (dateStr: string) => {
             if (!dateStr) return '';
             const date = new Date(dateStr);
-            return date.toLocaleDateString(undefined, {
+            return date.toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
                 year:
@@ -114,6 +124,7 @@ const PeriodFilter: React.FC = () => {
         <div
             className="relative"
             ref={dropdownRef}
+            data-testid="period-filter-container"
         >
             <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -140,6 +151,7 @@ const PeriodFilter: React.FC = () => {
                         exit={{ opacity: 0, scale: 0.95, y: -10 }}
                         transition={{ duration: 0.15 }}
                         className="absolute top-12 right-0 z-50 min-w-[280px] rounded-lg border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
+                        data-testid="period-filter-dropdown"
                     >
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
@@ -154,6 +166,7 @@ const PeriodFilter: React.FC = () => {
                                             t('clear_date_filter') ||
                                             'Clear date filter'
                                         }
+                                        data-testid="clear-filter-button"
                                     >
                                         <FiX size={16} />
                                     </button>
@@ -161,7 +174,10 @@ const PeriodFilter: React.FC = () => {
                             </div>
 
                             {hasDateFilter && (
-                                <div className="text-sm text-neutral-600 dark:text-neutral-400">
+                                <div
+                                    className="text-sm text-neutral-600 dark:text-neutral-400"
+                                    data-testid="formatted-date-range"
+                                >
                                     {formatDateRange()}
                                 </div>
                             )}
@@ -179,6 +195,7 @@ const PeriodFilter: React.FC = () => {
                                             setTempStartDate(e.target.value)
                                         }
                                         className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+                                        data-testid="start-date-input"
                                     />
                                 </div>
 
@@ -195,6 +212,7 @@ const PeriodFilter: React.FC = () => {
                                             setTempEndDate(e.target.value)
                                         }
                                         className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+                                        data-testid="end-date-input"
                                     />
                                 </div>
                             </div>
@@ -204,12 +222,14 @@ const PeriodFilter: React.FC = () => {
                                     onClick={handleApply}
                                     disabled={!tempStartDate && !tempEndDate}
                                     className="bg-green-450 flex-1 rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-green-500 disabled:bg-neutral-300 disabled:text-neutral-500 dark:disabled:bg-neutral-600 dark:disabled:text-neutral-400"
+                                    data-testid="apply-button"
                                 >
                                     {t('apply') || 'Apply'}
                                 </button>
                                 <button
                                     onClick={() => setIsOpen(false)}
                                     className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                                    data-testid="cancel-button"
                                 >
                                     {t('cancel') || 'Cancel'}
                                 </button>
