@@ -5,6 +5,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiCalendar, FiX } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
+import Button from '../buttons/Button';
 
 export interface DateRange {
     startDate: string;
@@ -207,21 +208,26 @@ const PeriodFilter: React.FC = () => {
                             </div>
 
                             <div className="flex gap-2 pt-2">
-                                <button
-                                    onClick={() => setIsOpen(false)}
-                                    className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-700"
-                                    data-testid="cancel-button"
-                                >
-                                    {t('cancel') || 'Cancel'}
-                                </button>
-                                <button
-                                    onClick={handleApply}
-                                    disabled={!tempStartDate && !tempEndDate}
-                                    className="bg-green-450 flex-1 rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-green-500 disabled:bg-neutral-300 disabled:text-neutral-500 dark:disabled:bg-neutral-600 dark:disabled:text-neutral-400"
-                                    data-testid="apply-button"
-                                >
-                                    {t('apply') || 'Apply'}
-                                </button>
+                                <div className="flex-1">
+                                    <Button
+                                        label={t('cancel') || 'Cancel'}
+                                        onClick={() => setIsOpen(false)}
+                                        outline
+                                        small
+                                        dataCy="cancel-button"
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <Button
+                                        label={t('apply') || 'Apply'}
+                                        onClick={handleApply}
+                                        disabled={
+                                            !tempStartDate && !tempEndDate
+                                        }
+                                        small
+                                        dataCy="apply-button"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </motion.div>
