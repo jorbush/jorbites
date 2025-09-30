@@ -478,5 +478,10 @@
     "title_a_z": "Title (A-Z)",
     "title_z_a": "Title (Z-A)",
     "most_liked": "Most Liked",
-    "order_by": "Order by"
+    "order_by": "Order by",
+    "filter_by_date": "Filter by date",
+    "clear_date_filter": "Clear date filter",
+    "from_date": "From date",
+    "to_date": "To date",
+    "apply": "Apply"
 }

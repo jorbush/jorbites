@@ -16,25 +16,33 @@ vi.mock('@/app/components/navbar/Logo', () => ({
 
 // Mock the icons
 vi.mock('react-icons/bi', () => ({
-    BiSearch: () => <div data-testid="mock-search-icon">Search Icon</div>,
-    BiX: () => <div data-testid="mock-x-icon">X Icon</div>,
+    BiSearch: () => <div data-testid="search-icon">BiSearch</div>,
+    BiX: () => <div data-testid="x-icon">BiX</div>,
 }));
 
 vi.mock('react-icons/fi', () => ({
-    FiChevronLeft: () => <div data-testid="chevron-left-icon" />,
-    FiFilter: () => <div data-testid="filter-icon" />,
-    FiChevronDown: () => <div data-testid="chevron-down-icon" />,
+    FiChevronLeft: () => (
+        <div data-testid="chevron-left-icon">FiChevronLeft</div>
+    ),
+    FiFilter: () => <div data-testid="filter-icon">FiFilter</div>,
+    FiCalendar: () => <div data-testid="calendar-icon">FiCalendar</div>,
+    FiX: () => <div data-testid="fi-x-icon">FiX</div>,
 }));
 
 vi.mock('react-icons/io5', () => ({
     IoReorderThree: () => <div data-testid="reorder-icon" />,
 }));
 
+// Mock OrderByDropdown and PeriodFilter components
 vi.mock('@/app/components/navbar/OrderByDropdown', () => ({
-    default: () => <div data-testid="order-by-dropdown" />,
+    default: () => <div data-testid="order-by-dropdown">OrderByDropdown</div>,
 }));
 
-vi.mock('@/app/utils/order-by', () => ({
+vi.mock('@/app/components/navbar/PeriodFilter', () => ({
+    default: () => <div data-testid="period-filter">PeriodFilter</div>,
+}));
+
+vi.mock('@/app/utils/filter', () => ({
     OrderByType: {
         NEWEST: 'newest',
         OLDEST: 'oldest',
@@ -125,14 +133,14 @@ describe('<Search />', () => {
             render(<Search onSearchModeChange={mockOnSearchModeChange} />);
 
             expect(screen.getByTestId('mock-logo')).toBeDefined();
-            expect(screen.getByTestId('mock-search-icon')).toBeDefined();
+            expect(screen.getByTestId('search-icon')).toBeDefined();
         });
 
         it('calls onSearchModeChange when search button is clicked', () => {
             render(<Search onSearchModeChange={mockOnSearchModeChange} />);
 
             const searchButton = screen
-                .getByTestId('mock-search-icon')
+                .getByTestId('search-icon')
                 .closest('button');
             fireEvent.click(searchButton!);
 
@@ -155,7 +163,7 @@ describe('<Search />', () => {
 
             render(<Search onSearchModeChange={mockOnSearchModeChange} />);
 
-            expect(screen.getByTestId('mock-x-icon')).toBeDefined();
+            expect(screen.getByTestId('x-icon')).toBeDefined();
         });
     });
 
@@ -217,9 +225,7 @@ describe('<Search />', () => {
 
             render(<Search onSearchModeChange={mockOnSearchModeChange} />);
 
-            const clearButton = screen
-                .getByTestId('mock-x-icon')
-                .closest('button');
+            const clearButton = screen.getByTestId('x-icon').closest('button');
             fireEvent.click(clearButton!);
             waitFor(() => {
                 const searchInput = screen.getByPlaceholderText(

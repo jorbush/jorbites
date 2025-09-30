@@ -11,7 +11,7 @@ import {
     ORDER_BY_OPTIONS,
     ORDER_BY_LABELS,
     ORDER_BY_FALLBACK_LABELS,
-} from '@/app/utils/order-by';
+} from '@/app/utils/filter';
 
 const OrderByDropdown: React.FC = () => {
     const { t } = useTranslation();

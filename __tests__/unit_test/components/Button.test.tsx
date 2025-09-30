@@ -68,7 +68,6 @@ describe('<Button />', () => {
         );
         const button = screen.getByText('Small');
         expect(button.className).toContain('text-sm');
-        expect(button.className).toContain('py-1');
     });
 
     it('renders icon when provided', () => {

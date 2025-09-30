@@ -45,3 +45,40 @@ export const getPrismaOrderByClause = (orderBy: OrderByType) => {
             return { createdAt: 'desc' } as const;
     }
 };
+
+// Date range filtering utilities
+export interface DateRangeFilter {
+    startDate?: string;
+    endDate?: string;
+}
+
+export interface PrismaDateFilter {
+    createdAt?: {
+        gte?: Date;
+        lte?: Date;
+    };
+}
+
+export const getDateRangeFilter = (
+    startDate?: string,
+    endDate?: string
+): PrismaDateFilter => {
+    const filter: PrismaDateFilter = {};
+
+    if (startDate || endDate) {
+        filter.createdAt = {};
+
+        if (startDate) {
+            filter.createdAt.gte = new Date(startDate);
+        }
+
+        if (endDate) {
+            // Set end date to end of day
+            const endDateTime = new Date(endDate);
+            endDateTime.setHours(23, 59, 59, 999);
+            filter.createdAt.lte = endDateTime;
+        }
+    }
+
+    return filter;
+};
