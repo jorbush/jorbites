@@ -172,8 +172,8 @@ const PeriodFilter: React.FC = () => {
                                 </div>
                             )}
 
-                            <div className="space-y-3">
-                                <div>
+                            <div className="flex flex-col space-y-3">
+                                <div className="flex flex-col">
                                     <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                                         {t('from_date') || 'From date'}
                                     </label>
@@ -184,12 +184,12 @@ const PeriodFilter: React.FC = () => {
                                         onChange={(e) =>
                                             setTempStartDate(e.target.value)
                                         }
-                                        className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+                                        className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 flex-shrink rounded-md border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
                                         data-testid="start-date-input"
                                     />
                                 </div>
 
-                                <div>
+                                <div className="flex flex-col">
                                     <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                                         {t('to_date') || 'To date'}
                                     </label>
@@ -201,7 +201,7 @@ const PeriodFilter: React.FC = () => {
                                         onChange={(e) =>
                                             setTempEndDate(e.target.value)
                                         }
-                                        className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+                                        className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 flex-shrink rounded-md border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
                                         data-testid="end-date-input"
                                     />
                                 </div>
