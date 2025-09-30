@@ -208,19 +208,19 @@ const PeriodFilter: React.FC = () => {
 
                             <div className="flex gap-2 pt-2">
                                 <button
+                                    onClick={() => setIsOpen(false)}
+                                    className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                                    data-testid="cancel-button"
+                                >
+                                    {t('cancel') || 'Cancel'}
+                                </button>
+                                <button
                                     onClick={handleApply}
                                     disabled={!tempStartDate && !tempEndDate}
                                     className="bg-green-450 flex-1 rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-green-500 disabled:bg-neutral-300 disabled:text-neutral-500 dark:disabled:bg-neutral-600 dark:disabled:text-neutral-400"
                                     data-testid="apply-button"
                                 >
                                     {t('apply') || 'Apply'}
-                                </button>
-                                <button
-                                    onClick={() => setIsOpen(false)}
-                                    className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-700"
-                                    data-testid="cancel-button"
-                                >
-                                    {t('cancel') || 'Cancel'}
                                 </button>
                             </div>
                         </div>
