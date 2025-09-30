@@ -52,8 +52,18 @@ export interface DateRangeFilter {
     endDate?: string;
 }
 
-export const getDateRangeFilter = (startDate?: string, endDate?: string) => {
-    const filter: any = {};
+export interface PrismaDateFilter {
+    createdAt?: {
+        gte?: Date;
+        lte?: Date;
+    };
+}
+
+export const getDateRangeFilter = (
+    startDate?: string,
+    endDate?: string
+): PrismaDateFilter => {
+    const filter: PrismaDateFilter = {};
 
     if (startDate || endDate) {
         filter.createdAt = {};
