@@ -37,6 +37,13 @@ const Search: React.FC<SearchProps> = ({
     const currentSearch = searchParams?.get('search') || '';
     const isFiltering = searchParams?.get('category') || '';
 
+    // Check if any filters are active
+    const currentStartDate = searchParams?.get('startDate') || '';
+    const currentEndDate = searchParams?.get('endDate') || '';
+    const currentOrderBy = searchParams?.get('orderBy') || '';
+    const hasActiveFilters =
+        isFiltering || currentStartDate || currentEndDate || currentOrderBy;
+
     const debouncedUrlUpdate = useRef<ReturnType<typeof debounce> | null>(null);
 
     useEffect(() => {
@@ -205,10 +212,13 @@ const Search: React.FC<SearchProps> = ({
                     // Desktop button mode - only search button
                     <button
                         onClick={handleSearchToggle}
-                        className="bg-green-450 dark:text-dark flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
+                        className="bg-green-450 dark:text-dark relative flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
                         aria-label={t('search_recipes') || 'Search recipes'}
                     >
                         <BiSearch size={18} />
+                        {hasActiveFilters && (
+                            <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
+                        )}
                     </button>
                 )}
             </div>
@@ -309,12 +319,15 @@ const Search: React.FC<SearchProps> = ({
                         <Logo />
                         <button
                             onClick={handleSearchToggle}
-                            className="bg-green-450 dark:text-dark flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
+                            className="bg-green-450 dark:text-dark relative flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
                             aria-label={
                                 t('search_and_filter') || 'Search and filter'
                             }
                         >
                             <BiSearch size={18} />
+                            {hasActiveFilters && (
+                                <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
+                            )}
                         </button>
                     </motion.div>
                 )}
