@@ -122,6 +122,9 @@ describe('<Search />', () => {
         vi.clearAllMocks();
         mockSearchParams.delete('search');
         mockSearchParams.delete('category');
+        mockSearchParams.delete('startDate');
+        mockSearchParams.delete('endDate');
+        mockSearchParams.delete('orderBy');
     });
 
     afterEach(() => {
@@ -245,6 +248,88 @@ describe('<Search />', () => {
             fireEvent.change(searchInput, { target: { value: '' } });
 
             // Search mode should still be active
+            expect(screen.getByTestId('chevron-left-icon')).toBeDefined();
+        });
+    });
+
+    describe('Notification circle on search button', () => {
+        it('shows notification circle when category filter is active', () => {
+            mockSearchParams.set('category', 'dessert');
+
+            render(<Search onSearchModeChange={mockOnSearchModeChange} />);
+
+            const searchButton = screen
+                .getByTestId('search-icon')
+                .closest('button');
+            const notificationCircle = searchButton?.querySelector('span');
+
+            expect(notificationCircle).toBeDefined();
+            expect(notificationCircle?.className).toContain('bg-rose-500');
+        });
+
+        it('shows notification circle when period filter is active', () => {
+            mockSearchParams.set('startDate', '2024-01-01');
+
+            render(<Search onSearchModeChange={mockOnSearchModeChange} />);
+
+            const searchButton = screen
+                .getByTestId('search-icon')
+                .closest('button');
+            const notificationCircle = searchButton?.querySelector('span');
+
+            expect(notificationCircle).toBeDefined();
+            expect(notificationCircle?.className).toContain('bg-rose-500');
+        });
+
+        it('shows notification circle when orderBy filter is active', () => {
+            mockSearchParams.set('orderBy', 'most_liked');
+
+            render(<Search onSearchModeChange={mockOnSearchModeChange} />);
+
+            const searchButton = screen
+                .getByTestId('search-icon')
+                .closest('button');
+            const notificationCircle = searchButton?.querySelector('span');
+
+            expect(notificationCircle).toBeDefined();
+            expect(notificationCircle?.className).toContain('bg-rose-500');
+        });
+
+        it('shows notification circle when multiple filters are active', () => {
+            mockSearchParams.set('category', 'dessert');
+            mockSearchParams.set('startDate', '2024-01-01');
+            mockSearchParams.set('orderBy', 'most_liked');
+
+            render(<Search onSearchModeChange={mockOnSearchModeChange} />);
+
+            const searchButton = screen
+                .getByTestId('search-icon')
+                .closest('button');
+            const notificationCircle = searchButton?.querySelector('span');
+
+            expect(notificationCircle).toBeDefined();
+            expect(notificationCircle?.className).toContain('bg-rose-500');
+        });
+
+        it('does not show notification circle when no filters are active', () => {
+            render(<Search onSearchModeChange={mockOnSearchModeChange} />);
+
+            const searchButton = screen
+                .getByTestId('search-icon')
+                .closest('button');
+            const notificationCircle = searchButton?.querySelector('span');
+
+            expect(notificationCircle).toBeNull();
+        });
+
+        it('does not show notification circle in search mode (filters are visible)', () => {
+            mockSearchParams.set('search', 'test');
+            mockSearchParams.set('category', 'dessert');
+
+            render(<Search onSearchModeChange={mockOnSearchModeChange} />);
+
+            // In search mode, the search icon is not visible (back button is shown instead)
+            expect(screen.queryByTestId('search-icon')).toBeNull();
             expect(screen.getByTestId('chevron-left-icon')).toBeDefined();
         });
     });
