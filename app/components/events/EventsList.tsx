@@ -26,12 +26,22 @@ const EventsList: React.FC<EventsListProps> = ({
                 </p>
             ) : (
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {events.map((event) => (
-                        <EventCard
-                            key={event.slug}
-                            event={event}
-                        />
-                    ))}
+                    {events
+                        .filter((event: Event) => {
+                            // Show only upcoming events within the next month
+                            const eventDate = new Date(event.frontmatter.date);
+                            const oneMonthFromNow = new Date();
+                            oneMonthFromNow.setMonth(
+                                oneMonthFromNow.getMonth() + 1
+                            );
+                            return eventDate <= oneMonthFromNow;
+                        })
+                        .map((event: Event) => (
+                            <EventCard
+                                key={event.slug}
+                                event={event}
+                            />
+                        ))}
                 </div>
             )}
         </div>
