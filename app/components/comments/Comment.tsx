@@ -65,7 +65,7 @@ const Comment: React.FC<CommentProps> = ({
             <div className="mt-2 ml-4 grow">
                 <div className="flex flex-row">
                     <p
-                        className="cursor-pointer truncate text-justify font-bold whitespace-normal text-gray-800 dark:text-neutral-100 break-words"
+                        className="cursor-pointer truncate text-justify font-bold break-words whitespace-normal text-gray-800 dark:text-neutral-100"
                         onClick={() => router.push('/profile/' + userId)}
                     >
                         {userName}
@@ -74,7 +74,7 @@ const Comment: React.FC<CommentProps> = ({
                     <div className="mt-0.5 ml-1.5 text-sm text-gray-400">{`${t('level')} ${userLevel}`}</div>
                 </div>
                 <p
-                    className="text-justify whitespace-normal text-gray-800 dark:text-neutral-100 break-words"
+                    className="text-justify break-words whitespace-normal text-gray-800 dark:text-neutral-100"
                     data-cy="comment-text"
                 >
                     {formatText(comment)}
