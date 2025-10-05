@@ -107,7 +107,17 @@ const EventsClient = () => {
                         />
 
                         <EventsList
-                            events={events.upcoming}
+                            events={events.upcoming.filter((event: Event) => {
+                                // Show only upcoming events within the next month
+                                const eventDate = new Date(
+                                    event.frontmatter.date
+                                );
+                                const oneMonthFromNow = new Date();
+                                oneMonthFromNow.setMonth(
+                                    oneMonthFromNow.getMonth() + 1
+                                );
+                                return eventDate <= oneMonthFromNow;
+                            })}
                             title={t('upcoming_events') || 'Upcoming Events'}
                             emptyMessage={
                                 t('no_upcoming_events') ||
