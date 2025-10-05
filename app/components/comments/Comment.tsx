@@ -65,7 +65,7 @@ const Comment: React.FC<CommentProps> = ({
             <div className="mt-2 ml-4 grow">
                 <div className="flex flex-row">
                     <p
-                        className="cursor-pointer truncate text-justify font-bold break-words whitespace-normal text-gray-800 dark:text-neutral-100"
+                        className="cursor-pointer truncate text-justify font-bold whitespace-normal text-gray-800 dark:text-neutral-100"
                         onClick={() => router.push('/profile/' + userId)}
                     >
                         {userName}
