@@ -36,12 +36,9 @@ const Comment: React.FC<CommentProps> = ({
     userLevel,
 }) => {
     const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
-    const words = comment.split(' ');
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
     const router = useRouter();
     const { t } = useTranslation();
-
-    const isLongWord = words.some((word) => word.length > 20);
 
     const deleteComment = () => {
         axios
@@ -68,9 +65,7 @@ const Comment: React.FC<CommentProps> = ({
             <div className="mt-2 ml-4 grow">
                 <div className="flex flex-row">
                     <p
-                        className={`cursor-pointer truncate text-justify font-bold whitespace-normal text-gray-800 dark:text-neutral-100 ${
-                            isLongWord ? 'break-all' : ''
-                        }`}
+                        className="cursor-pointer truncate text-justify font-bold whitespace-normal text-gray-800 dark:text-neutral-100 break-all"
                         onClick={() => router.push('/profile/' + userId)}
                     >
                         {userName}
@@ -79,9 +74,7 @@ const Comment: React.FC<CommentProps> = ({
                     <div className="mt-0.5 ml-1.5 text-sm text-gray-400">{`${t('level')} ${userLevel}`}</div>
                 </div>
                 <p
-                    className={`truncate text-justify whitespace-normal text-gray-800 dark:text-neutral-100 ${
-                        isLongWord ? 'break-all' : ''
-                    }`}
+                    className="truncate text-justify whitespace-normal text-gray-800 dark:text-neutral-100 break-words"
                     data-cy="comment-text"
                 >
                     {formatText(comment)}
