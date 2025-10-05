@@ -487,5 +487,7 @@
     "clear_date_filter": "Netejar filtre de data",
     "from_date": "Data des de",
     "to_date": "Data fins",
-    "apply": "Aplicar"
+    "apply": "Aplicar",
+    "pot": "Olla",
+    "quick pot": "Olla ràpida"
 }
