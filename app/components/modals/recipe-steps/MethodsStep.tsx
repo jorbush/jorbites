@@ -2,18 +2,16 @@
 
 import { useTranslation } from 'react-i18next';
 import { GiCookingPot, GiPressureCooker } from 'react-icons/gi';
-import { PiCookingPotFill } from 'react-icons/pi';
 import { MdMicrowave } from 'react-icons/md';
 import { TbCooker } from 'react-icons/tb';
 import { CgSmartHomeCooker } from 'react-icons/cg';
 import Heading from '@/app/components/navigation/Heading';
 import CategoryInput from '@/app/components/inputs/CategoryInput';
-import { PanIcon } from '@/app/components/icons/PanIcon';
 
 export const preparationMethods = [
     {
         label: 'Frying pan',
-        icon: PanIcon,
+        icon: GiCookingPot,
     },
     {
         label: 'Microwave',
@@ -30,14 +28,6 @@ export const preparationMethods = [
     {
         label: 'Oven',
         icon: TbCooker,
-    },
-    {
-        label: 'Pot',
-        icon: GiCookingPot,
-    },
-    {
-        label: 'Quick Pot',
-        icon: PiCookingPotFill,
     },
 ];
 

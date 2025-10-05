@@ -484,7 +484,5 @@
     "clear_date_filter": "Limpiar filtro de fecha",
     "from_date": "Fecha desde",
     "to_date": "Fecha hasta",
-    "apply": "Aplicar",
-    "pot": "Olla",
-    "quick pot": "Olla Rápida"
+    "apply": "Aplicar"
 }
