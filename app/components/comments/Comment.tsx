@@ -74,7 +74,7 @@ const Comment: React.FC<CommentProps> = ({
                     <div className="mt-0.5 ml-1.5 text-sm text-gray-400">{`${t('level')} ${userLevel}`}</div>
                 </div>
                 <p
-                    className="truncate text-justify whitespace-normal text-gray-800 dark:text-neutral-100 break-words"
+                    className="text-justify whitespace-normal text-gray-800 dark:text-neutral-100 break-words"
                     data-cy="comment-text"
                 >
                     {formatText(comment)}
