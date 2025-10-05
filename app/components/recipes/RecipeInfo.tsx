@@ -225,7 +225,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                             {steps.map((step, index) => (
                                 <li
                                     key={index}
-                                    className="mb-2"
+                                    className="overflow-wrap-anywhere mb-2 break-words break-all"
                                     data-cy={`step-${index}`}
                                 >
                                     {step}
