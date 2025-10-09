@@ -9,11 +9,10 @@ import {
     conflict,
     internalServerError,
 } from '@/app/utils/apiErrors';
-import { logger, withAxiom } from '@/app/lib/axiom/server';
+import { logger } from '@/app/lib/axiom/server';
 
-export const PATCH = withAxiom(async (request: Request) => {
+export async function PATCH(request: Request) {
     try {
-        logger.info('PATCH /api/userName/[userId] - start');
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
@@ -21,6 +20,10 @@ export const PATCH = withAxiom(async (request: Request) => {
                 'User authentication required to update username'
             );
         }
+
+        logger.info('PATCH /api/userName/[userId] - start', {
+            userId: currentUser.id,
+        });
 
         const body = await request.json();
         const { userName } = body;
@@ -83,4 +86,4 @@ export const PATCH = withAxiom(async (request: Request) => {
         });
         return internalServerError('Failed to update username');
     }
-});
+}

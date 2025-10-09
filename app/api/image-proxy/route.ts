@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
-import { logger, withAxiom } from '@/app/lib/axiom/server';
+import { logger } from '@/app/lib/axiom/server';
 
-export const GET = withAxiom(async (request: NextRequest) => {
-    logger.info('GET /api/image-proxy - start');
+export async function GET(request: NextRequest) {
     const url = request.nextUrl.searchParams.get('url');
     const width = request.nextUrl.searchParams.get('w');
     const height = request.nextUrl.searchParams.get('h');
     const quality = request.nextUrl.searchParams.get('q') || 'auto:good';
+
+    logger.info('GET /api/image-proxy - start', {
+        url: url?.substring(0, 100),
+        width,
+        height,
+        quality,
+    });
 
     if (!url) {
         logger.error('GET /api/image-proxy - missing URL parameter');
@@ -146,4 +152,4 @@ export const GET = withAxiom(async (request: NextRequest) => {
         });
         return internalServerError('Failed to process image request');
     }
-});
+}

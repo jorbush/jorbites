@@ -2,11 +2,10 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { unauthorized, internalServerError } from '@/app/utils/apiErrors';
-import { logger, withAxiom } from '@/app/lib/axiom/server';
+import { logger } from '@/app/lib/axiom/server';
 
-export const GET = withAxiom(async (request: Request) => {
+export async function GET(request: Request) {
     try {
-        logger.info('GET /api/search - start');
         const url = new URL(request.url);
         const query = url.searchParams.get('q');
         const type = url.searchParams.get('type') || 'all';
@@ -20,6 +19,12 @@ export const GET = withAxiom(async (request: Request) => {
         if (!currentUser) {
             return unauthorized('User authentication required to search');
         }
+
+        logger.info('GET /api/search - start', {
+            query,
+            type,
+            userId: currentUser.id,
+        });
 
         type SearchedUser = {
             id: string;
@@ -103,4 +108,4 @@ export const GET = withAxiom(async (request: Request) => {
         logger.error('GET /api/search - error', { error: error.message });
         return internalServerError('Failed to perform search');
     }
-});
+}

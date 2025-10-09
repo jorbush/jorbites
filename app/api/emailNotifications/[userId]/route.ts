@@ -4,11 +4,10 @@ import prisma from '@/app/lib/prismadb';
 import sendEmail from '@/app/actions/sendEmail';
 import { EmailType } from '@/app/types/email';
 import { unauthorized, internalServerError } from '@/app/utils/apiErrors';
-import { logger, withAxiom } from '@/app/lib/axiom/server';
+import { logger } from '@/app/lib/axiom/server';
 
-export const PUT = withAxiom(async (_request: Request) => {
+export async function PUT(_request: Request) {
     try {
-        logger.info('PUT /api/emailNotifications/[userId] - start');
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
@@ -16,6 +15,10 @@ export const PUT = withAxiom(async (_request: Request) => {
                 'User authentication required to update email notifications'
             );
         }
+
+        logger.info('PUT /api/emailNotifications/[userId] - start', {
+            userId: currentUser.id,
+        });
 
         const user = await prisma.user.update({
             where: {
@@ -44,4 +47,4 @@ export const PUT = withAxiom(async (_request: Request) => {
         });
         return internalServerError('Failed to update email notifications');
     }
-});
+}

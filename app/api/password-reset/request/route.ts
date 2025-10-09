@@ -5,13 +5,14 @@ import { JORBITES_URL } from '@/app/utils/constants';
 import sendEmail from '@/app/actions/sendEmail';
 import { EmailType } from '@/app/types/email';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
-import { logger, withAxiom } from '@/app/lib/axiom/server';
+import { logger } from '@/app/lib/axiom/server';
 
-export const POST = withAxiom(async (request: Request) => {
+export async function POST(request: Request) {
     try {
-        logger.info('POST /api/password-reset/request - start');
         const body = await request.json();
         const { email } = body;
+
+        logger.info('POST /api/password-reset/request - start', { email });
 
         if (!email) {
             return badRequest('Email is required');
@@ -58,4 +59,4 @@ export const POST = withAxiom(async (request: Request) => {
         });
         return internalServerError('Failed to process password reset request');
     }
-});
+}

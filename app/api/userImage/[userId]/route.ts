@@ -8,11 +8,10 @@ import {
     badRequest,
     internalServerError,
 } from '@/app/utils/apiErrors';
-import { logger, withAxiom } from '@/app/lib/axiom/server';
+import { logger } from '@/app/lib/axiom/server';
 
-export const PUT = withAxiom(async (request: Request) => {
+export async function PUT(request: Request) {
     try {
-        logger.info('PUT /api/userImage/[userId] - start');
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
@@ -20,6 +19,10 @@ export const PUT = withAxiom(async (request: Request) => {
                 'User authentication required to update profile image'
             );
         }
+
+        logger.info('PUT /api/userImage/[userId] - start', {
+            userId: currentUser.id,
+        });
 
         const body = await request.json();
         const { userImage } = body;
@@ -70,4 +73,4 @@ export const PUT = withAxiom(async (request: Request) => {
         });
         return internalServerError('Failed to update user image');
     }
-});
+}

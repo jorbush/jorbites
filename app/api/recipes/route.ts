@@ -20,11 +20,10 @@ import {
     conflict,
     internalServerError,
 } from '@/app/utils/apiErrors';
-import { logger, withAxiom } from '@/app/lib/axiom/server';
+import { logger } from '@/app/lib/axiom/server';
 
-export const POST = withAxiom(async (request: Request) => {
+export async function POST(request: Request) {
     try {
-        logger.info('POST /api/recipes - start');
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
@@ -34,6 +33,8 @@ export const POST = withAxiom(async (request: Request) => {
         }
 
         const body = await request.json();
+
+        logger.info('POST /api/recipes - start', { userId: currentUser.id });
         const {
             title,
             description,
@@ -181,4 +182,4 @@ export const POST = withAxiom(async (request: Request) => {
         logger.error('POST /api/recipes - error', { error: error.message });
         return internalServerError('Failed to create recipe');
     }
-});
+}

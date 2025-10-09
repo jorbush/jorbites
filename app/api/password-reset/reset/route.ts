@@ -2,13 +2,16 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import bcrypt from 'bcrypt';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
-import { logger, withAxiom } from '@/app/lib/axiom/server';
+import { logger } from '@/app/lib/axiom/server';
 
-export const POST = withAxiom(async (request: Request) => {
+export async function POST(request: Request) {
     try {
-        logger.info('POST /api/password-reset/reset - start');
         const body = await request.json();
         const { token, password } = body;
+
+        logger.info('POST /api/password-reset/reset - start', {
+            hasToken: !!token,
+        });
 
         if (!token || !password) {
             return badRequest('Token and password are required');
@@ -54,4 +57,4 @@ export const POST = withAxiom(async (request: Request) => {
         });
         return internalServerError('Failed to reset password');
     }
-});
+}
