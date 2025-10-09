@@ -49,6 +49,7 @@ export async function POST(request: Request) {
             imageSrc3,
             coCooksIds,
             linkedRecipeIds,
+            youtubeUrl,
         } = body;
 
         if (
@@ -121,6 +122,15 @@ export async function POST(request: Request) {
             return conflict('A recipe with this image already exists');
         }
 
+        // Validate YouTube URL if provided
+        if (youtubeUrl && youtubeUrl.trim() !== '') {
+            const youtubeRegex =
+                /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]+((&[\w=\-]*)*|(\?[\w=\-]*)*)?$/;
+            if (!youtubeRegex.test(youtubeUrl.trim())) {
+                return validationError('Invalid YouTube URL format');
+            }
+        }
+
         const extraImages: string[] = [];
 
         if (imageSrc1 !== '' && imageSrc1 !== undefined) {
@@ -158,6 +168,7 @@ export async function POST(request: Request) {
                 userId: currentUser.id,
                 coCooksIds: limitedCoCooksIds,
                 linkedRecipeIds: limitedLinkedRecipeIds,
+                youtubeUrl: youtubeUrl?.trim() || null,
             },
         });
 
@@ -180,6 +191,7 @@ export async function POST(request: Request) {
         return NextResponse.json(recipe);
     } catch (error: any) {
         logger.error('POST /api/recipes - error', { error: error.message });
+        console.error(error);
         return internalServerError('Failed to create recipe');
     }
 }
