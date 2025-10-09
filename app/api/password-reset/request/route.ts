@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import { JORBITES_URL } from '@/app/utils/constants';
 import sendEmail from '@/app/actions/sendEmail';
 import { EmailType } from '@/app/types/email';

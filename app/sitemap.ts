@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import fs from 'fs';
 import path from 'path';
 

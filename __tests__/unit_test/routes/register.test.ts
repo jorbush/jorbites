@@ -15,7 +15,7 @@ jest.mock('@/app/libs/prismadb', () => ({
     },
 }));
 
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 
 describe('Register API Error Handling', () => {
     beforeEach(() => {

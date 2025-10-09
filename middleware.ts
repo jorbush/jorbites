@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import type { NextRequest, NextFetchEvent } from 'next/server';
+import { logger } from '@/app/lib/axiom/server';
+import { transformMiddlewareRequest } from '@axiomhq/nextjs';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest, event: NextFetchEvent) {
+  logger.info(...transformMiddlewareRequest(request));
+  event.waitUntil(logger.flush());
+
   const response = NextResponse.next();
   if (request.nextUrl.pathname.startsWith('/api/image-proxy')) {
     response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
@@ -14,5 +19,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/api/image-proxy/:path*',
+    '/((?!api|_next/static|_next/image|favicon.*|sitemap.xml|robots.txt|locales/*|images/logo-nobg.webp|images/no_bg_white.webp|manifest.json).*)',
   ],
 };

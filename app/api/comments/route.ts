@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import { EmailType } from '@/app/types/email';

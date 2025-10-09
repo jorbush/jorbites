@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import getCommentById from '@/app/actions/getCommentById';
 import {
     unauthorized,

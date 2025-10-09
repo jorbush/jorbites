@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { redis } from '@/app/libs/redis';
+import { redis } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { unauthorized, internalServerError } from '@/app/utils/apiErrors';
 import { STEPS_LENGTH } from '@/app/utils/constants';

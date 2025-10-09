@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import bcrypt from 'bcrypt';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
 

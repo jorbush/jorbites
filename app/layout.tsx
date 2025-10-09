@@ -6,6 +6,7 @@ import ToasterProvider from '@/app/providers/ToasterProvider';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import SmartFooter from '@/app/components/footer/SmartFooter';
 import { dynamicImport } from '@/app/utils/dynamicImport';
+import { WebVitals } from '@/app/lib/axiom/client';
 
 const RegisterModal = dynamicImport(
     () => import('@/app/components/modals/RegisterModal')
@@ -88,6 +89,7 @@ export default async function RootLayout({
             lang="es"
             translate="no"
         >
+            <WebVitals />
             <head>
                 <meta
                     name="viewport"

@@ -1,6 +1,6 @@
 'use server';
 
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import challenges from '@/app/content/events/weekly-challenges.json';
 import {
     startOfWeek,
