@@ -34,15 +34,12 @@ export async function GET(
 
         if (!user) {
             logger.info(
-                'GET /api/password-reset/validate/[token] - invalid token',
-                { token }
+                'GET /api/password-reset/validate/[token] - invalid token'
             );
             return NextResponse.json({ valid: false });
         }
 
-        logger.info('GET /api/password-reset/validate/[token] - valid token', {
-            token,
-        });
+        logger.info('GET /api/password-reset/validate/[token] - valid token');
         return NextResponse.json({ valid: true });
     } catch (error: any) {
         logger.error('GET /api/password-reset/validate/[token] - error', {
