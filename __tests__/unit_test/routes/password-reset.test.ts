@@ -16,7 +16,7 @@ jest.mock('crypto', () => ({
     }),
 }));
 
-jest.mock('@/app/libs/prismadb', () => ({
+jest.mock('@/app/lib/prismadb', () => ({
     user: {
         findUnique: jest.fn(),
         findFirst: jest.fn(),
@@ -26,7 +26,7 @@ jest.mock('@/app/libs/prismadb', () => ({
 
 jest.mock('@/app/actions/sendEmail', () => jest.fn());
 
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import sendEmail from '@/app/actions/sendEmail';
 
 describe('Password Reset API Error Handling', () => {

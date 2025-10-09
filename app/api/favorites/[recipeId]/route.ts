@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import {
     unauthorized,
     invalidInput,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
     recipeId?: string;
@@ -24,6 +25,11 @@ export async function POST(
         }
 
         const { recipeId } = params;
+
+        logger.info('POST /api/favorites/[recipeId] - start', {
+            recipeId,
+            userId: currentUser.id,
+        });
 
         if (!recipeId || typeof recipeId !== 'string') {
             return invalidInput(
@@ -44,9 +50,15 @@ export async function POST(
             },
         });
 
+        logger.info('POST /api/favorites/[recipeId] - success', {
+            recipeId,
+            userId: user.id,
+        });
         return NextResponse.json(user);
-    } catch (error) {
-        console.error('Error adding favorite:', error);
+    } catch (error: any) {
+        logger.error('POST /api/favorites/[recipeId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to add recipe to favorites');
     }
 }
@@ -67,6 +79,11 @@ export async function DELETE(
 
         const { recipeId } = params;
 
+        logger.info('DELETE /api/favorites/[recipeId] - start', {
+            recipeId,
+            userId: currentUser.id,
+        });
+
         if (!recipeId || typeof recipeId !== 'string') {
             return invalidInput(
                 'Recipe ID is required and must be a valid string'
@@ -86,9 +103,15 @@ export async function DELETE(
             },
         });
 
+        logger.info('DELETE /api/favorites/[recipeId] - success', {
+            recipeId,
+            userId: user.id,
+        });
         return NextResponse.json(user);
-    } catch (error) {
-        console.error('Error removing favorite:', error);
+    } catch (error: any) {
+        logger.error('DELETE /api/favorites/[recipeId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to remove recipe from favorites');
     }
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import { EmailType } from '@/app/types/email';
@@ -12,6 +12,7 @@ import {
     validationError,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 export async function POST(request: Request) {
     try {
@@ -23,6 +24,11 @@ export async function POST(request: Request) {
 
         const body = await request.json();
         const { recipeId, comment } = body;
+
+        logger.info('POST /api/comments - start', {
+            recipeId,
+            userId: currentUser.id,
+        });
 
         if (!recipeId || !comment) {
             return badRequest('Recipe ID and comment content are required');
@@ -91,9 +97,15 @@ export async function POST(request: Request) {
             });
         }
 
+        logger.info('POST /api/comments - success', {
+            recipeId,
+            commentId:
+                recipeAndComment.comments[recipeAndComment.comments.length - 1]
+                    ?.id,
+        });
         return NextResponse.json(recipeAndComment);
-    } catch (error) {
-        console.error('Error posting comment:', error);
+    } catch (error: any) {
+        logger.error('POST /api/comments - error', { error: error.message });
         return internalServerError('Failed to post comment');
     }
 }

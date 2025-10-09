@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import {
     unauthorized,
     invalidInput,
@@ -8,6 +8,7 @@ import {
     notFound,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
     userId?: string;
@@ -28,6 +29,11 @@ export async function DELETE(
         }
 
         const { userId } = params;
+
+        logger.info('DELETE /api/user/[userId] - start', {
+            userId,
+            currentUserId: currentUser.id,
+        });
 
         if (!userId || typeof userId !== 'string') {
             return invalidInput(
@@ -57,12 +63,15 @@ export async function DELETE(
             });
         });
 
+        logger.info('DELETE /api/user/[userId] - success', { userId });
         return NextResponse.json({
             success: true,
             message: 'Account deleted successfully',
         });
-    } catch (error) {
-        console.error('Error deleting user account:', error);
+    } catch (error: any) {
+        logger.error('DELETE /api/user/[userId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to delete account');
     }
 }

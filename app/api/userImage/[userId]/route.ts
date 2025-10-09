@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import { deleteFromCloudinary, isCloudinaryUrl } from '@/app/utils/cloudinary';
 import {
     unauthorized,
     badRequest,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 export async function PUT(request: Request) {
     try {
@@ -18,6 +19,10 @@ export async function PUT(request: Request) {
                 'User authentication required to update profile image'
             );
         }
+
+        logger.info('PUT /api/userImage/[userId] - start', {
+            userId: currentUser.id,
+        });
 
         const body = await request.json();
         const { userImage } = body;
@@ -58,9 +63,14 @@ export async function PUT(request: Request) {
             },
         });
 
+        logger.info('PUT /api/userImage/[userId] - success', {
+            userId: user.id,
+        });
         return NextResponse.json(user);
-    } catch (error) {
-        console.error('Error updating user image:', error);
+    } catch (error: any) {
+        logger.error('PUT /api/userImage/[userId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to update user image');
     }
 }

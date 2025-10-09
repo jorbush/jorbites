@@ -1,4 +1,5 @@
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
+import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
     userId?: string;
@@ -6,6 +7,7 @@ interface IParams {
 
 export default async function getRecipesByUserId(params: IParams) {
     try {
+        logger.info('getRecipesByUserId - start', { userId: params.userId });
         const { userId } = params;
 
         const recipes = await prisma.recipe.findMany({
@@ -19,8 +21,16 @@ export default async function getRecipesByUserId(params: IParams) {
             createdAt: recipe.createdAt.toString(),
         }));
 
+        logger.info('getRecipesByUserId - success', {
+            userId,
+            count: safeRecipes.length,
+        });
         return safeRecipes;
     } catch (error: any) {
+        logger.error('getRecipesByUserId - error', {
+            error: error.message,
+            userId: params.userId,
+        });
         throw new Error(error);
     }
 }

@@ -2,13 +2,14 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import {
     unauthorized,
     badRequest,
     forbidden,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
     userId?: string;
@@ -29,6 +30,11 @@ export async function PATCH(
         }
 
         const { userId } = params;
+
+        logger.info('PATCH /api/password/[userId] - start', {
+            userId,
+            currentUserId: currentUser.id,
+        });
 
         if (!userId || typeof userId !== 'string') {
             return badRequest('User ID is required and must be a valid string');
@@ -85,12 +91,15 @@ export async function PATCH(
             },
         });
 
+        logger.info('PATCH /api/password/[userId] - success', { userId });
         return NextResponse.json({
             success: true,
             message: 'Password updated successfully',
         });
-    } catch (error) {
-        console.error('Error changing password:', error);
+    } catch (error: any) {
+        logger.error('PATCH /api/password/[userId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to change password');
     }
 }

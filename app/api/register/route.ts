@@ -1,17 +1,20 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import {
     badRequest,
     conflict,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
         const { email, name, password } = body;
+
+        logger.info('POST /api/register - start', { email });
 
         if (!email || !name || !password) {
             return badRequest('Email, name, and password are required');
@@ -41,9 +44,10 @@ export async function POST(request: Request) {
             },
         });
 
+        logger.info('POST /api/register - success', { userId: user.id, email });
         return NextResponse.json(user);
-    } catch (error) {
-        console.error('Error creating user:', error);
+    } catch (error: any) {
+        logger.error('POST /api/register - error', { error: error.message });
         return internalServerError('Failed to create user account');
     }
 }

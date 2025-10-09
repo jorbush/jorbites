@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
     token?: string;
@@ -13,6 +14,10 @@ export async function GET(
     try {
         const params = await props.params;
         const { token } = params;
+
+        logger.info('GET /api/password-reset/validate/[token] - start', {
+            hasToken: !!token,
+        });
 
         if (!token) {
             return badRequest('Token is required');
@@ -28,12 +33,18 @@ export async function GET(
         });
 
         if (!user) {
+            logger.info(
+                'GET /api/password-reset/validate/[token] - invalid token'
+            );
             return NextResponse.json({ valid: false });
         }
 
+        logger.info('GET /api/password-reset/validate/[token] - valid token');
         return NextResponse.json({ valid: true });
-    } catch (error) {
-        console.error('Error validating token:', error);
+    } catch (error: any) {
+        logger.error('GET /api/password-reset/validate/[token] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to validate token');
     }
 }

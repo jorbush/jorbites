@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import updateUserLevel from '@/app/actions/updateUserLevel';
@@ -20,6 +20,7 @@ import {
     conflict,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 export async function POST(request: Request) {
     try {
@@ -32,6 +33,8 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
+
+        logger.info('POST /api/recipes - start', { userId: currentUser.id });
         const {
             title,
             description,
@@ -170,9 +173,13 @@ export async function POST(request: Request) {
             userId: currentUser.id,
         });
 
+        logger.info('POST /api/recipes - success', {
+            recipeId: recipe.id,
+            userId: currentUser.id,
+        });
         return NextResponse.json(recipe);
-    } catch (error) {
-        console.error('Error creating recipe:', error);
+    } catch (error: any) {
+        logger.error('POST /api/recipes - error', { error: error.message });
         return internalServerError('Failed to create recipe');
     }
 }

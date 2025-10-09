@@ -1,15 +1,18 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import { JORBITES_URL } from '@/app/utils/constants';
 import sendEmail from '@/app/actions/sendEmail';
 import { EmailType } from '@/app/types/email';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
         const { email } = body;
+
+        logger.info('POST /api/password-reset/request - start', { email });
 
         if (!email) {
             return badRequest('Email is required');
@@ -48,9 +51,12 @@ export async function POST(request: Request) {
             },
         });
 
+        logger.info('POST /api/password-reset/request - success', { email });
         return NextResponse.json({ success: true });
-    } catch (error) {
-        console.error('Error in reset request:', error);
+    } catch (error: any) {
+        logger.error('POST /api/password-reset/request - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to process password reset request');
     }
 }

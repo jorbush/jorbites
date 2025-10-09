@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { unauthorized, internalServerError } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 export async function GET(request: Request) {
     try {
@@ -18,6 +19,12 @@ export async function GET(request: Request) {
         if (!currentUser) {
             return unauthorized('User authentication required to search');
         }
+
+        logger.info('GET /api/search - start', {
+            query,
+            type,
+            userId: currentUser.id,
+        });
 
         type SearchedUser = {
             id: string;
@@ -87,12 +94,18 @@ export async function GET(request: Request) {
             });
         }
 
+        logger.info('GET /api/search - success', {
+            query,
+            type,
+            userCount: users.length,
+            recipeCount: recipes.length,
+        });
         return NextResponse.json({
             users,
             recipes,
         });
-    } catch (error) {
-        console.error('Error performing search:', error);
+    } catch (error: any) {
+        logger.error('GET /api/search - error', { error: error.message });
         return internalServerError('Failed to perform search');
     }
 }

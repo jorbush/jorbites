@@ -1,0 +1,13 @@
+import axiomClient from '@/app/lib/axiom/axiom';
+import { Logger, AxiomJSTransport } from '@axiomhq/logging';
+import { nextJsFormatters } from '@axiomhq/nextjs';
+
+export const logger = new Logger({
+    transports: [
+        new AxiomJSTransport({
+            axiom: axiomClient,
+            dataset: process.env.AXIOM_DATASET!,
+        }),
+    ],
+    formatters: nextJsFormatters,
+});

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import getCommentById from '@/app/actions/getCommentById';
 import {
     unauthorized,
@@ -10,6 +10,7 @@ import {
     forbidden,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
     commentId?: string;
@@ -30,6 +31,11 @@ export async function DELETE(
         }
 
         const { commentId } = params;
+
+        logger.info('DELETE /api/comments/[commentId] - start', {
+            commentId,
+            userId: currentUser.id,
+        });
 
         if (!commentId || typeof commentId !== 'string') {
             return invalidInput(
@@ -53,9 +59,14 @@ export async function DELETE(
             },
         });
 
+        logger.info('DELETE /api/comments/[commentId] - success', {
+            commentId,
+        });
         return NextResponse.json(deletedComment);
-    } catch (error) {
-        console.error('Error deleting comment:', error);
+    } catch (error: any) {
+        logger.error('DELETE /api/comments/[commentId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to delete comment');
     }
 }

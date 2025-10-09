@@ -11,14 +11,14 @@ const mockGetCurrentUser = getCurrentUser as jest.MockedFunction<
 >;
 
 // Mock prisma
-jest.mock('@/app/libs/prismadb', () => ({
+jest.mock('@/app/lib/prismadb', () => ({
     user: {
         findFirst: jest.fn(),
         update: jest.fn(),
     },
 }));
 
-const mockPrisma = require('@/app/libs/prismadb');
+const mockPrisma = require('@/app/lib/prismadb');
 
 describe('PATCH /api/userName/[userId]', () => {
     const mockUser = {

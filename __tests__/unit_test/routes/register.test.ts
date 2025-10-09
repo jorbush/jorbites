@@ -8,14 +8,14 @@ jest.mock('bcrypt', () => ({
 }));
 
 // Mock prisma
-jest.mock('@/app/libs/prismadb', () => ({
+jest.mock('@/app/lib/prismadb', () => ({
     user: {
         findUnique: jest.fn(),
         create: jest.fn(),
     },
 }));
 
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 
 describe('Register API Error Handling', () => {
     beforeEach(() => {

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import { USERNAME_MAX_LENGTH } from '@/app/utils/constants';
 import {
     unauthorized,
@@ -9,6 +9,7 @@ import {
     conflict,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 export async function PATCH(request: Request) {
     try {
@@ -19,6 +20,10 @@ export async function PATCH(request: Request) {
                 'User authentication required to update username'
             );
         }
+
+        logger.info('PATCH /api/userName/[userId] - start', {
+            userId: currentUser.id,
+        });
 
         const body = await request.json();
         const { userName } = body;
@@ -70,9 +75,15 @@ export async function PATCH(request: Request) {
             },
         });
 
+        logger.info('PATCH /api/userName/[userId] - success', {
+            userId: user.id,
+            newUserName: trimmedUserName,
+        });
         return NextResponse.json(user);
-    } catch (error) {
-        console.error('Error updating username:', error);
+    } catch (error: any) {
+        logger.error('PATCH /api/userName/[userId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to update username');
     }
 }

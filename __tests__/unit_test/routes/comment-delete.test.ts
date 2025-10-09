@@ -6,7 +6,7 @@ jest.mock('@/app/actions/getCurrentUser', () => jest.fn());
 jest.mock('@/app/actions/getCommentById', () => jest.fn());
 
 // Mock prisma
-jest.mock('@/app/libs/prismadb', () => ({
+jest.mock('@/app/lib/prismadb', () => ({
     comment: {
         delete: jest.fn(),
     },
@@ -14,7 +14,7 @@ jest.mock('@/app/libs/prismadb', () => ({
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getCommentById from '@/app/actions/getCommentById';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 
 describe('Comment Delete API Error Handling', () => {
     beforeEach(() => {

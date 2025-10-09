@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
+import { logger } from '@/app/lib/axiom/server';
 
 export async function GET(request: NextRequest) {
     const url = request.nextUrl.searchParams.get('url');
@@ -7,8 +8,15 @@ export async function GET(request: NextRequest) {
     const height = request.nextUrl.searchParams.get('h');
     const quality = request.nextUrl.searchParams.get('q') || 'auto:good';
 
+    logger.info('GET /api/image-proxy - start', {
+        url: url?.substring(0, 100),
+        width,
+        height,
+        quality,
+    });
+
     if (!url) {
-        console.error('[Image Proxy] Missing URL parameter');
+        logger.error('GET /api/image-proxy - missing URL parameter');
         return badRequest('URL parameter is required');
     }
 
@@ -125,6 +133,10 @@ export async function GET(request: NextRequest) {
         const contentType =
             imageResponse.headers.get('Content-Type') || 'image/jpeg';
 
+        logger.info('GET /api/image-proxy - success', {
+            url: imageUrl.substring(0, 100),
+            contentType,
+        });
         return new NextResponse(imageData, {
             status: 200,
             headers: {
@@ -133,8 +145,11 @@ export async function GET(request: NextRequest) {
                 'Access-Control-Allow-Origin': '*',
             },
         });
-    } catch (error) {
-        console.error('[Image Proxy] Unhandled error:', error);
+    } catch (error: any) {
+        logger.error('GET /api/image-proxy - error', {
+            error: error.message,
+            url,
+        });
         return internalServerError('Failed to process image request');
     }
 }

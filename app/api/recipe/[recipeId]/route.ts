@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/app/libs/prismadb';
+import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import getRecipeById from '@/app/actions/getRecipeById';
@@ -23,6 +23,7 @@ import {
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
 } from '@/app/utils/constants';
+import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
     recipeId?: string;
@@ -47,6 +48,12 @@ export async function POST(
         }
 
         const { recipeId } = params;
+
+        logger.info('POST /api/recipe/[recipeId] - start', {
+            recipeId,
+            operation,
+            userId: currentUser.id,
+        });
 
         if (!recipeId || typeof recipeId !== 'string') {
             return invalidInput(
@@ -109,9 +116,16 @@ export async function POST(
             userId: currentRecipe.user.id,
         });
 
+        logger.info('POST /api/recipe/[recipeId] - success', {
+            recipeId,
+            operation,
+            numLikes: recipe.numLikes,
+        });
         return NextResponse.json(recipe);
-    } catch (error) {
-        console.error('Error updating recipe likes:', error);
+    } catch (error: any) {
+        logger.error('POST /api/recipe/[recipeId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to update recipe likes');
     }
 }
@@ -129,6 +143,11 @@ export async function PATCH(
         }
 
         const { recipeId } = params;
+
+        logger.info('PATCH /api/recipe/[recipeId] - start', {
+            recipeId,
+            userId: currentUser.id,
+        });
 
         if (!recipeId || typeof recipeId !== 'string') {
             return invalidInput(
@@ -278,9 +297,12 @@ export async function PATCH(
             },
         });
 
+        logger.info('PATCH /api/recipe/[recipeId] - success', { recipeId });
         return NextResponse.json(updatedRecipe);
-    } catch (error) {
-        console.error('Error updating recipe:', error);
+    } catch (error: any) {
+        logger.error('PATCH /api/recipe/[recipeId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to update recipe');
     }
 }
@@ -300,6 +322,11 @@ export async function DELETE(
         }
 
         const { recipeId } = params;
+
+        logger.info('DELETE /api/recipe/[recipeId] - start', {
+            recipeId,
+            userId: currentUser.id,
+        });
 
         if (!recipeId || typeof recipeId !== 'string') {
             return invalidInput(
@@ -354,9 +381,14 @@ export async function DELETE(
             userId: recipe.userId,
         });
 
+        logger.info('DELETE /api/recipe/[recipeId] - success', {
+            recipeId,
+        });
         return NextResponse.json(deletedRecipe);
-    } catch (error) {
-        console.error('Error deleting recipe:', error);
+    } catch (error: any) {
+        logger.error('DELETE /api/recipe/[recipeId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to delete recipe');
     }
 }
