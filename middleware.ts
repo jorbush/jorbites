@@ -16,9 +16,26 @@ export async function middleware(request: NextRequest, event: NextFetchEvent) {
   return response;
 }
 
+/**
+ * Regex pattern to exclude specific paths from middleware matching.
+ * Excludes:
+ * - /api
+ * - /_next/static
+ * - /_next/image
+ * - /favicon.*
+ * - /sitemap.xml
+ * - /robots.txt
+ * - /locales/*
+ * - /images/logo-nobg.webp
+ * - /images/no_bg_white.webp
+ * - /manifest.json
+ */
+const EXCLUDED_PATHS_REGEX =
+  '/((?!api|_next/static|_next/image|favicon.*|sitemap.xml|robots.txt|locales/*|images/logo-nobg.webp|images/no_bg_white.webp|manifest.json).*)';
+
 export const config = {
   matcher: [
     '/api/image-proxy/:path*',
-    '/((?!api|_next/static|_next/image|favicon.*|sitemap.xml|robots.txt|locales/*|images/logo-nobg.webp|images/no_bg_white.webp|manifest.json).*)',
+    EXCLUDED_PATHS_REGEX,
   ],
 };
