@@ -1,12 +1,15 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import prisma from '@/app/lib/prismadb';
+import { logger } from '@/app/lib/axiom/server';
 
 export default async function getCurrentUser() {
     try {
+        logger.info('getCurrentUser - start');
         const session = await getServerSession(authOptions);
 
         if (!session?.user?.email) {
+            logger.info('getCurrentUser - no session');
             return null;
         }
 
@@ -17,9 +20,11 @@ export default async function getCurrentUser() {
         });
 
         if (!currentUser) {
+            logger.info('getCurrentUser - user not found');
             return null;
         }
 
+        logger.info('getCurrentUser - success', { userId: currentUser.id });
         return {
             ...currentUser,
             createdAt: currentUser.createdAt.toISOString(),
@@ -27,7 +32,7 @@ export default async function getCurrentUser() {
             emailVerified: currentUser.emailVerified?.toISOString() || null,
         };
     } catch (error: any) {
-        console.log(error);
+        logger.error('getCurrentUser - error', { error: error.message });
         return null;
     }
 }

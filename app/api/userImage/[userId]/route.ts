@@ -8,9 +8,11 @@ import {
     badRequest,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger, withAxiom } from '@/app/lib/axiom/server';
 
-export async function PUT(request: Request) {
+export const PUT = withAxiom(async (request: Request) => {
     try {
+        logger.info('PUT /api/userImage/[userId] - start');
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
@@ -58,9 +60,14 @@ export async function PUT(request: Request) {
             },
         });
 
+        logger.info('PUT /api/userImage/[userId] - success', {
+            userId: user.id,
+        });
         return NextResponse.json(user);
-    } catch (error) {
-        console.error('Error updating user image:', error);
+    } catch (error: any) {
+        logger.error('PUT /api/userImage/[userId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to update user image');
     }
-}
+});

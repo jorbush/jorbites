@@ -1,9 +1,12 @@
+import { logger } from '@/app/lib/axiom/server';
+
 interface IParams {
     userId?: string;
 }
 
 export default async function updateUserLevel(params: IParams) {
     try {
+        logger.info('updateUserLevel - start', { userId: params.userId });
         const { userId } = params;
 
         const badgeForgePayload = {
@@ -24,11 +27,21 @@ export default async function updateUserLevel(params: IParams) {
 
         if (!badgeForgeResponse.ok) {
             const errorData = await badgeForgeResponse.json().catch(() => ({}));
+            logger.error('updateUserLevel - badge forge error', {
+                status: badgeForgeResponse.status,
+                errorData,
+                userId,
+            });
             throw new Error(
                 `Badge Forge service responded with status ${badgeForgeResponse.status}: ${JSON.stringify(errorData)}`
             );
         }
+
+        logger.info('updateUserLevel - success', { userId });
     } catch (error: any) {
-        console.error('Error updating user level:', error);
+        logger.error('updateUserLevel - error', {
+            error: error.message,
+            userId: params.userId,
+        });
     }
 }

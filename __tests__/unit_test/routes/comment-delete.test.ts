@@ -6,7 +6,7 @@ jest.mock('@/app/actions/getCurrentUser', () => jest.fn());
 jest.mock('@/app/actions/getCommentById', () => jest.fn());
 
 // Mock prisma
-jest.mock('@/app/libs/prismadb', () => ({
+jest.mock('@/app/lib/prismadb', () => ({
     comment: {
         delete: jest.fn(),
     },

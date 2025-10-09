@@ -2,9 +2,11 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import bcrypt from 'bcrypt';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
+import { logger, withAxiom } from '@/app/lib/axiom/server';
 
-export async function POST(request: Request) {
+export const POST = withAxiom(async (request: Request) => {
     try {
+        logger.info('POST /api/password-reset/reset - start');
         const body = await request.json();
         const { token, password } = body;
 
@@ -42,9 +44,14 @@ export async function POST(request: Request) {
             },
         });
 
+        logger.info('POST /api/password-reset/reset - success', {
+            userId: user.id,
+        });
         return NextResponse.json({ success: true });
-    } catch (error) {
-        console.error('Error resetting password:', error);
+    } catch (error: any) {
+        logger.error('POST /api/password-reset/reset - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to reset password');
     }
-}
+});

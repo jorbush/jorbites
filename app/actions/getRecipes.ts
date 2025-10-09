@@ -5,6 +5,7 @@ import {
     getPrismaOrderByClause,
     getDateRangeFilter,
 } from '@/app/utils/filter';
+import { logger } from '@/app/lib/axiom/server';
 
 export interface IRecipesParams {
     category?: string;
@@ -35,6 +36,7 @@ export default async function getRecipes(
     params: IRecipesParams
 ): Promise<ServerResponse<RecipesResponse>> {
     try {
+        logger.info('getRecipes - start', { params });
         const {
             category,
             search,
@@ -98,6 +100,7 @@ export default async function getRecipes(
             createdAt: recipe.createdAt.toISOString(),
         }));
 
+        logger.info('getRecipes - success', { totalRecipes, page, limit });
         return {
             data: {
                 recipes: safeRecipes,
@@ -108,7 +111,7 @@ export default async function getRecipes(
             error: null,
         };
     } catch (error: any) {
-        console.error('Failed to get recipes', error);
+        logger.error('getRecipes - error', { error: error.message, params });
         return {
             data: null,
             error: {

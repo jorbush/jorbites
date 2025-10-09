@@ -16,7 +16,7 @@ jest.mock('crypto', () => ({
     }),
 }));
 
-jest.mock('@/app/libs/prismadb', () => ({
+jest.mock('@/app/lib/prismadb', () => ({
     user: {
         findUnique: jest.fn(),
         findFirst: jest.fn(),

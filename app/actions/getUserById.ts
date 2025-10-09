@@ -1,4 +1,5 @@
 import prisma from '@/app/lib/prismadb';
+import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
     userId?: string;
@@ -7,6 +8,10 @@ interface IParams {
 
 export default async function getUserById(params: IParams) {
     try {
+        logger.info('getUserById - start', {
+            userId: params.userId,
+            withStats: params.withStats,
+        });
         const { userId } = params;
 
         const user = await prisma.user.findUnique({
@@ -16,6 +21,7 @@ export default async function getUserById(params: IParams) {
         });
 
         if (!user) {
+            logger.info('getUserById - user not found', { userId });
             return null;
         }
 
@@ -94,6 +100,10 @@ export default async function getUserById(params: IParams) {
             };
         }
 
+        logger.info('getUserById - success', {
+            userId,
+            withStats: params.withStats,
+        });
         return {
             ...user,
             createdAt: user.createdAt.toISOString(),
@@ -101,7 +111,10 @@ export default async function getUserById(params: IParams) {
             emailVerified: user.emailVerified?.toISOString() || null,
         };
     } catch (error: any) {
-        console.log(error);
+        logger.error('getUserById - error', {
+            error: error.message,
+            userId: params.userId,
+        });
         return null;
     }
 }

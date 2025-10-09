@@ -10,6 +10,7 @@ import {
     setSeconds,
     setMilliseconds,
 } from 'date-fns';
+import { logger } from '@/app/lib/axiom/server';
 
 export type ChallengeType =
     | 'ingredient'
@@ -45,6 +46,7 @@ export interface WeeklyChallenge {
  * Gets the current active challenge or generates a new one if none exists
  */
 export async function getCurrentChallenge(): Promise<WeeklyChallenge> {
+    logger.info('getCurrentChallenge - start');
     const now = new Date();
 
     // Get the current challenge
@@ -56,10 +58,14 @@ export async function getCurrentChallenge(): Promise<WeeklyChallenge> {
     });
 
     if (currentChallenge) {
+        logger.info('getCurrentChallenge - found existing challenge', {
+            challengeId: currentChallenge.id,
+        });
         return currentChallenge as WeeklyChallenge;
     }
 
     // If no current challenge exists or it's expired, generate a new one
+    logger.info('getCurrentChallenge - generating new challenge');
     return generateNewChallenge();
 }
 
@@ -67,6 +73,7 @@ export async function getCurrentChallenge(): Promise<WeeklyChallenge> {
  * Generates a new weekly challenge with random type and value
  */
 async function generateNewChallenge(): Promise<WeeklyChallenge> {
+    logger.info('generateNewChallenge - start');
     // Delete any existing challenges
     await prisma.weeklyChallenge.deleteMany({});
 
@@ -154,5 +161,10 @@ async function generateNewChallenge(): Promise<WeeklyChallenge> {
         },
     });
 
+    logger.info('generateNewChallenge - success', {
+        challengeId: challenge.id,
+        type: randomType,
+        value,
+    });
     return challenge as WeeklyChallenge;
 }

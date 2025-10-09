@@ -1,7 +1,9 @@
 import prisma from '@/app/lib/prismadb';
+import { logger } from '@/app/lib/axiom/server';
 
 export default async function getTopJorbiters() {
     try {
+        logger.info('getTopJorbiters - start');
         const users = await prisma.user.findMany({
             orderBy: {
                 level: 'desc',
@@ -37,9 +39,12 @@ export default async function getTopJorbiters() {
             })
         );
 
+        logger.info('getTopJorbiters - success', {
+            count: usersWithLikes.length,
+        });
         return usersWithLikes;
     } catch (error: any) {
-        console.error(error);
+        logger.error('getTopJorbiters - error', { error: error.message });
         return error;
     }
 }

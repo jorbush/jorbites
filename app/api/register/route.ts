@@ -7,9 +7,11 @@ import {
     conflict,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger, withAxiom } from '@/app/lib/axiom/server';
 
-export async function POST(request: Request) {
+export const POST = withAxiom(async (request: Request) => {
     try {
+        logger.info('POST /api/register - start');
         const body = await request.json();
         const { email, name, password } = body;
 
@@ -41,9 +43,10 @@ export async function POST(request: Request) {
             },
         });
 
+        logger.info('POST /api/register - success', { userId: user.id, email });
         return NextResponse.json(user);
-    } catch (error) {
-        console.error('Error creating user:', error);
+    } catch (error: any) {
+        logger.error('POST /api/register - error', { error: error.message });
         return internalServerError('Failed to create user account');
     }
-}
+});

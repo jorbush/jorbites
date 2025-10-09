@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import { internalServerError } from '@/app/utils/apiErrors';
+import { logger, withAxiom } from '@/app/lib/axiom/server';
 
-export async function GET(request: Request) {
+export const GET = withAxiom(async (request: Request) => {
     try {
+        logger.info('GET /api/users/multiple - start');
         const url = new URL(request.url);
         const idsParam = url.searchParams.get('ids');
 
@@ -32,9 +34,14 @@ export async function GET(request: Request) {
             },
         });
 
+        logger.info('GET /api/users/multiple - success', {
+            count: users.length,
+        });
         return NextResponse.json(users);
-    } catch (error) {
-        console.error('Error fetching users:', error);
+    } catch (error: any) {
+        logger.error('GET /api/users/multiple - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to fetch users');
     }
-}
+});

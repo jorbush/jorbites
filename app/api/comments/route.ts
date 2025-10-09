@@ -12,9 +12,11 @@ import {
     validationError,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger, withAxiom } from '@/app/lib/axiom/server';
 
-export async function POST(request: Request) {
+export const POST = withAxiom(async (request: Request) => {
     try {
+        logger.info('POST /api/comments - start');
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
@@ -91,9 +93,15 @@ export async function POST(request: Request) {
             });
         }
 
+        logger.info('POST /api/comments - success', {
+            recipeId,
+            commentId:
+                recipeAndComment.comments[recipeAndComment.comments.length - 1]
+                    ?.id,
+        });
         return NextResponse.json(recipeAndComment);
-    } catch (error) {
-        console.error('Error posting comment:', error);
+    } catch (error: any) {
+        logger.error('POST /api/comments - error', { error: error.message });
         return internalServerError('Failed to post comment');
     }
-}
+});

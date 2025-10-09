@@ -1,4 +1,5 @@
 import prisma from '@/app/lib/prismadb';
+import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
     recipeId?: string;
@@ -6,6 +7,9 @@ interface IParams {
 
 export default async function getCommentsByRecipeId(params: IParams) {
     try {
+        logger.info('getCommentsByRecipeId - start', {
+            recipeId: params.recipeId,
+        });
         const { recipeId } = params;
 
         const query: any = {};
@@ -36,8 +40,16 @@ export default async function getCommentsByRecipeId(params: IParams) {
             },
         }));
 
+        logger.info('getCommentsByRecipeId - success', {
+            recipeId,
+            count: safeComments.length,
+        });
         return safeComments;
     } catch (error: any) {
+        logger.error('getCommentsByRecipeId - error', {
+            error: error.message,
+            recipeId: params.recipeId,
+        });
         throw new Error(error);
     }
 }

@@ -4,9 +4,11 @@ import prisma from '@/app/lib/prismadb';
 import sendEmail from '@/app/actions/sendEmail';
 import { EmailType } from '@/app/types/email';
 import { unauthorized, internalServerError } from '@/app/utils/apiErrors';
+import { logger, withAxiom } from '@/app/lib/axiom/server';
 
-export async function PUT(_request: Request) {
+export const PUT = withAxiom(async (_request: Request) => {
     try {
+        logger.info('PUT /api/emailNotifications/[userId] - start');
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
@@ -31,9 +33,15 @@ export async function PUT(_request: Request) {
             });
         }
 
+        logger.info('PUT /api/emailNotifications/[userId] - success', {
+            userId: user.id,
+            emailNotifications: user.emailNotifications,
+        });
         return NextResponse.json(user);
-    } catch (error) {
-        console.error('Error updating email notifications:', error);
+    } catch (error: any) {
+        logger.error('PUT /api/emailNotifications/[userId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to update email notifications');
     }
-}
+});

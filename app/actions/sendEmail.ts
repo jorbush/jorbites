@@ -1,4 +1,5 @@
 import { EmailType } from '@/app/types/email';
+import { logger } from '@/app/lib/axiom/server';
 
 interface SendEmailParams {
     type: EmailType;
@@ -16,9 +17,13 @@ interface SendEmailParams {
  * Sends an email notification using the Jorbites Notifier service
  */
 const sendEmail = async ({ type, userEmail, params = {} }: SendEmailParams) => {
-    if (!userEmail) return;
+    if (!userEmail) {
+        logger.info('sendEmail - no userEmail provided', { type });
+        return;
+    }
 
     try {
+        logger.info('sendEmail - start', { type, userEmail, params });
         const metadata: Record<string, string> = {};
 
         if (params.userName) metadata.authorName = params.userName;
@@ -52,17 +57,26 @@ const sendEmail = async ({ type, userEmail, params = {} }: SendEmailParams) => {
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
+            logger.error('sendEmail - notification service error', {
+                status: response.status,
+                errorData,
+                type,
+                userEmail,
+            });
             throw new Error(
                 `Notification service responded with status ${response.status}: ${JSON.stringify(errorData)}`
             );
         }
 
-        return await response.json();
-    } catch (error) {
-        console.error(
-            'Error sending notification via Jorbites Notifier:',
-            error
-        );
+        const result = await response.json();
+        logger.info('sendEmail - success', { type, userEmail });
+        return result;
+    } catch (error: any) {
+        logger.error('sendEmail - error', {
+            error: error.message,
+            type,
+            userEmail,
+        });
     }
 };
 

@@ -9,9 +9,11 @@ import {
     conflict,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger, withAxiom } from '@/app/lib/axiom/server';
 
-export async function PATCH(request: Request) {
+export const PATCH = withAxiom(async (request: Request) => {
     try {
+        logger.info('PATCH /api/userName/[userId] - start');
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
@@ -70,9 +72,15 @@ export async function PATCH(request: Request) {
             },
         });
 
+        logger.info('PATCH /api/userName/[userId] - success', {
+            userId: user.id,
+            newUserName: trimmedUserName,
+        });
         return NextResponse.json(user);
-    } catch (error) {
-        console.error('Error updating username:', error);
+    } catch (error: any) {
+        logger.error('PATCH /api/userName/[userId] - error', {
+            error: error.message,
+        });
         return internalServerError('Failed to update username');
     }
-}
+});

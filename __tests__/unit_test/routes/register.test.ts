@@ -8,7 +8,7 @@ jest.mock('bcrypt', () => ({
 }));
 
 // Mock prisma
-jest.mock('@/app/libs/prismadb', () => ({
+jest.mock('@/app/lib/prismadb', () => ({
     user: {
         findUnique: jest.fn(),
         create: jest.fn(),

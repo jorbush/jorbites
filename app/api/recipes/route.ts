@@ -20,9 +20,11 @@ import {
     conflict,
     internalServerError,
 } from '@/app/utils/apiErrors';
+import { logger, withAxiom } from '@/app/lib/axiom/server';
 
-export async function POST(request: Request) {
+export const POST = withAxiom(async (request: Request) => {
     try {
+        logger.info('POST /api/recipes - start');
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
@@ -170,9 +172,13 @@ export async function POST(request: Request) {
             userId: currentUser.id,
         });
 
+        logger.info('POST /api/recipes - success', {
+            recipeId: recipe.id,
+            userId: currentUser.id,
+        });
         return NextResponse.json(recipe);
-    } catch (error) {
-        console.error('Error creating recipe:', error);
+    } catch (error: any) {
+        logger.error('POST /api/recipes - error', { error: error.message });
         return internalServerError('Failed to create recipe');
     }
-}
+});
