@@ -38,6 +38,7 @@ const EditRecipeButton: React.FC<EditRecipeButtonProps> = ({ recipe }) => {
                 minutes: recipe.minutes,
                 coCooksIds: recipe.coCooksIds || [],
                 linkedRecipeIds: recipe.linkedRecipeIds || [],
+                youtubeUrl: recipe.youtubeUrl || '',
             };
 
             if (recipe.coCooksIds && recipe.coCooksIds.length > 0) {
