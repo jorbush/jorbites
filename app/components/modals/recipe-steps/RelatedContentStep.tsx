@@ -114,29 +114,9 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                 title={t('related_content') || 'Related Content'}
                 subtitle={
                     t('related_content_subtitle') ||
-                    'Add co-cooks, related recipes, and YouTube video'
+                    'Add co-cooks and related recipes'
                 }
             />
-
-            {/* YouTube URL Input */}
-            <div className="space-y-2">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-zinc-400">
-                    {t('youtube_video') || 'YouTube Video'}
-                </h3>
-                <Input
-                    id="youtubeUrl"
-                    label={t('youtube_url') || 'YouTube URL (optional)'}
-                    type="url"
-                    disabled={isLoading}
-                    register={register}
-                    errors={errors}
-                    dataCy="youtube-url-input"
-                />
-                <p className="text-xs text-gray-500 dark:text-zinc-400">
-                    {t('youtube_url_help') ||
-                        'Enter a YouTube video URL (e.g., https://youtube.com/watch?v=...)'}
-                </p>
-            </div>
 
             {/* Tab selection for co-cooks vs related recipes */}
             <Tabs
@@ -276,6 +256,27 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                             </div>
                         </div>
                     )}
+            </div>
+
+            {/* YouTube URL Input */}
+            <div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+                <div className="space-y-3">
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-zinc-400">
+                        {t('youtube_video') || 'YouTube Video'}
+                    </h3>
+                    <Input
+                        id="youtubeUrl"
+                        label={t('youtube_url_optional')}
+                        type="url"
+                        disabled={isLoading}
+                        register={register}
+                        errors={errors}
+                        dataCy="youtube-url-input"
+                    />
+                    <p className="text-xs text-gray-400 dark:text-zinc-500">
+                        {t('youtube_url_help')}
+                    </p>
+                </div>
             </div>
         </div>
     );

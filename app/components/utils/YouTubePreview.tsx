@@ -17,7 +17,6 @@ const YouTubePreview: React.FC<YouTubePreviewProps> = ({
 }) => {
     const [imageError, setImageError] = useState(false);
 
-    // Extract video ID from YouTube URL
     const getVideoId = (url: string): string | null => {
         const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/;
         const match = url.match(regex);
@@ -30,13 +29,11 @@ const YouTubePreview: React.FC<YouTubePreviewProps> = ({
         return null;
     }
 
-    // YouTube thumbnail URL (no cookies required)
     const thumbnailUrl = imageError
         ? `https://img.youtube.com/vi/${videoId}/default.jpg`
         : `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
     const handleClick = () => {
-        // Open YouTube video in new tab
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
@@ -64,18 +61,14 @@ const YouTubePreview: React.FC<YouTubePreviewProps> = ({
                     className="object-cover transition-opacity duration-200 hover:opacity-80"
                     onError={handleImageError}
                 />
-
-                {/* Play button overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="bg-opacity-90 bg-green-450 flex h-16 w-16 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-110">
                         <FiPlay
                             size={24}
-                            className="ml-1" // Slight offset to center the play icon visually
+                            className="ml-1"
                         />
                     </div>
                 </div>
-
-                {/* Hover overlay */}
             </div>
         </div>
     );

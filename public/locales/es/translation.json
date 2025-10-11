@@ -486,5 +486,8 @@
     "to_date": "Fecha hasta",
     "apply": "Aplicar",
     "pot": "Olla",
-    "quick pot": "Olla Rápida"
+    "quick pot": "Olla Rápida",
+    "youtube_video": "Video de YouTube",
+    "youtube_url_optional": "URL del vídeo de YouTube (opcional)",
+    "youtube_url_help": "Añade tu vídeo tutorial de YouTube para esta receta"
 }

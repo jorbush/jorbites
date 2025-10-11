@@ -245,13 +245,12 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                     <hr />
                     <div className="dark:text-neutral-100">
                         <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                            {t('video_tutorial') || 'Video Tutorial'}
+                            {t('youtube_video')}
                         </div>
                         <div className="mt-4">
                             <YouTubePreview
                                 url={youtubeUrl}
                                 title={`${t('video_for')} ${user.name}'s recipe`}
-                                className="max-w-md"
                             />
                         </div>
                     </div>
