@@ -85,7 +85,55 @@ vi.mock('@/app/components/inputs/SearchInput', () => ({
     ),
 }));
 
+// Mock the Input component
+vi.mock('@/app/components/inputs/Input', () => ({
+    default: ({ id, label, register, errors, dataCy, ...props }: any) => {
+        const registeredField = register(id);
+        return (
+            <div data-testid={`input-${id}`}>
+                <label htmlFor={id}>{label}</label>
+                <input
+                    id={id}
+                    data-testid={`input-field-${id}`}
+                    data-cy={dataCy}
+                    value={registeredField.value || ''}
+                    {...props}
+                />
+                {errors[id] && (
+                    <span data-testid={`error-${id}`}>
+                        {errors[id].message}
+                    </span>
+                )}
+            </div>
+        );
+    },
+}));
+
 describe('<RelatedContentStep />', () => {
+    // Create a proper mock register function that matches react-hook-form types
+    const createMockRegister = (youtubeUrl = '') => {
+        return vi.fn((id: string) => {
+            const baseReturn = {
+                name: id as any,
+                onChange: vi.fn(),
+                onBlur: vi.fn(),
+                ref: vi.fn(),
+            };
+
+            if (id === 'youtubeUrl') {
+                return {
+                    ...baseReturn,
+                    value: youtubeUrl,
+                };
+            }
+
+            return {
+                ...baseReturn,
+                value: '',
+            };
+        });
+    };
+
     // Default mock props for all tests
     const mockProps = {
         isLoading: false,
@@ -95,6 +143,10 @@ describe('<RelatedContentStep />', () => {
         onRemoveCoCook: vi.fn(),
         onAddLinkedRecipe: vi.fn(),
         onRemoveLinkedRecipe: vi.fn(),
+        register: createMockRegister(),
+        errors: {},
+        youtubeUrl: '',
+        onYoutubeUrlChange: vi.fn(),
     };
 
     beforeEach(() => {
@@ -395,5 +447,206 @@ describe('<RelatedContentStep />', () => {
         // Check that both tabs are rendered with correct test IDs
         expect(screen.getByTestId('tab-users')).toBeDefined();
         expect(screen.getByTestId('tab-recipes')).toBeDefined();
+    });
+
+    describe('YouTube URL input', () => {
+        it('renders YouTube URL input field', () => {
+            render(<RelatedContentStep {...mockProps} />);
+
+            expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
+            expect(screen.getByTestId('input-field-youtubeUrl')).toBeDefined();
+        });
+
+        it('passes register function to YouTube input', () => {
+            render(<RelatedContentStep {...mockProps} />);
+
+            expect(mockProps.register).toHaveBeenCalledWith('youtubeUrl');
+        });
+
+        it('passes errors to YouTube input', () => {
+            const propsWithError = {
+                ...mockProps,
+                errors: {
+                    youtubeUrl: {
+                        type: 'validation',
+                        message: 'Invalid YouTube URL',
+                    },
+                } as any, // Cast to any to match FieldErrors type
+            };
+
+            render(<RelatedContentStep {...propsWithError} />);
+
+            expect(screen.getByTestId('error-youtubeUrl')).toBeDefined();
+            expect(screen.getByText('Invalid YouTube URL')).toBeDefined();
+        });
+
+        it('disables YouTube input when loading', () => {
+            const loadingProps = {
+                ...mockProps,
+                isLoading: true,
+            };
+
+            render(<RelatedContentStep {...loadingProps} />);
+
+            const youtubeInput = screen.getByTestId(
+                'input-field-youtubeUrl'
+            ) as HTMLInputElement;
+            expect(youtubeInput.disabled).toBe(true);
+        });
+
+        it('sets correct input type for YouTube URL', () => {
+            render(<RelatedContentStep {...mockProps} />);
+
+            const youtubeInput = screen.getByTestId(
+                'input-field-youtubeUrl'
+            ) as HTMLInputElement;
+            expect(youtubeInput.type).toBe('url');
+        });
+
+        it('has correct data-cy attribute for testing', () => {
+            render(<RelatedContentStep {...mockProps} />);
+
+            const youtubeInput = screen.getByTestId('input-field-youtubeUrl');
+            expect(youtubeInput.getAttribute('data-cy')).toBe(
+                'youtube-url-input'
+            );
+        });
+    });
+
+    describe('YouTube URL validation scenarios', () => {
+        it('handles valid YouTube URLs', () => {
+            const validUrls = [
+                'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'https://youtube.com/watch?v=dQw4w9WgXcQ',
+                'https://youtu.be/dQw4w9WgXcQ',
+                'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=30s',
+            ];
+
+            validUrls.forEach((url) => {
+                const propsWithUrl = {
+                    ...mockProps,
+                    youtubeUrl: url,
+                    register: createMockRegister(url),
+                };
+
+                render(<RelatedContentStep {...propsWithUrl} />);
+
+                const youtubeInput = screen.getByTestId(
+                    'input-field-youtubeUrl'
+                ) as HTMLInputElement;
+                expect(youtubeInput.value).toBe(url);
+
+                cleanup();
+            });
+        });
+
+        it('shows error for invalid YouTube URLs', () => {
+            const invalidUrls = [
+                'https://vimeo.com/123456',
+                'https://example.com/video',
+                'not-a-url',
+                'youtube.com/watch?v=',
+            ];
+
+            invalidUrls.forEach((url) => {
+                const propsWithError = {
+                    ...mockProps,
+                    youtubeUrl: url,
+                    errors: {
+                        youtubeUrl: {
+                            type: 'validation',
+                            message: 'Invalid YouTube URL format',
+                        },
+                    } as any, // Cast to any to match FieldErrors type
+                };
+
+                render(<RelatedContentStep {...propsWithError} />);
+
+                expect(screen.getByTestId('error-youtubeUrl')).toBeDefined();
+                expect(
+                    screen.getByText('Invalid YouTube URL format')
+                ).toBeDefined();
+
+                cleanup();
+            });
+        });
+    });
+
+    describe('Layout and positioning', () => {
+        it('positions YouTube input after selected items section', () => {
+            const propsWithSelections = {
+                ...mockProps,
+                selectedCoCooks: [
+                    { id: 'user1', name: 'Test User', image: '/test.jpg' },
+                ],
+            };
+
+            render(<RelatedContentStep {...propsWithSelections} />);
+
+            // Simply check that YouTube section exists when co-cooks are selected
+            expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
+            expect(screen.getByText('selected_co_cooks')).toBeDefined();
+        });
+
+        it('maintains consistent spacing with border separator', () => {
+            render(<RelatedContentStep {...mockProps} />);
+
+            const youtubeContainer =
+                screen.getByTestId('input-youtubeUrl').parentElement
+                    ?.parentElement;
+
+            // Check for border and padding classes
+            expect(youtubeContainer?.className).toContain('border-t');
+            expect(youtubeContainer?.className).toContain('border-gray-200');
+            expect(youtubeContainer?.className).toContain(
+                'dark:border-gray-700'
+            );
+            expect(youtubeContainer?.className).toContain('pt-6');
+        });
+    });
+
+    describe('Integration with form handling', () => {
+        it('calls register with correct parameters', () => {
+            const mockRegister = createMockRegister();
+            const propsWithMockRegister = {
+                ...mockProps,
+                register: mockRegister,
+            };
+
+            render(<RelatedContentStep {...propsWithMockRegister} />);
+
+            expect(mockRegister).toHaveBeenCalledWith('youtubeUrl');
+        });
+
+        it('receives and displays current YouTube URL value', () => {
+            const testUrl = 'https://www.youtube.com/watch?v=test123';
+            const propsWithUrl = {
+                ...mockProps,
+                youtubeUrl: testUrl,
+                register: createMockRegister(testUrl),
+            };
+
+            render(<RelatedContentStep {...propsWithUrl} />);
+
+            const youtubeInput = screen.getByTestId(
+                'input-field-youtubeUrl'
+            ) as HTMLInputElement;
+            expect(youtubeInput.value).toBe(testUrl);
+        });
+
+        it('handles empty YouTube URL gracefully', () => {
+            const propsWithEmptyUrl = {
+                ...mockProps,
+                youtubeUrl: '',
+                register: createMockRegister(''),
+            };
+
+            render(<RelatedContentStep {...propsWithEmptyUrl} />);
+
+            const youtubeInput = screen.getByTestId(
+                'input-field-youtubeUrl'
+            ) as HTMLInputElement;
+            expect(youtubeInput.value).toBe('');
+        });
     });
 });

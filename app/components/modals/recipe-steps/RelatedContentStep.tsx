@@ -26,8 +26,6 @@ interface RelatedContentStepProps {
     onRemoveLinkedRecipe: (recipeId: string) => void;
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
-    youtubeUrl: string;
-    onYoutubeUrlChange: (value: string) => void;
 }
 
 const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
@@ -40,8 +38,6 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
     onRemoveLinkedRecipe,
     register,
     errors,
-    youtubeUrl,
-    onYoutubeUrlChange,
 }) => {
     const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
@@ -261,9 +257,6 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
             {/* YouTube URL Input */}
             <div className="border-t border-gray-200 pt-6 dark:border-gray-700">
                 <div className="space-y-3">
-                    <h3 className="text-sm font-medium text-gray-500 dark:text-zinc-400">
-                        {t('youtube_video') || 'YouTube Video'}
-                    </h3>
                     <Input
                         id="youtubeUrl"
                         label={t('youtube_url_optional')}
@@ -273,9 +266,6 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                         errors={errors}
                         dataCy="youtube-url-input"
                     />
-                    <p className="text-xs text-gray-400 dark:text-zinc-500">
-                        {t('youtube_url_help')}
-                    </p>
                 </div>
             </div>
         </div>

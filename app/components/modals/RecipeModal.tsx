@@ -583,10 +583,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 onRemoveLinkedRecipe={removeLinkedRecipe}
                 register={register}
                 errors={errors}
-                youtubeUrl={watch('youtubeUrl')}
-                onYoutubeUrlChange={(value) =>
-                    setCustomValue('youtubeUrl', value)
-                }
             />
         );
     }

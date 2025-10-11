@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiPlay } from 'react-icons/fi';
 import Image from 'next/image';
 
@@ -60,6 +60,7 @@ const YouTubePreview: React.FC<YouTubePreviewProps> = ({
                     fill
                     className="object-cover transition-opacity duration-200 hover:opacity-80"
                     onError={handleImageError}
+                    data-testid="youtube-thumbnail"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="bg-opacity-90 bg-green-450 flex h-16 w-16 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-110">

@@ -487,6 +487,5 @@
     "pot": "Pot",
     "quick_pot": "Quick Pot",
     "youtube_video": "YouTube Video",
-    "youtube_url_optional": "YouTube URL (optional)",
-    "youtube_url_help": "Add your YouTube video tutorial for this recipe"
+    "youtube_url_optional": "Your YouTube Video URL (optional)"
 }
