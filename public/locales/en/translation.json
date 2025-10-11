@@ -485,5 +485,7 @@
     "to_date": "To date",
     "apply": "Apply",
     "pot": "Pot",
-    "quick_pot": "Quick Pot"
+    "quick_pot": "Quick Pot",
+    "youtube_video": "YouTube Video",
+    "youtube_url_optional": "Your YouTube Video URL (optional)"
 }

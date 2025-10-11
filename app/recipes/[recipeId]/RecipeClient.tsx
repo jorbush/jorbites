@@ -118,6 +118,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             steps={formattedSteps}
                             coCooksIds={recipe.coCooksIds || []}
                             linkedRecipeIds={recipe.linkedRecipeIds || []}
+                            youtubeUrl={recipe.youtubeUrl || undefined}
                         />
                     </div>
                     <Comments

@@ -65,6 +65,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             minutes: 30,
             coCooksIds: [],
             linkedRecipeIds: [],
+            youtubeUrl: '',
         },
     });
 
@@ -174,6 +175,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             minutes: watch('minutes'),
             coCooksIds: watch('coCooksIds'),
             linkedRecipeIds: watch('linkedRecipeIds'),
+            youtubeUrl: watch('youtubeUrl'),
         };
 
         try {
@@ -267,6 +269,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     minutes: editData.minutes,
                     coCooksIds: editData.coCooksIds || [],
                     linkedRecipeIds: editData.linkedRecipeIds || [],
+                    youtubeUrl: editData.youtubeUrl || '',
                 });
 
                 setNumIngredients(editData.ingredients.length || 1);
@@ -321,6 +324,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 minutes: 30,
                 coCooksIds: [],
                 linkedRecipeIds: [],
+                youtubeUrl: '',
             });
             setStep(STEPS.CATEGORY);
             setNumIngredients(1);
@@ -448,6 +452,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 minutes: 10,
                 coCooksIds: [],
                 linkedRecipeIds: [],
+                youtubeUrl: '',
             });
             setStep(STEPS.CATEGORY);
             setNumIngredients(1);
@@ -576,6 +581,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 onRemoveCoCook={removeCoCook}
                 onAddLinkedRecipe={addLinkedRecipe}
                 onRemoveLinkedRecipe={removeLinkedRecipe}
+                register={register}
+                errors={errors}
             />
         );
     }
