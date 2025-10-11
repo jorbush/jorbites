@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FiPlay } from 'react-icons/fi';
 import Image from 'next/image';
 
