@@ -67,6 +67,7 @@ model Recipe {
   userId String @db.ObjectId
   coCooksIds String[] @db.ObjectId @default([])
   linkedRecipeIds String[] @db.ObjectId @default([])
+  youtubeUrl String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]

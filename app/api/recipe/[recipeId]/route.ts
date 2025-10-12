@@ -24,6 +24,7 @@ import {
     RECIPE_MAX_STEPS,
 } from '@/app/utils/constants';
 import { logger } from '@/app/lib/axiom/server';
+import { YOUTUBE_URL_REGEX } from '@/app/utils/validation';
 
 interface IParams {
     recipeId?: string;
@@ -180,6 +181,7 @@ export async function PATCH(
             imageSrc3,
             coCooksIds,
             linkedRecipeIds,
+            youtubeUrl,
         } = body;
 
         if (
@@ -242,6 +244,12 @@ export async function PATCH(
             }
         }
 
+        if (youtubeUrl && youtubeUrl.trim() !== '') {
+            if (!YOUTUBE_URL_REGEX.test(youtubeUrl.trim())) {
+                return validationError('Invalid YouTube URL format');
+            }
+        }
+
         const extraImages = [imageSrc1, imageSrc2, imageSrc3].filter(Boolean);
 
         const imagesToDelete: string[] = [];
@@ -294,6 +302,7 @@ export async function PATCH(
                 extraImages,
                 coCooksIds: coCooksIds || [],
                 linkedRecipeIds: linkedRecipeIds || [],
+                youtubeUrl: youtubeUrl?.trim() || null,
             },
         });
 

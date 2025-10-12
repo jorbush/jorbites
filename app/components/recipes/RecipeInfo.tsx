@@ -13,6 +13,7 @@ import VerificationBadge from '@/app/components/VerificationBadge';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
+import YouTubePreview from '@/app/components/utils/YouTubePreview';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -37,6 +38,7 @@ interface RecipeInfoProps {
     likes: number;
     coCooksIds?: string[];
     linkedRecipeIds?: string[];
+    youtubeUrl?: string | null;
 }
 
 const RecipeInfo: React.FC<RecipeInfoProps> = ({
@@ -51,6 +53,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     currentUser,
     coCooksIds = [],
     linkedRecipeIds = [],
+    youtubeUrl,
 }) => {
     const { t } = useTranslation();
     const router = useRouter();
@@ -232,6 +235,24 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                 </li>
                             ))}
                         </ol>
+                    </div>
+                </>
+            )}
+
+            {/* YouTube video section */}
+            {youtubeUrl && (
+                <>
+                    <hr />
+                    <div className="dark:text-neutral-100">
+                        <div className="flex flex-row items-center gap-2 text-xl font-semibold">
+                            {t('youtube_video')}
+                        </div>
+                        <div className="mt-4">
+                            <YouTubePreview
+                                url={youtubeUrl}
+                                title={`${t('video_for')} ${user.name}'s recipe`}
+                            />
+                        </div>
                     </div>
                 </>
             )}
