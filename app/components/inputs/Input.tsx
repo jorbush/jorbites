@@ -1,6 +1,11 @@
 'use client';
 
-import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
+import {
+    FieldErrors,
+    FieldValues,
+    UseFormRegister,
+    RegisterOptions,
+} from 'react-hook-form';
 import { BiDollar } from 'react-icons/bi';
 import { useState, useRef } from 'react';
 import { CHAR_COUNT_WARNING_THRESHOLD } from '@/app/utils/constants';
@@ -16,6 +21,7 @@ interface InputProps {
     errors: FieldErrors;
     dataCy?: string;
     maxLength?: number;
+    validation?: RegisterOptions;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -29,15 +35,23 @@ const Input: React.FC<InputProps> = ({
     errors,
     dataCy,
     maxLength,
+    validation = {},
 }) => {
     const [charCount, setCharCount] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    // Combine validation rules
+    const validationRules = {
+        required,
+        maxLength,
+        ...validation,
+    };
 
     const {
         onChange,
         ref: registerRef,
         ...rest
-    } = register(id, { required, maxLength });
+    } = register(id, validationRules);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -93,6 +107,14 @@ const Input: React.FC<InputProps> = ({
             >
                 {label}
             </label>
+
+            {/* Error message */}
+            {errors[id] && (
+                <div className="mt-1 text-sm text-rose-500">
+                    {errors[id]?.message as string}
+                </div>
+            )}
+
             {maxLength && (
                 <div
                     className={`absolute top-2 right-2 text-xs transition-opacity duration-200 ${

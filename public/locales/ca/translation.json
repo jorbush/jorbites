@@ -491,5 +491,6 @@
     "pot": "Olla",
     "quick pot": "Olla ràpida",
     "youtube_video": "Vídeo de YouTube",
-    "youtube_url_optional": "URL del teu vídeo de YouTube (opcional)"
+    "youtube_url_optional": "URL del teu vídeo de YouTube (opcional)",
+    "invalid_youtube_url": "Sisplau, introdueix una URL vàlida de YouTube (per exemple: https://www.youtube.com/watch?v=... o https://youtu.be/...)"
 }

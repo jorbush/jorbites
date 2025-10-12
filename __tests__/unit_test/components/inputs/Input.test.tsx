@@ -246,4 +246,210 @@ describe('Input', () => {
         const charCount = screen.getByTestId('char-count');
         expect(charCount.textContent).toBe(`7/${RECIPE_TITLE_MAX_LENGTH}`);
     });
+
+    describe('Validation parameter', () => {
+        it('passes validation rules to register function', () => {
+            const customValidation = {
+                validate: (value: string) =>
+                    value !== 'invalid' || 'Value is invalid',
+                pattern: {
+                    value: /^[A-Za-z]+$/,
+                    message: 'Only letters allowed',
+                },
+            };
+
+            render(
+                <Input
+                    id="test"
+                    label="Test Input"
+                    register={mockRegister}
+                    errors={mockErrors}
+                    validation={customValidation}
+                />
+            );
+
+            expect(mockRegister).toHaveBeenCalledWith('test', {
+                required: undefined,
+                maxLength: undefined,
+                validate: customValidation.validate,
+                pattern: customValidation.pattern,
+            });
+        });
+
+        it('combines validation with required and maxLength', () => {
+            const customValidation = {
+                validate: (value: string) => value.length > 2 || 'Too short',
+                minLength: {
+                    value: 3,
+                    message: 'Minimum 3 characters',
+                },
+            };
+
+            render(
+                <Input
+                    id="test"
+                    label="Test Input"
+                    register={mockRegister}
+                    errors={mockErrors}
+                    required={true}
+                    maxLength={100}
+                    validation={customValidation}
+                />
+            );
+
+            expect(mockRegister).toHaveBeenCalledWith('test', {
+                required: true,
+                maxLength: 100,
+                validate: customValidation.validate,
+                minLength: customValidation.minLength,
+            });
+        });
+
+        it('displays error message from validation', () => {
+            const errorsWithValidation = {
+                test: {
+                    type: 'validate',
+                    message: 'Please enter a valid YouTube URL',
+                },
+            };
+
+            render(
+                <Input
+                    id="test"
+                    label="Test Input"
+                    register={mockRegister}
+                    errors={errorsWithValidation}
+                />
+            );
+
+            expect(
+                screen.getByText('Please enter a valid YouTube URL')
+            ).toBeDefined();
+        });
+
+        it('displays error message from pattern validation', () => {
+            const errorsWithPattern = {
+                test: {
+                    type: 'pattern',
+                    message: 'Invalid format',
+                },
+            };
+
+            render(
+                <Input
+                    id="test"
+                    label="Test Input"
+                    register={mockRegister}
+                    errors={errorsWithPattern}
+                />
+            );
+
+            expect(screen.getByText('Invalid format')).toBeDefined();
+        });
+
+        it('works without validation parameter', () => {
+            render(
+                <Input
+                    id="test"
+                    label="Test Input"
+                    register={mockRegister}
+                    errors={mockErrors}
+                />
+            );
+
+            expect(mockRegister).toHaveBeenCalledWith('test', {
+                required: undefined,
+                maxLength: undefined,
+            });
+        });
+
+        it('overrides default validation rules with custom ones', () => {
+            const customValidation = {
+                required: 'Custom required message',
+                maxLength: {
+                    value: 50,
+                    message: 'Custom max length message',
+                },
+            };
+
+            render(
+                <Input
+                    id="test"
+                    label="Test Input"
+                    register={mockRegister}
+                    errors={mockErrors}
+                    required={true}
+                    maxLength={100}
+                    validation={customValidation}
+                />
+            );
+
+            expect(mockRegister).toHaveBeenCalledWith('test', {
+                required: 'Custom required message',
+                maxLength: {
+                    value: 50,
+                    message: 'Custom max length message',
+                },
+            });
+        });
+
+        it('applies error styling when validation fails', () => {
+            const errorsWithValidation = {
+                test: {
+                    type: 'validate',
+                    message: 'Validation failed',
+                },
+            };
+
+            render(
+                <Input
+                    id="test"
+                    label="Test Input"
+                    register={mockRegister}
+                    errors={errorsWithValidation}
+                />
+            );
+
+            const input = screen.getByRole('textbox');
+            const label = screen.getByText('Test Input');
+
+            expect(input.className).toContain('border-rose-500');
+            expect(input.className).toContain('focus:border-rose-500');
+            expect(label.className).toContain('text-rose-500');
+        });
+
+        it('handles multiple validation rules', () => {
+            const multipleValidation = {
+                validate: {
+                    notEmpty: (value: string) =>
+                        value.trim() !== '' || 'Cannot be empty',
+                    noSpaces: (value: string) =>
+                        !value.includes(' ') || 'No spaces allowed',
+                    minLength: (value: string) =>
+                        value.length >= 3 || 'Minimum 3 characters',
+                },
+                pattern: {
+                    value: /^[a-zA-Z0-9]+$/,
+                    message: 'Only alphanumeric characters',
+                },
+            };
+
+            render(
+                <Input
+                    id="test"
+                    label="Test Input"
+                    register={mockRegister}
+                    errors={mockErrors}
+                    validation={multipleValidation}
+                />
+            );
+
+            expect(mockRegister).toHaveBeenCalledWith('test', {
+                required: undefined,
+                maxLength: undefined,
+                validate: multipleValidation.validate,
+                pattern: multipleValidation.pattern,
+            });
+        });
+    });
 });

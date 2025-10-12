@@ -15,6 +15,7 @@ import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import debounce from 'lodash/debounce';
 import Input from '@/app/components/inputs/Input';
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
+import { validateYouTubeUrl } from '@/app/utils/validation';
 
 interface RelatedContentStepProps {
     isLoading: boolean;
@@ -265,6 +266,14 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                         register={register}
                         errors={errors}
                         dataCy="youtube-url-input"
+                        validation={{
+                            validate: (value: string) =>
+                                validateYouTubeUrl(
+                                    value,
+                                    t('invalid_youtube_url') ||
+                                        'Please enter a valid YouTube URL (e.g., https://youtube.com/watch?v=... or https://youtu.be/...)'
+                                ),
+                        }}
                     />
                 </div>
             </div>

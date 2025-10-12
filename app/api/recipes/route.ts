@@ -21,6 +21,7 @@ import {
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { YOUTUBE_URL_REGEX } from '@/app/utils/validation';
 
 export async function POST(request: Request) {
     try {
@@ -124,9 +125,7 @@ export async function POST(request: Request) {
 
         // Validate YouTube URL if provided
         if (youtubeUrl && youtubeUrl.trim() !== '') {
-            const youtubeRegex =
-                /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]+((&[\w=-]*)*|(\?[\w=-]*)*)?$/;
-            if (!youtubeRegex.test(youtubeUrl.trim())) {
+            if (!YOUTUBE_URL_REGEX.test(youtubeUrl.trim())) {
                 return validationError('Invalid YouTube URL format');
             }
         }
