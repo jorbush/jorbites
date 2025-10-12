@@ -586,4 +586,190 @@ describe('Recipes API Error Handling', () => {
         expect(data.code).toBe('VALIDATION_ERROR');
         expect(data.timestamp).toBeDefined();
     });
+
+    it('should return 400 when invalid YouTube URL is provided', async () => {
+        mockedSession = {
+            expires: 'expires',
+            user: {
+                name: 'test',
+                email: 'test@a.com',
+            },
+        };
+
+        const request = new NextRequest('http://localhost:3000/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'Test title',
+                description: 'Test description',
+                imageSrc: 'test.jpg',
+                category: 'test',
+                method: 'test',
+                ingredients: ['test'],
+                steps: ['test'],
+                minutes: 30,
+                youtubeUrl: 'https://vimeo.com/123456789',
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe('Invalid YouTube URL format');
+        expect(data.code).toBe('VALIDATION_ERROR');
+        expect(data.timestamp).toBeDefined();
+    });
+
+    it('should accept valid YouTube URLs', async () => {
+        mockedSession = {
+            expires: 'expires',
+            user: {
+                name: 'test',
+                email: 'test@a.com',
+            },
+        };
+
+        const validYouTubeUrls = [
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'https://youtube.com/watch?v=dQw4w9WgXcQ',
+            'https://youtu.be/dQw4w9WgXcQ',
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=30s',
+        ];
+
+        for (const youtubeUrl of validYouTubeUrls) {
+            const request = new NextRequest(
+                'http://localhost:3000/api/recipes',
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        title: 'Test title',
+                        description: 'Test description',
+                        imageSrc: `test-${Date.now()}-${Math.random()}.jpg`, // Unique image to avoid conflict
+                        category: 'test',
+                        method: 'test',
+                        ingredients: ['test'],
+                        steps: ['test'],
+                        minutes: 30,
+                        youtubeUrl,
+                    }),
+                }
+            );
+
+            const response = await RecipePOST(request);
+            expect(response.status).toBe(200);
+
+            const data = await response.json();
+            expect(data.youtubeUrl).toBe(youtubeUrl);
+        }
+    });
+
+    it('should accept empty YouTube URL', async () => {
+        mockedSession = {
+            expires: 'expires',
+            user: {
+                name: 'test',
+                email: 'test@a.com',
+            },
+        };
+
+        const request = new NextRequest('http://localhost:3000/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'Test title',
+                description: 'Test description',
+                imageSrc: `test-empty-youtube-${Date.now()}.jpg`,
+                category: 'test',
+                method: 'test',
+                ingredients: ['test'],
+                steps: ['test'],
+                minutes: 30,
+                youtubeUrl: '',
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        expect(response.status).toBe(200);
+
+        const data = await response.json();
+        expect(data.youtubeUrl).toBe(null);
+    });
+
+    it('should trim whitespace from YouTube URL', async () => {
+        mockedSession = {
+            expires: 'expires',
+            user: {
+                name: 'test',
+                email: 'test@a.com',
+            },
+        };
+
+        const request = new NextRequest('http://localhost:3000/api/recipes', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'Test title',
+                description: 'Test description',
+                imageSrc: `test-trim-youtube-${Date.now()}.jpg`,
+                category: 'test',
+                method: 'test',
+                ingredients: ['test'],
+                steps: ['test'],
+                minutes: 30,
+                youtubeUrl: '  https://www.youtube.com/watch?v=dQw4w9WgXcQ  ',
+            }),
+        });
+
+        const response = await RecipePOST(request);
+        expect(response.status).toBe(200);
+
+        const data = await response.json();
+        expect(data.youtubeUrl).toBe(
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+        );
+    });
+
+    it('should reject various invalid YouTube URL formats', async () => {
+        mockedSession = {
+            expires: 'expires',
+            user: {
+                name: 'test',
+                email: 'test@a.com',
+            },
+        };
+
+        const invalidUrls = [
+            'https://example.com/video',
+            'not-a-url',
+            'https://youtube.com/watch?v=',
+            'https://www.dailymotion.com/video/x123456',
+            'ftp://youtube.com/watch?v=dQw4w9WgXcQ',
+            'youtube.com/watch?v=dQw4w9WgXcQ', // Missing protocol
+        ];
+
+        for (const youtubeUrl of invalidUrls) {
+            const request = new NextRequest(
+                'http://localhost:3000/api/recipes',
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        title: 'Test title',
+                        description: 'Test description',
+                        imageSrc: `test-invalid-${Date.now()}-${Math.random()}.jpg`,
+                        category: 'test',
+                        method: 'test',
+                        ingredients: ['test'],
+                        steps: ['test'],
+                        minutes: 30,
+                        youtubeUrl,
+                    }),
+                }
+            );
+
+            const response = await RecipePOST(request);
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data.error).toBe('Invalid YouTube URL format');
+            expect(data.code).toBe('VALIDATION_ERROR');
+        }
+    });
 });
