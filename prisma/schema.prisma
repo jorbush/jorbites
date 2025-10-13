@@ -30,6 +30,7 @@ model User {
   accounts            Account[]
   recipes             Recipe[]
   comments            Comment[]
+  workshops           Workshop[]
 }
 
 model Account {
@@ -94,4 +95,37 @@ model WeeklyChallenge {
   endDate     DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Workshop {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  title               String
+  description         String
+  date                DateTime
+  location            String
+  isRecurrent         Boolean  @default(false)
+  recurrencePattern   String?  // e.g., "weekly", "monthly"
+  isPrivate           Boolean  @default(false)
+  whitelistedUserIds  String[] @db.ObjectId @default([])
+  imageSrc            String?
+  price               Float    @default(0)
+  ingredients         String[] @default([])
+  previousSteps       String[] @default([])
+  hostId              String   @db.ObjectId
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  host                User     @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  participants        WorkshopParticipant[]
+}
+
+model WorkshopParticipant {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  workshopId  String   @db.ObjectId
+  userId      String   @db.ObjectId
+  joinedAt    DateTime @default(now())
+
+  workshop    Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+
+  @@unique([workshopId, userId])
 }

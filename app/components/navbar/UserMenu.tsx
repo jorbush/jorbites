@@ -20,6 +20,7 @@ import {
     FcExport,
     FcImport,
     FcPortraitMode,
+    FcConferenceCall,
 } from 'react-icons/fc';
 
 interface UserMenuProps {
@@ -139,6 +140,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 <MenuItem
                                     onClick={() => {
+                                        router.push('/workshops');
+                                        toggleOpen();
+                                    }}
+                                    label={t('workshops')}
+                                    icon={FcConferenceCall}
+                                />
+                                <MenuItem
+                                    onClick={() => {
                                         settingsModal.onOpen();
                                         toggleOpen();
                                     }}
@@ -162,6 +171,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('events') || 'Events'}
                                     icon={FcCalendar}
+                                />
+                                <MenuItem
+                                    onClick={() => {
+                                        router.push('/workshops');
+                                        toggleOpen();
+                                    }}
+                                    label={t('workshops')}
+                                    icon={FcConferenceCall}
                                 />
                                 <MenuItem
                                     onClick={() => {

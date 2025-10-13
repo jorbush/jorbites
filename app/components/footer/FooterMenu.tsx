@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { FcPositiveDynamic, FcAbout } from 'react-icons/fc';
+import { FcPositiveDynamic, FcAbout, FcConferenceCall } from 'react-icons/fc';
 
 interface FooterMenuItem {
     href: string;
@@ -18,6 +18,11 @@ const FooterMenu = () => {
             href: '/top-jorbiters',
             labelKey: 'top_jorbiters',
             icon: FcPositiveDynamic,
+        },
+        {
+            href: '/workshops',
+            labelKey: 'workshops',
+            icon: FcConferenceCall,
         },
         {
             href: '/about',

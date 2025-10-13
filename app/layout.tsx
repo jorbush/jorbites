@@ -17,6 +17,9 @@ const LoginModal = dynamicImport(
 const RecipeModal = dynamicImport(
     () => import('@/app/components/modals/RecipeModal')
 );
+const WorkshopModal = dynamicImport(
+    () => import('@/app/components/modals/WorkshopModal')
+);
 const SettingsModal = dynamicImport(
     () => import('@/app/components/modals/SettingsModal')
 );
@@ -108,6 +111,7 @@ export default async function RootLayout({
                     <LoginModal />
                     <SettingsModal currentUser={currentUser} />
                     <RecipeModal currentUser={currentUser} />
+                    <WorkshopModal currentUser={currentUser} />
                     <RegisterModal />
                     <ForgotPasswordModal />
                     <Navbar currentUser={currentUser} />
