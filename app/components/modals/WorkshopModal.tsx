@@ -11,6 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { FiUploadCloud } from 'react-icons/fi';
 import { SafeUser } from '@/app/types';
 import Input from '@/app/components/inputs/Input';
+import WhitelistUsersStep from '@/app/components/modals/workshop-steps/WhitelistUsersStep';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import {
     WORKSHOP_MAX_INGREDIENTS,
     WORKSHOP_MAX_STEPS,
@@ -27,7 +29,9 @@ enum WORKSHOP_STEPS {
     IMAGE = 3,
 }
 
-const WorkshopModal: React.FC<WorkshopModalProps> = ({ currentUser }) => {
+const WorkshopModal: React.FC<WorkshopModalProps> = ({
+    currentUser: _currentUser,
+}) => {
     const router = useRouter();
     const { t } = useTranslation();
     const workshopModal = useWorkshopModal();
@@ -66,26 +70,42 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({ currentUser }) => {
     const imageSrc = watch('imageSrc');
 
     useEffect(() => {
-        if (workshopModal.isEditMode && workshopModal.editWorkshopData) {
-            const data = workshopModal.editWorkshopData;
-            setValue('title', data.title);
-            setValue('description', data.description);
-            setValue('date', data.date.slice(0, 16));
-            setValue('location', data.location);
-            setValue('isRecurrent', data.isRecurrent);
-            setValue('recurrencePattern', data.recurrencePattern || '');
-            setValue('isPrivate', data.isPrivate);
-            setValue('whitelistedUserIds', data.whitelistedUserIds);
-            setValue('imageSrc', data.imageSrc || '');
-            setValue('price', data.price);
-            setValue('ingredients', data.ingredients);
-            setValue('previousSteps', data.previousSteps);
-            setNumIngredients(data.ingredients.length);
-            setNumPreviousSteps(data.previousSteps.length);
-            if (data.whitelistedUsers) {
-                setSelectedUsers(data.whitelistedUsers);
+        const loadEditData = async () => {
+            if (workshopModal.isEditMode && workshopModal.editWorkshopData) {
+                const data = workshopModal.editWorkshopData;
+                setValue('title', data.title);
+                setValue('description', data.description);
+                setValue('date', data.date.slice(0, 16));
+                setValue('location', data.location);
+                setValue('isRecurrent', data.isRecurrent);
+                setValue('recurrencePattern', data.recurrencePattern || '');
+                setValue('isPrivate', data.isPrivate);
+                setValue('whitelistedUserIds', data.whitelistedUserIds);
+                setValue('imageSrc', data.imageSrc || '');
+                setValue('price', data.price);
+                setValue('ingredients', data.ingredients);
+                setValue('previousSteps', data.previousSteps);
+                setNumIngredients(data.ingredients.length);
+                setNumPreviousSteps(data.previousSteps.length);
+
+                // Load whitelisted users if private workshop
+                if (data.isPrivate && data.whitelistedUserIds.length > 0) {
+                    try {
+                        const response = await axios.get(
+                            `/api/users/multiple?ids=${data.whitelistedUserIds.join(',')}`
+                        );
+                        setSelectedUsers(response.data);
+                    } catch (error) {
+                        console.error(
+                            'Failed to load whitelisted users',
+                            error
+                        );
+                    }
+                }
             }
-        }
+        };
+
+        loadEditData();
     }, [workshopModal.isEditMode, workshopModal.editWorkshopData, setValue]);
 
     const onBack = () => {
@@ -165,13 +185,16 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({ currentUser }) => {
         }
     };
 
-    const setCustomValue = (id: string, value: any) => {
-        setValue(id, value, {
-            shouldValidate: true,
-            shouldDirty: true,
-            shouldTouch: true,
-        });
-    };
+    const setCustomValue = useCallback(
+        (id: string, value: any) => {
+            setValue(id, value, {
+                shouldValidate: true,
+                shouldDirty: true,
+                shouldTouch: true,
+            });
+        },
+        [setValue]
+    );
 
     const handleImageUpload = useCallback(
         async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -195,6 +218,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({ currentUser }) => {
                 setCustomValue('imageSrc', data.secure_url);
                 toast.success(t('image_updated'));
             } catch (error) {
+                console.error('Error uploading image', error);
                 toast.error(t('something_went_wrong'));
             }
         },
@@ -215,6 +239,28 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({ currentUser }) => {
             return;
         }
         setNumPreviousSteps(numPreviousSteps + 1);
+    };
+
+    const addWhitelistedUser = (user: any) => {
+        if (selectedUsers.some((u) => u.id === user.id)) {
+            toast.error(t('user_already_added') || 'User already added');
+            return;
+        }
+        const newSelectedUsers = [...selectedUsers, user];
+        setSelectedUsers(newSelectedUsers);
+        setValue(
+            'whitelistedUserIds',
+            newSelectedUsers.map((u) => u.id)
+        );
+    };
+
+    const removeWhitelistedUser = (userId: string) => {
+        const newSelectedUsers = selectedUsers.filter((u) => u.id !== userId);
+        setSelectedUsers(newSelectedUsers);
+        setValue(
+            'whitelistedUserIds',
+            newSelectedUsers.map((u) => u.id)
+        );
     };
 
     const actionLabel = useMemo(() => {
@@ -377,15 +423,12 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({ currentUser }) => {
                     </label>
                 </div>
                 {isPrivate && (
-                    <div>
-                        <p className="mb-2 text-sm text-neutral-500">
-                            {t('workshop_whitelist_description')}
-                        </p>
-                        {/* TODO: Add user search and selection component */}
-                        <div className="text-sm text-gray-500">
-                            {t('workshop_whitelist')} - Feature coming soon
-                        </div>
-                    </div>
+                    <WhitelistUsersStep
+                        isLoading={isLoading}
+                        selectedUsers={selectedUsers}
+                        onAddUser={addWhitelistedUser}
+                        onRemoveUser={removeWhitelistedUser}
+                    />
                 )}
             </div>
         );
@@ -410,10 +453,12 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({ currentUser }) => {
                         className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-300 p-20 transition hover:opacity-70"
                     >
                         {imageSrc ? (
-                            <img
+                            <CustomProxyImage
                                 src={imageSrc}
                                 alt="Workshop"
-                                className="h-full w-full object-cover"
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, 50vw"
                             />
                         ) : (
                             <div className="flex flex-col items-center">
@@ -434,8 +479,8 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({ currentUser }) => {
             isOpen={workshopModal.isOpen}
             title={
                 workshopModal.isEditMode
-                    ? t('edit_workshop')
-                    : t('create_workshop')
+                    ? String(t('edit_workshop'))
+                    : String(t('create_workshop'))
             }
             actionLabel={actionLabel}
             onSubmit={handleSubmit(onSubmit)}
@@ -447,6 +492,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({ currentUser }) => {
                 setStep(WORKSHOP_STEPS.INFO);
                 setNumIngredients(0);
                 setNumPreviousSteps(0);
+                setSelectedUsers([]);
             }}
             body={bodyContent}
             disabled={isLoading}

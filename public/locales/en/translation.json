@@ -240,6 +240,7 @@
     "search_failed": "Search failed",
     "max_cooks_reached": "Maximum of 4 co-cooks allowed",
     "cook_already_added": "This cook is already added",
+    "user_already_added": "This user is already added",
     "max_recipes_reached": "Maximum of 2 linked recipes allowed",
     "recipe_already_added": "This recipe is already added",
     "email_already_exists": "Email already exists",

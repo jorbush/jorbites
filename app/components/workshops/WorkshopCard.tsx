@@ -21,7 +21,7 @@ interface WorkshopCardProps {
 
 const WorkshopCard = memo(function WorkshopCard({
     data,
-    currentUser,
+    currentUser: _currentUser,
     isFirstCard = false,
 }: WorkshopCardProps) {
     const router = useRouter();

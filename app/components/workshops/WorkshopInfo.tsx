@@ -46,7 +46,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
     ingredients,
     previousSteps,
     currentUser,
-    id,
+    id: _id,
     participants = [],
     whitelistedUserIds,
 }) => {
