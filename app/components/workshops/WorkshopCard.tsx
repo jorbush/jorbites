@@ -46,6 +46,7 @@ const WorkshopCard = memo(function WorkshopCard({
             onClick={() => router.push(`/workshops/${data.id}`)}
             className="group col-span-1 cursor-pointer"
             id={isFirstCard ? 'lcp-container' : undefined}
+            data-testid="workshop-card"
         >
             <div className="flex w-full flex-col gap-2">
                 <div className="relative aspect-square w-full overflow-hidden rounded-xl">

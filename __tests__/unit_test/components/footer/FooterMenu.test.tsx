@@ -41,6 +41,12 @@ vi.mock('react-icons/fc', () => ({
             className={className}
         />
     ),
+    FcConferenceCall: ({ className }: { className?: string }) => (
+        <div
+            data-testid="fc-conference-call-icon"
+            className={className}
+        />
+    ),
 }));
 
 const mockT = vi.fn((key: string) => key);
@@ -62,14 +68,14 @@ describe('FooterMenu', () => {
 
     it('renders without crashing', () => {
         render(<FooterMenu />);
-        expect(screen.getAllByTestId('footer-menu-link')).toHaveLength(2);
+        expect(screen.getAllByTestId('footer-menu-link')).toHaveLength(3);
     });
 
     it('renders all menu items', () => {
         render(<FooterMenu />);
 
         const menuLinks = screen.getAllByTestId('footer-menu-link');
-        expect(menuLinks).toHaveLength(2);
+        expect(menuLinks).toHaveLength(3);
     });
 
     it('renders Top Jorbiters link with correct props', () => {
@@ -191,9 +197,13 @@ describe('FooterMenu', () => {
         expect(menuLinks[0].getAttribute('data-href')).toBe('/top-jorbiters');
         expect(menuLinks[0].textContent).toContain('top_jorbiters');
 
-        // Second should be About
-        expect(menuLinks[1].getAttribute('data-href')).toBe('/about');
-        expect(menuLinks[1].textContent).toContain('about');
+        // Second should be Workshops
+        expect(menuLinks[1].getAttribute('data-href')).toBe('/workshops');
+        expect(menuLinks[1].textContent).toContain('workshops');
+
+        // Third should be About
+        expect(menuLinks[2].getAttribute('data-href')).toBe('/about');
+        expect(menuLinks[2].textContent).toContain('about');
     });
 
     it('has accessible structure with spans for text', () => {
