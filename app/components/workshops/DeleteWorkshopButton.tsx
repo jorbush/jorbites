@@ -77,7 +77,7 @@ const DeleteWorkshopButton: React.FC<DeleteWorkshopButtonProps> = ({
             </button>
             <Modal
                 isOpen={isOpen}
-                title={t('delete_workshop')}
+                title={t('delete_workshop') || 'Delete Workshop'}
                 actionLabel={t('delete')}
                 onClose={() => {
                     setIsOpen(false);
