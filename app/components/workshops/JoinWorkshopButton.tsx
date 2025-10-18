@@ -8,6 +8,8 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import useLoginModal from '@/app/hooks/useLoginModal';
 
+import Button from '@/app/components/buttons/Button';
+
 interface JoinWorkshopButtonProps {
     workshopId: string;
     currentUser?: SafeUser | null;
@@ -79,42 +81,37 @@ const JoinWorkshopButton: React.FC<JoinWorkshopButtonProps> = ({
 
     if (isHost) {
         return (
-            <button
+            <Button
+                label={t('host')}
+                onClick={() => {}}
                 disabled
-                className="w-full cursor-not-allowed rounded-lg bg-gray-400 px-4 py-2 font-semibold text-white"
-            >
-                {t('host')}
-            </button>
+            />
         );
     }
 
     if (isPast) {
         return (
-            <button
+            <Button
+                label={t('workshop_date_passed')}
+                onClick={() => {}}
                 disabled
-                className="w-full cursor-not-allowed rounded-lg bg-gray-400 px-4 py-2 font-semibold text-white"
-            >
-                {t('workshop_date_passed')}
-            </button>
+            />
         );
     }
 
     return (
-        <button
+        <Button
+            label={
+                loading
+                    ? '...'
+                    : isParticipant
+                      ? t('leave_workshop')
+                      : t('join_workshop')
+            }
             onClick={handleClick}
             disabled={loading}
-            className={`w-full rounded-lg px-4 py-2 font-semibold text-white transition ${
-                isParticipant
-                    ? 'bg-red-500 hover:bg-red-600'
-                    : 'bg-green-600 hover:bg-green-700'
-            } ${loading ? 'cursor-not-allowed opacity-70' : ''}`}
-        >
-            {loading
-                ? '...'
-                : isParticipant
-                  ? t('leave_workshop')
-                  : t('join_workshop')}
-        </button>
+            deleteButton={isParticipant}
+        />
     );
 };
 

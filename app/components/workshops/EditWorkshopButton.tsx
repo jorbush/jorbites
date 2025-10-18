@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import useWorkshopModal from '@/app/hooks/useWorkshopModal';
 import { EditWorkshopData } from '@/app/hooks/useWorkshopModal';
 
+import Button from '@/app/components/buttons/Button';
+
 interface EditWorkshopButtonProps {
     workshop: SafeWorkshop;
 }
@@ -35,12 +37,10 @@ const EditWorkshopButton: React.FC<EditWorkshopButtonProps> = ({
     };
 
     return (
-        <button
+        <Button
+            label={t('edit_workshop')}
             onClick={handleEdit}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white transition hover:bg-blue-700"
-        >
-            {t('edit_workshop')}
-        </button>
+        />
     );
 };
 

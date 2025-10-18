@@ -8,15 +8,16 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { FiUploadCloud } from 'react-icons/fi';
-import { SafeUser } from '@/app/types';
-import Input from '@/app/components/inputs/Input';
-import WhitelistUsersStep from '@/app/components/modals/workshop-steps/WhitelistUsersStep';
-import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
+import WorkshopImageStep from '@/app/components/modals/workshop-steps/WorkshopImageStep';
 import {
     WORKSHOP_MAX_INGREDIENTS,
     WORKSHOP_MAX_STEPS,
 } from '@/app/utils/constants';
+import Input from '../inputs/Input';
+import WorkshopIngredientsStep from './workshop-steps/WorkshopIngredientsStep';
+import WorkshopPreviousStepsStep from './workshop-steps/WorkshopPreviousStepsStep';
+import WhitelistUsersStep from './workshop-steps/WhitelistUsersStep';
+import { SafeUser } from '@/app/types';
 
 interface WorkshopModalProps {
     currentUser?: SafeUser | null;
@@ -87,6 +88,16 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 setValue('previousSteps', data.previousSteps);
                 setNumIngredients(data.ingredients.length);
                 setNumPreviousSteps(data.previousSteps.length);
+
+                data.ingredients.forEach(
+                    (ingredient: string, index: number) => {
+                        setValue(`ingredient-${index}`, ingredient);
+                    }
+                );
+
+                data.previousSteps.forEach((step: string, index: number) => {
+                    setValue(`previousStep-${index}`, step);
+                });
 
                 // Load whitelisted users if private workshop
                 if (data.isPrivate && data.whitelistedUserIds.length > 0) {
@@ -196,35 +207,6 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
         [setValue]
     );
 
-    const handleImageUpload = useCallback(
-        async (e: React.ChangeEvent<HTMLInputElement>) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', 'jorbites');
-
-            try {
-                const response = await fetch(
-                    `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-                    {
-                        method: 'POST',
-                        body: formData,
-                    }
-                );
-
-                const data = await response.json();
-                setCustomValue('imageSrc', data.secure_url);
-                toast.success(t('image_updated'));
-            } catch (error) {
-                console.error('Error uploading image', error);
-                toast.error(t('something_went_wrong'));
-            }
-        },
-        [setCustomValue, t]
-    );
-
     const addIngredient = () => {
         if (numIngredients >= WORKSHOP_MAX_INGREDIENTS) {
             toast.error(t('max_ingredients_reached'));
@@ -261,6 +243,16 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             'whitelistedUserIds',
             newSelectedUsers.map((u) => u.id)
         );
+    };
+
+    const removeIngredient = (index: number) => {
+        setNumIngredients((value) => value - 1);
+        setValue(`ingredient-${index}`, '');
+    };
+
+    const removePreviousStep = (index: number) => {
+        setNumPreviousSteps((value) => value - 1);
+        setValue(`previousStep-${index}`, '');
     };
 
     const actionLabel = useMemo(() => {
@@ -353,53 +345,20 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                     errors={errors}
                     formatPrice
                 />
-                <div>
-                    <label className="text-md font-semibold">
-                        {t('ingredients')}
-                    </label>
-                    {Array.from({ length: numIngredients }).map((_, i) => (
-                        <Input
-                            key={i}
-                            id={`ingredient-${i}`}
-                            label={`${t('ingredients')} ${i + 1}`}
-                            disabled={isLoading}
-                            register={register}
-                            errors={errors}
-                        />
-                    ))}
-                    <button
-                        type="button"
-                        onClick={addIngredient}
-                        className="mt-2 text-sm text-blue-600 hover:underline"
-                    >
-                        + {t('ingredients')}
-                    </button>
-                </div>
-                <div>
-                    <label className="text-md font-semibold">
-                        {t('previous_steps')}
-                    </label>
-                    <p className="mb-2 text-sm text-neutral-500">
-                        {t('previous_steps_description')}
-                    </p>
-                    {Array.from({ length: numPreviousSteps }).map((_, i) => (
-                        <Input
-                            key={i}
-                            id={`previousStep-${i}`}
-                            label={`${t('previous_steps')} ${i + 1}`}
-                            disabled={isLoading}
-                            register={register}
-                            errors={errors}
-                        />
-                    ))}
-                    <button
-                        type="button"
-                        onClick={addPreviousStep}
-                        className="mt-2 text-sm text-blue-600 hover:underline"
-                    >
-                        + {t('previous_steps')}
-                    </button>
-                </div>
+                <WorkshopIngredientsStep
+                    numIngredients={numIngredients}
+                    register={register}
+                    errors={errors}
+                    onAddIngredient={addIngredient}
+                    onRemoveIngredient={removeIngredient}
+                />
+                <WorkshopPreviousStepsStep
+                    numPreviousSteps={numPreviousSteps}
+                    register={register}
+                    errors={errors}
+                    onAddPreviousStep={addPreviousStep}
+                    onRemovePreviousStep={removePreviousStep}
+                />
             </div>
         );
     }
@@ -436,41 +395,10 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
 
     if (step === WORKSHOP_STEPS.IMAGE) {
         bodyContent = (
-            <div className="flex flex-col gap-4">
-                <label className="text-md font-semibold">
-                    {t('workshop_image')}
-                </label>
-                <div className="relative">
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                        id="workshop-image-upload"
-                    />
-                    <label
-                        htmlFor="workshop-image-upload"
-                        className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-300 p-20 transition hover:opacity-70"
-                    >
-                        {imageSrc ? (
-                            <CustomProxyImage
-                                src={imageSrc}
-                                alt="Workshop"
-                                fill
-                                className="object-cover"
-                                sizes="(max-width: 768px) 100vw, 50vw"
-                            />
-                        ) : (
-                            <div className="flex flex-col items-center">
-                                <FiUploadCloud size={50} />
-                                <p className="mt-2 font-semibold">
-                                    {t('images_subtitle')}
-                                </p>
-                            </div>
-                        )}
-                    </label>
-                </div>
-            </div>
+            <WorkshopImageStep
+                imageSrc={imageSrc}
+                onImageChange={(value) => setCustomValue('imageSrc', value)}
+            />
         );
     }
 

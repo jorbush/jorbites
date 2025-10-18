@@ -8,6 +8,8 @@ import { toast } from 'react-hot-toast';
 import Modal from '@/app/components/modals/Modal';
 import { MdDelete } from 'react-icons/md';
 
+import Button from '@/app/components/buttons/Button';
+
 interface DeleteWorkshopButtonProps {
     workshopId: string;
 }
@@ -68,13 +70,12 @@ const DeleteWorkshopButton: React.FC<DeleteWorkshopButtonProps> = ({
 
     return (
         <>
-            <button
+            <Button
+                label={t('delete_workshop')}
                 onClick={() => setIsOpen(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 font-semibold text-white transition hover:bg-red-700"
-            >
-                <MdDelete size={20} />
-                {t('delete_workshop')}
-            </button>
+                icon={MdDelete}
+                deleteButton
+            />
             <Modal
                 isOpen={isOpen}
                 title={t('delete_workshop') || 'Delete Workshop'}

@@ -536,5 +536,14 @@
     "not_invited": "You are not invited to this workshop",
     "workshop_image": "Workshop Image",
     "max_previous_steps_reached": "Maximum of 10 previous steps allowed",
-    "workshop_description_subtitle": "Describe what participants will learn and create"
+    "workshop_description_subtitle": "Describe what participants will learn and create",
+    "workshop_image_subtitle": "Upload an image for your workshop",
+    "person": "person",
+    "workshops_description": "Discover and join cooking workshops in your area",
+    "no_upcoming_workshops_found": "No upcoming workshops found",
+    "check_back_later": "Check back later for upcoming workshops",
+    "no_past_workshops_found": "No past workshops found",
+    "check_back_later_past": "There are no past workshops to show",
+    "contribute_to_community": "Do you want to contribute to the community sharing your knowledge?",
+    "share_cooking_skills": "Share your cooking skills and help others learn new recipes and techniques."
 }

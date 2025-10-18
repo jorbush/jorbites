@@ -119,4 +119,17 @@ const WorkshopCard = memo(function WorkshopCard({
     );
 });
 
+export const WorkshopCardSkeleton = () => {
+    return (
+        <div className="group col-span-1">
+            <div className="flex w-full flex-col gap-2">
+                <div className="aspect-square w-full overflow-hidden rounded-xl bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="h-6 w-3/4 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="h-4 w-1/2 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="h-4 w-1/4 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+            </div>
+        </div>
+    );
+};
+
 export default WorkshopCard;

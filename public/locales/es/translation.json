@@ -537,5 +537,14 @@
     "not_invited": "No estás invitado a este taller",
     "workshop_image": "Imagen del Taller",
     "max_previous_steps_reached": "Máximo de 10 pasos previos permitidos",
-    "workshop_description_subtitle": "Describe qué aprenderán y crearán los participantes"
+    "workshop_description_subtitle": "Describe qué aprenderán y crearán los participantes",
+    "workshop_image_subtitle": "Sube una imagen para tu taller",
+    "person": "persona",
+    "workshops_description": "Descubre y únete a talleres de cocina en tu área",
+    "no_upcoming_workshops_found": "No se encontraron próximos talleres",
+    "check_back_later": "Vuelve más tarde para ver los próximos talleres",
+    "no_past_workshops_found": "No se encontraron talleres pasados",
+    "check_back_later_past": "No hay talleres pasados para mostrar",
+    "contribute_to_community": "¿Quieres contribuir a la comunidad compartiendo tu conocimiento?",
+    "share_cooking_skills": "Comparte tus habilidades culinarias y ayuda a otros a aprender nuevas recetas y técnicas."
 }

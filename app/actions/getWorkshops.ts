@@ -4,9 +4,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 
 export interface IWorkshopsParams {
     search?: string;
-    page?: number;
     limit?: number;
-    upcoming?: boolean; // Filter for upcoming workshops only
     isPrivate?: boolean;
     hostId?: string; // Filter by host
 }
@@ -21,24 +19,14 @@ export interface ServerResponse<T> {
 
 export interface WorkshopsResponse {
     workshops: any[];
-    totalWorkshops: number;
-    totalPages: number;
-    currentPage: number;
 }
 
 export default async function getWorkshops(
-    params: IWorkshopsParams
+    params: IWorkshopsParams = {}
 ): Promise<ServerResponse<WorkshopsResponse>> {
     try {
         logger.info('getWorkshops - start', { params });
-        const {
-            search,
-            page = 1,
-            limit = 10,
-            upcoming = true,
-            isPrivate,
-            hostId,
-        } = params;
+        const { search, limit = 100, isPrivate, hostId } = params;
 
         const currentUser = await getCurrentUser();
         let query: any = {};
@@ -67,13 +55,6 @@ export default async function getWorkshops(
             ];
         }
 
-        // Filter upcoming workshops
-        if (upcoming) {
-            query.date = {
-                gte: new Date(),
-            };
-        }
-
         // Filter by host
         if (hostId) {
             query.hostId = hostId;
@@ -92,9 +73,6 @@ export default async function getWorkshops(
                     return {
                         data: {
                             workshops: [],
-                            totalWorkshops: 0,
-                            totalPages: 0,
-                            currentPage: page,
                         },
                         error: null,
                     };
@@ -118,16 +96,11 @@ export default async function getWorkshops(
         const workshops = await prisma.workshop.findMany({
             where: query,
             orderBy: { date: 'asc' },
-            skip: (page - 1) * limit,
             take: limit,
             include: {
                 host: true,
                 participants: true,
             },
-        });
-
-        const totalWorkshops = await prisma.workshop.count({
-            where: query,
         });
 
         const safeWorkshops = workshops.map((workshop) => ({
@@ -147,13 +120,12 @@ export default async function getWorkshops(
             })),
         }));
 
-        logger.info('getWorkshops - success', { totalWorkshops, page, limit });
+        logger.info('getWorkshops - success', {
+            workshopsCount: workshops.length,
+        });
         return {
             data: {
                 workshops: safeWorkshops,
-                totalWorkshops,
-                totalPages: Math.ceil(totalWorkshops / limit),
-                currentPage: page,
             },
             error: null,
         };

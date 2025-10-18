@@ -540,5 +540,12 @@
     "not_invited": "No estàs convidat a aquest taller",
     "workshop_image": "Imatge del Taller",
     "max_previous_steps_reached": "Màxim de 10 passos previs permesos",
-    "workshop_description_subtitle": "Descriu què aprendran i crearan els participants"
+    "workshop_description_subtitle": "Descriu què aprendran i crearan els participants",
+    "workshop_image_subtitle": "Puja una imatge per al teu taller",
+    "person": "persona",
+    "workshops_description": "Descobreix i uneix-te a tallers de cuina a la teva zona",
+    "no_upcoming_workshops_found": "No s'han trobat propers tallers",
+    "check_back_later": "Torna més tard per veure els propers tallers",
+    "no_past_workshops_found": "No s'han trobat tallers passats",
+    "check_back_later_past": "No hi ha tallers passats per mostrar"
 }
