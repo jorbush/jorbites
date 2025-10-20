@@ -64,22 +64,24 @@ const WorkshopsClient: React.FC<WorkshopsClientProps> = ({
                 />
 
                 {/* Call to Action Card */}
-                <div className="border-green-450/20 from-green-450/10 to-green-450/20 dark:border-green-450/30 dark:from-green-450/10 dark:to-green-450/20 mt-16 rounded-lg border-2 border-dashed bg-gradient-to-r p-8 text-center">
-                    <div className="mx-auto max-w-md">
-                        <div className="mb-4 text-4xl">👨‍🍳</div>
-                        <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-neutral-100">
-                            {t('contribute_to_community') ||
-                                'Do you want to contribute to the community sharing your knowledge?'}
-                        </h3>
-                        <p className="mb-6 text-gray-600 dark:text-neutral-400">
-                            {t('share_cooking_skills') ||
-                                'Share your cooking skills and help others learn new recipes and techniques.'}
-                        </p>
-                        <Button
-                            label={t('create_workshop')}
-                            onClick={onCreateWorkshop}
-                            dataCy="create-workshop"
-                        />
+                <div className="flex w-full flex-row items-center justify-center">
+                    <div className="border-green-450/20 from-green-450/10 to-green-450/20 dark:border-green-450/30 dark:from-green-450/10 dark:to-green-450/20 w-full max-w-2xl rounded-lg border-2 border-dashed bg-gradient-to-r p-8 text-center">
+                        <div className="mx-auto max-w-md">
+                            <div className="mb-4 text-4xl">👨‍🍳</div>
+                            <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-neutral-100">
+                                {t('contribute_to_community') ||
+                                    'Do you want to contribute to the community sharing your knowledge?'}
+                            </h3>
+                            <p className="mb-6 text-gray-600 dark:text-neutral-400">
+                                {t('share_cooking_skills') ||
+                                    'Share your cooking skills and help others learn new recipes and techniques.'}
+                            </p>
+                            <Button
+                                label={t('create_workshop')}
+                                onClick={onCreateWorkshop}
+                                dataCy="create-workshop"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

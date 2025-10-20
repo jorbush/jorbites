@@ -49,7 +49,7 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
 
     return (
         <Container>
-            <div className="mx-auto flex max-w-screen-lg flex-col gap-6 pt-24">
+            <div className="mx-auto flex max-w-screen-lg flex-col gap-6 pt-2">
                 <WorkshopHead
                     title={workshop.title}
                     date={workshop.date}
