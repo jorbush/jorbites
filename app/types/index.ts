@@ -38,6 +38,7 @@ export type SafeWorkshop = Omit<
     date: string;
     createdAt: string;
     updatedAt: string;
+    currency?: string;
     host?: SafeUser;
     participants?: SafeWorkshopParticipant[];
 };

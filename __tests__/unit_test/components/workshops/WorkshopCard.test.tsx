@@ -138,12 +138,12 @@ describe('<WorkshopCard />', () => {
     it('displays price when workshop has a price', () => {
         render(
             <WorkshopCard
-                data={mockWorkshop}
+                data={{ ...mockWorkshop, currency: 'USD' }}
                 currentUser={mockUser}
             />
         );
 
-        expect(screen.getByText(/€25.50/)).toBeDefined();
+        expect(screen.getByText(/USD25.50/)).toBeDefined();
     });
 
     it('does not display price for free workshops', () => {
@@ -155,7 +155,7 @@ describe('<WorkshopCard />', () => {
             />
         );
 
-        expect(screen.queryByText(/€/)).toBeNull();
+        expect(screen.queryByText(/USD/)).toBeNull();
     });
 
     it('shows private workshop icon for private workshops', () => {

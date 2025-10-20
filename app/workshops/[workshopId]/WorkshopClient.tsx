@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
 import { SafeWorkshop, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import WorkshopHead from '@/app/components/workshops/WorkshopHead';
@@ -20,6 +21,7 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
     workshop,
     currentUser,
 }) => {
+    const { t } = useTranslation();
     const isHost = currentUser?.id === workshop.hostId;
     const isParticipant =
         workshop.participants?.some((p) => p.userId === currentUser?.id) ||
@@ -36,10 +38,10 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
                 <div className="mx-auto flex max-w-screen-lg flex-col gap-6 pt-24">
                     <div className="rounded-lg bg-yellow-100 p-6 text-center dark:bg-yellow-900/30">
                         <h2 className="mb-2 text-2xl font-bold dark:text-neutral-100">
-                            Private Workshop
+                            {t('private_workshop_title')}
                         </h2>
                         <p className="text-neutral-600 dark:text-neutral-400">
-                            This is a private workshop and you are not invited.
+                            {t('private_workshop_message')}
                         </p>
                     </div>
                 </div>
@@ -93,20 +95,22 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
                             <div className="rounded-lg border p-4 dark:border-neutral-700">
                                 <div className="text-sm text-neutral-500">
                                     <p className="mb-2 font-semibold dark:text-neutral-100">
-                                        Workshop Information
+                                        {t('workshop_information_title')}
                                     </p>
                                     <p>
-                                        Participants:{' '}
+                                        {t('participants_label')}{' '}
                                         {workshop.participants?.length || 0}
                                     </p>
                                     {workshop.price > 0 && (
                                         <p>
-                                            Price: €{workshop.price.toFixed(2)}
+                                            {t('price_label')}{' '}
+                                            {workshop.currency}
+                                            {workshop.price.toFixed(2)}
                                         </p>
                                     )}
                                     {workshop.isPrivate && (
                                         <p className="mt-2 text-yellow-600 dark:text-yellow-400">
-                                            🔒 Private Workshop
+                                            {t('private_workshop_badge')}
                                         </p>
                                     )}
                                 </div>

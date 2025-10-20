@@ -109,6 +109,7 @@ model Workshop {
   whitelistedUserIds  String[] @db.ObjectId @default([])
   imageSrc            String?
   price               Float    @default(0)
+  currency            String   @default("EUR")
   ingredients         String[] @default([])
   previousSteps       String[] @default([])
   hostId              String   @db.ObjectId

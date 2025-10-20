@@ -111,7 +111,8 @@ const WorkshopCard = memo(function WorkshopCard({
                 </div>
                 {data.price > 0 && (
                     <div className="text-sm font-semibold text-green-600 dark:text-green-400">
-                        €{data.price.toFixed(2)} / {t('person', 'person')}
+                        {data.currency}
+                        {data.price.toFixed(2)} / {t('person', 'person')}
                     </div>
                 )}
             </div>

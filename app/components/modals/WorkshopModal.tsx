@@ -17,6 +17,7 @@ import Input from '../inputs/Input';
 import WorkshopIngredientsStep from './workshop-steps/WorkshopIngredientsStep';
 import WorkshopPreviousStepsStep from './workshop-steps/WorkshopPreviousStepsStep';
 import WhitelistUsersStep from './workshop-steps/WhitelistUsersStep';
+import CollapsibleSection from '@/app/components/utils/CollapsibleSection';
 import { SafeUser } from '@/app/types';
 
 interface WorkshopModalProps {
@@ -61,6 +62,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             whitelistedUserIds: [],
             imageSrc: '',
             price: 0,
+            currency: 'EUR',
             ingredients: [],
             previousSteps: [],
         },
@@ -164,6 +166,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                     : [],
                 imageSrc: data.imageSrc,
                 price: parseFloat(data.price) || 0,
+                currency: data.currency,
                 ingredients,
                 previousSteps,
             };
@@ -336,29 +339,55 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
     if (step === WORKSHOP_STEPS.REQUIREMENTS) {
         bodyContent = (
             <div className="flex flex-col gap-4">
-                <Input
-                    id="price"
-                    label={t('price_per_person')}
-                    type="number"
-                    disabled={isLoading}
-                    register={register}
-                    errors={errors}
-                    formatPrice
-                />
-                <WorkshopIngredientsStep
-                    numIngredients={numIngredients}
-                    register={register}
-                    errors={errors}
-                    onAddIngredient={addIngredient}
-                    onRemoveIngredient={removeIngredient}
-                />
-                <WorkshopPreviousStepsStep
-                    numPreviousSteps={numPreviousSteps}
-                    register={register}
-                    errors={errors}
-                    onAddPreviousStep={addPreviousStep}
-                    onRemovePreviousStep={removePreviousStep}
-                />
+                <CollapsibleSection
+                    title={t('price_per_person')}
+                    description={t('price_description')}
+                >
+                    <div className="flex items-center gap-4">
+                        <Input
+                            id="price"
+                            label={t('price_per_person')}
+                            type="number"
+                            disabled={isLoading}
+                            register={register}
+                            errors={errors}
+                            formatPrice
+                        />
+                        <select
+                            {...register('currency')}
+                            disabled={isLoading}
+                            className="w-full rounded-lg border-2 p-4 transition outline-none disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800 dark:text-white"
+                        >
+                            <option value="EUR">EUR</option>
+                            <option value="USD">USD</option>
+                            <option value="GBP">GBP</option>
+                        </select>
+                    </div>
+                </CollapsibleSection>
+                <CollapsibleSection
+                    title={t('ingredients')}
+                    description={t('ingredients_description')}
+                >
+                    <WorkshopIngredientsStep
+                        numIngredients={numIngredients}
+                        register={register}
+                        errors={errors}
+                        onAddIngredient={addIngredient}
+                        onRemoveIngredient={removeIngredient}
+                    />
+                </CollapsibleSection>
+                <CollapsibleSection
+                    title={t('previous_steps')}
+                    description={t('previous_steps_description')}
+                >
+                    <WorkshopPreviousStepsStep
+                        numPreviousSteps={numPreviousSteps}
+                        register={register}
+                        errors={errors}
+                        onAddPreviousStep={addPreviousStep}
+                        onRemovePreviousStep={removePreviousStep}
+                    />
+                </CollapsibleSection>
             </div>
         );
     }
