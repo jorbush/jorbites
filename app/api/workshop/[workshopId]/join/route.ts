@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import sendEmail from '@/app/actions/sendEmail';
-import { EmailType } from '@/app/types/email';
 import {
     unauthorized,
     invalidInput,
@@ -110,16 +108,16 @@ export async function POST(
             });
 
             // Notify host if notifications enabled
-            if (workshop.host.emailNotifications) {
-                await sendEmail({
-                    type: EmailType.NEW_LIKE, // TODO: Create WORKSHOP_JOIN type
-                    userEmail: workshop.host.email,
-                    params: {
-                        userName: currentUser.name,
-                        recipeId: workshopId,
-                    },
-                });
-            }
+            // if (workshop.host.emailNotifications) {
+            //     await sendEmail({
+            //         type: EmailType.NEW_LIKE, // TODO: Create WORKSHOP_JOIN type
+            //         userEmail: workshop.host.email,
+            //         params: {
+            //             userName: currentUser.name,
+            //             recipeId: workshopId,
+            //         },
+            //     });
+            // }
 
             logger.info('POST /api/workshop/[workshopId]/join - joined', {
                 workshopId,

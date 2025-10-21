@@ -136,25 +136,25 @@ export async function POST(request: Request) {
             },
         });
 
-        // Send notifications to whitelisted users if workshop is private
-        if (isPrivate && whitelistedUserIds && whitelistedUserIds.length > 0) {
-            const whitelistedUsers = await prisma.user.findMany({
-                where: {
-                    id: { in: whitelistedUserIds },
-                    emailNotifications: true,
-                },
-            });
+        // TODO: Send notifications to whitelisted users if workshop is private
+        // if (isPrivate && whitelistedUserIds && whitelistedUserIds.length > 0) {
+        //     const whitelistedUsers = await prisma.user.findMany({
+        //         where: {
+        //             id: { in: whitelistedUserIds },
+        //             emailNotifications: true,
+        //         },
+        //     });
 
-            for (const user of whitelistedUsers) {
-                await sendEmail({
-                    type: EmailType.NEW_RECIPE, // TODO: Create WORKSHOP_INVITATION type
-                    userEmail: user.email,
-                    params: {
-                        recipeId: workshop.id, // Use workshopId when email type is ready
-                    },
-                });
-            }
-        }
+        //     for (const user of whitelistedUsers) {
+        //         await sendEmail({
+        //             type: EmailType.NEW_RECIPE, // TODO: Create WORKSHOP_INVITATION type
+        //             userEmail: user.email,
+        //             params: {
+        //                 recipeId: workshop.id, // Use workshopId when email type is ready
+        //             },
+        //         });
+        //     }
+        // }
 
         logger.info('POST /api/workshops - success', {
             workshopId: workshop.id,
