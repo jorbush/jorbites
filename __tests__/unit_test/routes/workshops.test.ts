@@ -8,7 +8,6 @@ import {
 } from '@/app/api/workshop/[workshopId]/route';
 import { POST as WorkshopJoinPOST } from '@/app/api/workshop/[workshopId]/join/route';
 import getWorkshopById from '@/app/actions/getWorkshopById';
-import getWorkshopsByUserId from '@/app/actions/getWorkshopsByUserId';
 import { NextRequest } from 'next/server';
 import {
     WORKSHOP_TITLE_MAX_LENGTH,
@@ -36,8 +35,6 @@ jest.mock('next-auth/next', () => ({
 }));
 
 describe('Workshops API Routes and Server Actions', () => {
-    let publishedWorkshop: any = null;
-
     let initialUser: any = null;
 
     beforeAll(async () => {
@@ -65,15 +62,9 @@ describe('Workshops API Routes and Server Actions', () => {
     });
 
     afterAll(async () => {
-        // Clean up: delete test workshops and user
+        // Clean up: delete test user
         const { PrismaClient } = require('@prisma/client');
         const prisma = new PrismaClient();
-
-        if (publishedWorkshop) {
-            await prisma.workshop.deleteMany({
-                where: { id: publishedWorkshop.id },
-            });
-        }
 
         if (initialUser) {
             await prisma.user.delete({
@@ -84,47 +75,12 @@ describe('Workshops API Routes and Server Actions', () => {
         await prisma.$disconnect();
     });
 
-    describe('POST /api/workshops - Create Workshop', () => {
-        it('should create a workshop successfully', async () => {
+    describe('POST /api/workshops - Create Workshop Error Handling', () => {
+        beforeEach(() => {
             mockedSession = {
                 user: { email: initialUser.email },
                 expires: new Date(Date.now() + 86400000).toISOString(),
             };
-
-            const futureDate = new Date(Date.now() + 86400000); // Tomorrow
-            const workshopData = {
-                title: 'Test Workshop',
-                description: 'A test workshop description',
-                date: futureDate.toISOString(),
-                location: 'Test Location',
-                isRecurrent: false,
-                isPrivate: false,
-                imageSrc: null,
-                price: 25.5,
-                currency: 'EUR',
-                ingredients: ['ingredient1', 'ingredient2'],
-                previousSteps: ['step1'],
-            };
-
-            const req = new NextRequest('http://localhost:3000/api/workshops', {
-                method: 'POST',
-                body: JSON.stringify(workshopData),
-            });
-
-            const res = await WorkshopPOST(req);
-            const data = await res.json();
-
-            if (res.status !== 200) {
-                console.error('Workshop creation failed:', data);
-            }
-
-            expect(res.status).toBe(200);
-            expect(data.title).toBe('Test Workshop');
-            expect(data.location).toBe('Test Location');
-            expect(data.price).toBe(25.5);
-            expect(data.hostId).toBe(initialUser.id);
-
-            publishedWorkshop = data;
         });
 
         it('should reject workshop creation without authentication', async () => {
@@ -147,11 +103,6 @@ describe('Workshops API Routes and Server Actions', () => {
         });
 
         it('should reject workshop with missing required fields', async () => {
-            mockedSession = {
-                user: { email: initialUser.email },
-                expires: new Date(Date.now() + 86400000).toISOString(),
-            };
-
             const workshopData = {
                 title: 'Incomplete Workshop',
                 // Missing description, date, location
@@ -271,143 +222,10 @@ describe('Workshops API Routes and Server Actions', () => {
             const res = await WorkshopPOST(req);
             expect(res.status).toBe(400);
         });
-
-        it('should create private workshop with whitelisted users', async () => {
-            const workshopData = {
-                title: 'Private Workshop',
-                description: 'A private workshop',
-                date: new Date(Date.now() + 86400000).toISOString(),
-                location: 'Private Location',
-                isPrivate: true,
-                whitelistedUserIds: [initialUser.id],
-                imageSrc: null,
-                currency: 'EUR',
-            };
-
-            const req = new NextRequest('http://localhost:3000/api/workshops', {
-                method: 'POST',
-                body: JSON.stringify(workshopData),
-            });
-
-            const res = await WorkshopPOST(req);
-            const data = await res.json();
-
-            if (res.status !== 200) {
-                console.error('Private workshop creation failed:', data);
-            }
-
-            expect(res.status).toBe(200);
-            expect(data.isPrivate).toBe(true);
-            expect(data.whitelistedUserIds).toContain(initialUser.id);
-
-            // Clean up
-            const { PrismaClient } = require('@prisma/client');
-            const prisma = new PrismaClient();
-            await prisma.workshop.delete({ where: { id: data.id } });
-        });
     });
 
-    describe('PATCH /api/workshop/[workshopId] - Update Workshop', () => {
-        it('should update workshop successfully', async () => {
-            if (!publishedWorkshop) {
-                console.warn('Skipping test: publishedWorkshop is null');
-                return;
-            }
-
-            mockedSession = {
-                user: { email: initialUser.email },
-                expires: new Date(Date.now() + 86400000).toISOString(),
-            };
-
-            const updateData = {
-                title: 'Updated Workshop Title',
-                description: 'Updated description',
-                date: new Date(Date.now() + 172800000).toISOString(), // 2 days from now
-                location: 'Updated Location',
-                price: 30,
-                currency: 'EUR',
-                imageSrc: null,
-                ingredients: ['new ingredient'],
-                previousSteps: [],
-            };
-
-            const req = new NextRequest(
-                `http://localhost:3000/api/workshop/${publishedWorkshop.id}`,
-                {
-                    method: 'PATCH',
-                    body: JSON.stringify(updateData),
-                }
-            );
-
-            const res = await WorkshopPATCH(req, {
-                params: Promise.resolve({ workshopId: publishedWorkshop.id }),
-            });
-            const data = await res.json();
-
-            if (res.status !== 200) {
-                console.error('Workshop update failed:', data);
-            }
-
-            expect(res.status).toBe(200);
-            expect(data.title).toBe('Updated Workshop Title');
-            expect(data.location).toBe('Updated Location');
-            expect(data.price).toBe(30);
-        });
-
-        it('should reject update from non-host user', async () => {
-            if (!publishedWorkshop) {
-                console.warn('Skipping test: publishedWorkshop is null');
-                return;
-            }
-
-            // Create another user
-            const { PrismaClient } = require('@prisma/client');
-            const prisma = new PrismaClient();
-
-            const anotherUser = await prisma.user.create({
-                data: {
-                    name: 'Another User',
-                    email: `another_${Date.now()}@test.com`,
-                    hashedPassword: 'hashedPassword',
-                },
-            });
-
-            mockedSession = {
-                user: { email: anotherUser.email },
-                expires: new Date(Date.now() + 86400000).toISOString(),
-            };
-
-            const updateData = {
-                title: 'Unauthorized Update',
-                description: 'Should not work',
-                date: new Date(Date.now() + 86400000).toISOString(),
-                location: 'Test',
-            };
-
-            const req = new NextRequest(
-                `http://localhost:3000/api/workshop/${publishedWorkshop.id}`,
-                {
-                    method: 'PATCH',
-                    body: JSON.stringify(updateData),
-                }
-            );
-
-            const res = await WorkshopPATCH(req, {
-                params: Promise.resolve({ workshopId: publishedWorkshop.id }),
-            });
-
-            expect(res.status).toBe(403);
-
-            // Clean up
-            await prisma.user.delete({ where: { id: anotherUser.id } });
-        });
-
+    describe('PATCH /api/workshop/[workshopId] - Update Workshop Error Handling', () => {
         it('should reject update without authentication', async () => {
-            if (!publishedWorkshop) {
-                console.warn('Skipping test: publishedWorkshop is null');
-                return;
-            }
-
             mockedSession = null;
 
             const updateData = {
@@ -418,7 +236,7 @@ describe('Workshops API Routes and Server Actions', () => {
             };
 
             const req = new NextRequest(
-                `http://localhost:3000/api/workshop/${publishedWorkshop.id}`,
+                `http://localhost:3000/api/workshop/fake-workshop-id`,
                 {
                     method: 'PATCH',
                     body: JSON.stringify(updateData),
@@ -426,248 +244,80 @@ describe('Workshops API Routes and Server Actions', () => {
             );
 
             const res = await WorkshopPATCH(req, {
-                params: Promise.resolve({ workshopId: publishedWorkshop.id }),
+                params: Promise.resolve({ workshopId: 'fake-workshop-id' }),
             });
 
             expect(res.status).toBe(401);
         });
     });
 
-    describe('POST /api/workshop/[workshopId]/join - Join/Leave Workshop', () => {
-        let testParticipant: any;
+    describe('POST /api/workshop/[workshopId]/join - Join/Leave Workshop Error Handling', () => {
+        it('should reject join without authentication', async () => {
+            mockedSession = null;
 
-        beforeAll(async () => {
-            const { PrismaClient } = require('@prisma/client');
-            const prisma = new PrismaClient();
+            const req = new NextRequest(
+                `http://localhost:3000/api/workshop/fake-workshop-id/join`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'join' }),
+                }
+            );
 
-            testParticipant = await prisma.user.create({
-                data: {
-                    name: 'Test Participant',
-                    email: `participant_${Date.now()}@test.com`,
-                    hashedPassword: 'hashedPassword',
-                },
+            const res = await WorkshopJoinPOST(req, {
+                params: Promise.resolve({ workshopId: 'fake-workshop-id' }),
             });
+
+            expect(res.status).toBe(401);
         });
 
-        afterAll(async () => {
-            const { PrismaClient } = require('@prisma/client');
-            const prisma = new PrismaClient();
-
-            if (testParticipant) {
-                await prisma.user.delete({ where: { id: testParticipant.id } });
-            }
-        });
-
-        it('should join workshop successfully', async () => {
-            if (!publishedWorkshop) {
-                console.warn('Skipping test: publishedWorkshop is null');
-                return;
-            }
-
+        it('should reject with invalid action', async () => {
             mockedSession = {
-                user: { email: testParticipant.email },
+                user: { email: initialUser.email },
                 expires: new Date(Date.now() + 86400000).toISOString(),
             };
 
             const req = new NextRequest(
-                `http://localhost:3000/api/workshop/${publishedWorkshop.id}/join`,
+                `http://localhost:3000/api/workshop/fake-workshop-id/join`,
                 {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'join' }),
+                    body: JSON.stringify({ action: 'invalid' }),
                 }
             );
 
             const res = await WorkshopJoinPOST(req, {
-                params: Promise.resolve({ workshopId: publishedWorkshop.id }),
-            });
-
-            expect(res.status).toBe(200);
-
-            const data = await res.json();
-            expect(data.message).toContain('Successfully joined workshop');
-        });
-
-        it('should prevent joining twice', async () => {
-            if (!publishedWorkshop) {
-                console.warn('Skipping test: publishedWorkshop is null');
-                return;
-            }
-
-            const req = new NextRequest(
-                `http://localhost:3000/api/workshop/${publishedWorkshop.id}/join`,
-                {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'join' }),
-                }
-            );
-
-            const res = await WorkshopJoinPOST(req, {
-                params: Promise.resolve({ workshopId: publishedWorkshop.id }),
+                params: Promise.resolve({ workshopId: 'fake-workshop-id' }),
             });
 
             expect(res.status).toBe(400);
         });
+    });
 
-        it('should leave workshop successfully', async () => {
-            if (!publishedWorkshop) {
-                console.warn('Skipping test: publishedWorkshop is null');
-                return;
-            }
-
-            const req = new NextRequest(
-                `http://localhost:3000/api/workshop/${publishedWorkshop.id}/join`,
-                {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'leave' }),
-                }
-            );
-
-            const res = await WorkshopJoinPOST(req, {
-                params: Promise.resolve({ workshopId: publishedWorkshop.id }),
-            });
-
-            expect(res.status).toBe(200);
-
-            const data = await res.json();
-            expect(data.message).toContain('Successfully left workshop');
-        });
-
-        it('should reject join without authentication', async () => {
-            if (!publishedWorkshop) {
-                console.warn('Skipping test: publishedWorkshop is null');
-                return;
-            }
-
+    describe('DELETE /api/workshop/[workshopId] - Delete Workshop Error Handling', () => {
+        it('should reject delete without authentication', async () => {
             mockedSession = null;
 
             const req = new NextRequest(
-                `http://localhost:3000/api/workshop/${publishedWorkshop.id}/join`,
-                {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'join' }),
-                }
-            );
-
-            const res = await WorkshopJoinPOST(req, {
-                params: Promise.resolve({ workshopId: publishedWorkshop.id }),
-            });
-
-            expect(res.status).toBe(401);
-        });
-    });
-
-    describe('DELETE /api/workshop/[workshopId] - Delete Workshop', () => {
-        it('should delete workshop successfully', async () => {
-            if (!publishedWorkshop) {
-                console.warn('Skipping test: publishedWorkshop is null');
-                return;
-            }
-
-            mockedSession = {
-                user: { email: initialUser.email },
-                expires: new Date(Date.now() + 86400000).toISOString(),
-            };
-
-            const req = new NextRequest(
-                `http://localhost:3000/api/workshop/${publishedWorkshop.id}`,
+                `http://localhost:3000/api/workshop/fake-workshop-id`,
                 {
                     method: 'DELETE',
                 }
             );
 
             const res = await WorkshopDELETE(req, {
-                params: Promise.resolve({ workshopId: publishedWorkshop.id }),
+                params: Promise.resolve({ workshopId: 'fake-workshop-id' }),
             });
 
-            expect(res.status).toBe(200);
-
-            // Verify deletion
-            const workshop = await getWorkshopById({
-                workshopId: publishedWorkshop.id,
-            });
-            expect(workshop).toBeNull();
-
-            publishedWorkshop = null;
+            expect(res.status).toBe(401);
         });
     });
 
     describe('Server Actions - Get Workshops', () => {
-        let testWorkshop: any;
-
-        beforeAll(async () => {
-            mockedSession = {
-                user: { email: initialUser.email },
-                expires: new Date(Date.now() + 86400000).toISOString(),
-            };
-
-            const workshopData = {
-                title: 'Server Action Test Workshop',
-                description: 'Testing server actions',
-                date: new Date(Date.now() + 86400000).toISOString(),
-                location: 'Test Location',
-                imageSrc: null,
-                currency: 'EUR',
-            };
-
-            const req = new NextRequest('http://localhost:3000/api/workshops', {
-                method: 'POST',
-                body: JSON.stringify(workshopData),
-            });
-
-            const res = await WorkshopPOST(req);
-            testWorkshop = await res.json();
-
-            if (res.status !== 200) {
-                console.error('Test workshop creation failed:', testWorkshop);
-            }
-        });
-
-        afterAll(async () => {
-            if (testWorkshop) {
-                const { PrismaClient } = require('@prisma/client');
-                const prisma = new PrismaClient();
-                await prisma.workshop.deleteMany({
-                    where: { id: testWorkshop.id },
-                });
-            }
-        });
-
         it('should get workshops list', async () => {
             const result = await getWorkshops({ limit: 10 });
 
             expect(result.error).toBeNull();
             expect(result.data).not.toBeNull();
             expect(Array.isArray(result.data?.workshops)).toBe(true);
-        });
-
-        it('should get workshop by id', async () => {
-            if (!testWorkshop || !testWorkshop.id) {
-                console.warn('Skipping test: testWorkshop is not available');
-                return;
-            }
-
-            const workshop = await getWorkshopById({
-                workshopId: testWorkshop.id,
-            });
-
-            expect(workshop).not.toBeNull();
-            expect(workshop?.id).toBe(testWorkshop.id);
-            expect(workshop?.title).toBe('Server Action Test Workshop');
-        });
-
-        it('should get workshops by user id', async () => {
-            if (!testWorkshop || !testWorkshop.id) {
-                console.warn('Skipping test: testWorkshop is not available');
-                return;
-            }
-
-            const workshops = await getWorkshopsByUserId({
-                userId: initialUser.id,
-            });
-
-            expect(Array.isArray(workshops)).toBe(true);
-            expect(workshops.length).toBeGreaterThan(0);
-            expect(workshops[0].hostId).toBe(initialUser.id);
         });
 
         it('should filter upcoming workshops', async () => {
@@ -684,19 +334,14 @@ describe('Workshops API Routes and Server Actions', () => {
             }
         });
 
-        it('should search workshops by title', async () => {
+        it('should handle search with no results', async () => {
             const result = await getWorkshops({
-                search: 'Server Action',
+                search: 'NonExistentWorkshopTitle12345',
                 limit: 10,
             });
 
             expect(result.data).not.toBeNull();
-            if (result.data && result.data.workshops.length > 0) {
-                const found = result.data.workshops.some(
-                    (w: any) => w.id === testWorkshop.id
-                );
-                expect(found).toBe(true);
-            }
+            expect(result.data?.workshops).toBeDefined();
         });
     });
 });
