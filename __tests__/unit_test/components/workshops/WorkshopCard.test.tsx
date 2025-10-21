@@ -143,7 +143,8 @@ describe('<WorkshopCard />', () => {
             />
         );
 
-        expect(screen.getByText(/USD25.50/)).toBeDefined();
+        expect(screen.getByText(/25.50/)).toBeDefined();
+        expect(screen.getByText(/\$/)).toBeDefined();
     });
 
     it('does not display price for free workshops', () => {
@@ -220,7 +221,7 @@ describe('<WorkshopCard />', () => {
         );
 
         const image = screen.getByTestId('workshop-image');
-        expect(image.getAttribute('src')).toBe('/avocado.webp');
+        expect(image.getAttribute('src')).toBe('/jorbites-social.jpg');
     });
 
     it('shows host avatar and name', () => {

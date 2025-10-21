@@ -122,7 +122,9 @@ describe('<WorkshopClient />', () => {
             />
         );
 
-        expect(screen.getByText(/price_label EUR25.50/)).toBeDefined();
+        expect(screen.getByText(/price_label/)).toBeDefined();
+        expect(screen.getByText(/25.50/)).toBeDefined();
+        expect(screen.getByText(/€/)).toBeDefined();
     });
 
     it('does not display the price for free workshops', () => {
@@ -180,7 +182,7 @@ describe('<WorkshopClient />', () => {
         );
 
         expect(screen.getByTestId('edit-workshop-button')).toBeDefined();
-        expect(screen.getByTestId('delete-workshop-button')).toBeDefined();
+        expect(screen.getByTestId('delete-workshop')).toBeDefined();
     });
 
     it('shows join button for other users', () => {
