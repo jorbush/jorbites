@@ -7,7 +7,6 @@ import {
     DELETE as WorkshopDELETE,
 } from '@/app/api/workshop/[workshopId]/route';
 import { POST as WorkshopJoinPOST } from '@/app/api/workshop/[workshopId]/join/route';
-import getWorkshopById from '@/app/actions/getWorkshopById';
 import { NextRequest } from 'next/server';
 import {
     WORKSHOP_TITLE_MAX_LENGTH,
