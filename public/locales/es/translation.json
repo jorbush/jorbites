@@ -555,5 +555,6 @@
     "check_back_later_past": "No hay talleres pasados para mostrar",
     "contribute_to_community": "¿Quieres contribuir a la comunidad compartiendo tu conocimiento?",
     "share_cooking_skills": "Comparte tus habilidades culinarias y ayuda a otros a aprender nuevas recetas y técnicas.",
-    "joined_at": "Se unió en"
+    "joined_at": "Se unió en",
+    "text_delete_workshop": "Jorbites elimina este taller"
 }
