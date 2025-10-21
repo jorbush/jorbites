@@ -555,5 +555,6 @@
     "no_upcoming_workshops_found": "No s'han trobat propers tallers",
     "check_back_later": "Torna més tard per veure els propers tallers",
     "no_past_workshops_found": "No s'han trobat tallers passats",
-    "check_back_later_past": "No hi ha tallers passats per mostrar"
+    "check_back_later_past": "No hi ha tallers passats per mostrar",
+    "joined_at": "Unit el"
 }

@@ -256,7 +256,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                                 >
                                     <div className="h-2 w-2 rounded-full bg-green-500" />
                                     <span>
-                                        {t('joined_at', 'Joined')}:{' '}
+                                        {t('joined_at')}:{' '}
                                         {new Date(
                                             participant.joinedAt
                                         ).toLocaleDateString()}
