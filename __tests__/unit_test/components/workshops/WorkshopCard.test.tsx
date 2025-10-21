@@ -57,6 +57,7 @@ describe('<WorkshopCard />', () => {
         whitelistedUserIds: [],
         imageSrc: '/test-image.jpg',
         price: 25.5,
+        currency: 'EUR',
         ingredients: ['ingredient1'],
         previousSteps: [],
         hostId: 'host1',
