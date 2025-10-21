@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import sendEmail from '@/app/actions/sendEmail';
-import { EmailType } from '@/app/types/email';
 import {
     WORKSHOP_TITLE_MAX_LENGTH,
     WORKSHOP_DESCRIPTION_MAX_LENGTH,
