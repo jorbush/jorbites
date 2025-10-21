@@ -36,7 +36,6 @@ jest.mock('next-auth/next', () => ({
 }));
 
 describe('Workshops API Routes and Server Actions', () => {
-    let initialWorkshops: any[] = [];
     let publishedWorkshop: any = null;
 
     let initialUser: any = null;
@@ -63,10 +62,6 @@ describe('Workshops API Routes and Server Actions', () => {
             updatedAt: createdUser.updatedAt.toISOString(),
             emailVerified: createdUser.emailVerified?.toISOString() || null,
         };
-
-        // Get initial workshops
-        const workshops = await getWorkshops({ limit: 100 });
-        initialWorkshops = workshops.data?.workshops || [];
     });
 
     afterAll(async () => {
@@ -603,7 +598,6 @@ describe('Workshops API Routes and Server Actions', () => {
 
         it('should filter upcoming workshops', async () => {
             const result = await getWorkshops({
-                upcoming: true,
                 limit: 10,
             });
 

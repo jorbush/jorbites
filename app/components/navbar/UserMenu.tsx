@@ -20,7 +20,6 @@ import {
     FcExport,
     FcImport,
     FcPortraitMode,
-    FcConferenceCall,
 } from 'react-icons/fc';
 
 interface UserMenuProps {
