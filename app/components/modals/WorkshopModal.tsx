@@ -18,6 +18,7 @@ import WorkshopIngredientsStep from './workshop-steps/WorkshopIngredientsStep';
 import WorkshopPreviousStepsStep from './workshop-steps/WorkshopPreviousStepsStep';
 import WhitelistUsersStep from './workshop-steps/WhitelistUsersStep';
 import CollapsibleSection from '@/app/components/utils/CollapsibleSection';
+import CurrencySelect from '@/app/components/inputs/CurrencySelect';
 import { SafeUser } from '@/app/types';
 
 interface WorkshopModalProps {
@@ -133,7 +134,6 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
         if (step !== WORKSHOP_STEPS.IMAGE) {
             return onNext();
         }
-
         setIsLoading(true);
 
         try {
@@ -313,7 +313,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                     type="checkbox"
                     {...register('isRecurrent')}
                     disabled={isLoading}
-                    className="h-5 w-5"
+                    className="accent-green-450 h-5 w-5"
                 />
                 <label
                     htmlFor="isRecurrent"
@@ -326,7 +326,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 <select
                     {...register('recurrencePattern')}
                     disabled={isLoading}
-                    className="w-full rounded-lg border-2 p-4 transition outline-none disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800 dark:text-white"
+                    className="w-full appearance-none rounded-lg border-2 p-4 transition outline-none disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800 dark:text-white"
                 >
                     <option value="">{t('recurrence_pattern')}</option>
                     <option value="weekly">{t('weekly')}</option>
@@ -343,25 +343,24 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                     title={t('price_per_person')}
                     description={t('price_description')}
                 >
-                    <div className="flex items-center gap-4">
-                        <Input
-                            id="price"
-                            label={t('price_per_person')}
-                            type="number"
+                    <div className="flex items-start gap-3">
+                        <div className="flex-1">
+                            <Input
+                                id="price"
+                                label={t('price_per_person')}
+                                type="number"
+                                disabled={isLoading}
+                                register={register}
+                                errors={errors}
+                                formatPrice
+                            />
+                        </div>
+                        <CurrencySelect
+                            id="currency"
                             disabled={isLoading}
                             register={register}
                             errors={errors}
-                            formatPrice
                         />
-                        <select
-                            {...register('currency')}
-                            disabled={isLoading}
-                            className="w-full rounded-lg border-2 p-4 transition outline-none disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800 dark:text-white"
-                        >
-                            <option value="EUR">EUR</option>
-                            <option value="USD">USD</option>
-                            <option value="GBP">GBP</option>
-                        </select>
                     </div>
                 </CollapsibleSection>
                 <CollapsibleSection
@@ -401,7 +400,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                         type="checkbox"
                         {...register('isPrivate')}
                         disabled={isLoading}
-                        className="h-5 w-5"
+                        className="accent-green-450 h-5 w-5"
                     />
                     <label
                         htmlFor="isPrivate"

@@ -51,7 +51,7 @@ const WorkshopCard = memo(function WorkshopCard({
             <div className="flex w-full flex-col gap-2">
                 <div className="relative aspect-square w-full overflow-hidden rounded-xl">
                     <CustomProxyImage
-                        src={data.imageSrc || '/avocado.webp'}
+                        src={data.imageSrc || '/jorbites-social.jpg'}
                         alt="workshop"
                         fill
                         priority={isFirstCard}
@@ -109,10 +109,15 @@ const WorkshopCard = memo(function WorkshopCard({
                         </span>
                     </div>
                 </div>
-                {data.price > 0 && (
-                    <div className="text-sm font-semibold text-green-600 dark:text-green-400">
-                        {data.currency}
-                        {data.price.toFixed(2)} / {t('person', 'person')}
+                {data.price > 0 ? (
+                    <div className="text-green-450 dark:text-green-450 text-sm font-semibold">
+                        {data.price.toFixed(2)}{' '}
+                        {data.currency == 'EUR' ? '€' : '$'} /{' '}
+                        {t('person', 'person')}
+                    </div>
+                ) : (
+                    <div className="text-green-450 dark:text-green-450 text-sm font-semibold">
+                        {t('free')}
                     </div>
                 )}
             </div>

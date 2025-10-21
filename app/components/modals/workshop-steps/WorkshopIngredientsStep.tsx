@@ -59,7 +59,7 @@ const WorkshopIngredientsStep: React.FC<WorkshopIngredientsStepProps> = ({
                             dataCy={`workshop-ingredient-${i}`}
                         />
                     </div>
-                    {numIngredients > 1 && i === numIngredients - 1 ? (
+                    {i === numIngredients - 1 ? (
                         <div className="shrink-0">
                             <AiFillDelete
                                 data-testid="remove-ingredient-button"

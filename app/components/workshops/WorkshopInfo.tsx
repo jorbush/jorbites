@@ -11,9 +11,9 @@ import {
     MdLocationOn,
     MdCalendarToday,
     MdPeople,
-    MdEuroSymbol,
     MdLock,
 } from 'react-icons/md';
+import { FaMoneyBillWave } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -149,9 +149,9 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                 )}
                 {price > 0 && (
                     <div className="flex items-center gap-2 text-lg">
-                        <MdEuroSymbol size={24} />
+                        <FaMoneyBillWave size={24} />
                         <span>
-                            €{price.toFixed(2)} {t('price_per_person')}
+                            {price.toFixed(2)}€ {t('price_per_person')}
                         </span>
                     </div>
                 )}

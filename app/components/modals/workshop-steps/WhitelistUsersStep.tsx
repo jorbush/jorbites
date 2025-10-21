@@ -68,7 +68,7 @@ const WhitelistUsersStep: React.FC<WhitelistUsersStepProps> = ({
     }, [searchQuery, handleSearch]);
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex min-h-[300px] flex-col gap-4">
             <div className="mb-2">
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">
                     {t('workshop_whitelist_description')}

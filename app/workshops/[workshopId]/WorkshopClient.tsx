@@ -7,7 +7,10 @@ import WorkshopHead from '@/app/components/workshops/WorkshopHead';
 import WorkshopInfo from '@/app/components/workshops/WorkshopInfo';
 import JoinWorkshopButton from '@/app/components/workshops/JoinWorkshopButton';
 import EditWorkshopButton from '@/app/components/workshops/EditWorkshopButton';
-import DeleteWorkshopButton from '@/app/components/workshops/DeleteWorkshopButton';
+import DeleteWorkshopModal from '@/app/components/modals/DeleteWorkshopModal';
+import Button from '@/app/components/buttons/Button';
+import { MdDelete } from 'react-icons/md';
+import { useState } from 'react';
 
 interface WorkshopClientProps {
     workshop: SafeWorkshop & {
@@ -22,6 +25,7 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
     currentUser,
 }) => {
     const { t } = useTranslation();
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const isHost = currentUser?.id === workshop.hostId;
     const isParticipant =
         workshop.participants?.some((p) => p.userId === currentUser?.id) ||
@@ -51,6 +55,11 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
 
     return (
         <Container>
+            <DeleteWorkshopModal
+                open={isDeleteModalOpen}
+                setIsOpen={setIsDeleteModalOpen}
+                id={workshop.id}
+            />
             <div className="mx-auto flex max-w-screen-lg flex-col gap-6 pt-2">
                 <WorkshopHead
                     title={workshop.title}
@@ -79,8 +88,14 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
                             {isHost ? (
                                 <>
                                     <EditWorkshopButton workshop={workshop} />
-                                    <DeleteWorkshopButton
-                                        workshopId={workshop.id}
+                                    <Button
+                                        label={t('delete_workshop')}
+                                        onClick={() =>
+                                            setIsDeleteModalOpen(true)
+                                        }
+                                        icon={MdDelete}
+                                        deleteButton
+                                        dataCy="delete-workshop"
                                     />
                                 </>
                             ) : (
@@ -101,12 +116,16 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
                                         {t('participants_label')}{' '}
                                         {workshop.participants?.length || 0}
                                     </p>
-                                    {workshop.price > 0 && (
+                                    {workshop.price > 0 ? (
                                         <p>
                                             {t('price_label')}{' '}
-                                            {workshop.currency}
                                             {workshop.price.toFixed(2)}
+                                            {workshop.currency == 'EUR'
+                                                ? '€'
+                                                : '$'}
                                         </p>
+                                    ) : (
+                                        <p>{t('free')}</p>
                                     )}
                                     {workshop.isPrivate && (
                                         <p className="mt-2 text-yellow-600 dark:text-yellow-400">

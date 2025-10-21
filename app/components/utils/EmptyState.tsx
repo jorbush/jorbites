@@ -10,12 +10,14 @@ interface EmptyStateProps {
     title?: string;
     subtitle?: string;
     showReset?: boolean;
+    height?: string;
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({
     title = 'No exact matches',
     subtitle = 'Try changing or removing some of your filters.',
     showReset,
+    height = 'h-[60vh]',
 }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -44,7 +46,9 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     }
 
     return (
-        <div className="flex h-[60vh] flex-col items-center justify-center gap-2">
+        <div
+            className={`flex ${height} flex-col items-center justify-center gap-2`}
+        >
             <Heading
                 center
                 title={displayTitle}

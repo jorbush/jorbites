@@ -59,7 +59,7 @@ const WorkshopPreviousStepsStep: React.FC<WorkshopPreviousStepsStepProps> = ({
                             dataCy={`workshop-previous-step-${i}`}
                         />
                     </div>
-                    {numPreviousSteps > 1 && i === numPreviousSteps - 1 ? (
+                    {i === numPreviousSteps - 1 ? (
                         <div className="shrink-0">
                             <AiFillDelete
                                 data-testid="remove-previous-step-button"

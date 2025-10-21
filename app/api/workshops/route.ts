@@ -55,6 +55,14 @@ export async function POST(request: Request) {
             );
         }
 
+        if (
+            imageSrc === undefined ||
+            imageSrc === null ||
+            imageSrc.trim() === ''
+        ) {
+            return badRequest('Image source is required');
+        }
+
         if (title.length > WORKSHOP_TITLE_MAX_LENGTH) {
             return validationError(
                 `Title must be ${WORKSHOP_TITLE_MAX_LENGTH} characters or less`

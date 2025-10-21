@@ -76,7 +76,7 @@ const WorkshopHead: React.FC<WorkshopHeadProps> = ({
             </div>
             <div className="relative h-[60vh] w-full overflow-hidden rounded-xl">
                 <CustomProxyImage
-                    src={imageSrc || '/avocado.webp'}
+                    src={imageSrc || '/jorbites-social.jpg'}
                     fill
                     priority={true}
                     className="object-cover"

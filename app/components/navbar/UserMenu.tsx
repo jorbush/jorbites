@@ -138,14 +138,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     label={t('events') || 'Events'}
                                     icon={FcCalendar}
                                 />
-                                <MenuItem
+                                {/* <MenuItem
                                     onClick={() => {
                                         router.push('/workshops');
                                         toggleOpen();
                                     }}
                                     label={t('workshops')}
                                     icon={FcConferenceCall}
-                                />
+                                /> */}
                                 <MenuItem
                                     onClick={() => {
                                         settingsModal.onOpen();
@@ -172,14 +172,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     label={t('events') || 'Events'}
                                     icon={FcCalendar}
                                 />
-                                <MenuItem
+                                {/* <MenuItem
                                     onClick={() => {
                                         router.push('/workshops');
                                         toggleOpen();
                                     }}
                                     label={t('workshops')}
                                     icon={FcConferenceCall}
-                                />
+                                /> */}
                                 <MenuItem
                                     onClick={() => {
                                         settingsModal.onOpen();

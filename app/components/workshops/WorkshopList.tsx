@@ -19,12 +19,11 @@ const WorkshopList: React.FC<WorkshopListProps> = ({
 }) => {
     if (workshops.length === 0) {
         return (
-            <div className="min-h-[60vh]">
-                <EmptyState
-                    title={emptyStateTitle}
-                    subtitle={emptyStateSubtitle}
-                />
-            </div>
+            <EmptyState
+                title={emptyStateTitle}
+                subtitle={emptyStateSubtitle}
+                height="h-[30vh]"
+            />
         );
     }
 
