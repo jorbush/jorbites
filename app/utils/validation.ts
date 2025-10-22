@@ -4,10 +4,11 @@
  * - https://www.youtube.com/watch?v=VIDEO_ID
  * - https://youtube.com/watch?v=VIDEO_ID
  * - https://youtu.be/VIDEO_ID
+ * - https://www.youtube.com/shorts/VIDEO_ID
  * - With additional query parameters
  */
 export const YOUTUBE_URL_REGEX =
-    /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]+((&[\w=-]*)*|(\?[\w=-]*)*)?$/;
+    /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)[\w-]+((&[\w=-]*)*|(\?[\w=-]*)*)?$/;
 
 /**
  * Validates YouTube URL format

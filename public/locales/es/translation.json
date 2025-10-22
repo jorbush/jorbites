@@ -490,7 +490,7 @@
     "quick pot": "Olla Rápida",
     "youtube_video": "Video de YouTube",
     "youtube_url_optional": "URL de tu vídeo de YouTube (opcional)",
-    "invalid_youtube_url": "Por favor, introduce una URL de YouTube válida (por ejemplo, https://www.youtube.com/watch?v=... o https://youtu.be/...)",
+    "invalid_youtube_url": "Por favor, introduce una URL de YouTube válida (por ejemplo, https://www.youtube.com/watch?v=..., https://youtu.be/... o https://youtube.com/shorts/...)",
     "video_for": "Video para",
     "workshops": "Talleres",
     "workshop": "Taller",
