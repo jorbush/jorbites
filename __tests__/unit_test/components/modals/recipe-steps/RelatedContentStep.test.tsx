@@ -520,6 +520,7 @@ describe('<RelatedContentStep />', () => {
                 'https://youtube.com/watch?v=dQw4w9WgXcQ',
                 'https://youtu.be/dQw4w9WgXcQ',
                 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=30s',
+                'https://youtube.com/shorts/IoB4GSxUidI',
             ];
 
             validUrls.forEach((url) => {

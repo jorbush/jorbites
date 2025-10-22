@@ -16,6 +16,7 @@ describe('YouTube URL Validation', () => {
                 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLrAXtmRdnEQy',
                 'http://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 'http://youtu.be/dQw4w9WgXcQ',
+                'https://youtube.com/shorts/IoB4GSxUidI',
             ];
 
             validUrls.forEach((url) => {
