@@ -80,7 +80,9 @@ describe('<WorkshopClientSkeleton />', () => {
         const { container } = render(<WorkshopClientSkeleton />);
 
         // Check for dark mode classes
-        const darkModeElements = container.querySelectorAll('.dark\\:bg-neutral-700');
+        const darkModeElements = container.querySelectorAll(
+            '.dark\\:bg-neutral-700'
+        );
         expect(darkModeElements.length).toBeGreaterThan(0);
     });
 

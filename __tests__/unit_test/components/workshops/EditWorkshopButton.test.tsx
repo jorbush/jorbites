@@ -15,14 +15,11 @@ vi.mock('react-i18next', () => ({
 vi.mock('@/app/hooks/useWorkshopModal');
 
 vi.mock('@/app/components/buttons/Button', () => ({
-    default: ({
-        label,
-        onClick,
-    }: {
-        label: string;
-        onClick: () => void;
-    }) => (
-        <button onClick={onClick} data-testid="edit-button">
+    default: ({ label, onClick }: { label: string; onClick: () => void }) => (
+        <button
+            onClick={onClick}
+            data-testid="edit-button"
+        >
             {label}
         </button>
     ),
@@ -175,6 +172,10 @@ describe('<EditWorkshopButton />', () => {
 
         const callArgs = mockOnOpenEdit.mock.calls[0][0];
         expect(callArgs.isPrivate).toBe(true);
-        expect(callArgs.whitelistedUserIds).toEqual(['user1', 'user2', 'user3']);
+        expect(callArgs.whitelistedUserIds).toEqual([
+            'user1',
+            'user2',
+            'user3',
+        ]);
     });
 });

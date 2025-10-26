@@ -28,7 +28,10 @@ vi.mock('@/app/components/navigation/Heading', () => ({
         subtitle: string;
         center?: boolean;
     }) => (
-        <div data-testid="heading" data-center={center}>
+        <div
+            data-testid="heading"
+            data-center={center}
+        >
             <h1>{title}</h1>
             <p>{subtitle}</p>
         </div>
@@ -37,7 +40,11 @@ vi.mock('@/app/components/navigation/Heading', () => ({
 
 vi.mock('@/app/components/optimization/CustomProxyImage', () => ({
     default: ({ src, alt }: { src: string; alt: string }) => (
-        <img data-testid="workshop-image" src={src} alt={alt} />
+        <img
+            data-testid="workshop-image"
+            src={src}
+            alt={alt}
+        />
     ),
 }));
 

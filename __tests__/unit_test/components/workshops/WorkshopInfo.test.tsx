@@ -28,8 +28,17 @@ vi.mock('@/app/utils/responsive', () => ({
 }));
 
 vi.mock('@/app/components/utils/Avatar', () => ({
-    default: ({ src, onClick }: { src: string | null; onClick?: () => void }) => (
-        <div data-testid="avatar" onClick={onClick}>
+    default: ({
+        src,
+        onClick,
+    }: {
+        src: string | null;
+        onClick?: () => void;
+    }) => (
+        <div
+            data-testid="avatar"
+            onClick={onClick}
+        >
             Avatar
         </div>
     ),
@@ -317,7 +326,9 @@ describe('<WorkshopInfo />', () => {
             { id: 'user2', name: 'User 2', image: null },
         ];
 
-        (axios.get as any).mockResolvedValueOnce({ data: mockWhitelistedUsers });
+        (axios.get as any).mockResolvedValueOnce({
+            data: mockWhitelistedUsers,
+        });
 
         render(
             <WorkshopInfo
@@ -349,9 +360,9 @@ describe('<WorkshopInfo />', () => {
 
     it('does not show whitelist section when user is not host', async () => {
         const otherUser: SafeUser = { ...mockHost, id: 'other-user' };
-        
-        (axios.get as any).mockResolvedValueOnce({ 
-            data: [{ id: 'user1', name: 'User 1', image: null }] 
+
+        (axios.get as any).mockResolvedValueOnce({
+            data: [{ id: 'user1', name: 'User 1', image: null }],
         });
 
         render(

@@ -47,7 +47,9 @@ describe('<WorkshopCardSkeleton />', () => {
     it('uses correct dark mode classes', () => {
         const { container } = render(<WorkshopCardSkeleton />);
 
-        const darkModeElements = container.querySelectorAll('.dark\\:bg-neutral-700');
+        const darkModeElements = container.querySelectorAll(
+            '.dark\\:bg-neutral-700'
+        );
         expect(darkModeElements.length).toBeGreaterThan(0);
     });
 

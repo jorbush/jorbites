@@ -175,7 +175,9 @@ describe('<WorkshopList />', () => {
             />
         );
 
-        const section = container.querySelector('[aria-label="Workshops grid"]');
+        const section = container.querySelector(
+            '[aria-label="Workshops grid"]'
+        );
         expect(section).toBeDefined();
     });
 

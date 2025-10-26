@@ -69,7 +69,9 @@ describe('<WorkshopsListSkeleton />', () => {
         const { container } = render(<WorkshopsListSkeleton />);
 
         // Check for dark mode classes
-        const darkModeElements = container.querySelectorAll('.dark\\:bg-neutral-700');
+        const darkModeElements = container.querySelectorAll(
+            '.dark\\:bg-neutral-700'
+        );
         expect(darkModeElements.length).toBeGreaterThan(0);
     });
 
@@ -77,9 +79,7 @@ describe('<WorkshopsListSkeleton />', () => {
         const { container } = render(<WorkshopsListSkeleton />);
 
         // Check for responsive classes
-        const responsiveGrids = container.querySelectorAll(
-            '.sm\\:grid-cols-2'
-        );
+        const responsiveGrids = container.querySelectorAll('.sm\\:grid-cols-2');
         expect(responsiveGrids.length).toBeGreaterThan(0);
     });
 
@@ -95,7 +95,8 @@ describe('<WorkshopsListSkeleton />', () => {
         const { container } = render(<WorkshopsListSkeleton />);
 
         // Check for min-h classes
-        const minHeightElements = container.querySelectorAll('[class*="min-h"]');
+        const minHeightElements =
+            container.querySelectorAll('[class*="min-h"]');
         expect(minHeightElements.length).toBeGreaterThan(0);
     });
 });
