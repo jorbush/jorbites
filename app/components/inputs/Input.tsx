@@ -63,7 +63,9 @@ const Input: React.FC<InputProps> = ({
     };
 
     return (
-        <div className="relative w-full">
+        <div
+            className={`relative w-full ${type === 'date' || type === 'datetime-local' ? 'flex' : ''}`}
+        >
             {formatPrice && (
                 <BiDollar
                     size={24}
@@ -86,10 +88,10 @@ const Input: React.FC<InputProps> = ({
                 placeholder=" "
                 type={type}
                 maxLength={maxLength}
-                className={`peer w-full ${
+                className={`peer ${
                     type === 'date' || type === 'datetime-local'
-                        ? 'max-w-full'
-                        : ''
+                        ? 'w-0 flex-1 flex-shrink'
+                        : 'w-full'
                 } rounded-md border-2 bg-white p-4 pt-6 font-light text-zinc-900 outline-hidden transition disabled:cursor-not-allowed disabled:opacity-70 dark:bg-zinc-800 dark:text-zinc-100 ${
                     formatPrice ? 'pl-9' : 'pl-4'
                 } ${
