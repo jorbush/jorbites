@@ -452,4 +452,90 @@ describe('Input', () => {
             });
         });
     });
+
+    describe('Date input iOS fix', () => {
+        it('applies flex-shrink and w-0 flex-1 classes to date inputs', () => {
+            render(
+                <Input
+                    id="test-date"
+                    label="Test Date"
+                    type="date"
+                    register={mockRegister}
+                    errors={mockErrors}
+                />
+            );
+
+            const input = screen.getByLabelText('Test Date');
+            expect(input.className).toContain('flex-shrink');
+            expect(input.className).toContain('w-0');
+            expect(input.className).toContain('flex-1');
+            expect(input.className).not.toContain('w-full');
+        });
+
+        it('applies flex-shrink and w-0 flex-1 classes to datetime-local inputs', () => {
+            render(
+                <Input
+                    id="test-datetime"
+                    label="Test DateTime"
+                    type="datetime-local"
+                    register={mockRegister}
+                    errors={mockErrors}
+                />
+            );
+
+            const input = screen.getByLabelText('Test DateTime');
+            expect(input.className).toContain('flex-shrink');
+            expect(input.className).toContain('w-0');
+            expect(input.className).toContain('flex-1');
+            expect(input.className).not.toContain('w-full');
+        });
+
+        it('applies flex class to wrapper div for date inputs', () => {
+            const { container } = render(
+                <Input
+                    id="test-date"
+                    label="Test Date"
+                    type="date"
+                    register={mockRegister}
+                    errors={mockErrors}
+                />
+            );
+
+            const wrapper = container.querySelector('.relative.w-full');
+            expect(wrapper?.className).toContain('flex');
+        });
+
+        it('does not apply flex classes to non-date inputs', () => {
+            render(
+                <Input
+                    id="test-text"
+                    label="Test Text"
+                    type="text"
+                    register={mockRegister}
+                    errors={mockErrors}
+                />
+            );
+
+            const input = screen.getByRole('textbox');
+            expect(input.className).toContain('w-full');
+            expect(input.className).not.toContain('flex-shrink');
+            expect(input.className).not.toContain('w-0');
+            expect(input.className).not.toContain('flex-1');
+        });
+
+        it('does not apply flex class to wrapper div for non-date inputs', () => {
+            const { container } = render(
+                <Input
+                    id="test-text"
+                    label="Test Text"
+                    type="text"
+                    register={mockRegister}
+                    errors={mockErrors}
+                />
+            );
+
+            const wrapper = container.querySelector('.relative.w-full');
+            expect(wrapper?.className).not.toContain('flex');
+        });
+    });
 });
