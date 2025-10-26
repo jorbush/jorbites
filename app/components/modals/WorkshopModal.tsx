@@ -290,15 +290,23 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 errors={errors}
                 required
             />
-            <Input
-                id="date"
-                label={t('date')}
-                type="datetime-local"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required
-            />
+            <div className="flex flex-col">
+                <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    {t('date')}
+                </label>
+                <input
+                    type="datetime-local"
+                    {...register('date', { required: true })}
+                    disabled={isLoading}
+                    className="flex-shrink rounded-md border-2 border-neutral-300 bg-white px-3 py-2 text-sm transition outline-none focus:border-black disabled:cursor-not-allowed disabled:opacity-70 dark:border-neutral-600 dark:bg-zinc-800 dark:text-zinc-100 dark:focus:border-white"
+                />
+                {errors.date && (
+                    <div className="mt-1 text-sm text-rose-500">
+                        {t('this_field_is_required') ||
+                            'This field is required'}
+                    </div>
+                )}
+            </div>
             <Input
                 id="location"
                 label={t('location')}

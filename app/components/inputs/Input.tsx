@@ -63,9 +63,7 @@ const Input: React.FC<InputProps> = ({
     };
 
     return (
-        <div
-            className={`relative w-full ${type === 'date' || type === 'datetime-local' ? 'flex-shrink' : ''}`}
-        >
+        <div className="relative w-full">
             {formatPrice && (
                 <BiDollar
                     size={24}
