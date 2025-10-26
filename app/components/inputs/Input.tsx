@@ -86,7 +86,13 @@ const Input: React.FC<InputProps> = ({
                 placeholder=" "
                 type={type}
                 maxLength={maxLength}
-                className={`peer w-full rounded-md border-2 bg-white p-4 pt-6 font-light text-zinc-900 outline-hidden transition disabled:cursor-not-allowed disabled:opacity-70 dark:bg-zinc-800 dark:text-zinc-100 ${formatPrice ? 'pl-9' : 'pl-4'} ${
+                className={`peer ${
+                    type === 'date' || type === 'datetime-local'
+                        ? 'flex-shrink'
+                        : 'w-full'
+                } rounded-md border-2 bg-white p-4 pt-6 font-light text-zinc-900 outline-hidden transition disabled:cursor-not-allowed disabled:opacity-70 dark:bg-zinc-800 dark:text-zinc-100 ${
+                    formatPrice ? 'pl-9' : 'pl-4'
+                } ${
                     errors[id]
                         ? 'border-rose-500'
                         : 'border-neutral-300 dark:border-neutral-600'
