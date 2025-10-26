@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const Logo = () => {
     const router = useRouter();
@@ -12,16 +13,15 @@ const Logo = () => {
     }
 
     return (
-        /* eslint-disable-next-line @next/next/no-img-element */
-        <img
+        <Image
             onClick={() => router.push('/')}
             alt="Logo"
             className="h-auto w-32 cursor-pointer md:block"
-            height="29"
-            width="128"
+            height={29}
+            width={128}
             src={logoPath}
             data-cy="logo"
-            fetchPriority="high"
+            priority
         />
     );
 };
