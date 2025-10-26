@@ -290,15 +290,17 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 errors={errors}
                 required
             />
-            <Input
-                id="date"
-                label={t('date')}
-                type="datetime-local"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required
-            />
+            <div className="flex-shrink">
+                <Input
+                    id="date"
+                    label={t('date')}
+                    type="datetime-local"
+                    disabled={isLoading}
+                    register={register}
+                    errors={errors}
+                    required
+                />
+            </div>
             <Input
                 id="location"
                 label={t('location')}
