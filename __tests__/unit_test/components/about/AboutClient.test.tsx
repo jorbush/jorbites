@@ -51,7 +51,6 @@ vi.mock('next/link', () => ({
         children,
         target,
         rel,
-        prefetch,
     }: {
         href: string;
         className?: string;
@@ -76,6 +75,10 @@ vi.mock('react-icons/fa', () => ({
     FaGithub: () => <div data-testid="fa-github-icon" />,
     FaEnvelope: () => <div data-testid="fa-envelope-icon" />,
     FaHeart: () => <div data-testid="fa-heart-icon" />,
+}));
+
+vi.mock('react-icons/ri', () => ({
+    RiGitRepositoryLine: () => <div data-testid="ri-repository-icon" />,
 }));
 
 // Mock useRegisterModal
@@ -206,6 +209,7 @@ describe('AboutClient', () => {
         expect(screen.getAllByTestId('fa-github-icon')).toHaveLength(1);
         expect(screen.getAllByTestId('fa-envelope-icon')).toHaveLength(1);
         expect(screen.getAllByTestId('fa-heart-icon')).toHaveLength(1);
+        expect(screen.getAllByTestId('ri-repository-icon')).toHaveLength(1);
     });
 
     it('renders correct social links', () => {
@@ -399,5 +403,17 @@ describe('AboutClient', () => {
         ).find((link) => link.textContent?.includes('Explore Recipes'));
 
         expect(exploreLink).toBeDefined();
+    });
+
+    it('renders repository link in The Project section', () => {
+        const { container } = render(<AboutClient />);
+
+        const repoLink = Array.from(container.querySelectorAll('a')).find(
+            (link) =>
+                link.getAttribute('href') === 'https://github.com/jorbush/jorbites'
+        );
+
+        expect(repoLink).toBeDefined();
+        expect(repoLink?.textContent).toContain('Repository');
     });
 });

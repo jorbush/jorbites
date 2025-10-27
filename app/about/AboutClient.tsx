@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaGithub, FaEnvelope, FaHeart } from 'react-icons/fa';
+import { RiGitRepositoryLine } from 'react-icons/ri';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
 
 interface AboutClientProps {
@@ -33,25 +34,6 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                 </div>
 
                 <div className="space-y-8">
-                    {/* Why Jorbites Section */}
-                    <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
-                        <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
-                            {t('why_jorbites')}
-                        </h2>
-                        <p className="mb-4 text-neutral-600 dark:text-neutral-400">
-                            {t('why_jorbites_description')}
-                        </p>
-                        <Link
-                            href="/recipes/68b194a84e84cb9eabfb4350"
-                            className="inline-flex items-center text-blue-600 hover:underline dark:text-blue-400"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            prefetch={false}
-                        >
-                            🥑 {t('why_jorbites_recipe')}
-                        </Link>
-                    </section>
-
                     {/* What is Jorbites Section */}
                     <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
                         <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
@@ -63,6 +45,25 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                         <p className="text-neutral-600 dark:text-neutral-400">
                             {t('jorbites_mission')}
                         </p>
+                    </section>
+
+                    {/* Why Jorbites Section */}
+                    <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
+                        <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+                            {t('why_jorbites')}
+                        </h2>
+                        <p className="mb-4 text-neutral-600 dark:text-neutral-400">
+                            {t('why_jorbites_description')}
+                        </p>
+                        <Link
+                            href="/recipes/68b194a84e84cb9eabfb4350"
+                            className="inline-flex items-center text-green-450 hover:underline dark:text-green-450"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            prefetch={false}
+                        >
+                            🥑 {t('why_jorbites_recipe')}
+                        </Link>
                     </section>
 
                     {/* Features Section */}
@@ -137,7 +138,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                     <li>
                                         <a
                                             href="https://github.com/jorbush/jorbites-notifier"
-                                            className="text-blue-600 hover:underline dark:text-blue-400"
+                                            className="text-green-450 hover:underline dark:text-green-450"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -149,7 +150,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                     <li>
                                         <a
                                             href="https://github.com/jorbush/badge_forge"
-                                            className="text-blue-600 hover:underline dark:text-blue-400"
+                                            className="text-green-450 hover:underline dark:text-green-450"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -161,7 +162,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                     <li>
                                         <a
                                             href="https://github.com/jorbush/pantry_keeper"
-                                            className="text-blue-600 hover:underline dark:text-blue-400"
+                                            className="text-green-450 hover:underline dark:text-green-450"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -273,16 +274,25 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                             <FaEnvelope className="h-5 w-5" />
                                             <span>{t('contact')}</span>
                                         </a>
+                                        <a
+                                            href="https://github.com/jorbush/jorbites"
+                                            className="flex items-center space-x-2 text-neutral-600 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <RiGitRepositoryLine className="h-5 w-5" />
+                                            <span>Repository</span>
+                                        </a>
+                                        <a
+                                            href="https://github.com/sponsors/jorbush"
+                                            className="inline-flex items-center space-x-2 rounded-lg bg-pink-600 px-4 py-2 text-white transition-colors hover:bg-pink-700"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <FaHeart className="h-4 w-4" />
+                                            <span>Sponsor on GitHub</span>
+                                        </a>
                                     </div>
-                                    <a
-                                        href="https://github.com/sponsors/jorbush"
-                                        className="inline-flex items-center space-x-2 rounded-lg bg-pink-600 px-4 py-2 text-white transition-colors hover:bg-pink-700"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <FaHeart className="h-4 w-4" />
-                                        <span>Sponsor on GitHub</span>
-                                    </a>
                                 </div>
                             </div>
                         </div>
