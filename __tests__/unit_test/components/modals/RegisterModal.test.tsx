@@ -156,4 +156,37 @@ describe('RegisterModal', () => {
             expect(mockLoginModalOpen).toHaveBeenCalled();
         });
     });
+
+    it('shows loading text while registering', async () => {
+        // Create a delayed promise to test loading state
+        let resolvePromise: Function;
+        const delayedPromise = new Promise((resolve) => {
+            resolvePromise = resolve;
+        });
+
+        (axios.post as any).mockImplementationOnce(() => delayedPromise);
+
+        render(<RegisterModal />);
+
+        fireEvent.change(screen.getByLabelText('email'), {
+            target: { value: 'test@example.com' },
+        });
+        fireEvent.change(screen.getByLabelText('name'), {
+            target: { value: 'testuser' },
+        });
+        fireEvent.change(screen.getByLabelText('password'), {
+            target: { value: 'password123' },
+        });
+
+        fireEvent.click(screen.getByText('continue'));
+
+        // Should show loading text
+        await waitFor(() => {
+            expect(screen.getByText('registering')).toBeDefined();
+        });
+
+        // Resolve the promise to complete test
+        // @ts-ignore
+        resolvePromise({});
+    });
 });

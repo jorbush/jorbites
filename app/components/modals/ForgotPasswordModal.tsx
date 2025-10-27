@@ -93,7 +93,13 @@ const ForgotPasswordModal = () => {
             disabled={isLoading}
             isOpen={forgotPasswordModal.isOpen}
             title={t('reset_password') ?? 'Reset Password'}
-            actionLabel={emailSent ? t('ok') : t('send_reset_link')}
+            actionLabel={
+                emailSent
+                    ? t('ok')
+                    : isLoading
+                      ? t('sending') || 'Sending...'
+                      : t('send_reset_link')
+            }
             onClose={forgotPasswordModal.onClose}
             onSubmit={
                 emailSent
