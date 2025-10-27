@@ -4,6 +4,7 @@ import getWorkshopById from '@/app/actions/getWorkshopById';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import WorkshopClient from '@/app/workshops/[workshopId]/WorkshopClient';
+import WorkshopClientSkeleton from '@/app/components/workshops/WorkshopClientSkeleton';
 
 interface IParams {
     workshopId?: string;
@@ -63,7 +64,7 @@ const WorkshopPage = async (props: { params: Promise<IParams> }) => {
     }
 
     return (
-        <ClientOnly>
+        <ClientOnly fallback={<WorkshopClientSkeleton />}>
             <WorkshopClient
                 workshop={workshop}
                 currentUser={currentUser}
