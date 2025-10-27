@@ -67,6 +67,7 @@ vi.mock('next/link', () => ({
 vi.mock('react-icons/fa', () => ({
     FaGithub: () => <div data-testid="fa-github-icon" />,
     FaEnvelope: () => <div data-testid="fa-envelope-icon" />,
+    FaHeart: () => <div data-testid="fa-heart-icon" />,
 }));
 
 // Mock react-i18next
@@ -150,6 +151,8 @@ describe('AboutClient', () => {
         // Check main section titles
         expect(screen.getByText('What is Jorbites?')).toBeDefined();
         expect(screen.getByText('Features')).toBeDefined();
+        expect(screen.getByText('Architecture')).toBeDefined();
+        expect(screen.getByText('Documentation')).toBeDefined();
         expect(screen.getByText('About the Developer')).toBeDefined();
         expect(screen.getByText('Get Started')).toBeDefined();
     });
@@ -173,6 +176,7 @@ describe('AboutClient', () => {
 
         expect(screen.getAllByTestId('fa-github-icon')).toHaveLength(1);
         expect(screen.getAllByTestId('fa-envelope-icon')).toHaveLength(1);
+        expect(screen.getAllByTestId('fa-heart-icon')).toHaveLength(1);
     });
 
     it('renders correct social links', () => {
@@ -250,5 +254,66 @@ describe('AboutClient', () => {
         expect(mockT).toHaveBeenCalledWith('features');
         expect(mockT).toHaveBeenCalledWith('about_developer');
         expect(mockT).toHaveBeenCalledWith('get_started');
+    });
+
+    it('renders architecture section with core platform and microservices', () => {
+        const { container } = render(<AboutClient />);
+
+        expect(screen.getByText('Architecture')).toBeDefined();
+        expect(container.textContent).toContain('Core Platform');
+        expect(container.textContent).toContain('Microservices');
+        expect(container.textContent).toContain(
+            'Next.js with TypeScript on Vercel'
+        );
+        expect(container.textContent).toContain(
+            'MongoDB Atlas with Prisma ORM'
+        );
+    });
+
+    it('renders microservices links', () => {
+        const { container } = render(<AboutClient />);
+
+        const allLinks = container.querySelectorAll('a');
+        const microserviceLinks = Array.from(allLinks).filter((link) => {
+            const href = link.getAttribute('href') || '';
+            return (
+                href.includes('jorbites-notifier') ||
+                href.includes('badge_forge') ||
+                href.includes('pantry_keeper')
+            );
+        });
+
+        expect(microserviceLinks.length).toBe(3);
+    });
+
+    it('renders documentation section with links', () => {
+        const { container } = render(<AboutClient />);
+
+        expect(screen.getByText('Documentation')).toBeDefined();
+        expect(screen.getByText('Development Setup')).toBeDefined();
+        expect(screen.getByText('Architecture Details')).toBeDefined();
+        expect(screen.getByText('API Documentation')).toBeDefined();
+        expect(screen.getByText('Image Optimization')).toBeDefined();
+
+        const allLinks = container.querySelectorAll('a');
+        const docLinks = Array.from(allLinks).filter((link) => {
+            const href = link.getAttribute('href') || '';
+            return href.includes('docs/');
+        });
+
+        expect(docLinks.length).toBeGreaterThan(0);
+    });
+
+    it('renders GitHub sponsor button', () => {
+        const { container } = render(<AboutClient />);
+
+        const sponsorLink = Array.from(container.querySelectorAll('a')).find(
+            (link) =>
+                link.getAttribute('href') ===
+                'https://github.com/sponsors/jorbush'
+        );
+
+        expect(sponsorLink).toBeDefined();
+        expect(sponsorLink?.textContent).toContain('Sponsor on GitHub');
     });
 });
