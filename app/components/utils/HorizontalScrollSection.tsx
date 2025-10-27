@@ -11,6 +11,10 @@ interface HorizontalScrollSectionProps {
     hasItems: boolean;
 }
 
+// Constants for scroll behavior
+const SCROLL_TOLERANCE = 10; // Pixel tolerance for edge detection
+const SCROLL_PERCENTAGE = 0.8; // Percentage of viewport width to scroll
+
 const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
     title,
     emptyMessage = 'No items found',
@@ -27,13 +31,16 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
         const { scrollLeft, scrollWidth, clientWidth } =
             scrollContainerRef.current;
         setShowLeftArrow(scrollLeft > 0);
-        setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+        setShowRightArrow(
+            scrollLeft < scrollWidth - clientWidth - SCROLL_TOLERANCE
+        );
     };
 
     const scroll = (direction: 'left' | 'right') => {
         if (!scrollContainerRef.current) return;
 
-        const scrollAmount = scrollContainerRef.current.clientWidth * 0.8;
+        const scrollAmount =
+            scrollContainerRef.current.clientWidth * SCROLL_PERCENTAGE;
         const newScrollLeft =
             scrollContainerRef.current.scrollLeft +
             (direction === 'left' ? -scrollAmount : scrollAmount);
