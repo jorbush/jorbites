@@ -81,7 +81,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => scroll('left')}
-                            className="absolute left-0 top-1/2 z-10 hidden -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg transition hover:bg-white group-hover:block dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
+                            className="absolute left-0 top-1/2 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition hover:bg-white group-hover:block dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
                             aria-label="Scroll left"
                         >
                             <FiChevronLeft className="h-6 w-6 text-neutral-700 dark:text-neutral-200" />
@@ -92,16 +92,16 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                     <div
                         ref={scrollContainerRef}
                         onScroll={checkScrollPosition}
-                        className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth pb-2"
+                        className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth px-2 pb-2"
                     >
                         {children}
                     </div>
 
                     {/* Left fade overlay */}
-                    <div className="pointer-events-none absolute top-0 left-0 h-full w-8 bg-gradient-to-r from-white to-transparent dark:from-neutral-900" />
+                    <div className="pointer-events-none absolute top-0 left-0 h-full w-5 bg-gradient-to-r from-white to-transparent dark:from-neutral-900" />
 
                     {/* Right fade overlay */}
-                    <div className="pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-white to-transparent dark:from-neutral-900" />
+                    <div className="pointer-events-none absolute top-0 right-0 h-full w-5 bg-gradient-to-l from-white to-transparent dark:from-neutral-900" />
 
                     {/* Right scroll button */}
                     {showRightArrow && (
@@ -110,7 +110,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => scroll('right')}
-                            className="absolute right-0 top-1/2 z-10 hidden -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg transition hover:bg-white group-hover:block dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
+                            className="absolute right-0 top-1/2 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition hover:bg-white group-hover:block dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
                             aria-label="Scroll right"
                         >
                             <FiChevronRight className="h-6 w-6 text-neutral-700 dark:text-neutral-200" />
