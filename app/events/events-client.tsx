@@ -50,7 +50,7 @@ const EventsClient = () => {
 
                 setEvents({
                     current: sortEventsByDate(categorized.current),
-                    upcoming: sortEventsByDate(categorized.upcoming),
+                    upcoming: sortEventsByDate(categorized.upcoming, true), // true for ascending (soonest first)
                     past: sortEventsByDate(categorized.past),
                     permanent: categorized.permanent,
                 });
@@ -80,7 +80,7 @@ const EventsClient = () => {
                         <h2 className="mb-5 text-2xl font-bold dark:text-neutral-100">
                             <div className="h-8 w-40 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                         </h2>
-                        <div className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth pb-2">
+                        <div className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth px-6 pb-2">
                             {[1, 2, 3, 4].map((i) => (
                                 <div
                                     key={i}
