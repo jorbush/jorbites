@@ -87,6 +87,8 @@ const mockT = vi.fn((key: string) => {
         level_system_description: 'Gain experience by sharing recipes...',
         community: 'Community',
         community_description: 'Connect with other food enthusiasts...',
+        architecture: 'Architecture',
+        documentation: 'Documentation',
         about_developer: 'About the Developer',
         developer_description: 'Jorbites was created with passion...',
         get_started: 'Get Started',
@@ -127,6 +129,39 @@ describe('AboutClient', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        // Restore mockT implementation after clearAllMocks
+        mockT.mockImplementation((key: string) => {
+            const translations: Record<string, string> = {
+                about: 'About',
+                about_subtitle: 'Learn more about Jorbites and our mission',
+                what_is_jorbites: 'What is Jorbites?',
+                jorbites_description:
+                    'Jorbites is a vibrant community platform...',
+                jorbites_mission:
+                    'Our mission is to make cooking more accessible...',
+                features: 'Features',
+                share_recipes: 'Share Recipes',
+                share_recipes_description: 'Upload your favorite recipes...',
+                discover_recipes: 'Discover Recipes',
+                discover_recipes_description: 'Explore thousands of recipes...',
+                level_system: 'Level System',
+                level_system_description:
+                    'Gain experience by sharing recipes...',
+                community: 'Community',
+                community_description: 'Connect with other food enthusiasts...',
+                architecture: 'Architecture',
+                documentation: 'Documentation',
+                about_developer: 'About the Developer',
+                developer_description: 'Jorbites was created with passion...',
+                get_started: 'Get Started',
+                get_started_description:
+                    'Ready to join our culinary community?',
+                explore_recipes: 'Explore Recipes',
+                sign_up: 'Sign Up',
+                contact: 'Contact',
+            };
+            return translations[key] || key;
+        });
     });
 
     it('renders without crashing', () => {

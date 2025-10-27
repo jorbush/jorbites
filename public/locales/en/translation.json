@@ -466,6 +466,8 @@
     "level_system_description": "Gain experience by sharing recipes and engaging with the community. Level up to unlock achievements and recognition.",
     "community": "Community",
     "community_description": "Connect with other food enthusiasts, leave comments, and build relationships through shared culinary experiences.",
+    "architecture": "Architecture",
+    "documentation": "Documentation",
     "about_developer": "About the Developer",
     "developer_description": "Jorbites was created with passion for both technology and culinary arts. Built using modern web technologies to provide the best user experience possible.",
     "get_started": "Get Started",

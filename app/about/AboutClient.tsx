@@ -88,7 +88,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                     {/* Architecture Section */}
                     <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
                         <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
-                            Architecture
+                            {t('architecture')}
                         </h2>
                         <p className="mb-4 text-neutral-600 dark:text-neutral-400">
                             Jorbites follows a modern microservices architecture
@@ -157,7 +157,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                     {/* Documentation Section */}
                     <section>
                         <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
-                            Documentation
+                            {t('documentation')}
                         </h2>
                         <div className="grid gap-3 md:grid-cols-2">
                             <a
