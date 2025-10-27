@@ -1,4 +1,4 @@
-describe('Basic E2E', () => {
+describe('Recipes E2E', () => {
     beforeEach(() => {
         cy.visit('http://localhost:3000/');
         // Login

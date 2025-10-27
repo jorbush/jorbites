@@ -78,22 +78,30 @@ describe('Workshops E2E', () => {
 
         // Fill info step
         cy.get('[data-cy="workshop-title"]').type(workshopTitle);
-        cy.get('[data-cy="workshop-description"]').type('Test workshop description');
+        cy.get('[data-cy="workshop-description"]').type(
+            'Test workshop description'
+        );
         cy.get('[data-cy="workshop-date"]').type(formattedDate);
         cy.get('[data-cy="workshop-location"]').type('Test Location');
         cy.task('log', 'Info step filled');
         cy.get('[data-cy="modal-action-button"]').click();
 
         // Fill requirements step - add ingredients and previous steps
+        cy.get('[data-cy="ingredients-section"]').click();
         cy.get('[data-cy="add-ingredient-button"]').click();
         cy.get('[data-cy="workshop-ingredient-0"]').type('Test ingredient 1');
         cy.get('[data-cy="add-ingredient-button"]').click();
         cy.get('[data-cy="workshop-ingredient-1"]').type('Test ingredient 2');
-        
+
+        cy.get('[data-cy="previous-steps-section"]').click();
         cy.get('[data-cy="add-previous-step-button"]').click();
-        cy.get('[data-cy="workshop-previous-step-0"]').type('Test previous step 1');
+        cy.get('[data-cy="workshop-previous-step-0"]').type(
+            'Test previous step 1'
+        );
         cy.get('[data-cy="add-previous-step-button"]').click();
-        cy.get('[data-cy="workshop-previous-step-1"]').type('Test previous step 2');
+        cy.get('[data-cy="workshop-previous-step-1"]').type(
+            'Test previous step 2'
+        );
         cy.task('log', 'Requirements step filled');
         cy.get('[data-cy="modal-action-button"]').click();
 
@@ -104,7 +112,7 @@ describe('Workshops E2E', () => {
         // Skip image step and create the workshop
         cy.task('log', 'Image step skipped');
         cy.get('[data-cy="modal-action-button"]').click();
-        
+
         // Check if the workshop was created
         cy.task('log', 'Workshop created');
         cy.wait(2000);
@@ -157,7 +165,10 @@ describe('Workshops E2E', () => {
         });
         cy.task('log', '✓ Workshop previous steps verified');
 
-        cy.task('log', '🎉 All workshop creation details verified successfully');
+        cy.task(
+            'log',
+            '🎉 All workshop creation details verified successfully'
+        );
 
         // STEP 2: Edit the workshop
         cy.task('log', '=== STEP 2: Editing workshop ===');
@@ -167,7 +178,9 @@ describe('Workshops E2E', () => {
         cy.task('log', 'Edit button clicked');
 
         // Navigate to info step and edit
-        cy.get('[data-cy="workshop-title"]').clear().type('Edited Workshop Title');
+        cy.get('[data-cy="workshop-title"]')
+            .clear()
+            .type('Edited Workshop Title');
         cy.get('[data-cy="workshop-description"]')
             .clear()
             .type('Edited workshop description');
@@ -175,6 +188,7 @@ describe('Workshops E2E', () => {
         cy.get('[data-cy="modal-action-button"]').click();
 
         // Edit ingredients
+        cy.get('[data-cy="ingredients-section"]').click();
         cy.get('[data-cy="workshop-ingredient-0"]')
             .clear()
             .type('Edited ingredient 1');

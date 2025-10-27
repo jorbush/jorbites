@@ -370,6 +370,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 <CollapsibleSection
                     title={t('ingredients')}
                     description={t('ingredients_description')}
+                    dataCy="ingredients-section"
                 >
                     <WorkshopIngredientsStep
                         numIngredients={numIngredients}
@@ -382,6 +383,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 <CollapsibleSection
                     title={t('previous_steps')}
                     description={t('previous_steps_description')}
+                    dataCy="previous-steps-section"
                 >
                     <WorkshopPreviousStepsStep
                         numPreviousSteps={numPreviousSteps}
