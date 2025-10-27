@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
@@ -25,7 +25,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(false);
 
-    const checkScrollPosition = () => {
+    const checkScrollPosition = useCallback(() => {
         if (!scrollContainerRef.current) return;
 
         const { scrollLeft, scrollWidth, clientWidth } =
@@ -34,7 +34,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
         setShowRightArrow(
             scrollLeft < scrollWidth - clientWidth - SCROLL_TOLERANCE
         );
-    };
+    }, []);
 
     const scroll = (direction: 'left' | 'right') => {
         if (!scrollContainerRef.current) return;
@@ -51,13 +51,16 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
         });
     };
 
+    // Set up window resize event listener on mount
+    React.useEffect(() => {
+        window.addEventListener('resize', checkScrollPosition);
+        return () => window.removeEventListener('resize', checkScrollPosition);
+    }, [checkScrollPosition]);
+
     // Check scroll position on mount and when children change
     React.useEffect(() => {
         checkScrollPosition();
-        // Add event listener for window resize
-        window.addEventListener('resize', checkScrollPosition);
-        return () => window.removeEventListener('resize', checkScrollPosition);
-    }, [children]);
+    }, [children, checkScrollPosition]);
 
     return (
         <div className="mb-10">
@@ -93,6 +96,12 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                     >
                         {children}
                     </div>
+
+                    {/* Left fade overlay */}
+                    <div className="pointer-events-none absolute top-0 left-0 h-full w-8 bg-gradient-to-r from-white to-transparent dark:from-neutral-900" />
+
+                    {/* Right fade overlay */}
+                    <div className="pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-white to-transparent dark:from-neutral-900" />
 
                     {/* Right scroll button */}
                     {showRightArrow && (
