@@ -10,6 +10,25 @@ vi.mock('@/app/components/events/EventCard', () => ({
     ),
 }));
 
+vi.mock('@/app/components/utils/HorizontalScrollSection', () => ({
+    default: ({
+        title,
+        emptyMessage,
+        hasItems,
+        children,
+    }: {
+        title: string;
+        emptyMessage: string;
+        hasItems: boolean;
+        children: React.ReactNode;
+    }) => (
+        <div data-testid="horizontal-scroll-section">
+            <h2>{title}</h2>
+            {!hasItems ? <p>{emptyMessage}</p> : <div>{children}</div>}
+        </div>
+    ),
+}));
+
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => key,

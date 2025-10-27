@@ -80,9 +80,14 @@ const EventsClient = () => {
                         <h2 className="mb-5 text-2xl font-bold dark:text-neutral-100">
                             <div className="h-8 w-40 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                         </h2>
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        <div className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth pb-2">
                             {[1, 2, 3, 4].map((i) => (
-                                <EventCardSkeleton key={i} />
+                                <div
+                                    key={i}
+                                    className="min-w-[280px] flex-shrink-0 sm:min-w-[320px] md:min-w-[350px]"
+                                >
+                                    <EventCardSkeleton />
+                                </div>
                             ))}
                         </div>
                     </div>
