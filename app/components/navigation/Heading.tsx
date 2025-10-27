@@ -4,9 +4,15 @@ interface HeadingProps {
     title: string;
     subtitle?: string;
     center?: boolean;
+    dataCy?: string;
 }
 
-const Heading: React.FC<HeadingProps> = ({ title, subtitle, center }) => {
+const Heading: React.FC<HeadingProps> = ({
+    title,
+    subtitle,
+    center,
+    dataCy,
+}) => {
     const words = title.split(' ');
     const isLongWord = words.some((word) => word.length > 20);
     return (
@@ -15,7 +21,7 @@ const Heading: React.FC<HeadingProps> = ({ title, subtitle, center }) => {
                 className={`text-center text-2xl font-bold whitespace-pre-wrap dark:text-neutral-100 ${
                     isLongWord ? 'break-words' : ''
                 }`}
-                data-cy="recipe-title-display"
+                data-cy={dataCy || 'recipe-title-display'}
             >
                 {title}
             </div>

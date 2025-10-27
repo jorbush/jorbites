@@ -281,6 +281,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 register={register}
                 errors={errors}
                 required
+                dataCy="workshop-title"
             />
             <Input
                 id="description"
@@ -289,6 +290,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 register={register}
                 errors={errors}
                 required
+                dataCy="workshop-description"
             />
             <Input
                 id="date"
@@ -298,6 +300,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 register={register}
                 errors={errors}
                 required
+                dataCy="workshop-date"
             />
             <Input
                 id="location"
@@ -306,6 +309,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 register={register}
                 errors={errors}
                 required
+                dataCy="workshop-location"
             />
             <div className="flex items-center gap-2">
                 <input
@@ -366,6 +370,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 <CollapsibleSection
                     title={t('ingredients')}
                     description={t('ingredients_description')}
+                    dataCy="ingredients-section"
                 >
                     <WorkshopIngredientsStep
                         numIngredients={numIngredients}
@@ -378,6 +383,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 <CollapsibleSection
                     title={t('previous_steps')}
                     description={t('previous_steps_description')}
+                    dataCy="previous-steps-section"
                 >
                     <WorkshopPreviousStepsStep
                         numPreviousSteps={numPreviousSteps}

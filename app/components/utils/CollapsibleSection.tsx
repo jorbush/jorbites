@@ -7,12 +7,14 @@ interface CollapsibleSectionProps {
     title: string;
     description: string;
     children: React.ReactNode;
+    dataCy?: string;
 }
 
 const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     title,
     description,
     children,
+    dataCy,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -21,6 +23,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
             <div
                 className="flex cursor-pointer items-center justify-between p-4"
                 onClick={() => setIsOpen(!isOpen)}
+                data-cy={dataCy}
             >
                 <div>
                     <h3 className="font-semibold">{title}</h3>
