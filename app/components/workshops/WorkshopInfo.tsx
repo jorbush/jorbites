@@ -124,7 +124,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
             <div className="flex flex-col gap-4 dark:text-neutral-100">
                 <div className="flex items-center gap-2 text-lg">
                     <MdCalendarToday size={24} />
-                    <span>{formatDate(workshopDate)}</span>
+                    <span data-cy="workshop-date-display">{formatDate(workshopDate)}</span>
                 </div>
                 {isRecurrent && recurrencePattern && (
                     <div className="text-sm text-neutral-500">
@@ -133,7 +133,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                 )}
                 <div className="flex items-center gap-2 text-lg">
                     <MdLocationOn size={24} />
-                    <span>{location}</span>
+                    <span data-cy="workshop-location-display">{location}</span>
                 </div>
                 <div className="flex items-center gap-2 text-lg">
                     <MdPeople size={24} />
@@ -161,7 +161,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
 
             <div className="flex flex-col gap-4 text-lg dark:text-neutral-100">
                 <div className="font-semibold">{t('description')}</div>
-                <div className="whitespace-pre-line text-neutral-500">
+                <div className="whitespace-pre-line text-neutral-500" data-cy="workshop-description-display">
                     {description}
                 </div>
             </div>
@@ -173,7 +173,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                         <div className="flex flex-row items-center gap-2 text-xl font-semibold">
                             {t('ingredients')}
                         </div>
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2" data-cy="workshop-ingredients-section">
                             {ingredients.map((ingredient, index) => (
                                 <div
                                     key={index}
@@ -197,11 +197,12 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                         <div className="mb-2 text-sm text-neutral-500">
                             {t('previous_steps_description')}
                         </div>
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2" data-cy="workshop-previous-steps-section">
                             {previousSteps.map((step, index) => (
                                 <div
                                     key={index}
                                     className="text-neutral-500"
+                                    data-cy={`workshop-previous-step-display-${index}`}
                                 >
                                     {index + 1}. {step}
                                 </div>

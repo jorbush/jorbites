@@ -40,6 +40,7 @@ const EditWorkshopButton: React.FC<EditWorkshopButtonProps> = ({
         <Button
             label={t('edit_workshop')}
             onClick={handleEdit}
+            dataCy="edit-workshop"
         />
     );
 };

@@ -281,6 +281,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 register={register}
                 errors={errors}
                 required
+                dataCy="workshop-title"
             />
             <Input
                 id="description"
@@ -289,6 +290,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 register={register}
                 errors={errors}
                 required
+                dataCy="workshop-description"
             />
             <Input
                 id="date"
@@ -298,6 +300,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 register={register}
                 errors={errors}
                 required
+                dataCy="workshop-date"
             />
             <Input
                 id="location"
@@ -306,6 +309,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 register={register}
                 errors={errors}
                 required
+                dataCy="workshop-location"
             />
             <div className="flex items-center gap-2">
                 <input
