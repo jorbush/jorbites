@@ -180,7 +180,7 @@ describe('<WorkshopHead />', () => {
     });
 
     it('renders image with priority flag', () => {
-        const { container } = render(
+        render(
             <WorkshopHead
                 title="Test Workshop"
                 date="2024-12-01T10:00:00.000Z"

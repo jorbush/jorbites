@@ -28,13 +28,7 @@ vi.mock('@/app/utils/responsive', () => ({
 }));
 
 vi.mock('@/app/components/utils/Avatar', () => ({
-    default: ({
-        src,
-        onClick,
-    }: {
-        src: string | null;
-        onClick?: () => void;
-    }) => (
+    default: ({ onClick }: { src: string | null; onClick?: () => void }) => (
         <div
             data-testid="avatar"
             onClick={onClick}

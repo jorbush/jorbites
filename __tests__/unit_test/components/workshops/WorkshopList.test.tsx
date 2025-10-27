@@ -182,7 +182,7 @@ describe('<WorkshopList />', () => {
     });
 
     it('marks first workshop card with isFirstCard prop', () => {
-        const { container } = render(
+        render(
             <WorkshopList
                 workshops={mockWorkshops}
                 currentUser={mockUser}
