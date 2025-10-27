@@ -49,15 +49,23 @@ vi.mock('next/link', () => ({
         href,
         className,
         children,
+        target,
+        rel,
+        prefetch,
     }: {
         href: string;
         className?: string;
         children: React.ReactNode;
+        target?: string;
+        rel?: string;
+        prefetch?: boolean;
     }) => (
         <a
             href={href}
             className={className}
             data-testid="next-link"
+            target={target}
+            rel={rel}
         >
             {children}
         </a>
@@ -70,10 +78,24 @@ vi.mock('react-icons/fa', () => ({
     FaHeart: () => <div data-testid="fa-heart-icon" />,
 }));
 
+// Mock useRegisterModal
+const mockOnOpen = vi.fn();
+vi.mock('@/app/hooks/useRegisterModal', () => ({
+    default: () => ({
+        onOpen: mockOnOpen,
+        onClose: vi.fn(),
+        isOpen: false,
+    }),
+}));
+
 // Mock translations for react-i18next
 const mockTranslations: Record<string, string> = {
     about: 'About',
     about_subtitle: 'Learn more about Jorbites and our mission',
+    why_jorbites: 'Why Jorbites?',
+    why_jorbites_description:
+        'A user posted this recipe that indirectly answers the question:',
+    why_jorbites_recipe: 'Why Jorbites?',
     what_is_jorbites: 'What is Jorbites?',
     jorbites_description: 'Jorbites is a vibrant community platform...',
     jorbites_mission: 'Our mission is to make cooking more accessible...',
@@ -88,6 +110,7 @@ const mockTranslations: Record<string, string> = {
     community_description: 'Connect with other food enthusiasts...',
     architecture: 'Architecture',
     documentation: 'Documentation',
+    the_project: 'The Project',
     about_developer: 'About the Developer',
     developer_description: 'Jorbites was created with passion...',
     get_started: 'Get Started',
@@ -129,6 +152,7 @@ describe('AboutClient', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        mockOnOpen.mockClear();
         // Restore mockT implementation after clearAllMocks
         mockT.mockImplementation((key: string) => mockTranslations[key] || key);
     });
@@ -153,11 +177,12 @@ describe('AboutClient', () => {
         render(<AboutClient />);
 
         // Check main section titles
+        expect(screen.getByText('Why Jorbites?')).toBeDefined();
         expect(screen.getByText('What is Jorbites?')).toBeDefined();
         expect(screen.getByText('Features')).toBeDefined();
         expect(screen.getByText('Architecture')).toBeDefined();
         expect(screen.getByText('Documentation')).toBeDefined();
-        expect(screen.getByText('About the Developer')).toBeDefined();
+        expect(screen.getByText('The Project')).toBeDefined();
         expect(screen.getByText('Get Started')).toBeDefined();
     });
 
@@ -254,9 +279,10 @@ describe('AboutClient', () => {
 
         expect(mockT).toHaveBeenCalledWith('about');
         expect(mockT).toHaveBeenCalledWith('about_subtitle');
+        expect(mockT).toHaveBeenCalledWith('why_jorbites');
         expect(mockT).toHaveBeenCalledWith('what_is_jorbites');
         expect(mockT).toHaveBeenCalledWith('features');
-        expect(mockT).toHaveBeenCalledWith('about_developer');
+        expect(mockT).toHaveBeenCalledWith('the_project');
         expect(mockT).toHaveBeenCalledWith('get_started');
     });
 
@@ -319,5 +345,59 @@ describe('AboutClient', () => {
 
         expect(sponsorLink).toBeDefined();
         expect(sponsorLink?.textContent).toContain('Sponsor on GitHub');
+    });
+
+    it('renders Why Jorbites section with recipe link', () => {
+        const { container } = render(<AboutClient />);
+
+        expect(screen.getByText('Why Jorbites?')).toBeDefined();
+
+        const recipeLink = Array.from(container.querySelectorAll('a')).find(
+            (link) =>
+                link
+                    .getAttribute('href')
+                    ?.includes('/recipes/68b194a84e84cb9eabfb4350')
+        );
+
+        expect(recipeLink).toBeDefined();
+        expect(recipeLink?.getAttribute('target')).toBe('_blank');
+        expect(recipeLink?.getAttribute('rel')).toContain('noopener');
+    });
+
+    it('renders sign up button that opens register modal when not logged in', () => {
+        const { container } = render(<AboutClient currentUser={null} />);
+
+        const signUpButton = Array.from(
+            container.querySelectorAll('button')
+        ).find((button) => button.textContent?.includes('Sign Up'));
+
+        expect(signUpButton).toBeDefined();
+
+        // Simulate button click
+        signUpButton?.click();
+
+        expect(mockOnOpen).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not render sign up button when user is logged in', () => {
+        const { container } = render(
+            <AboutClient currentUser={mockCurrentUser} />
+        );
+
+        const signUpButton = Array.from(
+            container.querySelectorAll('button')
+        ).find((button) => button.textContent?.includes('Sign Up'));
+
+        expect(signUpButton).toBeUndefined();
+    });
+
+    it('renders explore recipes link with prefetch disabled', () => {
+        const { container } = render(<AboutClient />);
+
+        const exploreLink = Array.from(
+            container.querySelectorAll('[data-testid="next-link"]')
+        ).find((link) => link.textContent?.includes('Explore Recipes'));
+
+        expect(exploreLink).toBeDefined();
     });
 });

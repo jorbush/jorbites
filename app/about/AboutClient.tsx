@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaGithub, FaEnvelope, FaHeart } from 'react-icons/fa';
+import useRegisterModal from '@/app/hooks/useRegisterModal';
 
 interface AboutClientProps {
     currentUser?: SafeUser | null;
@@ -15,6 +16,7 @@ interface AboutClientProps {
 
 const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
     const { t } = useTranslation();
+    const registerModal = useRegisterModal();
 
     return (
         <Container>
@@ -31,6 +33,25 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                 </div>
 
                 <div className="space-y-8">
+                    {/* Why Jorbites Section */}
+                    <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
+                        <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+                            {t('why_jorbites')}
+                        </h2>
+                        <p className="mb-4 text-neutral-600 dark:text-neutral-400">
+                            {t('why_jorbites_description')}
+                        </p>
+                        <Link
+                            href="/recipes/68b194a84e84cb9eabfb4350"
+                            className="inline-flex items-center text-blue-600 hover:underline dark:text-blue-400"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            prefetch={false}
+                        >
+                            🥑 {t('why_jorbites_recipe')}
+                        </Link>
+                    </section>
+
                     {/* What is Jorbites Section */}
                     <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
                         <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
@@ -215,10 +236,10 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                         </div>
                     </section>
 
-                    {/* Developer Section */}
+                    {/* The Project Section */}
                     <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
                         <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
-                            {t('about_developer')}
+                            {t('the_project')}
                         </h2>
                         <div className="flex flex-col items-center space-y-4 md:flex-row md:items-start md:space-y-0 md:space-x-6">
                             <div className="flex-shrink-0">
@@ -278,17 +299,18 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                         <div className="flex flex-col space-y-3 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
                             <Link
                                 href="/"
+                                prefetch={false}
                                 className="rounded-lg bg-neutral-800 px-6 py-3 text-white transition-colors hover:bg-neutral-700 dark:bg-neutral-200 dark:text-neutral-800 dark:hover:bg-neutral-300"
                             >
                                 {t('explore_recipes')}
                             </Link>
                             {!currentUser && (
-                                <Link
-                                    href="/"
+                                <button
+                                    onClick={registerModal.onOpen}
                                     className="rounded-lg border border-neutral-300 px-6 py-3 text-neutral-800 transition-colors hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-200 dark:hover:bg-neutral-800"
                                 >
                                     {t('sign_up')}
-                                </Link>
+                                </button>
                             )}
                         </div>
                     </section>
