@@ -562,5 +562,8 @@
     "share_cooking_skills": "Comparte tus habilidades culinarias y ayuda a otros a aprender nuevas recetas y técnicas.",
     "joined_at": "Se unió en",
     "text_delete_workshop": "Jorbites elimina este taller",
-    "currency": "Moneda"
+    "currency": "Moneda",
+    "connect_to_internet": "Conectarse a Internet",
+    "you_are_offline": "Estás desconectado. Comprueba tu conexión.",
+    "retry": "Reintentar"
 }

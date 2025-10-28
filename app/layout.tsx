@@ -30,6 +30,10 @@ const ForgotPasswordModal = dynamicImport(
     () => import('@/app/components/modals/ForgotPasswordModal')
 );
 
+const NoInternetConnection = dynamicImport(
+    () => import('@/app/components/utils/NoInternetConnection')
+);
+
 const SpeedInsights = dynamicImport<{}>(() =>
     import('@vercel/speed-insights/next').then((mod) => ({
         default: mod.SpeedInsights,
@@ -108,6 +112,7 @@ export default async function RootLayout({
             >
                 <ClientOnly>
                     <ToasterProvider />
+                    <NoInternetConnection />
                     <LoginModal />
                     <SettingsModal currentUser={currentUser} />
                     <RecipeModal currentUser={currentUser} />

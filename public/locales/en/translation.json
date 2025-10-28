@@ -561,5 +561,8 @@
     "share_cooking_skills": "Share your cooking skills and help others learn new recipes and techniques.",
     "joined_at": "Joined at",
     "text_delete_workshop": "Jorbites delete this workshop",
-    "currency": "Currency"
+    "currency": "Currency",
+    "connect_to_internet": "Connect to the Internet",
+    "you_are_offline": "You're offline. Check your connection.",
+    "retry": "Retry"
 }
