@@ -25,3 +25,15 @@ body,
 :root {
   height: 100%;
 }
+
+/* Hide scrollbar for horizontal scrolling */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
