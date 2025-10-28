@@ -110,20 +110,20 @@ const EventsClient = () => {
                         />
 
                         <EventsList
-                            events={events.permanent}
-                            title={t('permanent_events') || 'Permanent Events'}
-                            emptyMessage={
-                                t('no_permanent_events') ||
-                                'No permanent events found'
-                            }
-                        />
-
-                        <EventsList
                             events={events.upcoming}
                             title={t('upcoming_events') || 'Upcoming Events'}
                             emptyMessage={
                                 t('no_upcoming_events') ||
                                 'No upcoming events found'
+                            }
+                        />
+
+                        <EventsList
+                            events={events.permanent}
+                            title={t('permanent_events') || 'Permanent Events'}
+                            emptyMessage={
+                                t('no_permanent_events') ||
+                                'No permanent events found'
                             }
                         />
 
