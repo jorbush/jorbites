@@ -18,8 +18,10 @@ This NextJS application provides a recipe API with built-in protection against e
 ## Features
 
 - Recipe browsing with pagination and filtering
+- Real-time search with debounced queries
 - Rate limiting protection for database calls
-- User-based or IP-based rate limiting
+- **Per-user rate limiting** with higher limits for authenticated users
+- User-based (for authenticated) or IP-based (for anonymous) rate limiting
 - Graceful error handling with informative messages
 
 ## Rate Limiting
@@ -36,21 +38,38 @@ When a user exceeds their allowed request quota, the API returns a structured er
 
 ### Configuration
 
-The current rate limit configuration uses a sliding window approach:
+The rate limit configuration uses a sliding window approach with different limits for authenticated and unauthenticated users:
 
+**Authenticated Users:**
 ```typescript
-const ratelimit = new Ratelimit({
+export const authenticatedRatelimit = new Ratelimit({
     redis: Redis.fromEnv(),
-    limiter: Ratelimit.slidingWindow(4, '20 s'),
+    limiter: Ratelimit.slidingWindow(30, '10 s'),
     analytics: true,
-    prefix: '@upstash/ratelimit',
+    prefix: '@upstash/ratelimit/authenticated',
 });
 ```
 
-This configuration allows:
-- 4 requests per 20-second window
+**Unauthenticated Users:**
+```typescript
+export const unauthenticatedRatelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(15, '10 s'),
+    analytics: true,
+    prefix: '@upstash/ratelimit/unauthenticated',
+});
+```
+
+This tiered configuration allows:
+- **Authenticated users**: 30 requests per 10-second window (180 requests/minute)
+  - Higher limits to support search functionality with 1-second debounce
+  - Better experience for registered users
+- **Unauthenticated users**: 15 requests per 10-second window (90 requests/minute)
+  - Moderate limits to prevent abuse while still allowing search
+  - Sufficient for normal browsing and searching
 - Analytics enabled for monitoring
 - Redis credentials loaded from environment variables
+- Separate prefixes for tracking different user types
 
 ### Sliding Window Algorithm
 
