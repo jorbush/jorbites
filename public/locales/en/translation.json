@@ -592,5 +592,6 @@
     "currency": "Currency",
     "connect_to_internet": "Connect to the Internet",
     "you_are_offline": "You're offline. Check your connection.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "no_internet_connection": "No Internet connection"
 }

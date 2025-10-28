@@ -177,7 +177,7 @@ export default function NoInternetConnection() {
 
                 {/* No Internet connection text at bottom */}
                 <p className="mt-8 text-sm text-neutral-500 dark:text-neutral-500">
-                    No Internet connection
+                    {t('no_internet_connection')}
                 </p>
             </div>
         </div>

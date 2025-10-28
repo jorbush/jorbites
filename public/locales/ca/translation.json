@@ -594,5 +594,6 @@
     "currency": "Moneda",
     "connect_to_internet": "Connecta't a Internet",
     "you_are_offline": "Estàs desconnectat. Comprova la teva connexió.",
-    "retry": "Torna-ho a provar"
+    "retry": "Torna-ho a provar",
+    "no_internet_connection": "Sense connexió a Internet"
 }

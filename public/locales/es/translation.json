@@ -593,5 +593,6 @@
     "currency": "Moneda",
     "connect_to_internet": "Conectarse a Internet",
     "you_are_offline": "Estás desconectado. Comprueba tu conexión.",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "no_internet_connection": "Sin conexión a Internet"
 }

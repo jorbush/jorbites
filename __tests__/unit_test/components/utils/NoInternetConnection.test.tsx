@@ -11,6 +11,7 @@ vi.mock('react-i18next', () => ({
                 connect_to_internet: 'Connect to the Internet',
                 you_are_offline: "You're offline. Check your connection.",
                 retry: 'Retry',
+                no_internet_connection: 'No Internet connection',
             };
             return translations[key] || key;
         },
