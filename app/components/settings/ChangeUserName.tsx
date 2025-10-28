@@ -15,6 +15,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { FaRegSave } from 'react-icons/fa';
 import { FiEdit3 } from 'react-icons/fi';
+import useSettingsModal from '@/app/hooks/useSettingsModal';
 
 interface ChangeUserNameProps {
     currentUser?: SafeUser | null;
@@ -29,6 +30,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
 }) => {
     const router = useRouter();
     const { t } = useTranslation();
+    const settingsModal = useSettingsModal();
     const [newUserName, setNewUserName] = useState(currentUser?.name || '');
     const [canSave, setCanSave] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -88,6 +90,14 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
         setNewUserName(currentUser?.name || '');
         setCanSave(false);
     };
+
+    useEffect(() => {
+        if (!settingsModal.isOpen) {
+            setNewUserName(currentUser?.name || '');
+            setCanSave(false);
+            setIsEditing(false);
+        }
+    }, [settingsModal.isOpen, currentUser?.name]);
 
     useEffect(() => {
         if (saveUserName && canSave) {

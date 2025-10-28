@@ -15,6 +15,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { FaRegSave } from 'react-icons/fa';
 import { FiEdit3, FiEye, FiEyeOff } from 'react-icons/fi';
+import useSettingsModal from '@/app/hooks/useSettingsModal';
 
 interface ChangePasswordProps {
     currentUser?: SafeUser | null;
@@ -29,6 +30,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 }) => {
     const router = useRouter();
     const { t } = useTranslation();
+    const settingsModal = useSettingsModal();
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -52,6 +54,13 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 
     const watchedFields = watch();
     const { currentPassword, newPassword, confirmPassword } = watchedFields;
+
+    useEffect(() => {
+        if (!settingsModal.isOpen) {
+            setIsEditing(false);
+            reset();
+        }
+    }, [settingsModal.isOpen, reset]);
 
     const updatePassword: SubmitHandler<FieldValues> = useCallback(
         (data) => {

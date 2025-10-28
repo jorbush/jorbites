@@ -15,6 +15,7 @@ import { toast } from 'react-hot-toast';
 import { CldUploadWidget } from 'next-cloudinary';
 import { FaRegSave } from 'react-icons/fa';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
+import useSettingsModal from '@/app/hooks/useSettingsModal';
 
 interface ChangeUserImageProps {
     currentUser?: SafeUser | null;
@@ -29,6 +30,7 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
 }) => {
     const router = useRouter();
     const { t } = useTranslation();
+    const settingsModal = useSettingsModal();
     const [newImage, setNewImage] = useState(currentUser?.image);
     const [canSave, setCanSave] = useState(false);
 
@@ -53,6 +55,13 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
         setNewImage(result.info.secure_url);
         setCanSave(true);
     }, []);
+
+    useEffect(() => {
+        if (!settingsModal.isOpen) {
+            setNewImage(currentUser?.image);
+            setCanSave(false);
+        }
+    }, [settingsModal.isOpen, currentUser?.image]);
 
     useEffect(() => {
         if (saveImage && canSave) {
