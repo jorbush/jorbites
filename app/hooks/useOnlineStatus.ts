@@ -9,8 +9,6 @@ const useOnlineStatus = () => {
         const handleOnline = () => setIsOnline(true);
         const handleOffline = () => setIsOnline(false);
 
-        setIsOnline(navigator.onLine);
-
         window.addEventListener('online', handleOnline);
         window.addEventListener('offline', handleOffline);
 

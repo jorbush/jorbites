@@ -19,7 +19,7 @@ export default function NoInternetConnection() {
     return (
         <div className="dark:bg-dark fixed inset-0 z-50 flex items-center justify-center bg-white">
             <div className="flex flex-col items-center justify-center gap-6 px-4">
-                {/* Astronaut Illustration */}
+                {/* Avocado Illustration */}
                 <div className="relative h-48 w-48">
                     <svg
                         viewBox="0 0 200 200"
@@ -27,132 +27,117 @@ export default function NoInternetConnection() {
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-full w-full"
                     >
-                        {/* Space background circles */}
+                        {/* Background circles */}
                         <circle
                             cx="100"
                             cy="100"
                             r="90"
-                            fill="#8B5CF6"
+                            fill="#86efac"
                             opacity="0.2"
                         />
                         <circle
                             cx="100"
                             cy="100"
                             r="70"
-                            fill="#8B5CF6"
+                            fill="#86efac"
                             opacity="0.3"
                         />
 
-                        {/* Stars */}
-                        <circle
-                            cx="40"
-                            cy="40"
-                            r="2"
-                            fill="#FFF"
-                        />
-                        <circle
-                            cx="160"
-                            cy="50"
-                            r="2"
-                            fill="#FFF"
-                        />
-                        <circle
-                            cx="50"
-                            cy="150"
-                            r="2"
-                            fill="#FFF"
-                        />
-                        <circle
-                            cx="150"
-                            cy="140"
-                            r="2"
-                            fill="#FFF"
-                        />
-
-                        {/* Astronaut body */}
+                        {/* Avocado outer (dark green) */}
                         <ellipse
                             cx="100"
-                            cy="130"
-                            rx="30"
-                            ry="40"
-                            fill="#8B5CF6"
+                            cy="110"
+                            rx="45"
+                            ry="55"
+                            fill="#4d7c0f"
                         />
 
-                        {/* Astronaut helmet */}
-                        <circle
-                            cx="100"
-                            cy="70"
-                            r="35"
-                            fill="#A78BFA"
-                        />
-
-                        {/* Helmet glass */}
+                        {/* Avocado inner (light green flesh) */}
                         <ellipse
                             cx="100"
-                            cy="70"
-                            rx="25"
-                            ry="28"
-                            fill="#E9D5FF"
-                            opacity="0.5"
+                            cy="110"
+                            rx="35"
+                            ry="45"
+                            fill="#86efac"
                         />
 
-                        {/* Face */}
+                        {/* Avocado pit (brown) */}
                         <circle
-                            cx="92"
-                            cy="65"
+                            cx="100"
+                            cy="115"
+                            r="18"
+                            fill="#92400e"
+                        />
+
+                        {/* Face on pit - Eyes */}
+                        <circle
+                            cx="93"
+                            cy="112"
                             r="3"
-                            fill="#6B21A8"
+                            fill="#FFF"
                         />
                         <circle
-                            cx="108"
-                            cy="65"
+                            cx="107"
+                            cy="112"
                             r="3"
-                            fill="#6B21A8"
+                            fill="#FFF"
                         />
+
+                        {/* Face - Smile */}
                         <path
-                            d="M 92 75 Q 100 80 108 75"
-                            stroke="#6B21A8"
+                            d="M 92 120 Q 100 125 108 120"
+                            stroke="#FFF"
                             strokeWidth="2"
                             fill="none"
                             strokeLinecap="round"
                         />
 
-                        {/* Laptop */}
-                        <rect
-                            x="115"
-                            y="55"
-                            width="30"
-                            height="25"
-                            rx="2"
-                            fill="#C084FC"
-                            transform="rotate(15 130 67.5)"
-                        />
-                        <rect
-                            x="117"
-                            y="57"
-                            width="26"
-                            height="18"
-                            fill="#E9D5FF"
-                            transform="rotate(15 130 66)"
-                        />
-
-                        {/* Arms */}
-                        <ellipse
-                            cx="70"
-                            cy="120"
-                            rx="8"
-                            ry="25"
-                            fill="#8B5CF6"
-                            transform="rotate(-20 70 120)"
-                        />
-                        <ellipse
-                            cx="130"
-                            cy="120"
-                            rx="8"
-                            ry="25"
-                            fill="#8B5CF6"
-                            transform="rotate(20 130 120)"
-                        />
+                        {/* Disconnected WiFi symbol above avocado */}
+                        <g transform="translate(100, 45)">
+                            {/* WiFi arc 1 (outer) - crossed out */}
+                            <path
+                                d="M -20 0 Q 0 -20 20 0"
+                                stroke="#ef4444"
+                                strokeWidth="3"
+                                fill="none"
+                                strokeLinecap="round"
+                            />
+                            {/* WiFi arc 2 (middle) - crossed out */}
+                            <path
+                                d="M -13 5 Q 0 -8 13 5"
+                                stroke="#ef4444"
+                                strokeWidth="3"
+                                fill="none"
+                                strokeLinecap="round"
+                            />
+                            {/* WiFi arc 3 (inner) - crossed out */}
+                            <path
+                                d="M -7 10 Q 0 4 7 10"
+                                stroke="#ef4444"
+                                strokeWidth="3"
+                                fill="none"
+                                strokeLinecap="round"
+                            />
+                            {/* X mark through WiFi */}
+                            <line
+                                x1="-22"
+                                y1="-5"
+                                x2="22"
+                                y2="15"
+                                stroke="#ef4444"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                            />
+                            <line
+                                x1="22"
+                                y1="-5"
+                                x2="-22"
+                                y2="15"
+                                stroke="#ef4444"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                            />
+                        </g>
                     </svg>
                 </div>
 
