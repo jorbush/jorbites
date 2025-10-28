@@ -285,7 +285,9 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                             rel="noopener noreferrer"
                                         >
                                             <FaHeart className="h-4 w-4" />
-                                            <span>{t('sponsor_on_github')}</span>
+                                            <span>
+                                                {t('sponsor_on_github')}
+                                            </span>
                                         </a>
                                     </div>
                                 </div>
