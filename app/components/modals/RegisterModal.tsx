@@ -153,7 +153,9 @@ const RegisterModal = () => {
             disabled={isLoading}
             isOpen={registerModal.isOpen}
             title={t('register') ?? ''}
-            actionLabel={t('continue')}
+            actionLabel={
+                isLoading ? t('registering') || 'Registering...' : t('continue')
+            }
             onClose={registerModal.onClose}
             onSubmit={handleSubmit(onSubmit)}
             body={bodyContent}
