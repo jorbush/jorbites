@@ -113,26 +113,24 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                             {t('architecture')}
                         </h2>
                         <p className="mb-4 text-neutral-600 dark:text-neutral-400">
-                            Jorbites follows a modern microservices architecture
-                            for scalability and performance, overcoming
-                            serverless limitations with specialized services.
+                            {t('architecture_description')}
                         </p>
                         <div className="space-y-3">
                             <div>
                                 <h3 className="mb-2 font-semibold text-neutral-800 dark:text-neutral-200">
-                                    Core Platform
+                                    {t('core_platform')}
                                 </h3>
                                 <ul className="list-inside list-disc space-y-1 text-sm text-neutral-600 dark:text-neutral-400">
-                                    <li>Next.js with TypeScript on Vercel</li>
-                                    <li>MongoDB Atlas with Prisma ORM</li>
-                                    <li>NextAuth with Google/GitHub SSO</li>
-                                    <li>Cloudinary image optimization</li>
-                                    <li>Upstash Redis for rate limiting</li>
+                                    <li>{t('core_platform_nextjs')}</li>
+                                    <li>{t('core_platform_mongodb')}</li>
+                                    <li>{t('core_platform_nextauth')}</li>
+                                    <li>{t('core_platform_cloudinary')}</li>
+                                    <li>{t('core_platform_redis')}</li>
                                 </ul>
                             </div>
                             <div>
                                 <h3 className="mb-2 font-semibold text-neutral-800 dark:text-neutral-200">
-                                    Microservices
+                                    {t('microservices')}
                                 </h3>
                                 <ul className="list-inside list-disc space-y-1 text-sm text-neutral-600 dark:text-neutral-400">
                                     <li>
@@ -144,8 +142,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                         >
                                             Jorbites Notifier
                                         </a>{' '}
-                                        (Go): Notification service with FIFO
-                                        queue
+                                        {t('microservices_notifier')}
                                     </li>
                                     <li>
                                         <a
@@ -156,8 +153,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                         >
                                             Badge Forge
                                         </a>{' '}
-                                        (Rust): Badge and level calculation
-                                        system
+                                        {t('microservices_badge')}
                                     </li>
                                     <li>
                                         <a
@@ -168,8 +164,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                         >
                                             Pantry Keeper
                                         </a>{' '}
-                                        (Python): Automated database backup
-                                        system
+                                        {t('microservices_pantry')}
                                     </li>
                                 </ul>
                             </div>
@@ -189,10 +184,10 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                 rel="noopener noreferrer"
                             >
                                 <h3 className="mb-1 font-semibold text-neutral-800 dark:text-neutral-200">
-                                    Development Setup
+                                    {t('doc_development_setup')}
                                 </h3>
                                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                                    Local development guide
+                                    {t('doc_development_setup_desc')}
                                 </p>
                             </a>
                             <a
@@ -202,10 +197,10 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                 rel="noopener noreferrer"
                             >
                                 <h3 className="mb-1 font-semibold text-neutral-800 dark:text-neutral-200">
-                                    Architecture Details
+                                    {t('doc_architecture_details')}
                                 </h3>
                                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                                    Detailed system architecture
+                                    {t('doc_architecture_details_desc')}
                                 </p>
                             </a>
                             <a
@@ -215,10 +210,10 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                 rel="noopener noreferrer"
                             >
                                 <h3 className="mb-1 font-semibold text-neutral-800 dark:text-neutral-200">
-                                    API Documentation
+                                    {t('doc_api_documentation')}
                                 </h3>
                                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                                    API endpoints and error handling
+                                    {t('doc_api_documentation_desc')}
                                 </p>
                             </a>
                             <a
@@ -228,10 +223,10 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                 rel="noopener noreferrer"
                             >
                                 <h3 className="mb-1 font-semibold text-neutral-800 dark:text-neutral-200">
-                                    Image Optimization
+                                    {t('doc_image_optimization')}
                                 </h3>
                                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                                    Image proxy and optimization
+                                    {t('doc_image_optimization_desc')}
                                 </p>
                             </a>
                         </div>
@@ -265,7 +260,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                             rel="noopener noreferrer"
                                         >
                                             <FaGithub className="h-5 w-5" />
-                                            <span>GitHub</span>
+                                            <span>{t('github')}</span>
                                         </a>
                                         <a
                                             href="mailto:jbonetv5@gmail.com"
@@ -281,7 +276,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                             rel="noopener noreferrer"
                                         >
                                             <RiGitRepositoryLine className="h-5 w-5" />
-                                            <span>Repository</span>
+                                            <span>{t('repository')}</span>
                                         </a>
                                         <a
                                             href="https://github.com/sponsors/jorbush"
@@ -290,7 +285,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                             rel="noopener noreferrer"
                                         >
                                             <FaHeart className="h-4 w-4" />
-                                            <span>Sponsor on GitHub</span>
+                                            <span>{t('sponsor_on_github')}</span>
                                         </a>
                                     </div>
                                 </div>
