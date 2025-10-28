@@ -91,7 +91,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                     <div
                         ref={scrollContainerRef}
                         onScroll={checkScrollPosition}
-                        className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth px-4 pb-2"
+                        className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth px-3 pb-2"
                     >
                         {children}
                     </div>
