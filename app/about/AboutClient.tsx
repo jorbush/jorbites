@@ -57,7 +57,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                         </p>
                         <Link
                             href="/recipes/68b194a84e84cb9eabfb4350"
-                            className="inline-flex items-center text-green-450 hover:underline dark:text-green-450"
+                            className="text-green-450 dark:text-green-450 inline-flex items-center hover:underline"
                             target="_blank"
                             rel="noopener noreferrer"
                             prefetch={false}
@@ -138,7 +138,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                     <li>
                                         <a
                                             href="https://github.com/jorbush/jorbites-notifier"
-                                            className="text-green-450 hover:underline dark:text-green-450"
+                                            className="text-green-450 dark:text-green-450 hover:underline"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -150,7 +150,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                     <li>
                                         <a
                                             href="https://github.com/jorbush/badge_forge"
-                                            className="text-green-450 hover:underline dark:text-green-450"
+                                            className="text-green-450 dark:text-green-450 hover:underline"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -162,7 +162,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                     <li>
                                         <a
                                             href="https://github.com/jorbush/pantry_keeper"
-                                            className="text-green-450 hover:underline dark:text-green-450"
+                                            className="text-green-450 dark:text-green-450 hover:underline"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >

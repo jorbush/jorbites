@@ -410,7 +410,8 @@ describe('AboutClient', () => {
 
         const repoLink = Array.from(container.querySelectorAll('a')).find(
             (link) =>
-                link.getAttribute('href') === 'https://github.com/jorbush/jorbites'
+                link.getAttribute('href') ===
+                'https://github.com/jorbush/jorbites'
         );
 
         expect(repoLink).toBeDefined();
