@@ -1,4 +1,4 @@
-import { cleanup, render, screen, fireEvent } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import HorizontalScrollSection from '@/app/components/utils/HorizontalScrollSection';
 
@@ -94,7 +94,9 @@ describe('HorizontalScrollSection', () => {
         );
 
         // Check for aria labels
-        const leftButton = container.querySelector('[aria-label="Scroll left"]');
+        const leftButton = container.querySelector(
+            '[aria-label="Scroll left"]'
+        );
         const rightButton = container.querySelector(
             '[aria-label="Scroll right"]'
         );
