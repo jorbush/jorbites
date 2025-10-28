@@ -194,4 +194,36 @@ describe('LoginModal', () => {
             expect(mockLoginModalClose).toHaveBeenCalled();
         });
     });
+
+    it('shows loading text while logging in', async () => {
+        const signIn = vi.mocked(await import('next-auth/react')).signIn;
+
+        // Create a delayed promise to test loading state
+        let resolvePromise: Function;
+        const delayedPromise = new Promise((resolve) => {
+            resolvePromise = resolve;
+        });
+
+        signIn.mockImplementationOnce(() => delayedPromise as any);
+
+        render(<LoginModal />);
+
+        fireEvent.change(screen.getByLabelText('email'), {
+            target: { value: 'test@example.com' },
+        });
+        fireEvent.change(screen.getByLabelText('password'), {
+            target: { value: 'password123' },
+        });
+
+        fireEvent.click(screen.getByText('continue'));
+
+        // Should show loading text
+        await waitFor(() => {
+            expect(screen.getByText('logging_in')).toBeDefined();
+        });
+
+        // Resolve the promise to complete test
+        // @ts-ignore
+        resolvePromise({ ok: true });
+    });
 });
