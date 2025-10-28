@@ -49,15 +49,22 @@ vi.mock('next/link', () => ({
         href,
         className,
         children,
+        target,
+        rel,
     }: {
         href: string;
         className?: string;
         children: React.ReactNode;
+        target?: string;
+        rel?: string;
+        prefetch?: boolean;
     }) => (
         <a
             href={href}
             className={className}
             data-testid="next-link"
+            target={target}
+            rel={rel}
         >
             {children}
         </a>
@@ -67,35 +74,80 @@ vi.mock('next/link', () => ({
 vi.mock('react-icons/fa', () => ({
     FaGithub: () => <div data-testid="fa-github-icon" />,
     FaEnvelope: () => <div data-testid="fa-envelope-icon" />,
+    FaHeart: () => <div data-testid="fa-heart-icon" />,
 }));
 
+vi.mock('react-icons/ri', () => ({
+    RiGitRepositoryLine: () => <div data-testid="ri-repository-icon" />,
+}));
+
+// Mock useRegisterModal
+const mockOnOpen = vi.fn();
+vi.mock('@/app/hooks/useRegisterModal', () => ({
+    default: () => ({
+        onOpen: mockOnOpen,
+        onClose: vi.fn(),
+        isOpen: false,
+    }),
+}));
+
+// Mock translations for react-i18next
+const mockTranslations: Record<string, string> = {
+    about: 'About',
+    about_subtitle: 'Learn more about Jorbites and our mission',
+    why_jorbites: 'Why Jorbites?',
+    why_jorbites_description:
+        'A user posted this recipe that indirectly answers the question:',
+    why_jorbites_recipe: 'Why Jorbites?',
+    what_is_jorbites: 'What is Jorbites?',
+    jorbites_description: 'Jorbites is a vibrant community platform...',
+    jorbites_mission: 'Our mission is to make cooking more accessible...',
+    features: 'Features',
+    share_recipes: 'Share Recipes',
+    share_recipes_description: 'Upload your favorite recipes...',
+    discover_recipes: 'Discover Recipes',
+    discover_recipes_description: 'Explore thousands of recipes...',
+    level_system: 'Level System',
+    level_system_description: 'Gain experience by sharing recipes...',
+    community: 'Community',
+    community_description: 'Connect with other food enthusiasts...',
+    architecture: 'Architecture',
+    architecture_description:
+        'Jorbites follows a modern microservices architecture...',
+    core_platform: 'Core Platform',
+    core_platform_nextjs: 'Next.js with TypeScript on Vercel',
+    core_platform_mongodb: 'MongoDB Atlas with Prisma ORM',
+    core_platform_nextauth: 'NextAuth with Google/GitHub SSO',
+    core_platform_cloudinary: 'Cloudinary image optimization',
+    core_platform_redis: 'Upstash Redis for rate limiting',
+    microservices: 'Microservices',
+    microservices_notifier: '(Go): Notification service with FIFO queue',
+    microservices_badge: '(Rust): Badge and level calculation system',
+    microservices_pantry: '(Python): Automated database backup system',
+    documentation: 'Documentation',
+    doc_development_setup: 'Development Setup',
+    doc_development_setup_desc: 'Local development guide',
+    doc_architecture_details: 'Architecture Details',
+    doc_architecture_details_desc: 'Detailed system architecture',
+    doc_api_documentation: 'API Documentation',
+    doc_api_documentation_desc: 'API endpoints and error handling',
+    doc_image_optimization: 'Image Optimization',
+    doc_image_optimization_desc: 'Image proxy and optimization',
+    the_project: 'The Project',
+    github: 'GitHub',
+    repository: 'Repository',
+    sponsor_on_github: 'Sponsor on GitHub',
+    about_developer: 'About the Developer',
+    developer_description: 'Jorbites was created with passion...',
+    get_started: 'Get Started',
+    get_started_description: 'Ready to join our culinary community?',
+    explore_recipes: 'Explore Recipes',
+    sign_up: 'Sign Up',
+    contact: 'Contact',
+};
+
 // Mock react-i18next
-const mockT = vi.fn((key: string) => {
-    const translations: Record<string, string> = {
-        about: 'About',
-        about_subtitle: 'Learn more about Jorbites and our mission',
-        what_is_jorbites: 'What is Jorbites?',
-        jorbites_description: 'Jorbites is a vibrant community platform...',
-        jorbites_mission: 'Our mission is to make cooking more accessible...',
-        features: 'Features',
-        share_recipes: 'Share Recipes',
-        share_recipes_description: 'Upload your favorite recipes...',
-        discover_recipes: 'Discover Recipes',
-        discover_recipes_description: 'Explore thousands of recipes...',
-        level_system: 'Level System',
-        level_system_description: 'Gain experience by sharing recipes...',
-        community: 'Community',
-        community_description: 'Connect with other food enthusiasts...',
-        about_developer: 'About the Developer',
-        developer_description: 'Jorbites was created with passion...',
-        get_started: 'Get Started',
-        get_started_description: 'Ready to join our culinary community?',
-        explore_recipes: 'Explore Recipes',
-        sign_up: 'Sign Up',
-        contact: 'Contact',
-    };
-    return translations[key] || key;
-});
+const mockT = vi.fn((key: string) => mockTranslations[key] || key);
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -126,6 +178,9 @@ describe('AboutClient', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        mockOnOpen.mockClear();
+        // Restore mockT implementation after clearAllMocks
+        mockT.mockImplementation((key: string) => mockTranslations[key] || key);
     });
 
     it('renders without crashing', () => {
@@ -148,9 +203,12 @@ describe('AboutClient', () => {
         render(<AboutClient />);
 
         // Check main section titles
+        expect(screen.getByText('Why Jorbites?')).toBeDefined();
         expect(screen.getByText('What is Jorbites?')).toBeDefined();
         expect(screen.getByText('Features')).toBeDefined();
-        expect(screen.getByText('About the Developer')).toBeDefined();
+        expect(screen.getByText('Architecture')).toBeDefined();
+        expect(screen.getByText('Documentation')).toBeDefined();
+        expect(screen.getByText('The Project')).toBeDefined();
         expect(screen.getByText('Get Started')).toBeDefined();
     });
 
@@ -173,6 +231,8 @@ describe('AboutClient', () => {
 
         expect(screen.getAllByTestId('fa-github-icon')).toHaveLength(1);
         expect(screen.getAllByTestId('fa-envelope-icon')).toHaveLength(1);
+        expect(screen.getAllByTestId('fa-heart-icon')).toHaveLength(1);
+        expect(screen.getAllByTestId('ri-repository-icon')).toHaveLength(1);
     });
 
     it('renders correct social links', () => {
@@ -246,9 +306,138 @@ describe('AboutClient', () => {
 
         expect(mockT).toHaveBeenCalledWith('about');
         expect(mockT).toHaveBeenCalledWith('about_subtitle');
+        expect(mockT).toHaveBeenCalledWith('why_jorbites');
         expect(mockT).toHaveBeenCalledWith('what_is_jorbites');
         expect(mockT).toHaveBeenCalledWith('features');
-        expect(mockT).toHaveBeenCalledWith('about_developer');
+        expect(mockT).toHaveBeenCalledWith('the_project');
         expect(mockT).toHaveBeenCalledWith('get_started');
+    });
+
+    it('renders architecture section with core platform and microservices', () => {
+        const { container } = render(<AboutClient />);
+
+        expect(screen.getByText('Architecture')).toBeDefined();
+        expect(container.textContent).toContain('Core Platform');
+        expect(container.textContent).toContain('Microservices');
+        expect(container.textContent).toContain(
+            'Next.js with TypeScript on Vercel'
+        );
+        expect(container.textContent).toContain(
+            'MongoDB Atlas with Prisma ORM'
+        );
+    });
+
+    it('renders microservices links', () => {
+        const { container } = render(<AboutClient />);
+
+        const allLinks = container.querySelectorAll('a');
+        const microserviceLinks = Array.from(allLinks).filter((link) => {
+            const href = link.getAttribute('href') || '';
+            return (
+                href.includes('jorbites-notifier') ||
+                href.includes('badge_forge') ||
+                href.includes('pantry_keeper')
+            );
+        });
+
+        expect(microserviceLinks.length).toBe(3);
+    });
+
+    it('renders documentation section with links', () => {
+        const { container } = render(<AboutClient />);
+
+        expect(screen.getByText('Documentation')).toBeDefined();
+        expect(screen.getByText('Development Setup')).toBeDefined();
+        expect(screen.getByText('Architecture Details')).toBeDefined();
+        expect(screen.getByText('API Documentation')).toBeDefined();
+        expect(screen.getByText('Image Optimization')).toBeDefined();
+
+        const allLinks = container.querySelectorAll('a');
+        const docLinks = Array.from(allLinks).filter((link) => {
+            const href = link.getAttribute('href') || '';
+            return href.includes('docs/');
+        });
+
+        expect(docLinks.length).toBeGreaterThan(0);
+    });
+
+    it('renders GitHub sponsor button', () => {
+        const { container } = render(<AboutClient />);
+
+        const sponsorLink = Array.from(container.querySelectorAll('a')).find(
+            (link) =>
+                link.getAttribute('href') ===
+                'https://github.com/sponsors/jorbush'
+        );
+
+        expect(sponsorLink).toBeDefined();
+        expect(sponsorLink?.textContent).toContain('Sponsor on GitHub');
+    });
+
+    it('renders Why Jorbites section with recipe link', () => {
+        const { container } = render(<AboutClient />);
+
+        expect(screen.getByText('Why Jorbites?')).toBeDefined();
+
+        const recipeLink = Array.from(container.querySelectorAll('a')).find(
+            (link) =>
+                link
+                    .getAttribute('href')
+                    ?.includes('/recipes/68b194a84e84cb9eabfb4350')
+        );
+
+        expect(recipeLink).toBeDefined();
+        expect(recipeLink?.getAttribute('target')).toBe('_blank');
+        expect(recipeLink?.getAttribute('rel')).toContain('noopener');
+    });
+
+    it('renders sign up button that opens register modal when not logged in', () => {
+        const { container } = render(<AboutClient currentUser={null} />);
+
+        const signUpButton = Array.from(
+            container.querySelectorAll('button')
+        ).find((button) => button.textContent?.includes('Sign Up'));
+
+        expect(signUpButton).toBeDefined();
+
+        // Simulate button click
+        signUpButton?.click();
+
+        expect(mockOnOpen).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not render sign up button when user is logged in', () => {
+        const { container } = render(
+            <AboutClient currentUser={mockCurrentUser} />
+        );
+
+        const signUpButton = Array.from(
+            container.querySelectorAll('button')
+        ).find((button) => button.textContent?.includes('Sign Up'));
+
+        expect(signUpButton).toBeUndefined();
+    });
+
+    it('renders explore recipes link with prefetch disabled', () => {
+        const { container } = render(<AboutClient />);
+
+        const exploreLink = Array.from(
+            container.querySelectorAll('[data-testid="next-link"]')
+        ).find((link) => link.textContent?.includes('Explore Recipes'));
+
+        expect(exploreLink).toBeDefined();
+    });
+
+    it('renders repository link in The Project section', () => {
+        const { container } = render(<AboutClient />);
+
+        const repoLink = Array.from(container.querySelectorAll('a')).find(
+            (link) =>
+                link.getAttribute('href') ===
+                'https://github.com/jorbush/jorbites'
+        );
+
+        expect(repoLink).toBeDefined();
+        expect(repoLink?.textContent).toContain('Repository');
     });
 });
