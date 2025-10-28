@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
@@ -57,8 +57,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
         return () => window.removeEventListener('resize', checkScrollPosition);
     }, [checkScrollPosition]);
 
-    // Check scroll position on mount and when children change
-    React.useEffect(() => {
+    useEffect(() => {
         checkScrollPosition();
     }, [children, checkScrollPosition]);
 
@@ -92,16 +91,16 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                     <div
                         ref={scrollContainerRef}
                         onScroll={checkScrollPosition}
-                        className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth px-6 pb-2"
+                        className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth px-4 pb-2"
                     >
                         {children}
                     </div>
 
                     {/* Left fade overlay */}
-                    <div className="pointer-events-none absolute top-0 left-0 h-full w-5 bg-gradient-to-r from-white to-transparent dark:from-neutral-900" />
+                    <div className="pointer-events-none absolute top-0 left-0 h-full w-3 bg-gradient-to-r from-white to-transparent dark:from-neutral-900" />
 
                     {/* Right fade overlay */}
-                    <div className="pointer-events-none absolute top-0 right-0 h-full w-5 bg-gradient-to-l from-white to-transparent dark:from-neutral-900" />
+                    <div className="pointer-events-none absolute top-0 right-0 h-full w-3 bg-gradient-to-l from-white to-transparent dark:from-neutral-900" />
 
                     {/* Right scroll button */}
                     {showRightArrow && (
