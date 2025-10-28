@@ -35,9 +35,16 @@ const WeeklyChallenge = () => {
     if (loading) {
         return (
             <div className="dark:bg-dark mb-10 animate-pulse rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700">
-                <div className="mb-4 h-6 w-48 rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="mb-2 h-4 w-full rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="h-4 w-3/4 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="mb-4 flex items-center">
+                    <div className="mr-2 h-7 w-7 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="h-6 w-48 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                </div>
+                <div className="mb-2 h-5 w-40 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="mb-4 space-y-2">
+                    <div className="h-4 w-full rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="h-4 w-3/4 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                </div>
+                <div className="h-4 w-52 rounded bg-neutral-200 dark:bg-neutral-700"></div>
             </div>
         );
     }

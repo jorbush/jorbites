@@ -76,21 +76,28 @@ const EventsClient = () => {
                 <WeeklyChallenge />
 
                 {loading ? (
-                    <div className="mb-10">
-                        <h2 className="mb-5 text-2xl font-bold dark:text-neutral-100">
-                            <div className="h-8 w-40 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                        </h2>
-                        <div className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth px-6 pb-2">
-                            {[1, 2, 3, 4].map((i) => (
-                                <div
-                                    key={i}
-                                    className="min-w-[280px] flex-shrink-0 sm:min-w-[320px] md:min-w-[350px]"
-                                >
-                                    <EventCardSkeleton />
+                    <>
+                        {[...Array(4)].map((_, index) => (
+                            <div
+                                key={index}
+                                className="mb-10"
+                            >
+                                <h2 className="mb-5 text-2xl font-bold dark:text-neutral-100">
+                                    <div className="h-8 w-40 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                                </h2>
+                                <div className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth px-6 pb-2">
+                                    {[...Array(4)].map((_, i) => (
+                                        <div
+                                            key={i}
+                                            className="min-w-[280px] flex-shrink-0 sm:min-w-[320px] md:min-w-[350px]"
+                                        >
+                                            <EventCardSkeleton />
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    </div>
+                            </div>
+                        ))}
+                    </>
                 ) : (
                     <>
                         <EventsList
