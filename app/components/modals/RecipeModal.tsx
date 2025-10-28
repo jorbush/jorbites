@@ -503,10 +503,15 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const actionLabel = useMemo(() => {
         if (step === STEPS.IMAGES) {
+            if (isLoading) {
+                return recipeModal.isEditMode
+                    ? t('updating_recipe') || 'Updating...'
+                    : t('creating_recipe') || 'Creating...';
+            }
             return recipeModal.isEditMode ? t('update') : t('create');
         }
         return t('next');
-    }, [step, t, recipeModal.isEditMode]);
+    }, [step, t, recipeModal.isEditMode, isLoading]);
 
     const secondaryActionLabel = useMemo(() => {
         if (step === STEPS.CATEGORY) {

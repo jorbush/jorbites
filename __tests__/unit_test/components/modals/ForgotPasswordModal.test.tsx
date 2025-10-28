@@ -196,6 +196,7 @@ describe('ForgotPasswordModal', () => {
         // Should be in loading state
         await waitFor(() => {
             expect(actionButton).toHaveProperty('disabled', true);
+            expect(screen.getByText('sending')).toBeDefined();
         });
 
         // Resolve the promise to complete test

@@ -144,7 +144,9 @@ const LoginModal = () => {
             disabled={isLoading}
             isOpen={loginModal.isOpen}
             title={t('login') ?? ''}
-            actionLabel={t('continue')}
+            actionLabel={
+                isLoading ? t('logging_in') || 'Logging in...' : t('continue')
+            }
             onClose={loginModal.onClose}
             onSubmit={handleSubmit(onSubmit)}
             body={bodyContent}
