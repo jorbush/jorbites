@@ -3,6 +3,7 @@ import { Nunito } from 'next/font/google';
 import Navbar from '@/app/components/navbar/Navbar';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import ToasterProvider from '@/app/providers/ToasterProvider';
+import I18nProvider from '@/app/providers/I18nProvider';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import SmartFooter from '@/app/components/footer/SmartFooter';
 import { dynamicImport } from '@/app/utils/dynamicImport';
@@ -107,6 +108,7 @@ export default async function RootLayout({
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
             >
                 <ClientOnly>
+                    <I18nProvider />
                     <ToasterProvider />
                     <LoginModal />
                     <SettingsModal currentUser={currentUser} />

@@ -8,7 +8,6 @@ import packageJson from '@/package.json';
 import { FaGithub, FaTwitter, FaInstagram, FaEnvelope } from 'react-icons/fa';
 import { RiGitRepositoryLine } from 'react-icons/ri';
 import FooterMenu from './FooterMenu';
-import '@/app/i18n';
 
 const Footer = () => {
     useTheme();

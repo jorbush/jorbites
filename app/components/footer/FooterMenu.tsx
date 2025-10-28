@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { FcPositiveDynamic, FcAbout, FcConferenceCall } from 'react-icons/fc';
-import '@/app/i18n';
 
 interface FooterMenuItem {
     href: string;
