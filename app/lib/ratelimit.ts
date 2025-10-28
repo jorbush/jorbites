@@ -18,6 +18,3 @@ export const unauthenticatedRatelimit = new Ratelimit({
     analytics: true,
     prefix: '@upstash/ratelimit/unauthenticated',
 });
-
-// Default export for backward compatibility
-export default authenticatedRatelimit;
