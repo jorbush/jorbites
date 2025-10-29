@@ -76,7 +76,7 @@ export default async function getRecipes(
             const currentUser = await getCurrentUser();
             const rateLimitKey = currentUser
                 ? currentUser.id
-                : ((await headers()).get('x-forwarded-for') ?? '');
+                : ((await headers()).get('x-forwarded-for') ?? 'unknown-ip');
 
             // Use different rate limits for authenticated vs unauthenticated users
             const ratelimit = currentUser
