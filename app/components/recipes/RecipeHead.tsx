@@ -120,25 +120,21 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 <AnimatePresence
                     initial={false}
                     custom={direction}
-                    mode="wait"
                 >
                     <motion.div
                         key={currentImageIndex}
                         custom={direction}
                         variants={{
                             enter: (direction: number) => ({
-                                x: direction > 0 ? 1000 : -1000,
-                                opacity: 0,
+                                x: direction > 0 ? '100%' : '-100%',
                             }),
                             center: {
                                 zIndex: 1,
                                 x: 0,
-                                opacity: 1,
                             },
                             exit: (direction: number) => ({
                                 zIndex: 0,
-                                x: direction < 0 ? 1000 : -1000,
-                                opacity: 0,
+                                x: direction < 0 ? '100%' : '-100%',
                             }),
                         }}
                         initial="enter"
@@ -146,13 +142,12 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                         exit="exit"
                         transition={{
                             x: { type: 'spring', stiffness: 300, damping: 30 },
-                            opacity: { duration: 0.2 },
                         }}
                         drag={imagesSrc.length > 1 ? 'x' : false}
                         dragConstraints={{ left: 0, right: 0 }}
                         dragElastic={1}
                         onDragEnd={handleDragEnd}
-                        className="absolute h-full w-full"
+                        className="absolute h-full w-full overflow-hidden rounded-xl"
                     >
                         <CustomProxyImage
                             src={
@@ -160,7 +155,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                             }
                             fill
                             priority={true}
-                            className="object-cover"
+                            className="rounded-xl object-cover"
                             alt="Recipe Image"
                             maxQuality={true}
                             quality="auto:best"
