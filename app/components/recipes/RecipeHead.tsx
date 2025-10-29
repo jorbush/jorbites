@@ -105,8 +105,8 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 <motion.div
                     className="flex h-full"
                     drag={imagesSrc.length > 1 ? 'x' : false}
-                    dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={1}
+                    dragElastic={0.2}
+                    dragMomentum={false}
                     onDragEnd={handleDragEnd}
                     animate={{ x: `-${currentImageIndex * 100}%` }}
                     transition={{
