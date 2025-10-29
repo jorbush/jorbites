@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import {
+    render,
+    screen,
+    fireEvent,
+    cleanup,
+    waitFor,
+} from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RecipeHead from '@/app/components/recipes/RecipeHead';
 import { useRouter } from 'next/navigation';
@@ -48,30 +54,37 @@ describe('<RecipeHead />', () => {
         expect(mockRouter.back).toHaveBeenCalledTimes(1);
     });
 
-    it('changes image when next button is clicked', () => {
+    it('changes image when next button is clicked', async () => {
         render(<RecipeHead {...mockProps} />);
         const nextButton = screen.getByTestId('next-button');
-        const image = screen.getByAltText('Recipe Image');
+        let image = screen.getByAltText('Recipe Image');
         expect(image).toHaveProperty(
             'src',
             expect.stringContaining('image1.jpg')
         );
         fireEvent.click(nextButton);
-        expect(image).toHaveProperty(
-            'src',
-            expect.stringContaining('image2.jpg')
-        );
+        // Wait for the animation and state update
+        await waitFor(() => {
+            image = screen.getByAltText('Recipe Image');
+            expect(image).toHaveProperty(
+                'src',
+                expect.stringContaining('image2.jpg')
+            );
+        });
     });
 
-    it('changes image when previous button is clicked', () => {
+    it('changes image when previous button is clicked', async () => {
         render(<RecipeHead {...mockProps} />);
         const prevButton = screen.getByTestId('prev-button');
-        const image = screen.getByAltText('Recipe Image');
         fireEvent.click(prevButton);
-        expect(image).toHaveProperty(
-            'src',
-            expect.stringContaining('image2.jpg')
-        );
+        // Wait for the animation and state update
+        await waitFor(() => {
+            const image = screen.getByAltText('Recipe Image');
+            expect(image).toHaveProperty(
+                'src',
+                expect.stringContaining('image2.jpg')
+            );
+        });
     });
 
     it('copies URL to clipboard when share button is clicked and navigator.share is not available', () => {
@@ -105,5 +118,38 @@ describe('<RecipeHead />', () => {
             'className',
             expect.stringContaining('cursor-pointer')
         );
+    });
+
+    it('renders dot indicators when multiple images are present', () => {
+        render(<RecipeHead {...mockProps} />);
+        const dotIndicator0 = screen.getByTestId('dot-indicator-0');
+        const dotIndicator1 = screen.getByTestId('dot-indicator-1');
+        expect(dotIndicator0).toBeDefined();
+        expect(dotIndicator1).toBeDefined();
+    });
+
+    it('changes image when clicking on dot indicator', async () => {
+        render(<RecipeHead {...mockProps} />);
+        const dotIndicator1 = screen.getByTestId('dot-indicator-1');
+        fireEvent.click(dotIndicator1);
+        // Wait for the animation and state update
+        await waitFor(() => {
+            const image = screen.getByAltText('Recipe Image');
+            expect(image).toHaveProperty(
+                'src',
+                expect.stringContaining('image2.jpg')
+            );
+        });
+    });
+
+    it('does not render dot indicators when only one image is present', () => {
+        const singleImageProps = {
+            title: 'Test Recipe',
+            minutes: '30',
+            imagesSrc: ['/image1.jpg'],
+        };
+        render(<RecipeHead {...singleImageProps} />);
+        const dotIndicator = screen.queryByTestId('dot-indicator-0');
+        expect(dotIndicator).toBeNull();
     });
 });

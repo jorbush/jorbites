@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface RecipeHeadProps {
     title: string;
@@ -20,6 +21,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     imagesSrc,
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [[_page, direction], setPage] = useState([0, 0]);
     const router = useRouter();
     const { t } = useTranslation();
 
@@ -48,15 +50,34 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     };
 
     const goToPreviousImage = () => {
-        setCurrentImageIndex((prevIndex) =>
-            prevIndex === 0 ? imagesSrc.length - 1 : prevIndex - 1
-        );
+        const newIndex =
+            currentImageIndex === 0
+                ? imagesSrc.length - 1
+                : currentImageIndex - 1;
+        setPage([newIndex, -1]);
+        setCurrentImageIndex(newIndex);
     };
 
     const goToNextImage = () => {
-        setCurrentImageIndex((prevIndex) =>
-            prevIndex === imagesSrc.length - 1 ? 0 : prevIndex + 1
-        );
+        const newIndex =
+            currentImageIndex === imagesSrc.length - 1
+                ? 0
+                : currentImageIndex + 1;
+        setPage([newIndex, 1]);
+        setCurrentImageIndex(newIndex);
+    };
+
+    const swipeConfidenceThreshold = 10000;
+    const swipePower = (offset: number, velocity: number) => {
+        return Math.abs(offset) * velocity;
+    };
+
+    const paginate = (newDirection: number) => {
+        if (newDirection === 1) {
+            goToNextImage();
+        } else {
+            goToPreviousImage();
+        }
     };
 
     return (
@@ -82,36 +103,105 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 </button>
             </div>
             <div className="relative h-[60vh] w-full overflow-hidden rounded-xl">
-                <CustomProxyImage
-                    src={imagesSrc[currentImageIndex] || '/avocado.webp'}
-                    fill
-                    priority={true}
-                    className="object-cover"
-                    alt="Recipe Image"
-                    maxQuality={true}
-                    quality="auto:best"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                    preloadViaProxy={true}
-                />
+                <AnimatePresence
+                    initial={false}
+                    custom={direction}
+                    mode="wait"
+                >
+                    <motion.div
+                        key={currentImageIndex}
+                        custom={direction}
+                        variants={{
+                            enter: (direction: number) => ({
+                                x: direction > 0 ? 1000 : -1000,
+                                opacity: 0,
+                            }),
+                            center: {
+                                zIndex: 1,
+                                x: 0,
+                                opacity: 1,
+                            },
+                            exit: (direction: number) => ({
+                                zIndex: 0,
+                                x: direction < 0 ? 1000 : -1000,
+                                opacity: 0,
+                            }),
+                        }}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{
+                            x: { type: 'spring', stiffness: 300, damping: 30 },
+                            opacity: { duration: 0.2 },
+                        }}
+                        drag={imagesSrc.length > 1 ? 'x' : false}
+                        dragConstraints={{ left: 0, right: 0 }}
+                        dragElastic={1}
+                        onDragEnd={(e, { offset, velocity }) => {
+                            const swipe = swipePower(offset.x, velocity.x);
+                            if (swipe < -swipeConfidenceThreshold) {
+                                paginate(1);
+                            } else if (swipe > swipeConfidenceThreshold) {
+                                paginate(-1);
+                            }
+                        }}
+                        className="absolute h-full w-full"
+                    >
+                        <CustomProxyImage
+                            src={
+                                imagesSrc[currentImageIndex] || '/avocado.webp'
+                            }
+                            fill
+                            priority={true}
+                            className="object-cover"
+                            alt="Recipe Image"
+                            maxQuality={true}
+                            quality="auto:best"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                            preloadViaProxy={true}
+                        />
+                    </motion.div>
+                </AnimatePresence>
                 {imagesSrc.length > 1 && (
                     <>
                         <div
-                            className="absolute top-0 bottom-0 left-0 flex w-1/4 items-center justify-center"
+                            className="absolute top-0 bottom-0 left-0 z-10 flex w-1/4 items-center justify-center transition-colors hover:bg-black/10"
                             onClick={goToPreviousImage}
                             data-testid="prev-button"
                         >
-                            <div className="absolute top-1/2 left-3 -translate-y-1/2 transform">
-                                <FiChevronLeft className="cursor-pointer text-2xl text-white" />
+                            <div className="absolute top-1/2 left-3 -translate-y-1/2 transform rounded-full bg-white/90 p-2 shadow-lg transition-colors hover:bg-white">
+                                <FiChevronLeft className="cursor-pointer text-2xl text-gray-800" />
                             </div>
                         </div>
                         <div
-                            className="absolute top-0 right-0 bottom-0 flex w-1/4 items-center justify-center"
+                            className="absolute top-0 right-0 bottom-0 z-10 flex w-1/4 items-center justify-center transition-colors hover:bg-black/10"
                             onClick={goToNextImage}
                             data-testid="next-button"
                         >
-                            <div className="absolute top-1/2 right-3 -translate-y-1/2 transform">
-                                <FiChevronRight className="cursor-pointer text-2xl text-white" />
+                            <div className="absolute top-1/2 right-3 -translate-y-1/2 transform rounded-full bg-white/90 p-2 shadow-lg transition-colors hover:bg-white">
+                                <FiChevronRight className="cursor-pointer text-2xl text-gray-800" />
                             </div>
+                        </div>
+                        {/* Dot Indicators */}
+                        <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 transform gap-2">
+                            {imagesSrc.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => {
+                                        const newDirection =
+                                            index > currentImageIndex ? 1 : -1;
+                                        setPage([index, newDirection]);
+                                        setCurrentImageIndex(index);
+                                    }}
+                                    className={`h-2 rounded-full transition-all duration-300 ${
+                                        index === currentImageIndex
+                                            ? 'w-8 bg-white'
+                                            : 'w-2 bg-white/60 hover:bg-white/80'
+                                    }`}
+                                    aria-label={`Go to image ${index + 1}`}
+                                    data-testid={`dot-indicator-${index}`}
+                                />
+                            ))}
                         </div>
                     </>
                 )}
