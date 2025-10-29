@@ -67,7 +67,9 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
         setCurrentImageIndex(newIndex);
     };
 
-    const swipeConfidenceThreshold = 10000;
+    // Swipe threshold for touch gesture detection
+    // Higher values require more deliberate swipes to prevent accidental navigation
+    const SWIPE_CONFIDENCE_THRESHOLD = 10000;
     const swipePower = (offset: number, velocity: number) => {
         return Math.abs(offset) * velocity;
     };
@@ -77,6 +79,18 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
             goToNextImage();
         } else {
             goToPreviousImage();
+        }
+    };
+
+    const handleDragEnd = (
+        _e: MouseEvent | TouchEvent | PointerEvent,
+        { offset, velocity }: { offset: { x: number }; velocity: { x: number } }
+    ) => {
+        const swipe = swipePower(offset.x, velocity.x);
+        if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) {
+            paginate(1);
+        } else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) {
+            paginate(-1);
         }
     };
 
@@ -137,14 +151,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                         drag={imagesSrc.length > 1 ? 'x' : false}
                         dragConstraints={{ left: 0, right: 0 }}
                         dragElastic={1}
-                        onDragEnd={(e, { offset, velocity }) => {
-                            const swipe = swipePower(offset.x, velocity.x);
-                            if (swipe < -swipeConfidenceThreshold) {
-                                paginate(1);
-                            } else if (swipe > swipeConfidenceThreshold) {
-                                paginate(-1);
-                            }
-                        }}
+                        onDragEnd={handleDragEnd}
                         className="absolute h-full w-full"
                     >
                         <CustomProxyImage
