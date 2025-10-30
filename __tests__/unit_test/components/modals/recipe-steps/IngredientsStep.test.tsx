@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 vi.mock('react-hot-toast', () => ({
     toast: {
         error: vi.fn(),
+        success: vi.fn(),
     },
 }));
 
@@ -40,6 +41,20 @@ vi.mock('@/app/components/inputs/Input', () => ({
     ),
 }));
 
+// Mock Textarea component
+vi.mock('@/app/components/inputs/Textarea', () => ({
+    default: ({ id, rows, dataCy, placeholder }: any) => (
+        <div data-testid={dataCy || `textarea-${id}`}>
+            <textarea
+                id={id}
+                rows={rows}
+                placeholder={placeholder}
+                data-testid={`${id}-field`}
+            />
+        </div>
+    ),
+}));
+
 // Mock Button component
 vi.mock('@/app/components/buttons/Button', () => ({
     default: ({ label, onClick, dataCy }: any) => (
@@ -56,6 +71,7 @@ vi.mock('@/app/components/buttons/Button', () => ({
 vi.mock('@/app/utils/constants', () => ({
     RECIPE_INGREDIENT_MAX_LENGTH: 200,
     RECIPE_MAX_INGREDIENTS: 20,
+    CHAR_COUNT_WARNING_THRESHOLD: 0.8,
 }));
 
 // Mock AiFillDelete icon
@@ -254,5 +270,94 @@ describe('<IngredientsStep />', () => {
 
         // Should try to get translation first, fallback to english
         expect(toast.error).toHaveBeenCalledWith('max_ingredients_reached');
+    });
+
+    it('renders toggle button for switching input modes', () => {
+        render(<IngredientsStep {...mockProps} />);
+
+        const toggleButton = screen.getByTestId('toggle-input-mode');
+        expect(toggleButton).toBeDefined();
+        expect(toggleButton.textContent).toBe('switch_to_plain_text');
+    });
+
+    it('switches to plain text mode when toggle is clicked', () => {
+        render(<IngredientsStep {...mockProps} />);
+
+        const toggleButton = screen.getByTestId('toggle-input-mode');
+        fireEvent.click(toggleButton);
+
+        // After clicking, we should see the textarea
+        expect(screen.queryByTestId('ingredients-textarea')).toBeDefined();
+        // And the button text should change
+        expect(toggleButton.textContent).toBe('switch_to_list');
+    });
+
+    it('switches back to list mode when toggle is clicked again', () => {
+        render(<IngredientsStep {...mockProps} />);
+
+        const toggleButton = screen.getByTestId('toggle-input-mode');
+
+        // Switch to plain text mode
+        fireEvent.click(toggleButton);
+        expect(screen.queryByTestId('ingredients-textarea')).toBeDefined();
+
+        // Switch back to list mode
+        fireEvent.click(toggleButton);
+        expect(screen.queryByTestId('ingredients-textarea')).toBeNull();
+        expect(screen.queryByTestId('recipe-ingredient-0')).toBeDefined();
+    });
+
+    it('shows help text in plain text mode', () => {
+        render(<IngredientsStep {...mockProps} />);
+
+        const toggleButton = screen.getByTestId('toggle-input-mode');
+        fireEvent.click(toggleButton);
+
+        // Check for help text
+        expect(screen.getByText('paste_ingredients_help')).toBeDefined();
+    });
+
+    it('shows apply button in plain text mode', () => {
+        render(<IngredientsStep {...mockProps} />);
+
+        const toggleButton = screen.getByTestId('toggle-input-mode');
+        fireEvent.click(toggleButton);
+
+        const applyButton = screen.getByTestId('apply-ingredients-button');
+        expect(applyButton).toBeDefined();
+        expect(applyButton.textContent).toBe('apply');
+    });
+
+    it('calls onSetIngredients when apply is clicked with valid text', () => {
+        const mockSetIngredients = vi.fn();
+        const propsWithSetIngredients = {
+            ...mockProps,
+            onSetIngredients: mockSetIngredients,
+        };
+
+        render(<IngredientsStep {...propsWithSetIngredients} />);
+
+        // Switch to plain text mode
+        const toggleButton = screen.getByTestId('toggle-input-mode');
+        fireEvent.click(toggleButton);
+
+        // Set value in textarea
+        const textarea = screen.getByTestId(
+            'ingredients-plain-text-field'
+        ) as HTMLTextAreaElement;
+        fireEvent.change(textarea, {
+            target: { value: '1. flour\n2. sugar\n3. eggs' },
+        });
+
+        // Click apply
+        const applyButton = screen.getByTestId('apply-ingredients-button');
+        fireEvent.click(applyButton);
+
+        // Should call onSetIngredients with parsed array
+        expect(mockSetIngredients).toHaveBeenCalledWith([
+            'flour',
+            'sugar',
+            'eggs',
+        ]);
     });
 });
