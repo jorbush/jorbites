@@ -195,7 +195,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                         setPage([index, newDirection]);
                                         setCurrentImageIndex(index);
                                     }}
-                                    className={`h-2 rounded-full transition-all duration-300 ${
+                                    className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${
                                         index === currentImageIndex
                                             ? 'w-8 bg-white'
                                             : 'w-2 bg-white/60 hover:bg-white/80'
