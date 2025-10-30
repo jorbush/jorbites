@@ -167,20 +167,28 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 {imagesSrc.length > 1 && (
                     <>
                         <div
-                            className="absolute top-0 bottom-0 left-0 z-10 flex w-1/4 items-center justify-center transition-colors hover:bg-black/10"
-                            onClick={goToPreviousImage}
+                            className="absolute top-0 bottom-0 left-0 z-[2] flex w-1/4 items-center justify-center transition-colors hover:bg-gradient-to-r hover:from-black/10 hover:to-transparent"
+                            style={{ pointerEvents: 'none' }}
                             data-testid="prev-button"
                         >
-                            <div className="absolute top-1/2 left-3 -translate-y-1/2 transform rounded-full bg-white/90 p-2 shadow-lg transition-colors hover:bg-white">
+                            <div
+                                className="absolute top-1/2 left-3 -translate-y-1/2 transform rounded-full bg-white/90 p-2 shadow-lg transition-colors hover:bg-white"
+                                style={{ pointerEvents: 'auto' }}
+                                onClick={goToPreviousImage}
+                            >
                                 <FiChevronLeft className="cursor-pointer text-2xl text-gray-800" />
                             </div>
                         </div>
                         <div
-                            className="absolute top-0 right-0 bottom-0 z-10 flex w-1/4 items-center justify-center transition-colors hover:bg-black/10"
-                            onClick={goToNextImage}
+                            className="absolute top-0 right-0 bottom-0 z-[2] flex w-1/4 items-center justify-center transition-colors hover:bg-gradient-to-l hover:from-black/10 hover:to-transparent"
+                            style={{ pointerEvents: 'none' }}
                             data-testid="next-button"
                         >
-                            <div className="absolute top-1/2 right-3 -translate-y-1/2 transform rounded-full bg-white/90 p-2 shadow-lg transition-colors hover:bg-white">
+                            <div
+                                className="absolute top-1/2 right-3 -translate-y-1/2 transform rounded-full bg-white/90 p-2 shadow-lg transition-colors hover:bg-white"
+                                style={{ pointerEvents: 'auto' }}
+                                onClick={goToNextImage}
+                            >
                                 <FiChevronRight className="cursor-pointer text-2xl text-gray-800" />
                             </div>
                         </div>

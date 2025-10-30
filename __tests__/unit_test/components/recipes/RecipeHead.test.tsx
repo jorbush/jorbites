@@ -56,13 +56,16 @@ describe('<RecipeHead />', () => {
 
     it('changes image when next button is clicked', async () => {
         render(<RecipeHead {...mockProps} />);
-        const nextButton = screen.getByTestId('next-button');
+        const nextButtonContainer = screen.getByTestId('next-button');
+        const nextButton = nextButtonContainer.querySelector(
+            'div[style*="pointer-events: auto"]'
+        );
         let image = screen.getByAltText('Recipe Image');
         expect(image).toHaveProperty(
             'src',
             expect.stringContaining('image1.jpg')
         );
-        fireEvent.click(nextButton);
+        fireEvent.click(nextButton!);
         // Wait for the animation and state update
         await waitFor(() => {
             image = screen.getByAltText('Recipe Image');
@@ -75,8 +78,11 @@ describe('<RecipeHead />', () => {
 
     it('changes image when previous button is clicked', async () => {
         render(<RecipeHead {...mockProps} />);
-        const prevButton = screen.getByTestId('prev-button');
-        fireEvent.click(prevButton);
+        const prevButtonContainer = screen.getByTestId('prev-button');
+        const prevButton = prevButtonContainer.querySelector(
+            'div[style*="pointer-events: auto"]'
+        );
+        fireEvent.click(prevButton!);
         // Wait for the animation and state update
         await waitFor(() => {
             const image = screen.getByAltText('Recipe Image');
