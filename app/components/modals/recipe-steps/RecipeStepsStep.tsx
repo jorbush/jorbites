@@ -98,7 +98,7 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
                 <ToggleSwitch
                     checked={inputMode === 'text'}
                     onChange={handleModeToggle}
-                    label={t('plain_text_mode') || 'Plain text mode'}
+                    label={t('plain_text_mode')}
                     dataCy="toggle-input-mode"
                 />
             </div>
@@ -118,8 +118,7 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
             ) : (
                 <div className="flex flex-col gap-3">
                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                        {t('paste_steps_help') ||
-                            'Paste your recipe steps here (one per line, with or without numbers/bullets)'}
+                        {t('paste_steps_help')}
                     </p>
                     <Textarea
                         id="steps-plain-text"
@@ -127,15 +126,12 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
                         register={register}
                         errors={errors}
                         rows={12}
-                        placeholder={
-                            t('steps_placeholder') ||
-                            '1. Preheat oven to 350°F\n2. Mix dry ingredients\n3. Add wet ingredients'
-                        }
+                        placeholder={t('steps_placeholder')}
                         dataCy="steps-textarea"
                     />
                     <Button
                         outline={true}
-                        label={t('apply') || 'Apply'}
+                        label={t('apply')}
                         onClick={() => {
                             const textareaElement = document.getElementById(
                                 'steps-plain-text'
@@ -149,14 +145,10 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
                                     onSetSteps(parsedItems);
                                     setInputMode('list');
                                     toast.success(
-                                        t('steps_applied') ||
-                                            `${parsedItems.length} step(s) added`
+                                        `${parsedItems.length} ${t('steps_applied')}`
                                     );
                                 } else {
-                                    toast.error(
-                                        t('no_steps_found') ||
-                                            'No steps found in the text'
-                                    );
+                                    toast.error(t('no_steps_found'));
                                 }
                             }
                         }}

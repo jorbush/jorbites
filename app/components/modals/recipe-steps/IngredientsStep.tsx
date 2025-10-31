@@ -96,7 +96,7 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
                 <ToggleSwitch
                     checked={inputMode === 'text'}
                     onChange={handleModeToggle}
-                    label={t('plain_text_mode') || 'Plain text mode'}
+                    label={t('plain_text_mode')}
                     dataCy="toggle-input-mode"
                 />
             </div>
@@ -116,8 +116,7 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
             ) : (
                 <div className="flex flex-col gap-3">
                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                        {t('paste_ingredients_help') ||
-                            'Paste your ingredients list here (one per line, with or without numbers/bullets)'}
+                        {t('paste_ingredients_help')}
                     </p>
                     <Textarea
                         id="ingredients-plain-text"
@@ -125,15 +124,12 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
                         register={register}
                         errors={errors}
                         rows={12}
-                        placeholder={
-                            t('ingredients_placeholder') ||
-                            '1. 2 cups flour\n2. 1 cup sugar\n3. 3 eggs'
-                        }
+                        placeholder={t('ingredients_placeholder')}
                         dataCy="ingredients-textarea"
                     />
                     <Button
                         outline={true}
-                        label={t('apply') || 'Apply'}
+                        label={t('apply')}
                         onClick={() => {
                             const textareaElement = document.getElementById(
                                 'ingredients-plain-text'
@@ -147,14 +143,10 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
                                     onSetIngredients(parsedItems);
                                     setInputMode('list');
                                     toast.success(
-                                        t('ingredients_applied') ||
-                                            `${parsedItems.length} ingredient(s) added`
+                                        `${parsedItems.length} ${t('ingredients_applied')}`
                                     );
                                 } else {
-                                    toast.error(
-                                        t('no_ingredients_found') ||
-                                            'No ingredients found in the text'
-                                    );
+                                    toast.error(t('no_ingredients_found'));
                                 }
                             }
                         }}
