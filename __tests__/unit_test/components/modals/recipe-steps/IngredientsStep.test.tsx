@@ -55,6 +55,24 @@ vi.mock('@/app/components/inputs/Textarea', () => ({
     ),
 }));
 
+// Mock ToggleSwitch component
+vi.mock('@/app/components/inputs/ToggleSwitch', () => ({
+    default: ({ checked, onChange, label, dataCy }: any) => (
+        <div data-testid="toggle-switch-container">
+            <span>{label}</span>
+            <button
+                data-testid="toggle-input-mode"
+                data-cy={dataCy}
+                onClick={onChange}
+                role="switch"
+                aria-checked={checked}
+            >
+                {checked ? 'ON' : 'OFF'}
+            </button>
+        </div>
+    ),
+}));
+
 // Mock Button component
 vi.mock('@/app/components/buttons/Button', () => ({
     default: ({ label, onClick, dataCy }: any) => (
@@ -277,7 +295,7 @@ describe('<IngredientsStep />', () => {
 
         const toggleButton = screen.getByTestId('toggle-input-mode');
         expect(toggleButton).toBeDefined();
-        expect(toggleButton.textContent).toBe('switch_to_plain_text');
+        expect(toggleButton.getAttribute('aria-checked')).toBe('false');
     });
 
     it('switches to plain text mode when toggle is clicked', () => {
@@ -288,8 +306,8 @@ describe('<IngredientsStep />', () => {
 
         // After clicking, we should see the textarea
         expect(screen.queryByTestId('ingredients-textarea')).toBeDefined();
-        // And the button text should change
-        expect(toggleButton.textContent).toBe('switch_to_list');
+        // And the toggle should be checked
+        expect(toggleButton.getAttribute('aria-checked')).toBe('true');
     });
 
     it('switches back to list mode when toggle is clicked again', () => {

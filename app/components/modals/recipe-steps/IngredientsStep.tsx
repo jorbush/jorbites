@@ -8,6 +8,7 @@ import { useState } from 'react';
 import Heading from '@/app/components/navigation/Heading';
 import Input from '@/app/components/inputs/Input';
 import Textarea from '@/app/components/inputs/Textarea';
+import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
 import Button from '@/app/components/buttons/Button';
 import { parseTextToList } from '@/app/utils/textParser';
 import {
@@ -90,18 +91,14 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
 
     return (
         <div className="flex flex-col gap-8">
-            <div className="flex items-center justify-between">
-                <Heading title={t('title_ingredients')} />
-                <button
-                    type="button"
-                    onClick={handleModeToggle}
-                    className="text-sm text-neutral-600 underline hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
-                    data-testid="toggle-input-mode"
-                >
-                    {inputMode === 'list'
-                        ? t('switch_to_plain_text') || 'Switch to plain text'
-                        : t('switch_to_list') || 'Switch to list'}
-                </button>
+            <Heading title={t('title_ingredients')} />
+            <div className="flex items-center justify-center">
+                <ToggleSwitch
+                    checked={inputMode === 'text'}
+                    onChange={handleModeToggle}
+                    label={t('plain_text_mode') || 'Plain text mode'}
+                    dataCy="toggle-input-mode"
+                />
             </div>
 
             {inputMode === 'list' ? (
