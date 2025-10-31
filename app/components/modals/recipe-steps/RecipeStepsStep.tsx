@@ -98,7 +98,7 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
                 <ToggleSwitch
                     checked={inputMode === 'text'}
                     onChange={handleModeToggle}
-                    label={t('plain_text_mode')}
+                    label={t('plain_text_mode') || undefined}
                     dataCy="toggle-input-mode"
                 />
             </div>
