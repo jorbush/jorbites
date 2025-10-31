@@ -4,9 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { FieldValues, FieldErrors, UseFormRegister } from 'react-hook-form';
 import { AiFillDelete } from 'react-icons/ai';
 import { toast } from 'react-hot-toast';
+import { useState } from 'react';
 import Heading from '@/app/components/navigation/Heading';
 import Input from '@/app/components/inputs/Input';
+import Textarea from '@/app/components/inputs/Textarea';
+import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
 import Button from '@/app/components/buttons/Button';
+import { parseTextToList } from '@/app/utils/textParser';
 import {
     RECIPE_INGREDIENT_MAX_LENGTH,
     RECIPE_MAX_INGREDIENTS,
@@ -18,6 +22,7 @@ interface IngredientsStepProps {
     errors: FieldErrors;
     onAddIngredient: () => void;
     onRemoveIngredient: (index: number) => void;
+    onSetIngredients?: (ingredients: string[]) => void;
 }
 
 const IngredientsStep: React.FC<IngredientsStepProps> = ({
@@ -26,8 +31,10 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
     errors,
     onAddIngredient,
     onRemoveIngredient,
+    onSetIngredients,
 }) => {
     const { t } = useTranslation();
+    const [inputMode, setInputMode] = useState<'list' | 'text'>('list');
 
     const handleAddIngredient = () => {
         if (numIngredients >= RECIPE_MAX_INGREDIENTS) {
@@ -38,6 +45,10 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
             return;
         }
         onAddIngredient();
+    };
+
+    const handleModeToggle = () => {
+        setInputMode((mode) => (mode === 'list' ? 'text' : 'list'));
     };
 
     const renderIngredientInputs = () => {
@@ -81,15 +92,68 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
     return (
         <div className="flex flex-col gap-8">
             <Heading title={t('title_ingredients')} />
-            <div className="flex max-h-[50vh] flex-col gap-3 overflow-y-auto">
-                {renderIngredientInputs()}
+            <div className="flex items-center justify-center">
+                <ToggleSwitch
+                    checked={inputMode === 'text'}
+                    onChange={handleModeToggle}
+                    label={t('plain_text_mode') || undefined}
+                    dataCy="toggle-input-mode"
+                />
             </div>
-            <Button
-                outline={true}
-                label="+"
-                onClick={handleAddIngredient}
-                dataCy="add-ingredient-button"
-            />
+
+            {inputMode === 'list' ? (
+                <>
+                    <div className="flex max-h-[50vh] flex-col gap-3 overflow-y-auto">
+                        {renderIngredientInputs()}
+                    </div>
+                    <Button
+                        outline={true}
+                        label="+"
+                        onClick={handleAddIngredient}
+                        dataCy="add-ingredient-button"
+                    />
+                </>
+            ) : (
+                <div className="flex flex-col gap-3">
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                        {t('paste_ingredients_help')}
+                    </p>
+                    <Textarea
+                        id="ingredients-plain-text"
+                        label=""
+                        register={register}
+                        errors={errors}
+                        rows={12}
+                        placeholder={t('ingredients_placeholder')}
+                        dataCy="ingredients-textarea"
+                    />
+                    <Button
+                        outline={true}
+                        label={t('apply')}
+                        onClick={() => {
+                            const textareaElement = document.getElementById(
+                                'ingredients-plain-text'
+                            ) as HTMLTextAreaElement;
+                            if (textareaElement && onSetIngredients) {
+                                const parsedItems = parseTextToList(
+                                    textareaElement.value,
+                                    RECIPE_MAX_INGREDIENTS
+                                );
+                                if (parsedItems.length > 0) {
+                                    onSetIngredients(parsedItems);
+                                    setInputMode('list');
+                                    toast.success(
+                                        `${parsedItems.length} ${t('ingredients_applied')}`
+                                    );
+                                } else {
+                                    toast.error(t('no_ingredients_found'));
+                                }
+                            }
+                        }}
+                        dataCy="apply-ingredients-button"
+                    />
+                </div>
+            )}
         </div>
     );
 };

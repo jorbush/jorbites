@@ -4,9 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { FieldValues, FieldErrors, UseFormRegister } from 'react-hook-form';
 import { AiFillDelete } from 'react-icons/ai';
 import { toast } from 'react-hot-toast';
+import { useState } from 'react';
 import Heading from '@/app/components/navigation/Heading';
 import Input from '@/app/components/inputs/Input';
+import Textarea from '@/app/components/inputs/Textarea';
+import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
 import Button from '@/app/components/buttons/Button';
+import { parseTextToList } from '@/app/utils/textParser';
 import {
     RECIPE_STEP_MAX_LENGTH,
     RECIPE_MAX_STEPS,
@@ -18,6 +22,7 @@ interface RecipeStepsStepProps {
     errors: FieldErrors;
     onAddStep: () => void;
     onRemoveStep: (index: number) => void;
+    onSetSteps?: (steps: string[]) => void;
 }
 
 const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
@@ -26,8 +31,10 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
     errors,
     onAddStep,
     onRemoveStep,
+    onSetSteps,
 }) => {
     const { t } = useTranslation();
+    const [inputMode, setInputMode] = useState<'list' | 'text'>('list');
 
     const handleAddStep = () => {
         if (numSteps >= RECIPE_MAX_STEPS) {
@@ -38,6 +45,10 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
             return;
         }
         onAddStep();
+    };
+
+    const handleModeToggle = () => {
+        setInputMode((mode) => (mode === 'list' ? 'text' : 'list'));
     };
 
     const renderStepsInputs = () => {
@@ -83,15 +94,68 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
     return (
         <div className="flex flex-col gap-8">
             <Heading title={t('title_steps')} />
-            <div className="flex max-h-[50vh] flex-col gap-3 overflow-y-auto">
-                {renderStepsInputs()}
+            <div className="flex items-center justify-center">
+                <ToggleSwitch
+                    checked={inputMode === 'text'}
+                    onChange={handleModeToggle}
+                    label={t('plain_text_mode') || undefined}
+                    dataCy="toggle-input-mode"
+                />
             </div>
-            <Button
-                outline={true}
-                label="+"
-                onClick={handleAddStep}
-                dataCy="add-step-button"
-            />
+
+            {inputMode === 'list' ? (
+                <>
+                    <div className="flex max-h-[50vh] flex-col gap-3 overflow-y-auto">
+                        {renderStepsInputs()}
+                    </div>
+                    <Button
+                        outline={true}
+                        label="+"
+                        onClick={handleAddStep}
+                        dataCy="add-step-button"
+                    />
+                </>
+            ) : (
+                <div className="flex flex-col gap-3">
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                        {t('paste_steps_help')}
+                    </p>
+                    <Textarea
+                        id="steps-plain-text"
+                        label=""
+                        register={register}
+                        errors={errors}
+                        rows={12}
+                        placeholder={t('steps_placeholder')}
+                        dataCy="steps-textarea"
+                    />
+                    <Button
+                        outline={true}
+                        label={t('apply')}
+                        onClick={() => {
+                            const textareaElement = document.getElementById(
+                                'steps-plain-text'
+                            ) as HTMLTextAreaElement;
+                            if (textareaElement && onSetSteps) {
+                                const parsedItems = parseTextToList(
+                                    textareaElement.value,
+                                    RECIPE_MAX_STEPS
+                                );
+                                if (parsedItems.length > 0) {
+                                    onSetSteps(parsedItems);
+                                    setInputMode('list');
+                                    toast.success(
+                                        `${parsedItems.length} ${t('steps_applied')}`
+                                    );
+                                } else {
+                                    toast.error(t('no_steps_found'));
+                                }
+                            }
+                        }}
+                        dataCy="apply-steps-button"
+                    />
+                </div>
+            )}
         </div>
     );
 };

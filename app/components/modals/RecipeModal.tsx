@@ -485,6 +485,19 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         setCustomValue(`ingredient-${index}`, '');
     };
 
+    const setIngredients = (ingredients: string[]) => {
+        // Clear existing ingredients
+        for (let i = 0; i < numIngredients; i++) {
+            setCustomValue(`ingredient-${i}`, '');
+        }
+        // Set new ingredients
+        setNumIngredients(ingredients.length);
+        ingredients.forEach((ingredient, index) => {
+            setCustomValue(`ingredient-${index}`, ingredient);
+        });
+        setCustomValue('ingredients', ingredients);
+    };
+
     const addStepInput = () => {
         if (numSteps >= RECIPE_MAX_STEPS) {
             toast.error(
@@ -499,6 +512,19 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const removeStepInput = (index: number) => {
         setNumSteps((value) => value - 1);
         setCustomValue(`step-${index}`, '');
+    };
+
+    const setSteps = (steps: string[]) => {
+        // Clear existing steps
+        for (let i = 0; i < numSteps; i++) {
+            setCustomValue(`step-${i}`, '');
+        }
+        // Set new steps
+        setNumSteps(steps.length);
+        steps.forEach((step, index) => {
+            setCustomValue(`step-${index}`, step);
+        });
+        setCustomValue('steps', steps);
     };
 
     const actionLabel = useMemo(() => {
@@ -537,6 +563,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 errors={errors}
                 onAddIngredient={addIngredientInput}
                 onRemoveIngredient={removeIngredientInput}
+                onSetIngredients={setIngredients}
             />
         );
     }
@@ -549,6 +576,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 errors={errors}
                 onAddStep={addStepInput}
                 onRemoveStep={removeStepInput}
+                onSetSteps={setSteps}
             />
         );
     }
