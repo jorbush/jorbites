@@ -2,7 +2,7 @@
 title: 🏴 Catalan Recipes 🥘
 date: 2025-11-04
 endDate: 2025-11-24T21:59:59
-image: /images/events/sant_jordi_2025.webp
+image: /images/events/catalan_recipes.webp
 description: Celebrate Catalan cuisine and help preserve the Catalan language
 ---
 
