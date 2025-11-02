@@ -57,7 +57,9 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
                 .join('\n');
             setValue('steps-plain-text', plainText);
         }
-    }, [inputMode, numSteps, getValues, setValue]);
+        // getValues and setValue are stable references from react-hook-form
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [inputMode, numSteps]);
 
     const handleAddStep = () => {
         if (numSteps >= RECIPE_MAX_STEPS) {

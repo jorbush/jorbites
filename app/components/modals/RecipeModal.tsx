@@ -487,8 +487,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     };
 
     const setIngredients = (ingredients: string[]) => {
-        // Clear existing ingredients
-        for (let i = 0; i < numIngredients; i++) {
+        // Clear all existing ingredients (handle case where old count > new count)
+        const maxCount = Math.max(numIngredients, ingredients.length);
+        for (let i = 0; i < maxCount; i++) {
             setCustomValue(`ingredient-${i}`, '');
         }
         // Set new ingredients
@@ -516,8 +517,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     };
 
     const setSteps = (steps: string[]) => {
-        // Clear existing steps
-        for (let i = 0; i < numSteps; i++) {
+        // Clear all existing steps (handle case where old count > new count)
+        const maxCount = Math.max(numSteps, steps.length);
+        for (let i = 0; i < maxCount; i++) {
             setCustomValue(`step-${i}`, '');
         }
         // Set new steps

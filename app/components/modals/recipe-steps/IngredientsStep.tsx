@@ -57,7 +57,9 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
                 .join('\n');
             setValue('ingredients-plain-text', plainText);
         }
-    }, [inputMode, numIngredients, getValues, setValue]);
+        // getValues and setValue are stable references from react-hook-form
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [inputMode, numIngredients]);
 
     const handleAddIngredient = () => {
         if (numIngredients >= RECIPE_MAX_INGREDIENTS) {
