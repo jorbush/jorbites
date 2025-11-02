@@ -80,7 +80,7 @@ const Modal: React.FC<ModalProps> = ({
             // Don't submit if user is typing in a textarea (e.g., plain text mode)
             const target = event.target as HTMLElement;
             const isTextarea = target?.tagName === 'TEXTAREA';
-            
+
             if (
                 event.key === 'Enter' &&
                 !event.shiftKey &&
