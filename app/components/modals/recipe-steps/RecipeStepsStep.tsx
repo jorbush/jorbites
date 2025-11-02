@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FieldValues, FieldErrors, UseFormRegister } from 'react-hook-form';
 import { AiFillDelete } from 'react-icons/ai';
 import { toast } from 'react-hot-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Heading from '@/app/components/navigation/Heading';
 import Input from '@/app/components/inputs/Input';
 import Textarea from '@/app/components/inputs/Textarea';
@@ -23,6 +23,8 @@ interface RecipeStepsStepProps {
     onAddStep: () => void;
     onRemoveStep: (index: number) => void;
     onSetSteps?: (steps: string[]) => void;
+    getValues?: (name?: string | string[]) => any;
+    setValue?: (name: string, value: any) => void;
 }
 
 const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
@@ -32,9 +34,30 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
     onAddStep,
     onRemoveStep,
     onSetSteps,
+    getValues,
+    setValue,
 }) => {
     const { t } = useTranslation();
     const [inputMode, setInputMode] = useState<'list' | 'text'>('list');
+
+    // Update plain text value when switching to text mode
+    useEffect(() => {
+        if (inputMode === 'text' && getValues && setValue) {
+            // Collect current steps
+            const currentSteps: string[] = [];
+            for (let i = 0; i < numSteps; i++) {
+                const value = getValues(`step-${i}`);
+                if (value && value.trim() !== '') {
+                    currentSteps.push(value.trim());
+                }
+            }
+            // Convert to numbered plain text format
+            const plainText = currentSteps
+                .map((step, index) => `${index + 1}. ${step}`)
+                .join('\n');
+            setValue('steps-plain-text', plainText);
+        }
+    }, [inputMode, numSteps, getValues, setValue]);
 
     const handleAddStep = () => {
         if (numSteps >= RECIPE_MAX_STEPS) {

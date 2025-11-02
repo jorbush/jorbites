@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FieldValues, FieldErrors, UseFormRegister } from 'react-hook-form';
 import { AiFillDelete } from 'react-icons/ai';
 import { toast } from 'react-hot-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Heading from '@/app/components/navigation/Heading';
 import Input from '@/app/components/inputs/Input';
 import Textarea from '@/app/components/inputs/Textarea';
@@ -23,6 +23,8 @@ interface IngredientsStepProps {
     onAddIngredient: () => void;
     onRemoveIngredient: (index: number) => void;
     onSetIngredients?: (ingredients: string[]) => void;
+    getValues?: (name?: string | string[]) => any;
+    setValue?: (name: string, value: any) => void;
 }
 
 const IngredientsStep: React.FC<IngredientsStepProps> = ({
@@ -32,9 +34,30 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
     onAddIngredient,
     onRemoveIngredient,
     onSetIngredients,
+    getValues,
+    setValue,
 }) => {
     const { t } = useTranslation();
     const [inputMode, setInputMode] = useState<'list' | 'text'>('list');
+
+    // Update plain text value when switching to text mode
+    useEffect(() => {
+        if (inputMode === 'text' && getValues && setValue) {
+            // Collect current ingredients
+            const currentIngredients: string[] = [];
+            for (let i = 0; i < numIngredients; i++) {
+                const value = getValues(`ingredient-${i}`);
+                if (value && value.trim() !== '') {
+                    currentIngredients.push(value.trim());
+                }
+            }
+            // Convert to numbered plain text format
+            const plainText = currentIngredients
+                .map((ingredient, index) => `${index + 1}. ${ingredient}`)
+                .join('\n');
+            setValue('ingredients-plain-text', plainText);
+        }
+    }, [inputMode, numIngredients, getValues, setValue]);
 
     const handleAddIngredient = () => {
         if (numIngredients >= RECIPE_MAX_INGREDIENTS) {

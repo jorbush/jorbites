@@ -48,6 +48,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         handleSubmit,
         setValue,
         watch,
+        getValues,
         formState: { errors },
         reset,
     } = useForm<FieldValues>({
@@ -564,6 +565,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 onAddIngredient={addIngredientInput}
                 onRemoveIngredient={removeIngredientInput}
                 onSetIngredients={setIngredients}
+                getValues={getValues}
+                setValue={setValue}
             />
         );
     }
@@ -577,6 +580,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 onAddStep={addStepInput}
                 onRemoveStep={removeStepInput}
                 onSetSteps={setSteps}
+                getValues={getValues}
+                setValue={setValue}
             />
         );
     }
