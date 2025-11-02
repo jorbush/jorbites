@@ -93,14 +93,17 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
 
     return (
         <div className="flex flex-col gap-8">
-            <Heading title={t('title_steps')} />
-            <div className="flex items-center justify-center">
-                <ToggleSwitch
-                    checked={inputMode === 'text'}
-                    onChange={handleModeToggle}
-                    label={t('plain_text_mode') || undefined}
-                    dataCy="toggle-input-mode"
-                />
+            <div className="flex items-center justify-between">
+                <div className="flex-1"></div>
+                <Heading title={t('title_steps')} />
+                <div className="flex flex-1 items-center justify-end">
+                    <ToggleSwitch
+                        checked={inputMode === 'text'}
+                        onChange={handleModeToggle}
+                        label={t('plain_text_mode') || undefined}
+                        dataCy="toggle-input-mode"
+                    />
+                </div>
             </div>
 
             {inputMode === 'list' ? (

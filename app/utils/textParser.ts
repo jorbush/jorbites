@@ -32,7 +32,7 @@ export function parseTextToList(text: string, maxItems?: number): string[] {
         // Remove common list prefixes:
         // - Numbered: "1.", "1)", "1 -", "1 )", etc.
         // - Bullets: "-", "*", "•", "→", "⋅"
-        trimmedLine = trimmedLine.replace(/^(?:\d+[\.\)]\s*|[-*•→⋅]\s*)/, '');
+        trimmedLine = trimmedLine.replace(/^(?:\d+[.)]\s*|[-*•→⋅]\s*)/, '');
 
         // Trim again after removing prefix
         trimmedLine = trimmedLine.trim();
