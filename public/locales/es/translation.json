@@ -590,5 +590,14 @@
     "share_cooking_skills": "Comparte tus habilidades culinarias y ayuda a otros a aprender nuevas recetas y técnicas.",
     "joined_at": "Se unió en",
     "text_delete_workshop": "Jorbites elimina este taller",
-    "currency": "Moneda"
+    "currency": "Moneda",
+    "plain_text_mode": "Modo texto plano",
+    "paste_ingredients_help": "Pega tu lista de ingredientes aquí (uno por línea, con o sin números/viñetas)",
+    "ingredients_placeholder": "1. 2 tazas de harina\n2. 1 taza de azúcar\n3. 3 huevos",
+    "paste_steps_help": "Pega los pasos de tu receta aquí (uno por línea, con o sin números/viñetas)",
+    "steps_placeholder": "1. Precalentar el horno a 180°C\n2. Mezclar ingredientes secos\n3. Añadir ingredientes húmedos",
+    "ingredients_applied": "ingrediente(s) añadido(s)",
+    "no_ingredients_found": "No se encontraron ingredientes en el texto",
+    "steps_applied": "paso(s) añadido(s)",
+    "no_steps_found": "No se encontraron pasos en el texto"
 }
