@@ -401,9 +401,16 @@ describe('<RecipeStepsStep />', () => {
 
     it('calls onSetSteps when apply is clicked with valid text', () => {
         const mockSetSteps = vi.fn();
+        const mockGetValues = vi.fn((name: string) => {
+            if (name === 'steps-plain-text') {
+                return '1. Preheat oven\n2. Mix ingredients\n3. Bake';
+            }
+            return '';
+        });
         const propsWithSetSteps = {
             ...mockProps,
             onSetSteps: mockSetSteps,
+            getValues: mockGetValues,
         };
 
         render(<RecipeStepsStep {...propsWithSetSteps} />);

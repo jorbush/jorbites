@@ -114,10 +114,9 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
 
     return (
         <div className="flex flex-col gap-8">
-            <div className="flex items-center justify-between">
-                <div className="flex-1"></div>
+            <div className="relative flex items-center justify-center">
                 <Heading title={t('title_ingredients')} />
-                <div className="flex flex-1 items-center justify-end">
+                <div className="absolute right-0 flex items-center">
                     <ToggleSwitch
                         checked={inputMode === 'text'}
                         onChange={handleModeToggle}
@@ -157,12 +156,10 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
                         outline={true}
                         label={t('apply') || 'Apply'}
                         onClick={() => {
-                            const textareaElement = document.getElementById(
-                                'ingredients-plain-text'
-                            ) as HTMLTextAreaElement;
-                            if (textareaElement && onSetIngredients) {
+                            if (getValues && onSetIngredients) {
+                                const textareaValue = getValues('ingredients-plain-text');
                                 const parsedItems = parseTextToList(
-                                    textareaElement.value,
+                                    textareaValue,
                                     RECIPE_MAX_INGREDIENTS
                                 );
                                 if (parsedItems.length > 0) {
