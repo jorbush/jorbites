@@ -126,12 +126,12 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
                         register={register}
                         errors={errors}
                         rows={12}
-                        placeholder={t('steps_placeholder')}
+                        placeholder={t('steps_placeholder') || undefined}
                         dataCy="steps-textarea"
                     />
                     <Button
                         outline={true}
-                        label={t('apply')}
+                        label={t('apply') || 'Apply'}
                         onClick={() => {
                             const textareaElement = document.getElementById(
                                 'steps-plain-text'
