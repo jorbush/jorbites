@@ -161,7 +161,8 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
                         label={t('apply') || 'Apply'}
                         onClick={() => {
                             if (getValues && onSetSteps) {
-                                const textareaValue = getValues('steps-plain-text');
+                                const textareaValue =
+                                    getValues('steps-plain-text');
                                 const parsedItems = parseTextToList(
                                     textareaValue,
                                     RECIPE_MAX_STEPS

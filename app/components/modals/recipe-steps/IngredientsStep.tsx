@@ -159,7 +159,9 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
                         label={t('apply') || 'Apply'}
                         onClick={() => {
                             if (getValues && onSetIngredients) {
-                                const textareaValue = getValues('ingredients-plain-text');
+                                const textareaValue = getValues(
+                                    'ingredients-plain-text'
+                                );
                                 const parsedItems = parseTextToList(
                                     textareaValue,
                                     RECIPE_MAX_INGREDIENTS
