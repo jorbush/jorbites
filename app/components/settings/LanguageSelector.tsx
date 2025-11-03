@@ -92,6 +92,7 @@ const LanguageSelector: React.FC = () => {
                             exit={{ opacity: 0, y: -10, scale: 0.95 }}
                             transition={{ duration: 0.2 }}
                             className="dark:bg-dark absolute top-full left-0 z-50 mt-2 w-full overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:text-neutral-100"
+                            role="listbox"
                         >
                             <div className="cursor-pointer">
                                 {LANGUAGE_OPTIONS.map((lang) => (
@@ -99,6 +100,10 @@ const LanguageSelector: React.FC = () => {
                                         key={lang.value}
                                         onClick={() =>
                                             handleLanguageChange(lang.value)
+                                        }
+                                        role="option"
+                                        aria-selected={
+                                            currentLanguage === lang.value
                                         }
                                         className={`flex w-full cursor-pointer items-center px-4 py-3 text-left text-sm transition hover:bg-neutral-100 dark:hover:bg-neutral-700 ${
                                             currentLanguage === lang.value
