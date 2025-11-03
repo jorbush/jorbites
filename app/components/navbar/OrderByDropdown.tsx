@@ -48,9 +48,7 @@ const OrderByDropdown: React.FC = () => {
 
             {/* Desktop: Show text and dropdown arrow */}
             <div className="hidden items-center gap-1 lg:flex">
-                <span className="text-sm">
-                    {getOrderLabel(currentOrderBy)}
-                </span>
+                <span className="text-sm">{getOrderLabel(currentOrderBy)}</span>
                 <FiChevronDown size={14} />
             </div>
 
