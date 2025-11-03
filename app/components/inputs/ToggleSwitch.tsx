@@ -29,11 +29,11 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
                 onClick={onChange}
                 data-cy={dataCy}
                 disabled={disabled}
-                className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2 focus:outline-none dark:focus:ring-offset-neutral-900 ${
+                className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-neutral-900 ${
                     checked
                         ? 'bg-green-450'
                         : 'bg-neutral-300 dark:bg-neutral-600'
-                } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
+                }`}
             >
                 <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
