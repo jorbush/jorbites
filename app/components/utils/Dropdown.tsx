@@ -42,6 +42,44 @@ const Dropdown: React.FC<DropdownProps> = ({
         [onChange]
     );
 
+    const handleKeyDown = useCallback(
+        (event: globalThis.KeyboardEvent) => {
+            switch (event.key) {
+                case 'Escape':
+                    setIsOpen(false);
+                    break;
+                case 'ArrowDown':
+                    event.preventDefault();
+                    setFocusedIndex((prevIndex) =>
+                        prevIndex === -1
+                            ? 0
+                            : prevIndex < options.length - 1
+                            ? prevIndex + 1
+                            : prevIndex
+                    );
+                    break;
+                case 'ArrowUp':
+                    event.preventDefault();
+                    setFocusedIndex((prevIndex) =>
+                        prevIndex > 0 ? prevIndex - 1 : 0
+                    );
+                    break;
+                case 'Enter':
+                case ' ':
+                    event.preventDefault();
+                    if (focusedIndex !== -1) {
+                        handleOptionClick(options[focusedIndex].value);
+                    } else {
+                        setIsOpen(!isOpen);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        },
+        [focusedIndex, handleOptionClick, isOpen, options]
+    );
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -61,38 +99,7 @@ const Dropdown: React.FC<DropdownProps> = ({
             document.removeEventListener('mousedown', handleClickOutside);
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [isOpen]);
-
-    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
-        switch (event.key) {
-            case 'Escape':
-                setIsOpen(false);
-                break;
-            case 'ArrowDown':
-                event.preventDefault();
-                setFocusedIndex((prevIndex) =>
-                    prevIndex < options.length - 1 ? prevIndex + 1 : prevIndex
-                );
-                break;
-            case 'ArrowUp':
-                event.preventDefault();
-                setFocusedIndex((prevIndex) =>
-                    prevIndex > 0 ? prevIndex - 1 : 0
-                );
-                break;
-            case 'Enter':
-            case ' ':
-                event.preventDefault();
-                if (focusedIndex !== -1) {
-                    handleOptionClick(options[focusedIndex].value);
-                } else {
-                    setIsOpen(!isOpen);
-                }
-                break;
-            default:
-                break;
-        }
-    };
+    }, [isOpen, handleKeyDown]);
 
     const selectedOption = options.find((option) => option.value === value);
 
@@ -104,7 +111,7 @@ const Dropdown: React.FC<DropdownProps> = ({
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 onKeyDown={(e: KeyboardEvent<HTMLButtonElement>) =>
-                    handleKeyDown(e as any)
+                    handleKeyDown(e.nativeEvent)
                 }
                 className={
                     buttonClassName ||
