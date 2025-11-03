@@ -2,16 +2,25 @@
 
 import { useTranslation } from 'react-i18next';
 import i18n from '../../i18n';
+import Dropdown from '../utils/Dropdown';
+import { FiChevronDown } from 'react-icons/fi';
 
 const LanguageSelector: React.FC = () => {
     const { t } = useTranslation();
 
-    const handleChangeLanguage = (
-        event: React.ChangeEvent<HTMLSelectElement>
-    ) => {
-        const selectedLanguage = event.target.value;
+    const handleChangeLanguage = (selectedLanguage: string) => {
         i18n.changeLanguage(selectedLanguage);
     };
+
+    const languages = [
+        { value: 'es', label: 'Castellano' },
+        { value: 'en', label: 'English' },
+        { value: 'ca', label: 'Català' },
+    ];
+
+    const currentLanguage =
+        languages.find((lang) => lang.value === i18n.language)?.label ||
+        'English';
 
     return (
         <div
@@ -21,16 +30,29 @@ const LanguageSelector: React.FC = () => {
             <div className="flex-1">
                 <p className="text-left">{t('select_your_language')}</p>
             </div>
-            <select
-                value={i18n.language}
-                onChange={handleChangeLanguage}
-                className="focus:border-green-450 focus:ring-green-450 rounded-md border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-xs"
-                data-cy="language-dropdown"
+            <Dropdown
+                buttonAriaLabel={t('select_your_language') || 'Select Language'}
+                buttonContent={
+                    <div className="flex items-center gap-1">
+                        <span className="text-sm">{currentLanguage}</span>
+                        <FiChevronDown size={14} />
+                    </div>
+                }
             >
-                <option value="es">Castellano</option>
-                <option value="en">English</option>
-                <option value="ca">Català</option>
-            </select>
+                {languages.map((lang) => (
+                    <div
+                        key={lang.value}
+                        onClick={() => handleChangeLanguage(lang.value)}
+                        className={`flex w-full cursor-pointer items-center px-4 py-3 text-left text-sm transition hover:bg-neutral-100 dark:hover:bg-neutral-700 ${
+                            i18n.language === lang.value
+                                ? 'bg-green-450/10 text-green-450 dark:bg-green-450/20 dark:text-green-450'
+                                : 'text-neutral-700 dark:text-neutral-300'
+                        }`}
+                    >
+                        <span className="whitespace-nowrap">{lang.label}</span>
+                    </div>
+                ))}
+            </Dropdown>
         </div>
     );
 };

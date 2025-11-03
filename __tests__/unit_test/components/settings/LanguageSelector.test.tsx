@@ -34,45 +34,30 @@ describe('<LanguageSelector />', () => {
         render(<LanguageSelector />);
 
         expect(screen.getByText('select_your_language')).toBeDefined();
-        expect(screen.getByRole('combobox')).toBeDefined();
-        expect(
-            screen.getByRole('option', {
-                name: 'Castellano',
-            })
-        ).toBeDefined();
-        expect(screen.getByRole('option', { name: 'English' })).toBeDefined();
-        expect(screen.getByRole('option', { name: 'Català' })).toBeDefined();
+        expect(screen.getByRole('button')).toBeDefined();
+        expect(screen.getByText('English')).toBeDefined();
     });
 
-    it('sets the correct initial value for the select element', () => {
+    it('opens the dropdown and shows language options when clicked', () => {
         render(<LanguageSelector />);
 
-        const select = screen.getByRole('combobox') as HTMLSelectElement;
-        expect(select.value).toBe('en');
+        const button = screen.getByRole('button');
+        fireEvent.click(button);
+
+        expect(screen.getByText('Castellano')).toBeDefined();
+        expect(screen.getAllByText('English').length).toBe(2);
+        expect(screen.getByText('Català')).toBeDefined();
     });
 
-    it('calls i18n.changeLanguage when language is changed', () => {
+    it('calls i18n.changeLanguage when a language is selected', () => {
         render(<LanguageSelector />);
 
-        const select = screen.getByRole('combobox');
-        fireEvent.change(select, {
-            target: { value: 'es' },
-        });
+        const button = screen.getByRole('button');
+        fireEvent.click(button);
+
+        const spanishOption = screen.getByText('Castellano');
+        fireEvent.click(spanishOption);
 
         expect(i18n.changeLanguage).toHaveBeenCalledWith('es');
-    });
-
-    it('changes select value when language is changed', () => {
-        render(<LanguageSelector />);
-
-        const select = screen.getByRole('combobox') as HTMLSelectElement;
-        fireEvent.change(select, {
-            target: { value: 'ca' },
-        });
-
-        // Use a small delay to allow for state updates
-        setTimeout(() => {
-            expect(select.value).toBe('ca');
-        }, 100);
     });
 });
