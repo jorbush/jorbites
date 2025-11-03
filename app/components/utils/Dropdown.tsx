@@ -7,12 +7,14 @@ interface DropdownProps {
     buttonContent: ReactNode;
     children: ReactNode;
     buttonAriaLabel: string;
+    buttonClassName?: string;
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
     buttonContent,
     children,
     buttonAriaLabel,
+    buttonClassName = 'relative flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-2 text-sm text-neutral-600 shadow-xs transition hover:bg-neutral-200 hover:shadow-md lg:px-3 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700',
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -27,12 +29,20 @@ const Dropdown: React.FC<DropdownProps> = ({
             }
         };
 
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setIsOpen(false);
+            }
+        };
+
         if (isOpen) {
             document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('keydown', handleKeyDown);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleKeyDown);
         };
     }, [isOpen]);
 
@@ -43,7 +53,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         >
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-2 text-sm text-neutral-600 shadow-xs transition hover:bg-neutral-200 hover:shadow-md lg:px-3 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
+                className={buttonClassName}
                 aria-label={buttonAriaLabel}
                 aria-expanded={isOpen}
             >
@@ -60,7 +70,7 @@ const Dropdown: React.FC<DropdownProps> = ({
                         className="dark:bg-dark absolute top-full right-0 z-50 mt-2 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:text-neutral-100"
                         onClick={() => setIsOpen(false)}
                     >
-                        <div className="w-max cursor-pointer">{children}</div>
+                        {children}
                     </motion.div>
                 )}
             </AnimatePresence>

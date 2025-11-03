@@ -48,7 +48,9 @@ const OrderByDropdown: React.FC = () => {
 
             {/* Desktop: Show text and dropdown arrow */}
             <div className="hidden items-center gap-1 lg:flex">
-                <span className="text-sm">{getOrderLabel(currentOrderBy)}</span>
+                <span className="text-sm">
+                    {getOrderLabel(currentOrderBy)}
+                </span>
                 <FiChevronDown size={14} />
             </div>
 
@@ -64,10 +66,9 @@ const OrderByDropdown: React.FC = () => {
             buttonAriaLabel={t('order_by') || 'Order by'}
             buttonContent={buttonContent}
         >
-            <div className="w-max cursor-pointer">
-                {ORDER_BY_OPTIONS.map((orderBy) => (
-                    <div
-                        key={orderBy}
+            {ORDER_BY_OPTIONS.map((orderBy) => (
+                <div
+                    key={orderBy}
                         onClick={() => handleOrderChange(orderBy)}
                         className={`flex w-full cursor-pointer items-center px-4 py-3 text-left text-sm transition hover:bg-neutral-100 dark:hover:bg-neutral-700 ${
                             currentOrderBy === orderBy
@@ -80,7 +81,6 @@ const OrderByDropdown: React.FC = () => {
                         </span>
                     </div>
                 ))}
-            </div>
         </Dropdown>
     );
 };
