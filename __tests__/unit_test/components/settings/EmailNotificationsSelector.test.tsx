@@ -56,16 +56,16 @@ describe('<EmailNotificationsSelector />', () => {
         render(<EmailNotificationsSelector currentUser={mockUser} />);
 
         expect(screen.getByText('enable_email_notifications')).toBeDefined();
-        expect(screen.getByRole('button')).toBeDefined();
+        expect(screen.getByRole('switch')).toBeDefined();
     });
 
-    it('toggles email notifications when button is clicked', async () => {
+    it('toggles email notifications when switch is clicked', async () => {
         (axios.put as any).mockResolvedValue({});
 
         render(<EmailNotificationsSelector currentUser={mockUser} />);
 
-        const button = screen.getByRole('button');
-        fireEvent.click(button);
+        const switchControl = screen.getByRole('switch');
+        fireEvent.click(switchControl);
 
         await waitFor(() => {
             expect(axios.put).toHaveBeenCalledWith('/api/emailNotifications/1');
@@ -80,8 +80,8 @@ describe('<EmailNotificationsSelector />', () => {
 
         render(<EmailNotificationsSelector currentUser={mockUser} />);
 
-        const button = screen.getByRole('button');
-        fireEvent.click(button);
+        const switchControl = screen.getByRole('switch');
+        fireEvent.click(switchControl);
 
         await waitFor(() => {
             expect(axios.put).toHaveBeenCalledWith('/api/emailNotifications/1');
@@ -89,7 +89,7 @@ describe('<EmailNotificationsSelector />', () => {
         });
     });
 
-    it('disables button for 2 seconds after click', async () => {
+    it('disables switch for 2 seconds after click', async () => {
         vi.useFakeTimers();
         (axios.put as any).mockResolvedValue({});
 
@@ -97,63 +97,19 @@ describe('<EmailNotificationsSelector />', () => {
             render(<EmailNotificationsSelector currentUser={mockUser} />);
         });
 
-        const button = screen.getByRole('button');
+        const switchControl = screen.getByRole('switch');
 
         await act(async () => {
-            fireEvent.click(button);
+            fireEvent.click(switchControl);
         });
 
-        expect(button).toHaveProperty('disabled', true);
+        expect(switchControl).toHaveProperty('disabled', true);
 
         await act(async () => {
             await vi.advanceTimersByTimeAsync(2000);
         });
-        expect(button).toHaveProperty('disabled', false);
+        expect(switchControl).toHaveProperty('disabled', false);
 
         vi.useRealTimers();
-    });
-
-    it('renders correct icon based on user preferences', () => {
-        const userWithNotifications = {
-            ...mockUser,
-            emailNotifications: true,
-            name: null,
-            email: null,
-            emailVerified: null,
-            image: null,
-            hashedPassword: null,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            favoriteIds: [],
-            level: 0,
-            verified: false,
-        };
-        const { rerender } = render(
-            <EmailNotificationsSelector currentUser={userWithNotifications} />
-        );
-
-        expect(screen.getByTestId('thumb-up-icon')).toBeDefined();
-
-        const userWithoutNotifications = {
-            ...mockUser,
-            emailNotifications: false,
-            name: null,
-            email: null,
-            emailVerified: null,
-            image: null,
-            hashedPassword: null,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            favoriteIds: [],
-            level: 0,
-            verified: false,
-        };
-        rerender(
-            <EmailNotificationsSelector
-                currentUser={userWithoutNotifications}
-            />
-        );
-
-        expect(screen.getByTestId('thumb-down-icon')).toBeDefined();
     });
 });

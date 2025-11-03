@@ -54,19 +54,18 @@ describe('<ThemeSelector />', () => {
         render(<ThemeSelector />);
 
         expect(screen.getByText('dark_theme')).toBeDefined();
-        expect(screen.getByRole('button')).toBeDefined();
+        expect(screen.getByRole('switch')).toBeDefined();
     });
 
-    it('toggles theme when button is clicked', async () => {
+    it('toggles theme when switch is clicked', async () => {
         render(<ThemeSelector />);
 
-        const button = screen.getByRole('button');
+        const switchControl = screen.getByRole('switch');
 
         await act(async () => {
-            fireEvent.click(button);
+            fireEvent.click(switchControl);
         });
 
-        expect(screen.getByText('light_theme')).toBeDefined();
         expect(localStorageMock['theme']).toBe('dark');
         expect(document.documentElement.classList.toggle).toHaveBeenCalledWith(
             'dark',
@@ -82,7 +81,6 @@ describe('<ThemeSelector />', () => {
             render(<ThemeSelector />);
         });
 
-        expect(screen.getByText('light_theme')).toBeDefined();
         expect(document.documentElement.classList.toggle).toHaveBeenCalledWith(
             'dark',
             true
@@ -98,20 +96,18 @@ describe('<ThemeSelector />', () => {
     it('toggles theme multiple times', async () => {
         render(<ThemeSelector />);
 
-        const button = screen.getByRole('button');
+        const switchControl = screen.getByRole('switch');
 
         await act(async () => {
-            fireEvent.click(button);
+            fireEvent.click(switchControl);
         });
 
-        expect(screen.getByText('light_theme')).toBeDefined();
         expect(localStorageMock['theme']).toBe('dark');
 
         await act(async () => {
-            fireEvent.click(button);
+            fireEvent.click(switchControl);
         });
 
-        expect(screen.getByText('dark_theme')).toBeDefined();
         expect(localStorageMock['theme']).toBe('light');
     });
 });
