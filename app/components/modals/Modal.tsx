@@ -128,7 +128,7 @@ const Modal: React.FC<ModalProps> = ({
                                     {topButton}
                                 </div>
                             </div>
-                            <div className="relative min-h-0 flex-auto overflow-y-auto p-6 text-black dark:text-neutral-100">
+                            <div className="relative min-h-0 flex-auto overflow-y-visible p-6 text-black dark:text-neutral-100">
                                 {body}
                             </div>
                             <div className="flex flex-shrink-0 flex-col gap-2 border-t border-gray-200 p-6 dark:border-neutral-600">
