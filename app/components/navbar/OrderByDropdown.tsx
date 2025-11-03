@@ -48,9 +48,7 @@ const OrderByDropdown: React.FC = () => {
 
             {/* Desktop: Show text and dropdown arrow */}
             <div className="hidden items-center gap-1 lg:flex">
-                <span className="text-sm">
-                    {getOrderLabel(currentOrderBy)}
-                </span>
+                <span className="text-sm">{getOrderLabel(currentOrderBy)}</span>
                 <FiChevronDown size={14} />
             </div>
 
@@ -69,18 +67,18 @@ const OrderByDropdown: React.FC = () => {
             {ORDER_BY_OPTIONS.map((orderBy) => (
                 <div
                     key={orderBy}
-                        onClick={() => handleOrderChange(orderBy)}
-                        className={`flex w-full cursor-pointer items-center px-4 py-3 text-left text-sm transition hover:bg-neutral-100 dark:hover:bg-neutral-700 ${
-                            currentOrderBy === orderBy
-                                ? 'bg-green-450/10 text-green-450 dark:bg-green-450/20 dark:text-green-450'
-                                : 'text-neutral-700 dark:text-neutral-300'
-                        }`}
-                    >
-                        <span className="whitespace-nowrap">
-                            {getOrderLabel(orderBy)}
-                        </span>
-                    </div>
-                ))}
+                    onClick={() => handleOrderChange(orderBy)}
+                    className={`flex w-full cursor-pointer items-center px-4 py-3 text-left text-sm transition hover:bg-neutral-100 dark:hover:bg-neutral-700 ${
+                        currentOrderBy === orderBy
+                            ? 'bg-green-450/10 text-green-450 dark:bg-green-450/20 dark:text-green-450'
+                            : 'text-neutral-700 dark:text-neutral-300'
+                    }`}
+                >
+                    <span className="whitespace-nowrap">
+                        {getOrderLabel(orderBy)}
+                    </span>
+                </div>
+            ))}
         </Dropdown>
     );
 };

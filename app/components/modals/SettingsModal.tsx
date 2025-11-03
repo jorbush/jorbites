@@ -86,7 +86,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
 
     const bodyContent = (
         <div
-            className="flex flex-col gap-6"
+            className="flex min-h-50 flex-col gap-6"
             data-cy="settings-modal-content"
         >
             <Tabs
