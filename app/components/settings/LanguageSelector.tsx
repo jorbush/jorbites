@@ -2,35 +2,36 @@
 
 import { useTranslation } from 'react-i18next';
 import i18n from '../../i18n';
+import Dropdown from '../utils/Dropdown';
 
 const LanguageSelector: React.FC = () => {
     const { t } = useTranslation();
 
-    const handleChangeLanguage = (
-        event: React.ChangeEvent<HTMLSelectElement>
-    ) => {
-        const selectedLanguage = event.target.value;
+    const handleChangeLanguage = (selectedLanguage: string) => {
         i18n.changeLanguage(selectedLanguage);
     };
 
+    const languageOptions = [
+        { value: 'es', label: 'Castellano' },
+        { value: 'en', label: 'English' },
+        { value: 'ca', label: 'Català' },
+    ];
+
     return (
         <div
-            className="relative inline-flex"
+            className="relative inline-flex items-center"
             data-cy="language-selector"
         >
             <div className="flex-1">
                 <p className="text-left">{t('select_your_language')}</p>
             </div>
-            <select
+            <Dropdown
+                options={languageOptions}
                 value={i18n.language}
                 onChange={handleChangeLanguage}
-                className="focus:border-green-450 focus:ring-green-450 rounded-md border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-xs"
-                data-cy="language-dropdown"
-            >
-                <option value="es">Castellano</option>
-                <option value="en">English</option>
-                <option value="ca">Català</option>
-            </select>
+                ariaLabel={t('select_your_language') || 'Select your language'}
+                buttonClassName="rounded-md border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-xs focus:border-green-450 focus:ring-green-450"
+            />
         </div>
     );
 };
