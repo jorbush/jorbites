@@ -53,6 +53,15 @@ const Dropdown: React.FC<DropdownProps> = ({
         >
             <button
                 onClick={() => setIsOpen(!isOpen)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                        setIsOpen(false);
+                        e.preventDefault();
+                    } else if (e.key === 'Enter' || e.key === ' ') {
+                        setIsOpen(!isOpen);
+                        e.preventDefault();
+                    }
+                }}
                 className={buttonClassName}
                 aria-label={buttonAriaLabel}
                 aria-expanded={isOpen}
