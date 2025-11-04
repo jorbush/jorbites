@@ -19,7 +19,10 @@ interface DropdownProps<T> {
     showNotification?: boolean;
     className?: string;
     dropdownClassName?: string;
-    optionClassName?: (option: DropdownOption<T>, isSelected: boolean) => string;
+    optionClassName?: (
+        option: DropdownOption<T>,
+        isSelected: boolean
+    ) => string;
     'data-cy'?: string;
 }
 

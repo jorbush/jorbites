@@ -27,7 +27,9 @@ const LanguageSelector: React.FC = () => {
         label: lang.name,
     }));
 
-    const currentLanguage = LANGUAGES.find((lang) => lang.code === i18n.language);
+    const currentLanguage = LANGUAGES.find(
+        (lang) => lang.code === i18n.language
+    );
 
     const buttonContent = (
         <span className="text-sm">{currentLanguage?.name || 'English'}</span>
