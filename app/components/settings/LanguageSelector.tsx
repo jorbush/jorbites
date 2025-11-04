@@ -35,7 +35,7 @@ const LanguageSelector: React.FC = () => {
 
     return (
         <div
-            className="relative inline-flex flex-col gap-2"
+            className="flex items-center"
             data-cy="language-selector"
         >
             <div className="flex-1">
