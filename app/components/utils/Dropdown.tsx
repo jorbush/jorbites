@@ -20,6 +20,7 @@ interface DropdownProps<T> {
     className?: string;
     dropdownClassName?: string;
     optionClassName?: (option: DropdownOption<T>, isSelected: boolean) => string;
+    'data-cy'?: string;
 }
 
 function Dropdown<T extends string>({
@@ -33,6 +34,7 @@ function Dropdown<T extends string>({
     className = '',
     dropdownClassName = '',
     optionClassName,
+    'data-cy': dataCy,
 }: DropdownProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -87,6 +89,7 @@ function Dropdown<T extends string>({
                 }
                 aria-label={ariaLabel}
                 aria-expanded={isOpen}
+                data-cy={dataCy}
             >
                 {buttonContent}
                 {showChevron && (

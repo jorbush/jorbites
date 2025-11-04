@@ -28,13 +28,17 @@ describe('Workshops E2E', () => {
         // Look for the language selector using the new data-cy attribute
         cy.get('[data-cy="language-dropdown"]', { timeout: 5000 })
             .should('be.visible')
-            .then(($select) => {
-                // Check if we're not already on English
-                const currentLang = $select.val();
-                cy.task('log', `Current language: ${currentLang}`);
+            .then(($button) => {
+                // Get the button text to check current language
+                const buttonText = $button.text();
+                cy.task('log', `Current language: ${buttonText}`);
 
-                if (currentLang !== 'en') {
-                    cy.wrap($select).select('en');
+                if (!buttonText.includes('English')) {
+                    // Click the dropdown button to open options
+                    cy.wrap($button).click();
+
+                    // Select English from the dropdown
+                    cy.contains('English').click();
 
                     // Save settings to persist the language change
                     cy.get('[data-cy="modal-action-button"]')
