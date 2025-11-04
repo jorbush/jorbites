@@ -33,46 +33,38 @@ describe('<LanguageSelector />', () => {
     it('renders correctly with initial language', () => {
         render(<LanguageSelector />);
 
-        expect(screen.getByText('select_your_language')).toBeDefined();
-        expect(screen.getByRole('combobox')).toBeDefined();
-        expect(
-            screen.getByRole('option', {
-                name: 'Castellano',
-            })
-        ).toBeDefined();
-        expect(screen.getByRole('option', { name: 'English' })).toBeDefined();
-        expect(screen.getByRole('option', { name: 'Català' })).toBeDefined();
-    });
-
-    it('sets the correct initial value for the select element', () => {
-        render(<LanguageSelector />);
-
-        const select = screen.getByRole('combobox') as HTMLSelectElement;
-        expect(select.value).toBe('en');
-    });
-
-    it('calls i18n.changeLanguage when language is changed', () => {
-        render(<LanguageSelector />);
-
-        const select = screen.getByRole('combobox');
-        fireEvent.change(select, {
-            target: { value: 'es' },
+        expect(screen.getByText('select_your_language')).toBeInTheDocument();
+        const button = screen.getByRole('button', {
+            name: 'select_your_language',
         });
+        expect(button).toBeInTheDocument();
+
+        // Check that the initial value is displayed
+        expect(screen.getByText('English')).toBeInTheDocument();
+    });
+
+    it('opens the dropdown and shows options when clicked', () => {
+        render(<LanguageSelector />);
+        const button = screen.getByRole('button', {
+            name: 'select_your_language',
+        });
+        fireEvent.click(button);
+
+        expect(screen.getByText('Castellano')).toBeInTheDocument();
+        expect(screen.getByText('English')).toBeInTheDocument();
+        expect(screen.getByText('Català')).toBeInTheDocument();
+    });
+
+    it('calls i18n.changeLanguage when a new language is selected', () => {
+        render(<LanguageSelector />);
+        const button = screen.getByRole('button', {
+            name: 'select_your_language',
+        });
+        fireEvent.click(button);
+
+        const spanishOption = screen.getByText('Castellano');
+        fireEvent.click(spanishOption);
 
         expect(i18n.changeLanguage).toHaveBeenCalledWith('es');
-    });
-
-    it('changes select value when language is changed', () => {
-        render(<LanguageSelector />);
-
-        const select = screen.getByRole('combobox') as HTMLSelectElement;
-        fireEvent.change(select, {
-            target: { value: 'ca' },
-        });
-
-        // Use a small delay to allow for state updates
-        setTimeout(() => {
-            expect(select.value).toBe('ca');
-        }, 100);
     });
 });

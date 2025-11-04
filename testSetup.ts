@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom';
 (globalThis as { [key: string]: any }).IS_REACT_ACT_ENVIRONMENT = true;
 
 // Mock Axiom modules to prevent import errors in tests
