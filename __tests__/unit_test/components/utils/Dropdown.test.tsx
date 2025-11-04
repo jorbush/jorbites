@@ -257,4 +257,154 @@ describe('<Dropdown />', () => {
             'text-green-450'
         );
     });
+
+    it('has aria-haspopup="listbox" attribute on button', () => {
+        const mockOnChange = vi.fn();
+        render(
+            <Dropdown
+                options={mockOptions}
+                value="option1"
+                onChange={mockOnChange}
+                buttonContent={<span>Button</span>}
+            />
+        );
+
+        const button = screen.getByRole('button');
+        expect(button.getAttribute('aria-haspopup')).toBe('listbox');
+    });
+
+    it('dropdown menu has role="listbox"', () => {
+        const mockOnChange = vi.fn();
+        render(
+            <Dropdown
+                options={mockOptions}
+                value="option1"
+                onChange={mockOnChange}
+                buttonContent={<span>Button</span>}
+            />
+        );
+
+        const button = screen.getByRole('button');
+        fireEvent.click(button);
+
+        const listbox = screen.getByRole('listbox');
+        expect(listbox).toBeDefined();
+    });
+
+    it('dropdown options have role="option"', () => {
+        const mockOnChange = vi.fn();
+        render(
+            <Dropdown
+                options={mockOptions}
+                value="option1"
+                onChange={mockOnChange}
+                buttonContent={<span>Button</span>}
+            />
+        );
+
+        const button = screen.getByRole('button');
+        fireEvent.click(button);
+
+        const options = screen.getAllByRole('option');
+        expect(options.length).toBe(3);
+    });
+
+    it('supports keyboard navigation with ArrowDown', () => {
+        const mockOnChange = vi.fn();
+        render(
+            <Dropdown
+                options={mockOptions}
+                value="option1"
+                onChange={mockOnChange}
+                buttonContent={<span>Button</span>}
+            />
+        );
+
+        const button = screen.getByRole('button');
+        
+        // ArrowDown opens the dropdown
+        fireEvent.keyDown(button, { key: 'ArrowDown' });
+        expect(screen.getByText('Option 1')).toBeDefined();
+    });
+
+    it('supports keyboard navigation with Escape', () => {
+        const mockOnChange = vi.fn();
+        render(
+            <Dropdown
+                options={mockOptions}
+                value="option1"
+                onChange={mockOnChange}
+                buttonContent={<span>Button</span>}
+            />
+        );
+
+        const button = screen.getByRole('button');
+        fireEvent.click(button);
+        
+        // Escape closes the dropdown
+        fireEvent.keyDown(button, { key: 'Escape' });
+        expect(screen.queryByText('Option 2')).toBeNull();
+    });
+
+    it('supports keyboard navigation with Enter to select option', () => {
+        const mockOnChange = vi.fn();
+        render(
+            <Dropdown
+                options={mockOptions}
+                value="option1"
+                onChange={mockOnChange}
+                buttonContent={<span>Button</span>}
+            />
+        );
+
+        const button = screen.getByRole('button');
+        
+        // Open dropdown with Enter
+        fireEvent.keyDown(button, { key: 'Enter' });
+        expect(screen.getByText('Option 1')).toBeDefined();
+        
+        // Navigate down with ArrowDown
+        fireEvent.keyDown(button, { key: 'ArrowDown' });
+        
+        // Select with Enter
+        fireEvent.keyDown(button, { key: 'Enter' });
+        expect(mockOnChange).toHaveBeenCalledWith('option2');
+    });
+
+    it('supports keyboard navigation with Space key', () => {
+        const mockOnChange = vi.fn();
+        render(
+            <Dropdown
+                options={mockOptions}
+                value="option1"
+                onChange={mockOnChange}
+                buttonContent={<span>Button</span>}
+            />
+        );
+
+        const button = screen.getByRole('button');
+        
+        // Space opens the dropdown
+        fireEvent.keyDown(button, { key: ' ' });
+        expect(screen.getByText('Option 1')).toBeDefined();
+    });
+
+    it('selected option has aria-selected="true"', () => {
+        const mockOnChange = vi.fn();
+        render(
+            <Dropdown
+                options={mockOptions}
+                value="option2"
+                onChange={mockOnChange}
+                buttonContent={<span>Button</span>}
+            />
+        );
+
+        const button = screen.getByRole('button');
+        fireEvent.click(button);
+
+        const options = screen.getAllByRole('option');
+        expect(options[1].getAttribute('aria-selected')).toBe('true');
+        expect(options[0].getAttribute('aria-selected')).toBe('false');
+    });
 });
