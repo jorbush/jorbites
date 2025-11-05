@@ -16,6 +16,7 @@ interface DropdownProps<T> {
     buttonContent?: ReactNode;
     ariaLabel?: string;
     showChevron?: boolean;
+    chevronClassName?: string;
     showNotification?: boolean;
     className?: string;
     dropdownClassName?: string;
@@ -33,6 +34,7 @@ function Dropdown<T extends string>({
     buttonContent,
     ariaLabel,
     showChevron = true,
+    chevronClassName = '',
     showNotification = false,
     className = '',
     dropdownClassName = '',
@@ -161,7 +163,7 @@ function Dropdown<T extends string>({
                 {showChevron && (
                     <FiChevronDown
                         size={14}
-                        className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                        className={`transition-transform ${isOpen ? 'rotate-180' : ''} ${chevronClassName}`}
                     />
                 )}
                 {showNotification && (

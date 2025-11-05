@@ -50,7 +50,7 @@ const OrderByDropdown: React.FC = () => {
                 <IoReorderThree size={18} />
             </div>
 
-            {/* Desktop: Show text and dropdown arrow */}
+            {/* Desktop: Show text */}
             <div className="hidden items-center gap-1 lg:flex">
                 <span className="text-sm">{getOrderLabel(currentOrderBy)}</span>
             </div>
@@ -65,6 +65,7 @@ const OrderByDropdown: React.FC = () => {
             buttonContent={buttonContent}
             ariaLabel={t('order_by') || 'Order by'}
             showNotification={currentOrderBy !== OrderByType.NEWEST}
+            chevronClassName="hidden lg:inline"
         />
     );
 };
