@@ -47,7 +47,6 @@ function Dropdown<T extends string>({
     const buttonRef = useRef<HTMLButtonElement>(null);
     const listboxRef = useRef<HTMLDivElement>(null);
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -59,24 +58,18 @@ function Dropdown<T extends string>({
         };
 
         if (isOpen) {
+            const currentIndex = options.findIndex(
+                (opt) => opt.value === value
+            );
+            setFocusedIndex(currentIndex >= 0 ? currentIndex : 0);
             document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            setFocusedIndex(-1);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isOpen]);
-
-    // Reset focused index when dropdown opens
-    useEffect(() => {
-        if (isOpen) {
-            const currentIndex = options.findIndex(
-                (opt) => opt.value === value
-            );
-            setFocusedIndex(currentIndex >= 0 ? currentIndex : 0);
-        } else {
-            setFocusedIndex(-1);
-        }
     }, [isOpen, options, value]);
 
     const handleOptionClick = (optionValue: T) => {
