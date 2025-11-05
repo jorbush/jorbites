@@ -48,6 +48,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         handleSubmit,
         setValue,
         watch,
+        getValues,
         formState: { errors },
         reset,
     } = useForm<FieldValues>({
@@ -485,6 +486,20 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         setCustomValue(`ingredient-${index}`, '');
     };
 
+    const setIngredients = (ingredients: string[]) => {
+        // Clear all existing ingredients (handle case where old count > new count)
+        const maxCount = Math.max(numIngredients, ingredients.length);
+        for (let i = 0; i < maxCount; i++) {
+            setCustomValue(`ingredient-${i}`, '');
+        }
+        // Set new ingredients
+        setNumIngredients(ingredients.length);
+        ingredients.forEach((ingredient, index) => {
+            setCustomValue(`ingredient-${index}`, ingredient);
+        });
+        setCustomValue('ingredients', ingredients);
+    };
+
     const addStepInput = () => {
         if (numSteps >= RECIPE_MAX_STEPS) {
             toast.error(
@@ -499,6 +514,20 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const removeStepInput = (index: number) => {
         setNumSteps((value) => value - 1);
         setCustomValue(`step-${index}`, '');
+    };
+
+    const setSteps = (steps: string[]) => {
+        // Clear all existing steps (handle case where old count > new count)
+        const maxCount = Math.max(numSteps, steps.length);
+        for (let i = 0; i < maxCount; i++) {
+            setCustomValue(`step-${i}`, '');
+        }
+        // Set new steps
+        setNumSteps(steps.length);
+        steps.forEach((step, index) => {
+            setCustomValue(`step-${index}`, step);
+        });
+        setCustomValue('steps', steps);
     };
 
     const actionLabel = useMemo(() => {
@@ -537,6 +566,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 errors={errors}
                 onAddIngredient={addIngredientInput}
                 onRemoveIngredient={removeIngredientInput}
+                onSetIngredients={setIngredients}
+                getValues={getValues}
+                setValue={setValue}
             />
         );
     }
@@ -549,6 +581,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 errors={errors}
                 onAddStep={addStepInput}
                 onRemoveStep={removeStepInput}
+                onSetSteps={setSteps}
+                getValues={getValues}
+                setValue={setValue}
             />
         );
     }

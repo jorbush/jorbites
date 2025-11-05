@@ -1,12 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import { HiThumbUp, HiThumbDown } from 'react-icons/hi';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
 
 interface EmailNotificationProps {
     currentUser?: SafeUser | null;
@@ -57,49 +57,13 @@ const EmailNotificationsSelector: React.FC<EmailNotificationProps> = ({
             <div className="flex-1">
                 <p className="text-left">{t('enable_email_notifications')}</p>
             </div>
-            <div className="flex items-center">
-                <button
-                    disabled={isLoading || isDisabled}
-                    onClick={handleButtonClick}
-                    className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border border-gray-50 transition-colors duration-200 ease-in-out focus:ring-0 focus:outline-hidden"
-                >
-                    <span className="sr-only">Toggle</span>
-                    <span
-                        className={`${
-                            !currentUser?.emailNotifications
-                                ? 'translate-x-5'
-                                : 'translate-x-0'
-                        } relative mt-[1.2px] ml-[1.2px] inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
-                    >
-                        <span
-                            className={`${
-                                !currentUser?.emailNotifications
-                                    ? 'opacity-0 duration-100 ease-out'
-                                    : 'opacity-100 duration-200 ease-in'
-                            } absolute inset-0 flex h-full w-full items-center justify-center transition-opacity`}
-                            aria-hidden="true"
-                        >
-                            <HiThumbUp
-                                data-testid="thumb-up-icon"
-                                className="h-3 w-3 text-gray-400"
-                            />
-                        </span>
-                        <span
-                            className={`${
-                                !currentUser?.emailNotifications
-                                    ? 'opacity-100 duration-200 ease-in'
-                                    : 'opacity-0 duration-100 ease-out'
-                            } absolute inset-0 flex h-full w-full items-center justify-center transition-opacity`}
-                            aria-hidden="true"
-                        >
-                            <HiThumbDown
-                                data-testid="thumb-down-icon"
-                                className="h-3 w-3 text-gray-400"
-                            />
-                        </span>
-                    </span>
-                </button>
-            </div>
+            <ToggleSwitch
+                checked={!!currentUser?.emailNotifications}
+                onChange={handleButtonClick}
+                label=""
+                dataCy="email-notifications-toggle"
+                disabled={isLoading || isDisabled}
+            />
         </div>
     );
 };

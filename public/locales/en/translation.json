@@ -589,5 +589,14 @@
     "share_cooking_skills": "Share your cooking skills and help others learn new recipes and techniques.",
     "joined_at": "Joined at",
     "text_delete_workshop": "Jorbites delete this workshop",
-    "currency": "Currency"
+    "currency": "Currency",
+    "plain_text_mode": "Plain text mode",
+    "paste_ingredients_help": "Paste your ingredients list here (one per line, with or without numbers/bullets)",
+    "ingredients_placeholder": "1. 2 cups flour\n2. 1 cup sugar\n3. 3 eggs",
+    "paste_steps_help": "Paste your recipe steps here (one per line, with or without numbers/bullets)",
+    "steps_placeholder": "1. Preheat oven to 350°F\n2. Mix dry ingredients\n3. Add wet ingredients",
+    "ingredients_applied": "ingredient(s) added",
+    "no_ingredients_found": "No ingredients found in the text",
+    "steps_applied": "step(s) added",
+    "no_steps_found": "No steps found in the text"
 }

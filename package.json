@@ -1,6 +1,6 @@
 {
   "name": "jorbites",
-  "version": "0.8.9",
+  "version": "0.9.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -43,7 +43,7 @@
     "ioredis": "^5.4.1",
     "lodash.debounce": "^4.0.8",
     "next": "15.5.2",
-    "next-auth": "^4.24.11",
+    "next-auth": "^4.24.12",
     "next-cloudinary": "^6.16.0",
     "postcss": "8.4.41",
     "prettier-plugin-tailwindcss": "^0.6.11",
