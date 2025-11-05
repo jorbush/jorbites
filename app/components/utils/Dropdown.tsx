@@ -68,7 +68,9 @@ function Dropdown<T extends string>({
     // Reset focused index when dropdown opens
     useEffect(() => {
         if (isOpen) {
-            const currentIndex = options.findIndex((opt) => opt.value === value);
+            const currentIndex = options.findIndex(
+                (opt) => opt.value === value
+            );
             setFocusedIndex(currentIndex >= 0 ? currentIndex : 0);
         } else {
             setFocusedIndex(-1);
@@ -127,7 +129,9 @@ function Dropdown<T extends string>({
             return optionClassName(option, isSelected);
         }
         return `flex w-full cursor-pointer items-center px-4 py-3 text-left text-sm transition border-0 bg-transparent ${
-            isFocused ? 'bg-neutral-200 dark:bg-neutral-600' : 'hover:bg-neutral-100 dark:hover:bg-neutral-700'
+            isFocused
+                ? 'bg-neutral-200 dark:bg-neutral-600'
+                : 'hover:bg-neutral-100 dark:hover:bg-neutral-700'
         } ${
             isSelected
                 ? 'bg-green-450/10 text-green-450 dark:bg-green-450/20 dark:text-green-450'
@@ -192,7 +196,10 @@ function Dropdown<T extends string>({
                                     onClick={() =>
                                         handleOptionClick(option.value)
                                     }
-                                    className={getOptionClassName(option, index)}
+                                    className={getOptionClassName(
+                                        option,
+                                        index
+                                    )}
                                 >
                                     <span className="whitespace-nowrap">
                                         {option.label}

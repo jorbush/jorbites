@@ -321,7 +321,7 @@ describe('<Dropdown />', () => {
         );
 
         const button = screen.getByRole('button');
-        
+
         // ArrowDown opens the dropdown
         fireEvent.keyDown(button, { key: 'ArrowDown' });
         expect(screen.getByText('Option 1')).toBeDefined();
@@ -340,7 +340,7 @@ describe('<Dropdown />', () => {
 
         const button = screen.getByRole('button');
         fireEvent.click(button);
-        
+
         // Escape closes the dropdown
         fireEvent.keyDown(button, { key: 'Escape' });
         expect(screen.queryByText('Option 2')).toBeNull();
@@ -358,14 +358,14 @@ describe('<Dropdown />', () => {
         );
 
         const button = screen.getByRole('button');
-        
+
         // Open dropdown with Enter
         fireEvent.keyDown(button, { key: 'Enter' });
         expect(screen.getByText('Option 1')).toBeDefined();
-        
+
         // Navigate down with ArrowDown
         fireEvent.keyDown(button, { key: 'ArrowDown' });
-        
+
         // Select with Enter
         fireEvent.keyDown(button, { key: 'Enter' });
         expect(mockOnChange).toHaveBeenCalledWith('option2');
@@ -383,7 +383,7 @@ describe('<Dropdown />', () => {
         );
 
         const button = screen.getByRole('button');
-        
+
         // Space opens the dropdown
         fireEvent.keyDown(button, { key: ' ' });
         expect(screen.getByText('Option 1')).toBeDefined();
