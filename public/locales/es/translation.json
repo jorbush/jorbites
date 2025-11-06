@@ -591,7 +591,7 @@
     "joined_at": "Se unió en",
     "text_delete_workshop": "Jorbites elimina este taller",
     "currency": "Moneda",
-    "plain_text_mode": "Modo texto plano",
+    "plain_text_mode": "Texto plano",
     "paste_ingredients_help": "Pega tu lista de ingredientes aquí (uno por línea, con o sin números/viñetas)",
     "ingredients_placeholder": "1. 2 tazas de harina\n2. 1 taza de azúcar\n3. 3 huevos",
     "paste_steps_help": "Pega los pasos de tu receta aquí (uno por línea, con o sin números/viñetas)",

@@ -118,9 +118,9 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
 
     return (
         <div className="flex flex-col gap-8">
-            <div className="relative flex items-center justify-center">
+            <div className="relative flex items-center justify-between pl-2">
                 <Heading title={t('title_steps')} />
-                <div className="absolute right-0 flex items-center">
+                <div className="absolute top-8 right-0 flex items-center">
                     <ToggleSwitch
                         checked={inputMode === 'text'}
                         onChange={handleModeToggle}
