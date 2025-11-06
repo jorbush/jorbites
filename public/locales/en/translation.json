@@ -590,7 +590,7 @@
     "joined_at": "Joined at",
     "text_delete_workshop": "Jorbites delete this workshop",
     "currency": "Currency",
-    "plain_text_mode": "Plain text mode",
+    "plain_text_mode": "Plain text",
     "paste_ingredients_help": "Paste your ingredients list here (one per line, with or without numbers/bullets)",
     "ingredients_placeholder": "1. 2 cups flour\n2. 1 cup sugar\n3. 3 eggs",
     "paste_steps_help": "Paste your recipe steps here (one per line, with or without numbers/bullets)",
