@@ -9,6 +9,7 @@ interface CallToActionProps {
     subtitle: string;
     buttonText: string;
     onClick: () => void;
+    dataCy?: string;
 }
 
 const CallToAction: React.FC<CallToActionProps> = ({
@@ -17,6 +18,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
     subtitle,
     buttonText,
     onClick,
+    dataCy,
 }) => {
     return (
         <div className="flex w-full flex-row items-center justify-center">
@@ -32,7 +34,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
                     <Button
                         label={buttonText}
                         onClick={onClick}
-                        dataCy="action-button"
+                        dataCy={dataCy}
                     />
                 </div>
             </div>

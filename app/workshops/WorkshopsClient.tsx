@@ -69,6 +69,7 @@ const WorkshopsClient: React.FC<WorkshopsClientProps> = ({
                     subtitle={t('share_cooking_skills')}
                     buttonText={t('create_workshop')}
                     onClick={onCreateWorkshop}
+                    dataCy="create-workshop"
                 />
             </div>
         </Container>
