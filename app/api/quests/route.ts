@@ -85,20 +85,28 @@ export async function GET(request: Request) {
         }
 
         if (q) {
-            query.OR = [
+            query.AND = [
+                ...(query.status ? [{ status: query.status }] : []),
+                ...(query.userId ? [{ userId: query.userId }] : []),
                 {
-                    title: {
-                        contains: q,
-                        mode: 'insensitive',
-                    },
-                },
-                {
-                    description: {
-                        contains: q,
-                        mode: 'insensitive',
-                    },
+                    OR: [
+                        {
+                            title: {
+                                contains: q,
+                                mode: 'insensitive',
+                            },
+                        },
+                        {
+                            description: {
+                                contains: q,
+                                mode: 'insensitive',
+                            },
+                        },
+                    ],
                 },
             ];
+            delete query.status;
+            delete query.userId;
         }
 
         const quests = await prisma.quest.findMany({
