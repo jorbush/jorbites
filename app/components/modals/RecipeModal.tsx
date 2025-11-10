@@ -372,7 +372,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             hasLoadedDraft.current = false;
             hasLoadedEditData.current = false;
         } else {
-            // Handle questId when modal opens
             if (recipeModal.questId) {
                 axios
                     .get(`/api/quest/${recipeModal.questId}`)

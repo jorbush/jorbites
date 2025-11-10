@@ -135,6 +135,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                     onClick={handleRequestRecipe}
                     className="hidden flex-shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg bg-rose-500 px-6 py-3 text-white transition hover:bg-rose-600 md:flex"
                     data-cy="request-recipe-button"
+                    aria-label={t('request_recipe') || 'Request Recipe'}
                 >
                     <FiPlus />
                     {t('request_recipe') || 'Request Recipe'}
@@ -310,7 +311,9 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                     <Pagination
                         totalPages={totalPages}
                         currentPage={currentPage}
-                        searchParams={{ status: filter !== 'all' ? filter : undefined }}
+                        searchParams={{
+                            status: filter !== 'all' ? filter : undefined,
+                        }}
                     />
                 </div>
             )}
