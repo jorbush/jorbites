@@ -1,6 +1,7 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getQuestById from '@/app/actions/getQuestById';
 import QuestDetailClient from '@/app/quests/[questId]/QuestDetailClient';
+import QuestDetailSkeleton from '@/app/components/quests/QuestDetailSkeleton';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import Container from '@/app/components/utils/Container';
 import EmptyState from '@/app/components/utils/EmptyState';
@@ -32,18 +33,7 @@ const QuestDetailPage = async ({ params }: QuestDetailPageProps) => {
     }
 
     return (
-        <ClientOnly
-            fallback={
-                <Container>
-                    <section
-                        aria-label="Loading"
-                        className="min-h-[60vh]"
-                    >
-                        <div className="text-center">Loading quest...</div>
-                    </section>
-                </Container>
-            }
-        >
+        <ClientOnly fallback={<QuestDetailSkeleton />}>
             <QuestDetailClient
                 currentUser={currentUser}
                 quest={quest}

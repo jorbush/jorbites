@@ -137,6 +137,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('quests') || 'Quests'}
                                     icon={FcTodoList}
+                                    isNew
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -179,6 +180,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('quests') || 'Quests'}
                                     icon={FcTodoList}
+                                    isNew
                                 />
                                 <MenuItem
                                     onClick={() => {

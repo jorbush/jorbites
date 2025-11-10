@@ -119,7 +119,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                 </div>
                 <button
                     onClick={handleRequestRecipe}
-                    className="flex flex-shrink-0 items-center justify-center gap-2 rounded-lg bg-rose-500 px-6 py-3 text-white transition hover:bg-rose-600"
+                    className="hidden flex-shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg bg-rose-500 px-6 py-3 text-white transition hover:bg-rose-600 md:flex"
                     data-cy="request-recipe-button"
                 >
                     <FiPlus />
@@ -127,24 +127,36 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                 </button>
             </div>
 
-            {/* Filters */}
-            <div className="mb-6 flex flex-wrap gap-2">
-                {(['all', 'open', 'in_progress', 'completed'] as const).map(
-                    (status) => (
-                        <button
-                            key={status}
-                            onClick={() => handleFilterChange(status)}
-                            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                                filter === status
-                                    ? 'bg-rose-500 text-white'
-                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-                            }`}
-                        >
-                            {t(status) || status.replace('_', ' ')}
-                        </button>
-                    )
-                )}
+            {/* Filters Row with Horizontal Scroll */}
+            <div className="-mx-4 mb-6 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+                <div className="flex min-w-max gap-2 pb-2">
+                    {(['all', 'open', 'in_progress', 'completed'] as const).map(
+                        (status) => (
+                            <button
+                                key={status}
+                                onClick={() => handleFilterChange(status)}
+                                className={`flex-shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition ${
+                                    filter === status
+                                        ? 'bg-rose-500 text-white'
+                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+                                }`}
+                            >
+                                {t(status) || status.replace('_', ' ')}
+                            </button>
+                        )
+                    )}
+                </div>
             </div>
+
+            {/* Floating Action Button for mobile (below md) */}
+            <button
+                onClick={handleRequestRecipe}
+                className="fixed right-6 bottom-6 z-40 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-rose-500 text-white shadow-lg transition hover:bg-rose-600 md:hidden"
+                data-cy="request-recipe-button-mobile"
+                aria-label={t('request_recipe') || 'Request Recipe'}
+            >
+                <FiPlus className="h-6 w-6" />
+            </button>
 
             {/* Quests Grid */}
             {quests.length === 0 ? (

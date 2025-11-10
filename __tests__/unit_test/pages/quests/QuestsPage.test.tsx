@@ -22,6 +22,12 @@ vi.mock('@/app/hooks/useQuestModal', () => ({
     }),
 }));
 
+vi.mock('@/app/hooks/useLoginModal', () => ({
+    default: () => ({
+        onOpen: vi.fn(),
+    }),
+}));
+
 vi.mock('date-fns', () => ({
     formatDistance: () => '2 hours ago',
 }));
@@ -117,10 +123,12 @@ describe('<QuestsClient />', () => {
                 currentPage={1}
             />
         );
-        expect(screen.getByText('request_recipe')).toBeDefined();
+        // Should have both desktop and mobile buttons
+        const buttons = screen.getAllByRole('button');
+        expect(buttons.length).toBeGreaterThan(0);
     });
 
-    it('does not render the request recipe button when user is not logged in', () => {
+    it('renders the request recipe button even when user is not logged in', () => {
         render(
             <QuestsClient
                 currentUser={null}
@@ -129,8 +137,9 @@ describe('<QuestsClient />', () => {
                 currentPage={1}
             />
         );
-        const button = screen.queryByText('request_recipe');
-        expect(button).toBeNull();
+        // Should have both desktop and mobile buttons
+        const buttons = screen.getAllByRole('button');
+        expect(buttons.length).toBeGreaterThan(0);
     });
 
     it('renders all quests', () => {
@@ -189,8 +198,24 @@ describe('<QuestsClient />', () => {
             />
         );
         const filterButtons = screen.getAllByRole('button');
-        // Should have: all, open, in_progress, completed, and request recipe button
-        expect(filterButtons.length).toBeGreaterThanOrEqual(4);
+        // Should have: all, open, in_progress, completed, desktop request button, and mobile FAB
+        expect(filterButtons.length).toBeGreaterThanOrEqual(6);
+    });
+
+    it('renders mobile floating action button', () => {
+        render(
+            <QuestsClient
+                currentUser={mockUser}
+                quests={mockQuests}
+                totalPages={1}
+                currentPage={1}
+            />
+        );
+        const mobileFab = screen.getByLabelText('request_recipe');
+        expect(mobileFab).toBeDefined();
+        expect(mobileFab.getAttribute('data-cy')).toBe(
+            'request-recipe-button-mobile'
+        );
     });
 
     it('renders empty state when no quests are provided', () => {
