@@ -310,7 +310,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                     <Pagination
                         totalPages={totalPages}
                         currentPage={currentPage}
-                        searchParams={{}}
+                        searchParams={{ status: filter !== 'all' ? filter : undefined }}
                     />
                 </div>
             )}
