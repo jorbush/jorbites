@@ -80,12 +80,22 @@ describe('<TopJorbitersClient />', () => {
     });
 
     it('renders container component', () => {
-        render(<TopJorbitersClient currentUser={mockCurrentUser} topJorbiters={mockTopJorbiters} />);
+        render(
+            <TopJorbitersClient
+                currentUser={mockCurrentUser}
+                topJorbiters={mockTopJorbiters}
+            />
+        );
         expect(screen.getByTestId('container')).toBeInTheDocument();
     });
 
     it('renders header component', () => {
-        render(<TopJorbitersClient currentUser={mockCurrentUser} topJorbiters={mockTopJorbiters} />);
+        render(
+            <TopJorbitersClient
+                currentUser={mockCurrentUser}
+                topJorbiters={mockTopJorbiters}
+            />
+        );
         expect(screen.getByTestId('leaderboard-header')).toBeInTheDocument();
     });
 
@@ -123,9 +133,15 @@ describe('<TopJorbitersClient />', () => {
         const callToAction = screen.getByTestId('call-to-action');
         expect(callToAction).toBeInTheDocument();
         expect(callToAction.getAttribute('data-icon')).toBe('🚀');
-        expect(callToAction.getAttribute('data-title')).toBe('call_to_action_first_place_title');
-        expect(callToAction.getAttribute('data-subtitle')).toBe('call_to_action_first_place_subtitle');
-        expect(callToAction.getAttribute('data-button-text')).toBe('post_recipe');
+        expect(callToAction.getAttribute('data-title')).toBe(
+            'call_to_action_first_place_title'
+        );
+        expect(callToAction.getAttribute('data-subtitle')).toBe(
+            'call_to_action_first_place_subtitle'
+        );
+        expect(callToAction.getAttribute('data-button-text')).toBe(
+            'post_recipe'
+        );
     });
 
     it('handles missing top jorbiters', () => {
@@ -136,8 +152,14 @@ describe('<TopJorbitersClient />', () => {
         const callToAction = screen.getByTestId('call-to-action');
         expect(callToAction).toBeInTheDocument();
         expect(callToAction.getAttribute('data-icon')).toBe('🏆');
-        expect(callToAction.getAttribute('data-title')).toBe('call_to_action_ranked_title');
-        expect(callToAction.getAttribute('data-subtitle')).toBe('call_to_action_ranked_subtitle');
-        expect(callToAction.getAttribute('data-button-text')).toBe('post_recipe');
+        expect(callToAction.getAttribute('data-title')).toBe(
+            'call_to_action_ranked_title'
+        );
+        expect(callToAction.getAttribute('data-subtitle')).toBe(
+            'call_to_action_ranked_subtitle'
+        );
+        expect(callToAction.getAttribute('data-button-text')).toBe(
+            'post_recipe'
+        );
     });
 });
