@@ -153,6 +153,9 @@ export async function POST(request: Request) {
         const limitedCoCooksIds = finalCoCooksIds.slice(0, 4); // Max 4 co-cooks
         const limitedLinkedRecipeIds = finalLinkedRecipeIds.slice(0, 2); // Max 2 linked recipes
 
+        // Handle questId - ensure empty strings become null
+        const finalQuestId = questId && questId.trim() !== '' ? questId : null;
+
         const recipe = await prisma.recipe.create({
             data: {
                 title,
@@ -169,7 +172,7 @@ export async function POST(request: Request) {
                 coCooksIds: limitedCoCooksIds,
                 linkedRecipeIds: limitedLinkedRecipeIds,
                 youtubeUrl: youtubeUrl?.trim() || null,
-                questId: questId || null,
+                questId: finalQuestId,
             },
         });
 
