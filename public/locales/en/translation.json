@@ -620,8 +620,8 @@
     "edit_quest": "Edit Quest",
     "edit_quest_subtitle": "Update your recipe request",
     "request_recipe_subtitle": "Tell the community what recipe you'd like to see",
-    "title_max_length": "Title must be less than 100 characters",
-    "description_max_length": "Description must be less than 500 characters",
+    "title_max_length": "Title must be less than 200 characters",
+    "description_max_length": "Description must be less than 1000 characters",
     "quest_description_placeholder": "Describe what recipe you're looking for in detail...",
     "status": "Status",
     "search_quests": "Search quests"
