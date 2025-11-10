@@ -600,7 +600,7 @@
     "no_ingredients_found": "No se encontraron ingredientes en el texto",
     "steps_applied": "paso(s) añadido(s)",
     "no_steps_found": "No se encontraron pasos en el texto",
-    "quests": "Peticiones de Recetas",
+    "quests": "Peticiones",
     "quests_subtitle": "Solicita recetas a la comunidad o cumple solicitudes existentes",
     "request_recipe": "Solicitar Receta",
     "all": "Todas",
