@@ -8,6 +8,9 @@ vi.mock('next/navigation', () => ({
         push: vi.fn(),
         refresh: vi.fn(),
     }),
+    useSearchParams: () => ({
+        get: vi.fn(),
+    }),
 }));
 
 vi.mock('react-i18next', () => ({
