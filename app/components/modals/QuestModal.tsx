@@ -65,12 +65,12 @@ const QuestModal = () => {
         try {
             if (questModal.isEditMode && questModal.editQuestData) {
                 // Edit existing quest
-                const url = `${window.location.origin}/api/quest/${questModal.editQuestData.id}`;
+                const url = `/api/quest/${questModal.editQuestData.id}`;
                 await axios.patch(url, data);
                 toast.success(t('quest_updated') || 'Quest updated!');
             } else {
                 // Create new quest
-                const url = `${window.location.origin}/api/quests`;
+                const url = `/api/quests`;
                 await axios.post(url, data);
                 toast.success(t('quest_created') || 'Quest created!');
             }
