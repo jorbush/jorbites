@@ -51,6 +51,7 @@ export async function POST(request: Request) {
             coCooksIds,
             linkedRecipeIds,
             youtubeUrl,
+            questId,
         } = body;
 
         if (
@@ -168,6 +169,7 @@ export async function POST(request: Request) {
                 coCooksIds: limitedCoCooksIds,
                 linkedRecipeIds: limitedLinkedRecipeIds,
                 youtubeUrl: youtubeUrl?.trim() || null,
+                questId: questId || null,
             },
         });
 

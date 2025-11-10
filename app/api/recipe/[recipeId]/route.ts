@@ -182,6 +182,7 @@ export async function PATCH(
             coCooksIds,
             linkedRecipeIds,
             youtubeUrl,
+            questId,
         } = body;
 
         if (
@@ -303,6 +304,7 @@ export async function PATCH(
                 coCooksIds: coCooksIds || [],
                 linkedRecipeIds: linkedRecipeIds || [],
                 youtubeUrl: youtubeUrl?.trim() || null,
+                questId: questId !== undefined ? questId : recipe.questId,
             },
         });
 

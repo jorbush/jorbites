@@ -19,6 +19,7 @@ export interface EditRecipeData {
     coCooks?: SafeUser[];
     linkedRecipes?: SafeRecipe[];
     youtubeUrl?: string;
+    questId?: string;
 }
 
 interface RecipeModalStore {

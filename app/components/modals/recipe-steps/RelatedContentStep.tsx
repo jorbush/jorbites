@@ -8,7 +8,7 @@ import Heading from '@/app/components/navigation/Heading';
 import SearchInput from '@/app/components/inputs/SearchInput';
 import Avatar from '@/app/components/utils/Avatar';
 import Tabs, { Tab } from '@/app/components/utils/Tabs';
-import { FiSearch, FiUsers } from 'react-icons/fi';
+import { FiSearch, FiUsers, FiTarget } from 'react-icons/fi';
 import { AiFillDelete } from 'react-icons/ai';
 import { IoRestaurantOutline } from 'react-icons/io5';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
@@ -21,10 +21,13 @@ interface RelatedContentStepProps {
     isLoading: boolean;
     selectedCoCooks: any[];
     selectedLinkedRecipes: any[];
+    selectedQuest: any | null;
     onAddCoCook: (user: any) => void;
     onRemoveCoCook: (userId: string) => void;
     onAddLinkedRecipe: (recipe: any) => void;
     onRemoveLinkedRecipe: (recipeId: string) => void;
+    onSelectQuest: (quest: any) => void;
+    onRemoveQuest: () => void;
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
 }
@@ -33,20 +36,26 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
     isLoading,
     selectedCoCooks,
     selectedLinkedRecipes,
+    selectedQuest,
     onAddCoCook,
     onRemoveCoCook,
     onAddLinkedRecipe,
     onRemoveLinkedRecipe,
+    onSelectQuest,
+    onRemoveQuest,
     register,
     errors,
 }) => {
     const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchType, setSearchType] = useState<'users' | 'recipes'>('users');
+    const [searchType, setSearchType] = useState<
+        'users' | 'recipes' | 'quests'
+    >('users');
     const [searchResults, setSearchResults] = useState<{
         users: any[];
         recipes: any[];
-    }>({ users: [], recipes: [] });
+        quests: any[];
+    }>({ users: [], recipes: [], quests: [] });
 
     // Define tabs for the component
     const tabs: Tab[] = [
@@ -60,6 +69,11 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
             label: t('linked_recipes') || 'Linked Recipes',
             icon: <IoRestaurantOutline />,
         },
+        {
+            id: 'quests',
+            label: t('quest') || 'Quest',
+            icon: <FiTarget />,
+        },
     ];
 
     const debouncedSearch = useRef(
@@ -71,15 +85,35 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                 setResults: Function
             ) => {
                 if (query.length < 2) {
-                    setResults({ users: [], recipes: [] });
+                    setResults({ users: [], recipes: [], quests: [] });
                     return;
                 }
 
                 try {
-                    const response = await axios.get(
-                        `/api/search?q=${encodeURIComponent(query)}&type=${type}`
-                    );
-                    setResults(response.data);
+                    if (type === 'quests') {
+                        const response = await axios.get(
+                            `/api/quests?status=open`
+                        );
+                        const filteredQuests = response.data.quests.filter(
+                            (quest: any) =>
+                                quest.title
+                                    .toLowerCase()
+                                    .includes(query.toLowerCase()) ||
+                                quest.description
+                                    .toLowerCase()
+                                    .includes(query.toLowerCase())
+                        );
+                        setResults({
+                            users: [],
+                            recipes: [],
+                            quests: filteredQuests,
+                        });
+                    } else {
+                        const response = await axios.get(
+                            `/api/search?q=${encodeURIComponent(query)}&type=${type}`
+                        );
+                        setResults({ ...response.data, quests: [] });
+                    }
                 } catch (error) {
                     console.error('Search failed:', error);
                     toast.error(tFunction('search_failed') || 'Search failed');
@@ -97,7 +131,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
     );
 
     const handleTabChange = (tabId: string) => {
-        setSearchType(tabId as 'users' | 'recipes');
+        setSearchType(tabId as 'users' | 'recipes' | 'quests');
         setSearchQuery('');
     };
 
@@ -130,7 +164,9 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                     label={
                         searchType === 'users'
                             ? t('search_users') || 'Search Users'
-                            : t('search_recipes') || 'Search Recipes'
+                            : searchType === 'recipes'
+                              ? t('search_recipes') || 'Search Recipes'
+                              : t('search_quests') || 'Search Quests'
                     }
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -141,24 +177,36 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                     onSelectResult={(result) => {
                         if (searchType === 'users') {
                             onAddCoCook(result);
-                        } else {
+                        } else if (searchType === 'recipes') {
                             onAddLinkedRecipe(result);
+                        } else {
+                            onSelectQuest(result);
                         }
                         setSearchQuery('');
                     }}
                     searchType={searchType}
-                    maxSelected={searchType === 'users' ? 4 : 2}
+                    maxSelected={
+                        searchType === 'users'
+                            ? 4
+                            : searchType === 'recipes'
+                              ? 2
+                              : 1
+                    }
                     isSelected={(id) =>
                         searchType === 'users'
                             ? selectedCoCooks.some((cook) => cook.id === id)
-                            : selectedLinkedRecipes.some(
-                                  (recipe) => recipe.id === id
-                              )
+                            : searchType === 'recipes'
+                              ? selectedLinkedRecipes.some(
+                                    (recipe) => recipe.id === id
+                                )
+                              : selectedQuest?.id === id
                     }
                     emptyMessage={
                         searchType === 'users'
                             ? t('no_users_found') || 'No users found'
-                            : t('no_recipes_found') || 'No recipes found'
+                            : searchType === 'recipes'
+                              ? t('no_recipes_found') || 'No recipes found'
+                              : t('no_quests_found') || 'No quests found'
                     }
                 />
             </div>
@@ -195,6 +243,38 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                     </button>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Selected quest */}
+                {searchType === 'quests' && selectedQuest && (
+                    <div>
+                        <h3 className="mb-2 text-sm font-medium text-gray-500 dark:text-zinc-400">
+                            {t('selected_quest') || 'Selected Quest'}
+                        </h3>
+                        <div className="rounded-lg border border-neutral-300 bg-white p-3 dark:border-neutral-600 dark:bg-zinc-800">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                                        {selectedQuest.title}
+                                    </p>
+                                    <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">
+                                        {selectedQuest.description.length > 100
+                                            ? selectedQuest.description.substring(
+                                                  0,
+                                                  100
+                                              ) + '...'
+                                            : selectedQuest.description}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={onRemoveQuest}
+                                    className="ml-2 text-gray-500 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-500"
+                                >
+                                    <AiFillDelete size={20} />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
