@@ -28,3 +28,5 @@ export enum STEPS {
     IMAGES = 6,
 }
 export const STEPS_LENGTH = Object.keys(STEPS).length;
+export const QUEST_TITLE_MAX_LENGTH = 200;
+export const QUEST_DESCRIPTION_MAX_LENGTH = 1000;

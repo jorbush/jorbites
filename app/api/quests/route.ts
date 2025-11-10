@@ -8,9 +8,10 @@ import {
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
-
-const QUEST_TITLE_MAX_LENGTH = 200;
-const QUEST_DESCRIPTION_MAX_LENGTH = 1000;
+import {
+    QUEST_DESCRIPTION_MAX_LENGTH,
+    QUEST_TITLE_MAX_LENGTH,
+} from '@/app/utils/constants';
 
 export async function POST(request: Request) {
     try {
@@ -31,13 +32,13 @@ export async function POST(request: Request) {
             );
         }
 
-        if (title && title.length > QUEST_TITLE_MAX_LENGTH) {
+        if (title.length > QUEST_TITLE_MAX_LENGTH) {
             return validationError(
                 `Title must be ${QUEST_TITLE_MAX_LENGTH} characters or less`
             );
         }
 
-        if (description && description.length > QUEST_DESCRIPTION_MAX_LENGTH) {
+        if (description.length > QUEST_DESCRIPTION_MAX_LENGTH) {
             return validationError(
                 `Description must be ${QUEST_DESCRIPTION_MAX_LENGTH} characters or less`
             );
@@ -69,8 +70,9 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
         const userId = searchParams.get('userId');
-        const page = parseInt(searchParams.get('page') || '1');
-        const limit = parseInt(searchParams.get('limit') || '10');
+        const q = searchParams.get('q');
+        const page = parseInt(searchParams.get('page') || '1', 10);
+        const limit = parseInt(searchParams.get('limit') || '10', 10);
 
         let query: any = {};
 
@@ -80,6 +82,23 @@ export async function GET(request: Request) {
 
         if (userId) {
             query.userId = userId;
+        }
+
+        if (q) {
+            query.OR = [
+                {
+                    title: {
+                        contains: q,
+                        mode: 'insensitive',
+                    },
+                },
+                {
+                    description: {
+                        contains: q,
+                        mode: 'insensitive',
+                    },
+                },
+            ];
         }
 
         const quests = await prisma.quest.findMany({

@@ -618,11 +618,13 @@
     "quest_updated": "Quest updated!",
     "quest_created": "Quest created!",
     "edit_quest": "Edit Quest",
+    "delete_quest": "Delete Quest",
     "edit_quest_subtitle": "Update your recipe request",
     "request_recipe_subtitle": "Tell the community what recipe you'd like to see",
     "title_max_length": "Title must be less than 100 characters",
     "description_max_length": "Description must be less than 500 characters",
     "quest_description_placeholder": "Describe what recipe you're looking for in detail...",
     "status": "Status",
-    "search_quests": "Search quests"
+    "search_quests": "Search quests",
+    "selected_quest": "Selected Quest"
 }

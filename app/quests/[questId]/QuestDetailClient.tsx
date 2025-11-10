@@ -138,12 +138,6 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
         }
     };
 
-    const handleCreateRecipe = () => {
-        recipeModal.onOpenCreate();
-        // Store quest ID in session storage for the recipe form to pick up
-        sessionStorage.setItem('pendingQuestId', quest.id);
-    };
-
     return (
         <>
             <ConfirmModal
@@ -182,6 +176,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                             <div className="flex gap-2">
                                 <button
                                     onClick={handleEdit}
+                                    aria-label={t('edit_quest') || 'Edit Quest'}
                                     className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                                 >
                                     <FiEdit />
@@ -189,6 +184,9 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                                 <button
                                     onClick={handleDeleteClick}
                                     disabled={isDeleting}
+                                    aria-label={
+                                        t('delete_quest') || 'Delete Quest'
+                                    }
                                     className="cursor-pointer rounded-lg border border-red-300 px-4 py-2 text-red-600 transition hover:bg-red-50 disabled:opacity-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
                                 >
                                     <FiTrash />
@@ -225,7 +223,9 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                         </div>
                         {currentUser && quest.status !== 'completed' && (
                             <button
-                                onClick={handleCreateRecipe}
+                                onClick={() =>
+                                    recipeModal.onOpenCreate(quest.id)
+                                }
                                 className="cursor-pointer rounded-lg bg-rose-500 px-6 py-2 text-white transition hover:bg-rose-600"
                             >
                                 {t('fulfill_quest') || 'Fulfill This Request'}
@@ -244,7 +244,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                         <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center dark:border-gray-700">
                             <p className="text-gray-600 dark:text-gray-400">
                                 {t('no_recipes_yet') ||
-                                    'No recipes yet. Be the first to fulfill this request!'}
+                                    'No recipes have been submitted yet'}
                             </p>
                         </div>
                     ) : (

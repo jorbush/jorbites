@@ -10,9 +10,10 @@ import {
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
-
-const QUEST_TITLE_MAX_LENGTH = 200;
-const QUEST_DESCRIPTION_MAX_LENGTH = 1000;
+import {
+    QUEST_TITLE_MAX_LENGTH,
+    QUEST_DESCRIPTION_MAX_LENGTH,
+} from '@/app/utils/constants';
 
 export async function GET(
     request: Request,

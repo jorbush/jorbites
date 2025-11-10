@@ -26,8 +26,9 @@ interface RecipeModalStore {
     isOpen: boolean;
     isEditMode: boolean;
     editRecipeData: EditRecipeData | null;
+    questId: string | null;
     onOpen: () => void;
-    onOpenCreate: () => void;
+    onOpenCreate: (questId?: string) => void;
     onOpenEdit: (recipeData: EditRecipeData) => void;
     onClose: () => void;
 }
@@ -36,21 +37,34 @@ const useRecipeModal = create<RecipeModalStore>((set) => ({
     isOpen: false,
     isEditMode: false,
     editRecipeData: null,
+    questId: null,
     onOpen: () =>
-        set({ isOpen: true, isEditMode: false, editRecipeData: null }),
-    onOpenCreate: () =>
-        set({ isOpen: true, isEditMode: false, editRecipeData: null }),
+        set({
+            isOpen: true,
+            isEditMode: false,
+            editRecipeData: null,
+            questId: null,
+        }),
+    onOpenCreate: (questId?: string) =>
+        set({
+            isOpen: true,
+            isEditMode: false,
+            editRecipeData: null,
+            questId: questId || null,
+        }),
     onOpenEdit: (recipeData: EditRecipeData) =>
         set({
             isOpen: true,
             isEditMode: true,
             editRecipeData: recipeData,
+            questId: null,
         }),
     onClose: () =>
         set({
             isOpen: false,
             isEditMode: false,
             editRecipeData: null,
+            questId: null,
         }),
 }));
 

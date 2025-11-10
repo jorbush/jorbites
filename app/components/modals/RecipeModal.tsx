@@ -371,48 +371,45 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             setSelectedQuest(null);
             hasLoadedDraft.current = false;
             hasLoadedEditData.current = false;
-        } else if (
-            recipeModal.isOpen &&
-            recipeModal.isEditMode &&
-            recipeModal.editRecipeData &&
-            !hasLoadedEditData.current
-        ) {
-            // Load edit data when opening in edit mode
-            hasLoadedEditData.current = true;
-            loadEditData(recipeModal.editRecipeData);
-        } else if (
-            recipeModal.isOpen &&
-            !recipeModal.isEditMode &&
-            currentUser &&
-            !hasLoadedDraft.current
-        ) {
-            // Load draft when opening in create mode
-            hasLoadedDraft.current = true;
-            loadDraft().then(() => {
-                console.log('Draft loaded');
-            });
-
-            // Check if there's a pending questId from session storage
-            const pendingQuestId = sessionStorage.getItem('pendingQuestId');
-            if (pendingQuestId) {
+        } else {
+            // Handle questId when modal opens
+            if (recipeModal.questId) {
                 axios
-                    .get(`/api/quest/${pendingQuestId}`)
+                    .get(`/api/quest/${recipeModal.questId}`)
                     .then((response) => {
                         setSelectedQuest(response.data);
                         setValue('questId', response.data.id);
                     })
                     .catch((error) => {
                         console.error('Failed to load pending quest', error);
-                    })
-                    .finally(() => {
-                        sessionStorage.removeItem('pendingQuestId');
                     });
+            }
+
+            if (
+                recipeModal.isEditMode &&
+                recipeModal.editRecipeData &&
+                !hasLoadedEditData.current
+            ) {
+                // Load edit data when opening in edit mode
+                hasLoadedEditData.current = true;
+                loadEditData(recipeModal.editRecipeData);
+            } else if (
+                !recipeModal.isEditMode &&
+                currentUser &&
+                !hasLoadedDraft.current
+            ) {
+                // Load draft when opening in create mode
+                hasLoadedDraft.current = true;
+                loadDraft().then(() => {
+                    console.log('Draft loaded');
+                });
             }
         }
     }, [
         recipeModal.isOpen,
         recipeModal.isEditMode,
         recipeModal.editRecipeData,
+        recipeModal.questId,
         currentUser,
         loadDraft,
         loadEditData,

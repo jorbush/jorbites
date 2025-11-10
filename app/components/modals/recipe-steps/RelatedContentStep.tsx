@@ -71,7 +71,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
         },
         {
             id: 'quests',
-            label: t('quest') || 'Quest',
+            label: t('quests') || 'Quests',
             icon: <FiTarget />,
         },
     ];
@@ -92,21 +92,12 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                 try {
                     if (type === 'quests') {
                         const response = await axios.get(
-                            `/api/quests?status=open`
-                        );
-                        const filteredQuests = response.data.quests.filter(
-                            (quest: any) =>
-                                quest.title
-                                    .toLowerCase()
-                                    .includes(query.toLowerCase()) ||
-                                quest.description
-                                    .toLowerCase()
-                                    .includes(query.toLowerCase())
+                            `/api/quests?status=open&q=${encodeURIComponent(query)}`
                         );
                         setResults({
                             users: [],
                             recipes: [],
-                            quests: filteredQuests,
+                            quests: response.data.quests,
                         });
                     } else {
                         const response = await axios.get(

@@ -619,11 +619,13 @@
     "quest_updated": "¡Petición actualizada!",
     "quest_created": "¡Petición creada!",
     "edit_quest": "Editar Petición",
+    "delete_quest": "Eliminar Petición",
     "edit_quest_subtitle": "Actualiza tu solicitud de receta",
     "request_recipe_subtitle": "Dile a la comunidad qué receta te gustaría ver",
     "title_max_length": "El título debe tener menos de 100 caracteres",
     "description_max_length": "La descripción debe tener menos de 500 caracteres",
     "quest_description_placeholder": "Describe en detalle qué receta estás buscando...",
     "status": "Estado",
-    "search_quests": "Buscar peticiones"
+    "search_quests": "Buscar peticiones",
+    "selected_quest": "Petición seleccionada"
 }

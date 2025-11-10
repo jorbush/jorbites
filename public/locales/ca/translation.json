@@ -620,11 +620,13 @@
     "quest_updated": "Petició actualitzada!",
     "quest_created": "Petició creada!",
     "edit_quest": "Editar Petició",
+    "delete_quest": "Eliminar Petició",
     "edit_quest_subtitle": "Actualitza la teva sol·licitud de recepta",
     "request_recipe_subtitle": "Explica a la comunitat quina recepta t'agradaria veure",
     "title_max_length": "El títol ha de tenir menys de 100 caràcters",
     "description_max_length": "La descripció ha de tenir menys de 500 caràcters",
     "quest_description_placeholder": "Descriu detalladament quina recepta estàs cercant...",
     "status": "Estat",
-    "search_quests": "Cercar peticions"
+    "search_quests": "Cercar peticions",
+    "selected_quest": "Petició seleccionada"
 }

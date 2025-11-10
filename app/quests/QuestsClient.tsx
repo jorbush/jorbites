@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { SafeUser } from '@/app/types';
 import { useTranslation } from 'react-i18next';
 import useQuestModal from '@/app/hooks/useQuestModal';
@@ -52,11 +52,25 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
 }) => {
     const { t } = useTranslation();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const questModal = useQuestModal();
     const loginModal = useLoginModal();
+
+    const getInitialFilter = () => {
+        const status = searchParams?.get('status') || 'all';
+        if (
+            status === 'open' ||
+            status === 'in_progress' ||
+            status === 'completed'
+        ) {
+            return status;
+        }
+        return 'all';
+    };
+
     const [filter, setFilter] = useState<
         'all' | 'open' | 'in_progress' | 'completed'
-    >('all');
+    >(getInitialFilter());
 
     const handleRequestRecipe = () => {
         if (!currentUser) {

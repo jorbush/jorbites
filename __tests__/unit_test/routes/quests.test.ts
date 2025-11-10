@@ -26,8 +26,10 @@ jest.mock('next-auth/next', () => ({
     }),
 }));
 
-const QUEST_TITLE_MAX_LENGTH = 200;
-const QUEST_DESCRIPTION_MAX_LENGTH = 1000;
+import {
+    QUEST_DESCRIPTION_MAX_LENGTH,
+    QUEST_TITLE_MAX_LENGTH,
+} from '@/app/utils/constants';
 
 describe('Quests API Error Handling', () => {
     beforeEach(() => {

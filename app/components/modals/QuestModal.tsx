@@ -8,11 +8,12 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import {
+    QUEST_DESCRIPTION_MAX_LENGTH,
+    QUEST_TITLE_MAX_LENGTH,
+} from '@/app/utils/constants';
 import Heading from '@/app/components/navigation/Heading';
 import Input from '@/app/components/inputs/Input';
-
-const QUEST_TITLE_MAX_LENGTH = 200;
-const QUEST_DESCRIPTION_MAX_LENGTH = 1000;
 
 const QuestModal = () => {
     const router = useRouter();
