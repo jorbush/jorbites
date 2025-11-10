@@ -214,11 +214,14 @@ describe('<QuestsClient />', () => {
                 currentPage={1}
             />
         );
-        const mobileFab = screen.getByLabelText('request_recipe');
-        expect(mobileFab).toBeDefined();
-        expect(mobileFab.getAttribute('data-cy')).toBe(
-            'request-recipe-button-mobile'
+        // Find the mobile FAB by its unique data-cy attribute
+        const buttons = screen.getAllByRole('button');
+        const mobileFab = buttons.find(
+            (button) =>
+                button.getAttribute('data-cy') ===
+                'request-recipe-button-mobile'
         );
+        expect(mobileFab).toBeDefined();
     });
 
     it('renders empty state when no quests are provided', () => {
