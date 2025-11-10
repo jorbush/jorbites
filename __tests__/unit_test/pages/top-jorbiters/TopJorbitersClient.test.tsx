@@ -4,6 +4,16 @@ import TopJorbitersClient from '@/app/top-jorbiters/TopJorbitersClient';
 import { SafeUser } from '@/app/types';
 
 // Mock dependencies
+vi.mock('i18next', () => ({
+    t: (key: string) => key,
+}));
+
+vi.mock('@/app/hooks/useRecipeModal', () => ({
+    default: () => ({
+        onOpen: vi.fn(),
+    }),
+}));
+
 vi.mock('@/app/components/utils/Container', () => ({
     default: ({ children }: { children: React.ReactNode }) => (
         <div data-testid="container">{children}</div>
@@ -25,16 +35,27 @@ vi.mock('@/app/components/top-jorbiters/JorbiterCard', () => ({
     ),
 }));
 
-vi.mock('@/app/components/top-jorbiters/CallToAction', () => ({
+vi.mock('@/app/components/utils/CallToAction', () => ({
     default: ({
-        currentUser,
+        icon,
+        title,
+        subtitle,
+        buttonText,
+        onClick,
     }: {
-        currentUser?: SafeUser | null;
-        topJorbiters?: SafeUser[];
+        icon?: React.ReactNode;
+        title: string;
+        subtitle: string;
+        buttonText: string;
+        onClick: () => void;
     }) => (
         <div
             data-testid="call-to-action"
-            data-user-id={currentUser?.id}
+            data-icon={icon}
+            data-title={title}
+            data-subtitle={subtitle}
+            data-button-text={buttonText}
+            onClick={onClick}
         >
             Call To Action Mock
         </div>
@@ -59,13 +80,13 @@ describe('<TopJorbitersClient />', () => {
     });
 
     it('renders container component', () => {
-        render(<TopJorbitersClient />);
-        expect(screen.getByTestId('container')).toBeDefined();
+        render(<TopJorbitersClient currentUser={mockCurrentUser} topJorbiters={mockTopJorbiters} />);
+        expect(screen.getByTestId('container')).toBeInTheDocument();
     });
 
     it('renders header component', () => {
-        render(<TopJorbitersClient />);
-        expect(screen.getByTestId('leaderboard-header')).toBeDefined();
+        render(<TopJorbitersClient currentUser={mockCurrentUser} topJorbiters={mockTopJorbiters} />);
+        expect(screen.getByTestId('leaderboard-header')).toBeInTheDocument();
     });
 
     it('renders jorbiter cards for each top jorbiter', () => {
@@ -76,9 +97,9 @@ describe('<TopJorbitersClient />', () => {
             />
         );
 
-        expect(screen.getByTestId('jorbiter-card-0')).toBeDefined();
-        expect(screen.getByTestId('jorbiter-card-1')).toBeDefined();
-        expect(screen.getByTestId('jorbiter-card-2')).toBeDefined();
+        expect(screen.getByTestId('jorbiter-card-0')).toBeInTheDocument();
+        expect(screen.getByTestId('jorbiter-card-1')).toBeInTheDocument();
+        expect(screen.getByTestId('jorbiter-card-2')).toBeInTheDocument();
 
         expect(
             screen.getByTestId('jorbiter-card-0').getAttribute('data-id')
@@ -99,10 +120,12 @@ describe('<TopJorbitersClient />', () => {
             />
         );
 
-        expect(screen.getByTestId('call-to-action')).toBeDefined();
-        expect(
-            screen.getByTestId('call-to-action').getAttribute('data-user-id')
-        ).toBe('user1');
+        const callToAction = screen.getByTestId('call-to-action');
+        expect(callToAction).toBeInTheDocument();
+        expect(callToAction.getAttribute('data-icon')).toBe('🚀');
+        expect(callToAction.getAttribute('data-title')).toBe('call_to_action_first_place_title');
+        expect(callToAction.getAttribute('data-subtitle')).toBe('call_to_action_first_place_subtitle');
+        expect(callToAction.getAttribute('data-button-text')).toBe('post_recipe');
     });
 
     it('handles missing top jorbiters', () => {
@@ -110,6 +133,11 @@ describe('<TopJorbitersClient />', () => {
 
         // Should not throw error when topJorbiters is undefined
         expect(screen.queryByTestId('jorbiter-card-0')).toBeNull();
-        expect(screen.getByTestId('call-to-action')).toBeDefined();
+        const callToAction = screen.getByTestId('call-to-action');
+        expect(callToAction).toBeInTheDocument();
+        expect(callToAction.getAttribute('data-icon')).toBe('🏆');
+        expect(callToAction.getAttribute('data-title')).toBe('call_to_action_ranked_title');
+        expect(callToAction.getAttribute('data-subtitle')).toBe('call_to_action_ranked_subtitle');
+        expect(callToAction.getAttribute('data-button-text')).toBe('post_recipe');
     });
 });
