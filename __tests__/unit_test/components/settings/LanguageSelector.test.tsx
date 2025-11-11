@@ -1,7 +1,26 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import {
+    render,
+    screen,
+    fireEvent,
+    cleanup,
+    waitFor,
+} from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import i18n from '@/app/i18n';
+
+// Mock framer-motion
+vi.mock('framer-motion', () => ({
+    motion: {
+        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    },
+    AnimatePresence: ({ children }: any) => <>{children}</>,
+}));
+
+// Mock the icons
+vi.mock('react-icons/fi', () => ({
+    FiChevronDown: () => <div data-testid="chevron-down-icon" />,
+}));
 
 vi.mock('@/app/i18n', () => ({
     default: {
@@ -34,45 +53,43 @@ describe('<LanguageSelector />', () => {
         render(<LanguageSelector />);
 
         expect(screen.getByText('select_your_language')).toBeDefined();
-        expect(screen.getByRole('combobox')).toBeDefined();
-        expect(
-            screen.getByRole('option', {
-                name: 'Castellano',
-            })
-        ).toBeDefined();
-        expect(screen.getByRole('option', { name: 'English' })).toBeDefined();
-        expect(screen.getByRole('option', { name: 'Català' })).toBeDefined();
+        expect(screen.getByText('English')).toBeDefined();
     });
 
-    it('sets the correct initial value for the select element', () => {
+    it('opens dropdown when button is clicked', () => {
         render(<LanguageSelector />);
 
-        const select = screen.getByRole('combobox') as HTMLSelectElement;
-        expect(select.value).toBe('en');
+        const dropdownButton = screen.getByRole('button');
+        fireEvent.click(dropdownButton);
+
+        expect(screen.getByText('Castellano')).toBeDefined();
+        expect(screen.getByText('Català')).toBeDefined();
     });
 
-    it('calls i18n.changeLanguage when language is changed', () => {
+    it('calls i18n.changeLanguage when language is changed', async () => {
         render(<LanguageSelector />);
 
-        const select = screen.getByRole('combobox');
-        fireEvent.change(select, {
-            target: { value: 'es' },
-        });
+        const dropdownButton = screen.getByRole('button');
+        fireEvent.click(dropdownButton);
+
+        const spanishOption = screen.getByText('Castellano');
+        fireEvent.click(spanishOption);
 
         expect(i18n.changeLanguage).toHaveBeenCalledWith('es');
     });
 
-    it('changes select value when language is changed', () => {
+    it('closes dropdown after selecting an option', async () => {
         render(<LanguageSelector />);
 
-        const select = screen.getByRole('combobox') as HTMLSelectElement;
-        fireEvent.change(select, {
-            target: { value: 'ca' },
-        });
+        const dropdownButton = screen.getByRole('button');
+        fireEvent.click(dropdownButton);
 
-        // Use a small delay to allow for state updates
-        setTimeout(() => {
-            expect(select.value).toBe('ca');
-        }, 100);
+        const catalanOption = screen.getByText('Català');
+        fireEvent.click(catalanOption);
+
+        // Dropdown should close after selection
+        await waitFor(() => {
+            expect(screen.queryByText('Castellano')).toBeNull();
+        });
     });
 });

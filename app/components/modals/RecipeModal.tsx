@@ -42,6 +42,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const [selectedLinkedRecipes, setSelectedLinkedRecipes] = useState<any[]>(
         []
     );
+    const [selectedQuest, setSelectedQuest] = useState<any | null>(null);
 
     const {
         register,
@@ -67,6 +68,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             coCooksIds: [],
             linkedRecipeIds: [],
             youtubeUrl: '',
+            questId: '',
         },
     });
 
@@ -144,6 +146,16 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         );
     };
 
+    const selectQuest = (quest: any) => {
+        setSelectedQuest(quest);
+        setValue('questId', quest.id);
+    };
+
+    const removeQuest = () => {
+        setSelectedQuest(null);
+        setValue('questId', '');
+    };
+
     const saveDraft = async () => {
         // Collect ingredients
         const newIngredients: string[] = [];
@@ -177,6 +189,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             coCooksIds: watch('coCooksIds'),
             linkedRecipeIds: watch('linkedRecipeIds'),
             youtubeUrl: watch('youtubeUrl'),
+            questId: watch('questId'),
         };
 
         try {
@@ -235,6 +248,17 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     console.error('Failed to load linked recipes', error);
                 }
             }
+
+            if (formData.questId) {
+                try {
+                    const questResponse = await axios.get(
+                        `/api/quest/${formData.questId}`
+                    );
+                    setSelectedQuest(questResponse.data);
+                } catch (error) {
+                    console.error('Failed to load quest', error);
+                }
+            }
         } catch (error) {
             console.error(error);
             toast.error(t('error_loading_draft') ?? 'Failed to load draft.');
@@ -271,6 +295,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     coCooksIds: editData.coCooksIds || [],
                     linkedRecipeIds: editData.linkedRecipeIds || [],
                     youtubeUrl: editData.youtubeUrl || '',
+                    questId: editData.questId || '',
                 });
 
                 setNumIngredients(editData.ingredients.length || 1);
@@ -292,6 +317,16 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 }
                 if (editData.linkedRecipes) {
                     setSelectedLinkedRecipes(editData.linkedRecipes);
+                }
+                if (editData.questId) {
+                    try {
+                        const questResponse = await axios.get(
+                            `/api/quest/${editData.questId}`
+                        );
+                        setSelectedQuest(questResponse.data);
+                    } catch (error) {
+                        console.error('Failed to load quest', error);
+                    }
                 }
 
                 setStep(STEPS.CATEGORY);
@@ -326,43 +361,59 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 coCooksIds: [],
                 linkedRecipeIds: [],
                 youtubeUrl: '',
+                questId: '',
             });
             setStep(STEPS.CATEGORY);
             setNumIngredients(1);
             setNumSteps(1);
             setSelectedCoCooks([]);
             setSelectedLinkedRecipes([]);
+            setSelectedQuest(null);
             hasLoadedDraft.current = false;
             hasLoadedEditData.current = false;
-        } else if (
-            recipeModal.isOpen &&
-            recipeModal.isEditMode &&
-            recipeModal.editRecipeData &&
-            !hasLoadedEditData.current
-        ) {
-            // Load edit data when opening in edit mode
-            hasLoadedEditData.current = true;
-            loadEditData(recipeModal.editRecipeData);
-        } else if (
-            recipeModal.isOpen &&
-            !recipeModal.isEditMode &&
-            currentUser &&
-            !hasLoadedDraft.current
-        ) {
-            // Load draft when opening in create mode
-            hasLoadedDraft.current = true;
-            loadDraft().then(() => {
-                console.log('Draft loaded');
-            });
+        } else {
+            if (recipeModal.questId) {
+                axios
+                    .get(`/api/quest/${recipeModal.questId}`)
+                    .then((response) => {
+                        setSelectedQuest(response.data);
+                        setValue('questId', response.data.id);
+                    })
+                    .catch((error) => {
+                        console.error('Failed to load pending quest', error);
+                    });
+            }
+
+            if (
+                recipeModal.isEditMode &&
+                recipeModal.editRecipeData &&
+                !hasLoadedEditData.current
+            ) {
+                // Load edit data when opening in edit mode
+                hasLoadedEditData.current = true;
+                loadEditData(recipeModal.editRecipeData);
+            } else if (
+                !recipeModal.isEditMode &&
+                currentUser &&
+                !hasLoadedDraft.current
+            ) {
+                // Load draft when opening in create mode
+                hasLoadedDraft.current = true;
+                loadDraft().then(() => {
+                    console.log('Draft loaded');
+                });
+            }
         }
     }, [
         recipeModal.isOpen,
         recipeModal.isEditMode,
         recipeModal.editRecipeData,
+        recipeModal.questId,
         currentUser,
         loadDraft,
         loadEditData,
         reset,
+        setValue,
     ]);
 
     const setCustomValue = (id: string, value: any) => {
@@ -454,12 +505,14 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 coCooksIds: [],
                 linkedRecipeIds: [],
                 youtubeUrl: '',
+                questId: '',
             });
             setStep(STEPS.CATEGORY);
             setNumIngredients(1);
             setNumSteps(1);
             setSelectedCoCooks([]);
             setSelectedLinkedRecipes([]);
+            setSelectedQuest(null);
             recipeModal.onClose();
             router.refresh();
         } catch (error) {
@@ -617,10 +670,13 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 isLoading={isLoading}
                 selectedCoCooks={selectedCoCooks}
                 selectedLinkedRecipes={selectedLinkedRecipes}
+                selectedQuest={selectedQuest}
                 onAddCoCook={addCoCook}
                 onRemoveCoCook={removeCoCook}
                 onAddLinkedRecipe={addLinkedRecipe}
                 onRemoveLinkedRecipe={removeLinkedRecipe}
+                onSelectQuest={selectQuest}
+                onRemoveQuest={removeQuest}
                 register={register}
                 errors={errors}
             />
