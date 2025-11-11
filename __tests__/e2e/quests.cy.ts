@@ -99,7 +99,7 @@ describe('Quests E2E', () => {
             .contains(questDescription)
             .should('be.visible');
         cy.get('[data-cy="quest-card-status"]')
-            .contains('open')
+            .contains('Open')
             .should('be.visible');
         cy.task('log', '✓ Quest appears in list with correct details');
 
@@ -119,7 +119,7 @@ describe('Quests E2E', () => {
             questDescription
         );
         cy.get('[data-cy="quest-status-display"]')
-            .contains('open')
+            .contains('Open')
             .should('be.visible');
         cy.task('log', '✓ Quest detail page displays correct information');
 
@@ -153,7 +153,7 @@ describe('Quests E2E', () => {
             editedDescription
         );
         cy.get('[data-cy="quest-status-display"]')
-            .contains('in_progress')
+            .contains('In Progress')
             .should('be.visible');
         cy.task('log', '✓ Quest updated successfully');
         cy.task('log', '🧪 Quest edit completed');
