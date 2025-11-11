@@ -20,13 +20,18 @@ const TopJorbitersClient: React.FC<TopJorbitersClientProps> = ({
 }) => {
     const recipeModal = useRecipeModal();
 
-    if (!currentUser) return null;
+    // Only use currentUser for call-to-action logic
 
-    const userRank = topJorbiters?.findIndex((j) => j.id === currentUser.id);
+    const userRank = currentUser
+        ? topJorbiters?.findIndex((j) => j.id === currentUser.id)
+        : undefined;
     const isRanked = userRank !== -1 && userRank !== undefined;
     const isFirstPlace = userRank === 0;
 
     const renderCallToAction = () => {
+        if (!currentUser) {
+            return null;
+        }
         if (!isRanked) {
             return (
                 <CallToAction
