@@ -9,10 +9,10 @@ import {
     FiCircle,
     FiEdit,
     FiTrash,
-    FiChevronLeft,
 } from 'react-icons/fi';
 import { formatDistance } from 'date-fns';
 import Avatar from '@/app/components/utils/Avatar';
+import QuestHead from '@/app/components/quests/QuestHead';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
 import useQuestModal from '@/app/hooks/useQuestModal';
@@ -150,14 +150,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                 }
             />
             <div className="mx-auto max-w-7xl p-4 sm:px-6 lg:px-8">
-                {/* Back Button */}
-                <button
-                    onClick={() => router.back()}
-                    className="mb-6 flex items-center gap-2 text-gray-600 transition hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
-                >
-                    <FiChevronLeft className="cursor-pointer text-xl" />
-                    <span>{t('back') || 'Back'}</span>
-                </button>
+                <QuestHead title={quest.title} />
 
                 {/* Quest Header */}
                 <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -194,10 +187,6 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                             </div>
                         )}
                     </div>
-
-                    <h1 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
-                        {quest.title}
-                    </h1>
                     <p className="mb-6 text-gray-600 dark:text-gray-400">
                         {quest.description}
                     </p>
