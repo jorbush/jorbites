@@ -132,20 +132,20 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 <MenuItem
                                     onClick={() => {
+                                        router.push('/events');
+                                        toggleOpen();
+                                    }}
+                                    label={t('events') || 'Events'}
+                                    icon={FcCalendar}
+                                />
+                                <MenuItem
+                                    onClick={() => {
                                         router.push('/quests');
                                         toggleOpen();
                                     }}
                                     label={t('quests') || 'Quests'}
                                     icon={FcTodoList}
                                     isNew
-                                />
-                                <MenuItem
-                                    onClick={() => {
-                                        router.push('/events');
-                                        toggleOpen();
-                                    }}
-                                    label={t('events') || 'Events'}
-                                    icon={FcCalendar}
                                 />
                                 {/* <MenuItem
                                     onClick={() => {
@@ -175,20 +175,20 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                             <>
                                 <MenuItem
                                     onClick={() => {
+                                        router.push('/events');
+                                        toggleOpen();
+                                    }}
+                                    label={t('events') || 'Events'}
+                                    icon={FcCalendar}
+                                />
+                                <MenuItem
+                                    onClick={() => {
                                         router.push('/quests');
                                         toggleOpen();
                                     }}
                                     label={t('quests') || 'Quests'}
                                     icon={FcTodoList}
                                     isNew
-                                />
-                                <MenuItem
-                                    onClick={() => {
-                                        router.push('/events');
-                                        toggleOpen();
-                                    }}
-                                    label={t('events') || 'Events'}
-                                    icon={FcCalendar}
                                 />
                                 {/* <MenuItem
                                     onClick={() => {
