@@ -11,6 +11,7 @@ import { formatDistance } from 'date-fns';
 import Avatar from '@/app/components/utils/Avatar';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import Pagination from '@/app/components/navigation/Pagination';
+import { FcTodoList } from 'react-icons/fc';
 
 interface Quest {
     id: string;
@@ -123,9 +124,12 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
             {/* Header */}
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                        {t('quests') || 'Recipe Quests'}
-                    </h1>
+                    <div className="flex items-center gap-3">
+                        <FcTodoList className="mb-2 h-10 w-10" />
+                        <h1 className="pb-2 text-3xl font-bold text-gray-900 dark:text-white">
+                            {t('quests') || 'Recipe Quests'}
+                        </h1>
+                    </div>
                     <p className="mt-2 text-gray-600 dark:text-gray-400">
                         {t('quests_subtitle') ||
                             'Request recipes from the community or fulfill existing requests'}
@@ -166,7 +170,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
             {/* Floating Action Button for mobile (below md) */}
             <button
                 onClick={handleRequestRecipe}
-                className="fixed right-6 bottom-6 z-10 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-rose-500 text-white shadow-lg transition hover:bg-rose-600 md:hidden"
+                className="fixed right-6 bottom-16 z-10 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-rose-500 text-white shadow-lg transition hover:bg-rose-600 md:hidden"
                 data-cy="request-recipe-button-mobile"
                 aria-label={t('request_recipe') || 'Request Recipe'}
             >
