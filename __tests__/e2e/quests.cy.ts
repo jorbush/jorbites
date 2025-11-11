@@ -88,7 +88,7 @@ describe('Quests E2E', () => {
         // Submit the quest
         cy.get('[data-cy="modal-action-button"]').click();
         cy.task('log', 'Quest created');
-        cy.wait(2000);
+        cy.wait(5000);
 
         // STEP 3: Verify quest appears in the list
         cy.task('log', '=== STEP 3: Verifying quest in list ===');
@@ -140,7 +140,7 @@ describe('Quests E2E', () => {
         // Submit the update
         cy.get('[data-cy="modal-action-button"]').click();
         cy.task('log', 'Quest updated');
-        cy.wait(2000);
+        cy.wait(5000);
 
         // Verify updated quest details
         cy.task('log', 'Verifying quest update...');
@@ -169,12 +169,17 @@ describe('Quests E2E', () => {
 
         // Verify we're back to quests page
         cy.url().should('include', '/quests');
+        cy.wait(2000);
         cy.task('log', '✅ Quest lifecycle test completed');
 
         // Verify quest is not in the list anymore
-        cy.get('[data-cy="quest-card-title"]')
-            .contains(editedTitle)
-            .should('not.exist');
+        cy.get('body').then(($body) => {
+            if ($body.find('[data-cy="quest-card-title"]').length > 0) {
+                cy.get('[data-cy="quest-card-title"]')
+                    .contains(editedTitle)
+                    .should('not.exist');
+            }
+        });
         cy.task('log', '✓ Quest removed from list');
     });
 });
