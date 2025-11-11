@@ -182,6 +182,7 @@ export async function PATCH(
             coCooksIds,
             linkedRecipeIds,
             youtubeUrl,
+            questId,
         } = body;
 
         if (
@@ -250,6 +251,14 @@ export async function PATCH(
             }
         }
 
+        // Handle questId - ensure empty strings become null
+        let finalQuestId: string | null = null;
+        if (questId !== undefined) {
+            finalQuestId = questId && questId.trim() !== '' ? questId : null;
+        } else if (recipe.questId) {
+            finalQuestId = recipe.questId;
+        }
+
         const extraImages = [imageSrc1, imageSrc2, imageSrc3].filter(Boolean);
 
         const imagesToDelete: string[] = [];
@@ -303,6 +312,7 @@ export async function PATCH(
                 coCooksIds: coCooksIds || [],
                 linkedRecipeIds: linkedRecipeIds || [],
                 youtubeUrl: youtubeUrl?.trim() || null,
+                questId: finalQuestId,
             },
         });
 
