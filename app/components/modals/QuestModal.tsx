@@ -126,6 +126,7 @@ const QuestModal = () => {
                             `Title must be ${QUEST_TITLE_MAX_LENGTH} characters or less`,
                     },
                 }}
+                dataCy="quest-title"
             />
             <div className="relative">
                 <label
@@ -154,6 +155,7 @@ const QuestModal = () => {
                         t('quest_description_placeholder') ||
                         'Describe the recipe you would like someone to create...'
                     }
+                    data-cy="quest-description"
                 />
                 {errors.description && (
                     <p className="mt-1 text-xs text-rose-500">
@@ -175,6 +177,7 @@ const QuestModal = () => {
                         {...register('status')}
                         disabled={isLoading}
                         className="w-full rounded-lg border border-gray-300 p-3 text-gray-900 transition focus:border-rose-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                        data-cy="quest-status"
                     >
                         <option value="open">{t('open') || 'Open'}</option>
                         <option value="in_progress">

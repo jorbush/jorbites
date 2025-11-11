@@ -168,6 +168,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                                 className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(
                                     quest.status
                                 )}`}
+                                data-cy="quest-status-display"
                             >
                                 {t(quest.status) || quest.status}
                             </span>
@@ -178,6 +179,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                                     onClick={handleEdit}
                                     aria-label={t('edit_quest') || 'Edit Quest'}
                                     className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                                    data-cy="edit-quest"
                                 >
                                     <FiEdit />
                                 </button>
@@ -188,6 +190,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                                         t('delete_quest') || 'Delete Quest'
                                     }
                                     className="cursor-pointer rounded-lg border border-red-300 px-4 py-2 text-red-600 transition hover:bg-red-50 disabled:opacity-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
+                                    data-cy="delete-quest"
                                 >
                                     <FiTrash />
                                 </button>
@@ -195,10 +198,16 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                         )}
                     </div>
 
-                    <h1 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
+                    <h1
+                        className="mb-4 text-3xl font-bold text-gray-900 dark:text-white"
+                        data-cy="quest-title-display"
+                    >
                         {quest.title}
                     </h1>
-                    <p className="mb-6 text-gray-600 dark:text-gray-400">
+                    <p
+                        className="mb-6 text-gray-600 dark:text-gray-400"
+                        data-cy="quest-description-display"
+                    >
                         {quest.description}
                     </p>
 
@@ -227,6 +236,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                                     recipeModal.onOpenCreate(quest.id)
                                 }
                                 className="cursor-pointer rounded-lg bg-rose-500 px-6 py-2 text-white transition hover:bg-rose-600"
+                                data-cy="fulfill-quest"
                             >
                                 {t('fulfill_quest') || 'Fulfill This Request'}
                             </button>
