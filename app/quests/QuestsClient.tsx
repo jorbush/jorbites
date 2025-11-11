@@ -12,6 +12,7 @@ import Avatar from '@/app/components/utils/Avatar';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import Pagination from '@/app/components/navigation/Pagination';
 import { FcTodoList } from 'react-icons/fc';
+import Button from '@/app/components/utils/Button';
 
 interface Quest {
     id: string;
@@ -135,15 +136,14 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                             'Request recipes from the community or fulfill existing requests'}
                     </p>
                 </div>
-                <button
+                <Button
+                    rose
                     onClick={handleRequestRecipe}
-                    className="hidden flex-shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg bg-rose-500 px-6 py-3 text-white transition hover:bg-rose-600 md:flex"
-                    data-cy="request-recipe-button"
-                    aria-label={t('request_recipe') || 'Request Recipe'}
-                >
-                    <FiPlus />
-                    {t('request_recipe') || 'Request Recipe'}
-                </button>
+                    label={t('request_recipe') || 'Request Recipe'}
+                    icon={FiPlus}
+                    dataCy="request-recipe-button"
+                    custom="hidden w-full md:block md:w-auto"
+                />
             </div>
 
             {/* Filters Row with Horizontal Scroll */}
@@ -168,14 +168,15 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
             </div>
 
             {/* Floating Action Button for mobile (below md) */}
-            <button
+            <Button
+                rose
                 onClick={handleRequestRecipe}
-                className="fixed right-6 bottom-16 z-10 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-rose-500 text-white shadow-lg transition hover:bg-rose-600 md:hidden"
-                data-cy="request-recipe-button-mobile"
-                aria-label={t('request_recipe') || 'Request Recipe'}
-            >
-                <FiPlus className="h-6 w-6" />
-            </button>
+                label=""
+                icon={FiPlus}
+                custom="fixed right-6 bottom-16 z-10 h-14 w-14 rounded-full flex items-center justify-center shadow-lg md:hidden"
+                ariaLabel={t('request_recipe') || 'Request Recipe'}
+                dataCy="request-recipe-button-mobile"
+            />
 
             {/* Quests Grid */}
             {quests.length === 0 ? (
