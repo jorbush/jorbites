@@ -223,7 +223,10 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                         >
                                             {quest.title}
                                         </h2>
-                                        <p className="text-gray-600 dark:text-gray-400" data-cy="quest-card-description">
+                                        <p
+                                            className="text-gray-600 dark:text-gray-400"
+                                            data-cy="quest-card-description"
+                                        >
                                             {quest.description}
                                         </p>
                                     </div>

@@ -198,10 +198,16 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                         )}
                     </div>
 
-                    <h1 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white" data-cy="quest-title-display">
+                    <h1
+                        className="mb-4 text-3xl font-bold text-gray-900 dark:text-white"
+                        data-cy="quest-title-display"
+                    >
                         {quest.title}
                     </h1>
-                    <p className="mb-6 text-gray-600 dark:text-gray-400" data-cy="quest-description-display">
+                    <p
+                        className="mb-6 text-gray-600 dark:text-gray-400"
+                        data-cy="quest-description-display"
+                    >
                         {quest.description}
                     </p>
 

@@ -67,7 +67,8 @@ describe('Quests E2E', () => {
 
     it('complete quest lifecycle - create, view, edit, and delete', () => {
         const questTitle = 'Test Quest';
-        const questDescription = 'Looking for a delicious chocolate cake recipe';
+        const questDescription =
+            'Looking for a delicious chocolate cake recipe';
 
         // STEP 1: Navigate to quests page
         cy.task('log', '=== STEP 1: Navigating to quests page ===');
@@ -112,10 +113,7 @@ describe('Quests E2E', () => {
 
         // Verify quest details on detail page
         cy.url().should('include', '/quests/');
-        cy.get('[data-cy="quest-title-display"]').should(
-            'contain',
-            questTitle
-        );
+        cy.get('[data-cy="quest-title-display"]').should('contain', questTitle);
         cy.get('[data-cy="quest-description-display"]').should(
             'contain',
             questDescription
@@ -135,9 +133,7 @@ describe('Quests E2E', () => {
         const editedDescription = 'Looking for a delicious vanilla cake recipe';
 
         cy.get('[data-cy="quest-title"]').clear().type(editedTitle);
-        cy.get('[data-cy="quest-description"]')
-            .clear()
-            .type(editedDescription);
+        cy.get('[data-cy="quest-description"]').clear().type(editedDescription);
         cy.get('[data-cy="quest-status"]').select('in_progress');
         cy.task('log', 'Quest form updated');
 
