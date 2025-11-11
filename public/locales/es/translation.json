@@ -620,7 +620,7 @@
     "quest_created": "¡Misión creada!",
     "edit_quest": "Editar Misión",
     "delete_quest": "Eliminar Misión",
-    "edit_quest_subtitle": "Actualiza tu solicitud de receta",
+    "edit_quest_subtitle": "Actualiza tu misión de receta",
     "request_recipe_subtitle": "Dile a la comunidad qué receta te gustaría ver",
     "title_max_length": "El título debe tener menos de 200 caracteres",
     "description_max_length": "La descripción debe tener menos de 1000 caracteres",
