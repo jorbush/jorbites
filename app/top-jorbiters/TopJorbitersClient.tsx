@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import LeaderboardHeader from '@/app/components/top-jorbiters/LeaderboardHeader';
@@ -19,8 +19,6 @@ const TopJorbitersClient: React.FC<TopJorbitersClientProps> = ({
     topJorbiters,
 }) => {
     const recipeModal = useRecipeModal();
-
-    // Only use currentUser for call-to-action logic
 
     const userRank = currentUser
         ? topJorbiters?.findIndex((j) => j.id === currentUser.id)
@@ -58,6 +56,7 @@ const TopJorbitersClient: React.FC<TopJorbitersClientProps> = ({
 
         return null;
     };
+
     return (
         <Container>
             <div className="mx-auto max-w-(--breakpoint-lg) sm:px-2 md:px-4">
@@ -73,7 +72,7 @@ const TopJorbitersClient: React.FC<TopJorbitersClientProps> = ({
                         />
                     ))}
                 </div>
-
+                <div className="my-8" />
                 {renderCallToAction()}
             </div>
         </Container>
