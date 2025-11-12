@@ -62,7 +62,7 @@ const WorkshopsClient: React.FC<WorkshopsClientProps> = ({
                     emptyStateTitle={t('no_past_workshops_found')}
                     emptyStateSubtitle={t('check_back_later_past')}
                 />
-
+                <div className="my-8" />
                 <CallToAction
                     icon="👨‍🍳"
                     title={t('contribute_to_community')}
