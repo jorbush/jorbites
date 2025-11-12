@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import { SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import LeaderboardHeader from '@/app/components/top-jorbiters/LeaderboardHeader';
