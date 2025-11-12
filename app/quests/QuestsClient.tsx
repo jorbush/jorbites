@@ -206,6 +206,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                 className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(
                                                     quest.status
                                                 )}`}
+                                                data-cy="quest-card-status"
                                             >
                                                 {t(quest.status) ||
                                                     quest.status}
@@ -218,10 +219,14 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                     `/quests/${quest.id}`
                                                 )
                                             }
+                                            data-cy="quest-card-title"
                                         >
                                             {quest.title}
                                         </h2>
-                                        <p className="text-gray-600 dark:text-gray-400">
+                                        <p
+                                            className="text-gray-600 dark:text-gray-400"
+                                            data-cy="quest-card-description"
+                                        >
                                             {quest.description}
                                         </p>
                                     </div>
