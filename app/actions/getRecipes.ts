@@ -6,6 +6,12 @@ import {
     getDateRangeFilter,
 } from '@/app/utils/filter';
 import { logger } from '@/app/lib/axiom/server';
+import {
+    authenticatedRatelimit,
+    unauthenticatedRatelimit,
+} from '@/app/lib/ratelimit';
+import getCurrentUser from '@/app/actions/getCurrentUser';
+import { headers } from 'next/headers';
 
 export interface IRecipesParams {
     category?: string;
@@ -65,24 +71,29 @@ export default async function getRecipes(
             query = { ...query, ...dateRangeFilter };
         }
 
-        // Commenting because of Search implementation
-        // TODO: Re-enable rate limiting somehow
-        // if (process.env.ENV === 'production') {
-        //     const currentUser = await getCurrentUser();
-        //     const rateLimitKey = currentUser
-        //         ? currentUser.id
-        //         : ((await headers()).get('x-forwarded-for') ?? '');
-        //     const { success, reset } = await ratelimit.limit(rateLimitKey);
-        //     if (!success) {
-        //         return {
-        //             data: null,
-        //             error: {
-        //                 code: 'RATE_LIMIT_EXCEEDED',
-        //                 message: `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`,
-        //             },
-        //         };
-        //     }
-        // }
+        // Rate limiting with per-user limits (higher for authenticated users)
+        if (process.env.ENV === 'production') {
+            const currentUser = await getCurrentUser();
+            const rateLimitKey = currentUser
+                ? currentUser.id
+                : ((await headers()).get('x-forwarded-for') ?? 'unknown-ip');
+
+            // Use different rate limits for authenticated vs unauthenticated users
+            const ratelimit = currentUser
+                ? authenticatedRatelimit
+                : unauthenticatedRatelimit;
+
+            const { success, reset } = await ratelimit.limit(rateLimitKey);
+            if (!success) {
+                return {
+                    data: null,
+                    error: {
+                        code: 'RATE_LIMIT_EXCEEDED',
+                        message: `You have made too many requests. Try again in ${Math.floor((reset - Date.now()) / 1000)} seconds.`,
+                    },
+                };
+            }
+        }
 
         const recipes = await prisma.recipe.findMany({
             where: query,
