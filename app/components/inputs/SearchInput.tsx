@@ -12,6 +12,7 @@ interface SearchResult {
     name?: string;
     image?: string;
     title?: string;
+    description?: string;
     imageSrc?: string;
     user?: {
         name: string;
@@ -33,9 +34,10 @@ interface SearchInputProps {
     results?: {
         users?: SearchResult[];
         recipes?: SearchResult[];
+        quests?: SearchResult[];
     };
     onSelectResult?: (result: SearchResult) => void;
-    searchType: 'users' | 'recipes';
+    searchType: 'users' | 'recipes' | 'quests';
     maxSelected?: number;
     isSelected?: (id: string) => boolean;
     emptyMessage?: string;
@@ -50,7 +52,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
     onChange,
     icon: Icon,
     dataCy,
-    results = { users: [], recipes: [] },
+    results = { users: [], recipes: [], quests: [] },
     onSelectResult,
     searchType,
     maxSelected = 0,
@@ -60,10 +62,16 @@ const SearchInput: React.FC<SearchInputProps> = ({
     const hasResults =
         searchType === 'users'
             ? results.users && results.users.length > 0
-            : results.recipes && results.recipes.length > 0;
+            : searchType === 'recipes'
+              ? results.recipes && results.recipes.length > 0
+              : results.quests && results.quests.length > 0;
 
     const searchResults =
-        searchType === 'users' ? results.users || [] : results.recipes || [];
+        searchType === 'users'
+            ? results.users || []
+            : searchType === 'recipes'
+              ? results.recipes || []
+              : results.quests || [];
 
     const showResults = value.length >= 2;
 
@@ -130,7 +138,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
                                               </span>
                                           </div>
                                       </Fragment>
-                                  ) : (
+                                  ) : searchType === 'recipes' ? (
                                       <Fragment>
                                           <div className="flex items-center gap-3">
                                               <div className="relative h-10 w-10 overflow-hidden rounded-md">
@@ -156,6 +164,17 @@ const SearchInput: React.FC<SearchInputProps> = ({
                                                       {result.user?.name}
                                                   </span>
                                               </div>
+                                          </div>
+                                      </Fragment>
+                                  ) : (
+                                      <Fragment>
+                                          <div className="flex flex-1 flex-col gap-1">
+                                              <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                                                  {result.title}
+                                              </span>
+                                              <span className="line-clamp-1 text-xs text-gray-500 dark:text-zinc-400">
+                                                  {result.description}
+                                              </span>
                                           </div>
                                       </Fragment>
                                   )}
