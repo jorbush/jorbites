@@ -20,6 +20,7 @@ import {
     FcExport,
     FcImport,
     FcPortraitMode,
+    FcTodoList,
 } from 'react-icons/fc';
 
 interface UserMenuProps {
@@ -137,6 +138,15 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     label={t('events') || 'Events'}
                                     icon={FcCalendar}
                                 />
+                                <MenuItem
+                                    onClick={() => {
+                                        router.push('/quests');
+                                        toggleOpen();
+                                    }}
+                                    label={t('quests') || 'Quests'}
+                                    icon={FcTodoList}
+                                    isNew
+                                />
                                 {/* <MenuItem
                                     onClick={() => {
                                         router.push('/workshops');
@@ -170,6 +180,15 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('events') || 'Events'}
                                     icon={FcCalendar}
+                                />
+                                <MenuItem
+                                    onClick={() => {
+                                        router.push('/quests');
+                                        toggleOpen();
+                                    }}
+                                    label={t('quests') || 'Quests'}
+                                    icon={FcTodoList}
+                                    isNew
                                 />
                                 {/* <MenuItem
                                     onClick={() => {

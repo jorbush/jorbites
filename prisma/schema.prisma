@@ -31,6 +31,7 @@ model User {
   recipes             Recipe[]
   comments            Comment[]
   workshops           Workshop[]
+  quests              Quest[]
 }
 
 model Account {
@@ -69,9 +70,11 @@ model Recipe {
   coCooksIds String[] @db.ObjectId @default([])
   linkedRecipeIds String[] @db.ObjectId @default([])
   youtubeUrl String?
+  questId String? @db.ObjectId
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]
+  quest Quest? @relation(fields: [questId], references: [id], onDelete: SetNull)
 }
 
 model Comment {
@@ -129,4 +132,17 @@ model WorkshopParticipant {
   workshop    Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
 
   @@unique([workshopId, userId])
+}
+
+model Quest {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String   @db.ObjectId
+  status      String   @default("open") // open, in_progress, completed
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipes     Recipe[]
 }
