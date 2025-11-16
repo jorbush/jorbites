@@ -2,7 +2,7 @@
 title: 🦃 Festí d'Acció de Gràcies 🥧
 date: 2025-11-25
 endDate: 2025-11-30T21:59:59
-image: /images/events/autumn_flavors.webp
+image: /images/events/thanksgiving_feast.webp
 description: Uneix-te a nosaltres per a una celebració d'Acció de Gràcies plena de gratitud i menjar deliciós!
 ---
 

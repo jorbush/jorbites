@@ -2,7 +2,7 @@
 title: 🦃 Festín de Acción de Gracias 🥧
 date: 2025-11-25
 endDate: 2025-11-30T21:59:59
-image: /images/events/autumn_flavors.webp
+image: /images/events/thanksgiving_feast.webp
 description: ¡Únete a nosotros para una celebración de Acción de Gracias llena de gratitud y comida deliciosa!
 ---
 
