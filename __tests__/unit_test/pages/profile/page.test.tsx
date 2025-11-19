@@ -18,6 +18,7 @@ vi.mock('next/navigation', () => ({
         query: {},
     })),
     useSearchParams: vi.fn(() => new URLSearchParams()),
+    usePathname: vi.fn(() => '/profile/user1'),
 }));
 
 vi.mock('react-i18next', () => ({
@@ -38,6 +39,17 @@ const mockRecipes = [
         createdAt: new Date().toISOString(),
         imageSrc: 'http://image.png',
         category: '',
+        description: 'Test Description 1',
+        method: 'Test Method 1',
+        minutes: 30,
+        numLikes: 0,
+        ingredients: ['Ingredient 1'],
+        steps: ['Step 1'],
+        extraImages: [],
+        coCooksIds: [],
+        linkedRecipeIds: [],
+        youtubeUrl: '',
+        questId: null,
     },
     {
         id: 'recipe2',
@@ -46,6 +58,17 @@ const mockRecipes = [
         createdAt: new Date().toISOString(),
         imageSrc: 'http://image.png',
         category: '',
+        description: 'Test Description 2',
+        method: 'Test Method 2',
+        minutes: 45,
+        numLikes: 5,
+        ingredients: ['Ingredient A'],
+        steps: ['Step A'],
+        extraImages: [],
+        coCooksIds: [],
+        linkedRecipeIds: [],
+        youtubeUrl: '',
+        questId: null,
     },
 ];
 const mockCurrentUser = {
@@ -78,10 +101,14 @@ describe('ProfilePage', () => {
             emailNotifications: false,
             level: 0,
             verified: false,
+            badges: [],
+            resetToken: null,
+            resetTokenExpiry: null,
         });
 
-        const params = { userId: 'user1' };
-        const profilePage = await ProfilePage({ params });
+        const params = Promise.resolve({ userId: 'user1' });
+        const searchParams = Promise.resolve({});
+        const profilePage = await ProfilePage({ params, searchParams });
         const { getByText } = render(profilePage);
 
         await waitFor(() => {
@@ -93,23 +120,7 @@ describe('ProfilePage', () => {
     });
 
     it('renders profile header and recipes when user has recipes', async () => {
-        vi.mocked(getRecipesByUserId).mockResolvedValue(
-            mockRecipes as {
-                createdAt: string;
-                id: string;
-                title: string;
-                description: string;
-                imageSrc: string;
-                category: string;
-                method: string;
-                minutes: number;
-                numLikes: number;
-                ingredients: string[];
-                steps: string[];
-                extraImages: string[];
-                userId: string;
-            }[]
-        );
+        vi.mocked(getRecipesByUserId).mockResolvedValue(mockRecipes as any);
         vi.mocked(getUserById).mockResolvedValue({
             createdAt: '',
             updatedAt: '',
@@ -123,6 +134,9 @@ describe('ProfilePage', () => {
             emailNotifications: false,
             level: 0,
             verified: false,
+            badges: [],
+            resetToken: null,
+            resetTokenExpiry: null,
         });
         vi.mocked(getCurrentUser).mockResolvedValue({
             createdAt: '',
@@ -137,10 +151,14 @@ describe('ProfilePage', () => {
             emailNotifications: false,
             level: 0,
             verified: false,
+            badges: [],
+            resetToken: null,
+            resetTokenExpiry: null,
         });
 
         const profilePage = await ProfilePage({
-            params: { userId: 'user1' },
+            params: Promise.resolve({ userId: 'user1' }),
+            searchParams: Promise.resolve({}),
         });
         const { getByText } = render(profilePage);
 
@@ -166,6 +184,9 @@ describe('ProfilePage', () => {
             emailNotifications: false,
             level: 0,
             verified: false,
+            badges: [],
+            resetToken: null,
+            resetTokenExpiry: null,
         });
         vi.mocked(getCurrentUser).mockResolvedValue({
             createdAt: '',
@@ -180,10 +201,14 @@ describe('ProfilePage', () => {
             emailNotifications: false,
             level: 0,
             verified: false,
+            badges: [],
+            resetToken: null,
+            resetTokenExpiry: null,
         });
 
         const profilePage = await ProfilePage({
-            params: { userId: 'user1' },
+            params: Promise.resolve({ userId: 'user1' }),
+            searchParams: Promise.resolve({}),
         });
         const { getByText } = render(profilePage);
 
