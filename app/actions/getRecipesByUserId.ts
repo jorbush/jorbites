@@ -1,9 +1,6 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
-import {
-    OrderByType,
-    getPrismaOrderByClause,
-} from '@/app/utils/filter';
+import { OrderByType, getPrismaOrderByClause } from '@/app/utils/filter';
 
 interface IParams {
     userId?: string;

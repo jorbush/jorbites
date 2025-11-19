@@ -52,9 +52,13 @@ const OrderByDropdown: React.FC = () => {
     const buttonContent = (
         <>
             {/* Mobile: Show reorder icon only on main page, show text on profile */}
-            <div className={`flex items-center gap-1 ${isProfilePage ? '' : 'lg:hidden'}`}>
+            <div
+                className={`flex items-center gap-1 ${isProfilePage ? '' : 'lg:hidden'}`}
+            >
                 {isProfilePage ? (
-                    <span className="text-sm">{getOrderLabel(currentOrderBy)}</span>
+                    <span className="text-sm">
+                        {getOrderLabel(currentOrderBy)}
+                    </span>
                 ) : (
                     <IoReorderThree size={18} />
                 )}
@@ -63,7 +67,9 @@ const OrderByDropdown: React.FC = () => {
             {/* Desktop: Show text on main page */}
             {!isProfilePage && (
                 <div className="hidden items-center gap-1 lg:flex">
-                    <span className="text-sm">{getOrderLabel(currentOrderBy)}</span>
+                    <span className="text-sm">
+                        {getOrderLabel(currentOrderBy)}
+                    </span>
                 </div>
             )}
         </>
