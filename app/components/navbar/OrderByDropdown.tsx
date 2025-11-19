@@ -18,18 +18,24 @@ const OrderByDropdown: React.FC = () => {
     const pathname = usePathname();
 
     const isMainPage = pathname === '/';
+    const isProfilePage = pathname?.startsWith('/profile/');
     const currentOrderBy =
         (searchParams?.get('orderBy') as OrderByType) || OrderByType.NEWEST;
 
     const handleOrderChange = (orderBy: OrderByType) => {
-        if (!isMainPage) return;
+        if (!isMainPage && !isProfilePage) return;
         const params = new URLSearchParams(searchParams?.toString() || '');
         if (orderBy === OrderByType.NEWEST) {
             params.delete('orderBy');
         } else {
             params.set('orderBy', orderBy);
         }
-        router.replace(params.toString() ? `/?${params.toString()}` : '/');
+        const newUrl = isMainPage
+            ? params.toString()
+                ? `/?${params.toString()}`
+                : '/'
+            : `${pathname}?${params.toString()}`;
+        router.replace(newUrl);
     };
 
     const getOrderLabel = (orderBy: OrderByType) => {

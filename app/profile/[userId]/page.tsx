@@ -10,9 +10,14 @@ import ProfileHeaderSkeleton from '@/app/components/profile/ProfileHeaderSkeleto
 import UserStatsSkeleton from '@/app/components/stats/UserStatsSkeleton';
 import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
 import { Metadata } from 'next';
+import { OrderByType } from '@/app/utils/filter';
 
 interface IParams {
     userId?: string;
+}
+
+interface ISearchParams {
+    orderBy?: OrderByType;
 }
 
 export async function generateMetadata(props: {
@@ -58,9 +63,16 @@ export async function generateMetadata(props: {
     };
 }
 
-const ProfilePage = async (props: { params: Promise<IParams> }) => {
+const ProfilePage = async (props: {
+    params: Promise<IParams>;
+    searchParams: Promise<ISearchParams>;
+}) => {
     const params = await props.params;
-    const recipes = await getRecipesByUserId(params);
+    const searchParams = await props.searchParams;
+    const recipes = await getRecipesByUserId({
+        ...params,
+        orderBy: searchParams.orderBy,
+    });
     const user = await getUserById({ userId: params.userId, withStats: true });
     const currentUser = await getCurrentUser();
 
