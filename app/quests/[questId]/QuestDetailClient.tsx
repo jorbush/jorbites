@@ -269,20 +269,17 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                             </div>
                         </div>
                         {currentUser && quest.status !== 'completed' && (
-                            <div>
-                                <Button
-                                    onClick={() =>
-                                        recipeModal.onOpenCreate(quest.id)
-                                    }
-                                    label={
-                                        t('fulfill_quest') ||
-                                        'Fulfill This Request'
-                                    }
-                                    rose
-                                    small
-                                    dataCy="fulfill-quest"
-                                />
-                            </div>
+                            <Button
+                                onClick={() =>
+                                    recipeModal.onOpenCreate(quest.id)
+                                }
+                                label={
+                                    t('fulfill_quest') || 'Fulfill This Request'
+                                }
+                                rose
+                                small
+                                dataCy="fulfill-quest"
+                            />
                         )}
                     </div>
                 </div>

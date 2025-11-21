@@ -41,10 +41,7 @@ const Button: React.FC<ButtonProps> = ({
     };
 
     const getRoseButtonClasses = () => {
-        if (rose) {
-            return 'bg-rose-500 text-white hover:bg-rose-600 hover:opacity-100';
-        }
-        if (deleteButton) {
+        if (rose || deleteButton) {
             return 'bg-rose-500 text-white hover:bg-rose-600 hover:opacity-100';
         }
         return '';
@@ -57,7 +54,21 @@ const Button: React.FC<ButtonProps> = ({
             return `cursor-pointer rounded-lg ${padding} transition disabled:cursor-not-allowed disabled:opacity-70 ${Icon ? 'flex items-center justify-center gap-2' : ''}`;
         }
         // Default modal button style
-        return `relative w-full cursor-pointer rounded-lg transition hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-70 ${outline ? 'dark:bg-dark bg-white' : 'bg-green-450'} ${outline ? 'border-black dark:border-neutral-100' : 'border-green-450'} ${outline ? 'text-black dark:text-neutral-100' : 'dark:text-dark text-white'} ${small ? 'rounded-md border px-3 py-2 text-sm font-medium' : 'text-md w-full rounded-lg border-2 py-3 font-semibold'} ${deleteButton ? 'border-rose-500 bg-rose-500 text-neutral-100' : ''}`;
+        const baseModalClasses =
+            'relative w-full cursor-pointer rounded-lg transition hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-70';
+        const colorClasses = outline ? 'dark:bg-dark bg-white' : 'bg-green-450';
+        const borderClasses = outline
+            ? 'border-black dark:border-neutral-100'
+            : 'border-green-450';
+        const textClasses = outline
+            ? 'text-black dark:text-neutral-100'
+            : 'dark:text-dark text-white';
+        const sizeClasses = small
+            ? 'rounded-md border px-3 py-2 text-sm font-medium'
+            : 'text-md w-full rounded-lg border-2 py-3 font-semibold';
+        const deleteClasses = deleteButton ? 'border-rose-500' : '';
+
+        return `${baseModalClasses} ${colorClasses} ${borderClasses} ${textClasses} ${sizeClasses} ${deleteClasses}`;
     };
 
     return (
