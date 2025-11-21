@@ -21,6 +21,7 @@ import useRecipeModal from '@/app/hooks/useRecipeModal';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useState } from 'react';
+import Button from '@/app/components/buttons/Button';
 
 interface Quest {
     id: string;
@@ -268,15 +269,20 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                             </div>
                         </div>
                         {currentUser && quest.status !== 'completed' && (
-                            <button
-                                onClick={() =>
-                                    recipeModal.onOpenCreate(quest.id)
-                                }
-                                className="cursor-pointer rounded-lg bg-rose-500 px-6 py-2 text-white transition hover:bg-rose-600"
-                                data-cy="fulfill-quest"
-                            >
-                                {t('fulfill_quest') || 'Fulfill This Request'}
-                            </button>
+                            <div>
+                                <Button
+                                    onClick={() =>
+                                        recipeModal.onOpenCreate(quest.id)
+                                    }
+                                    label={
+                                        t('fulfill_quest') ||
+                                        'Fulfill This Request'
+                                    }
+                                    rose
+                                    small
+                                    dataCy="fulfill-quest"
+                                />
+                            </div>
                         )}
                     </div>
                 </div>
