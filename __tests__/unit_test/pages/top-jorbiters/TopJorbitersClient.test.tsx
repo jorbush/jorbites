@@ -25,7 +25,7 @@ vi.mock('@/app/components/top-jorbiters/JorbiterCard', () => ({
     ),
 }));
 
-vi.mock('@/app/components/top-jorbiters/CallToAction', () => ({
+vi.mock('@/app/components/shared/CallToAction', () => ({
     default: ({
         currentUser,
     }: {
