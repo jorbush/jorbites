@@ -5,7 +5,11 @@ import ActionCard from '@/app/components/shared/ActionCard';
 // Mock Button component
 vi.mock('@/app/components/buttons/Button', () => ({
     default: ({ label, onClick, dataCy }: any) => (
-        <button onClick={onClick} data-cy={dataCy} data-testid="action-button">
+        <button
+            onClick={onClick}
+            data-cy={dataCy}
+            data-testid="action-button"
+        >
             {label}
         </button>
     ),
