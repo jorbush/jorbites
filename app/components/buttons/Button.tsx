@@ -41,7 +41,10 @@ const Button: React.FC<ButtonProps> = ({
     };
 
     const getRoseButtonClasses = () => {
-        if (rose || deleteButton) {
+        if (rose) {
+            return 'bg-rose-500 text-white hover:bg-rose-600 hover:opacity-100';
+        }
+        if (deleteButton) {
             return 'bg-rose-500 text-white hover:bg-rose-600 hover:opacity-100';
         }
         return '';
@@ -65,16 +68,10 @@ const Button: React.FC<ButtonProps> = ({
             data-cy={dataCy}
             data-testid={dataCy || 'button-component'}
         >
-            {Icon && !rose && (
+            {Icon && (
                 <Icon
-                    size={24}
-                    className="absolute top-3 left-4"
-                    data-testid="button-icon"
-                />
-            )}
-            {Icon && rose && (
-                <Icon
-                    size={20}
+                    size={rose ? 20 : 24}
+                    className={rose ? '' : 'absolute top-3 left-4'}
                     data-testid="button-icon"
                 />
             )}
