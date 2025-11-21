@@ -12,6 +12,7 @@ import Avatar from '@/app/components/utils/Avatar';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import Pagination from '@/app/components/navigation/Pagination';
 import { FcTodoList } from 'react-icons/fc';
+import Button from '@/app/components/buttons/Button';
 
 interface Quest {
     id: string;
@@ -135,15 +136,15 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                             'Request recipes from the community or fulfill existing requests'}
                     </p>
                 </div>
-                <button
-                    onClick={handleRequestRecipe}
-                    className="hidden flex-shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg bg-rose-500 px-6 py-3 text-white transition hover:bg-rose-600 md:flex"
-                    data-cy="request-recipe-button"
-                    aria-label={t('request_recipe') || 'Request Recipe'}
-                >
-                    <FiPlus />
-                    {t('request_recipe') || 'Request Recipe'}
-                </button>
+                <div className="hidden md:block md:flex-shrink-0">
+                    <Button
+                        onClick={handleRequestRecipe}
+                        label={t('request_recipe') || 'Request Recipe'}
+                        icon={FiPlus}
+                        rose
+                        dataCy="request-recipe-button"
+                    />
+                </div>
             </div>
 
             {/* Filters Row with Horizontal Scroll */}
