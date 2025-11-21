@@ -32,10 +32,12 @@ const TopJorbitersClient: React.FC<TopJorbitersClientProps> = ({
                     ))}
                 </div>
 
-                <CallToAction
-                    currentUser={currentUser}
-                    topJorbiters={topJorbiters}
-                />
+                <div className="mt-8">
+                    <CallToAction
+                        currentUser={currentUser}
+                        topJorbiters={topJorbiters}
+                    />
+                </div>
             </div>
         </Container>
     );
