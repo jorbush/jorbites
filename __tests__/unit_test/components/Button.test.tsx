@@ -151,4 +151,46 @@ describe('<Button />', () => {
         expect(button.className).toContain('disabled:cursor-not-allowed');
         expect(button.hasAttribute('disabled')).toBe(false);
     });
+
+    it('applies rose button styles when rose prop is true', () => {
+        render(
+            <Button
+                label="Rose Button"
+                onClick={mockOnClick}
+                rose
+            />
+        );
+        const button = screen.getByText('Rose Button');
+        expect(button.className).toContain('bg-rose-500');
+        expect(button.className).toContain('hover:bg-rose-600');
+    });
+
+    it('renders icon inline for rose buttons', () => {
+        const { container } = render(
+            <Button
+                label="Rose Icon Button"
+                onClick={mockOnClick}
+                rose
+                icon={FaUser}
+            />
+        );
+        const icons = container.querySelectorAll('[data-testid="button-icon"]');
+        expect(icons.length).toBeGreaterThan(0);
+        const button = screen.getByText('Rose Icon Button');
+        expect(button.className).toContain('flex');
+        expect(button.className).toContain('items-center');
+    });
+
+    it('applies small padding to rose buttons when small prop is true', () => {
+        render(
+            <Button
+                label="Small Rose"
+                onClick={mockOnClick}
+                rose
+                small
+            />
+        );
+        const button = screen.getByText('Small Rose');
+        expect(button.className).toContain('py-2');
+    });
 });
