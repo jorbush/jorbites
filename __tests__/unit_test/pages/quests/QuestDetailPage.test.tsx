@@ -7,6 +7,13 @@ const mockPush = vi.fn();
 const mockBack = vi.fn();
 const mockRefresh = vi.fn();
 
+// Mock clipboard API
+Object.assign(navigator, {
+    clipboard: {
+        writeText: vi.fn(),
+    },
+});
+
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
         push: mockPush,
@@ -143,6 +150,49 @@ describe('<QuestDetailClient />', () => {
         expect(mockBack).toHaveBeenCalledTimes(1);
     });
 
+    it('renders share button for all users', () => {
+        render(
+            <QuestDetailClient
+                currentUser={mockUser}
+                quest={mockQuest}
+            />
+        );
+        const shareButton = screen.getByLabelText(/share_quest/i);
+        expect(shareButton).toBeDefined();
+    });
+
+    it('renders share button for non-owner', () => {
+        const otherUser = { ...mockUser, id: 'user999' };
+        render(
+            <QuestDetailClient
+                currentUser={otherUser}
+                quest={mockQuest}
+            />
+        );
+        const shareButton = screen.getByLabelText(/share_quest/i);
+        expect(shareButton).toBeDefined();
+    });
+
+    it('calls copyToClipboard when share button is clicked and navigator.share is not available', () => {
+        const writeTextMock = vi.fn();
+        Object.assign(navigator, {
+            clipboard: {
+                writeText: writeTextMock,
+            },
+            share: undefined,
+        });
+
+        render(
+            <QuestDetailClient
+                currentUser={mockUser}
+                quest={mockQuest}
+            />
+        );
+        const shareButton = screen.getByLabelText(/share_quest/i);
+        fireEvent.click(shareButton);
+        expect(writeTextMock).toHaveBeenCalledTimes(1);
+    });
+
     it('renders edit and delete buttons for quest owner', () => {
         render(
             <QuestDetailClient
@@ -151,8 +201,8 @@ describe('<QuestDetailClient />', () => {
             />
         );
         const buttons = screen.getAllByRole('button');
-        // Should have back, edit, delete, and fulfill quest buttons
-        expect(buttons.length).toBeGreaterThanOrEqual(4);
+        // Should have back, share, edit, delete, and fulfill quest buttons
+        expect(buttons.length).toBeGreaterThanOrEqual(5);
     });
 
     it('does not render edit and delete buttons for non-owner', () => {
@@ -164,8 +214,8 @@ describe('<QuestDetailClient />', () => {
             />
         );
         const buttons = screen.getAllByRole('button');
-        // Should have back and fulfill quest buttons only
-        expect(buttons.length).toBeLessThan(4);
+        // Should have back, share, and fulfill quest buttons only
+        expect(buttons.length).toBeLessThan(5);
     });
 
     it('opens delete confirmation modal when delete button is clicked', () => {
@@ -175,7 +225,7 @@ describe('<QuestDetailClient />', () => {
                 quest={mockQuest}
             />
         );
-        const deleteButton = screen.getAllByRole('button')[2]; // Third button (edit is second)
+        const deleteButton = screen.getAllByRole('button')[3]; // Fourth button (share, edit, then delete)
         fireEvent.click(deleteButton);
 
         // Check if confirm modal text appears

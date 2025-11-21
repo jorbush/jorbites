@@ -5,7 +5,7 @@ import { SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import LeaderboardHeader from '@/app/components/top-jorbiters/LeaderboardHeader';
 import JorbiterCard from '@/app/components/top-jorbiters/JorbiterCard';
-import CallToAction from '@/app/components/top-jorbiters/CallToAction';
+import CallToAction from '@/app/components/shared/CallToAction';
 
 interface TopJorbitersClientProps {
     currentUser?: SafeUser | null;
@@ -32,10 +32,12 @@ const TopJorbitersClient: React.FC<TopJorbitersClientProps> = ({
                     ))}
                 </div>
 
-                <CallToAction
-                    currentUser={currentUser}
-                    topJorbiters={topJorbiters}
-                />
+                <div className="mt-8">
+                    <CallToAction
+                        currentUser={currentUser}
+                        topJorbiters={topJorbiters}
+                    />
+                </div>
             </div>
         </Container>
     );

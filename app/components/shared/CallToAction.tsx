@@ -8,7 +8,7 @@ import ActionCard from './ActionCard';
 
 interface CallToActionProps {
     currentUser: SafeUser | null | undefined;
-    topJorbiters: SafeUser[] | undefined;
+    topJorbiters?: SafeUser[] | undefined;
 }
 
 const CallToAction: React.FC<CallToActionProps> = ({
@@ -30,6 +30,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
                 subtitle={t('call_to_action_ranked_subtitle')}
                 buttonText={t('post_recipe')}
                 onClick={() => recipeModal.onOpen()}
+                emoji="🏆"
             />
         );
     }
@@ -41,6 +42,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
                 subtitle={t('call_to_action_first_place_subtitle')}
                 buttonText={t('post_recipe')}
                 onClick={() => recipeModal.onOpen()}
+                emoji="🏆"
             />
         );
     }

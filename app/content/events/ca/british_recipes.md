@@ -1,41 +1,41 @@
 ---
-title: 🇬🇧 British Recipes 🎄
+title: 🇬🇧 Receptes Britàniques 🎄
 date: 2025-12-01
 endDate: 2025-12-15T21:59:59
 image: /images/events/british_recipes.webp
-description: Join our British Recipes event and share your favorite classic dishes!
+description: Uneix-te al nostre esdeveniment de Receptes Britàniques i comparteix els teus plats clàssics preferits!
 ---
 
-# 🇬🇧 British Recipes Festival 🎄
+# 🇬🇧 Festival de Receptes Britàniques 🎄
 
-Join us for a celebration of Great Britain's most delicious ingredients on Jorbites!
+Uneix-te a nosaltres per celebrar els ingredients més deliciosos de la Gran Bretanya a Jorbites!
 
-From December 1-15, share your favorite British recipes. Whether you're cooking a Sunday roast, a classic fish and chips, or a sticky toffee pudding, this is your chance to embrace the cozy flavors of British cuisine.
+De l'1 al 15 de desembre, comparteix les teves receptes britàniques preferides. Tant si cuines un Sunday roast, un clàssic fish and chips o un enganxós toffee pudding, aquesta és la teva oportunitat per gaudir dels acollidors sabors de la cuina britànica.
 
-### 🏆 Earn your exclusive badge!
+### 🏆 Guanya la teva insígnia exclusiva!
 
-All Jorbiters who publish a recipe featuring British classic dishes during the festival period will receive the exclusive British Recipes badge.
+Tots els Jorbiters que publiquin una recepta amb plats clàssics britànics durant el període del festival rebran la insígnia exclusiva de Receptes Britàniques.
 
-### 🍽️ Recipe ideas to inspire you:
+### 🍽️ Idees de receptes per inspirar-te:
 
-- **Shepherd's Pie**: A classic lamb and potato dish.
-- **Fish and Chips**: The ultimate British comfort food.
-- **Yorkshire Pudding**: A Sunday roast essential.
-- **Sticky Toffee Pudding**: A deliciously sweet and sticky dessert.
-- **Bangers and Mash**: Sausages and mashed potato.
-- **Full English Breakfast**: The perfect start to the day.
-- **Cornish Pasty**: A hearty and filling pastry.
-- **Eton Mess**: A simple and delicious dessert.
+- **Shepherd's Pie**: Un clàssic plat de xai i patates.
+- **Fish and Chips**: El menjar reconfortant britànic per excel·lència.
+- **Yorkshire Pudding**: Un essencial del Sunday roast.
+- **Sticky Toffee Pudding**: Unes postres deliciosament dolces i enganxoses.
+- **Bangers and Mash**: Salsitxes amb puré de patates.
+- **Full English Breakfast**: El començament perfecte per al dia.
+- **Cornish Pasty**: Una empanada contundent i substanciosa.
+- **Eton Mess**: Unes postres senzilles i delicioses.
 
-### 🌟 Why British recipes are special:
+### 🌟 Per què les receptes britàniques són especials:
 
-British ingredients offer incredible benefits:
-- Rich in tradition and history
-- Packed with flavor
-- Perfect for comfort cooking
-- Locally available and seasonal
-- Versatile for sweet and savory dishes
+Els ingredients britànics ofereixen beneficis increïbles:
+- Rics en tradició i història
+- Plens de sabor
+- Perfectes per a la cuina reconfortant
+- Disponibles localment i de temporada
+- Versàtils per a plats dolços i salats
 
-### 🎯 Challenge yourself:
+### 🎯 Posa't a prova:
 
-Experiment with different British ingredients and traditional recipes from around the world. From hearty pies to sweet treats, this is the perfect season to get creative in the kitchen! 🇬🇧✨
+Experimenta amb diferents ingredients britànics i receptes tradicionals d'arreu del món. Des de pastissos contundents fins a dolços, aquesta és la temporada perfecta per ser creatiu a la cuina! 🇬🇧✨

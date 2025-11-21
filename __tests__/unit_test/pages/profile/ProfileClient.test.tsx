@@ -7,8 +7,14 @@ import { SafeRecipe, SafeUser } from '@/app/types';
 vi.mock('next/navigation', () => ({
     useRouter: vi.fn(() => ({
         push: vi.fn(),
+        replace: vi.fn(),
         query: {},
     })),
+    useSearchParams: vi.fn(() => ({
+        get: vi.fn(() => null),
+        toString: vi.fn(() => ''),
+    })),
+    usePathname: vi.fn(() => '/profile/user1'),
 }));
 
 // Mock data

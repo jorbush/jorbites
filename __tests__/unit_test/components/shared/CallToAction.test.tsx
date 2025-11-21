@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import CallToAction from '@/app/components/top-jorbiters/CallToAction';
+import CallToAction from '@/app/components/shared/CallToAction';
 
 // Mock dependencies
 vi.mock('i18next', () => ({
@@ -13,14 +13,14 @@ vi.mock('@/app/hooks/useRecipeModal', () => ({
     }),
 }));
 
-vi.mock('@/app/components/top-jorbiters/ActionCard', () => ({
-    default: ({ title, subtitle, buttonText, onClick, extraClasses }: any) => (
+vi.mock('@/app/components/shared/ActionCard', () => ({
+    default: ({ title, subtitle, buttonText, onClick, emoji }: any) => (
         <div
             data-testid="action-card"
             data-title={title}
             data-subtitle={subtitle}
             data-button={buttonText}
-            data-classes={extraClasses || ''}
+            data-emoji={emoji}
         >
             <button onClick={onClick}>Mock Button</button>
         </div>
@@ -70,6 +70,7 @@ describe('<CallToAction />', () => {
         expect(actionCard.getAttribute('data-subtitle')).toBe(
             'call_to_action_first_place_subtitle'
         );
+        expect(actionCard.getAttribute('data-emoji')).toBe('🏆');
     });
 
     it('returns null for user in first place', () => {
@@ -83,5 +84,29 @@ describe('<CallToAction />', () => {
         );
 
         expect(container.firstChild).toBeNull();
+    });
+
+    it('renders call to action for unranked user', () => {
+        const unrankedUser = {
+            ...mockCurrentUser,
+            id: 'user99',
+        };
+
+        render(
+            <CallToAction
+                currentUser={unrankedUser}
+                topJorbiters={mockTopJorbiters}
+            />
+        );
+
+        const actionCard = screen.getByTestId('action-card');
+        expect(actionCard).toBeDefined();
+        expect(actionCard.getAttribute('data-title')).toBe(
+            'call_to_action_ranked_title'
+        );
+        expect(actionCard.getAttribute('data-subtitle')).toBe(
+            'call_to_action_ranked_subtitle'
+        );
+        expect(actionCard.getAttribute('data-emoji')).toBe('🏆');
     });
 });

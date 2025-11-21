@@ -10,6 +10,7 @@ import {
     FiEdit,
     FiTrash,
     FiChevronLeft,
+    FiShare2,
 } from 'react-icons/fi';
 import { formatDistance } from 'date-fns';
 import Avatar from '@/app/components/utils/Avatar';
@@ -138,6 +139,30 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
         }
     };
 
+    const copyToClipboard = () => {
+        const currentURL = window.location.href;
+        navigator.clipboard.writeText(currentURL);
+        toast.success(t('link_copied') || 'Link copied to clipboard');
+    };
+
+    const handleShare = () => {
+        if (navigator.share) {
+            navigator
+                .share({
+                    title: quest.title,
+                    url: window.location.href,
+                })
+                .then(() => {
+                    console.log('Successfully shared');
+                })
+                .catch((error) => {
+                    console.error('Error sharing:', error);
+                });
+        } else {
+            copyToClipboard();
+        }
+    };
+
     return (
         <>
             <ConfirmModal
@@ -173,29 +198,41 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                                 {t(quest.status) || quest.status}
                             </span>
                         </div>
-                        {isOwner && (
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={handleEdit}
-                                    aria-label={t('edit_quest') || 'Edit Quest'}
-                                    className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-                                    data-cy="edit-quest"
-                                >
-                                    <FiEdit />
-                                </button>
-                                <button
-                                    onClick={handleDeleteClick}
-                                    disabled={isDeleting}
-                                    aria-label={
-                                        t('delete_quest') || 'Delete Quest'
-                                    }
-                                    className="cursor-pointer rounded-lg border border-red-300 px-4 py-2 text-red-600 transition hover:bg-red-50 disabled:opacity-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
-                                    data-cy="delete-quest"
-                                >
-                                    <FiTrash />
-                                </button>
-                            </div>
-                        )}
+                        <div className="flex gap-2">
+                            <button
+                                onClick={handleShare}
+                                aria-label={t('share_quest') || 'Share Quest'}
+                                className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                                data-cy="share-quest"
+                            >
+                                <FiShare2 />
+                            </button>
+                            {isOwner && (
+                                <>
+                                    <button
+                                        onClick={handleEdit}
+                                        aria-label={
+                                            t('edit_quest') || 'Edit Quest'
+                                        }
+                                        className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                                        data-cy="edit-quest"
+                                    >
+                                        <FiEdit />
+                                    </button>
+                                    <button
+                                        onClick={handleDeleteClick}
+                                        disabled={isDeleting}
+                                        aria-label={
+                                            t('delete_quest') || 'Delete Quest'
+                                        }
+                                        className="cursor-pointer rounded-lg border border-red-300 px-4 py-2 text-red-600 transition hover:bg-red-50 disabled:opacity-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
+                                        data-cy="delete-quest"
+                                    >
+                                        <FiTrash />
+                                    </button>
+                                </>
+                            )}
+                        </div>
                     </div>
 
                     <h1
