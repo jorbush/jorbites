@@ -38,7 +38,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
             tabIndex={0}
             role="button"
             aria-label={`View ${chef.name || t('anonymous')}'s profile`}
-            className="group cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:focus:ring-offset-gray-900"
+            className="group cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:focus:ring-offset-gray-900"
             data-cy="chef-card"
             data-testid="chef-card"
         >
@@ -46,7 +46,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
             <div className="relative h-24 bg-gradient-to-br from-orange-400 to-amber-500">
                 {/* Level Badge */}
                 <div className="absolute top-3 right-3">
-                    <div className="flex items-center gap-1 rounded-full bg-white px-3 py-1 shadow-sm dark:bg-gray-800">
+                    <div className="flex items-center gap-1 rounded-full bg-white px-3 py-1 shadow-sm dark:bg-neutral-800">
                         <FiAward
                             className="text-yellow-500"
                             size={16}
@@ -60,7 +60,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
 
             {/* Avatar overlapping the header */}
             <div className="relative -mt-12 flex flex-col items-center px-4 pb-4">
-                <div className="mb-3 rounded-full border-4 border-white dark:border-gray-800">
+                <div className="mb-3 rounded-full border-4 border-white dark:border-neutral-800">
                     <Avatar
                         src={chef.image}
                         size={96}
