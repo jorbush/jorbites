@@ -1,7 +1,7 @@
 const ChefCardSkeleton = () => {
     return (
         <div
-            className="group cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:focus:ring-offset-gray-900 animate-pulse"
+            className="group animate-pulse cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:focus:ring-offset-gray-900"
             data-cy="chef-card-skeleton"
             data-testid="chef-card-skeleton"
         >
