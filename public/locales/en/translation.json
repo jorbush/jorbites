@@ -641,5 +641,6 @@
     "no_chefs": "No chefs found",
     "no_chefs_description": "Try adjusting your search or filters",
     "likes": "Likes",
-    "most_recipes": "Most Recipes"
+    "most_recipes": "Most Recipes",
+    "search": "Search"
 }

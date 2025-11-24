@@ -642,5 +642,6 @@
     "no_chefs": "No se encontraron chefs",
     "no_chefs_description": "Intenta ajustar tu búsqueda o filtros",
     "likes": "Me gusta",
-    "most_recipes": "Más recetas"
+    "most_recipes": "Más recetas",
+    "search": "Buscar"
 }
