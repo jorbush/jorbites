@@ -21,8 +21,12 @@ const ChefsList: React.FC<ChefsListProps> = ({
     if (chefs.length === 0) {
         return (
             <EmptyState
-                title={emptyStateTitle || t('no_chefs')}
-                subtitle={emptyStateSubtitle || t('no_chefs_description')}
+                title={emptyStateTitle || t('no_chefs') || 'No chefs found'}
+                subtitle={
+                    emptyStateSubtitle ||
+                    t('no_chefs_description') ||
+                    'Try adjusting your search or filters'
+                }
                 height="h-[30vh]"
             />
         );
