@@ -105,6 +105,16 @@ export default async function RootLayout({
                     name="apple-mobile-web-app-title"
                     content="Jorbites"
                 />
+                <meta
+                    name="theme-color"
+                    media="(prefers-color-scheme: dark)"
+                    content="#1d1d1d"
+                />
+                <meta
+                    name="theme-color"
+                    media="(prefers-color-scheme: light)"
+                    content="#ffffff"
+                />
             </head>
             <body
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
