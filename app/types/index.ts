@@ -29,6 +29,7 @@ export type SafeUser = Omit<
     avgLikesPerRecipe?: number | null | undefined;
     mostUsedCategory?: string | null | undefined;
     mostUsedMethod?: string | null | undefined;
+    badges?: string[];
 };
 
 export type SafeWorkshop = Omit<

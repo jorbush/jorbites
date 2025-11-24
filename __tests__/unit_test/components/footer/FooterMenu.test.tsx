@@ -35,6 +35,12 @@ vi.mock('react-icons/fc', () => ({
             className={className}
         />
     ),
+    FcManager: ({ className }: { className?: string }) => (
+        <div
+            data-testid="fc-manager-icon"
+            className={className}
+        />
+    ),
     FcAbout: ({ className }: { className?: string }) => (
         <div
             data-testid="fc-about-icon"
@@ -68,14 +74,14 @@ describe('FooterMenu', () => {
 
     it('renders without crashing', () => {
         render(<FooterMenu />);
-        expect(screen.getAllByTestId('footer-menu-link')).toHaveLength(3);
+        expect(screen.getAllByTestId('footer-menu-link')).toHaveLength(4);
     });
 
     it('renders all menu items', () => {
         render(<FooterMenu />);
 
         const menuLinks = screen.getAllByTestId('footer-menu-link');
-        expect(menuLinks).toHaveLength(3);
+        expect(menuLinks).toHaveLength(4);
     });
 
     it('renders Top Jorbiters link with correct props', () => {
@@ -90,6 +96,18 @@ describe('FooterMenu', () => {
         expect(topJorbitersLink).toBeDefined();
         expect(topJorbitersLink?.getAttribute('data-prefetch')).toBe('false');
         expect(topJorbitersLink?.textContent).toContain('top_jorbiters');
+    });
+
+    it('renders Chefs link with correct props', () => {
+        render(<FooterMenu />);
+
+        const chefsLink = screen
+            .getAllByTestId('footer-menu-link')
+            .find((link) => link.getAttribute('data-href') === '/chefs');
+
+        expect(chefsLink).toBeDefined();
+        expect(chefsLink?.getAttribute('data-prefetch')).toBe('false');
+        expect(chefsLink?.textContent).toContain('chefs');
     });
 
     it('renders About link with correct props', () => {
@@ -108,6 +126,10 @@ describe('FooterMenu', () => {
         render(<FooterMenu />);
 
         expect(screen.getAllByTestId('fc-positive-dynamic-icon')).toHaveLength(
+            1
+        );
+        expect(screen.getAllByTestId('fc-manager-icon')).toHaveLength(1);
+        expect(screen.getAllByTestId('fc-conference-call-icon')).toHaveLength(
             1
         );
         expect(screen.getAllByTestId('fc-about-icon')).toHaveLength(1);
@@ -157,6 +179,8 @@ describe('FooterMenu', () => {
         render(<FooterMenu />);
 
         expect(mockT).toHaveBeenCalledWith('top_jorbiters');
+        expect(mockT).toHaveBeenCalledWith('chefs');
+        expect(mockT).toHaveBeenCalledWith('workshops');
         expect(mockT).toHaveBeenCalledWith('about');
     });
 
@@ -164,6 +188,8 @@ describe('FooterMenu', () => {
         render(<FooterMenu />);
 
         expect(screen.getAllByText('top_jorbiters')).toHaveLength(1);
+        expect(screen.getAllByText('chefs')).toHaveLength(1);
+        expect(screen.getAllByText('workshops')).toHaveLength(1);
         expect(screen.getAllByText('about')).toHaveLength(1);
     });
 
@@ -175,6 +201,8 @@ describe('FooterMenu', () => {
 
         // Should still render with the key as fallback
         expect(container.textContent).toContain('top_jorbiters');
+        expect(container.textContent).toContain('chefs');
+        expect(container.textContent).toContain('workshops');
         expect(container.textContent).toContain('about');
     });
 
@@ -197,24 +225,30 @@ describe('FooterMenu', () => {
         expect(menuLinks[0].getAttribute('data-href')).toBe('/top-jorbiters');
         expect(menuLinks[0].textContent).toContain('top_jorbiters');
 
-        // Second should be Workshops
-        expect(menuLinks[1].getAttribute('data-href')).toBe('/workshops');
-        expect(menuLinks[1].textContent).toContain('workshops');
+        // Second should be Chefs
+        expect(menuLinks[1].getAttribute('data-href')).toBe('/chefs');
+        expect(menuLinks[1].textContent).toContain('chefs');
 
-        // Third should be About
-        expect(menuLinks[2].getAttribute('data-href')).toBe('/about');
-        expect(menuLinks[2].textContent).toContain('about');
+        // Third should be Workshops
+        expect(menuLinks[2].getAttribute('data-href')).toBe('/workshops');
+        expect(menuLinks[2].textContent).toContain('workshops');
+
+        // Fourth should be About
+        expect(menuLinks[3].getAttribute('data-href')).toBe('/about');
+        expect(menuLinks[3].textContent).toContain('about');
     });
 
     it('has accessible structure with spans for text', () => {
         const { container } = render(<FooterMenu />);
 
         const spans = container.querySelectorAll('span');
-        expect(spans.length).toBeGreaterThanOrEqual(2);
+        expect(spans.length).toBeGreaterThanOrEqual(4);
 
         // Check that spans contain the expected text
         const spanTexts = Array.from(spans).map((span) => span.textContent);
         expect(spanTexts).toContain('top_jorbiters');
+        expect(spanTexts).toContain('chefs');
+        expect(spanTexts).toContain('workshops');
         expect(spanTexts).toContain('about');
     });
 });

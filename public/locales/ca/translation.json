@@ -628,5 +628,20 @@
     "quest_description_placeholder": "Descriu detalladament quina recepta estàs cercant...",
     "status": "Estat",
     "search_quests": "Cercar missions",
-    "selected_quest": "Missió seleccionada"
+    "selected_quest": "Missió seleccionada",
+    "chefs": "Xefs",
+    "chefs_subtitle": "Descobreix xefs talentosos i les seves creacions",
+    "search_chefs": "Cercar xefs",
+    "trending": "Tendència",
+    "highest_level": "Nivell Més Alt",
+    "name_a_z": "Nom (A-Z)",
+    "name_z_a": "Nom (Z-A)",
+    "anonymous": "Anònim",
+    "recipe": "Recepta",
+    "recipes_this_year": "aquest any",
+    "likes_per_recipe": "m'agrada/recepta",
+    "no_chefs": "No s'han trobat xefs",
+    "no_chefs_description": "Prova d'ajustar la teva cerca o filtres",
+    "likes": "Me gusta",
+    "most_recipes": "Més receptes"
 }

@@ -82,3 +82,15 @@ export const getDateRangeFilter = (
 
     return filter;
 };
+
+// Chef ordering types
+export enum ChefOrderByType {
+    TRENDING = 'trending',
+    NEWEST = 'newest',
+    OLDEST = 'oldest',
+    NAME_ASC = 'name_asc',
+    NAME_DESC = 'name_desc',
+    MOST_RECIPES = 'most_recipes',
+    MOST_LIKED = 'most_liked',
+    HIGHEST_LEVEL = 'highest_level',
+}
