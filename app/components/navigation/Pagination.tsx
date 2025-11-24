@@ -20,7 +20,18 @@ const Pagination = ({
 
     const handlePageChange = (page: number) => {
         const newSearchParams = { ...searchParams, page };
-        const queryString = new URLSearchParams(newSearchParams).toString();
+
+        const filteredSearchParams: { [key: string]: string } = {};
+        for (const key in newSearchParams) {
+            if (
+                newSearchParams[key] !== undefined &&
+                newSearchParams[key] !== null
+            ) {
+                filteredSearchParams[key] = String(newSearchParams[key]);
+            }
+        }
+
+        const queryString = new URLSearchParams(filteredSearchParams).toString();
         const newUrl = `?${queryString}`;
         router.push(newUrl);
     };
