@@ -23,8 +23,10 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === 'Enter') {
             e.preventDefault();
+            handleClick();
+        } else if (e.key === ' ') {
             handleClick();
         }
     };
