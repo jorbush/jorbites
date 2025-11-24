@@ -106,9 +106,10 @@ export default async function getChefs(
                 0
             );
 
-            const currentYear = new Date().getFullYear();
-            const recipesThisYear = userRecipes.filter(
-                (recipe) => recipe.createdAt.getFullYear() === currentYear
+            const oneMonthAgo = new Date();
+            oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+            const recipesLastMonth = userRecipes.filter(
+                (recipe) => recipe.createdAt > oneMonthAgo
             ).length;
 
             const totalCookingTime = userRecipes.reduce(
@@ -142,7 +143,7 @@ export default async function getChefs(
                 emailVerified: user.emailVerified?.toISOString() || null,
                 recipeCount: userRecipes.length,
                 likesReceived: totalLikes,
-                recipesThisYear,
+                recipesLastMonth,
                 totalCookingTime,
                 avgLikesPerRecipe,
                 mostUsedCategory,
@@ -207,7 +208,8 @@ function sortChefsData(
     switch (orderBy) {
         case ChefOrderByType.TRENDING:
             return sorted.sort(
-                (a, b) => (b.recipesThisYear || 0) - (a.recipesThisYear || 0)
+                (a, b) =>
+                    (b.recipesLastMonth || 0) - (a.recipesLastMonth || 0)
             );
         case ChefOrderByType.MOST_RECIPES:
             return sorted.sort(
