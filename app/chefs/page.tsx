@@ -4,6 +4,7 @@ import getChefs, { ChefOrderByType } from '@/app/actions/getChefs';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import Container from '@/app/components/utils/Container';
 import ErrorDisplay from '@/app/components/utils/ErrorDisplay';
+import ChefsListSkeleton from '@/app/components/chefs/ChefsListSkeleton';
 
 interface ChefsPageProps {
     searchParams: Promise<{
@@ -32,16 +33,8 @@ const ChefsPage = async ({ searchParams }: ChefsPageProps) => {
         <ClientOnly
             fallback={
                 <Container>
-                    <div className="min-h-[60vh] py-8">
-                        <div className="h-12 w-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
-                        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                            {[...Array(12)].map((_, i) => (
-                                <div
-                                    key={i}
-                                    className="h-[320px] animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700"
-                                />
-                            ))}
-                        </div>
+                    <div className="min-h-[60vh]">
+                        <ChefsListSkeleton />
                     </div>
                 </Container>
             }

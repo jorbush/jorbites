@@ -643,5 +643,6 @@
     "no_chefs": "No s'han trobat xefs",
     "no_chefs_description": "Prova d'ajustar la teva cerca o filtres",
     "likes": "M'agrada",
-    "most_recipes": "Més receptes"
+    "most_recipes": "Més receptes",
+    "search": "Cercar"
 }
