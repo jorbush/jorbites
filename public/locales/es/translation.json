@@ -627,5 +627,20 @@
     "quest_description_placeholder": "Describe en detalle qué receta estás buscando...",
     "status": "Estado",
     "search_quests": "Buscar misiones",
-    "selected_quest": "Misión seleccionada"
+    "selected_quest": "Misión seleccionada",
+    "chefs": "Chefs",
+    "chefs_subtitle": "Descubre chefs talentosos y sus creaciones",
+    "search_chefs": "Buscar chefs",
+    "trending": "Tendencia",
+    "highest_level": "Nivel Más Alto",
+    "name_a_z": "Nombre (A-Z)",
+    "name_z_a": "Nombre (Z-A)",
+    "anonymous": "Anónimo",
+    "recipe": "Receta",
+    "recipes_this_year": "este año",
+    "likes_per_recipe": "me gusta/receta",
+    "no_chefs": "No se encontraron chefs",
+    "no_chefs_description": "Intenta ajustar tu búsqueda o filtros",
+    "likes": "Me gusta",
+    "most_recipes": "Más recetas"
 }

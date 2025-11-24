@@ -626,5 +626,20 @@
     "quest_description_placeholder": "Describe what recipe you're looking for in detail...",
     "status": "Status",
     "search_quests": "Search quests",
-    "selected_quest": "Selected Quest"
+    "selected_quest": "Selected Quest",
+    "chefs": "Chefs",
+    "chefs_subtitle": "Discover talented chefs and their creations",
+    "search_chefs": "Search chefs",
+    "trending": "Trending",
+    "highest_level": "Highest Level",
+    "name_a_z": "Name (A-Z)",
+    "name_z_a": "Name (Z-A)",
+    "anonymous": "Anonymous",
+    "recipe": "Recipe",
+    "recipes_this_year": "this year",
+    "likes_per_recipe": "likes/recipe",
+    "no_chefs": "No chefs found",
+    "no_chefs_description": "Try adjusting your search or filters",
+    "likes": "Likes",
+    "most_recipes": "Most Recipes"
 }
