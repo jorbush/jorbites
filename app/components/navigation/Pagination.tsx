@@ -31,7 +31,9 @@ const Pagination = ({
             }
         }
 
-        const queryString = new URLSearchParams(filteredSearchParams).toString();
+        const queryString = new URLSearchParams(
+            filteredSearchParams
+        ).toString();
         const newUrl = `?${queryString}`;
         router.push(newUrl);
     };
