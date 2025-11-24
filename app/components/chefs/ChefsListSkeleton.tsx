@@ -15,7 +15,7 @@ const ChefsListSkeleton: React.FC<ChefsListSkeletonProps> = ({
                     <div className="h-12 w-12 rounded-xl bg-gray-200 dark:bg-gray-700" />
                     <div>
                         <div className="h-8 w-32 rounded-lg bg-gray-200 dark:bg-gray-700" />
-                        <div className="mt-2 h-4 w-48 rounded-lg bg-gray-200 dark:bg-gray-700" />
+                        <div className="mt-2 h-4 w-48 rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse" />
                     </div>
                 </div>
             </div>
