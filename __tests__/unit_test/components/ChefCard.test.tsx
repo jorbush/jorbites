@@ -24,6 +24,7 @@ vi.mock('react-i18next', () => ({
                 likes: 'Likes',
                 recipes_this_year: 'this year',
                 likes_per_recipe: 'likes/recipe',
+                italian: 'Italiano',
             };
             return translations[key] || key;
         },
@@ -131,7 +132,16 @@ describe('<ChefCard />', () => {
 
     it('renders most used category', () => {
         render(<ChefCard chef={mockChef} />);
-        expect(screen.getByText('Italian')).toBeDefined();
+        expect(screen.getByText('Italiano')).toBeDefined();
+    });
+
+    it('renders most used category with case-insensitivity', () => {
+        const chefWithLowercaseCategory = {
+            ...mockChef,
+            mostUsedCategory: 'italian',
+        };
+        render(<ChefCard chef={chefWithLowercaseCategory} />);
+        expect(screen.getByText('Italiano')).toBeDefined();
     });
 
     it('renders recent activity indicator when chef has recipes this year', () => {
