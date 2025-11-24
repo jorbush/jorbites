@@ -173,7 +173,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                             data-cy="chef-search-button"
                             data-testid="chef-search-button"
                         >
-                            {t('search') || 'Search'}
+                            {t('search')}
                         </button>
                     </div>
 
