@@ -136,7 +136,10 @@ describe('<ChefCard />', () => {
     });
 
     it('renders most used category with case-insensitivity', () => {
-        const chefWithLowercaseCategory = { ...mockChef, mostUsedCategory: 'italian' };
+        const chefWithLowercaseCategory = {
+            ...mockChef,
+            mostUsedCategory: 'italian',
+        };
         render(<ChefCard chef={chefWithLowercaseCategory} />);
         expect(screen.getByText('Italiano')).toBeDefined();
     });
