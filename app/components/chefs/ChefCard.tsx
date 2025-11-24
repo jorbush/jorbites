@@ -87,7 +87,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                 {/* Most Used Category */}
                 {chef.mostUsedCategory && (
                     <div className="mb-3 text-sm text-gray-600 dark:text-gray-400">
-                        {chef.mostUsedCategory}
+                        {t(chef.mostUsedCategory.toLowerCase())}
                     </div>
                 )}
 
