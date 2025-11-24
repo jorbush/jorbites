@@ -29,17 +29,6 @@ const ORDER_BY_LABELS = {
     [ChefOrderByType.HIGHEST_LEVEL]: 'highest_level',
 } as const;
 
-const ORDER_BY_FALLBACK_LABELS = {
-    [ChefOrderByType.TRENDING]: 'Trending',
-    [ChefOrderByType.NEWEST]: 'Newest',
-    [ChefOrderByType.OLDEST]: 'Oldest',
-    [ChefOrderByType.NAME_ASC]: 'Name A-Z',
-    [ChefOrderByType.NAME_DESC]: 'Name Z-A',
-    [ChefOrderByType.MOST_RECIPES]: 'Most Recipes',
-    [ChefOrderByType.MOST_LIKED]: 'Most Liked',
-    [ChefOrderByType.HIGHEST_LEVEL]: 'Highest Level',
-} as const;
-
 const ChefsClient: React.FC<ChefsClientProps> = ({
     chefs,
     totalPages,
@@ -104,8 +93,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
 
     const getOrderLabel = (order: ChefOrderByType) => {
         const translationKey = ORDER_BY_LABELS[order];
-        const fallbackLabel = ORDER_BY_FALLBACK_LABELS[order];
-        return t(translationKey) || fallbackLabel;
+        return t(translationKey);
     };
 
     return (
@@ -122,11 +110,10 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                                {t('chefs') || 'Chefs'}
+                                {t('chefs')}
                             </h1>
                             <p className="text-gray-600 dark:text-gray-400">
-                                {t('chefs_subtitle') ||
-                                    'Discover talented chefs and their creations'}
+                                {t('chefs_subtitle')}
                             </p>
                         </div>
                     </div>
@@ -137,14 +124,19 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                     {/* Search Bar */}
                     <div className="flex flex-col gap-4 sm:flex-row">
                         <div className="relative flex-1">
+                            <label
+                                htmlFor="chef-search-input"
+                                className="sr-only"
+                            >
+                                {t('search_chefs') ?? ''}
+                            </label>
                             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                                 <FiSearch className="text-gray-400" />
                             </div>
                             <input
+                                id="chef-search-input"
                                 type="text"
-                                placeholder={
-                                    t('search_chefs') || 'Search chefs...'
-                                }
+                                placeholder={t('search_chefs') ?? ''}
                                 value={searchQuery}
                                 onChange={(e) =>
                                     handleSearchChange(e.target.value)
@@ -153,6 +145,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                                 className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-full border border-neutral-300 bg-white py-3 pr-10 pl-11 text-sm transition-all outline-none focus:ring-2 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                                 data-cy="chef-search-input"
                                 data-testid="chef-search-input"
+                                aria-label={t('search_chefs') ?? ''}
                             />
                             {searchQuery && (
                                 <button
@@ -162,6 +155,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                                         updateURL('', orderBy);
                                     }}
                                     className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+                                    aria-label="Clear search"
                                 >
                                     <BiX size={20} />
                                 </button>

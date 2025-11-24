@@ -49,96 +49,122 @@ export default async function getChefs(
             };
         }
 
-        // Get users with basic sorting
+        const needsRecipeDataForSorting =
+            orderBy === ChefOrderByType.TRENDING ||
+            orderBy === ChefOrderByType.MOST_RECIPES ||
+            orderBy === ChefOrderByType.MOST_LIKED;
+
         const users = await prisma.user.findMany({
             where: query,
-            orderBy: getBasicOrderByClause(orderBy),
-            skip: (page - 1) * limit,
-            take: limit,
+            orderBy: needsRecipeDataForSorting
+                ? undefined
+                : getBasicOrderByClause(orderBy),
+            skip: needsRecipeDataForSorting ? undefined : (page - 1) * limit,
+            take: needsRecipeDataForSorting ? undefined : limit,
         });
 
         const totalChefs = await prisma.user.count({
             where: query,
         });
 
-        // Enrich users with recipe statistics
-        const enrichedUsers = await Promise.all(
-            users.map(async (user) => {
-                const userRecipes = await prisma.recipe.findMany({
-                    where: {
-                        userId: user.id,
-                    },
-                    select: {
-                        numLikes: true,
-                        createdAt: true,
-                        minutes: true,
-                        category: true,
-                    },
-                });
+        const userIds = users.map((user) => user.id);
+        const allRecipes = await prisma.recipe.findMany({
+            where: {
+                userId: { in: userIds },
+            },
+            select: {
+                userId: true,
+                numLikes: true,
+                createdAt: true,
+                minutes: true,
+                category: true,
+            },
+        });
 
-                const totalLikes = userRecipes.reduce(
-                    (total, recipe) => total + (recipe.numLikes || 0),
-                    0
-                );
+        const recipesByUserId: Record<
+            string,
+            Array<{
+                userId: string;
+                numLikes: number | null;
+                createdAt: Date;
+                minutes: number | null;
+                category: string | null;
+            }>
+        > = {};
+        allRecipes.forEach((recipe) => {
+            if (!recipesByUserId[recipe.userId]) {
+                recipesByUserId[recipe.userId] = [];
+            }
+            recipesByUserId[recipe.userId].push(recipe);
+        });
 
-                const currentYear = new Date().getFullYear();
-                const recipesThisYear = userRecipes.filter(
-                    (recipe) => recipe.createdAt.getFullYear() === currentYear
-                ).length;
+        const enrichedUsers = users.map((user) => {
+            const userRecipes = recipesByUserId[user.id] || [];
 
-                const totalCookingTime = userRecipes.reduce(
-                    (total, recipe) => total + (recipe.minutes || 0),
-                    0
-                );
+            const totalLikes = userRecipes.reduce(
+                (total, recipe) => total + (recipe.numLikes || 0),
+                0
+            );
 
-                const avgLikesPerRecipe =
-                    userRecipes.length > 0
-                        ? Math.round(totalLikes / userRecipes.length)
-                        : 0;
+            const currentYear = new Date().getFullYear();
+            const recipesThisYear = userRecipes.filter(
+                (recipe) => recipe.createdAt.getFullYear() === currentYear
+            ).length;
 
-                // Get most used category
-                const categoryCount: Record<string, number> = {};
-                userRecipes.forEach((recipe) => {
-                    if (recipe.category) {
-                        categoryCount[recipe.category] =
-                            (categoryCount[recipe.category] || 0) + 1;
-                    }
-                });
-                const mostUsedCategory =
-                    Object.keys(categoryCount).length > 0
-                        ? Object.entries(categoryCount).reduce((a, b) =>
-                              a[1] > b[1] ? a : b
-                          )[0]
-                        : null;
+            const totalCookingTime = userRecipes.reduce(
+                (total, recipe) => total + (recipe.minutes || 0),
+                0
+            );
 
-                return {
-                    ...user,
-                    createdAt: user.createdAt.toISOString(),
-                    updatedAt: user.updatedAt.toISOString(),
-                    emailVerified: user.emailVerified?.toISOString() || null,
-                    recipeCount: userRecipes.length,
-                    likesReceived: totalLikes,
-                    recipesThisYear,
-                    totalCookingTime,
-                    avgLikesPerRecipe,
-                    mostUsedCategory,
-                };
-            })
-        );
+            const avgLikesPerRecipe =
+                userRecipes.length > 0
+                    ? Math.round(totalLikes / userRecipes.length)
+                    : 0;
 
-        // Sort enriched data if needed
+            const categoryCount: Record<string, number> = {};
+            userRecipes.forEach((recipe) => {
+                if (recipe.category) {
+                    categoryCount[recipe.category] =
+                        (categoryCount[recipe.category] || 0) + 1;
+                }
+            });
+            const mostUsedCategory =
+                Object.keys(categoryCount).length > 0
+                    ? Object.entries(categoryCount).reduce((a, b) =>
+                          a[1] > b[1] ? a : b
+                      )[0]
+                    : null;
+
+            return {
+                ...user,
+                createdAt: user.createdAt.toISOString(),
+                updatedAt: user.updatedAt.toISOString(),
+                emailVerified: user.emailVerified?.toISOString() || null,
+                recipeCount: userRecipes.length,
+                likesReceived: totalLikes,
+                recipesThisYear,
+                totalCookingTime,
+                avgLikesPerRecipe,
+                mostUsedCategory,
+            };
+        });
+
         const sortedChefs = sortChefsData(enrichedUsers, orderBy);
+
+        const paginatedChefs = needsRecipeDataForSorting
+            ? sortedChefs.slice((page - 1) * limit, page * limit)
+            : sortedChefs;
 
         const totalPages = Math.ceil(totalChefs / limit);
 
         logger.info('getChefs - success', {
-            count: sortedChefs.length,
+            count: paginatedChefs.length,
             totalChefs,
         });
 
         return {
             data: {
-                chefs: sortedChefs,
+                chefs: paginatedChefs,
                 totalChefs,
                 totalPages,
                 currentPage: page,

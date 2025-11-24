@@ -46,7 +46,6 @@ export const getPrismaOrderByClause = (orderBy: OrderByType) => {
     }
 };
 
-// Date range filtering utilities
 export interface DateRangeFilter {
     startDate?: string;
     endDate?: string;
@@ -83,7 +82,6 @@ export const getDateRangeFilter = (
     return filter;
 };
 
-// Chef ordering types
 export enum ChefOrderByType {
     TRENDING = 'trending',
     NEWEST = 'newest',

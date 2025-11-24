@@ -22,10 +22,21 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
         router.push(`/profile/${chef.id}`);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleClick();
+        }
+    };
+
     return (
         <div
             onClick={handleClick}
-            className="group cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+            role="button"
+            aria-label={`View ${chef.name || t('anonymous')}'s profile`}
+            className="group cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:focus:ring-offset-gray-900"
             data-cy="chef-card"
             data-testid="chef-card"
         >
@@ -140,8 +151,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                         <div className="flex items-center justify-center gap-2 rounded-lg bg-green-50 py-2 dark:bg-green-900/20">
                             <MdOutlineTimer className="text-green-600 dark:text-green-400" />
                             <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                                {chef.recipesThisYear}{' '}
-                                {t('recipes_this_year') || 'this year'}
+                                {chef.recipesThisYear} {t('recipes_this_year')}
                             </span>
                         </div>
                     </div>
@@ -151,8 +161,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                 {chef.avgLikesPerRecipe != null &&
                     chef.avgLikesPerRecipe > 0 && (
                         <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                            ~{chef.avgLikesPerRecipe}{' '}
-                            {t('likes_per_recipe') || 'likes/recipe'}
+                            ~{chef.avgLikesPerRecipe} {t('likes_per_recipe')}
                         </div>
                     )}
             </div>
