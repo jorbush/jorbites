@@ -148,16 +148,18 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                 </div>
 
                 {/* Recent Activity Indicator */}
-                {chef.recipesThisYear != null && chef.recipesThisYear > 0 && (
-                    <div className="mt-4 w-full">
-                        <div className="flex items-center justify-center gap-2 rounded-lg bg-green-50 py-2 dark:bg-green-900/20">
-                            <MdOutlineTimer className="text-green-600 dark:text-green-400" />
-                            <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                                {chef.recipesThisYear} {t('recipes_this_year')}
-                            </span>
+                {chef.recipesLastMonth != null &&
+                    chef.recipesLastMonth > 0 && (
+                        <div className="mt-4 w-full">
+                            <div className="flex items-center justify-center gap-2 rounded-lg bg-green-50 py-2 dark:bg-green-900/20">
+                                <MdOutlineTimer className="text-green-600 dark:text-green-400" />
+                                <span className="text-sm text-green-700 dark:text-green-300">
+                                    {chef.recipesLastMonth}{' '}
+                                    {t('recipes_last_month')}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
                 {/* Average likes indicator */}
                 {chef.avgLikesPerRecipe != null &&

@@ -37,10 +37,10 @@ export default async function getUserById(params: IParams) {
                 0
             );
 
-            const currentYear = new Date().getFullYear();
-            const recipesThisYear = userRecipes.filter(
-                (recipe) =>
-                    new Date(recipe.createdAt).getFullYear() === currentYear
+            const oneMonthAgo = new Date();
+            oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+            const recipesLastMonth = userRecipes.filter(
+                (recipe) => recipe.createdAt > oneMonthAgo
             ).length;
 
             const totalCookingTime = userRecipes.reduce(
@@ -92,7 +92,7 @@ export default async function getUserById(params: IParams) {
                 emailVerified: user.emailVerified?.toISOString() || null,
                 recipeCount: userRecipes.length,
                 likesReceived: totalLikes,
-                recipesThisYear,
+                recipesLastMonth,
                 totalCookingTime,
                 avgLikesPerRecipe,
                 mostUsedCategory,

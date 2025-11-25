@@ -19,10 +19,12 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
 
     if (!user) return null;
 
-    const recipesThisYear = user?.recipesThisYear || 0;
+    const recipesLastMonth = user?.recipesLastMonth || 0;
     const recipeCount = user?.recipeCount || 0;
     const trend =
-        recipeCount > 0 ? Math.round((recipesThisYear / recipeCount) * 100) : 0;
+        recipeCount > 0
+            ? Math.round((recipesLastMonth / recipeCount) * 100)
+            : 0;
     const cookingTimeInHours = user?.totalCookingTime
         ? Math.round((user.totalCookingTime / 60) * 10) / 10
         : 0;
@@ -58,10 +60,10 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
         </span>
     );
 
-    const thisYearFooter = (
+    const thisMonthFooter = (
         <span className="text-gray-500 dark:text-gray-400">
             {Math.round(
-                ((user?.recipesThisYear || 0) / (recipeCount || 1)) * 100
+                ((user?.recipesLastMonth || 0) / (recipeCount || 1)) * 100
             )}
             % {t('of_all_recipes')}
         </span>
@@ -108,15 +110,15 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
 
                         <StatCard
                             title={
-                                t('this_year').charAt(0).toUpperCase() +
-                                t('this_year').slice(1)
+                                t('this_month').charAt(0).toUpperCase() +
+                                t('this_month').slice(1)
                             }
-                            value={user?.recipesThisYear || 0}
+                            value={user?.recipesLastMonth || 0}
                             icon={<IoStarOutline />}
                             iconBgColor="bg-purple-100"
                             iconDarkBgColor="dark:bg-purple-900/30"
                             iconColor="text-purple-500"
-                            footer={thisYearFooter}
+                            footer={thisMonthFooter}
                         />
                     </div>
 

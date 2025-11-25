@@ -76,7 +76,7 @@ describe('<ChefCard />', () => {
         emailVerified: null,
         recipeCount: 15,
         likesReceived: 250,
-        recipesThisYear: 8,
+        recipesLastMonth: 8,
         totalCookingTime: 500,
         avgLikesPerRecipe: 17,
         mostUsedCategory: 'Italian',
@@ -144,15 +144,15 @@ describe('<ChefCard />', () => {
         expect(screen.getByText('Italiano')).toBeDefined();
     });
 
-    it('renders recent activity indicator when chef has recipes this year', () => {
+    it('renders recent activity indicator when chef has recipes last month', () => {
         render(<ChefCard chef={mockChef} />);
-        expect(screen.getByText(/8 this year/)).toBeDefined();
+        expect(screen.getByText(/8 recipes_last_month/)).toBeDefined();
     });
 
-    it('does not render recent activity indicator when chef has no recipes this year', () => {
-        const chefWithoutRecentRecipes = { ...mockChef, recipesThisYear: 0 };
+    it('does not render recent activity indicator when chef has no recipes last month', () => {
+        const chefWithoutRecentRecipes = { ...mockChef, recipesLastMonth: 0 };
         render(<ChefCard chef={chefWithoutRecentRecipes} />);
-        expect(screen.queryByText(/this year/)).toBeNull();
+        expect(screen.queryByText(/recipes_last_month/)).toBeNull();
     });
 
     it('renders average likes per recipe', () => {
