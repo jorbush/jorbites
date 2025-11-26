@@ -46,7 +46,8 @@ export async function POST(request: Request) {
                     userId: currentUser.id,
                 });
                 return rateLimitExceeded(
-                    `Too many recipe submissions. Please try again in ${retryAfterSeconds} seconds.`
+                    `Too many recipe submissions. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
                 );
             }
         }

@@ -35,7 +35,8 @@ export async function POST(request: Request) {
                     userId: currentUser.id,
                 });
                 return rateLimitExceeded(
-                    `Too many comments. Please try again in ${retryAfterSeconds} seconds.`
+                    `Too many comments. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
                 );
             }
         }

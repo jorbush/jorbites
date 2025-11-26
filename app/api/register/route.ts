@@ -16,15 +16,19 @@ export async function POST(request: Request) {
     try {
         // Rate limiting for registration - prevent mass account creation
         if (process.env.ENV === 'production') {
+            const hdrs = await headers();
             const ip =
-                (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown-ip';
+                hdrs.get('x-real-ip')?.trim() ||
+                hdrs.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+                'unknown-ip';
             const { success, reset } = await registrationRatelimit.limit(ip);
             if (!success) {
                 const retryAfterSeconds = Math.max(0, Math.ceil((reset - Date.now()) / 1000));
                 const retryAfterMinutes = Math.max(1, Math.ceil(retryAfterSeconds / 60));
                 logger.warn('POST /api/register - rate limit exceeded', { ip });
                 return rateLimitExceeded(
-                    `Too many registration attempts. Please try again in ${retryAfterMinutes} minutes.`
+                    `Too many registration attempts. Please try again in ${retryAfterMinutes} minutes.`,
+                    retryAfterSeconds
                 );
             }
         }

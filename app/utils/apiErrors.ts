@@ -103,5 +103,10 @@ export const validationError = (message?: string, details?: any) =>
 export const invalidInput = (message?: string) =>
     createApiError(ApiErrorType.INVALID_INPUT, message);
 
-export const rateLimitExceeded = (message?: string) =>
-    createApiError(ApiErrorType.RATE_LIMIT_EXCEEDED, message);
+export const rateLimitExceeded = (message?: string, retryAfterSeconds?: number) => {
+    const response = createApiError(ApiErrorType.RATE_LIMIT_EXCEEDED, message);
+    if (retryAfterSeconds !== undefined && retryAfterSeconds > 0) {
+        response.headers.set('Retry-After', retryAfterSeconds.toString());
+    }
+    return response;
+};
