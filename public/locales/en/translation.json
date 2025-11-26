@@ -636,6 +636,7 @@
     "name_z_a": "Name (Z-A)",
     "anonymous": "Anonymous",
     "recipe": "Recipe",
+    "recipes_this_month": "this month",
     "recipes_this_year": "this year",
     "likes_per_recipe": "likes/recipe",
     "no_chefs": "No chefs found",
