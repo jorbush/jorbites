@@ -40,23 +40,20 @@ const useTheme = () => {
         );
 
         // Update theme-color meta tags with media queries
+        // When user manually selects a theme, we override BOTH media query variants
+        // with the same color to ensure the status bar matches their selection,
+        // regardless of system color scheme preference
         const lightThemeMeta = document.querySelector(
             'meta[name="theme-color"][media="(prefers-color-scheme: light)"]'
         );
         const darkThemeMeta = document.querySelector(
             'meta[name="theme-color"][media="(prefers-color-scheme: dark)"]'
         );
+        const themeColor = isDark ? '#0F0F0F' : '#ffffff';
 
         if (lightThemeMeta && darkThemeMeta) {
-            // When user manually selects a theme, override both media query variants
-            lightThemeMeta.setAttribute(
-                'content',
-                isDark ? '#0F0F0F' : '#ffffff'
-            );
-            darkThemeMeta.setAttribute(
-                'content',
-                isDark ? '#0F0F0F' : '#ffffff'
-            );
+            lightThemeMeta.setAttribute('content', themeColor);
+            darkThemeMeta.setAttribute('content', themeColor);
         } else {
             // Fallback: update or create single theme-color meta
             let themeColorMeta = document.querySelector(
