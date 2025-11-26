@@ -99,11 +99,29 @@ export default async function RootLayout({
             <head>
                 <meta
                     name="viewport"
-                    content="width=device-width, initial-scale=1"
+                    content="width=device-width, initial-scale=1, viewport-fit=cover"
+                />
+                <meta
+                    name="apple-mobile-web-app-capable"
+                    content="yes"
                 />
                 <meta
                     name="apple-mobile-web-app-title"
                     content="Jorbites"
+                />
+                <meta
+                    name="apple-mobile-web-app-status-bar-style"
+                    content="default"
+                />
+                <meta
+                    name="theme-color"
+                    content="#ffffff"
+                    media="(prefers-color-scheme: light)"
+                />
+                <meta
+                    name="theme-color"
+                    content="#0F0F0F"
+                    media="(prefers-color-scheme: dark)"
                 />
             </head>
             <body
