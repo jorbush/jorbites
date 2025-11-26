@@ -132,4 +132,13 @@ describe('<ThemeSelector />', () => {
         );
         expect(mockRefresh).not.toHaveBeenCalled();
     });
+
+    it('does not call router.refresh when no theme is cached', async () => {
+        // localStorageMock is empty by default
+        await act(async () => {
+            render(<ThemeSelector />);
+        });
+
+        expect(mockRefresh).not.toHaveBeenCalled();
+    });
 });

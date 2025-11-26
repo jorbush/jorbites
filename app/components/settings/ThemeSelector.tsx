@@ -26,6 +26,9 @@ const ThemeSelector: React.FC = () => {
                 'dark',
                 cachedTheme === 'dark'
             );
+        } else {
+            // Ensure the default 'light' theme is applied
+            document.documentElement.classList.remove('dark');
         }
     }, []);
 
