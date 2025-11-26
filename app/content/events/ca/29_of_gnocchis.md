@@ -1,7 +1,7 @@
 ---
 title: 🥟 29 de Nyoquis 🥟
 date: 2025-01-29
-endDate: 2025-01-29T23:59:59
+endDate: 2025-01-29T21:59:59
 image: /images/events/29_of_gnocchis.webp
 description: Celebra el tradicional Dia dels Nyoquis el 29 de cada mes!
 recurrent: true

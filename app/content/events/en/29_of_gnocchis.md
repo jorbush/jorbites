@@ -1,7 +1,7 @@
 ---
 title: 🥟 29 of Gnocchis 🥟
 date: 2025-01-29
-endDate: 2025-01-29T23:59:59
+endDate: 2025-01-29T21:59:59
 image: /images/events/29_of_gnocchis.webp
 description: Celebrate the traditional Gnocchi Day on the 29th of each month!
 recurrent: true
