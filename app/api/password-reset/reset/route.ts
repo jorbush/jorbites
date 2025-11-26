@@ -1,11 +1,34 @@
 import { NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import prisma from '@/app/lib/prismadb';
 import bcrypt from 'bcrypt';
-import { badRequest, internalServerError } from '@/app/utils/apiErrors';
+import {
+    badRequest,
+    internalServerError,
+    rateLimitExceeded,
+} from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { passwordResetRatelimit } from '@/app/lib/ratelimit';
 
 export async function POST(request: Request) {
     try {
+        // Rate limiting for password reset - prevent brute force token guessing
+        if (process.env.ENV === 'production') {
+            const ip =
+                (await headers()).get('x-forwarded-for') ?? 'unknown-ip';
+            const { success, reset } = await passwordResetRatelimit.limit(ip);
+            if (!success) {
+                const retryAfter = Math.ceil((reset - Date.now()) / 1000);
+                logger.warn(
+                    'POST /api/password-reset/reset - rate limit exceeded',
+                    { ip }
+                );
+                return rateLimitExceeded(
+                    `Too many password reset attempts. Please try again in ${Math.ceil(retryAfter / 60)} minutes.`
+                );
+            }
+        }
+
         const body = await request.json();
         const { token, password } = body;
 

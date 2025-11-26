@@ -19,9 +19,11 @@ import {
     forbidden,
     conflict,
     internalServerError,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { YOUTUBE_URL_REGEX } from '@/app/utils/validation';
+import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 
 export async function POST(request: Request) {
     try {
@@ -31,6 +33,22 @@ export async function POST(request: Request) {
             return unauthorized(
                 'User authentication required to create recipe'
             );
+        }
+
+        // Rate limiting for recipe creation - prevent spam
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await contentCreationRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfter = Math.ceil((reset - Date.now()) / 1000);
+                logger.warn('POST /api/recipes - rate limit exceeded', {
+                    userId: currentUser.id,
+                });
+                return rateLimitExceeded(
+                    `Too many recipe submissions. Please try again in ${retryAfter} seconds.`
+                );
+            }
         }
 
         const body = await request.json();

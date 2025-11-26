@@ -1,16 +1,33 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
+import { headers } from 'next/headers';
 
 import prisma from '@/app/lib/prismadb';
 import {
     badRequest,
     conflict,
     internalServerError,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { registrationRatelimit } from '@/app/lib/ratelimit';
 
 export async function POST(request: Request) {
     try {
+        // Rate limiting for registration - prevent mass account creation
+        if (process.env.ENV === 'production') {
+            const ip =
+                (await headers()).get('x-forwarded-for') ?? 'unknown-ip';
+            const { success, reset } = await registrationRatelimit.limit(ip);
+            if (!success) {
+                const retryAfter = Math.ceil((reset - Date.now()) / 1000);
+                logger.warn('POST /api/register - rate limit exceeded', { ip });
+                return rateLimitExceeded(
+                    `Too many registration attempts. Please try again in ${Math.ceil(retryAfter / 60)} minutes.`
+                );
+            }
+        }
+
         const body = await request.json();
         const { email, name, password } = body;
 

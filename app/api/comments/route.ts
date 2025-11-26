@@ -11,8 +11,10 @@ import {
     badRequest,
     validationError,
     internalServerError,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 
 export async function POST(request: Request) {
     try {
@@ -20,6 +22,22 @@ export async function POST(request: Request) {
 
         if (!currentUser) {
             return unauthorized('User authentication required to post comment');
+        }
+
+        // Rate limiting for comment creation - prevent spam
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await contentCreationRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfter = Math.ceil((reset - Date.now()) / 1000);
+                logger.warn('POST /api/comments - rate limit exceeded', {
+                    userId: currentUser.id,
+                });
+                return rateLimitExceeded(
+                    `Too many comments. Please try again in ${retryAfter} seconds.`
+                );
+            }
         }
 
         const body = await request.json();
