@@ -15,12 +15,6 @@ const ThemeSelector: React.FC = () => {
         setTheme(newTheme);
         localStorage.setItem('theme', newTheme);
         document.documentElement.classList.toggle('dark', newTheme === 'dark');
-        // Dispatch event to update iOS status bar color immediately
-        document.dispatchEvent(
-            new CustomEvent('themeChanged', {
-                detail: { isDark: newTheme === 'dark' },
-            })
-        );
         router.refresh();
     };
 

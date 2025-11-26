@@ -132,23 +132,4 @@ describe('<ThemeSelector />', () => {
         );
         expect(mockRefresh).not.toHaveBeenCalled();
     });
-
-    it('dispatches themeChanged event when theme is toggled', async () => {
-        const themeChangedHandler = vi.fn();
-        document.addEventListener('themeChanged', themeChangedHandler);
-
-        render(<ThemeSelector />);
-
-        const switchControl = screen.getByRole('switch');
-
-        await act(async () => {
-            fireEvent.click(switchControl);
-        });
-
-        expect(themeChangedHandler).toHaveBeenCalled();
-        const event = themeChangedHandler.mock.calls[0][0] as CustomEvent;
-        expect(event.detail.isDark).toBe(true);
-
-        document.removeEventListener('themeChanged', themeChangedHandler);
-    });
 });
