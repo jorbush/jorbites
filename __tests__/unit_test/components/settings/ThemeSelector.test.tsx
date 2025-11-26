@@ -110,4 +110,26 @@ describe('<ThemeSelector />', () => {
 
         expect(localStorageMock['theme']).toBe('light');
     });
+
+    it('does not call router.refresh on initial mount', async () => {
+        await act(async () => {
+            render(<ThemeSelector />);
+        });
+
+        expect(mockRefresh).not.toHaveBeenCalled();
+    });
+
+    it('does not call router.refresh when loading theme from localStorage', async () => {
+        localStorageMock['theme'] = 'dark';
+
+        await act(async () => {
+            render(<ThemeSelector />);
+        });
+
+        expect(document.documentElement.classList.toggle).toHaveBeenCalledWith(
+            'dark',
+            true
+        );
+        expect(mockRefresh).not.toHaveBeenCalled();
+    });
 });

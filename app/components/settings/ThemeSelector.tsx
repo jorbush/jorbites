@@ -14,19 +14,20 @@ const ThemeSelector: React.FC = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
         localStorage.setItem('theme', newTheme);
+        document.documentElement.classList.toggle('dark', newTheme === 'dark');
+        router.refresh();
     };
 
     useEffect(() => {
         const cachedTheme = localStorage.getItem('theme');
         if (cachedTheme) {
             setTheme(cachedTheme);
+            document.documentElement.classList.toggle(
+                'dark',
+                cachedTheme === 'dark'
+            );
         }
     }, []);
-
-    useEffect(() => {
-        document.documentElement.classList.toggle('dark', theme === 'dark');
-        router.refresh();
-    }, [theme, router]);
 
     return (
         <div className="flex items-center">
