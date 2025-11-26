@@ -167,6 +167,28 @@ describe('<ChefCard />', () => {
         expect(screen.queryByText(/this year/)).toBeNull();
     });
 
+    it('renders only monthly indicator when chef has recipes this month but not this year', () => {
+        const chefWithOnlyMonthlyRecipes = {
+            ...mockChef,
+            recipesThisMonth: 5,
+            recipesThisYear: 0,
+        };
+        render(<ChefCard chef={chefWithOnlyMonthlyRecipes} />);
+        expect(screen.getByText(/5 this month/)).toBeDefined();
+        expect(screen.queryByText(/this year/)).toBeNull();
+    });
+
+    it('renders only yearly indicator when chef has recipes this year but not this month', () => {
+        const chefWithOnlyYearlyRecipes = {
+            ...mockChef,
+            recipesThisMonth: 0,
+            recipesThisYear: 10,
+        };
+        render(<ChefCard chef={chefWithOnlyYearlyRecipes} />);
+        expect(screen.queryByText(/this month/)).toBeNull();
+        expect(screen.getByText(/10 this year/)).toBeDefined();
+    });
+
     it('renders average likes per recipe', () => {
         render(<ChefCard chef={mockChef} />);
         expect(screen.getByText(/~17 likes\/recipe/)).toBeDefined();
