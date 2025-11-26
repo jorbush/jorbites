@@ -148,6 +148,44 @@ describe('categorizeEvents', () => {
             expect(result.upcoming).toHaveLength(1);
             expect(result.current).toHaveLength(0);
         });
+
+        it('should not treat event as recurrent if dayOfMonth is 0 (invalid)', () => {
+            vi.setSystemTime(new Date('2025-01-29T12:00:00'));
+
+            const events = [
+                createEvent('invalid-day', {
+                    recurrent: true,
+                    dayOfMonth: 0, // Invalid - should be 1-31
+                    date: '2099-01-01',
+                    endDate: '2099-12-31',
+                }),
+            ];
+
+            const result = categorizeEvents(events);
+
+            // Should be treated as a regular upcoming event based on date
+            expect(result.upcoming).toHaveLength(1);
+            expect(result.current).toHaveLength(0);
+        });
+
+        it('should not treat event as recurrent if dayOfMonth is greater than 31 (invalid)', () => {
+            vi.setSystemTime(new Date('2025-01-29T12:00:00'));
+
+            const events = [
+                createEvent('invalid-day-high', {
+                    recurrent: true,
+                    dayOfMonth: 32, // Invalid - should be 1-31
+                    date: '2099-01-01',
+                    endDate: '2099-12-31',
+                }),
+            ];
+
+            const result = categorizeEvents(events);
+
+            // Should be treated as a regular upcoming event based on date
+            expect(result.upcoming).toHaveLength(1);
+            expect(result.current).toHaveLength(0);
+        });
     });
 
     describe('regular events', () => {

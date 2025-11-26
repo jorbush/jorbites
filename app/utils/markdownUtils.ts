@@ -70,17 +70,16 @@ export function categorizeEvents(events: Event[]): {
             // Handle recurrent events (e.g., 29 of gnocchis)
             if (
                 event.frontmatter.recurrent === true &&
-                event.frontmatter.dayOfMonth
+                typeof event.frontmatter.dayOfMonth === 'number' &&
+                event.frontmatter.dayOfMonth >= 1 &&
+                event.frontmatter.dayOfMonth <= 31
             ) {
                 const eventDayOfMonth = event.frontmatter.dayOfMonth;
                 if (currentDayOfMonth === eventDayOfMonth) {
                     // Recurrent event is current today
                     acc.current.push(event);
-                } else if (currentDayOfMonth < eventDayOfMonth) {
-                    // Recurrent event is upcoming this month
-                    acc.upcoming.push(event);
                 } else {
-                    // Event day has passed this month, upcoming next month
+                    // Recurrent event is upcoming (either this month or next)
                     acc.upcoming.push(event);
                 }
                 return acc;
