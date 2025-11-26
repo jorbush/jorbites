@@ -41,12 +41,12 @@ export async function POST(request: Request) {
                 currentUser.id
             );
             if (!success) {
-                const retryAfter = Math.ceil((reset - Date.now()) / 1000);
+                const retryAfterSeconds = Math.max(1, Math.ceil((reset - Date.now()) / 1000));
                 logger.warn('POST /api/recipes - rate limit exceeded', {
                     userId: currentUser.id,
                 });
                 return rateLimitExceeded(
-                    `Too many recipe submissions. Please try again in ${retryAfter} seconds.`
+                    `Too many recipe submissions. Please try again in ${retryAfterSeconds} seconds.`
                 );
             }
         }
