@@ -25,6 +25,7 @@ export type SafeUser = Omit<
     recipeCount?: number | null | undefined;
     likesReceived?: number | null | undefined;
     recipesThisYear?: number | null | undefined;
+    recipesThisMonth?: number | null | undefined;
     totalCookingTime?: number | null | undefined;
     avgLikesPerRecipe?: number | null | undefined;
     mostUsedCategory?: string | null | undefined;
