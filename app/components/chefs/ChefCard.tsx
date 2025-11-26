@@ -148,14 +148,32 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                 </div>
 
                 {/* Recent Activity Indicator */}
-                {chef.recipesThisYear != null && chef.recipesThisYear > 0 && (
-                    <div className="mt-4 w-full">
-                        <div className="flex items-center justify-center gap-2 rounded-lg bg-green-50 py-2 dark:bg-green-900/20">
-                            <MdOutlineTimer className="text-green-600 dark:text-green-400" />
-                            <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                                {chef.recipesThisYear} {t('recipes_this_year')}
-                            </span>
-                        </div>
+                {(!!chef.recipesThisMonth || !!chef.recipesThisYear) && (
+                    <div className="mt-4 w-full space-y-2">
+                        {!!chef.recipesThisMonth && (
+                            <div className="flex items-center justify-center gap-2 rounded-lg bg-green-50 py-2 dark:bg-green-900/20">
+                                <MdOutlineTimer className="text-green-600 dark:text-green-400" />
+                                <span
+                                    className="text-sm font-medium text-green-700 dark:text-green-300"
+                                    data-testid="chef-card-recipes-this-month"
+                                >
+                                    {chef.recipesThisMonth}{' '}
+                                    {t('recipes_this_month')}
+                                </span>
+                            </div>
+                        )}
+                        {!!chef.recipesThisYear && (
+                            <div className="flex items-center justify-center gap-2 rounded-lg bg-blue-50 py-2 dark:bg-blue-900/20">
+                                <MdOutlineTimer className="text-blue-600 dark:text-blue-400" />
+                                <span
+                                    className="text-sm font-medium text-blue-700 dark:text-blue-300"
+                                    data-testid="chef-card-recipes-this-year"
+                                >
+                                    {chef.recipesThisYear}{' '}
+                                    {t('recipes_this_year')}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 )}
 
