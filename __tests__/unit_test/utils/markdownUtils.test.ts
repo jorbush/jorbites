@@ -186,6 +186,26 @@ describe('categorizeEvents', () => {
             expect(result.upcoming).toHaveLength(1);
             expect(result.current).toHaveLength(0);
         });
+
+        it('should categorize recurrent event as past when its endDate has passed', () => {
+            // Set the date to after the event's endDate
+            vi.setSystemTime(new Date('2026-01-01T12:00:00'));
+
+            const events = [
+                createEvent('past-recurrent-event', {
+                    recurrent: true,
+                    dayOfMonth: 29,
+                    endDate: '2025-12-31',
+                }),
+            ];
+
+            const result = categorizeEvents(events);
+
+            expect(result.past).toHaveLength(1);
+            expect(result.past[0].slug).toBe('past-recurrent-event');
+            expect(result.current).toHaveLength(0);
+            expect(result.upcoming).toHaveLength(0);
+        });
     });
 
     describe('regular events', () => {

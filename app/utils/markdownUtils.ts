@@ -67,6 +67,8 @@ export function categorizeEvents(events: Event[]): {
                 return acc;
             }
 
+            const endDate = new Date(event.frontmatter.endDate);
+
             // Handle recurrent events (e.g., 29 of gnocchis)
             if (
                 event.frontmatter.recurrent === true &&
@@ -74,6 +76,11 @@ export function categorizeEvents(events: Event[]): {
                 event.frontmatter.dayOfMonth >= 1 &&
                 event.frontmatter.dayOfMonth <= 31
             ) {
+                if (endDate < now) {
+                    acc.past.push(event);
+                    return acc;
+                }
+
                 const eventDayOfMonth = event.frontmatter.dayOfMonth;
                 if (currentDayOfMonth === eventDayOfMonth) {
                     // Recurrent event is current today
@@ -86,7 +93,6 @@ export function categorizeEvents(events: Event[]): {
             }
 
             const startDate = new Date(event.frontmatter.date);
-            const endDate = new Date(event.frontmatter.endDate);
 
             // Current events: ongoing right now
             if (startDate <= now && endDate >= now) {
