@@ -9,6 +9,7 @@ This project implements a NextJS API with built-in rate limiting protection usin
 - [Rate Limiting](#rate-limiting)
   - [How it Works](#how-it-works)
   - [Configuration](#configuration)
+  - [Protected Endpoints](#protected-endpoints)
   - [Sliding Window Algorithm](#sliding-window-algorithm)
 
 ## Overview
@@ -38,9 +39,9 @@ When a user exceeds their allowed request quota, the API returns a structured er
 
 ### Configuration
 
-The rate limit configuration uses a sliding window approach with different limits for authenticated and unauthenticated users:
+The rate limit configuration uses a sliding window approach with different limits for different operations:
 
-**Authenticated Users:**
+**General Browsing - Authenticated Users:**
 ```typescript
 export const authenticatedRatelimit = new Ratelimit({
     redis: Redis.fromEnv(),
@@ -50,7 +51,7 @@ export const authenticatedRatelimit = new Ratelimit({
 });
 ```
 
-**Unauthenticated Users:**
+**General Browsing - Unauthenticated Users:**
 ```typescript
 export const unauthenticatedRatelimit = new Ratelimit({
     redis: Redis.fromEnv(),
@@ -60,16 +61,65 @@ export const unauthenticatedRatelimit = new Ratelimit({
 });
 ```
 
+**Registration (Strict):**
+```typescript
+export const registrationRatelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(5, '1 h'),
+    analytics: true,
+    prefix: '@upstash/ratelimit/registration',
+});
+```
+
+**Password Reset (Strict):**
+```typescript
+export const passwordResetRatelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(3, '15 m'),
+    analytics: true,
+    prefix: '@upstash/ratelimit/password-reset',
+});
+```
+
+**Content Creation (Comments, Recipes):**
+```typescript
+export const contentCreationRatelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(10, '1 m'),
+    analytics: true,
+    prefix: '@upstash/ratelimit/content-creation',
+});
+```
+
 This tiered configuration allows:
-- **Authenticated users**: 30 requests per 10-second window (180 requests/minute)
+- **Authenticated users (browsing)**: 30 requests per 10-second window (180 requests/minute)
   - Higher limits to support search functionality with 1-second debounce
   - Better experience for registered users
-- **Unauthenticated users**: 15 requests per 10-second window (90 requests/minute)
+- **Unauthenticated users (browsing)**: 15 requests per 10-second window (90 requests/minute)
   - Moderate limits to prevent abuse while still allowing search
   - Sufficient for normal browsing and searching
+- **Registration**: 5 requests per hour per IP
+  - Prevents mass account creation/spam
+- **Password Reset**: 3 requests per 15 minutes per IP
+  - Prevents email bombing while allowing retries
+- **Content Creation**: 10 requests per minute per user
+  - Prevents spam while allowing normal usage
 - Analytics enabled for monitoring
 - Redis credentials loaded from environment variables
-- Separate prefixes for tracking different user types
+- Separate prefixes for tracking different operations
+
+### Protected Endpoints
+
+The following endpoints are protected with rate limiting:
+
+| Endpoint | Rate Limit | Identifier |
+|----------|-----------|------------|
+| `GET /api/recipes` (via getRecipes) | Authenticated: 30/10s, Unauth: 15/10s | User ID or IP |
+| `POST /api/register` | 5/hour | IP address |
+| `POST /api/password-reset/request` | 3/15min | IP address |
+| `POST /api/password-reset/reset` | 3/15min | IP address |
+| `POST /api/comments` | 10/min | User ID |
+| `POST /api/recipes` | 10/min | User ID |
 
 ### Sliding Window Algorithm
 
