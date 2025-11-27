@@ -7,6 +7,8 @@ export interface EventFrontmatter {
     endDate: string;
     image: string; // Mandatory image URL for the event
     permanent?: boolean; // Flag for permanent events
+    recurrent?: boolean; // Flag for recurrent events (e.g., 29 of gnocchis)
+    dayOfMonth?: number; // Day of month for recurrent events (1-31)
 }
 
 export interface Event {
@@ -55,12 +57,31 @@ export function categorizeEvents(events: Event[]): {
     permanent: Event[];
 } {
     const now = new Date();
+    const currentDayOfMonth = now.getDate();
 
     return events.reduce(
         (acc, event) => {
             // Handle permanent events separately
             if (event.frontmatter.permanent === true) {
                 acc.permanent.push(event);
+                return acc;
+            }
+
+            // Handle recurrent events (e.g., 29 of gnocchis)
+            if (
+                event.frontmatter.recurrent === true &&
+                typeof event.frontmatter.dayOfMonth === 'number' &&
+                event.frontmatter.dayOfMonth >= 1 &&
+                event.frontmatter.dayOfMonth <= 31
+            ) {
+                const eventDayOfMonth = event.frontmatter.dayOfMonth;
+                if (currentDayOfMonth === eventDayOfMonth) {
+                    // Recurrent event is current today
+                    acc.current.push(event);
+                } else {
+                    // Recurrent event is upcoming (either this month or next)
+                    acc.upcoming.push(event);
+                }
                 return acc;
             }
 
