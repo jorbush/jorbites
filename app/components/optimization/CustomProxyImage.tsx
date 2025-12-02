@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 
 interface CustomProxyImageProps {
     src: string;
@@ -18,6 +18,26 @@ interface CustomProxyImageProps {
     maxQuality?: boolean;
 }
 
+function getProxyUrl(
+    src: string,
+    width: number,
+    height: number,
+    quality: string
+) {
+    if (!src || src === '') return '/avocado.webp';
+    if (src.startsWith('/')) return src;
+
+    if (
+        src.includes('cloudinary.com') ||
+        src.includes('googleusercontent.com') ||
+        src.includes('githubusercontent.com')
+    ) {
+        return `/api/image-proxy?url=${encodeURIComponent(src)}&w=${width}&h=${height}&q=${quality}`;
+    }
+
+    return src;
+}
+
 export default function CustomProxyImage({
     src,
     alt,
@@ -27,19 +47,18 @@ export default function CustomProxyImage({
     width = 400,
     height = 400,
     sizes = '(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px',
-    preloadViaProxy = false,
     quality = 'auto:good',
     style,
     circular = false,
     maxQuality = false,
 }: CustomProxyImageProps) {
     const [isLoaded, setIsLoaded] = useState(false);
-    const imgRef = useRef<HTMLImageElement>(null);
-    const [optimizedSrc, setOptimizedSrc] = useState<string | null>(null);
-    const [placeholderSrc, setPlaceholderSrc] = useState<string | null>(null);
 
     const useMaxQuality = maxQuality || quality === 'auto:best';
 
+    // Calculate dimensions
+    // If fill is true, we default to width/height props or 400 if not provided
+    // The previous logic had a specific check for '250px' in sizes, we can keep it if we want to maintain exact behavior for the fallback src
     const actualWidth = fill ? (sizes.includes('250px') ? 250 : width) : width;
     const actualHeight = fill
         ? sizes.includes('250px')
@@ -47,76 +66,63 @@ export default function CustomProxyImage({
             : height
         : height;
 
-    useEffect(() => {
-        const fallbackImage = '/avocado.webp';
-
-        if (!src || src === '') {
-            setOptimizedSrc(fallbackImage);
-            setPlaceholderSrc(fallbackImage);
-            return;
-        }
-
-        if (src.startsWith('/')) {
-            setOptimizedSrc(src);
-            setPlaceholderSrc(src);
-            return;
-        }
-
+    // Generate Main Src
+    let optimizedSrc = src;
+    if (useMaxQuality) {
+        // For max quality, we might bypass resizing if supported, but getProxyUrl expects w/h
+        // We'll just use a large dimension or the original logic
         if (
             src.includes('cloudinary.com') ||
             src.includes('googleusercontent.com') ||
             src.includes('githubusercontent.com')
         ) {
-            try {
-                let proxyUrl;
-                if (useMaxQuality) {
-                    proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&q=auto:best`;
-                } else {
-                    proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${actualWidth}&h=${actualHeight}&q=${quality}`;
-                }
+            optimizedSrc = `/api/image-proxy?url=${encodeURIComponent(src)}&q=auto:best`;
+        }
+    } else {
+        optimizedSrc = getProxyUrl(src, actualWidth, actualHeight, quality);
+    }
 
-                const placeholderUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
-
-                setOptimizedSrc(proxyUrl);
-                setPlaceholderSrc(placeholderUrl);
-
-                if (preloadViaProxy && typeof window !== 'undefined') {
-                    const link = document.createElement('link');
-                    link.rel = 'preload';
-                    link.href = proxyUrl;
-                    link.as = 'image';
-                    link.fetchPriority = 'high';
-                    document.head.appendChild(link);
-                }
-
-                return;
-            } catch (e) {
-                console.error('Error creating proxy URL:', e);
-                setOptimizedSrc(fallbackImage);
-                setPlaceholderSrc(fallbackImage);
-            }
+    // Generate SrcSet
+    const generateSrcSet = () => {
+        if (
+            !src ||
+            src.startsWith('/') ||
+            (!src.includes('cloudinary.com') &&
+                !src.includes('googleusercontent.com') &&
+                !src.includes('githubusercontent.com'))
+        ) {
+            return undefined;
         }
 
-        setOptimizedSrc(src);
-        setPlaceholderSrc(src);
-    }, [
-        src,
-        actualWidth,
-        actualHeight,
-        preloadViaProxy,
-        sizes,
-        quality,
-        useMaxQuality,
-    ]);
+        if (useMaxQuality) return undefined;
 
-    useEffect(() => {
-        if (imgRef.current && priority) {
-            imgRef.current.setAttribute('fetchpriority', 'high');
-            imgRef.current.setAttribute('loading', 'eager');
-            imgRef.current.setAttribute('decoding', 'sync');
-            imgRef.current.id = 'lcp-image';
-        }
-    }, [priority]);
+        const breakpoints = [250, 384, 640, 750, 828, 1080, 1200, 1920];
+
+        return breakpoints
+            .map((w) => {
+                // Calculate height to maintain aspect ratio if not filling/square
+                // If fill/circular, we assume square or let CSS handle aspect ratio but we need to request enough pixels.
+                // If the container is square (aspect-square), we should request square images.
+                // If we don't know, we can request w=w and h=w (square) or try to maintain ratio.
+                // The previous code used actualWidth/actualHeight.
+
+                let h = w;
+                if (!fill && !circular && actualWidth && actualHeight) {
+                    h = Math.round(w * (actualHeight / actualWidth));
+                }
+
+                return `${getProxyUrl(src, w, h, quality)} ${w}w`;
+            })
+            .join(', ');
+    };
+
+    const srcSet = generateSrcSet();
+
+    // Placeholder
+    const placeholderSrc =
+        src && !src.startsWith('/')
+            ? getProxyUrl(src, 20, 20, 'auto:eco')
+            : src;
 
     const baseStyle = fill
         ? ({
@@ -133,19 +139,6 @@ export default function CustomProxyImage({
               ...style,
           };
 
-    if (!optimizedSrc) {
-        return (
-            <div
-                className={`${fill || circular ? 'relative aspect-square' : ''} overflow-hidden bg-neutral-200 dark:bg-neutral-700 ${circular ? 'rounded-full' : ''} ${fill || circular ? className : ''}`}
-                style={
-                    !fill && !circular
-                        ? { width: actualWidth, height: actualHeight, ...style }
-                        : style
-                }
-            />
-        );
-    }
-
     return (
         <div
             className={`${(fill && !maxQuality) || circular ? 'relative aspect-square' : ''} overflow-hidden bg-neutral-200 dark:bg-neutral-700 ${circular ? 'rounded-full' : ''} ${fill || circular ? className : ''} ${useMaxQuality && !fill ? 'flex items-center justify-center' : ''}`}
@@ -155,8 +148,8 @@ export default function CustomProxyImage({
                     : style
             }
         >
-            {/* Blurry placeholder - only for non-circular images */}
-            {placeholderSrc && !circular && (
+            {/* Blurry placeholder - only for non-circular images and if not priority */}
+            {placeholderSrc && !circular && !priority && (
                 <div
                     style={{
                         ...baseStyle,
@@ -173,15 +166,19 @@ export default function CustomProxyImage({
             {/* Main image */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-                ref={imgRef}
                 src={optimizedSrc}
+                srcSet={srcSet}
                 alt={alt}
                 width={actualWidth}
                 height={actualHeight}
                 onLoad={() => setIsLoaded(true)}
                 style={baseStyle}
                 sizes={sizes}
-                className={`${className} ${fill ? 'object-cover' : ''} transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                loading={priority ? 'eager' : 'lazy'}
+                fetchPriority={priority ? 'high' : undefined}
+                decoding={priority ? 'sync' : 'async'}
+                className={`${className} ${fill ? 'object-cover' : ''} transition-opacity duration-300 ${priority || isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                id={priority ? 'lcp-image' : undefined}
             />
         </div>
     );

@@ -8,8 +8,6 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import { headers } from 'next/headers';
 import ErrorDisplay from '@/app/components/utils/ErrorDisplay';
-import { getFirstRecipeImageUrl } from '@/app/utils/imageOptimizer';
-import LcpPreloader from '@/app/components/optimization/LcpPreloader';
 import { RecipeGrid } from '@/app/components/recipes/RecipeGrid';
 import { dynamicImport } from '@/app/utils/dynamicImport';
 import {
@@ -33,7 +31,6 @@ const Home = async ({ searchParams }: HomeProps) => {
             ? MOBILE_RECIPES_LIMIT
             : DESKTOP_RECIPES_LIMIT,
     });
-    const firstImageUrl = getFirstRecipeImageUrl(response.data?.recipes);
     const currentUser = await getCurrentUser();
     return (
         <ClientOnly
@@ -50,7 +47,6 @@ const Home = async ({ searchParams }: HomeProps) => {
         >
             <Container>
                 <TopScroller />
-                {firstImageUrl && <LcpPreloader imageUrl={firstImageUrl} />}
                 {response.error ? (
                     <div className="min-h-[60vh]">
                         <ErrorDisplay
