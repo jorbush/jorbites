@@ -76,6 +76,11 @@ const mockCurrentUser = {
     name: 'Current User',
 };
 
+const mockContributionData = [
+    { date: '2025-01-01', count: 1, level: 1 },
+    { date: '2025-01-02', count: 2, level: 2 },
+];
+
 describe('ProfilePage', () => {
     beforeEach(() => {
         vi.resetAllMocks();
@@ -120,7 +125,12 @@ describe('ProfilePage', () => {
     });
 
     it('renders profile header and recipes when user has recipes', async () => {
-        vi.mocked(getRecipesByUserId).mockResolvedValue(mockRecipes as any);
+        vi.mocked(getRecipesByUserId).mockImplementation(async (params) => {
+            if (params.forGraph) {
+                return mockContributionData;
+            }
+            return mockRecipes as any;
+        });
         vi.mocked(getUserById).mockResolvedValue({
             createdAt: '',
             updatedAt: '',

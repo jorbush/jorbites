@@ -73,6 +73,10 @@ const ProfilePage = async (props: {
         ...params,
         orderBy: searchParams.orderBy,
     });
+    const contributionData = await getRecipesByUserId({
+        ...params,
+        forGraph: true,
+    });
     const user = await getUserById({ userId: params.userId, withStats: true });
     const currentUser = await getCurrentUser();
 
@@ -90,7 +94,7 @@ const ProfilePage = async (props: {
     return (
         <>
             <ClientOnly fallback={<ProfileHeaderSkeleton />}>
-                <ProfileHeader user={user} />
+                <ProfileHeader user={user} contributionData={contributionData} />
             </ClientOnly>
 
             <ClientOnly fallback={<UserStatsSkeleton />}>

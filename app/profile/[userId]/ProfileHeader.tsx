@@ -13,12 +13,23 @@ import VerificationBadge from '@/app/components/VerificationBadge';
 import ScrollableContainer from '@/app/components/utils/ScrollableContainer';
 import { formatDateLanguage } from '@/app/utils/date-utils';
 import { FiCalendar } from 'react-icons/fi';
+import ContributionGraph from '@/app/components/profile/ContributionGraph';
+
+interface ContributionData {
+    date: string;
+    count: number;
+    level: 0 | 1 | 2 | 3 | 4;
+}
 
 interface ProfileHeaderProps {
     user?: SafeUser | null;
+    contributionData: ContributionData[];
 }
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({
+    user,
+    contributionData,
+}) => {
     const router = useRouter();
     const { t } = useTranslation();
     const isMdOrSmaller = useMediaQuery('(max-width: 415px)');
@@ -90,6 +101,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                         <hr className="mt-2" />
                     </>
                 )}
+            <ContributionGraph data={contributionData} />
         </Container>
     );
 };

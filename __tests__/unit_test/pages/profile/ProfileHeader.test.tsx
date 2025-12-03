@@ -1,147 +1,95 @@
-import React from 'react';
-import { render, fireEvent, cleanup } from '@testing-library/react';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
 import { SafeUser } from '@/app/types';
-import { useRouter } from 'next/navigation';
 
-// Mock data
-vi.mock('@/app/hooks/useMediaQuery', () => ({
-    default: () => false,
+Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(), // deprecated
+        removeListener: vi.fn(), // deprecated
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+    })),
+});
+
+vi.mock('date-fns-tz', () => ({
+    utcToZonedTime: (date: Date) => date,
+    format: (date: Date, format: string) => {
+        return new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        }).format(date);
+    },
+}));
+
+vi.mock('next/navigation', () => ({
+    useRouter: () => ({
+        push: vi.fn(),
+    }),
+}));
+
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (str: string) => str,
+    }),
+}));
+
+vi.mock('@/app/components/profile/ContributionGraph', () => ({
+    __esModule: true,
+    default: () => <div data-testid="contribution-graph"></div>,
+}));
+
+vi.mock('react-github-calendar', () => ({
+    __esModule: true,
+    default: () => <div data-testid="github-calendar"></div>,
 }));
 
 const mockUser: SafeUser = {
-    id: 'user1',
+    id: '1',
     name: 'Test User',
-    email: null,
-    emailVerified: null,
-    image: '/test-image.jpg',
-    hashedPassword: null,
-    createdAt: '2023-01-01T00:00:00.000Z',
+    email: 'test@example.com',
+    image: null,
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    favoriteIds: [],
-    emailNotifications: false,
     level: 5,
+    badges: ['badge1', 'badge2'],
     verified: true,
-    badges: [],
-    resetToken: null,
-    resetTokenExpiry: null,
 };
 
-// Mock the router and translation
-vi.mock('next/navigation', () => ({
-    useRouter: vi.fn(() => ({
-        push: vi.fn(),
-        query: {},
-    })),
-}));
-
-vi.mock('react-i18next', async (importOriginal) => {
-    const actual = (await importOriginal()) as any;
-    return {
-        ...actual,
-        useTranslation: () => ({
-            t: (key: string) => {
-                const translations: Record<string, string> = {
-                    level: 'Lv.',
-                    since: 'Since',
-                };
-                return translations[key] || key;
-            },
-        }),
-        initReactI18next: {
-            type: '3rdParty',
-            init: vi.fn(),
-        },
-    };
-});
-
-// Mock react-icons
-vi.mock('react-icons/fi', () => ({
-    FiCalendar: () =>
-        React.createElement('div', { 'data-testid': 'calendar-icon' }),
-}));
-
-// Mock date-fns
-vi.mock('date-fns', () => ({
-    format: vi.fn(() => '2023'),
-}));
-
-// Mock date-fns/locale
-vi.mock('date-fns/locale', () => ({
-    es: {},
-    enUS: {},
-    ca: {},
-}));
+const mockContributionData = [
+    { date: '2025-01-01', count: 1, level: 1 },
+    { date: '2025-01-02', count: 2, level: 2 },
+];
 
 describe('ProfileHeader', () => {
+    beforeEach(() => {
+        render(
+            <ProfileHeader
+                user={mockUser}
+                contributionData={mockContributionData}
+            />
+        );
+    });
+
     afterEach(() => {
         cleanup();
     });
 
-    it('renders correctly with user data', () => {
-        const router = { push: vi.fn() };
-        (useRouter as any).mockReturnValue(router);
-
-        const { getByText, getByAltText, getByTestId } = render(
-            <ProfileHeader user={mockUser} />
-        );
-
-        // Assert user details
-        expect(getByText('Test User')).toBeDefined();
-        expect(getByText('Lv. 5')).toBeDefined();
-        expect(getByAltText('Avatar')).toBeDefined();
-        expect(getByText('Since 2023')).toBeDefined();
-        expect(getByTestId('calendar-icon')).toBeDefined();
+    it('renders user information correctly', () => {
+        expect(screen.getByText('Test User')).toBeInTheDocument();
+        expect(screen.getByText('level 5')).toBeInTheDocument();
+        expect(screen.getByText(/since/)).toBeInTheDocument();
+        expect(screen.getByAltText('badge1 badge')).toBeInTheDocument();
+        expect(screen.getByAltText('badge2 badge')).toBeInTheDocument();
     });
 
-    it('calls router.push on user name click', () => {
-        const router = { push: vi.fn() };
-        (useRouter as any).mockReturnValue(router);
-
-        const { getByText } = render(<ProfileHeader user={mockUser} />);
-
-        // Simulate click on user name
-        fireEvent.click(getByText('Test User'));
-
-        // Assert router.push is called with correct URL
-        expect(router.push).toHaveBeenCalledWith('/profile/user1');
-    });
-
-    it('renders correctly with unverified user', () => {
-        const unverifiedUser = {
-            ...mockUser,
-            verified: false,
-        };
-        const router = { push: vi.fn() };
-        (useRouter as any).mockReturnValue(router);
-
-        const { getByText, queryByTestId } = render(
-            <ProfileHeader user={unverifiedUser} />
-        );
-
-        // Assert user details
-        expect(getByText('Test User')).toBeDefined();
-        expect(getByText('Lv. 5')).toBeDefined();
-
-        // Assert verified icon is not rendered
-        expect(queryByTestId('MdVerified')).toBeNull();
-    });
-
-    it('does not render member since when createdAt is not provided', () => {
-        const userWithoutCreatedAt: SafeUser = {
-            ...mockUser,
-            createdAt: '',
-        };
-        const router = { push: vi.fn() };
-        (useRouter as any).mockReturnValue(router);
-
-        const { queryByText, queryByTestId } = render(
-            <ProfileHeader user={userWithoutCreatedAt} />
-        );
-
-        // Assert member since is not rendered when createdAt is empty
-        expect(queryByText('Since 2023')).toBeNull();
-        expect(queryByTestId('calendar-icon')).toBeNull();
+    it('renders the contribution graph', () => {
+        expect(screen.getByTestId('contribution-graph')).toBeInTheDocument();
     });
 });

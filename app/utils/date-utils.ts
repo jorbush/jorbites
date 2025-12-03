@@ -1,43 +1,30 @@
-import { format } from 'date-fns';
-import { es, enUS, ca } from 'date-fns/locale';
-import i18n from '@/app/i18n';
+import { format, utcToZonedTime } from 'date-fns-tz';
+import { es, ca, enGB as en } from 'date-fns/locale';
 
-type LocaleType = 'es' | 'en' | 'ca';
-
-export const locales = {
+const locales: { [key: string]: Locale } = {
     es,
-    en: enUS,
     ca,
+    en,
 };
 
-/**
- * Formats a date range based on the current locale
- */
-export const formatDateRange = (
-    startDate: Date | string,
-    endDate: Date | string
+export const formatDate = (
+    date: Date | string,
+    formatStr: string,
+    timeZone: string = 'UTC'
 ): string => {
-    const start = startDate instanceof Date ? startDate : new Date(startDate);
-    const end = endDate instanceof Date ? endDate : new Date(endDate);
-    const isSameDay = start.toDateString() === end.toDateString();
-
-    const currentLocale = (i18n.language as LocaleType) || 'es';
-    const locale = locales[currentLocale];
-
-    if (isSameDay) {
-        return format(start, 'PPP', { locale });
-    } else {
-        const dateFormat = currentLocale === 'en' ? 'yyyy/MM/dd' : 'dd/MM/yyyy';
-        return `${format(start, dateFormat, { locale })} - ${format(end, dateFormat, { locale })}`;
-    }
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    const zonedDate = utcToZonedTime(dateObj, timeZone);
+    return format(zonedDate, formatStr, { timeZone });
 };
 
 export const formatDateLanguage = (
     date: Date | string,
-    formatString: string
-) => {
-    const currentLocale = (i18n.language as LocaleType) || 'es';
-    const locale = locales[currentLocale];
-    const parsedDate = date instanceof Date ? date : new Date(date);
-    return format(parsedDate, formatString, { locale });
+    formatStr: string,
+    language: string = 'en',
+    timeZone: string = 'UTC'
+): string => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    const zonedDate = utcToZonedTime(dateObj, timeZone);
+    const locale = locales[language] || en;
+    return format(zonedDate, formatStr, { timeZone, locale });
 };
