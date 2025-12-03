@@ -44,7 +44,7 @@ const Tabs: React.FC<TabsProps> = ({
                     data-testid={`tab-${tab.id}`}
                 >
                     {tab.icon && <span className="text-lg">{tab.icon}</span>}
-                    <span>{tab.label}</span>
+                    <span className="hidden sm:inline">{tab.label}</span>
                 </button>
             ))}
         </div>

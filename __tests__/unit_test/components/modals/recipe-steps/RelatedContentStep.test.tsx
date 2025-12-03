@@ -139,10 +139,13 @@ describe('<RelatedContentStep />', () => {
         isLoading: false,
         selectedCoCooks: [],
         selectedLinkedRecipes: [],
+        selectedQuest: null,
         onAddCoCook: vi.fn(),
         onRemoveCoCook: vi.fn(),
         onAddLinkedRecipe: vi.fn(),
         onRemoveLinkedRecipe: vi.fn(),
+        onSelectQuest: vi.fn(),
+        onRemoveQuest: vi.fn(),
         register: createMockRegister(),
         errors: {},
         youtubeUrl: '',
@@ -344,11 +347,7 @@ describe('<RelatedContentStep />', () => {
         render(<RelatedContentStep {...propsWithSelectedCooks} />);
 
         // Find and click the remove button
-        const removeButtons = screen.getAllByRole('button');
-        // The remove button should be present
-        expect(removeButtons.length).toBeGreaterThan(0);
-
-        fireEvent.click(removeButtons[removeButtons.length - 1]);
+        fireEvent.click(screen.getByTestId('remove-cocook-user1'));
 
         // Verify that onRemoveCoCook callback was called with correct user ID
         expect(mockProps.onRemoveCoCook).toHaveBeenCalledWith('user1');
@@ -375,11 +374,7 @@ describe('<RelatedContentStep />', () => {
 
         await waitFor(() => {
             // Find and click the remove button
-            const removeButtons = screen.getAllByRole('button');
-            // The remove button should be present
-            expect(removeButtons.length).toBeGreaterThan(0);
-
-            fireEvent.click(removeButtons[removeButtons.length - 1]);
+            fireEvent.click(screen.getByTestId('remove-recipe-recipe1'));
 
             // Verify that onRemoveLinkedRecipe callback was called with correct recipe ID
             expect(mockProps.onRemoveLinkedRecipe).toHaveBeenCalledWith(
@@ -453,12 +448,16 @@ describe('<RelatedContentStep />', () => {
         it('renders YouTube URL input field', () => {
             render(<RelatedContentStep {...mockProps} />);
 
+            fireEvent.click(screen.getByText('add_youtube_video_optional'));
+
             expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
             expect(screen.getByTestId('input-field-youtubeUrl')).toBeDefined();
         });
 
         it('passes register function to YouTube input', () => {
             render(<RelatedContentStep {...mockProps} />);
+
+            fireEvent.click(screen.getByText('add_youtube_video_optional'));
 
             expect(mockProps.register).toHaveBeenCalledWith('youtubeUrl');
         });
@@ -476,6 +475,8 @@ describe('<RelatedContentStep />', () => {
 
             render(<RelatedContentStep {...propsWithError} />);
 
+            fireEvent.click(screen.getByText('add_youtube_video_optional'));
+
             expect(screen.getByTestId('error-youtubeUrl')).toBeDefined();
             expect(screen.getByText('Invalid YouTube URL')).toBeDefined();
         });
@@ -488,6 +489,8 @@ describe('<RelatedContentStep />', () => {
 
             render(<RelatedContentStep {...loadingProps} />);
 
+            fireEvent.click(screen.getByText('add_youtube_video_optional'));
+
             const youtubeInput = screen.getByTestId(
                 'input-field-youtubeUrl'
             ) as HTMLInputElement;
@@ -497,6 +500,8 @@ describe('<RelatedContentStep />', () => {
         it('sets correct input type for YouTube URL', () => {
             render(<RelatedContentStep {...mockProps} />);
 
+            fireEvent.click(screen.getByText('add_youtube_video_optional'));
+
             const youtubeInput = screen.getByTestId(
                 'input-field-youtubeUrl'
             ) as HTMLInputElement;
@@ -505,6 +510,8 @@ describe('<RelatedContentStep />', () => {
 
         it('has correct data-cy attribute for testing', () => {
             render(<RelatedContentStep {...mockProps} />);
+
+            fireEvent.click(screen.getByText('add_youtube_video_optional'));
 
             const youtubeInput = screen.getByTestId('input-field-youtubeUrl');
             expect(youtubeInput.getAttribute('data-cy')).toBe(
@@ -531,6 +538,8 @@ describe('<RelatedContentStep />', () => {
                 };
 
                 render(<RelatedContentStep {...propsWithUrl} />);
+
+                fireEvent.click(screen.getByText('add_youtube_video_optional'));
 
                 const youtubeInput = screen.getByTestId(
                     'input-field-youtubeUrl'
@@ -563,6 +572,8 @@ describe('<RelatedContentStep />', () => {
 
                 render(<RelatedContentStep {...propsWithError} />);
 
+                fireEvent.click(screen.getByText('add_youtube_video_optional'));
+
                 expect(screen.getByTestId('error-youtubeUrl')).toBeDefined();
                 expect(
                     screen.getByText('Invalid YouTube URL format')
@@ -584,6 +595,8 @@ describe('<RelatedContentStep />', () => {
 
             render(<RelatedContentStep {...propsWithSelections} />);
 
+            fireEvent.click(screen.getByText('add_youtube_video_optional'));
+
             // Simply check that YouTube section exists when co-cooks are selected
             expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
             expect(screen.getByText('selected_co_cooks')).toBeDefined();
@@ -591,6 +604,8 @@ describe('<RelatedContentStep />', () => {
 
         it('maintains consistent spacing with border separator', () => {
             render(<RelatedContentStep {...mockProps} />);
+
+            fireEvent.click(screen.getByText('add_youtube_video_optional'));
 
             const youtubeContainer =
                 screen.getByTestId('input-youtubeUrl').parentElement
@@ -616,6 +631,8 @@ describe('<RelatedContentStep />', () => {
 
             render(<RelatedContentStep {...propsWithMockRegister} />);
 
+            fireEvent.click(screen.getByText('add_youtube_video_optional'));
+
             expect(mockRegister).toHaveBeenCalledWith('youtubeUrl');
         });
 
@@ -628,6 +645,8 @@ describe('<RelatedContentStep />', () => {
             };
 
             render(<RelatedContentStep {...propsWithUrl} />);
+
+            fireEvent.click(screen.getByText('add_youtube_video_optional'));
 
             const youtubeInput = screen.getByTestId(
                 'input-field-youtubeUrl'
@@ -643,6 +662,8 @@ describe('<RelatedContentStep />', () => {
             };
 
             render(<RelatedContentStep {...propsWithEmptyUrl} />);
+
+            fireEvent.click(screen.getByText('add_youtube_video_optional'));
 
             const youtubeInput = screen.getByTestId(
                 'input-field-youtubeUrl'

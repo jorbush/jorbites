@@ -16,6 +16,7 @@ import debounce from 'lodash/debounce';
 import Input from '@/app/components/inputs/Input';
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 import { validateYouTubeUrl } from '@/app/utils/validation';
+import { FaYoutube } from 'react-icons/fa';
 
 interface RelatedContentStepProps {
     isLoading: boolean;
@@ -51,6 +52,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
     const [searchType, setSearchType] = useState<
         'users' | 'recipes' | 'quests'
     >('users');
+    const [showYoutubeUrl, setShowYoutubeUrl] = useState(false);
     const [searchResults, setSearchResults] = useState<{
         users: any[];
         recipes: any[];
@@ -229,6 +231,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                     <button
                                         onClick={() => onRemoveCoCook(user.id)}
                                         className="ml-1 text-gray-500 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-500"
+                                        data-testid={`remove-cocook-${user.id}`}
                                     >
                                         <AiFillDelete size={16} />
                                     </button>
@@ -316,6 +319,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                                 onRemoveLinkedRecipe(recipe.id)
                                             }
                                             className="text-gray-500 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-500"
+                                            data-testid={`remove-recipe-${recipe.id}`}
                                         >
                                             <AiFillDelete size={20} />
                                         </button>
@@ -328,25 +332,35 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
 
             {/* YouTube URL Input */}
             <div className="border-t border-gray-200 pt-6 dark:border-gray-700">
-                <div className="space-y-3">
-                    <Input
-                        id="youtubeUrl"
-                        label={t('youtube_url_optional')}
-                        type="url"
-                        disabled={isLoading}
-                        register={register}
-                        errors={errors}
-                        dataCy="youtube-url-input"
-                        validation={{
-                            validate: (value: string) =>
-                                validateYouTubeUrl(
-                                    value,
-                                    t('invalid_youtube_url') ||
-                                        'Please enter a valid YouTube URL (e.g., https://youtube.com/watch?v=... or https://youtu.be/...)'
-                                ),
-                        }}
-                    />
-                </div>
+                {!showYoutubeUrl ? (
+                    <button
+                        onClick={() => setShowYoutubeUrl(true)}
+                        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-100"
+                    >
+                        <FaYoutube size={20} />
+                        {t('add_youtube_video_optional', 'Add YouTube video (optional)')}
+                    </button>
+                ) : (
+                    <div className="space-y-3">
+                        <Input
+                            id="youtubeUrl"
+                            label={t('youtube_url_optional')}
+                            type="url"
+                            disabled={isLoading}
+                            register={register}
+                            errors={errors}
+                            dataCy="youtube-url-input"
+                            validation={{
+                                validate: (value: string) =>
+                                    validateYouTubeUrl(
+                                        value,
+                                        t('invalid_youtube_url') ||
+                                            'Please enter a valid YouTube URL (e.g., https://youtube.com/watch?v=... or https://youtu.be/...)'
+                                    ),
+                            }}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );
