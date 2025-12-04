@@ -44,14 +44,17 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
         const todayDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
         const daysToSubtract = todayDayOfWeek;
         const startDate = new Date(today);
-        startDate.setDate(startDate.getDate() - daysToSubtract - (53 * 7 - 7)); // Go back 53 weeks from last Sunday
+        startDate.setDate(startDate.getDate() - daysToSubtract - 52 * 7); // Go back to the Sunday 52 weeks ago
 
         const weeksArray: DayData[][] = [];
 
         // Generate 371 days (53 weeks × 7 days) starting from startDate
+        // Reuse a single Date object for better performance
+        const date = new Date(startDate);
         for (let i = 0; i < 371; i++) {
-            const date = new Date(startDate);
-            date.setDate(startDate.getDate() + i);
+            if (i > 0) {
+                date.setDate(date.getDate() + 1);
+            }
             const dateKey = date.toISOString().split('T')[0];
             const count = recipeMap.get(dateKey) || 0;
 
@@ -65,7 +68,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
             }
 
             const dayData: DayData = {
-                date,
+                date: new Date(date), // Create a new Date object for storage to avoid mutation issues
                 count,
                 level,
             };
@@ -233,7 +236,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                                         }
                                                         title={
                                                             day.count > 0
-                                                                ? `${formatDate(day.date)}: ${day.count} ${day.count === 1 ? 'recipe' : 'recipes'}`
+                                                                ? `${formatDate(day.date)}: ${day.count} ${day.count === 1 ? t('recipe') : t('recipes')}`
                                                                 : formatDate(
                                                                       day.date
                                                                   )
