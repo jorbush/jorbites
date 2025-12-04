@@ -42,8 +42,11 @@ const Tabs: React.FC<TabsProps> = ({
                     }`}
                     onClick={() => onTabChange(tab.id)}
                     data-testid={`tab-${tab.id}`}
+                    aria-label={tab.label}
+                    role="tab"
+                    aria-selected={activeTab === tab.id}
                 >
-                    {tab.icon && <span className="text-lg">{tab.icon}</span>}
+                    {tab.icon && <span className="text-lg" aria-hidden="true">{tab.icon}</span>}
                     <span className="hidden text-sm md:inline md:text-base">
                         {tab.label}
                     </span>
