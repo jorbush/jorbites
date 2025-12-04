@@ -151,6 +151,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                 activeTab={searchType}
                 onTabChange={handleTabChange}
                 data-testid="related-content-tabs"
+                responsiveLabels={true}
             />
 
             {/* Search input with integrated dropdown - hide for videos tab */}
