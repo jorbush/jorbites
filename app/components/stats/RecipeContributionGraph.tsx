@@ -27,7 +27,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
     } | null>(null);
 
     // Generate the last year of days, aligned to weeks starting from Sunday
-    const { days, weeks } = useMemo(() => {
+    const { weeks } = useMemo(() => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const recipeMap = new Map<string, number>();
@@ -46,7 +46,6 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
         const startDate = new Date(today);
         startDate.setDate(startDate.getDate() - daysToSubtract - (53 * 7 - 7)); // Go back 53 weeks from last Sunday
 
-        const daysArray: DayData[] = [];
         const weeksArray: DayData[][] = [];
 
         // Generate 371 days (53 weeks × 7 days) starting from startDate
@@ -71,8 +70,6 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                 level,
             };
 
-            daysArray.push(dayData);
-
             // Group into weeks
             if (i % 7 === 0) {
                 weeksArray.push([]);
@@ -80,7 +77,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
             weeksArray[weeksArray.length - 1].push(dayData);
         }
 
-        return { days: daysArray, weeks: weeksArray };
+        return { weeks: weeksArray };
     }, [recipes]);
 
     // Get month labels for the top row
