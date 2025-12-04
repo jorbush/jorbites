@@ -38,7 +38,9 @@ const Tabs: React.FC<TabsProps> = ({
                 <button
                     key={tab.id}
                     className={`flex flex-1 items-center justify-center ${
-                        responsiveLabels ? 'gap-1 px-1 md:gap-2 md:px-4' : 'gap-2 px-4'
+                        responsiveLabels
+                            ? 'gap-1 px-1 md:gap-2 md:px-4'
+                            : 'gap-2 px-4'
                     } py-2 text-center ${
                         activeTab === tab.id
                             ? 'border-green-450 text-green-450 border-b-2 font-medium'
@@ -50,8 +52,21 @@ const Tabs: React.FC<TabsProps> = ({
                     role="tab"
                     aria-selected={activeTab === tab.id}
                 >
-                    {tab.icon && <span className="text-lg" aria-hidden="true">{tab.icon}</span>}
-                    <span className={responsiveLabels ? 'hidden text-sm md:inline md:text-base' : ''}>
+                    {tab.icon && (
+                        <span
+                            className="text-lg"
+                            aria-hidden="true"
+                        >
+                            {tab.icon}
+                        </span>
+                    )}
+                    <span
+                        className={
+                            responsiveLabels
+                                ? 'hidden text-sm md:inline md:text-base'
+                                : ''
+                        }
+                    >
                         {tab.label}
                     </span>
                 </button>
