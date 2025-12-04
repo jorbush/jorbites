@@ -158,7 +158,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
     return (
         <Container>
             <div className="w-full py-4">
-                <h2 className="mb-4 px-2 text-lg font-semibold dark:text-neutral-100 sm:text-xl">
+                <h2 className="mb-4 px-2 text-lg font-semibold sm:text-xl dark:text-neutral-100">
                     {t('recipe_contribution_graph')}
                 </h2>
                 <div className="flex justify-center">
@@ -174,7 +174,9 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                     <div className="flex gap-0.5 sm:gap-1">
                                         {weeks.map((_, weekIndex) => {
                                             const monthLabel = monthLabels.find(
-                                                (label) => label.weekIndex === weekIndex
+                                                (label) =>
+                                                    label.weekIndex ===
+                                                    weekIndex
                                             );
                                             return (
                                                 <div
@@ -182,7 +184,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                                     className="flex w-2.5 items-start justify-start sm:w-3"
                                                 >
                                                     {monthLabel && (
-                                                        <span className="text-[10px] text-gray-500 dark:text-gray-400 sm:text-xs">
+                                                        <span className="text-[10px] text-gray-500 sm:text-xs dark:text-gray-400">
                                                             {monthLabel.month}
                                                         </span>
                                                     )}
@@ -199,7 +201,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                         {dayLabels.map((label, index) => (
                                             <div
                                                 key={label}
-                                                className="flex h-2.5 items-center justify-end text-[9px] text-gray-500 dark:text-gray-400 sm:h-3 sm:text-xs"
+                                                className="flex h-2.5 items-center justify-end text-[9px] text-gray-500 sm:h-3 sm:text-xs dark:text-gray-400"
                                             >
                                                 {index % 2 === 0 && (
                                                     <span className="text-[8px] sm:text-[10px]">
@@ -222,15 +224,22 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                                         key={`${weekIndex}-${dayIndex}`}
                                                         className={`h-2.5 w-2.5 rounded-sm transition-colors sm:h-3 sm:w-3 ${getDayColor(
                                                             day.level
-                                                        )} ${day.count > 0 ? 'cursor-pointer hover:ring-2 hover:ring-green-450/50' : ''}`}
+                                                        )} ${day.count > 0 ? 'hover:ring-green-450/50 cursor-pointer hover:ring-2' : ''}`}
                                                         onMouseEnter={(e) =>
-                                                            handleDayHover(day, e)
+                                                            handleDayHover(
+                                                                day,
+                                                                e
+                                                            )
                                                         }
-                                                        onMouseLeave={handleDayLeave}
+                                                        onMouseLeave={
+                                                            handleDayLeave
+                                                        }
                                                         title={
                                                             day.count > 0
                                                                 ? `${formatDate(day.date)}: ${day.count} ${day.count === 1 ? 'recipe' : 'recipes'}`
-                                                                : formatDate(day.date)
+                                                                : formatDate(
+                                                                      day.date
+                                                                  )
                                                         }
                                                     />
                                                 ))}
@@ -241,32 +250,37 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                             </div>
 
                             {/* Tooltip */}
-                            {hoveredDay && tooltipPosition && hoveredDay.count > 0 && (
-                                <div
-                                    className="pointer-events-none fixed z-50 rounded-md bg-gray-900 px-3 py-2 text-xs text-white shadow-lg dark:bg-gray-800"
-                                    style={{
-                                        left: `${tooltipPosition.x}px`,
-                                        top: `${tooltipPosition.y}px`,
-                                        transform: 'translate(-50%, -100%)',
-                                    }}
-                                >
-                                    <div className="font-semibold">
-                                        {hoveredDay.count}{' '}
-                                        {hoveredDay.count === 1 ? t('recipe') : t('recipes')}{' '}
-                                        {t('on')} {formatDate(hoveredDay.date)}
+                            {hoveredDay &&
+                                tooltipPosition &&
+                                hoveredDay.count > 0 && (
+                                    <div
+                                        className="pointer-events-none fixed z-50 rounded-md bg-gray-900 px-3 py-2 text-xs text-white shadow-lg dark:bg-gray-800"
+                                        style={{
+                                            left: `${tooltipPosition.x}px`,
+                                            top: `${tooltipPosition.y}px`,
+                                            transform: 'translate(-50%, -100%)',
+                                        }}
+                                    >
+                                        <div className="font-semibold">
+                                            {hoveredDay.count}{' '}
+                                            {hoveredDay.count === 1
+                                                ? t('recipe')
+                                                : t('recipes')}{' '}
+                                            {t('on')}{' '}
+                                            {formatDate(hoveredDay.date)}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
                             {/* Legend */}
-                            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 px-2 text-[10px] text-gray-500 dark:text-gray-400 sm:gap-4 sm:text-xs">
+                            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 px-2 text-[10px] text-gray-500 sm:gap-4 sm:text-xs dark:text-gray-400">
                                 <span>{t('less')}</span>
                                 <div className="flex gap-0.5 sm:gap-1">
-                                    <div className="h-2.5 w-2.5 rounded-sm bg-gray-100 dark:bg-neutral-800 sm:h-3 sm:w-3" />
-                                    <div className="h-2.5 w-2.5 rounded-sm bg-green-450/30 dark:bg-green-450/20 sm:h-3 sm:w-3" />
-                                    <div className="h-2.5 w-2.5 rounded-sm bg-green-450/50 dark:bg-green-450/40 sm:h-3 sm:w-3" />
-                                    <div className="h-2.5 w-2.5 rounded-sm bg-green-450/70 dark:bg-green-450/60 sm:h-3 sm:w-3" />
-                                    <div className="h-2.5 w-2.5 rounded-sm bg-green-450 dark:bg-green-450 sm:h-3 sm:w-3" />
+                                    <div className="h-2.5 w-2.5 rounded-sm bg-gray-100 sm:h-3 sm:w-3 dark:bg-neutral-800" />
+                                    <div className="bg-green-450/30 dark:bg-green-450/20 h-2.5 w-2.5 rounded-sm sm:h-3 sm:w-3" />
+                                    <div className="bg-green-450/50 dark:bg-green-450/40 h-2.5 w-2.5 rounded-sm sm:h-3 sm:w-3" />
+                                    <div className="bg-green-450/70 dark:bg-green-450/60 h-2.5 w-2.5 rounded-sm sm:h-3 sm:w-3" />
+                                    <div className="bg-green-450 dark:bg-green-450 h-2.5 w-2.5 rounded-sm sm:h-3 sm:w-3" />
                                 </div>
                                 <span>{t('more')}</span>
                             </div>

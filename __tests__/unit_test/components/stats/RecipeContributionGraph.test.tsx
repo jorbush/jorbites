@@ -94,32 +94,22 @@ describe('<RecipeContributionGraph />', () => {
     });
 
     it('renders nothing when recipes array is empty', () => {
-        const { container } = render(
-            <RecipeContributionGraph recipes={[]} />
-        );
+        const { container } = render(<RecipeContributionGraph recipes={[]} />);
         expect(container.firstChild).toBeNull();
     });
 
     it('renders the component with title when recipes are provided', () => {
         const today = new Date();
-        const recipe = createMockRecipe(
-            '1',
-            today.toISOString()
-        );
+        const recipe = createMockRecipe('1', today.toISOString());
 
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
-        expect(
-            screen.getByText('Recipe Contribution Graph')
-        ).toBeDefined();
+        expect(screen.getByText('Recipe Contribution Graph')).toBeDefined();
     });
 
     it('renders the legend with Less and More labels', () => {
         const today = new Date();
-        const recipe = createMockRecipe(
-            '1',
-            today.toISOString()
-        );
+        const recipe = createMockRecipe('1', today.toISOString());
 
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
@@ -129,10 +119,7 @@ describe('<RecipeContributionGraph />', () => {
 
     it('renders calendar grid with correct number of weeks', () => {
         const today = new Date();
-        const recipe = createMockRecipe(
-            '1',
-            today.toISOString()
-        );
+        const recipe = createMockRecipe('1', today.toISOString());
 
         const { container } = render(
             <RecipeContributionGraph recipes={[recipe]} />
@@ -210,9 +197,7 @@ describe('<RecipeContributionGraph />', () => {
 
         render(<RecipeContributionGraph recipes={recipes} />);
 
-        expect(
-            screen.getByText('Recipe Contribution Graph')
-        ).toBeDefined();
+        expect(screen.getByText('Recipe Contribution Graph')).toBeDefined();
     });
 
     it('displays month labels', () => {
@@ -224,8 +209,13 @@ describe('<RecipeContributionGraph />', () => {
         );
 
         // Month labels should be present - they're in the month labels row
-        const monthLabelsRow = container.querySelector('.mb-2.flex.min-w-\\[600px\\]');
-        const monthLabels = monthLabelsRow?.querySelectorAll('.text-xs.text-gray-500, .text-\\[10px\\].text-gray-500') || [];
+        const monthLabelsRow = container.querySelector(
+            '.mb-2.flex.min-w-\\[600px\\]'
+        );
+        const monthLabels =
+            monthLabelsRow?.querySelectorAll(
+                '.text-xs.text-gray-500, .text-\\[10px\\].text-gray-500'
+            ) || [];
         expect(monthLabels.length).toBeGreaterThan(0);
     });
 
