@@ -199,7 +199,6 @@ describe('<RelatedContentStep />', () => {
         expect(screen.getByTestId('related-content-tabs')).toBeDefined();
         expect(screen.getByTestId('tab-users')).toBeDefined();
         expect(screen.getByTestId('tab-recipes')).toBeDefined();
-        expect(screen.getByTestId('tab-videos')).toBeDefined();
         expect(screen.getByTestId('search-input')).toBeDefined();
     });
 
@@ -208,7 +207,6 @@ describe('<RelatedContentStep />', () => {
 
         expect(screen.getByText('co_cooks')).toBeDefined();
         expect(screen.getByText('linked_recipes')).toBeDefined();
-        expect(screen.getByText('videos')).toBeDefined();
     });
 
     it('switches between users and recipes tabs', async () => {
@@ -446,68 +444,26 @@ describe('<RelatedContentStep />', () => {
         const tabsComponent = screen.getByTestId('related-content-tabs');
         expect(tabsComponent).toBeDefined();
 
-        // Check that all tabs are rendered with correct test IDs
+        // Check that both tabs are rendered with correct test IDs
         expect(screen.getByTestId('tab-users')).toBeDefined();
         expect(screen.getByTestId('tab-recipes')).toBeDefined();
-        expect(screen.getByTestId('tab-quests')).toBeDefined();
-        expect(screen.getByTestId('tab-videos')).toBeDefined();
-    });
-
-    it('switches to videos tab and displays YouTube input', async () => {
-        render(<RelatedContentStep {...mockProps} />);
-
-        // Initially on users tab
-        expect(screen.getByTestId('tab-users').className).toContain('active');
-
-        // Switch to videos tab
-        fireEvent.click(screen.getByTestId('tab-videos'));
-
-        await waitFor(() => {
-            // Videos tab should now be active
-            expect(screen.getByTestId('tab-videos').className).toContain(
-                'active'
-            );
-            // YouTube input should be visible
-            expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
-            // Search input should not be visible
-            expect(screen.queryByTestId('search-input')).toBeNull();
-        });
     });
 
     describe('YouTube URL input', () => {
-        it('does not render YouTube URL input field on users tab', () => {
+        it('renders YouTube URL input field', () => {
             render(<RelatedContentStep {...mockProps} />);
 
-            // Should not find YouTube input on users tab
-            expect(screen.queryByTestId('input-youtubeUrl')).toBeNull();
+            expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
+            expect(screen.getByTestId('input-field-youtubeUrl')).toBeDefined();
         });
 
-        it('renders YouTube URL input field on videos tab', async () => {
+        it('passes register function to YouTube input', () => {
             render(<RelatedContentStep {...mockProps} />);
 
-            // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
-                expect(
-                    screen.getByTestId('input-field-youtubeUrl')
-                ).toBeDefined();
-            });
+            expect(mockProps.register).toHaveBeenCalledWith('youtubeUrl');
         });
 
-        it('passes register function to YouTube input on videos tab', async () => {
-            render(<RelatedContentStep {...mockProps} />);
-
-            // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                expect(mockProps.register).toHaveBeenCalledWith('youtubeUrl');
-            });
-        });
-
-        it('passes errors to YouTube input on videos tab', async () => {
+        it('passes errors to YouTube input', () => {
             const propsWithError = {
                 ...mockProps,
                 errors: {
@@ -520,16 +476,11 @@ describe('<RelatedContentStep />', () => {
 
             render(<RelatedContentStep {...propsWithError} />);
 
-            // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                expect(screen.getByTestId('error-youtubeUrl')).toBeDefined();
-                expect(screen.getByText('Invalid YouTube URL')).toBeDefined();
-            });
+            expect(screen.getByTestId('error-youtubeUrl')).toBeDefined();
+            expect(screen.getByText('Invalid YouTube URL')).toBeDefined();
         });
 
-        it('disables YouTube input when loading on videos tab', async () => {
+        it('disables YouTube input when loading', () => {
             const loadingProps = {
                 ...mockProps,
                 isLoading: true,
@@ -537,50 +488,33 @@ describe('<RelatedContentStep />', () => {
 
             render(<RelatedContentStep {...loadingProps} />);
 
-            // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                const youtubeInput = screen.getByTestId(
-                    'input-field-youtubeUrl'
-                ) as HTMLInputElement;
-                expect(youtubeInput.disabled).toBe(true);
-            });
+            const youtubeInput = screen.getByTestId(
+                'input-field-youtubeUrl'
+            ) as HTMLInputElement;
+            expect(youtubeInput.disabled).toBe(true);
         });
 
-        it('sets correct input type for YouTube URL on videos tab', async () => {
+        it('sets correct input type for YouTube URL', () => {
             render(<RelatedContentStep {...mockProps} />);
 
-            // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                const youtubeInput = screen.getByTestId(
-                    'input-field-youtubeUrl'
-                ) as HTMLInputElement;
-                expect(youtubeInput.type).toBe('url');
-            });
+            const youtubeInput = screen.getByTestId(
+                'input-field-youtubeUrl'
+            ) as HTMLInputElement;
+            expect(youtubeInput.type).toBe('url');
         });
 
-        it('has correct data-cy attribute for testing on videos tab', async () => {
+        it('has correct data-cy attribute for testing', () => {
             render(<RelatedContentStep {...mockProps} />);
 
-            // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                const youtubeInput = screen.getByTestId(
-                    'input-field-youtubeUrl'
-                );
-                expect(youtubeInput.getAttribute('data-cy')).toBe(
-                    'youtube-url-input'
-                );
-            });
+            const youtubeInput = screen.getByTestId('input-field-youtubeUrl');
+            expect(youtubeInput.getAttribute('data-cy')).toBe(
+                'youtube-url-input'
+            );
         });
     });
 
     describe('YouTube URL validation scenarios', () => {
-        it('handles valid YouTube URLs on videos tab', async () => {
+        it('handles valid YouTube URLs', () => {
             const validUrls = [
                 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 'https://youtube.com/watch?v=dQw4w9WgXcQ',
@@ -589,7 +523,7 @@ describe('<RelatedContentStep />', () => {
                 'https://youtube.com/shorts/IoB4GSxUidI',
             ];
 
-            for (const url of validUrls) {
+            validUrls.forEach((url) => {
                 const propsWithUrl = {
                     ...mockProps,
                     youtubeUrl: url,
@@ -598,21 +532,16 @@ describe('<RelatedContentStep />', () => {
 
                 render(<RelatedContentStep {...propsWithUrl} />);
 
-                // Switch to videos tab
-                fireEvent.click(screen.getByTestId('tab-videos'));
-
-                await waitFor(() => {
-                    const youtubeInput = screen.getByTestId(
-                        'input-field-youtubeUrl'
-                    ) as HTMLInputElement;
-                    expect(youtubeInput.value).toBe(url);
-                });
+                const youtubeInput = screen.getByTestId(
+                    'input-field-youtubeUrl'
+                ) as HTMLInputElement;
+                expect(youtubeInput.value).toBe(url);
 
                 cleanup();
-            }
+            });
         });
 
-        it('shows error for invalid YouTube URLs on videos tab', async () => {
+        it('shows error for invalid YouTube URLs', () => {
             const invalidUrls = [
                 'https://vimeo.com/123456',
                 'https://example.com/video',
@@ -620,7 +549,7 @@ describe('<RelatedContentStep />', () => {
                 'youtube.com/watch?v=',
             ];
 
-            for (const url of invalidUrls) {
+            invalidUrls.forEach((url) => {
                 const propsWithError = {
                     ...mockProps,
                     youtubeUrl: url,
@@ -634,60 +563,51 @@ describe('<RelatedContentStep />', () => {
 
                 render(<RelatedContentStep {...propsWithError} />);
 
-                // Switch to videos tab
-                fireEvent.click(screen.getByTestId('tab-videos'));
-
-                await waitFor(() => {
-                    expect(
-                        screen.getByTestId('error-youtubeUrl')
-                    ).toBeDefined();
-                    expect(
-                        screen.getByText('Invalid YouTube URL format')
-                    ).toBeDefined();
-                });
+                expect(screen.getByTestId('error-youtubeUrl')).toBeDefined();
+                expect(
+                    screen.getByText('Invalid YouTube URL format')
+                ).toBeDefined();
 
                 cleanup();
-            }
+            });
         });
     });
 
     describe('Layout and positioning', () => {
-        it('hides YouTube input section when on users tab', () => {
-            render(<RelatedContentStep {...mockProps} />);
+        it('positions YouTube input after selected items section', () => {
+            const propsWithSelections = {
+                ...mockProps,
+                selectedCoCooks: [
+                    { id: 'user1', name: 'Test User', image: '/test.jpg' },
+                ],
+            };
 
-            // YouTube section should not be visible on users tab
-            expect(screen.queryByTestId('input-youtubeUrl')).toBeNull();
+            render(<RelatedContentStep {...propsWithSelections} />);
+
+            // Simply check that YouTube section exists when co-cooks are selected
+            expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
+            expect(screen.getByText('selected_co_cooks')).toBeDefined();
         });
 
-        it('shows YouTube input section when on videos tab', async () => {
+        it('maintains consistent spacing with border separator', () => {
             render(<RelatedContentStep {...mockProps} />);
 
-            // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
+            const youtubeContainer =
+                screen.getByTestId('input-youtubeUrl').parentElement
+                    ?.parentElement;
 
-            await waitFor(() => {
-                expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
-            });
-        });
-
-        it('hides search input when on videos tab', async () => {
-            render(<RelatedContentStep {...mockProps} />);
-
-            // Initially search input should be visible
-            expect(screen.getByTestId('search-input')).toBeDefined();
-
-            // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                // Search input should not be visible on videos tab
-                expect(screen.queryByTestId('search-input')).toBeNull();
-            });
+            // Check for border and padding classes
+            expect(youtubeContainer?.className).toContain('border-t');
+            expect(youtubeContainer?.className).toContain('border-gray-200');
+            expect(youtubeContainer?.className).toContain(
+                'dark:border-gray-700'
+            );
+            expect(youtubeContainer?.className).toContain('pt-6');
         });
     });
 
     describe('Integration with form handling', () => {
-        it('calls register with correct parameters on videos tab', async () => {
+        it('calls register with correct parameters', () => {
             const mockRegister = createMockRegister();
             const propsWithMockRegister = {
                 ...mockProps,
@@ -696,15 +616,10 @@ describe('<RelatedContentStep />', () => {
 
             render(<RelatedContentStep {...propsWithMockRegister} />);
 
-            // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                expect(mockRegister).toHaveBeenCalledWith('youtubeUrl');
-            });
+            expect(mockRegister).toHaveBeenCalledWith('youtubeUrl');
         });
 
-        it('receives and displays current YouTube URL value on videos tab', async () => {
+        it('receives and displays current YouTube URL value', () => {
             const testUrl = 'https://www.youtube.com/watch?v=test123';
             const propsWithUrl = {
                 ...mockProps,
@@ -714,18 +629,13 @@ describe('<RelatedContentStep />', () => {
 
             render(<RelatedContentStep {...propsWithUrl} />);
 
-            // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                const youtubeInput = screen.getByTestId(
-                    'input-field-youtubeUrl'
-                ) as HTMLInputElement;
-                expect(youtubeInput.value).toBe(testUrl);
-            });
+            const youtubeInput = screen.getByTestId(
+                'input-field-youtubeUrl'
+            ) as HTMLInputElement;
+            expect(youtubeInput.value).toBe(testUrl);
         });
 
-        it('handles empty YouTube URL gracefully on videos tab', async () => {
+        it('handles empty YouTube URL gracefully', () => {
             const propsWithEmptyUrl = {
                 ...mockProps,
                 youtubeUrl: '',
@@ -734,15 +644,10 @@ describe('<RelatedContentStep />', () => {
 
             render(<RelatedContentStep {...propsWithEmptyUrl} />);
 
-            // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                const youtubeInput = screen.getByTestId(
-                    'input-field-youtubeUrl'
-                ) as HTMLInputElement;
-                expect(youtubeInput.value).toBe('');
-            });
+            const youtubeInput = screen.getByTestId(
+                'input-field-youtubeUrl'
+            ) as HTMLInputElement;
+            expect(youtubeInput.value).toBe('');
         });
     });
 });
