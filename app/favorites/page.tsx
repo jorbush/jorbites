@@ -11,11 +11,13 @@ import getFavoriteRecipes, {
 import FavoritesClient from './FavoritesClient';
 
 interface FavoritesPageProps {
-    searchParams: IFavoriteRecipesParams;
+    searchParams: { [key: string]: string | string[] | undefined };
 }
 
 const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
-    const response = await getFavoriteRecipes(searchParams);
+    const page =
+        typeof searchParams.page === 'string' ? Number(searchParams.page) : 1;
+    const response = await getFavoriteRecipes({ page });
     const currentUser = await getCurrentUser();
 
     if (response.error || !response.data) {
