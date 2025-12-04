@@ -6,6 +6,7 @@ import { IconType } from 'react-icons';
 
 import Button from '@/app/components/buttons/Button';
 import useTheme from '@/app/hooks/useTheme';
+import Loader from '@/app/components/utils/Loader';
 
 interface ModalProps {
     isOpen?: boolean;
@@ -128,8 +129,14 @@ const Modal: React.FC<ModalProps> = ({
                                     {topButton}
                                 </div>
                             </div>
-                            <div className="relative min-h-0 flex-auto overflow-y-auto p-6 text-black dark:text-neutral-100">
-                                {body}
+                            <div
+                                className={`relative flex-auto overflow-y-auto p-6 text-black dark:text-neutral-100 ${
+                                    isLoading
+                                        ? 'min-h-[70vh] md:min-h-0'
+                                        : 'min-h-0'
+                                }`}
+                            >
+                                {isLoading ? <Loader /> : body}
                             </div>
                             <div className="flex flex-shrink-0 flex-col gap-2 border-t border-gray-200 p-6 dark:border-neutral-600">
                                 <div className="flex w-full flex-row items-center gap-4">
