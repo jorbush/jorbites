@@ -8,7 +8,7 @@ import Heading from '@/app/components/navigation/Heading';
 import SearchInput from '@/app/components/inputs/SearchInput';
 import Avatar from '@/app/components/utils/Avatar';
 import Tabs, { Tab } from '@/app/components/utils/Tabs';
-import { FiSearch, FiUsers, FiTarget } from 'react-icons/fi';
+import { FiSearch, FiUsers, FiTarget, FiYoutube } from 'react-icons/fi';
 import { AiFillDelete } from 'react-icons/ai';
 import { IoRestaurantOutline } from 'react-icons/io5';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
@@ -49,7 +49,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
     const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
     const [searchType, setSearchType] = useState<
-        'users' | 'recipes' | 'quests'
+        'users' | 'recipes' | 'quests' | 'videos'
     >('users');
     const [searchResults, setSearchResults] = useState<{
         users: any[];
@@ -73,6 +73,11 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
             id: 'quests',
             label: t('quests') || 'Quests',
             icon: <FiTarget />,
+        },
+        {
+            id: 'videos',
+            label: t('videos') || 'Videos',
+            icon: <FiYoutube />,
         },
     ];
 
@@ -122,7 +127,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
     );
 
     const handleTabChange = (tabId: string) => {
-        setSearchType(tabId as 'users' | 'recipes' | 'quests');
+        setSearchType(tabId as 'users' | 'recipes' | 'quests' | 'videos');
         setSearchQuery('');
     };
 
@@ -146,61 +151,64 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                 activeTab={searchType}
                 onTabChange={handleTabChange}
                 data-testid="related-content-tabs"
+                responsiveLabels={true}
             />
 
-            {/* Search input with integrated dropdown */}
-            <div className="relative">
-                <SearchInput
-                    id="search"
-                    label={
-                        searchType === 'users'
-                            ? t('search_users') || 'Search Users'
-                            : searchType === 'recipes'
-                              ? t('search_recipes') || 'Search Recipes'
-                              : t('search_quests') || 'Search Quests'
-                    }
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    disabled={isLoading}
-                    dataCy="search-input"
-                    icon={FiSearch}
-                    results={searchResults}
-                    onSelectResult={(result) => {
-                        if (searchType === 'users') {
-                            onAddCoCook(result);
-                        } else if (searchType === 'recipes') {
-                            onAddLinkedRecipe(result);
-                        } else {
-                            onSelectQuest(result);
+            {/* Search input with integrated dropdown - hide for videos tab */}
+            {searchType !== 'videos' && (
+                <div className="relative">
+                    <SearchInput
+                        id="search"
+                        label={
+                            searchType === 'users'
+                                ? t('search_users') || 'Search Users'
+                                : searchType === 'recipes'
+                                  ? t('search_recipes') || 'Search Recipes'
+                                  : t('search_quests') || 'Search Quests'
                         }
-                        setSearchQuery('');
-                    }}
-                    searchType={searchType}
-                    maxSelected={
-                        searchType === 'users'
-                            ? 4
-                            : searchType === 'recipes'
-                              ? 2
-                              : 1
-                    }
-                    isSelected={(id) =>
-                        searchType === 'users'
-                            ? selectedCoCooks.some((cook) => cook.id === id)
-                            : searchType === 'recipes'
-                              ? selectedLinkedRecipes.some(
-                                    (recipe) => recipe.id === id
-                                )
-                              : selectedQuest?.id === id
-                    }
-                    emptyMessage={
-                        searchType === 'users'
-                            ? t('no_users_found') || 'No users found'
-                            : searchType === 'recipes'
-                              ? t('no_recipes_found') || 'No recipes found'
-                              : t('no_quests_found') || 'No quests found'
-                    }
-                />
-            </div>
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        disabled={isLoading}
+                        dataCy="search-input"
+                        icon={FiSearch}
+                        results={searchResults}
+                        onSelectResult={(result) => {
+                            if (searchType === 'users') {
+                                onAddCoCook(result);
+                            } else if (searchType === 'recipes') {
+                                onAddLinkedRecipe(result);
+                            } else {
+                                onSelectQuest(result);
+                            }
+                            setSearchQuery('');
+                        }}
+                        searchType={searchType}
+                        maxSelected={
+                            searchType === 'users'
+                                ? 4
+                                : searchType === 'recipes'
+                                  ? 2
+                                  : 1
+                        }
+                        isSelected={(id) =>
+                            searchType === 'users'
+                                ? selectedCoCooks.some((cook) => cook.id === id)
+                                : searchType === 'recipes'
+                                  ? selectedLinkedRecipes.some(
+                                        (recipe) => recipe.id === id
+                                    )
+                                  : selectedQuest?.id === id
+                        }
+                        emptyMessage={
+                            searchType === 'users'
+                                ? t('no_users_found') || 'No users found'
+                                : searchType === 'recipes'
+                                  ? t('no_recipes_found') || 'No recipes found'
+                                  : t('no_quests_found') || 'No quests found'
+                        }
+                    />
+                </div>
+            )}
 
             {/* Display of selected items */}
             <div className="space-y-4">
@@ -326,8 +334,8 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                     )}
             </div>
 
-            {/* YouTube URL Input */}
-            <div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+            {/* YouTube URL Input - only show in Videos tab */}
+            {searchType === 'videos' && (
                 <div className="space-y-3">
                     <Input
                         id="youtubeUrl"
@@ -347,7 +355,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                         }}
                     />
                 </div>
-            </div>
+            )}
         </div>
     );
 };
