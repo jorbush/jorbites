@@ -200,13 +200,14 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                         }
                                     >
                                         {day.dateString && (
-                                            <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-xs text-white group-hover:block dark:bg-gray-700">
+                                            <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 rounded bg-gray-900 px-2 py-1 text-xs whitespace-nowrap text-white group-hover:block dark:bg-gray-700">
                                                 {day.count}{' '}
                                                 {day.count === 1
                                                     ? t('recipe')
                                                     : t('recipes')}{' '}
-                                                on {formatDateForTooltip(day.date)}
-                                                <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                                on{' '}
+                                                {formatDateForTooltip(day.date)}
+                                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
                                             </div>
                                         )}
                                     </div>
@@ -219,10 +220,10 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                     <div className="mt-2 flex items-center justify-end gap-1 text-xs text-gray-600 dark:text-gray-400">
                         <span>{t('less')}</span>
                         <div className="h-[10px] w-[10px] rounded-sm bg-gray-100 dark:bg-gray-800"></div>
-                        <div className="h-[10px] w-[10px] rounded-sm bg-green-450 opacity-30"></div>
-                        <div className="h-[10px] w-[10px] rounded-sm bg-green-450 opacity-50"></div>
-                        <div className="h-[10px] w-[10px] rounded-sm bg-green-450 opacity-70"></div>
-                        <div className="h-[10px] w-[10px] rounded-sm bg-green-450 opacity-100"></div>
+                        <div className="bg-green-450 h-[10px] w-[10px] rounded-sm opacity-30"></div>
+                        <div className="bg-green-450 h-[10px] w-[10px] rounded-sm opacity-50"></div>
+                        <div className="bg-green-450 h-[10px] w-[10px] rounded-sm opacity-70"></div>
+                        <div className="bg-green-450 h-[10px] w-[10px] rounded-sm opacity-100"></div>
                         <span>{t('more')}</span>
                     </div>
                 </div>

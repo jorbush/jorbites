@@ -59,18 +59,14 @@ describe('RecipeContributionGraph Component', () => {
         const recipes: SafeRecipe[] = [];
         render(<RecipeContributionGraph recipes={recipes} />);
 
-        expect(
-            screen.getByText('Recipe Contributions')
-        ).toBeDefined();
+        expect(screen.getByText('Recipe Contributions')).toBeDefined();
     });
 
     it('displays zero recipes when no recipes are provided', () => {
         const recipes: SafeRecipe[] = [];
         render(<RecipeContributionGraph recipes={recipes} />);
 
-        expect(
-            screen.getByText('0 recipes in the last year')
-        ).toBeDefined();
+        expect(screen.getByText('0 recipes in the last year')).toBeDefined();
     });
 
     it('counts recipes correctly within the last year', () => {
@@ -93,9 +89,7 @@ describe('RecipeContributionGraph Component', () => {
 
         render(<RecipeContributionGraph recipes={recipes} />);
 
-        expect(
-            screen.getByText('2 recipes in the last year')
-        ).toBeDefined();
+        expect(screen.getByText('2 recipes in the last year')).toBeDefined();
     });
 
     it('excludes recipes older than one year', () => {
@@ -119,9 +113,7 @@ describe('RecipeContributionGraph Component', () => {
         render(<RecipeContributionGraph recipes={recipes} />);
 
         // Should only count the recipe from 6 months ago
-        expect(
-            screen.getByText('1 recipes in the last year')
-        ).toBeDefined();
+        expect(screen.getByText('1 recipes in the last year')).toBeDefined();
     });
 
     it('renders legend with color indicators', () => {
@@ -155,9 +147,7 @@ describe('RecipeContributionGraph Component', () => {
 
         render(<RecipeContributionGraph recipes={recipes} />);
 
-        expect(
-            screen.getByText('3 recipes in the last year')
-        ).toBeDefined();
+        expect(screen.getByText('3 recipes in the last year')).toBeDefined();
     });
 
     it('renders in a white background container with shadow', () => {
