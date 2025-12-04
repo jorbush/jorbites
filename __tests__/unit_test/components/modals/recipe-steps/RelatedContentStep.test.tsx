@@ -569,7 +569,9 @@ describe('<RelatedContentStep />', () => {
             fireEvent.click(screen.getByTestId('tab-videos'));
 
             await waitFor(() => {
-                const youtubeInput = screen.getByTestId('input-field-youtubeUrl');
+                const youtubeInput = screen.getByTestId(
+                    'input-field-youtubeUrl'
+                );
                 expect(youtubeInput.getAttribute('data-cy')).toBe(
                     'youtube-url-input'
                 );
@@ -636,7 +638,9 @@ describe('<RelatedContentStep />', () => {
                 fireEvent.click(screen.getByTestId('tab-videos'));
 
                 await waitFor(() => {
-                    expect(screen.getByTestId('error-youtubeUrl')).toBeDefined();
+                    expect(
+                        screen.getByTestId('error-youtubeUrl')
+                    ).toBeDefined();
                     expect(
                         screen.getByText('Invalid YouTube URL format')
                     ).toBeDefined();
