@@ -1,16 +1,35 @@
 import EmptyState from '@/app/components/utils/EmptyState';
 import ClientOnly from '@/app/components/utils/ClientOnly';
+import Container from '@/app/components/utils/Container';
+import Pagination from '@/app/components/navigation/Pagination';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import getFavoriteRecipes from '@/app/actions/getFavoriteRecipes';
+import getFavoriteRecipes, {
+    IFavoriteRecipesParams,
+} from '@/app/actions/getFavoriteRecipes';
 
 import FavoritesClient from './FavoritesClient';
 
-const FavoritesPage = async () => {
-    const favoriteRecipes = await getFavoriteRecipes();
+interface FavoritesPageProps {
+    searchParams: IFavoriteRecipesParams;
+}
+
+const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
+    const response = await getFavoriteRecipes(searchParams);
     const currentUser = await getCurrentUser();
 
-    if (favoriteRecipes.length === 0) {
+    if (response.error || !response.data) {
+        return (
+            <ClientOnly>
+                <EmptyState
+                    title="Something went wrong"
+                    subtitle="Please try again later"
+                />
+            </ClientOnly>
+        );
+    }
+
+    if (response.data.recipes.length === 0) {
         return (
             <ClientOnly>
                 <EmptyState
@@ -23,10 +42,17 @@ const FavoritesPage = async () => {
 
     return (
         <ClientOnly>
-            <FavoritesClient
-                recipes={favoriteRecipes}
-                currentUser={currentUser}
-            />
+            <Container>
+                <FavoritesClient
+                    recipes={response.data.recipes}
+                    currentUser={currentUser}
+                />
+                <Pagination
+                    totalPages={response.data.totalPages || 1}
+                    currentPage={response.data.currentPage || 1}
+                    searchParams={searchParams}
+                />
+            </Container>
         </ClientOnly>
     );
 };

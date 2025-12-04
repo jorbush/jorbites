@@ -30,10 +30,13 @@ vi.mock('react-i18next', () => ({
 
 describe('FavoritesPage', () => {
     it('renders EmptyState when no favorite recipes are found', async () => {
-        (getFavoriteRecipes as any).mockResolvedValue([]);
+        (getFavoriteRecipes as any).mockResolvedValue({
+            data: { recipes: [], totalPages: 1, currentPage: 1 },
+            error: null,
+        });
         (getCurrentUser as any).mockResolvedValue(null);
 
-        const page = await FavoritesPage();
+        const page = await FavoritesPage({ searchParams: {} });
         const { findByText } = render(page);
 
         const noFavText = await findByText('No favorites found');
@@ -72,10 +75,17 @@ describe('FavoritesPage', () => {
             createdAt: new Date().toISOString(),
         };
 
-        (getFavoriteRecipes as any).mockResolvedValue(mockFavoriteRecipes);
+        (getFavoriteRecipes as any).mockResolvedValue({
+            data: {
+                recipes: mockFavoriteRecipes,
+                totalPages: 1,
+                currentPage: 1,
+            },
+            error: null,
+        });
         (getCurrentUser as any).mockResolvedValue(mockCurrentUser);
 
-        const page = await FavoritesPage();
+        const page = await FavoritesPage({ searchParams: {} });
         const { findByText } = render(page);
 
         const recipe1 = await findByText('Recipe 1');

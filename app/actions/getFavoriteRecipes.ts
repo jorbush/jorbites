@@ -1,24 +1,54 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
+import { SafeRecipe } from '@/app/types';
+import { DESKTOP_RECIPES_LIMIT } from '@/app/utils/constants';
 
 import getCurrentUser from './getCurrentUser';
+import { ServerResponse } from './getRecipes';
 
-export default async function getFavoriteRecipes() {
+export interface IFavoriteRecipesParams {
+    page?: number;
+    limit?: number;
+}
+
+export interface RecipesResponse {
+    recipes: SafeRecipe[];
+    totalRecipes: number;
+    totalPages: number;
+    currentPage: number;
+}
+
+export default async function getFavoriteRecipes(
+    params: IFavoriteRecipesParams
+): Promise<ServerResponse<RecipesResponse>> {
     try {
         logger.info('getFavoriteRecipes - start');
         const currentUser = await getCurrentUser();
+        const { page = 1, limit = DESKTOP_RECIPES_LIMIT } = params;
 
         if (!currentUser) {
             logger.info('getFavoriteRecipes - no current user');
-            return [];
+            return {
+                data: null,
+                error: {
+                    code: 'UNAUTHORIZED',
+                    message: 'You must be logged in to view favorites.',
+                },
+            };
         }
+
+        const favoriteIds = currentUser.favoriteIds || [];
+
+        const totalRecipes = favoriteIds.length;
 
         const favorites = await prisma.recipe.findMany({
             where: {
                 id: {
-                    in: [...(currentUser.favoriteIds || [])],
+                    in: favoriteIds,
                 },
             },
+            skip: (page - 1) * limit,
+            take: limit,
         });
 
         const safeFavorites = favorites.map((favorite) => ({
@@ -30,9 +60,23 @@ export default async function getFavoriteRecipes() {
             count: safeFavorites.length,
             userId: currentUser.id,
         });
-        return safeFavorites;
+        return {
+            data: {
+                recipes: safeFavorites,
+                totalRecipes,
+                totalPages: Math.ceil(totalRecipes / limit),
+                currentPage: page,
+            },
+            error: null,
+        };
     } catch (error: any) {
         logger.error('getFavoriteRecipes - error', { error: error.message });
-        throw new Error(error);
+        return {
+            data: null,
+            error: {
+                code: 'FETCH_ERROR',
+                message: 'Failed to get favorite recipes',
+            },
+        };
     }
 }
