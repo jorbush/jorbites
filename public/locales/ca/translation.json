@@ -645,5 +645,9 @@
     "no_chefs_description": "Prova d'ajustar la teva cerca o filtres",
     "likes": "M'agrada",
     "most_recipes": "Més receptes",
-    "search": "Cercar"
+    "search": "Cercar",
+    "recipe_contributions": "Contribucions de Receptes",
+    "recipes_last_year": "receptes en l'últim any",
+    "less": "Menys",
+    "more": "Més"
 }

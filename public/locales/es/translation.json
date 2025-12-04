@@ -644,5 +644,9 @@
     "no_chefs_description": "Intenta ajustar tu búsqueda o filtros",
     "likes": "Me gusta",
     "most_recipes": "Más recetas",
-    "search": "Buscar"
+    "search": "Buscar",
+    "recipe_contributions": "Contribuciones de Recetas",
+    "recipes_last_year": "recetas en el último año",
+    "less": "Menos",
+    "more": "Más"
 }

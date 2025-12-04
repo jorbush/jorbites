@@ -643,5 +643,9 @@
     "no_chefs_description": "Try adjusting your search or filters",
     "likes": "Likes",
     "most_recipes": "Most Recipes",
-    "search": "Search"
+    "search": "Search",
+    "recipe_contributions": "Recipe Contributions",
+    "recipes_last_year": "recipes in the last year",
+    "less": "Less",
+    "more": "More"
 }

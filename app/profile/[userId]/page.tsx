@@ -9,6 +9,7 @@ import UserStats from '@/app/components/stats/UserStats';
 import ProfileHeaderSkeleton from '@/app/components/profile/ProfileHeaderSkeleton';
 import UserStatsSkeleton from '@/app/components/stats/UserStatsSkeleton';
 import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
+import RecipeContributionGraph from '@/app/components/profile/RecipeContributionGraph';
 import { Metadata } from 'next';
 import { OrderByType } from '@/app/utils/filter';
 
@@ -96,6 +97,12 @@ const ProfilePage = async (props: {
             <ClientOnly fallback={<UserStatsSkeleton />}>
                 <UserStats user={user} />
             </ClientOnly>
+
+            {recipes.length > 0 && (
+                <ClientOnly>
+                    <RecipeContributionGraph recipes={recipes} />
+                </ClientOnly>
+            )}
 
             {recipes.length > 0 && (
                 <ClientOnly fallback={<ProfileClientSkeleton />}>
