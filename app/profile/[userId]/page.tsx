@@ -6,6 +6,8 @@ import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
 import getUserById from '@/app/actions/getUserById';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
 import UserStats from '@/app/components/stats/UserStats';
+import RecipeContributionGraph from '@/app/components/stats/RecipeContributionGraph';
+import RecipeContributionGraphSkeleton from '@/app/components/stats/RecipeContributionGraphSkeleton';
 import ProfileHeaderSkeleton from '@/app/components/profile/ProfileHeaderSkeleton';
 import UserStatsSkeleton from '@/app/components/stats/UserStatsSkeleton';
 import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
@@ -96,6 +98,12 @@ const ProfilePage = async (props: {
             <ClientOnly fallback={<UserStatsSkeleton />}>
                 <UserStats user={user} />
             </ClientOnly>
+
+            {recipes.length > 0 && (
+                <ClientOnly fallback={<RecipeContributionGraphSkeleton />}>
+                    <RecipeContributionGraph recipes={recipes} />
+                </ClientOnly>
+            )}
 
             {recipes.length > 0 && (
                 <ClientOnly fallback={<ProfileClientSkeleton />}>
