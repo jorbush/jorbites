@@ -22,7 +22,7 @@ const StatCard: React.FC<StatCardProps> = ({
     footer,
 }) => {
     return (
-        <div className="rounded-lg bg-white p-3 shadow-xs dark:bg-gray-800">
+        <div className="rounded-lg bg-white p-3 shadow-xs dark:bg-neutral-800">
             <div className="flex items-start justify-between">
                 <div className="flex flex-col">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
