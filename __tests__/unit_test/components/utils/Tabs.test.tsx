@@ -315,7 +315,9 @@ describe('<Tabs />', () => {
             const settingsTab = screen.getByTestId('tab-settings');
             const videosTab = screen.getByTestId('tab-videos');
 
-            const usersLabel = usersTab.querySelector('span:not([aria-hidden])');
+            const usersLabel = usersTab.querySelector(
+                'span:not([aria-hidden])'
+            );
             const settingsLabel = settingsTab.querySelector(
                 'span:not([aria-hidden])'
             );
