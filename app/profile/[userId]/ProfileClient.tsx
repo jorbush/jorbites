@@ -4,15 +4,22 @@ import { SafeRecipe, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
+import Pagination from '@/app/components/navigation/Pagination';
 
 interface ProfileClientProps {
     recipes: SafeRecipe[];
     currentUser?: SafeUser | null;
+    totalPages: number;
+    currentPage: number;
+    searchParams: any;
 }
 
 const ProfileClient: React.FC<ProfileClientProps> = ({
     recipes,
     currentUser,
+    totalPages,
+    currentPage,
+    searchParams,
 }) => {
     return (
         <Container>
@@ -28,6 +35,13 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                     />
                 ))}
             </div>
+            {totalPages > 1 && (
+                <Pagination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    searchParams={searchParams}
+                />
+            )}
         </Container>
     );
 };
