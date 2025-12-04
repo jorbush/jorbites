@@ -1,6 +1,7 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
 import { OrderByType, getPrismaOrderByClause } from '@/app/utils/filter';
+import { SafeRecipe } from '@/app/types';
 
 interface IParams {
     userId?: string;
@@ -10,7 +11,7 @@ interface IParams {
 }
 
 export interface RecipesByUserIdResponse {
-    recipes: any[];
+    recipes: SafeRecipe[];
     totalRecipes: number;
     totalPages: number;
     currentPage: number;

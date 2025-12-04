@@ -5,13 +5,19 @@ import Container from '@/app/components/utils/Container';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
 import Pagination from '@/app/components/navigation/Pagination';
+import { OrderByType } from '@/app/utils/filter';
+
+interface SearchParams {
+    orderBy?: OrderByType;
+    page?: string;
+}
 
 interface ProfileClientProps {
     recipes: SafeRecipe[];
     currentUser?: SafeUser | null;
     totalPages: number;
     currentPage: number;
-    searchParams: any;
+    searchParams: SearchParams;
 }
 
 const ProfileClient: React.FC<ProfileClientProps> = ({
