@@ -14,6 +14,7 @@ interface TabsProps {
     onTabChange: (tabId: string) => void;
     className?: string;
     'data-testid'?: string;
+    responsiveLabels?: boolean; // When true, hides labels on mobile/tablet screens
 }
 
 const Tabs: React.FC<TabsProps> = ({
@@ -22,6 +23,7 @@ const Tabs: React.FC<TabsProps> = ({
     onTabChange,
     className = '',
     'data-testid': dataTestId,
+    responsiveLabels = false,
 }) => {
     if (tabs.length <= 1) {
         return null;
@@ -35,16 +37,38 @@ const Tabs: React.FC<TabsProps> = ({
             {tabs.map((tab) => (
                 <button
                     key={tab.id}
-                    className={`flex flex-1 items-center justify-center gap-2 px-4 py-2 text-center ${
+                    className={`flex flex-1 items-center justify-center ${
+                        responsiveLabels
+                            ? 'gap-1 px-1 md:gap-2 md:px-4'
+                            : 'gap-2 px-4'
+                    } py-2 text-center ${
                         activeTab === tab.id
                             ? 'border-green-450 text-green-450 border-b-2 font-medium'
                             : 'text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-100'
                     }`}
                     onClick={() => onTabChange(tab.id)}
                     data-testid={`tab-${tab.id}`}
+                    aria-label={tab.label}
+                    role="tab"
+                    aria-selected={activeTab === tab.id}
                 >
-                    {tab.icon && <span className="text-lg">{tab.icon}</span>}
-                    <span>{tab.label}</span>
+                    {tab.icon && (
+                        <span
+                            className="text-lg"
+                            aria-hidden="true"
+                        >
+                            {tab.icon}
+                        </span>
+                    )}
+                    <span
+                        className={
+                            responsiveLabels
+                                ? 'hidden text-sm md:inline md:text-base'
+                                : ''
+                        }
+                    >
+                        {tab.label}
+                    </span>
                 </button>
             ))}
         </div>

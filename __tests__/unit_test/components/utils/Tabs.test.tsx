@@ -221,4 +221,204 @@ describe('<Tabs />', () => {
         expect(mockOnTabChange).toHaveBeenCalledWith('tab1');
         expect(mockOnTabChange).toHaveBeenCalledTimes(1);
     });
+
+    describe('responsiveLabels prop', () => {
+        it('renders labels without responsive classes when responsiveLabels is false (default)', () => {
+            render(<Tabs {...defaultProps} />);
+
+            const tab1 = screen.getByTestId('tab-tab1');
+            const labelSpan = tab1.querySelector('span:not([aria-hidden])');
+
+            // Should not have hidden or md:inline classes
+            expect(labelSpan?.className).not.toContain('hidden');
+            expect(labelSpan?.className).not.toContain('md:inline');
+
+            // Should have default spacing
+            expect(tab1.className).toContain('gap-2');
+            expect(tab1.className).toContain('px-4');
+            expect(tab1.className).not.toContain('gap-1');
+            expect(tab1.className).not.toContain('px-1');
+        });
+
+        it('renders labels with responsive classes when responsiveLabels is true', () => {
+            render(
+                <Tabs
+                    {...defaultProps}
+                    responsiveLabels={true}
+                />
+            );
+
+            const tab1 = screen.getByTestId('tab-tab1');
+            const labelSpan = tab1.querySelector('span:not([aria-hidden])');
+
+            // Should have hidden and md:inline classes for responsive behavior
+            expect(labelSpan?.className).toContain('hidden');
+            expect(labelSpan?.className).toContain('md:inline');
+            expect(labelSpan?.className).toContain('text-sm');
+            expect(labelSpan?.className).toContain('md:text-base');
+        });
+
+        it('applies responsive spacing classes when responsiveLabels is true', () => {
+            render(
+                <Tabs
+                    {...defaultProps}
+                    responsiveLabels={true}
+                />
+            );
+
+            const tab1 = screen.getByTestId('tab-tab1');
+
+            // Should have responsive spacing classes
+            expect(tab1.className).toContain('gap-1');
+            expect(tab1.className).toContain('px-1');
+            expect(tab1.className).toContain('md:gap-2');
+            expect(tab1.className).toContain('md:px-4');
+        });
+
+        it('applies default spacing classes when responsiveLabels is false', () => {
+            render(
+                <Tabs
+                    {...defaultProps}
+                    responsiveLabels={false}
+                />
+            );
+
+            const tab1 = screen.getByTestId('tab-tab1');
+
+            // Should have default spacing, not responsive
+            expect(tab1.className).toContain('gap-2');
+            expect(tab1.className).toContain('px-4');
+            expect(tab1.className).not.toContain('gap-1');
+            expect(tab1.className).not.toContain('px-1');
+            expect(tab1.className).not.toContain('md:gap-2');
+            expect(tab1.className).not.toContain('md:px-4');
+        });
+
+        it('renders labels correctly for all tabs when responsiveLabels is true', () => {
+            const tabsWithIcons: Tab[] = [
+                { id: 'users', label: 'Co-Cooks', icon: <FiUser /> },
+                { id: 'settings', label: 'Settings', icon: <FiSettings /> },
+                { id: 'videos', label: 'Videos' },
+            ];
+
+            render(
+                <Tabs
+                    tabs={tabsWithIcons}
+                    activeTab="users"
+                    onTabChange={mockOnTabChange}
+                    responsiveLabels={true}
+                />
+            );
+
+            // Check each tab has responsive label classes
+            const usersTab = screen.getByTestId('tab-users');
+            const settingsTab = screen.getByTestId('tab-settings');
+            const videosTab = screen.getByTestId('tab-videos');
+
+            const usersLabel = usersTab.querySelector(
+                'span:not([aria-hidden])'
+            );
+            const settingsLabel = settingsTab.querySelector(
+                'span:not([aria-hidden])'
+            );
+            const videosLabel = videosTab.querySelector(
+                'span:not([aria-hidden])'
+            );
+
+            // All labels should have responsive classes
+            expect(usersLabel?.className).toContain('hidden');
+            expect(usersLabel?.className).toContain('md:inline');
+            expect(settingsLabel?.className).toContain('hidden');
+            expect(settingsLabel?.className).toContain('md:inline');
+            expect(videosLabel?.className).toContain('hidden');
+            expect(videosLabel?.className).toContain('md:inline');
+        });
+
+        it('maintains accessibility attributes regardless of responsiveLabels value', () => {
+            const { rerender } = render(
+                <Tabs
+                    {...defaultProps}
+                    responsiveLabels={false}
+                />
+            );
+
+            let tab1 = screen.getByTestId('tab-tab1');
+
+            // Check ARIA attributes with responsiveLabels=false
+            expect(tab1.getAttribute('aria-label')).toBe('Tab 1');
+            expect(tab1.getAttribute('role')).toBe('tab');
+            expect(tab1.getAttribute('aria-selected')).toBe('true');
+
+            // Re-render with responsiveLabels=true
+            rerender(
+                <Tabs
+                    {...defaultProps}
+                    responsiveLabels={true}
+                />
+            );
+
+            tab1 = screen.getByTestId('tab-tab1');
+
+            // ARIA attributes should still be present
+            expect(tab1.getAttribute('aria-label')).toBe('Tab 1');
+            expect(tab1.getAttribute('role')).toBe('tab');
+            expect(tab1.getAttribute('aria-selected')).toBe('true');
+        });
+
+        it('maintains icon aria-hidden attribute with responsiveLabels', () => {
+            render(
+                <Tabs
+                    {...defaultProps}
+                    responsiveLabels={true}
+                />
+            );
+
+            const tab3 = screen.getByTestId('tab-tab3');
+            const iconSpan = tab3.querySelector('span[aria-hidden="true"]');
+
+            // Icon should have aria-hidden regardless of responsiveLabels
+            expect(iconSpan).toBeTruthy();
+            expect(iconSpan?.getAttribute('aria-hidden')).toBe('true');
+        });
+
+        it('functions correctly when toggling between responsiveLabels states', () => {
+            const { rerender } = render(
+                <Tabs
+                    {...defaultProps}
+                    responsiveLabels={false}
+                />
+            );
+
+            let tab1 = screen.getByTestId('tab-tab1');
+            expect(tab1.className).toContain('gap-2');
+            expect(tab1.className).toContain('px-4');
+
+            // Toggle to responsive
+            rerender(
+                <Tabs
+                    {...defaultProps}
+                    responsiveLabels={true}
+                />
+            );
+
+            tab1 = screen.getByTestId('tab-tab1');
+            expect(tab1.className).toContain('gap-1');
+            expect(tab1.className).toContain('px-1');
+            expect(tab1.className).toContain('md:gap-2');
+            expect(tab1.className).toContain('md:px-4');
+
+            // Toggle back to non-responsive
+            rerender(
+                <Tabs
+                    {...defaultProps}
+                    responsiveLabels={false}
+                />
+            );
+
+            tab1 = screen.getByTestId('tab-tab1');
+            expect(tab1.className).toContain('gap-2');
+            expect(tab1.className).toContain('px-4');
+            expect(tab1.className).not.toContain('md:gap-2');
+        });
+    });
 });
