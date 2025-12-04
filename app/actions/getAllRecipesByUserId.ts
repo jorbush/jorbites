@@ -5,29 +5,24 @@ import { OrderByType, getPrismaOrderByClause } from '@/app/utils/filter';
 interface IParams {
     userId?: string;
     orderBy?: OrderByType;
-    page?: number;
-    limit?: number;
 }
 
-export default async function getRecipesByUserId(params: IParams) {
+export default async function getAllRecipesByUserId(params: IParams) {
     try {
-        logger.info('getRecipesByUserId - start', { userId: params.userId });
-        const {
-            userId,
-            orderBy = OrderByType.NEWEST,
-            page = 1,
-            limit = 12,
-        } = params;
-
-        const skip = (page - 1) * limit;
+        logger.info('getAllRecipesByUserId - start', {
+            userId: params.userId,
+        });
+        const { userId, orderBy = OrderByType.NEWEST } = params;
 
         const recipes = await prisma.recipe.findMany({
             where: {
                 userId: userId,
             },
+            select: {
+                id: true,
+                createdAt: true,
+            },
             orderBy: getPrismaOrderByClause(orderBy),
-            skip,
-            take: limit,
         });
 
         const safeRecipes = recipes.map((recipe) => ({
@@ -35,14 +30,14 @@ export default async function getRecipesByUserId(params: IParams) {
             createdAt: recipe.createdAt.toString(),
         }));
 
-        logger.info('getRecipesByUserId - success', {
+        logger.info('getAllRecipesByUserId - success', {
             userId,
             count: safeRecipes.length,
             orderBy,
         });
         return safeRecipes;
     } catch (error: any) {
-        logger.error('getRecipesByUserId - error', {
+        logger.error('getAllRecipesByUserId - error', {
             error: error.message,
             userId: params.userId,
         });

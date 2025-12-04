@@ -3,6 +3,7 @@ import ClientOnly from '@/app/components/utils/ClientOnly';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import ProfileClient from '@/app/profile/[userId]/ProfileClient';
 import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
+import getAllRecipesByUserId from '@/app/actions/getAllRecipesByUserId';
 import getUserById from '@/app/actions/getUserById';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
 import UserStats from '@/app/components/stats/UserStats';
@@ -75,6 +76,10 @@ const ProfilePage = async (props: {
         ...params,
         orderBy: searchParams.orderBy,
     });
+    const allRecipes = await getAllRecipesByUserId({
+        ...params,
+        orderBy: searchParams.orderBy,
+    });
     const user = await getUserById({ userId: params.userId, withStats: true });
     const currentUser = await getCurrentUser();
 
@@ -99,22 +104,23 @@ const ProfilePage = async (props: {
                 <UserStats user={user} />
             </ClientOnly>
 
-            {recipes.length > 0 && (
+            {allRecipes.length > 0 && (
                 <ClientOnly fallback={<RecipeContributionGraphSkeleton />}>
-                    <RecipeContributionGraph recipes={recipes} />
+                    <RecipeContributionGraph recipes={allRecipes} />
                 </ClientOnly>
             )}
 
-            {recipes.length > 0 && (
+            {allRecipes.length > 0 && (
                 <ClientOnly fallback={<ProfileClientSkeleton />}>
                     <ProfileClient
-                        recipes={recipes}
+                        initialRecipes={recipes}
+                        recipesCount={allRecipes.length}
                         currentUser={currentUser}
                     />
                 </ClientOnly>
             )}
 
-            {recipes.length === 0 && (
+            {allRecipes.length === 0 && (
                 <ClientOnly>
                     <EmptyState
                         title="No recipes found"
