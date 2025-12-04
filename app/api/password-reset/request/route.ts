@@ -24,8 +24,14 @@ export async function POST(request: Request) {
                 'unknown-ip';
             const { success, reset } = await passwordResetRatelimit.limit(ip);
             if (!success) {
-                const retryAfterSeconds = Math.max(0, Math.ceil((reset - Date.now()) / 1000));
-                const retryAfterMinutes = Math.max(1, Math.ceil(retryAfterSeconds / 60));
+                const retryAfterSeconds = Math.max(
+                    0,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                const retryAfterMinutes = Math.max(
+                    1,
+                    Math.ceil(retryAfterSeconds / 60)
+                );
                 logger.warn(
                     'POST /api/password-reset/request - rate limit exceeded',
                     { ip }
