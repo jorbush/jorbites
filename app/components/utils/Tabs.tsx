@@ -35,7 +35,7 @@ const Tabs: React.FC<TabsProps> = ({
             {tabs.map((tab) => (
                 <button
                     key={tab.id}
-                    className={`flex flex-1 items-center justify-center gap-2 px-4 py-2 text-center ${
+                    className={`flex flex-1 items-center justify-center gap-2 px-2 py-2 text-center sm:px-4 ${
                         activeTab === tab.id
                             ? 'border-green-450 text-green-450 border-b-2 font-medium'
                             : 'text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-100'
@@ -44,7 +44,9 @@ const Tabs: React.FC<TabsProps> = ({
                     data-testid={`tab-${tab.id}`}
                 >
                     {tab.icon && <span className="text-lg">{tab.icon}</span>}
-                    <span>{tab.label}</span>
+                    <span className="hidden text-sm sm:inline sm:text-base">
+                        {tab.label}
+                    </span>
                 </button>
             ))}
         </div>
