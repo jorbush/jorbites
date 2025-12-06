@@ -9,6 +9,7 @@ export enum ApiErrorType {
     INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
     VALIDATION_ERROR = 'VALIDATION_ERROR',
     INVALID_INPUT = 'INVALID_INPUT',
+    RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
 }
 
 export interface ApiErrorResponse {
@@ -55,6 +56,10 @@ export function createApiError(
             status: 400,
             message: message || 'Invalid input provided',
         },
+        [ApiErrorType.RATE_LIMIT_EXCEEDED]: {
+            status: 429,
+            message: message || 'Too many requests',
+        },
     };
 
     const { status, message: defaultMessage } = errorMap[type];
@@ -97,3 +102,14 @@ export const validationError = (message?: string, details?: any) =>
 
 export const invalidInput = (message?: string) =>
     createApiError(ApiErrorType.INVALID_INPUT, message);
+
+export const rateLimitExceeded = (
+    message?: string,
+    retryAfterSeconds?: number
+) => {
+    const response = createApiError(ApiErrorType.RATE_LIMIT_EXCEEDED, message);
+    if (retryAfterSeconds !== undefined && retryAfterSeconds > 0) {
+        response.headers.set('Retry-After', retryAfterSeconds.toString());
+    }
+    return response;
+};
