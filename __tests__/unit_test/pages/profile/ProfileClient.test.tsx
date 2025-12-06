@@ -74,6 +74,9 @@ describe('ProfileClient', () => {
             <ProfileClient
                 recipes={mockRecipes}
                 currentUser={mockCurrentUser}
+                totalPages={1}
+                currentPage={1}
+                searchParams={{}}
             />
         );
 
@@ -87,6 +90,9 @@ describe('ProfileClient', () => {
             <ProfileClient
                 recipes={mockRecipes}
                 currentUser={null}
+                totalPages={1}
+                currentPage={1}
+                searchParams={{}}
             />
         );
 
@@ -100,6 +106,9 @@ describe('ProfileClient', () => {
             <ProfileClient
                 recipes={[]}
                 currentUser={mockCurrentUser}
+                totalPages={0}
+                currentPage={1}
+                searchParams={{}}
             />
         );
 

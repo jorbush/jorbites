@@ -30,6 +30,10 @@ const OrderByDropdown: React.FC = () => {
         } else {
             params.set('orderBy', orderBy);
         }
+        // Reset pagination to page 1 when order changes
+        if (isProfilePage) {
+            params.set('page', '1');
+        }
         const newUrl = isMainPage
             ? params.toString()
                 ? `/?${params.toString()}`

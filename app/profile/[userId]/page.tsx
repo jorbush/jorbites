@@ -3,6 +3,7 @@ import ClientOnly from '@/app/components/utils/ClientOnly';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import ProfileClient from '@/app/profile/[userId]/ProfileClient';
 import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
+import getRecipesForGraph from '@/app/actions/getRecipesForGraph';
 import getUserById from '@/app/actions/getUserById';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
 import UserStats from '@/app/components/stats/UserStats';
@@ -20,6 +21,7 @@ interface IParams {
 
 interface ISearchParams {
     orderBy?: OrderByType;
+    page?: string;
 }
 
 export async function generateMetadata(props: {
@@ -71,14 +73,25 @@ const ProfilePage = async (props: {
 }) => {
     const params = await props.params;
     const searchParams = await props.searchParams;
-    const recipes = await getRecipesByUserId({
+    const page = parseInt(searchParams.page || '1');
+
+    // Get paginated recipes for display
+    const recipesResponse = await getRecipesByUserId({
         ...params,
         orderBy: searchParams.orderBy,
+        page,
+        limit: 12,
     });
+
+    // Get all recipes for the contribution graph
+    const graphRecipes = await getRecipesForGraph({
+        userId: params.userId,
+    });
+
     const user = await getUserById({ userId: params.userId, withStats: true });
     const currentUser = await getCurrentUser();
 
-    if (!user && recipes.length === 0) {
+    if (!user && recipesResponse.recipes.length === 0) {
         return (
             <ClientOnly>
                 <EmptyState
@@ -99,22 +112,25 @@ const ProfilePage = async (props: {
                 <UserStats user={user} />
             </ClientOnly>
 
-            {recipes.length > 0 && (
+            {graphRecipes.length > 0 && (
                 <ClientOnly fallback={<RecipeContributionGraphSkeleton />}>
-                    <RecipeContributionGraph recipes={recipes} />
+                    <RecipeContributionGraph recipes={graphRecipes} />
                 </ClientOnly>
             )}
 
-            {recipes.length > 0 && (
+            {recipesResponse.recipes.length > 0 && (
                 <ClientOnly fallback={<ProfileClientSkeleton />}>
                     <ProfileClient
-                        recipes={recipes}
+                        recipes={recipesResponse.recipes}
                         currentUser={currentUser}
+                        totalPages={recipesResponse.totalPages}
+                        currentPage={recipesResponse.currentPage}
+                        searchParams={searchParams}
                     />
                 </ClientOnly>
             )}
 
-            {recipes.length === 0 && (
+            {recipesResponse.recipes.length === 0 && (
                 <ClientOnly>
                     <EmptyState
                         title="No recipes found"

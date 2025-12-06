@@ -1,13 +1,12 @@
 'use client';
 
-import { SafeRecipe } from '@/app/types';
 import { useTranslation } from 'react-i18next';
 import { useState, useMemo } from 'react';
 import Container from '@/app/components/utils/Container';
 import { formatDateLanguage } from '@/app/utils/date-utils';
 
 interface RecipeContributionGraphProps {
-    recipes: SafeRecipe[];
+    recipes: Array<{ id: string; createdAt: string }>;
 }
 
 interface DayData {
