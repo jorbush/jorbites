@@ -35,16 +35,21 @@ export default async function getFavoriteRecipes(
         }
 
         const favoriteIds = currentUser.favoriteIds || [];
-        const totalRecipes = favoriteIds.length;
+
+        const whereClause = {
+            id: {
+                in: favoriteIds,
+            },
+        };
 
         const favorites = await prisma.recipe.findMany({
-            where: {
-                id: {
-                    in: favoriteIds,
-                },
-            },
+            where: whereClause,
             skip: (page - 1) * limit,
             take: limit,
+        });
+
+        const totalRecipes = await prisma.recipe.count({
+            where: whereClause,
         });
 
         const safeFavorites = favorites.map((favorite) => ({
