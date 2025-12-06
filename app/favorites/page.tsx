@@ -4,14 +4,12 @@ import Container from '@/app/components/utils/Container';
 import Pagination from '@/app/components/navigation/Pagination';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import getFavoriteRecipes, {
-    IFavoriteRecipesParams,
-} from '@/app/actions/getFavoriteRecipes';
+import getFavoriteRecipes from '@/app/actions/getFavoriteRecipes';
 
 import FavoritesClient from './FavoritesClient';
 
 interface FavoritesPageProps {
-    searchParams: IFavoriteRecipesParams;
+    searchParams: { [key: string]: string | string[] | undefined };
 }
 
 const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
