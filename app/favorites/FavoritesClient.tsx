@@ -3,6 +3,7 @@
 import { SafeRecipe, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
+import Pagination from '@/app/components/navigation/Pagination';
 import { FcLike } from 'react-icons/fc';
 import SectionHeader from '@/app/components/utils/SectionHeader';
 import { useTranslation } from 'react-i18next';
@@ -10,11 +11,17 @@ import { useTranslation } from 'react-i18next';
 interface FavoritesClientProps {
     recipes: SafeRecipe[];
     currentUser?: SafeUser | null;
+    totalPages: number;
+    currentPage: number;
+    searchParams: any;
 }
 
 const FavoritesClient: React.FC<FavoritesClientProps> = ({
     recipes,
     currentUser,
+    totalPages,
+    currentPage,
+    searchParams,
 }) => {
     const { t } = useTranslation();
 
@@ -33,6 +40,11 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                     />
                 ))}
             </div>
+            <Pagination
+                totalPages={totalPages}
+                currentPage={currentPage}
+                searchParams={searchParams}
+            />
         </Container>
     );
 };
