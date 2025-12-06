@@ -4,18 +4,18 @@ import Container from '@/app/components/utils/Container';
 import Pagination from '@/app/components/navigation/Pagination';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import getFavoriteRecipes from '@/app/actions/getFavoriteRecipes';
+import getFavoriteRecipes, {
+    IFavoriteRecipesParams,
+} from '@/app/actions/getFavoriteRecipes';
 
 import FavoritesClient from './FavoritesClient';
 
 interface FavoritesPageProps {
-    searchParams: { [key: string]: string | string[] | undefined };
+    searchParams: IFavoriteRecipesParams;
 }
 
 const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
-    const page =
-        typeof searchParams.page === 'string' ? Number(searchParams.page) : 1;
-    const response = await getFavoriteRecipes({ page });
+    const response = await getFavoriteRecipes(searchParams);
     const currentUser = await getCurrentUser();
 
     if (response.error || !response.data) {

@@ -7,8 +7,8 @@ import getCurrentUser from './getCurrentUser';
 import { ServerResponse } from './getRecipes';
 
 export interface IFavoriteRecipesParams {
-    page?: number;
-    limit?: number;
+    page?: string;
+    limit?: string;
 }
 
 export interface RecipesResponse {
@@ -24,7 +24,10 @@ export default async function getFavoriteRecipes(
     try {
         logger.info('getFavoriteRecipes - start');
         const currentUser = await getCurrentUser();
-        const { page = 1, limit = DESKTOP_RECIPES_LIMIT } = params;
+        const page = params.page ? parseInt(params.page, 10) : 1;
+        const limit = params.limit
+            ? parseInt(params.limit, 10)
+            : DESKTOP_RECIPES_LIMIT;
 
         if (!currentUser) {
             logger.info('getFavoriteRecipes - no current user');
