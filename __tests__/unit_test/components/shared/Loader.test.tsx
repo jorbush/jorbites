@@ -9,6 +9,7 @@ describe('<Loader />', () => {
     });
 
     afterEach(() => {
+        vi.useRealTimers();
         cleanup();
     });
 
