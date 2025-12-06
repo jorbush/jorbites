@@ -2,6 +2,7 @@ import { cleanup, render, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ProfilePage from '@/app/profile/[userId]/page';
 import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
+import getRecipesForGraph from '@/app/actions/getRecipesForGraph';
 import getUserById from '@/app/actions/getUserById';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
@@ -10,6 +11,7 @@ vi.mock('@/app/hooks/useMediaQuery', () => ({
     default: () => false,
 }));
 vi.mock('@/app/actions/getRecipesByUserId');
+vi.mock('@/app/actions/getRecipesForGraph');
 vi.mock('@/app/actions/getUserById');
 vi.mock('@/app/actions/getCurrentUser');
 vi.mock('next/navigation', () => ({
@@ -86,7 +88,13 @@ describe('ProfilePage', () => {
     });
 
     it('renders empty state when no user and no recipes', async () => {
-        vi.mocked(getRecipesByUserId).mockResolvedValue([]);
+        vi.mocked(getRecipesByUserId).mockResolvedValue({
+            recipes: [],
+            totalRecipes: 0,
+            totalPages: 0,
+            currentPage: 1,
+        });
+        vi.mocked(getRecipesForGraph).mockResolvedValue([]);
         vi.mocked(getUserById).mockResolvedValue(null);
         vi.mocked(getCurrentUser).mockResolvedValue({
             createdAt: '',
@@ -120,7 +128,16 @@ describe('ProfilePage', () => {
     });
 
     it('renders profile header and recipes when user has recipes', async () => {
-        vi.mocked(getRecipesByUserId).mockResolvedValue(mockRecipes as any);
+        vi.mocked(getRecipesByUserId).mockResolvedValue({
+            recipes: mockRecipes as any,
+            totalRecipes: 2,
+            totalPages: 1,
+            currentPage: 1,
+        });
+        vi.mocked(getRecipesForGraph).mockResolvedValue([
+            { id: 'recipe1', createdAt: new Date().toISOString() },
+            { id: 'recipe2', createdAt: new Date().toISOString() },
+        ] as any);
         vi.mocked(getUserById).mockResolvedValue({
             createdAt: '',
             updatedAt: '',
@@ -170,7 +187,13 @@ describe('ProfilePage', () => {
     });
 
     it('renders profile header and empty state when user has no recipes', async () => {
-        vi.mocked(getRecipesByUserId).mockResolvedValue([]);
+        vi.mocked(getRecipesByUserId).mockResolvedValue({
+            recipes: [],
+            totalRecipes: 0,
+            totalPages: 0,
+            currentPage: 1,
+        });
+        vi.mocked(getRecipesForGraph).mockResolvedValue([]);
         vi.mocked(getUserById).mockResolvedValue({
             createdAt: '',
             updatedAt: '',

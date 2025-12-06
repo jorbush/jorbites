@@ -161,7 +161,7 @@ describe('Recipes API Routes and Server Actions', () => {
         }
         const mockParams = { userId: initialUser.id };
         const response = await getRecipesByUserId(mockParams);
-        expect(response.length).toBeGreaterThan(0);
+        expect(response.recipes.length).toBeGreaterThan(0);
     });
 
     it('should return the recipes filtered by category', async () => {
