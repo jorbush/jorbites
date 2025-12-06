@@ -774,7 +774,7 @@ describe('<RecipeModal />', () => {
                 onClose: vi.fn(),
             });
 
-            // Render without currentUser to avoid draft loading
+            // Render without currentUser since we're testing general form rendering capability
             await act(async () => {
                 render(<RecipeModal />);
             });
