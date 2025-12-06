@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { FiChevronLeft } from 'react-icons/fi';
 import { Policy } from '@/app/utils/policy-utils';
 import Markdown from 'markdown-to-jsx';
+import { PolicyStyles } from '@/app/components/policies/PolicyStyles';
 
 interface PrivacyPolicyProps {
     policy: Policy;
@@ -37,7 +38,13 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ policy }) => {
                         </h1>
                         <div className="w-8"></div>
                     </div>
-                    <Markdown>{policy.content}</Markdown>
+                    <Markdown
+                        options={{
+                            overrides: PolicyStyles,
+                        }}
+                    >
+                        {policy.content}
+                    </Markdown>
                 </div>
             </div>
         </Container>
