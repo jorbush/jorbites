@@ -7,13 +7,14 @@ import Pagination from '@/app/components/navigation/Pagination';
 import { FcLike } from 'react-icons/fc';
 import SectionHeader from '@/app/components/utils/SectionHeader';
 import { useTranslation } from 'react-i18next';
+import { IFavoriteRecipesParams } from '@/app/actions/getFavoriteRecipes';
 
 interface FavoritesClientProps {
     recipes: SafeRecipe[];
     currentUser?: SafeUser | null;
     totalPages: number;
     currentPage: number;
-    searchParams: any;
+    searchParams: IFavoriteRecipesParams;
 }
 
 const FavoritesClient: React.FC<FavoritesClientProps> = ({

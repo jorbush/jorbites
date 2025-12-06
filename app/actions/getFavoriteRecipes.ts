@@ -1,5 +1,6 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
+import { SafeRecipe } from '@/app/types';
 
 import getCurrentUser from './getCurrentUser';
 
@@ -9,7 +10,7 @@ export interface IFavoriteRecipesParams {
 }
 
 export interface FavoriteRecipesResponse {
-    recipes: any[];
+    recipes: SafeRecipe[];
     totalRecipes: number;
     totalPages: number;
     currentPage: number;
