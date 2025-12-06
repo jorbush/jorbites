@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { FiUploadCloud } from 'react-icons/fi';
 import { SafeUser } from '@/app/types';
+import Loader from '@/app/components/utils/Loader';
 import RelatedContentStep from '@/app/components/modals/recipe-steps/RelatedContentStep';
 import CategoryStep from '@/app/components/modals/recipe-steps/CategoryStep';
 import DescriptionStep from '@/app/components/modals/recipe-steps/DescriptionStep';
@@ -602,14 +603,15 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         return t('back');
     }, [step, t]);
 
-    let bodyContent = (
-        <CategoryStep
-            selectedCategory={category}
-            onCategorySelect={(selectedCategory) =>
-                setCustomValue('category', selectedCategory)
-            }
-        />
-    );
+    let bodyContent =
+        step === STEPS.CATEGORY ? (
+            <CategoryStep
+                selectedCategory={category}
+                onCategorySelect={(selectedCategory) =>
+                    setCustomValue('category', selectedCategory)
+                }
+            />
+        ) : null;
 
     if (step === STEPS.INGREDIENTS) {
         bodyContent = (

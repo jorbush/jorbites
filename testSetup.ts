@@ -1,7 +1,11 @@
 (globalThis as { [key: string]: any }).IS_REACT_ACT_ENVIRONMENT = true;
 
+import { expect, vi } from 'vitest';
+import * as matchers from '@testing-library/jest-dom/matchers';
+
+expect.extend(matchers);
+
 // Mock Axiom modules to prevent import errors in tests
-import { vi } from 'vitest';
 
 vi.mock('@axiomhq/nextjs', () => ({
     withAxiom: (handler: any) => handler,
