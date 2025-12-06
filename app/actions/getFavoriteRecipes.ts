@@ -36,6 +36,16 @@ export default async function getFavoriteRecipes(
 
         const favoriteIds = currentUser.favoriteIds || [];
 
+        if (favoriteIds.length === 0) {
+            logger.info('getFavoriteRecipes - no favorites');
+            return {
+                recipes: [],
+                totalRecipes: 0,
+                totalPages: 0,
+                currentPage: page,
+            };
+        }
+
         const whereClause = {
             id: {
                 in: favoriteIds,
