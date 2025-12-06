@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { render, cleanup, screen } from '@testing-library/react';
 import PrivacyPolicy from '@/app/policies/privacy/privacy';
+import * as policyUtils from '@/app/utils/policy-utils';
 
 // Mock the next/navigation module
 vi.mock('next/navigation', () => ({
@@ -16,47 +17,66 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 
+const mockPolicy = {
+    frontmatter: {
+        title: 'Privacy Policy',
+        description: 'Jorbites Privacy Policy',
+    },
+    content: `
+This is a mock privacy policy.
+
+## Information We Collect
+Mock information about data collection.
+
+### Third-party services
+- [Cloudinary](https://cloudinary.com/)
+- [Vercel](https://vercel.com)
+- [Hostinger](https://www.hostinger.com)
+- [MongoDB](https://www.mongodb.com)
+
+### Contact
+Contact us at [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).
+    `,
+    slug: 'privacy',
+    language: 'en',
+};
+
 describe('PrivacyPolicy', () => {
+    beforeEach(() => {
+        vi.spyOn(policyUtils, 'getPolicyBySlug').mockResolvedValue(mockPolicy);
+    });
+
     afterEach(() => {
         cleanup();
-    });
-    it('renders the privacy policy content', () => {
-        const { getByText } = render(<PrivacyPolicy />);
-
-        expect(getByText('privacy_policy')).toBeDefined();
-        expect(getByText('information_we_collect')).toBeDefined();
-        expect(getByText('how_we_use_info')).toBeDefined();
-        expect(getByText('sharing_info')).toBeDefined();
-        expect(getByText('data_security')).toBeDefined();
-        expect(getByText('your_rights')).toBeDefined();
-        expect(getByText('data_retention')).toBeDefined();
-        expect(getByText('policy_changes')).toBeDefined();
-        expect(getByText('8. contact')).toBeDefined();
+        vi.restoreAllMocks();
     });
 
-    it('has a back button that calls router.back()', () => {
-        const { getByRole } = render(<PrivacyPolicy />);
+    it('renders the privacy policy content', async () => {
+        render(<PrivacyPolicy />);
+        expect(await screen.findByText('Privacy Policy')).toBeDefined();
+        expect(await screen.findByText('Information We Collect')).toBeDefined();
+        expect(await screen.findByText('Third-party services')).toBeDefined();
+        expect(await screen.findByText('Contact')).toBeDefined();
+    });
 
-        const backButton = getByRole('button');
+    it('has a back button that calls router.back()', async () => {
+        render(<PrivacyPolicy />);
+        const backButton = await screen.findByRole('button');
         expect(backButton).toBeDefined();
     });
 
-    it('contains links to external services', () => {
-        const { getAllByText, getByText } = render(<PrivacyPolicy />);
-
-        expect(getAllByText('Cloudinary')).toBeDefined();
-        expect(getByText('Vercel')).toBeDefined();
-        expect(getByText('Hostinger')).toBeDefined();
-        expect(getByText('MongoDB')).toBeDefined();
+    it('contains links to external services', async () => {
+        render(<PrivacyPolicy />);
+        expect(await screen.findByText('Cloudinary')).toBeDefined();
+        expect(await screen.findByText('Vercel')).toBeDefined();
+        expect(await screen.findByText('Hostinger')).toBeDefined();
+        expect(await screen.findByText('MongoDB')).toBeDefined();
     });
 
-    it('contains email contact information', () => {
-        const { getAllByText } = render(<PrivacyPolicy />);
-
-        const emailLinks = getAllByText('jbonetv5@gmail.com');
-        expect(emailLinks.length).toBe(2);
-        emailLinks.forEach((link) => {
-            expect(link.getAttribute('href')).toBe('mailto:jbonetv5@gmail.com');
-        });
+    it('contains email contact information', async () => {
+        render(<PrivacyPolicy />);
+        const emailLink = await screen.findByText('jbonetv5@gmail.com');
+        expect(emailLink).toBeDefined();
+        expect(emailLink.getAttribute('href')).toBe('mailto:jbonetv5@gmail.com');
     });
 });
