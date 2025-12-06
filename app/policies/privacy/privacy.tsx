@@ -2,23 +2,26 @@
 
 import Container from '@/app/components/utils/Container';
 import Head from 'next/head';
-import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import { FiChevronLeft } from 'react-icons/fi';
-import { JORBITES_URL } from '@/app/utils/constants';
+import { Policy } from '@/app/utils/policy-utils';
+import Markdown from 'markdown-to-jsx';
 
-const PrivacyPolicy: React.FC = () => {
-    const { t } = useTranslation();
+interface PrivacyPolicyProps {
+    policy: Policy;
+}
+
+const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ policy }) => {
     const router = useRouter();
 
     return (
         <Container>
             <div className="mx-auto max-w-(--breakpoint-md) dark:text-neutral-100">
                 <Head>
-                    <title>{t('privacy_policy')} | Jorbites</title>
+                    <title>{policy.frontmatter.title} | Jorbites</title>
                     <meta
                         name="description"
-                        content={t('privacy_policy_description') || ''}
+                        content={policy.frontmatter.description}
                     />
                 </Head>
                 <div className="mx-auto max-w-[700px] gap-10 px-1 py-0 md:px-4 md:py-6">
@@ -30,201 +33,11 @@ const PrivacyPolicy: React.FC = () => {
                             <FiChevronLeft className="text-xl" />
                         </button>
                         <h1 className="text-3xl font-bold">
-                            {t('privacy_policy')}
+                            {policy.frontmatter.title}
                         </h1>
                         <div className="w-8"></div>
                     </div>
-                    <p className="mb-4">
-                        {t('last_update')}: {t('privacy_date')}
-                    </p>
-                    <p className="mb-4">
-                        {t('privacy_intro_1')}
-                        <strong>Jorbites</strong>
-                        {t('privacy_intro_2')}
-                        <a
-                            href={JORBITES_URL}
-                            className="text-blue-600"
-                        >
-                            {JORBITES_URL.split('//')[1]}
-                        </a>
-                        {t('privacy_intro_3')}
-                    </p>
-                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
-                        {t('information_we_collect')}
-                    </h2>
-                    <p className="mb-4">{t('information_collect_intro')}</p>
-                    <ul className="mb-4 ml-6 list-disc">
-                        <li>
-                            <strong>{t('user_data')}:</strong>
-                        </li>
-                        <ul className="mb-4 ml-6 list-disc">
-                            <li>
-                                <strong>{t('identification_contact')}:</strong>{' '}
-                                {t('identification_contact_desc')}
-                            </li>
-                            <li>
-                                <strong>{t('authentication')}:</strong>{' '}
-                                {t('authentication_desc')}
-                            </li>
-                            <li>
-                                <strong>{t('preferences_settings')}:</strong>{' '}
-                                {t('preferences_settings_desc')}
-                            </li>
-                        </ul>
-                        <li>
-                            <strong>{t('activity_data')}:</strong>
-                        </li>
-                        <ul className="mb-4 ml-6 list-disc">
-                            <li>
-                                <strong>{t('recipes')}:</strong>{' '}
-                                {t('recipes_desc')}
-                            </li>
-                            <li>
-                                <strong>{t('comments')}:</strong>{' '}
-                                {t('comments_desc')}
-                            </li>
-                        </ul>
-                        <li>
-                            <strong>{t('images')}: </strong>
-                            {t('images_desc_1')}
-                            <a
-                                href="https://cloudinary.com/"
-                                className="text-blue-600"
-                            >
-                                Cloudinary
-                            </a>
-                            {t('images_desc_2')}
-                        </li>
-                    </ul>
-                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
-                        {t('how_we_use_info')}
-                    </h2>
-                    <p className="mb-4">{t('use_info_intro')}</p>
-                    <ul className="mb-4 ml-6 list-disc">
-                        <li>{t('use_info_1')}</li>
-                        <li>{t('use_info_2')}</li>
-                        <li>{t('use_info_3')}</li>
-                        <li>{t('use_info_4')}</li>
-                    </ul>
-                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
-                        {t('sharing_info')}
-                    </h2>
-                    <p className="mb-4">{t('sharing_info_intro')}</p>
-                    <ul className="mb-4 ml-6 list-disc">
-                        <li>
-                            <strong>{t('service_providers')}:</strong>
-                            {t('service_providers_desc_1')}(
-                            <a
-                                href="https://vercel.com"
-                                className="text-blue-600"
-                            >
-                                Vercel
-                            </a>
-                            ){t('service_providers_desc_2')}(
-                            <a
-                                href="https://www.hostinger.com"
-                                className="text-blue-600"
-                            >
-                                Hostinger
-                            </a>
-                            ){t('service_providers_desc_3')}(
-                            <a
-                                href="https://www.mongodb.com"
-                                className="text-blue-600"
-                            >
-                                MongoDB
-                            </a>
-                            ){t('service_providers_desc_4')}
-                            <a
-                                href="https://cloudinary.com/"
-                                className="text-blue-600"
-                            >
-                                Cloudinary
-                            </a>{' '}
-                            {t('service_providers_desc_5')}
-                            <a
-                                href="https://www.upstash.com/"
-                                className="text-blue-600"
-                            >
-                                Upstash
-                            </a>
-                            {t('service_providers_desc_6')}
-                            <a
-                                href="https://www.redis.io"
-                                className="text-blue-600"
-                            >
-                                Redis
-                            </a>
-                            {t('service_providers_desc_7')}
-                            <a
-                                href="https://github.com/upstash/ratelimit-js"
-                                className="text-blue-600"
-                            >
-                                Rate Limit
-                            </a>
-                            {t('service_providers_desc_8')}
-                        </li>
-                        <li>
-                            <strong>{t('legal_requirements')}:</strong>{' '}
-                            {t('legal_requirements_desc')}
-                        </li>
-                    </ul>
-                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
-                        {t('data_security')}
-                    </h2>
-                    <p className="mb-4">{t('data_security_desc')}</p>
-                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
-                        {t('your_rights')}
-                    </h2>
-                    <p className="mb-4">{t('your_rights_intro')}</p>
-                    <ul className="mb-4 ml-6 list-disc">
-                        <li>
-                            <strong>{t('access')}:</strong> {t('access_desc')}
-                        </li>
-                        <li>
-                            <strong>{t('rectification')}:</strong>{' '}
-                            {t('rectification_desc')}
-                        </li>
-                        <li>
-                            <strong>{t('deletion')}:</strong>{' '}
-                            {t('deletion_desc')}
-                        </li>
-                        <li>
-                            <strong>{t('opposition')}:</strong>{' '}
-                            {t('opposition_desc')}
-                        </li>
-                    </ul>
-                    <p className="mb-4">
-                        {t('exercise_rights')}
-                        <a
-                            href="mailto:jbonetv5@gmail.com"
-                            className="text-blue-600"
-                        >
-                            jbonetv5@gmail.com
-                        </a>
-                        .
-                    </p>
-                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
-                        {t('data_retention')}
-                    </h2>
-                    <p className="mb-4">{t('data_retention_desc')}</p>
-                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
-                        {t('policy_changes')}
-                    </h2>
-                    <p className="mb-4">{t('policy_changes_desc')}</p>
-                    <h2 className="mt-4 mb-2 text-2xl font-semibold">
-                        8. {t('contact')}
-                    </h2>
-                    <p>
-                        {t('contact_desc')}
-                        <a
-                            href="mailto:jbonetv5@gmail.com"
-                            className="text-blue-600"
-                        >
-                            jbonetv5@gmail.com
-                        </a>
-                        .
-                    </p>
+                    <Markdown>{policy.content}</Markdown>
                 </div>
             </div>
         </Container>
