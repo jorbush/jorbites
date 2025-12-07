@@ -1,6 +1,5 @@
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import fs from 'fs';
-import path from 'path';
 import * as policyUtils from '@/app/utils/policy-utils';
 
 vi.mock('fs');
