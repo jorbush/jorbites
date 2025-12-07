@@ -24,7 +24,7 @@ interface DropdownProps<T> {
         option: DropdownOption<T>,
         isSelected: boolean
     ) => string;
-    'data-cy'?: string;
+    'data-testid'?: string;
 }
 
 function Dropdown<T extends string>({
@@ -39,7 +39,7 @@ function Dropdown<T extends string>({
     className = '',
     dropdownClassName = '',
     optionClassName,
-    'data-cy': dataCy,
+    'data-testid': dataTestId,
 }: DropdownProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState(-1);
@@ -150,7 +150,7 @@ function Dropdown<T extends string>({
                 aria-label={ariaLabel}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
-                data-cy={dataCy}
+                data-testid={dataTestId}
             >
                 {buttonContent}
                 {showChevron && (

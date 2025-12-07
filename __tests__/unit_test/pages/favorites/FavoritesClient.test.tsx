@@ -10,6 +10,16 @@ vi.mock('next/navigation', () => ({
         push: vi.fn(),
         query: {},
     })),
+    useSearchParams: vi.fn(() => ({
+        get: vi.fn(),
+    })),
+    usePathname: vi.fn(),
+}));
+
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key: string) => key,
+    }),
 }));
 
 // Mock data

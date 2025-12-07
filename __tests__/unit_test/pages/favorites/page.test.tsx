@@ -12,7 +12,10 @@ vi.mock('next/navigation', () => ({
         push: vi.fn(),
         query: {},
     })),
-    useSearchParams: vi.fn(() => new URLSearchParams()),
+    useSearchParams: vi.fn(() => ({
+        get: vi.fn(),
+    })),
+    usePathname: vi.fn(),
 }));
 
 vi.mock('next/headers', () => ({

@@ -1,12 +1,14 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
 import { SafeRecipe } from '@/app/types';
+import { OrderByType, getPrismaOrderByClause } from '@/app/utils/filter';
 
 import getCurrentUser from './getCurrentUser';
 
 export interface IFavoriteRecipesParams {
     page?: number;
     limit?: number;
+    orderBy?: OrderByType;
 }
 
 export interface FavoriteRecipesResponse {
@@ -20,7 +22,7 @@ export default async function getFavoriteRecipes(
     params: IFavoriteRecipesParams = {}
 ): Promise<FavoriteRecipesResponse> {
     try {
-        const { page = 1, limit = 10 } = params;
+        const { page = 1, limit = 10, orderBy = OrderByType.NEWEST } = params;
         logger.info('getFavoriteRecipes - start', { params });
         const currentUser = await getCurrentUser();
 
@@ -54,6 +56,7 @@ export default async function getFavoriteRecipes(
 
         const favorites = await prisma.recipe.findMany({
             where: whereClause,
+            orderBy: getPrismaOrderByClause(orderBy),
             skip: (page - 1) * limit,
             take: limit,
         });
