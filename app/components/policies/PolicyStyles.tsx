@@ -13,12 +13,7 @@ export const PolicyStyles: Components = {
             {...props}
         />
     ),
-    p: ({ node: _node, ...props }) => (
-        <p
-            className="mb-4"
-            {...props}
-        />
-    ),
+    p: ({ node: _node, ...props }) => <p className="mb-4" {...props} />,
     a: ({ node: _node, ...props }) => (
         <a
             className="text-blue-600 hover:underline"
@@ -31,10 +26,5 @@ export const PolicyStyles: Components = {
             {...props}
         />
     ),
-    li: ({ node: _node, ...props }) => (
-        <li
-            className="mb-2"
-            {...props}
-        />
-    ),
+    li: ({ node: _node, ...props }) => <li className="mb-2" {...props} />,
 };

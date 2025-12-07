@@ -45,8 +45,6 @@ describe('PrivacyPolicyPage', () => {
         const Page = await PrivacyPolicyPage();
         render(Page);
         expect(screen.getByText('Privacy Policy')).toBeDefined();
-        expect(
-            screen.getByText('This is a mock privacy policy.')
-        ).toBeDefined();
+        expect(screen.getByText('This is a mock privacy policy.')).toBeDefined();
     });
 });

@@ -45,8 +45,6 @@ describe('CookiesPolicyPage', () => {
         const Page = await CookiesPolicyPage();
         render(Page);
         expect(screen.getByText('Cookies Policy')).toBeDefined();
-        expect(
-            screen.getByText('This is a mock cookies policy.')
-        ).toBeDefined();
+        expect(screen.getByText('This is a mock cookies policy.')).toBeDefined();
     });
 });
