@@ -69,9 +69,6 @@ describe('FavoritesClient', () => {
             <FavoritesClient
                 recipes={mockRecipes}
                 currentUser={mockCurrentUser}
-                totalPages={1}
-                currentPage={1}
-                searchParams={{}}
             />
         );
 
@@ -85,9 +82,6 @@ describe('FavoritesClient', () => {
             <FavoritesClient
                 recipes={mockRecipes}
                 currentUser={null}
-                totalPages={1}
-                currentPage={1}
-                searchParams={{}}
             />
         );
 
@@ -101,32 +95,10 @@ describe('FavoritesClient', () => {
             <FavoritesClient
                 recipes={[]}
                 currentUser={mockCurrentUser}
-                totalPages={0}
-                currentPage={1}
-                searchParams={{}}
             />
         );
 
         // Assert that no recipes are displayed
         expect(container.querySelector('.grid')?.nodeValue).toBeNull();
-    });
-
-    it('renders pagination with multiple pages', () => {
-        const { container, getByText } = render(
-            <FavoritesClient
-                recipes={mockRecipes}
-                currentUser={mockCurrentUser}
-                totalPages={3}
-                currentPage={2}
-                searchParams={{ page: 2 }}
-            />
-        );
-
-        // Assert that pagination is displayed
-        const paginationNav = container.querySelector(
-            'nav[aria-label="Pagination"]'
-        );
-        expect(paginationNav).toBeDefined();
-        expect(getByText(/of/)).toBeDefined();
     });
 });
