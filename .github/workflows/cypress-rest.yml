@@ -33,6 +33,12 @@ jobs:
             \"userTestPassword\": \"${{ secrets.CYPRESS_USER_PASSWORD }}\"
           }" > cypress.env.json
 
+      - name: Get spec files
+        id: get_spec_files
+        run: |
+          specs=$(find __tests__/e2e -type f -name "*.cy.ts" ! -name "basic.cy.ts" | paste -sd "," -)
+          echo "specs=${specs}" >> $GITHUB_OUTPUT
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
@@ -40,7 +46,7 @@ jobs:
           start: npm start
           wait-on: 'http://localhost:3000'
           config-file: cypress.config.ts
-          spec: __tests__/e2e/app.cy.ts,__tests__/e2e/quests.cy.ts,__tests__/e2e/user.cy.ts,__tests__/e2e/workshops.cy.ts
+          spec: ${{ steps.get_spec_files.outputs.specs }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
