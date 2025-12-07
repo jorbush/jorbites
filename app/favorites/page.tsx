@@ -1,16 +1,34 @@
 import EmptyState from '@/app/components/utils/EmptyState';
 import ClientOnly from '@/app/components/utils/ClientOnly';
+import { isMobile } from '@/app/utils/deviceDetector';
+import { headers } from 'next/headers';
+import {
+    MOBILE_RECIPES_LIMIT,
+    DESKTOP_RECIPES_LIMIT,
+} from '@/app/utils/constants';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import getFavoriteRecipes from '@/app/actions/getFavoriteRecipes';
+import getFavoriteRecipes, {
+    IFavoriteRecipesParams,
+} from '@/app/actions/getFavoriteRecipes';
 
 import FavoritesClient from './FavoritesClient';
 
-const FavoritesPage = async () => {
-    const favoriteRecipes = await getFavoriteRecipes();
+interface FavoritesPageProps {
+    searchParams: Promise<IFavoriteRecipesParams>;
+}
+
+const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
+    const resolvedParams = await searchParams;
+    const favoriteRecipesResponse = await getFavoriteRecipes({
+        ...resolvedParams,
+        limit: isMobile((await headers()).get('user-agent') || '')
+            ? MOBILE_RECIPES_LIMIT
+            : DESKTOP_RECIPES_LIMIT,
+    });
     const currentUser = await getCurrentUser();
 
-    if (favoriteRecipes.length === 0) {
+    if (favoriteRecipesResponse.totalRecipes === 0) {
         return (
             <ClientOnly>
                 <EmptyState
@@ -24,8 +42,11 @@ const FavoritesPage = async () => {
     return (
         <ClientOnly>
             <FavoritesClient
-                recipes={favoriteRecipes}
+                recipes={favoriteRecipesResponse.recipes}
                 currentUser={currentUser}
+                totalPages={favoriteRecipesResponse.totalPages}
+                currentPage={favoriteRecipesResponse.currentPage}
+                searchParams={resolvedParams}
             />
         </ClientOnly>
     );
