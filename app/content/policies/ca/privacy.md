@@ -3,7 +3,7 @@ title: 'Política de Privadesa'
 description: 'Política de Privadesa de Jorbites'
 ---
 
-Darrera actualització: 1 de gener de 2023
+Darrera actualització: 6 de desembre de 2025
 
 Aquesta Política de Privadesa explica com **Jorbites** ("nosaltres", "ens" o "nostre") recopila, utilitza i divulga la vostra informació personal quan utilitzeu el nostre lloc web, accessible a [https://jorbites.com](https://jorbites.com) (el "Lloc Web").
 

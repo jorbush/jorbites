@@ -3,7 +3,7 @@ title: 'Cookies Policy'
 description: 'Jorbites Cookies Policy'
 ---
 
-Last Updated: [January 1, 2023]
+Last Updated: [December 6, 2025]
 
 This Cookies Policy explains how **Jorbites** ("we", "us", or "our") uses cookies and similar technologies on our website, accessible at [https://jorbites.com](https://jorbites.com) (the "Website").
 

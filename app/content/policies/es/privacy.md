@@ -3,7 +3,7 @@ title: 'Política de Privacidad'
 description: 'Política de Privacidad de Jorbites'
 ---
 
-Última actualización: 1 de enero de 2023
+Última actualización: 6 de diciembre de 2025
 
 Esta Política de Privacidad explica cómo **Jorbites** ("nosotros", "nos" o "nuestro") recopila, utiliza y divulga su información personal cuando utiliza nuestro sitio web, accesible en [https://jorbites.com](https://jorbites.com) (el "Sitio Web").
 

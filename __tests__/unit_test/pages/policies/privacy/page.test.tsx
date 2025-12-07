@@ -1,35 +1,50 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { render, cleanup, screen } from '@testing-library/react';
 import PrivacyPolicyPage from '@/app/policies/privacy/page';
+import * as policyUtils from '@/app/utils/policy-utils';
 
-// Mock the ClientOnly component
-vi.mock('@/app/components/utils/Container', () => ({
-    default: ({ children }: { children: React.ReactNode }) => (
-        <div data-testid="client-only">{children}</div>
-    ),
+vi.mock('next/headers', () => ({
+    cookies: () => ({
+        get: vi.fn(),
+    }),
 }));
 
-vi.mock('@/app/components/utils/ClientOnly', () => ({
-    default: ({ children }: { children: React.ReactNode }) => (
-        <div data-testid="client-only">{children}</div>
-    ),
+vi.mock('next/navigation', () => ({
+    useRouter: () => ({
+        back: vi.fn(),
+    }),
 }));
 
-// Mock the PrivacyPolicy component
-vi.mock('@/app/policies/privacy/privacy', () => ({
-    default: () => (
-        <div data-testid="privacy-policy">Mocked Privacy Policy</div>
-    ),
+vi.mock('@/app/utils/policy-utils', () => ({
+    getPolicyBySlug: vi.fn(),
 }));
+
+const mockPolicy = {
+    frontmatter: {
+        title: 'Privacy Policy',
+        description: 'Jorbites Privacy Policy',
+    },
+    content: `
+This is a mock privacy policy.
+    `,
+    slug: 'privacy',
+    language: 'en',
+};
 
 describe('PrivacyPolicyPage', () => {
-    it('renders PrivacyPolicy wrapped in ClientOnly', () => {
-        const { getByTestId } = render(<PrivacyPolicyPage />);
+    beforeEach(() => {
+        vi.spyOn(policyUtils, 'getPolicyBySlug').mockResolvedValue(mockPolicy);
+    });
 
-        const clientOnlyWrapper = getByTestId('client-only');
-        expect(clientOnlyWrapper).toBeDefined();
+    afterEach(() => {
+        cleanup();
+        vi.restoreAllMocks();
+    });
 
-        const privacyPolicyComponent = getByTestId('privacy-policy');
-        expect(privacyPolicyComponent).toBeDefined();
+    it('renders PrivacyPolicy', async () => {
+        const Page = await PrivacyPolicyPage();
+        render(Page);
+        expect(screen.getByText('Privacy Policy')).toBeDefined();
+        expect(screen.getByText('This is a mock privacy policy.')).toBeDefined();
     });
 });

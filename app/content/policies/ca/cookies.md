@@ -3,7 +3,7 @@ title: 'Política de Cookies'
 description: 'Política de Cookies de Jorbites'
 ---
 
-Darrera actualització: [1 de gener de 2023]
+Darrera actualització: [6 de desembre de 2025]
 
 Aquesta Política de Cookies explica com **Jorbites** ("nosaltres", "ens" o "nostre") utilitza cookies i tecnologies similars al nostre lloc web, accessible a [https://jorbites.com](https://jorbites.com) (el "Lloc Web").
 

@@ -1,35 +1,50 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { render, cleanup, screen } from '@testing-library/react';
 import CookiesPolicyPage from '@/app/policies/cookies/page';
+import * as policyUtils from '@/app/utils/policy-utils';
 
-// Mock the ClientOnly component
-vi.mock('@/app/components/utils/Container', () => ({
-    default: ({ children }: { children: React.ReactNode }) => (
-        <div data-testid="client-only">{children}</div>
-    ),
+vi.mock('next/headers', () => ({
+    cookies: () => ({
+        get: vi.fn(),
+    }),
 }));
 
-vi.mock('@/app/components/utils/ClientOnly', () => ({
-    default: ({ children }: { children: React.ReactNode }) => (
-        <div data-testid="client-only">{children}</div>
-    ),
+vi.mock('next/navigation', () => ({
+    useRouter: () => ({
+        back: vi.fn(),
+    }),
 }));
 
-// Mock the CookiesPolicy component
-vi.mock('@/app/policies/cookies/cookies', () => ({
-    default: () => (
-        <div data-testid="cookies-policy">Mocked Cookies Policy</div>
-    ),
+vi.mock('@/app/utils/policy-utils', () => ({
+    getPolicyBySlug: vi.fn(),
 }));
+
+const mockPolicy = {
+    frontmatter: {
+        title: 'Cookies Policy',
+        description: 'Jorbites Cookies Policy',
+    },
+    content: `
+This is a mock cookies policy.
+    `,
+    slug: 'cookies',
+    language: 'en',
+};
 
 describe('CookiesPolicyPage', () => {
-    it('renders CookiesPolicy wrapped in ClientOnly', () => {
-        const { getByTestId } = render(<CookiesPolicyPage />);
+    beforeEach(() => {
+        vi.spyOn(policyUtils, 'getPolicyBySlug').mockResolvedValue(mockPolicy);
+    });
 
-        const clientOnlyWrapper = getByTestId('client-only');
-        expect(clientOnlyWrapper).toBeDefined();
+    afterEach(() => {
+        cleanup();
+        vi.restoreAllMocks();
+    });
 
-        const cookiesPolicyComponent = getByTestId('cookies-policy');
-        expect(cookiesPolicyComponent).toBeDefined();
+    it('renders CookiesPolicy', async () => {
+        const Page = await CookiesPolicyPage();
+        render(Page);
+        expect(screen.getByText('Cookies Policy')).toBeDefined();
+        expect(screen.getByText('This is a mock cookies policy.')).toBeDefined();
     });
 });

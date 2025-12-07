@@ -17,7 +17,6 @@ import IngredientsStep from '@/app/components/modals/recipe-steps/IngredientsSte
 import MethodsStep from '@/app/components/modals/recipe-steps/MethodsStep';
 import RecipeStepsStep from '@/app/components/modals/recipe-steps/RecipeStepsStep';
 import ImagesStep from '@/app/components/modals/recipe-steps/ImagesStep';
-import Loader from '@/app/components/shared/Loader';
 import {
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
@@ -37,7 +36,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const [numIngredients, setNumIngredients] = useState(1);
     const [numSteps, setNumSteps] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
-    const [isLoadingDraft, setIsLoadingDraft] = useState(false);
     const hasLoadedDraft = useRef(false);
     const hasLoadedEditData = useRef(false);
     const [selectedCoCooks, setSelectedCoCooks] = useState<any[]>([]);
@@ -205,7 +203,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const loadDraft = useCallback(async () => {
         setIsLoading(true);
-        setIsLoadingDraft(true);
         try {
             const { data } = await axios.get(
                 `${window.location.origin}/api/draft`
@@ -267,7 +264,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             toast.error(t('error_loading_draft') ?? 'Failed to load draft.');
         } finally {
             setIsLoading(false);
-            setIsLoadingDraft(false);
         }
     }, [reset, setNumIngredients, setNumSteps, setValue, t]);
 
@@ -283,7 +279,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const loadEditData = useCallback(
         async (editData: EditRecipeData) => {
             setIsLoading(true);
-            setIsLoadingDraft(true);
             try {
                 reset({
                     category: editData.category,
@@ -343,7 +338,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 );
             } finally {
                 setIsLoading(false);
-                setIsLoadingDraft(false);
             }
         },
         [reset, setValue, t]
@@ -617,97 +611,88 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         />
     );
 
-    // Show loader while loading draft or edit data
-    if (isLoadingDraft) {
-        bodyContent = <Loader height="400px" />;
-    } else {
-        if (step === STEPS.INGREDIENTS) {
-            bodyContent = (
-                <IngredientsStep
-                    numIngredients={numIngredients}
-                    register={register}
-                    errors={errors}
-                    onAddIngredient={addIngredientInput}
-                    onRemoveIngredient={removeIngredientInput}
-                    onSetIngredients={setIngredients}
-                    getValues={getValues}
-                    setValue={setValue}
-                />
-            );
-        }
+    if (step === STEPS.INGREDIENTS) {
+        bodyContent = (
+            <IngredientsStep
+                numIngredients={numIngredients}
+                register={register}
+                errors={errors}
+                onAddIngredient={addIngredientInput}
+                onRemoveIngredient={removeIngredientInput}
+                onSetIngredients={setIngredients}
+                getValues={getValues}
+                setValue={setValue}
+            />
+        );
+    }
 
-        if (step === STEPS.STEPS) {
-            bodyContent = (
-                <RecipeStepsStep
-                    numSteps={numSteps}
-                    register={register}
-                    errors={errors}
-                    onAddStep={addStepInput}
-                    onRemoveStep={removeStepInput}
-                    onSetSteps={setSteps}
-                    getValues={getValues}
-                    setValue={setValue}
-                />
-            );
-        }
+    if (step === STEPS.STEPS) {
+        bodyContent = (
+            <RecipeStepsStep
+                numSteps={numSteps}
+                register={register}
+                errors={errors}
+                onAddStep={addStepInput}
+                onRemoveStep={removeStepInput}
+                onSetSteps={setSteps}
+                getValues={getValues}
+                setValue={setValue}
+            />
+        );
+    }
 
-        if (step === STEPS.DESCRIPTION) {
-            bodyContent = (
-                <DescriptionStep
-                    isLoading={isLoading}
-                    register={register}
-                    errors={errors}
-                    minutes={minutes}
-                    onMinutesChange={(value) =>
-                        setCustomValue('minutes', value)
-                    }
-                />
-            );
-        }
+    if (step === STEPS.DESCRIPTION) {
+        bodyContent = (
+            <DescriptionStep
+                isLoading={isLoading}
+                register={register}
+                errors={errors}
+                minutes={minutes}
+                onMinutesChange={(value) => setCustomValue('minutes', value)}
+            />
+        );
+    }
 
-        if (step == STEPS.METHODS) {
-            bodyContent = (
-                <MethodsStep
-                    selectedMethod={method}
-                    onMethodSelect={(selectedMethod) =>
-                        setCustomValue('method', selectedMethod)
-                    }
-                />
-            );
-        }
+    if (step == STEPS.METHODS) {
+        bodyContent = (
+            <MethodsStep
+                selectedMethod={method}
+                onMethodSelect={(selectedMethod) =>
+                    setCustomValue('method', selectedMethod)
+                }
+            />
+        );
+    }
 
-        if (step === STEPS.RELATED_CONTENT) {
-            bodyContent = (
-                <RelatedContentStep
-                    isLoading={isLoading}
-                    selectedCoCooks={selectedCoCooks}
-                    selectedLinkedRecipes={selectedLinkedRecipes}
-                    selectedQuest={selectedQuest}
-                    onAddCoCook={addCoCook}
-                    onRemoveCoCook={removeCoCook}
-                    onAddLinkedRecipe={addLinkedRecipe}
-                    onRemoveLinkedRecipe={removeLinkedRecipe}
-                    onSelectQuest={selectQuest}
-                    onRemoveQuest={removeQuest}
-                    register={register}
-                    errors={errors}
-                />
-            );
-        }
+    if (step === STEPS.RELATED_CONTENT) {
+        bodyContent = (
+            <RelatedContentStep
+                isLoading={isLoading}
+                selectedCoCooks={selectedCoCooks}
+                selectedLinkedRecipes={selectedLinkedRecipes}
+                selectedQuest={selectedQuest}
+                onAddCoCook={addCoCook}
+                onRemoveCoCook={removeCoCook}
+                onAddLinkedRecipe={addLinkedRecipe}
+                onRemoveLinkedRecipe={removeLinkedRecipe}
+                onSelectQuest={selectQuest}
+                onRemoveQuest={removeQuest}
+                register={register}
+                errors={errors}
+            />
+        );
+    }
 
-        if (step === STEPS.IMAGES) {
-            bodyContent = (
-                <ImagesStep
-                    imageSrc={imageSrc}
-                    imageSrc1={watch('imageSrc1')}
-                    imageSrc2={watch('imageSrc2')}
-                    imageSrc3={watch('imageSrc3')}
-                    onImageChange={(field, value) =>
-                        setCustomValue(field, value)
-                    }
-                />
-            );
-        }
+    if (step === STEPS.IMAGES) {
+        bodyContent = (
+            <ImagesStep
+                imageSrc={imageSrc}
+                imageSrc1={watch('imageSrc1')}
+                imageSrc2={watch('imageSrc2')}
+                imageSrc3={watch('imageSrc3')}
+                onImageChange={(field, value) => setCustomValue(field, value)}
+            />
+        );
     }
 
     return (
