@@ -8,7 +8,7 @@ import { FcLike } from 'react-icons/fc';
 import SectionHeader from '@/app/components/utils/SectionHeader';
 import { useTranslation } from 'react-i18next';
 import { IFavoriteRecipesParams } from '@/app/actions/getFavoriteRecipes';
-import OrderBy from '@/app/components/utils/OrderBy';
+import OrderByDropdown from '../components/navbar/OrderByDropdown';
 
 interface FavoritesClientProps {
     recipes: SafeRecipe[];
@@ -34,7 +34,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                     icon={FcLike}
                     title={t('favorites')}
                 />
-                <OrderBy />
+                <OrderByDropdown />
             </div>
             <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                 {recipes.map((recipe: any) => (
