@@ -1,33 +1,30 @@
-import React from 'react';
+import { Components } from 'react-markdown';
 
-export const PolicyStyles = {
-    h2: ({ children }: { children: React.ReactNode }) => (
-        <h2 className="text-2xl font-semibold mt-4 mb-2">{children}</h2>
-    ),
-    h3: ({ children }: { children: React.ReactNode }) => (
-        <h3 className="text-xl font-semibold mt-4 mb-2">{children}</h3>
-    ),
-    p: ({ children }: { children: React.ReactNode }) => (
-        <p className="mb-4">{children}</p>
-    ),
-    a: ({
-        children,
-        ...props
-    }: {
-        children: React.ReactNode;
-        [key: string]: any;
-    }) => (
-        <a
+export const PolicyStyles: Components = {
+    h2: ({ node, ...props }) => (
+        <h2
+            className="mt-4 mb-2 text-2xl font-semibold"
             {...props}
+        />
+    ),
+    h3: ({ node, ...props }) => (
+        <h3
+            className="mt-4 mb-2 text-xl font-semibold"
+            {...props}
+        />
+    ),
+    p: ({ node, ...props }) => <p className="mb-4" {...props} />,
+    a: ({ node, ...props }) => (
+        <a
             className="text-blue-600 hover:underline"
-        >
-            {children}
-        </a>
+            {...props}
+        />
     ),
-    ul: ({ children }: { children: React.ReactNode }) => (
-        <ul className="list-disc ml-6 mb-4">{children}</ul>
+    ul: ({ node, ...props }) => (
+        <ul
+            className="mb-4 ml-6 list-disc"
+            {...props}
+        />
     ),
-    li: ({ children }: { children: React.ReactNode }) => (
-        <li className="mb-2">{children}</li>
-    ),
+    li: ({ node, ...props }) => <li className="mb-2" {...props} />,
 };
