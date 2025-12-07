@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import { FiChevronLeft } from 'react-icons/fi';
 import { Policy } from '@/app/utils/policy-utils';
-import Markdown from 'markdown-to-jsx';
+import ReactMarkdown from 'react-markdown';
 import { PolicyStyles } from '@/app/components/policies/PolicyStyles';
 
 interface CookiesPolicyProps {
@@ -37,13 +37,9 @@ const CookiesPolicy: React.FC<CookiesPolicyProps> = ({ policy }) => {
                         </h1>
                         <div className="w-8"></div>
                     </div>
-                    <Markdown
-                        options={{
-                            overrides: PolicyStyles,
-                        }}
-                    >
+                    <ReactMarkdown components={PolicyStyles}>
                         {policy.content}
-                    </Markdown>
+                    </ReactMarkdown>
                 </div>
             </div>
         </Container>
