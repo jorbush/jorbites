@@ -4,7 +4,8 @@ import PolicySkeleton from '@/app/components/policies/PolicySkeleton';
 import { cookies } from 'next/headers';
 
 const PrivacyPolicyPage = async () => {
-    const lang = cookies().get('i18next')?.value || 'en';
+    const cookieStore = await cookies();
+    const lang = cookieStore.get('i18next')?.value || 'en';
     const policy = await getPolicyBySlug('privacy', lang);
 
     if (!policy) {
