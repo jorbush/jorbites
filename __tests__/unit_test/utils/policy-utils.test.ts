@@ -43,7 +43,10 @@ Hello world
             vi.spyOn(fs, 'existsSync').mockReturnValue(true);
             vi.spyOn(fs, 'readFileSync').mockReturnValue(mockContent);
 
-            const result = await policyUtils.getPolicyBySlug('test-policy', 'en');
+            const result = await policyUtils.getPolicyBySlug(
+                'test-policy',
+                'en'
+            );
             expect(result?.slug).toBe('test-policy');
             expect(result?.language).toBe('en');
             expect(result?.frontmatter.title).toBe('Test Policy');
@@ -51,7 +54,10 @@ Hello world
 
         it('should return null if the file does not exist', async () => {
             vi.spyOn(fs, 'existsSync').mockReturnValue(false);
-            const result = await policyUtils.getPolicyBySlug('non-existent', 'en');
+            const result = await policyUtils.getPolicyBySlug(
+                'non-existent',
+                'en'
+            );
             expect(result).toBeNull();
         });
     });
