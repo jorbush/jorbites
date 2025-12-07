@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, cleanup } from '@testing-library/react';
 import OrderBy from '@/app/components/utils/OrderBy';
-import { vi, it, describe, expect } from 'vitest';
+import { vi, it, describe, expect, afterEach } from 'vitest';
 
 vi.mock('next/navigation', () => ({
     useRouter: vi.fn(() => ({
@@ -27,6 +27,9 @@ vi.mock('react-i18next', () => ({
 }));
 
 describe('OrderBy', () => {
+    afterEach(() => {
+        cleanup();
+    });
     it('renders correctly', () => {
         const { getByText } = render(<OrderBy />);
         expect(getByText('Newest')).toBeDefined();

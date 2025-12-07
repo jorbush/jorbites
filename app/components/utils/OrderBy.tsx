@@ -10,11 +10,7 @@ import {
 } from '@/app/utils/filter';
 import Dropdown from '@/app/components/utils/Dropdown';
 
-interface OrderByProps {
-    isProfilePage?: boolean;
-}
-
-const OrderBy: React.FC<OrderByProps> = ({ isProfilePage }) => {
+const OrderBy: React.FC = () => {
     const { t } = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
