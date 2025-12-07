@@ -1,0 +1,52 @@
+name: Cypress Rest of E2E Testing
+
+on:
+  workflow_run:
+    workflows: ["Jest Unit Testing (API Routes & Server Actions)"]
+    types:
+      - completed
+  push:
+    branches: main
+  pull_request:
+    branches: main
+
+jobs:
+  cypress:
+    runs-on: ubuntu-latest
+    environment: testing
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create cypress.env.json
+        run: |
+          echo "{
+            \"userTestEmail\": \"${{ secrets.CYPRESS_USER_EMAIL }}\",
+            \"userTestPassword\": \"${{ secrets.CYPRESS_USER_PASSWORD }}\"
+          }" > cypress.env.json
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          build: npm run build
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          config-file: cypress.config.ts
+          spec: __tests__/e2e/app.cy.ts,__tests__/e2e/quests.cy.ts,__tests__/e2e/user.cy.ts,__tests__/e2e/workshops.cy.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}

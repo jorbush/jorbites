@@ -1,4 +1,4 @@
-name: Cypress E2E Testing
+name: Cypress Basic E2E Testing
 
 on:
   workflow_run:
@@ -40,6 +40,7 @@ jobs:
           start: npm start
           wait-on: 'http://localhost:3000'
           config-file: cypress.config.ts
+          spec: __tests__/e2e/basic.cy.ts
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
