@@ -123,7 +123,9 @@ describe('FavoritesClient', () => {
         );
 
         // Assert that pagination is displayed
-        const paginationNav = container.querySelector('nav[aria-label="Pagination"]');
+        const paginationNav = container.querySelector(
+            'nav[aria-label="Pagination"]'
+        );
         expect(paginationNav).toBeDefined();
         expect(getByText(/of/)).toBeDefined();
     });

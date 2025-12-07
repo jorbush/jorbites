@@ -195,7 +195,9 @@ describe('Recipes API Routes and Server Actions', () => {
     it('should return favorites recipes from the current user with the return', async () => {
         const response = await getFavoriteRecipes();
         expect(
-            response.recipes.filter((recipe) => recipe.id == publishedRecipe?.id).length
+            response.recipes.filter(
+                (recipe) => recipe.id == publishedRecipe?.id
+            ).length
         ).toBe(1);
     });
 
@@ -220,7 +222,9 @@ describe('Recipes API Routes and Server Actions', () => {
     it('should return favorites recipes from the current user without the recipe id', async () => {
         const response = await getFavoriteRecipes();
         expect(
-            response.recipes.filter((recipe) => recipe.id == publishedRecipe?.id).length
+            response.recipes.filter(
+                (recipe) => recipe.id == publishedRecipe?.id
+            ).length
         ).toBe(0);
     });
 
