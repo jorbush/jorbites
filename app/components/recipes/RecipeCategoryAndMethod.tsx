@@ -29,25 +29,29 @@ const RecipeCategoryAndMethod: React.FC<RecipeInfoProps> = ({
             <div
                 data-testid="recipe-category-and-method"
                 data-cy="cooking-methods"
-                className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 dark:text-neutral-100"
+                className="flex flex-row items-start gap-8 dark:text-neutral-100"
             >
-                {categories &&
-                    categories.map((category, index) => (
-                        <RecipeCategoryView
-                            key={`${category.label}-${index}`}
-                            icon={category.icon}
-                            label={category.label}
-                            description={''}
-                        />
-                    ))}
+                {categories && categories.length > 0 && (
+                    <div className="flex flex-row flex-wrap gap-8">
+                        {categories.map((category, index) => (
+                            <RecipeCategoryView
+                                key={`${category.label}-${index}`}
+                                icon={category.icon}
+                                label={category.label}
+                                description={''}
+                            />
+                        ))}
+                    </div>
+                )}
+                {categories && categories.length > 0 && method && (
+                    <div className="h-auto w-px bg-neutral-300 dark:bg-neutral-600" />
+                )}
                 {method && (
-                    <>
-                        <RecipeCategoryView
-                            icon={method.icon}
-                            label={method?.label}
-                            description={''}
-                        />
-                    </>
+                    <RecipeCategoryView
+                        icon={method.icon}
+                        label={method?.label}
+                        description={''}
+                    />
                 )}
             </div>
         </>
