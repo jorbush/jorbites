@@ -220,8 +220,7 @@ export async function PATCH(
                 return badRequest('All categories must be non-empty strings');
             }
 
-            // Check for award-winning category
-            // Use utility function to handle both legacy 'category' and new 'categories' field
+            // Check for existing award-winning category
             const existingCategories = recipe.categories || [];
             const hasAwardWinning = existingCategories.some(
                 (cat) => cat.toLowerCase() === 'award-winning'
