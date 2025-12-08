@@ -226,8 +226,8 @@ export async function PATCH(
             const existingCategories = Array.isArray(recipe.categories)
                 ? recipe.categories
                 : recipe.category
-                    ? [recipe.category]
-                    : [];
+                  ? [recipe.category]
+                  : [];
             const hasAwardWinning = existingCategories.some(
                 (cat) => cat.toLowerCase() === 'award-winning'
             );
@@ -246,7 +246,9 @@ export async function PATCH(
             // Prevent removal of the Award-winning category
             if (
                 hasAwardWinning &&
-                !finalCategories.some((cat) => cat.toLowerCase() === 'award-winning')
+                !finalCategories.some(
+                    (cat) => cat.toLowerCase() === 'award-winning'
+                )
             ) {
                 return badRequest('Cannot remove the Award-winning category');
             }

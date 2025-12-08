@@ -7,12 +7,15 @@
  * and new 'categories' array field for backward compatibility.
  *
  * @param recipe - Recipe object that may have 'category' (legacy) or 'categories' (new) field
- * @returns Array of category strings, empty array if none found
+ * @returns Array of category strings, empty array if none found. Invalid values are filtered out.
  */
 export function getRecipeCategories(recipe: any): string[] {
     if (Array.isArray(recipe.categories)) {
-        return recipe.categories;
-    } else if (recipe.category) {
+        // Filter out any non-string values to ensure type safety
+        return recipe.categories.filter(
+            (cat): cat is string => typeof cat === 'string'
+        );
+    } else if (typeof recipe.category === 'string') {
         return [recipe.category];
     }
     return [];
