@@ -56,11 +56,13 @@ export default async function getUserById(params: IParams) {
             const categoryCounts: Record<string, number> = {};
             userRecipes.forEach((recipe) => {
                 // Handle both legacy 'category' and new 'categories' field
-                const recipeCategories = Array.isArray((recipe as any).categories)
+                const recipeCategories = Array.isArray(
+                    (recipe as any).categories
+                )
                     ? (recipe as any).categories
                     : (recipe as any).category
-                    ? [(recipe as any).category]
-                    : [];
+                      ? [(recipe as any).category]
+                      : [];
 
                 recipeCategories.forEach((cat: string) => {
                     if (cat) {

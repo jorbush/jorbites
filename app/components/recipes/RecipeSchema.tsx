@@ -30,8 +30,8 @@ export default function RecipeSchema({
     const recipeCategories = Array.isArray(categories)
         ? categories
         : category
-        ? [category]
-        : ['Main Course'];
+          ? [category]
+          : ['Main Course'];
 
     const schemaData = {
         '@context': 'https://schema.org',

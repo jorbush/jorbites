@@ -100,9 +100,7 @@ export async function POST(request: Request) {
 
         // Check for award-winning category
         if (
-            finalCategories.some(
-                (cat) => cat.toLowerCase() === 'award-winning'
-            )
+            finalCategories.some((cat) => cat.toLowerCase() === 'award-winning')
         ) {
             return forbidden(
                 'The Award-winning category cannot be set via API'

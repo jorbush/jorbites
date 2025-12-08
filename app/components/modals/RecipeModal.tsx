@@ -290,8 +290,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     categories: Array.isArray(editData.categories)
                         ? editData.categories
                         : editData.category
-                        ? [editData.category]
-                        : [],
+                          ? [editData.category]
+                          : [],
                     method: editData.method,
                     imageSrc: editData.imageSrc,
                     imageSrc1: editData.imageSrc1 || '',

@@ -27,8 +27,8 @@ const EditRecipeButton: React.FC<EditRecipeButtonProps> = ({ recipe }) => {
             const recipeCategories = Array.isArray((recipe as any).categories)
                 ? (recipe as any).categories
                 : (recipe as any).category
-                ? [(recipe as any).category]
-                : [];
+                  ? [(recipe as any).category]
+                  : [];
 
             const editData: EditRecipeData = {
                 id: recipe.id,

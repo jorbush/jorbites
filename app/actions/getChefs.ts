@@ -136,8 +136,8 @@ export default async function getChefs(
                 const recipeCategories = Array.isArray(recipe.categories)
                     ? recipe.categories
                     : recipe.category
-                    ? [recipe.category]
-                    : [];
+                      ? [recipe.category]
+                      : [];
 
                 recipeCategories.forEach((cat) => {
                     if (cat) {

@@ -60,7 +60,9 @@ const CategoryStep: React.FC<CategoryStepProps> = ({
                         >
                             <CategoryInput
                                 onClick={handleCategoryClick}
-                                selected={selectedCategories.includes(item.label)}
+                                selected={selectedCategories.includes(
+                                    item.label
+                                )}
                                 label={item.label}
                                 icon={item.icon}
                                 dataCy={`category-box-${item.label}`}
