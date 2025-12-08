@@ -29,11 +29,27 @@ const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
     const currentUser = await getCurrentUser();
 
     if (favoriteRecipesResponse.totalRecipes === 0) {
+        // Check if it's because of filters or truly no favorites
+        const hasFilters =
+            resolvedParams.category ||
+            resolvedParams.search ||
+            resolvedParams.startDate ||
+            resolvedParams.endDate;
+
         return (
             <ClientOnly>
                 <EmptyState
-                    title="No favorites found"
-                    subtitle="Looks like you have no favorite recipes."
+                    title={
+                        hasFilters
+                            ? 'No matching favorites found'
+                            : 'No favorites found'
+                    }
+                    subtitle={
+                        hasFilters
+                            ? 'Try changing or removing some of your filters.'
+                            : 'Looks like you have no favorite recipes.'
+                    }
+                    showReset={hasFilters}
                 />
             </ClientOnly>
         );

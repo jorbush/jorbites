@@ -59,7 +59,8 @@ describe('<EmptyState />', () => {
         expect(screen.getByText(customSubtitle)).toBeDefined();
     });
 
-    it('renders reset button when showReset is true', () => {
+    it('renders reset button when showReset is true and filters are present', () => {
+        mockSearchParams.set('category', 'desserts');
         render(<EmptyState showReset={true} />);
 
         const resetButton = screen.getByRole('button');
@@ -67,6 +68,7 @@ describe('<EmptyState />', () => {
     });
 
     it('calls router.push when reset button is clicked', () => {
+        mockSearchParams.set('search', 'test');
         render(<EmptyState showReset={true} />);
 
         const resetButton = screen.getByRole('button');

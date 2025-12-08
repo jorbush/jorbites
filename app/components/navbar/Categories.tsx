@@ -109,8 +109,10 @@ const Categories = () => {
     const category = params?.get('category');
     const pathname = usePathname();
     const isMainPage = pathname === '/';
+    const isFavoritesPage = pathname === '/favorites';
+    const isFilterablePage = isMainPage || isFavoritesPage;
 
-    if (!isMainPage) {
+    if (!isFilterablePage) {
         return null;
     }
 

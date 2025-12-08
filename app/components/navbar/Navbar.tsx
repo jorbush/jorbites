@@ -22,7 +22,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     const pathname = usePathname();
     useTheme();
     const isMainPage = pathname === '/';
-    const isMobileSearchActive = isMobile && isMainPage && isSearchModeActive;
+    const isFavoritesPage = pathname === '/favorites';
+    const isFilterablePage = isMainPage || isFavoritesPage;
+    const isMobileSearchActive = isMobile && isFilterablePage && isSearchModeActive;
 
     const handleSearchModeChange = useCallback((isActive: boolean) => {
         setIsSearchModeActive(isActive);
@@ -45,7 +47,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                             />
                             <AnimatePresence mode="wait">
                                 {!isMobile ||
-                                !isMainPage ||
+                                !isFilterablePage ||
                                 (isMobile && !isMobileSearchActive) ? (
                                     <motion.div
                                         key="user-menu"
@@ -68,7 +70,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                     </Container>
                 </div>
                 <AnimatePresence>
-                    {isMainPage && isFilterOpen && (
+                    {isFilterablePage && isFilterOpen && (
                         <motion.div
                             key="categories"
                             initial={{ height: 0, opacity: 0 }}

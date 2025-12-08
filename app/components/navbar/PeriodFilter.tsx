@@ -23,6 +23,8 @@ const PeriodFilter: React.FC = () => {
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const isMainPage = pathname === '/';
+    const isFavoritesPage = pathname === '/favorites';
+    const isFilterablePage = isMainPage || isFavoritesPage;
     const currentStartDate = searchParams?.get('startDate') || '';
     const currentEndDate = searchParams?.get('endDate') || '';
     const hasDateFilter = currentStartDate || currentEndDate;
@@ -50,7 +52,7 @@ const PeriodFilter: React.FC = () => {
     }, [isOpen, currentStartDate, currentEndDate]);
 
     const updateUrlWithDates = (startDate: string, endDate: string) => {
-        if (!isMainPage) return;
+        if (!isFilterablePage) return;
 
         const params = new URLSearchParams(searchParams?.toString() || '');
 
@@ -66,7 +68,12 @@ const PeriodFilter: React.FC = () => {
             params.delete('endDate');
         }
 
-        router.replace(params.toString() ? `/?${params.toString()}` : '/');
+        const newUrl = isMainPage
+            ? params.toString()
+                ? `/?${params.toString()}`
+                : '/'
+            : `${pathname}?${params.toString()}`;
+        router.replace(newUrl);
     };
 
     const handleApply = () => {
@@ -77,7 +84,7 @@ const PeriodFilter: React.FC = () => {
     const handleClear = () => {
         setTempStartDate('');
         setTempEndDate('');
-        if (isMainPage) {
+        if (isFilterablePage) {
             updateUrlWithDates('', '');
         }
         setIsOpen(false);

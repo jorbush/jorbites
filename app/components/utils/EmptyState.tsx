@@ -25,6 +25,11 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 
     const searchQuery = searchParams?.get('search');
     const category = searchParams?.get('category');
+    const startDate = searchParams?.get('startDate');
+    const endDate = searchParams?.get('endDate');
+    const orderBy = searchParams?.get('orderBy');
+    
+    const hasFilters = !!(searchQuery || category || startDate || endDate || orderBy);
 
     // Customize messages based on current filters
     let displayTitle = title;
@@ -45,6 +50,16 @@ const EmptyState: React.FC<EmptyStateProps> = ({
         buttonLabel = t('remove_all_filters') || 'Remove all filters';
     }
 
+    const handleReset = () => {
+        // Get the current pathname to determine where to navigate
+        const currentPath = window.location.pathname;
+        if (currentPath === '/favorites') {
+            router.push('/favorites');
+        } else {
+            router.push('/');
+        }
+    };
+
     return (
         <div
             className={`flex ${height} flex-col items-center justify-center gap-2`}
@@ -55,11 +70,11 @@ const EmptyState: React.FC<EmptyStateProps> = ({
                 subtitle={displaySubtitle}
             />
             <div className="mt-4 w-48">
-                {showReset && (
+                {showReset && hasFilters && (
                     <Button
                         outline
                         label={buttonLabel}
-                        onClick={() => router.push('/')}
+                        onClick={handleReset}
                     />
                 )}
             </div>
