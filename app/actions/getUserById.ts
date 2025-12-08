@@ -1,6 +1,5 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
-import { getRecipeCategories } from '@/app/utils/recipeHelpers';
 
 interface IParams {
     userId?: string;
@@ -56,7 +55,7 @@ export default async function getUserById(params: IParams) {
 
             const categoryCounts: Record<string, number> = {};
             userRecipes.forEach((recipe) => {
-                const recipeCategories = getRecipeCategories(recipe);
+                const recipeCategories = recipe.categories || [];
                 recipeCategories.forEach((cat: string) => {
                     if (cat) {
                         categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;

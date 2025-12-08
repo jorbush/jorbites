@@ -2,7 +2,6 @@ import prisma from '@/app/lib/prismadb';
 import { SafeUser } from '@/app/types';
 import { logger } from '@/app/lib/axiom/server';
 import { ChefOrderByType } from '@/app/utils/filter';
-import { getRecipeCategories } from '@/app/utils/recipeHelpers';
 
 // Re-export for convenience in server components
 export { ChefOrderByType };
@@ -131,7 +130,7 @@ export default async function getChefs(
 
             const categoryCount: Record<string, number> = {};
             userRecipes.forEach((recipe) => {
-                const recipeCategories = getRecipeCategories(recipe);
+                const recipeCategories = recipe.categories || [];
                 recipeCategories.forEach((cat) => {
                     if (cat) {
                         categoryCount[cat] = (categoryCount[cat] || 0) + 1;

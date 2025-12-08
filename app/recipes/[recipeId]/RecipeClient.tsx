@@ -18,7 +18,6 @@ import EditRecipeButton from '@/app/components/recipes/EditRecipeButton';
 import { useTranslation } from 'react-i18next';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
-import { getRecipeCategories } from '@/app/utils/recipeHelpers';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
@@ -41,7 +40,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const [isLoading, setIsLoading] = useState(false);
 
     const recipeCategories = useMemo(() => {
-        return getRecipeCategories(recipe);
+        return recipe.categories || [];
     }, [recipe]);
 
     const categoryObjects = useMemo(() => {

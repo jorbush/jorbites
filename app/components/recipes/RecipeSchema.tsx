@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import { getRecipeCategories } from '@/app/utils/recipeHelpers';
 
 interface RecipeSchemaProps {
     title: string;
@@ -12,7 +11,6 @@ interface RecipeSchemaProps {
     ingredients?: string[];
     steps?: string[];
     categories?: string[];
-    category?: string; // Legacy field for backward compatibility
 }
 
 export default function RecipeSchema({
@@ -25,11 +23,8 @@ export default function RecipeSchema({
     ingredients,
     steps,
     categories,
-    category, // Legacy field
 }: RecipeSchemaProps) {
-    // Handle both legacy 'category' and new 'categories' field
-    const recipeCategories = getRecipeCategories({ categories, category });
-
+    const recipeCategories = categories || [];
     const schemaData: any = {
         '@context': 'https://schema.org',
         '@type': 'Recipe',
@@ -52,15 +47,11 @@ export default function RecipeSchema({
                 text: step,
                 image: imageSrc || '',
             })) || [],
-    };
-
-    // Only include recipeCategory if we have categories
-    if (recipeCategories.length > 0) {
-        schemaData.recipeCategory =
+        recipeCategory:
             recipeCategories.length === 1
                 ? recipeCategories[0]
-                : recipeCategories;
-    }
+                : recipeCategories,
+    };
 
     return (
         <script

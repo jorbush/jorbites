@@ -66,7 +66,7 @@ describe('<QuestDetailClient />', () => {
                 title: 'Test Recipe',
                 description: 'Test recipe description',
                 imageSrc: '/test.jpg',
-                category: 'Vegetarian',
+                categories: ['Dinner'],
                 method: 'Oven',
                 minutes: 30,
                 numLikes: 5,

@@ -8,7 +8,6 @@ import { SafeRecipe, SafeUser } from '@/app/types';
 import { useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { getRecipeCategories } from '@/app/utils/recipeHelpers';
 
 interface EditRecipeButtonProps {
     recipe: SafeRecipe & {
@@ -24,7 +23,7 @@ const EditRecipeButton: React.FC<EditRecipeButtonProps> = ({ recipe }) => {
 
     const onClick = useCallback(async () => {
         try {
-            const recipeCategories = getRecipeCategories(recipe);
+            const recipeCategories = recipe.categories || [];
 
             const editData: EditRecipeData = {
                 id: recipe.id,
