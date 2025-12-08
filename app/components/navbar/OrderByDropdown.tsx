@@ -19,11 +19,12 @@ const OrderByDropdown: React.FC = () => {
 
     const isMainPage = pathname === '/';
     const isProfilePage = pathname?.startsWith('/profile/');
+    const isFavoritesPage = pathname === '/favorites';
     const currentOrderBy =
         (searchParams?.get('orderBy') as OrderByType) || OrderByType.NEWEST;
 
     const handleOrderChange = (orderBy: OrderByType) => {
-        if (!isMainPage && !isProfilePage) return;
+        if (!isMainPage && !isProfilePage && !isFavoritesPage) return;
         const params = new URLSearchParams(searchParams?.toString() || '');
         if (orderBy === OrderByType.NEWEST) {
             params.delete('orderBy');
@@ -31,7 +32,7 @@ const OrderByDropdown: React.FC = () => {
             params.set('orderBy', orderBy);
         }
         // Reset pagination to page 1 when order changes
-        if (isProfilePage) {
+        if (isProfilePage || isFavoritesPage) {
             params.set('page', '1');
         }
         const newUrl = isMainPage
@@ -55,11 +56,11 @@ const OrderByDropdown: React.FC = () => {
 
     const buttonContent = (
         <>
-            {/* Mobile: Show reorder icon only on main page, show text on profile */}
+            {/* Mobile: Show reorder icon only on main page, show text on profile and favorites */}
             <div
-                className={`flex items-center gap-1 ${isProfilePage ? '' : 'lg:hidden'}`}
+                className={`flex items-center gap-1 ${isProfilePage || isFavoritesPage ? '' : 'lg:hidden'}`}
             >
-                {isProfilePage ? (
+                {isProfilePage || isFavoritesPage ? (
                     <span className="text-sm">
                         {getOrderLabel(currentOrderBy)}
                     </span>
@@ -69,7 +70,7 @@ const OrderByDropdown: React.FC = () => {
             </div>
 
             {/* Desktop: Show text on main page */}
-            {!isProfilePage && (
+            {!isProfilePage && !isFavoritesPage && (
                 <div className="hidden items-center gap-1 lg:flex">
                     <span className="text-sm">
                         {getOrderLabel(currentOrderBy)}
@@ -87,7 +88,9 @@ const OrderByDropdown: React.FC = () => {
             buttonContent={buttonContent}
             ariaLabel={t('order_by') || 'Order by'}
             showNotification={currentOrderBy !== OrderByType.NEWEST}
-            chevronClassName={isProfilePage ? '' : 'hidden lg:inline'}
+            chevronClassName={
+                isProfilePage || isFavoritesPage ? '' : 'hidden lg:inline'
+            }
         />
     );
 };

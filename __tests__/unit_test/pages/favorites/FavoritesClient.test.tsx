@@ -10,6 +10,10 @@ vi.mock('next/navigation', () => ({
         push: vi.fn(),
         query: {},
     })),
+    useSearchParams: vi.fn(() => ({
+        get: vi.fn(),
+    })),
+    usePathname: vi.fn(),
 }));
 
 // Mock data
