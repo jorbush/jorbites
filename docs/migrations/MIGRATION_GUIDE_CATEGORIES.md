@@ -75,31 +75,6 @@ db.Recipe.updateMany(
 )
 ```
 
-**Alternative approach** (if your MongoDB version doesn't support aggregation pipeline in update):
-
-```javascript
-// Find all recipes without categories field
-db.Recipe.find({
-  $or: [
-    { categories: { $exists: false } },
-    { categories: null }
-  ]
-}).forEach(function(recipe) {
-  var categories = [];
-
-  // If category exists and is not null/empty, add it to categories array
-  if (recipe.category && recipe.category.trim() !== '') {
-    categories = [recipe.category];
-  }
-
-  // Update the document
-  db.Recipe.updateOne(
-    { _id: recipe._id },
-    { $set: { categories: categories } }
-  );
-});
-```
-
 #### Step 4: Verify the Migration
 
 Check that all recipes now have a `categories` field:
@@ -121,7 +96,7 @@ Ensure all non-null categories were migrated correctly:
 
 ```javascript
 // Find recipes where category exists but categories is empty (should be 0)
-db.recipes.countDocuments({
+db.Recipe.countDocuments({
   category: { $exists: true, $ne: null, $ne: "" },
   $or: [
     { categories: { $exists: false } },
@@ -130,7 +105,7 @@ db.recipes.countDocuments({
 })
 
 // Find recipes with mismatched data (category not in categories array)
-db.recipes.find({
+db.Recipe.find({
   category: { $exists: true, $ne: null, $ne: "" },
   categories: { $not: { $elemMatch: { $eq: "$category" } } }
 })
@@ -155,7 +130,7 @@ After the database migration is complete:
 
 ```javascript
 // Remove category field from all recipes
-db.recipes.updateMany(
+db.Recipe.updateMany(
   {},
   { $unset: { category: "" } }
 )
@@ -165,7 +140,7 @@ db.recipes.updateMany(
 
 ```javascript
 // Should return 0
-db.recipes.countDocuments({ category: { $exists: true } })
+db.Recipe.countDocuments({ category: { $exists: true } })
 ```
 
 ## Rollback Plan
@@ -176,12 +151,12 @@ If you need to rollback the migration:
 
 ```javascript
 // Remove categories field and restore category from first element
-db.recipes.find({ categories: { $exists: true } }).forEach(function(recipe) {
+db.Recipe.find({ categories: { $exists: true } }).forEach(function(recipe) {
   var category = recipe.categories && recipe.categories.length > 0
     ? recipe.categories[0]
     : null;
 
-  db.recipes.updateOne(
+  db.Recipe.updateOne(
     { _id: recipe._id },
     {
       $set: { category: category },
