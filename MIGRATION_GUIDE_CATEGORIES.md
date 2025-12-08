@@ -227,6 +227,3 @@ If you encounter issues during migration:
 2. Verify your MongoDB version supports the operations used
 3. Test the migration script on a small subset first
 4. Ensure you have a recent database backup before proceeding
-
-
-
