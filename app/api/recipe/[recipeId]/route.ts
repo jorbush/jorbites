@@ -240,6 +240,14 @@ export async function PATCH(
                     'The Award-winning category cannot be set via API'
                 );
             }
+
+            // Prevent removal of the Award-winning category
+            if (
+                hasAwardWinning &&
+                !finalCategories.some((cat) => cat.toLowerCase() === 'award-winning')
+            ) {
+                return badRequest('Cannot remove the Award-winning category');
+            }
         }
 
         if (!title || !description) {
