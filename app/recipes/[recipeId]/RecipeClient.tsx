@@ -39,7 +39,9 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
 
-    const recipeCategories = recipe.categories || [];
+    const recipeCategories = useMemo(() => {
+        return recipe.categories || [];
+    }, [recipe]);
 
     const categoryObjects = useMemo(() => {
         return recipeCategories
