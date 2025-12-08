@@ -8,7 +8,6 @@ import { FcLike } from 'react-icons/fc';
 import SectionHeader from '@/app/components/utils/SectionHeader';
 import { useTranslation } from 'react-i18next';
 import { IFavoriteRecipesParams } from '@/app/actions/getFavoriteRecipes';
-import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
 import Categories from '@/app/components/navbar/Categories';
 
 interface FavoritesClientProps {

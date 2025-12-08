@@ -85,12 +85,13 @@ const Search: React.FC<SearchProps> = ({
         }
     }, [
         searchParams,
-        isMainPage,
         router,
         currentSearch,
         isSearchMode,
         onSearchModeChange,
         isExplicitlyExiting,
+        isSearchablePage,
+        pathname,
     ]);
 
     const handleSearchToggle = () => {
