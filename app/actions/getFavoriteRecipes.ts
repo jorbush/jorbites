@@ -5,10 +5,15 @@ import { OrderByType, getPrismaOrderByClause } from '@/app/utils/filter';
 
 import getCurrentUser from './getCurrentUser';
 
+import { getDateRangeFilter } from '@/app/utils/filter';
 export interface IFavoriteRecipesParams {
     page?: number;
     limit?: number;
     orderBy?: OrderByType;
+    category?: string;
+    search?: string;
+    startDate?: string;
+    endDate?: string;
 }
 
 export interface FavoriteRecipesResponse {
@@ -22,7 +27,15 @@ export default async function getFavoriteRecipes(
     params: IFavoriteRecipesParams = {}
 ): Promise<FavoriteRecipesResponse> {
     try {
-        const { page = 1, limit = 10, orderBy = OrderByType.NEWEST } = params;
+        const {
+            page = 1,
+            limit = 10,
+            orderBy = OrderByType.NEWEST,
+            category,
+            search,
+            startDate,
+            endDate,
+        } = params;
         logger.info('getFavoriteRecipes - start', { params });
         const currentUser = await getCurrentUser();
 
@@ -48,11 +61,29 @@ export default async function getFavoriteRecipes(
             };
         }
 
-        const whereClause = {
+        let whereClause: any = {
             id: {
                 in: favoriteIds,
             },
         };
+
+        if (typeof category === 'string') {
+            whereClause.categories = {
+                has: category,
+            };
+        }
+
+        if (typeof search === 'string' && search.trim()) {
+            whereClause.title = {
+                contains: search.trim(),
+                mode: 'insensitive',
+            };
+        }
+
+        const dateRangeFilter = getDateRangeFilter(startDate, endDate);
+        if (Object.keys(dateRangeFilter).length > 0) {
+            whereClause = { ...whereClause, ...dateRangeFilter };
+        }
 
         const orderByClause = getPrismaOrderByClause(orderBy);
 

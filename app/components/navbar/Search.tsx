@@ -34,6 +34,9 @@ const Search: React.FC<SearchProps> = ({
     const isMobile = useMediaQuery('(max-width: 768px)');
 
     const isMainPage = pathname === '/';
+    const isFavoritesPage = pathname === '/favorites';
+    const isSearchablePage = isMainPage || isFavoritesPage;
+
     const currentSearch = searchParams?.get('search') || '';
     const isFiltering = searchParams?.get('category') || '';
 
@@ -48,14 +51,18 @@ const Search: React.FC<SearchProps> = ({
 
     useEffect(() => {
         debouncedUrlUpdate.current = debounce((value: string) => {
-            if (!isMainPage) return;
+            if (!isSearchablePage) return;
             const params = new URLSearchParams(searchParams?.toString() || '');
             if (value.trim()) {
                 params.set('search', value.trim());
             } else {
                 params.delete('search');
             }
-            router.replace(params.toString() ? `/?${params.toString()}` : '/');
+            router.replace(
+                params.toString()
+                    ? `${pathname}?${params.toString()}`
+                    : pathname || '/'
+            );
         }, 1000); // 1 second debounce on URL update in order to avoid request and typing conflicts
 
         // Initialize search query from URL - but don't automatically exit search mode
@@ -92,14 +99,18 @@ const Search: React.FC<SearchProps> = ({
             setIsExplicitlyExiting(true);
             setSearchQuery('');
             // Always clear search from URL when exiting search mode and search content is present
-            if (isMainPage && searchQuery.trim()) {
+            if (isSearchablePage && searchQuery.trim()) {
                 const params = new URLSearchParams(
                     searchParams?.toString() || ''
                 );
                 params.delete('search');
-                router.push(params.toString() ? `/?${params.toString()}` : '/');
+                router.push(
+                    params.toString()
+                        ? `${pathname}?${params.toString()}`
+                        : pathname || '/'
+                );
             } else {
-                // If not on main page, exit immediately
+                // If not on a searchable page, exit immediately
                 setIsSearchMode(false);
                 onSearchModeChange?.(false);
                 setIsExplicitlyExiting(false);
@@ -129,8 +140,8 @@ const Search: React.FC<SearchProps> = ({
         }
     };
 
-    if (!isMainPage) {
-        // On non-main pages, just show logo
+    if (!isSearchablePage) {
+        // On non-searchable pages, just show logo
         return (
             <div className="flex flex-row items-center gap-1 md:gap-3">
                 <Logo />
