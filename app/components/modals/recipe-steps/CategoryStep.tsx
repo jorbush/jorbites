@@ -43,7 +43,7 @@ const CategoryStep: React.FC<CategoryStepProps> = ({
         <div className="flex flex-col gap-8">
             <Heading
                 title={t('title_category_recipe')}
-                subtitle={`${(t('subtitle_category_recipe') ?? '').trim()} (${selectedCategories.length}/${RECIPE_MAX_CATEGORIES})`}
+                subtitle={`${(t('subtitle_categories_recipe') || '').trim()} (${selectedCategories.length}/${RECIPE_MAX_CATEGORIES})`}
             />
             <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-y-auto">
                 {categories
