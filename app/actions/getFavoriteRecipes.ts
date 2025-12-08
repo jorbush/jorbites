@@ -6,6 +6,7 @@ import {
     getPrismaOrderByClause,
     getDateRangeFilter,
 } from '@/app/utils/filter';
+import { Prisma } from '@prisma/client';
 
 import getCurrentUser from './getCurrentUser';
 
@@ -64,7 +65,7 @@ export default async function getFavoriteRecipes(
             };
         }
 
-        let whereClause: any = {
+        const whereClause: Prisma.RecipeWhereInput = {
             id: {
                 in: favoriteIds,
             },
@@ -88,7 +89,7 @@ export default async function getFavoriteRecipes(
         // Apply date range filter
         const dateRangeFilter = getDateRangeFilter(startDate, endDate);
         if (Object.keys(dateRangeFilter).length > 0) {
-            whereClause = { ...whereClause, ...dateRangeFilter };
+            Object.assign(whereClause, dateRangeFilter);
         }
 
         const orderByClause = getPrismaOrderByClause(orderBy);

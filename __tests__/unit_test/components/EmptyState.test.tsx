@@ -5,6 +5,7 @@ import React from 'react';
 
 const pushMock = vi.fn();
 const mockSearchParams = new URLSearchParams();
+const mockPathname = '/';
 
 // Mock the next/navigation module
 vi.mock('next/navigation', () => ({
@@ -12,6 +13,7 @@ vi.mock('next/navigation', () => ({
         push: pushMock,
     }),
     useSearchParams: () => mockSearchParams,
+    usePathname: () => mockPathname,
 }));
 
 // Mock react-i18next

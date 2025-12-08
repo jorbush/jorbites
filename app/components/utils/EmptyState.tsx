@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import Button from '@/app/components/buttons/Button';
 import Heading from '@/app/components/navigation/Heading';
@@ -21,6 +21,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const pathname = usePathname();
     const { t } = useTranslation();
 
     const searchQuery = searchParams?.get('search');
@@ -51,9 +52,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     }
 
     const handleReset = () => {
-        // Get the current pathname to determine where to navigate
-        const currentPath = window.location.pathname;
-        if (currentPath === '/favorites') {
+        // Use pathname from usePathname hook instead of window.location
+        if (pathname === '/favorites') {
             router.push('/favorites');
         } else {
             router.push('/');
