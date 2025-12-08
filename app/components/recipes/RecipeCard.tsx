@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { memo, useMemo } from 'react';
 import Avatar from '../utils/Avatar';
-import { isAwardWinningRecipe } from '@/app/utils/recipeHelpers';
 
 interface RecipeCardProps {
     data: SafeRecipe;
@@ -27,7 +26,11 @@ const RecipeCard = memo(function RecipeCard({
     const { t } = useTranslation();
 
     const isAwardWinning = useMemo(() => {
-        return isAwardWinningRecipe(data);
+        return (
+            data.categories?.some(
+                (cat) => cat.toLowerCase() === 'award-winning'
+            ) || false
+        );
     }, [data]);
 
     return (

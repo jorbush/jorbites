@@ -26,7 +26,6 @@ import {
 } from '@/app/utils/constants';
 import { logger } from '@/app/lib/axiom/server';
 import { YOUTUBE_URL_REGEX } from '@/app/utils/validation';
-import { getRecipeCategories } from '@/app/utils/recipeHelpers';
 
 interface IParams {
     recipeId?: string;
@@ -223,7 +222,7 @@ export async function PATCH(
 
             // Check for award-winning category
             // Use utility function to handle both legacy 'category' and new 'categories' field
-            const existingCategories = getRecipeCategories(recipe);
+            const existingCategories = recipe.categories || [];
             const hasAwardWinning = existingCategories.some(
                 (cat) => cat.toLowerCase() === 'award-winning'
             );
