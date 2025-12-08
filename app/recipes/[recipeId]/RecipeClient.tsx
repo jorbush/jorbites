@@ -8,6 +8,7 @@ import useLoginModal from '@/app/hooks/useLoginModal';
 import { SafeComment, SafeRecipe, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import { categories } from '@/app/components/navbar/Categories';
+import { IconType } from 'react-icons';
 import RecipeHead from '@/app/components/recipes/RecipeHead';
 import RecipeInfo from '@/app/components/recipes/RecipeInfo';
 import { preparationMethods } from '@/app/components/modals/recipe-steps/MethodsStep';
@@ -46,7 +47,15 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const categoryObjects = useMemo(() => {
         return recipeCategories
             .map((cat: string) => categories.find((item) => item.label === cat))
-            .filter(Boolean);
+            .filter(
+                (
+                    cat
+                ): cat is {
+                    icon: IconType;
+                    label: string;
+                    description: string;
+                } => cat !== undefined
+            );
     }, [recipeCategories]);
 
     const method = useMemo(() => {

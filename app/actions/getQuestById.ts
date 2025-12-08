@@ -35,7 +35,7 @@ export default async function getQuestById(params: IParams) {
                         title: true,
                         description: true,
                         imageSrc: true,
-                        category: true,
+                        categories: true,
                         method: true,
                         minutes: true,
                         numLikes: true,
