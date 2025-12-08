@@ -37,7 +37,7 @@ const RecipeCategoryAndMethod: React.FC<RecipeInfoProps> = ({
                             key={`${category.label}-${index}`}
                             icon={category.icon}
                             label={category.label}
-                            description={''}
+                            description={category.description}
                         />
                     ))}
                 {method && (
