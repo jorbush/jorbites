@@ -50,7 +50,7 @@ Execute the following script to migrate all existing recipes:
 
 ```javascript
 // Migration script: Convert category to categories array
-db.recipes.updateMany(
+db.Recipe.updateMany(
   // Find all documents that don't have categories field or have null/empty categories
   {
     $or: [
@@ -79,7 +79,7 @@ db.recipes.updateMany(
 
 ```javascript
 // Find all recipes without categories field
-db.recipes.find({
+db.Recipe.find({
   $or: [
     { categories: { $exists: false } },
     { categories: null }
@@ -93,7 +93,7 @@ db.recipes.find({
   }
 
   // Update the document
-  db.recipes.updateOne(
+  db.Recipe.updateOne(
     { _id: recipe._id },
     { $set: { categories: categories } }
   );
@@ -106,13 +106,13 @@ Check that all recipes now have a `categories` field:
 
 ```javascript
 // Count recipes with categories field
-db.recipes.countDocuments({ categories: { $exists: true } })
+db.Recipe.countDocuments({ categories: { $exists: true } })
 
 // Should match total recipe count
-db.recipes.countDocuments({})
+db.Recipe.countDocuments({})
 
 // Check a few sample documents
-db.recipes.find({}, { title: 1, category: 1, categories: 1 }).limit(5)
+db.Recipe.find({}, { title: 1, category: 1, categories: 1 }).limit(5)
 ```
 
 #### Step 5: Verify Data Integrity

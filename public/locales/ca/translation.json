@@ -574,5 +574,6 @@
     "month_nov": "Nov",
     "month_dec": "Des",
     "cookies_policy": "Política de cookies",
-    "privacy_policy": "Política de privacitat"
+    "privacy_policy": "Política de privacitat",
+    "max_categories_reached": "Màxim de 3 categories permeses"
 }
