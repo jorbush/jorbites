@@ -20,13 +20,11 @@ interface RecipeInfoProps {
     description: React.ReactNode;
     ingredients: React.ReactNode[];
     steps: React.ReactNode[];
-    category:
-        | {
-              icon: IconType;
-              label: string;
-              description: string;
-          }
-        | undefined;
+    categories?: Array<{
+        icon: IconType;
+        label: string;
+        description: string;
+    }>;
     method:
         | {
               icon: IconType;
@@ -46,7 +44,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     description,
     ingredients,
     steps,
-    category,
+    categories,
     method,
     likes,
     id,
@@ -181,7 +179,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
             )}
 
             <RecipeCategoryAndMethod
-                category={category}
+                categories={categories}
                 method={method}
             />
             <hr />

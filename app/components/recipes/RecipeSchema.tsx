@@ -10,7 +10,8 @@ interface RecipeSchemaProps {
     minutes?: number;
     ingredients?: string[];
     steps?: string[];
-    category?: string;
+    categories?: string[];
+    category?: string; // Legacy field for backward compatibility
 }
 
 export default function RecipeSchema({
@@ -22,8 +23,16 @@ export default function RecipeSchema({
     minutes,
     ingredients,
     steps,
-    category,
+    categories,
+    category, // Legacy field
 }: RecipeSchemaProps) {
+    // Handle both legacy 'category' and new 'categories' field
+    const recipeCategories = Array.isArray(categories)
+        ? categories
+        : category
+        ? [category]
+        : ['Main Course'];
+
     const schemaData = {
         '@context': 'https://schema.org',
         '@type': 'Recipe',
@@ -38,7 +47,10 @@ export default function RecipeSchema({
         prepTime: `PT${minutes || 30}M`,
         cookTime: `PT${minutes || 30}M`,
         totalTime: `PT${minutes || 30}M`,
-        recipeCategory: category || 'Main Course',
+        recipeCategory:
+            recipeCategories.length === 1
+                ? recipeCategories[0]
+                : recipeCategories,
         recipeIngredient: ingredients || [],
         recipeInstructions:
             steps?.map((step, index) => ({

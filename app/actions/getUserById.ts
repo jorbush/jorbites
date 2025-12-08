@@ -55,8 +55,18 @@ export default async function getUserById(params: IParams) {
 
             const categoryCounts: Record<string, number> = {};
             userRecipes.forEach((recipe) => {
-                categoryCounts[recipe.category] =
-                    (categoryCounts[recipe.category] || 0) + 1;
+                // Handle both legacy 'category' and new 'categories' field
+                const recipeCategories = Array.isArray((recipe as any).categories)
+                    ? (recipe as any).categories
+                    : (recipe as any).category
+                    ? [(recipe as any).category]
+                    : [];
+
+                recipeCategories.forEach((cat: string) => {
+                    if (cat) {
+                        categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+                    }
+                });
             });
 
             let mostUsedCategory = '';

@@ -22,6 +22,7 @@ import {
     RECIPE_STEP_MAX_LENGTH,
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
+    RECIPE_MAX_CATEGORIES,
 } from '@/app/utils/constants';
 import { logger } from '@/app/lib/axiom/server';
 import { YOUTUBE_URL_REGEX } from '@/app/utils/validation';
@@ -171,7 +172,8 @@ export async function PATCH(
             title,
             description,
             imageSrc,
-            category,
+            category, // Legacy field for backward compatibility
+            categories,
             method,
             ingredients,
             steps,
@@ -185,14 +187,50 @@ export async function PATCH(
             questId,
         } = body;
 
-        if (
-            typeof category === 'string' &&
-            category.toLowerCase() === 'award-winning' &&
-            recipe.category?.toLowerCase() !== 'award-winning'
-        ) {
-            return forbidden(
-                'The Award-winning category cannot be set via API'
+        // Handle both legacy 'category' and new 'categories' field
+        let finalCategories: string[] | undefined = undefined;
+        if (Array.isArray(categories)) {
+            finalCategories = categories;
+        } else if (typeof category === 'string' && category.trim() !== '') {
+            // Migrate legacy single category to array
+            finalCategories = [category];
+        } else if (categories === undefined && category === undefined) {
+            // If neither is provided, keep existing categories
+            finalCategories = undefined;
+        }
+
+        // Validate categories if provided
+        if (finalCategories !== undefined) {
+            if (finalCategories.length === 0) {
+                return badRequest('At least one category is required');
+            }
+
+            if (finalCategories.length > RECIPE_MAX_CATEGORIES) {
+                return validationError(
+                    `Recipe cannot have more than ${RECIPE_MAX_CATEGORIES} categories`
+                );
+            }
+
+            // Check for award-winning category
+            const existingCategories = Array.isArray(recipe.categories)
+                ? recipe.categories
+                : recipe.category
+                ? [recipe.category]
+                : [];
+            const hasAwardWinning = existingCategories.some(
+                (cat) => cat.toLowerCase() === 'award-winning'
             );
+
+            if (
+                finalCategories.some(
+                    (cat) => cat.toLowerCase() === 'award-winning'
+                ) &&
+                !hasAwardWinning
+            ) {
+                return forbidden(
+                    'The Award-winning category cannot be set via API'
+                );
+            }
         }
 
         if (!title || !description) {
@@ -295,25 +333,31 @@ export async function PATCH(
             }
         }
 
+        const updateData: any = {
+            title,
+            description,
+            imageSrc,
+            method,
+            ingredients,
+            steps,
+            minutes,
+            extraImages,
+            coCooksIds: coCooksIds || [],
+            linkedRecipeIds: linkedRecipeIds || [],
+            youtubeUrl: youtubeUrl?.trim() || null,
+            questId: finalQuestId,
+        };
+
+        // Only update categories if provided
+        if (finalCategories !== undefined) {
+            updateData.categories = finalCategories;
+        }
+
         const updatedRecipe = await prisma.recipe.update({
             where: {
                 id: recipeId,
             },
-            data: {
-                title,
-                description,
-                imageSrc,
-                category,
-                method,
-                ingredients,
-                steps,
-                minutes,
-                extraImages,
-                coCooksIds: coCooksIds || [],
-                linkedRecipeIds: linkedRecipeIds || [],
-                youtubeUrl: youtubeUrl?.trim() || null,
-                questId: finalQuestId,
-            },
+            data: updateData,
         });
 
         logger.info('PATCH /api/recipe/[recipeId] - success', { recipeId });

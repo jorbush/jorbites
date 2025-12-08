@@ -59,7 +59,7 @@ model Recipe {
   description String
   imageSrc String
   createdAt DateTime @default(now())
-  category String
+  categories String[]
   method String
   minutes Int
   numLikes Int

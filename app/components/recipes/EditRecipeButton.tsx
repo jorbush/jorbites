@@ -23,11 +23,18 @@ const EditRecipeButton: React.FC<EditRecipeButtonProps> = ({ recipe }) => {
 
     const onClick = useCallback(async () => {
         try {
+            // Handle both legacy 'category' and new 'categories' field
+            const recipeCategories = Array.isArray((recipe as any).categories)
+                ? (recipe as any).categories
+                : (recipe as any).category
+                ? [(recipe as any).category]
+                : [];
+
             const editData: EditRecipeData = {
                 id: recipe.id,
                 title: recipe.title,
                 description: recipe.description,
-                category: recipe.category,
+                categories: recipeCategories,
                 method: recipe.method,
                 imageSrc: recipe.imageSrc,
                 imageSrc1: recipe.extraImages?.[0] || '',

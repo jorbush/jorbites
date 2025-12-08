@@ -49,7 +49,16 @@ const RecipeCard = memo(function RecipeCard({
                             currentUser={currentUser}
                         />
                     </div>
-                    {data.category?.toLowerCase() === 'award-winning' && (
+                    {(() => {
+                        const recipeCategories = Array.isArray((data as any).categories)
+                            ? (data as any).categories
+                            : (data as any).category
+                            ? [(data as any).category]
+                            : [];
+                        return recipeCategories.some(
+                            (cat: string) => cat?.toLowerCase() === 'award-winning'
+                        );
+                    })() && (
                         <div className="absolute bottom-0 flex w-full items-center justify-center bg-gray-900/50 p-2 text-white">
                             <GiTrophyCup
                                 className="mr-1 inline-block"

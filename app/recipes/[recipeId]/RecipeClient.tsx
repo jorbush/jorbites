@@ -38,9 +38,21 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
 
-    const category = useMemo(() => {
-        return categories.find((item) => item.label === recipe.category);
-    }, [recipe.category]);
+    // Handle both legacy 'category' and new 'categories' field
+    const recipeCategories = useMemo(() => {
+        if (Array.isArray((recipe as any).categories)) {
+            return (recipe as any).categories;
+        } else if ((recipe as any).category) {
+            return [(recipe as any).category];
+        }
+        return [];
+    }, [recipe]);
+
+    const categoryObjects = useMemo(() => {
+        return recipeCategories
+            .map((cat: string) => categories.find((item) => item.label === cat))
+            .filter(Boolean);
+    }, [recipeCategories]);
 
     const method = useMemo(() => {
         return preparationMethods.find((item) => item.label === recipe.method);
@@ -96,7 +108,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 minutes={recipe.minutes}
                 ingredients={recipe.ingredients}
                 steps={recipe.steps}
-                category={recipe.category}
+                categories={recipeCategories}
             />
             <div className="mx-auto max-w-[800px]">
                 <div className="flex flex-col gap-6">
@@ -111,7 +123,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             user={recipe.user}
                             likes={recipe.numLikes}
                             currentUser={currentUser}
-                            category={category}
+                            categories={categoryObjects}
                             method={method}
                             description={formattedDescription}
                             ingredients={formattedIngredients}

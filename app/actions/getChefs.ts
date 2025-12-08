@@ -77,7 +77,8 @@ export default async function getChefs(
                 numLikes: true,
                 createdAt: true,
                 minutes: true,
-                category: true,
+                categories: true,
+                category: true, // Legacy field for backward compatibility
             },
         });
 
@@ -88,7 +89,8 @@ export default async function getChefs(
                 numLikes: number | null;
                 createdAt: Date;
                 minutes: number | null;
-                category: string | null;
+                categories: string[] | null;
+                category: string | null; // Legacy field
             }>
         > = {};
         allRecipes.forEach((recipe) => {
@@ -130,10 +132,18 @@ export default async function getChefs(
 
             const categoryCount: Record<string, number> = {};
             userRecipes.forEach((recipe) => {
-                if (recipe.category) {
-                    categoryCount[recipe.category] =
-                        (categoryCount[recipe.category] || 0) + 1;
-                }
+                // Handle both legacy 'category' and new 'categories' field
+                const recipeCategories = Array.isArray(recipe.categories)
+                    ? recipe.categories
+                    : recipe.category
+                    ? [recipe.category]
+                    : [];
+
+                recipeCategories.forEach((cat) => {
+                    if (cat) {
+                        categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+                    }
+                });
             });
             const mostUsedCategory =
                 Object.keys(categoryCount).length > 0
