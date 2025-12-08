@@ -56,7 +56,10 @@ export default async function getRecipes(
         let query: any = {};
 
         if (typeof category === 'string') {
-            query.category = category;
+            // Filter recipes that have this category in their categories array
+            query.categories = {
+                has: category,
+            };
         }
 
         if (typeof search === 'string' && search.trim()) {

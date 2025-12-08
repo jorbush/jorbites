@@ -41,7 +41,7 @@ interface Quest {
         title: string;
         description: string;
         imageSrc: string;
-        category: string;
+        categories: string[];
         method: string;
         minutes: number;
         numLikes: number;

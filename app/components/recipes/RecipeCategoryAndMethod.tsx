@@ -4,13 +4,11 @@ import { IconType } from 'react-icons';
 import RecipeCategoryView from '@/app/components/recipes/RecipeCategory';
 
 interface RecipeInfoProps {
-    category:
-        | {
-              icon: IconType;
-              label: string;
-              description: string;
-          }
-        | undefined;
+    categories?: Array<{
+        icon: IconType;
+        label: string;
+        description: string;
+    }>;
     method:
         | {
               icon: IconType;
@@ -20,26 +18,28 @@ interface RecipeInfoProps {
 }
 
 const RecipeCategoryAndMethod: React.FC<RecipeInfoProps> = ({
-    category,
+    categories,
     method,
 }) => {
+    const hasContent = (categories && categories.length > 0) || method;
+
     return (
         <>
-            {(category || method) && <hr />}
+            {hasContent && <hr />}
             <div
                 data-testid="recipe-category-and-method"
                 data-cy="cooking-methods"
                 className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 dark:text-neutral-100"
             >
-                {category && (
-                    <>
+                {categories &&
+                    categories.map((category, index) => (
                         <RecipeCategoryView
+                            key={`${category.label}-${index}`}
                             icon={category.icon}
-                            label={category?.label}
+                            label={category.label}
                             description={''}
                         />
-                    </>
-                )}
+                    ))}
                 {method && (
                     <>
                         <RecipeCategoryView

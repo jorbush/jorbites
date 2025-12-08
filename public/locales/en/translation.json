@@ -35,8 +35,8 @@
     "create": "Create",
     "next": "Next",
     "back": "Back",
-    "title_category_recipe": "Which of these best describes your recipe?",
-    "subtitle_category_recipe": "Pick a category",
+    "title_category_recipe": "Which of these best describe your recipe?",
+    "subtitle_categories_recipe": "Pick categories",
     "title_ingredients": "Set ingredients",
     "title_steps": "Set steps",
     "title_description": "How would you describe your recipe?",
@@ -576,5 +576,6 @@
     "month_nov": "Nov",
     "month_dec": "Dec",
     "cookies_policy": "Cookies policy",
-    "privacy_policy": "Privacy policy"
+    "privacy_policy": "Privacy policy",
+    "max_categories_reached": "Maximum of 3 categories allowed"
 }

@@ -35,8 +35,8 @@
     "create": "Crear",
     "next": "Següent",
     "back": "Enrere",
-    "title_category_recipe": "Quina d'aquestes descriu millor la teva recepta?",
-    "subtitle_category_recipe": "Selecciona una categoria",
+    "title_category_recipe": "Quines d'aquestes descriuen millor la teva recepta?",
+    "subtitle_categories_recipe": "Selecciona les categories",
     "title_ingredients": "Afegir ingredients",
     "title_steps": "Afegir passos",
     "title_description": "Com descriuries la teva recepta?",
@@ -574,5 +574,6 @@
     "month_nov": "Nov",
     "month_dec": "Des",
     "cookies_policy": "Política de cookies",
-    "privacy_policy": "Política de privacitat"
+    "privacy_policy": "Política de privacitat",
+    "max_categories_reached": "Màxim de 3 categories permeses"
 }

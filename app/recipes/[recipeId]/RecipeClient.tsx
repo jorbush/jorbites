@@ -8,6 +8,7 @@ import useLoginModal from '@/app/hooks/useLoginModal';
 import { SafeComment, SafeRecipe, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import { categories } from '@/app/components/navbar/Categories';
+import { IconType } from 'react-icons';
 import RecipeHead from '@/app/components/recipes/RecipeHead';
 import RecipeInfo from '@/app/components/recipes/RecipeInfo';
 import { preparationMethods } from '@/app/components/modals/recipe-steps/MethodsStep';
@@ -17,6 +18,7 @@ import EditRecipeButton from '@/app/components/recipes/EditRecipeButton';
 import { useTranslation } from 'react-i18next';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
+import { getRecipeCategories } from '@/app/utils/recipeHelpers';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
@@ -38,9 +40,23 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
 
-    const category = useMemo(() => {
-        return categories.find((item) => item.label === recipe.category);
-    }, [recipe.category]);
+    const recipeCategories = useMemo(() => {
+        return getRecipeCategories(recipe);
+    }, [recipe]);
+
+    const categoryObjects = useMemo(() => {
+        return recipeCategories
+            .map((cat: string) => categories.find((item) => item.label === cat))
+            .filter(
+                (
+                    cat
+                ): cat is {
+                    icon: IconType;
+                    label: string;
+                    description: string;
+                } => cat !== undefined
+            );
+    }, [recipeCategories]);
 
     const method = useMemo(() => {
         return preparationMethods.find((item) => item.label === recipe.method);
@@ -96,7 +112,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 minutes={recipe.minutes}
                 ingredients={recipe.ingredients}
                 steps={recipe.steps}
-                category={recipe.category}
+                categories={recipeCategories}
             />
             <div className="mx-auto max-w-[800px]">
                 <div className="flex flex-col gap-6">
@@ -111,7 +127,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             user={recipe.user}
                             likes={recipe.numLikes}
                             currentUser={currentUser}
-                            category={category}
+                            categories={categoryObjects}
                             method={method}
                             description={formattedDescription}
                             ingredients={formattedIngredients}

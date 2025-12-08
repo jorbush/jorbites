@@ -1,5 +1,6 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
+import { getRecipeCategories } from '@/app/utils/recipeHelpers';
 
 interface IParams {
     userId?: string;
@@ -55,8 +56,12 @@ export default async function getUserById(params: IParams) {
 
             const categoryCounts: Record<string, number> = {};
             userRecipes.forEach((recipe) => {
-                categoryCounts[recipe.category] =
-                    (categoryCounts[recipe.category] || 0) + 1;
+                const recipeCategories = getRecipeCategories(recipe);
+                recipeCategories.forEach((cat: string) => {
+                    if (cat) {
+                        categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+                    }
+                });
             });
 
             let mostUsedCategory = '';

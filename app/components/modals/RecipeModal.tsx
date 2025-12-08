@@ -56,7 +56,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         reset,
     } = useForm<FieldValues>({
         defaultValues: {
-            category: '',
+            categories: [],
             method: '',
             imageSrc: '',
             imageSrc1: '',
@@ -74,7 +74,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         },
     });
 
-    const category = watch('category');
+    const categories = watch('categories');
     const minutes = watch('minutes');
     const imageSrc = watch('imageSrc');
     const method = watch('method');
@@ -177,7 +177,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
         const data = {
             currentStep: step,
-            category: watch('category'),
+            categories: watch('categories'),
             method: watch('method'),
             imageSrc: watch('imageSrc'),
             imageSrc1: watch('imageSrc1'),
@@ -286,7 +286,11 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             setIsLoadingDraft(true);
             try {
                 reset({
-                    category: editData.category,
+                    categories: Array.isArray(editData.categories)
+                        ? editData.categories
+                        : editData.category
+                          ? [editData.category]
+                          : [],
                     method: editData.method,
                     imageSrc: editData.imageSrc,
                     imageSrc1: editData.imageSrc1 || '',
@@ -353,7 +357,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         if (!recipeModal.isOpen) {
             // Reset form when modal closes to ensure clean state on next open
             reset({
-                category: '',
+                categories: [],
                 method: '',
                 imageSrc: '',
                 imageSrc1: '',
@@ -497,7 +501,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             }
 
             reset({
-                category: '',
+                categories: [],
                 method: '',
                 imageSrc: '',
                 imageSrc1: '',
@@ -610,9 +614,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     let bodyContent = (
         <CategoryStep
-            selectedCategory={category}
-            onCategorySelect={(selectedCategory) =>
-                setCustomValue('category', selectedCategory)
+            selectedCategories={categories || []}
+            onCategorySelect={(selectedCategories) =>
+                setCustomValue('categories', selectedCategories)
             }
         />
     );

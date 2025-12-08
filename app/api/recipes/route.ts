@@ -11,6 +11,7 @@ import {
     RECIPE_STEP_MAX_LENGTH,
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
+    RECIPE_MAX_CATEGORIES,
 } from '@/app/utils/constants';
 import {
     unauthorized,
@@ -62,7 +63,8 @@ export async function POST(request: Request) {
             title,
             description,
             imageSrc,
-            category,
+            category, // Legacy field for backward compatibility
+            categories,
             method,
             ingredients,
             steps,
@@ -76,9 +78,38 @@ export async function POST(request: Request) {
             questId,
         } = body;
 
+        // Handle both legacy 'category' and new 'categories' field
+        let finalCategories: string[] = [];
+        if (Array.isArray(categories)) {
+            finalCategories = categories;
+        } else if (typeof category === 'string' && category.trim() !== '') {
+            // Migrate legacy single category to array
+            finalCategories = [category];
+        }
+
+        // Validate categories
+        if (finalCategories.length === 0) {
+            return badRequest('At least one category is required');
+        }
+
+        if (finalCategories.length > RECIPE_MAX_CATEGORIES) {
+            return validationError(
+                `Recipe cannot have more than ${RECIPE_MAX_CATEGORIES} categories`
+            );
+        }
+
+        // Validate each category is a non-empty string
         if (
-            typeof category === 'string' &&
-            category.toLowerCase() === 'award-winning'
+            finalCategories.some(
+                (cat) => typeof cat !== 'string' || !cat.trim()
+            )
+        ) {
+            return badRequest('All categories must be non-empty strings');
+        }
+
+        // Check for award-winning category
+        if (
+            finalCategories.some((cat) => cat.toLowerCase() === 'award-winning')
         ) {
             return forbidden(
                 'The Award-winning category cannot be set via API'
@@ -183,7 +214,7 @@ export async function POST(request: Request) {
                 title,
                 description,
                 imageSrc,
-                category,
+                categories: finalCategories,
                 method,
                 ingredients,
                 steps,

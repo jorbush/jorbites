@@ -1,12 +1,21 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import CategoryStep from '@/app/components/modals/recipe-steps/CategoryStep';
+import { toast } from 'react-hot-toast';
+import { RECIPE_MAX_CATEGORIES } from '@/app/utils/constants';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
     useTranslation: vi.fn(() => ({
         t: (key: string) => key, // Return the key itself instead of the translated string
     })),
+}));
+
+// Mock react-hot-toast
+vi.mock('react-hot-toast', () => ({
+    toast: {
+        error: vi.fn(),
+    },
 }));
 
 // Mock Heading component
@@ -46,7 +55,7 @@ vi.mock('@/app/components/navbar/Categories', () => ({
 
 describe('<CategoryStep />', () => {
     const mockProps = {
-        selectedCategory: '',
+        selectedCategories: [] as string[],
         onCategorySelect: vi.fn(),
     };
 
@@ -81,7 +90,7 @@ describe('<CategoryStep />', () => {
     it('shows selected category correctly', () => {
         const propsWithSelection = {
             ...mockProps,
-            selectedCategory: 'breakfast',
+            selectedCategories: ['breakfast'],
         };
 
         render(<CategoryStep {...propsWithSelection} />);
@@ -99,7 +108,7 @@ describe('<CategoryStep />', () => {
         const breakfastCategory = screen.getByTestId('category-box-breakfast');
         fireEvent.click(breakfastCategory);
 
-        expect(mockProps.onCategorySelect).toHaveBeenCalledWith('breakfast');
+        expect(mockProps.onCategorySelect).toHaveBeenCalledWith(['breakfast']);
     });
 
     it('calls onCategorySelect for different categories', () => {
@@ -108,7 +117,38 @@ describe('<CategoryStep />', () => {
         const dinnerCategory = screen.getByTestId('category-box-dinner');
         fireEvent.click(dinnerCategory);
 
-        expect(mockProps.onCategorySelect).toHaveBeenCalledWith('dinner');
+        expect(mockProps.onCategorySelect).toHaveBeenCalledWith(['dinner']);
+    });
+
+    it('allows selecting multiple categories', () => {
+        const propsWithSelection = {
+            ...mockProps,
+            selectedCategories: ['breakfast'],
+        };
+
+        render(<CategoryStep {...propsWithSelection} />);
+
+        const lunchCategory = screen.getByTestId('category-box-lunch');
+        fireEvent.click(lunchCategory);
+
+        expect(mockProps.onCategorySelect).toHaveBeenCalledWith([
+            'breakfast',
+            'lunch',
+        ]);
+    });
+
+    it('allows deselecting a category', () => {
+        const propsWithSelection = {
+            ...mockProps,
+            selectedCategories: ['breakfast', 'lunch'],
+        };
+
+        render(<CategoryStep {...propsWithSelection} />);
+
+        const breakfastCategory = screen.getByTestId('category-box-breakfast');
+        fireEvent.click(breakfastCategory);
+
+        expect(mockProps.onCategorySelect).toHaveBeenCalledWith(['lunch']);
     });
 
     it('renders categories in grid layout', () => {
@@ -131,5 +171,47 @@ describe('<CategoryStep />', () => {
 
         // Ensure award-winning is not present
         expect(screen.queryByText('award-winning')).toBeNull();
+    });
+
+    it('prevents selecting more than max categories and shows toast error', () => {
+        const propsWithMaxCategories = {
+            ...mockProps,
+            selectedCategories: ['breakfast', 'lunch', 'dinner'], // Already at max (3)
+        };
+
+        render(<CategoryStep {...propsWithMaxCategories} />);
+
+        const dessertCategory = screen.getByTestId('category-box-dessert');
+        fireEvent.click(dessertCategory);
+
+        // Verify toast.error was called with the correct message
+        // The translation function returns the key, so it will be 'max_categories_reached'
+        // or the fallback message
+        expect(toast.error).toHaveBeenCalledWith(
+            expect.stringMatching(
+                /max_categories_reached|Maximum of \d+ categories allowed/
+            )
+        );
+
+        // Verify onCategorySelect was NOT called (category was not added)
+        expect(mockProps.onCategorySelect).not.toHaveBeenCalled();
+    });
+
+    it('shows correct counter in subtitle', () => {
+        const propsWithSelection = {
+            ...mockProps,
+            selectedCategories: ['breakfast', 'lunch'],
+        };
+
+        render(<CategoryStep {...propsWithSelection} />);
+
+        // Check that the heading contains the counter
+        const heading = screen.getByTestId('heading');
+        const subtitleText = heading.querySelector('p')?.textContent || '';
+
+        expect(subtitleText).toContain('2/3');
+        expect(subtitleText).toContain(
+            `${propsWithSelection.selectedCategories.length}/${RECIPE_MAX_CATEGORIES}`
+        );
     });
 });

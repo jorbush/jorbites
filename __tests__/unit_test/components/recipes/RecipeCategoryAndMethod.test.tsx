@@ -20,11 +20,13 @@ describe('<RecipeCategoryAndMethod />', () => {
 
     it('renders correctly with both category and method', () => {
         const props = {
-            category: {
-                icon: FaUtensils,
-                label: 'Italian',
-                description: 'Italian cuisine',
-            },
+            categories: [
+                {
+                    icon: FaUtensils,
+                    label: 'Italian',
+                    description: 'Italian cuisine',
+                },
+            ],
             method: {
                 icon: FaFire,
                 label: 'Grilling',
@@ -41,11 +43,13 @@ describe('<RecipeCategoryAndMethod />', () => {
 
     it('renders correctly with only category', () => {
         const props = {
-            category: {
-                icon: FaUtensils,
-                label: 'Italian',
-                description: 'Italian cuisine',
-            },
+            categories: [
+                {
+                    icon: FaUtensils,
+                    label: 'Italian',
+                    description: 'Italian cuisine',
+                },
+            ],
             method: undefined,
         };
 
@@ -58,7 +62,7 @@ describe('<RecipeCategoryAndMethod />', () => {
 
     it('renders correctly with only method', () => {
         const props = {
-            category: undefined,
+            categories: undefined,
             method: {
                 icon: FaFire,
                 label: 'Grilling',
@@ -74,7 +78,7 @@ describe('<RecipeCategoryAndMethod />', () => {
 
     it('renders correctly with neither category nor method', () => {
         const props = {
-            category: undefined,
+            categories: undefined,
             method: undefined,
         };
 
@@ -88,11 +92,13 @@ describe('<RecipeCategoryAndMethod />', () => {
 
     it('passes correct props to RecipeCategoryView', () => {
         const props = {
-            category: {
-                icon: FaUtensils,
-                label: 'Italian',
-                description: 'Italian cuisine',
-            },
+            categories: [
+                {
+                    icon: FaUtensils,
+                    label: 'Italian',
+                    description: 'Italian cuisine',
+                },
+            ],
             method: {
                 icon: FaFire,
                 label: 'Grilling',
@@ -104,5 +110,34 @@ describe('<RecipeCategoryAndMethod />', () => {
         const categoryViews = screen.getAllByTestId('mocked-recipe-category');
         expect(categoryViews[0].textContent).toBe('Italian');
         expect(categoryViews[1].textContent).toBe('Grilling');
+    });
+
+    it('renders multiple categories correctly', () => {
+        const props = {
+            categories: [
+                {
+                    icon: FaUtensils,
+                    label: 'Italian',
+                    description: 'Italian cuisine',
+                },
+                {
+                    icon: FaFire,
+                    label: 'Vegetarian',
+                    description: 'Vegetarian recipes',
+                },
+            ],
+            method: {
+                icon: FaFire,
+                label: 'Grilling',
+            },
+        };
+
+        render(<RecipeCategoryAndMethod {...props} />);
+
+        expect(screen.getByTestId('recipe-category-and-method')).toBeDefined();
+        expect(screen.getAllByTestId('mocked-recipe-category')).toHaveLength(3);
+        expect(screen.getByText('Italian')).toBeDefined();
+        expect(screen.getByText('Vegetarian')).toBeDefined();
+        expect(screen.getByText('Grilling')).toBeDefined();
     });
 });

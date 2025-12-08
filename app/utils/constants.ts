@@ -5,6 +5,7 @@ export const RECIPE_INGREDIENT_MAX_LENGTH = 135;
 export const RECIPE_STEP_MAX_LENGTH = 500;
 export const RECIPE_MAX_INGREDIENTS = 30;
 export const RECIPE_MAX_STEPS = 30;
+export const RECIPE_MAX_CATEGORIES = 3;
 export const COMMENT_MAX_LENGTH = 500;
 export const USERNAME_MAX_LENGTH = 15;
 export const CHAR_COUNT_WARNING_THRESHOLD = 0.8;
