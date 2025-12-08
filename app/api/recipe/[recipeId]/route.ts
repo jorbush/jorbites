@@ -26,6 +26,7 @@ import {
 } from '@/app/utils/constants';
 import { logger } from '@/app/lib/axiom/server';
 import { YOUTUBE_URL_REGEX } from '@/app/utils/validation';
+import { getRecipeCategories } from '@/app/utils/recipeHelpers';
 
 interface IParams {
     recipeId?: string;
@@ -221,13 +222,8 @@ export async function PATCH(
             }
 
             // Check for award-winning category
-            // Note: After migration, recipe.categories will always be an array
-            // The recipe.category fallback is only for backward compatibility during migration
-            const existingCategories = Array.isArray(recipe.categories)
-                ? recipe.categories
-                : recipe.category
-                  ? [recipe.category]
-                  : [];
+            // Use utility function to handle both legacy 'category' and new 'categories' field
+            const existingCategories = getRecipeCategories(recipe);
             const hasAwardWinning = existingCategories.some(
                 (cat) => cat.toLowerCase() === 'award-winning'
             );

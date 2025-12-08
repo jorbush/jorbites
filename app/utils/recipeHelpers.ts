@@ -13,7 +13,7 @@ export function getRecipeCategories(recipe: any): string[] {
     if (Array.isArray(recipe.categories)) {
         // Filter out any non-string values to ensure type safety
         return recipe.categories.filter(
-            (cat): cat is string => typeof cat === 'string'
+            (cat: any): cat is string => typeof cat === 'string'
         );
     } else if (typeof recipe.category === 'string') {
         return [recipe.category];
