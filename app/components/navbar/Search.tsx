@@ -61,7 +61,9 @@ const Search: React.FC<SearchProps> = ({
                 ? params.toString()
                     ? `/?${params.toString()}`
                     : '/'
-                : `${pathname}?${params.toString()}`;
+                : params.toString()
+                  ? `${pathname}?${params.toString()}`
+                  : pathname;
             router.replace(newUrl);
         }, 1000); // 1 second debounce on URL update in order to avoid request and typing conflicts
 
@@ -110,7 +112,9 @@ const Search: React.FC<SearchProps> = ({
                     ? params.toString()
                         ? `/?${params.toString()}`
                         : '/'
-                    : `${pathname}?${params.toString()}`;
+                    : params.toString()
+                      ? `${pathname}?${params.toString()}`
+                      : pathname;
                 router.push(newUrl);
             } else {
                 // If not on filterable page, exit immediately

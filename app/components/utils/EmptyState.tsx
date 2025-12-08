@@ -53,11 +53,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 
     const handleReset = () => {
         // Use pathname from usePathname hook instead of window.location
-        if (pathname === '/favorites') {
-            router.push('/favorites');
-        } else {
-            router.push('/');
-        }
+        // Navigate to the base path without any query parameters
+        router.push(pathname || '/');
     };
 
     return (

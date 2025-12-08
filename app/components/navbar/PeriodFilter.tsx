@@ -72,7 +72,9 @@ const PeriodFilter: React.FC = () => {
             ? params.toString()
                 ? `/?${params.toString()}`
                 : '/'
-            : `${pathname}?${params.toString()}`;
+            : params.toString()
+              ? `${pathname}?${params.toString()}`
+              : pathname;
         router.replace(newUrl);
     };
 
