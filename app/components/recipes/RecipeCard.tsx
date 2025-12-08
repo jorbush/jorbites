@@ -6,8 +6,9 @@ import HeartButton from '@/app/components/buttons/HeartButton';
 import { GiTrophyCup } from 'react-icons/gi';
 import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import Avatar from '../utils/Avatar';
+import { isAwardWinningRecipe } from '@/app/utils/recipeHelpers';
 
 interface RecipeCardProps {
     data: SafeRecipe;
@@ -24,6 +25,10 @@ const RecipeCard = memo(function RecipeCard({
 }: RecipeCardProps) {
     const router = useRouter();
     const { t } = useTranslation();
+
+    const isAwardWinning = useMemo(() => {
+        return isAwardWinningRecipe(data);
+    }, [data]);
 
     return (
         <div
@@ -49,19 +54,7 @@ const RecipeCard = memo(function RecipeCard({
                             currentUser={currentUser}
                         />
                     </div>
-                    {(() => {
-                        const recipeCategories = Array.isArray(
-                            (data as any).categories
-                        )
-                            ? (data as any).categories
-                            : (data as any).category
-                              ? [(data as any).category]
-                              : [];
-                        return recipeCategories.some(
-                            (cat: string) =>
-                                cat?.toLowerCase() === 'award-winning'
-                        );
-                    })() && (
+                    {isAwardWinning && (
                         <div className="absolute bottom-0 flex w-full items-center justify-center bg-gray-900/50 p-2 text-white">
                             <GiTrophyCup
                                 className="mr-1 inline-block"

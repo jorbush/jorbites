@@ -2,6 +2,7 @@ import prisma from '@/app/lib/prismadb';
 import { SafeUser } from '@/app/types';
 import { logger } from '@/app/lib/axiom/server';
 import { ChefOrderByType } from '@/app/utils/filter';
+import { getRecipeCategories } from '@/app/utils/recipeHelpers';
 
 // Re-export for convenience in server components
 export { ChefOrderByType };
@@ -78,7 +79,6 @@ export default async function getChefs(
                 createdAt: true,
                 minutes: true,
                 categories: true,
-                category: true, // Legacy field for backward compatibility
             },
         });
 
@@ -90,7 +90,6 @@ export default async function getChefs(
                 createdAt: Date;
                 minutes: number | null;
                 categories: string[] | null;
-                category: string | null; // Legacy field
             }>
         > = {};
         allRecipes.forEach((recipe) => {
@@ -132,13 +131,7 @@ export default async function getChefs(
 
             const categoryCount: Record<string, number> = {};
             userRecipes.forEach((recipe) => {
-                // Handle both legacy 'category' and new 'categories' field
-                const recipeCategories = Array.isArray(recipe.categories)
-                    ? recipe.categories
-                    : recipe.category
-                      ? [recipe.category]
-                      : [];
-
+                const recipeCategories = getRecipeCategories(recipe);
                 recipeCategories.forEach((cat) => {
                     if (cat) {
                         categoryCount[cat] = (categoryCount[cat] || 0) + 1;

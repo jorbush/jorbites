@@ -27,7 +27,7 @@ describe('EditRecipeButton', () => {
         minutes: 30,
         imageSrc: 'http://test.jpg',
         extraImages: ['http://test1.jpg', 'http://test2.jpg'],
-        category: 'Dinner',
+        categories: ['Dinner'],
         method: 'Baking',
         description: 'Test description',
         ingredients: ['Ingredient 1', 'Ingredient 2'],
@@ -41,7 +41,7 @@ describe('EditRecipeButton', () => {
             id: 'user1',
             name: 'Test User',
         } as SafeUser,
-    };
+    } as any;
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -82,7 +82,7 @@ describe('EditRecipeButton', () => {
                     id: '1',
                     title: 'Test Recipe',
                     description: 'Test description',
-                    category: 'Dinner',
+                    categories: ['Dinner'],
                     method: 'Baking',
                     imageSrc: 'http://test.jpg',
                     imageSrc1: 'http://test1.jpg',

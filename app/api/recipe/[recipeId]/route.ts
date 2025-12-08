@@ -211,12 +211,21 @@ export async function PATCH(
                 );
             }
 
+            // Validate each category is a non-empty string
+            if (
+                finalCategories.some(
+                    (cat) => typeof cat !== 'string' || !cat.trim()
+                )
+            ) {
+                return badRequest('All categories must be non-empty strings');
+            }
+
             // Check for award-winning category
+            // Note: After migration, recipe.categories will always be an array
+            // The recipe.category fallback is only for backward compatibility during migration
             const existingCategories = Array.isArray(recipe.categories)
                 ? recipe.categories
-                : recipe.category
-                  ? [recipe.category]
-                  : [];
+                : [];
             const hasAwardWinning = existingCategories.some(
                 (cat) => cat.toLowerCase() === 'award-winning'
             );

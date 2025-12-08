@@ -48,7 +48,7 @@ describe('Recipes API Routes and Server Actions', () => {
         title: string;
         description: string;
         imageSrc: string;
-        category: string;
+        categories: string[];
         method: string;
         minutes: number;
         numLikes: number;
@@ -63,7 +63,7 @@ describe('Recipes API Routes and Server Actions', () => {
         description: string;
         imageSrc: string;
         createdAt: Date;
-        category: string;
+        categories: string[];
         method: string;
         minutes: number;
         numLikes: number;
@@ -118,7 +118,7 @@ describe('Recipes API Routes and Server Actions', () => {
             title: 'Test Recipe',
             description: 'Delicious test recipe',
             imageSrc: `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/v1721469287/IMG_7717_xedos6.webp`,
-            category: 'Desserts',
+            categories: ['Desserts'],
             method: 'Oven',
             ingredients: ['sugar', 'flour'],
             steps: ['Mix ingredients', 'Bake at 350F'],
@@ -137,7 +137,7 @@ describe('Recipes API Routes and Server Actions', () => {
             description: string;
             imageSrc: string;
             createdAt: Date;
-            category: string;
+            categories: string[];
             method: string;
             minutes: number;
             numLikes: number;
@@ -332,7 +332,7 @@ describe('Recipes API Error Handling', () => {
                 title: 'a'.repeat(RECIPE_TITLE_MAX_LENGTH + 1),
                 description: 'Test description',
                 imageSrc: 'test.jpg',
-                category: 'test',
+                categories: ['test'],
                 method: 'test',
                 ingredients: ['test'],
                 steps: ['test'],
@@ -356,7 +356,7 @@ describe('Recipes API Error Handling', () => {
                 title: 'Test title',
                 description: 'a'.repeat(RECIPE_DESCRIPTION_MAX_LENGTH + 1),
                 imageSrc: 'test.jpg',
-                category: 'test',
+                categories: ['test'],
                 method: 'test',
                 ingredients: ['test'],
                 steps: ['test'],
@@ -380,7 +380,7 @@ describe('Recipes API Error Handling', () => {
                 title: 'Test title',
                 description: 'Test description',
                 imageSrc: 'test.jpg',
-                category: 'test',
+                categories: ['test'],
                 method: 'test',
                 ingredients: ['a'.repeat(RECIPE_INGREDIENT_MAX_LENGTH + 1)],
                 steps: ['test'],
@@ -404,7 +404,7 @@ describe('Recipes API Error Handling', () => {
                 title: 'Test title',
                 description: 'Test description',
                 imageSrc: 'test.jpg',
-                category: 'test',
+                categories: ['test'],
                 method: 'test',
                 ingredients: ['test'],
                 steps: ['a'.repeat(RECIPE_STEP_MAX_LENGTH + 1)],
@@ -430,7 +430,7 @@ describe('Recipes API Error Handling', () => {
                 title: 'Test title',
                 description: 'Test description',
                 imageSrc: 'test.jpg',
-                category: 'test',
+                categories: ['test'],
                 method: 'test',
                 ingredients: ['test'],
                 steps: ['test'],
@@ -464,7 +464,7 @@ describe('Recipes API Error Handling', () => {
                 title: 'Test title',
                 // description missing
                 imageSrc: 'test.jpg',
-                category: 'test',
+                categories: ['test'],
                 method: 'test',
                 ingredients: ['test'],
                 steps: ['test'],
@@ -498,7 +498,7 @@ describe('Recipes API Error Handling', () => {
                 title: 'a'.repeat(RECIPE_TITLE_MAX_LENGTH + 1),
                 description: 'Test description',
                 imageSrc: 'test.jpg',
-                category: 'test',
+                categories: ['test'],
                 method: 'test',
                 ingredients: ['test'],
                 steps: ['test'],
@@ -536,7 +536,7 @@ describe('Recipes API Error Handling', () => {
                 title: 'Test title',
                 description: 'Test description',
                 imageSrc: 'test.jpg',
-                category: 'test',
+                categories: ['test'],
                 method: 'test',
                 ingredients: tooManyIngredients,
                 steps: ['test'],
@@ -572,7 +572,7 @@ describe('Recipes API Error Handling', () => {
                 title: 'Test title',
                 description: 'Test description',
                 imageSrc: 'test.jpg',
-                category: 'test',
+                categories: ['test'],
                 method: 'test',
                 ingredients: ['test'],
                 steps: tooManySteps,
@@ -606,7 +606,7 @@ describe('Recipes API Error Handling', () => {
                 title: 'Test title',
                 description: 'Test description',
                 imageSrc: 'test.jpg',
-                category: 'test',
+                categories: ['test'],
                 method: 'test',
                 ingredients: ['test'],
                 steps: ['test'],
@@ -651,7 +651,7 @@ describe('Recipes API Error Handling', () => {
                         title: 'Test title',
                         description: 'Test description',
                         imageSrc: `test-invalid-${Date.now()}-${Math.random()}.jpg`,
-                        category: 'test',
+                        categories: ['test'],
                         method: 'test',
                         ingredients: ['test'],
                         steps: ['test'],

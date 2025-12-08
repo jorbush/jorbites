@@ -167,7 +167,7 @@ describe('Recipe API Error Handling', () => {
                 json: jest.fn().mockResolvedValue({
                     title: 'Updated Recipe',
                     description: 'Updated description',
-                    category: 'Dinner',
+                    categories: ['Dinner'],
                     method: 'Baking',
                     imageSrc: 'http://test.jpg',
                     ingredients: ['Ingredient 1'],

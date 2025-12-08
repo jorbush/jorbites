@@ -8,6 +8,7 @@ import { SafeRecipe, SafeUser } from '@/app/types';
 import { useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { getRecipeCategories } from '@/app/utils/recipeHelpers';
 
 interface EditRecipeButtonProps {
     recipe: SafeRecipe & {
@@ -23,12 +24,7 @@ const EditRecipeButton: React.FC<EditRecipeButtonProps> = ({ recipe }) => {
 
     const onClick = useCallback(async () => {
         try {
-            // Handle both legacy 'category' and new 'categories' field
-            const recipeCategories = Array.isArray((recipe as any).categories)
-                ? (recipe as any).categories
-                : (recipe as any).category
-                  ? [(recipe as any).category]
-                  : [];
+            const recipeCategories = getRecipeCategories(recipe);
 
             const editData: EditRecipeData = {
                 id: recipe.id,

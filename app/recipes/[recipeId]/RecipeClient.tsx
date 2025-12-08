@@ -17,6 +17,7 @@ import EditRecipeButton from '@/app/components/recipes/EditRecipeButton';
 import { useTranslation } from 'react-i18next';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
+import { getRecipeCategories } from '@/app/utils/recipeHelpers';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
@@ -38,14 +39,8 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
 
-    // Handle both legacy 'category' and new 'categories' field
     const recipeCategories = useMemo(() => {
-        if (Array.isArray((recipe as any).categories)) {
-            return (recipe as any).categories;
-        } else if ((recipe as any).category) {
-            return [(recipe as any).category];
-        }
-        return [];
+        return getRecipeCategories(recipe);
     }, [recipe]);
 
     const categoryObjects = useMemo(() => {

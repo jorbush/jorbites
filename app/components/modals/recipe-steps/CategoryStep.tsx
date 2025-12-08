@@ -13,7 +13,7 @@ interface CategoryStepProps {
 }
 
 const CategoryStep: React.FC<CategoryStepProps> = ({
-    selectedCategories,
+    selectedCategories = [],
     onCategorySelect,
 }) => {
     const { t } = useTranslation();

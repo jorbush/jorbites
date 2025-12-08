@@ -46,7 +46,7 @@ vi.mock('@/app/components/navbar/Categories', () => ({
 
 describe('<CategoryStep />', () => {
     const mockProps = {
-        selectedCategory: '',
+        selectedCategories: [] as string[],
         onCategorySelect: vi.fn(),
     };
 
@@ -81,7 +81,7 @@ describe('<CategoryStep />', () => {
     it('shows selected category correctly', () => {
         const propsWithSelection = {
             ...mockProps,
-            selectedCategory: 'breakfast',
+            selectedCategories: ['breakfast'],
         };
 
         render(<CategoryStep {...propsWithSelection} />);
@@ -99,7 +99,7 @@ describe('<CategoryStep />', () => {
         const breakfastCategory = screen.getByTestId('category-box-breakfast');
         fireEvent.click(breakfastCategory);
 
-        expect(mockProps.onCategorySelect).toHaveBeenCalledWith('breakfast');
+        expect(mockProps.onCategorySelect).toHaveBeenCalledWith(['breakfast']);
     });
 
     it('calls onCategorySelect for different categories', () => {
@@ -108,7 +108,38 @@ describe('<CategoryStep />', () => {
         const dinnerCategory = screen.getByTestId('category-box-dinner');
         fireEvent.click(dinnerCategory);
 
-        expect(mockProps.onCategorySelect).toHaveBeenCalledWith('dinner');
+        expect(mockProps.onCategorySelect).toHaveBeenCalledWith(['dinner']);
+    });
+
+    it('allows selecting multiple categories', () => {
+        const propsWithSelection = {
+            ...mockProps,
+            selectedCategories: ['breakfast'],
+        };
+
+        render(<CategoryStep {...propsWithSelection} />);
+
+        const lunchCategory = screen.getByTestId('category-box-lunch');
+        fireEvent.click(lunchCategory);
+
+        expect(mockProps.onCategorySelect).toHaveBeenCalledWith([
+            'breakfast',
+            'lunch',
+        ]);
+    });
+
+    it('allows deselecting a category', () => {
+        const propsWithSelection = {
+            ...mockProps,
+            selectedCategories: ['breakfast', 'lunch'],
+        };
+
+        render(<CategoryStep {...propsWithSelection} />);
+
+        const breakfastCategory = screen.getByTestId('category-box-breakfast');
+        fireEvent.click(breakfastCategory);
+
+        expect(mockProps.onCategorySelect).toHaveBeenCalledWith(['lunch']);
     });
 
     it('renders categories in grid layout', () => {

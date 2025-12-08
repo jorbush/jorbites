@@ -98,6 +98,15 @@ export async function POST(request: Request) {
             );
         }
 
+        // Validate each category is a non-empty string
+        if (
+            finalCategories.some(
+                (cat) => typeof cat !== 'string' || !cat.trim()
+            )
+        ) {
+            return badRequest('All categories must be non-empty strings');
+        }
+
         // Check for award-winning category
         if (
             finalCategories.some((cat) => cat.toLowerCase() === 'award-winning')

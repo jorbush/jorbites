@@ -21,7 +21,6 @@ import Loader from '@/app/components/shared/Loader';
 import {
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
-    RECIPE_MAX_CATEGORIES,
     STEPS,
     STEPS_LENGTH,
 } from '@/app/utils/constants';
