@@ -35,13 +35,17 @@ describe('RecipeClient', () => {
         minutes: 30,
         imageSrc: 'http://test.jpg',
         extraImages: [],
-        category: 'Dinner',
+        categories: ['Dinner'],
         method: 'Baking',
         description: 'Test description',
         ingredients: ['Ingredient 1', 'Ingredient 2'],
         steps: ['Step 1', 'Step 2'],
         numLikes: 5,
         userId: 'user1',
+        coCooksIds: [],
+        linkedRecipeIds: [],
+        youtubeUrl: '',
+        questId: null,
         createdAt: '2022-01-01', // Add the createdAt property with a valid date string
         user: {
             id: 'user1',

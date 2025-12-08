@@ -15,8 +15,6 @@ export function getRecipeCategories(recipe: any): string[] {
         return recipe.categories.filter(
             (cat: any): cat is string => typeof cat === 'string'
         );
-    } else if (typeof recipe.category === 'string') {
-        return [recipe.category];
     }
     return [];
 }

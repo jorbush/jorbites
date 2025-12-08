@@ -79,7 +79,7 @@ describe('<RecipeContributionGraph />', () => {
         description: 'Test description',
         imageSrc: '/test.jpg',
         createdAt,
-        category: 'main',
+        categories: ['main'],
         method: 'baking',
         minutes: 30,
         numLikes: 0,

@@ -24,7 +24,7 @@ const mockRecipes: SafeRecipe[] = [
         description: 'Description 1',
         imageSrc: 'http://image.png',
         createdAt: '',
-        category: '',
+        categories: [],
         method: '',
         minutes: 0,
         numLikes: 0,
@@ -32,6 +32,10 @@ const mockRecipes: SafeRecipe[] = [
         steps: [],
         extraImages: [],
         userId: '',
+        coCooksIds: [],
+        linkedRecipeIds: [],
+        youtubeUrl: '',
+        questId: null,
     },
     {
         id: 'recipe2',
@@ -39,7 +43,7 @@ const mockRecipes: SafeRecipe[] = [
         description: 'Description 2',
         imageSrc: 'http://image.png',
         createdAt: '',
-        category: '',
+        categories: [],
         method: '',
         minutes: 0,
         numLikes: 0,
@@ -47,6 +51,10 @@ const mockRecipes: SafeRecipe[] = [
         steps: [],
         extraImages: [],
         userId: '',
+        coCooksIds: [],
+        linkedRecipeIds: [],
+        youtubeUrl: '',
+        questId: null,
     },
 ];
 const mockCurrentUser: SafeUser = {
@@ -62,6 +70,9 @@ const mockCurrentUser: SafeUser = {
     emailNotifications: false,
     level: 0,
     verified: false,
+    badges: [],
+    resetToken: null,
+    resetTokenExpiry: null,
 };
 
 describe('FavoritesClient', () => {

@@ -5,7 +5,6 @@ export interface EditRecipeData {
     id: string;
     title: string;
     description: string;
-    category?: string; // Legacy field for backward compatibility
     categories?: string[];
     method: string;
     imageSrc: string;

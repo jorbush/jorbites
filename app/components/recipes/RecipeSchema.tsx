@@ -12,7 +12,6 @@ interface RecipeSchemaProps {
     ingredients?: string[];
     steps?: string[];
     categories?: string[];
-    category?: string; // Legacy field for backward compatibility
 }
 
 export default function RecipeSchema({
@@ -25,10 +24,9 @@ export default function RecipeSchema({
     ingredients,
     steps,
     categories,
-    category, // Legacy field
 }: RecipeSchemaProps) {
     // Handle both legacy 'category' and new 'categories' field
-    const recipeCategories = getRecipeCategories({ categories, category });
+    const recipeCategories = getRecipeCategories({ categories });
 
     const schemaData: any = {
         '@context': 'https://schema.org',
