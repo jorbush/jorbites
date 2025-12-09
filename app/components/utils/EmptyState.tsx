@@ -28,7 +28,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     const category = searchParams?.get('category');
     const startDate = searchParams?.get('startDate');
     const endDate = searchParams?.get('endDate');
-    
+
     // Note: orderBy is not a filter, it's a sorting option, so we don't include it
     const hasFilters = !!(searchQuery || category || startDate || endDate);
 

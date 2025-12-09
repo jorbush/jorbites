@@ -24,7 +24,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     const isMainPage = pathname === '/';
     const isFavoritesPage = pathname === '/favorites';
     const isFilterablePage = isMainPage || isFavoritesPage;
-    const isMobileSearchActive = isMobile && isFilterablePage && isSearchModeActive;
+    const isMobileSearchActive =
+        isMobile && isFilterablePage && isSearchModeActive;
 
     const handleSearchModeChange = useCallback((isActive: boolean) => {
         setIsSearchModeActive(isActive);
