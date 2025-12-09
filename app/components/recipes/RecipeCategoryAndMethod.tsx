@@ -2,7 +2,6 @@
 
 import { IconType } from 'react-icons';
 import RecipeCategoryView from '@/app/components/recipes/RecipeCategory';
-import useMediaQuery from '@/app/hooks/useMediaQuery';
 
 interface RecipeInfoProps {
     categories?: Array<{
