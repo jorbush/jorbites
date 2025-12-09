@@ -2,6 +2,7 @@
 
 import { IconType } from 'react-icons';
 import RecipeCategoryView from '@/app/components/recipes/RecipeCategory';
+import useMediaQuery from '@/app/hooks/useMediaQuery';
 
 interface RecipeInfoProps {
     categories?: Array<{
@@ -29,7 +30,7 @@ const RecipeCategoryAndMethod: React.FC<RecipeInfoProps> = ({
             <div
                 data-testid="recipe-category-and-method"
                 data-cy="cooking-methods"
-                className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 dark:text-neutral-100"
+                className="flex flex-row flex-wrap gap-8 dark:text-neutral-100"
             >
                 {categories &&
                     categories.map((category, index) => (
@@ -41,13 +42,11 @@ const RecipeCategoryAndMethod: React.FC<RecipeInfoProps> = ({
                         />
                     ))}
                 {method && (
-                    <>
-                        <RecipeCategoryView
-                            icon={method.icon}
-                            label={method?.label}
-                            description={''}
-                        />
-                    </>
+                    <RecipeCategoryView
+                        icon={method.icon}
+                        label={method?.label}
+                        description={''}
+                    />
                 )}
             </div>
         </>
