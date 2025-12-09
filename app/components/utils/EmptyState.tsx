@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import Button from '@/app/components/buttons/Button';
 import Heading from '@/app/components/navigation/Heading';
@@ -21,10 +21,16 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const pathname = usePathname();
     const { t } = useTranslation();
 
     const searchQuery = searchParams?.get('search');
     const category = searchParams?.get('category');
+    const startDate = searchParams?.get('startDate');
+    const endDate = searchParams?.get('endDate');
+
+    // Note: orderBy is not a filter, it's a sorting option, so we don't include it
+    const hasFilters = !!(searchQuery || category || startDate || endDate);
 
     // Customize messages based on current filters
     let displayTitle = title;
@@ -45,6 +51,12 @@ const EmptyState: React.FC<EmptyStateProps> = ({
         buttonLabel = t('remove_all_filters') || 'Remove all filters';
     }
 
+    const handleReset = () => {
+        // Use pathname from usePathname hook instead of window.location
+        // Navigate to the base path without any query parameters
+        router.push(pathname || '/');
+    };
+
     return (
         <div
             className={`flex ${height} flex-col items-center justify-center gap-2`}
@@ -55,11 +67,11 @@ const EmptyState: React.FC<EmptyStateProps> = ({
                 subtitle={displaySubtitle}
             />
             <div className="mt-4 w-48">
-                {showReset && (
+                {showReset && hasFilters && (
                     <Button
                         outline
                         label={buttonLabel}
-                        onClick={() => router.push('/')}
+                        onClick={handleReset}
                     />
                 )}
             </div>

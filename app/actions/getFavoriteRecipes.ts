@@ -1,7 +1,12 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
 import { SafeRecipe } from '@/app/types';
-import { OrderByType, getPrismaOrderByClause } from '@/app/utils/filter';
+import {
+    OrderByType,
+    getPrismaOrderByClause,
+    getDateRangeFilter,
+} from '@/app/utils/filter';
+import { Prisma } from '@prisma/client';
 
 import getCurrentUser from './getCurrentUser';
 
@@ -9,6 +14,10 @@ export interface IFavoriteRecipesParams {
     page?: number;
     limit?: number;
     orderBy?: OrderByType;
+    category?: string;
+    search?: string;
+    startDate?: string;
+    endDate?: string;
 }
 
 export interface FavoriteRecipesResponse {
@@ -22,7 +31,15 @@ export default async function getFavoriteRecipes(
     params: IFavoriteRecipesParams = {}
 ): Promise<FavoriteRecipesResponse> {
     try {
-        const { page = 1, limit = 10, orderBy = OrderByType.NEWEST } = params;
+        const {
+            page = 1,
+            limit = 10,
+            orderBy = OrderByType.NEWEST,
+            category,
+            search,
+            startDate,
+            endDate,
+        } = params;
         logger.info('getFavoriteRecipes - start', { params });
         const currentUser = await getCurrentUser();
 
@@ -48,11 +65,32 @@ export default async function getFavoriteRecipes(
             };
         }
 
-        const whereClause = {
+        const whereClause: Prisma.RecipeWhereInput = {
             id: {
                 in: favoriteIds,
             },
         };
+
+        // Apply category filter
+        if (typeof category === 'string') {
+            whereClause.categories = {
+                has: category,
+            };
+        }
+
+        // Apply search filter
+        if (typeof search === 'string' && search.trim()) {
+            whereClause.title = {
+                contains: search.trim(),
+                mode: 'insensitive',
+            };
+        }
+
+        // Apply date range filter
+        const dateRangeFilter = getDateRangeFilter(startDate, endDate);
+        if (Object.keys(dateRangeFilter).length > 0) {
+            Object.assign(whereClause, dateRangeFilter);
+        }
 
         const orderByClause = getPrismaOrderByClause(orderBy);
 

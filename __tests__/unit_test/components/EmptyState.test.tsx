@@ -5,6 +5,7 @@ import React from 'react';
 
 const pushMock = vi.fn();
 const mockSearchParams = new URLSearchParams();
+const mockPathname = '/';
 
 // Mock the next/navigation module
 vi.mock('next/navigation', () => ({
@@ -12,6 +13,7 @@ vi.mock('next/navigation', () => ({
         push: pushMock,
     }),
     useSearchParams: () => mockSearchParams,
+    usePathname: () => mockPathname,
 }));
 
 // Mock react-i18next
@@ -59,7 +61,8 @@ describe('<EmptyState />', () => {
         expect(screen.getByText(customSubtitle)).toBeDefined();
     });
 
-    it('renders reset button when showReset is true', () => {
+    it('renders reset button when showReset is true and filters are present', () => {
+        mockSearchParams.set('category', 'desserts');
         render(<EmptyState showReset={true} />);
 
         const resetButton = screen.getByRole('button');
@@ -67,6 +70,7 @@ describe('<EmptyState />', () => {
     });
 
     it('calls router.push when reset button is clicked', () => {
+        mockSearchParams.set('search', 'test');
         render(<EmptyState showReset={true} />);
 
         const resetButton = screen.getByRole('button');

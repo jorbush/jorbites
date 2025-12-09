@@ -34,6 +34,8 @@ const Search: React.FC<SearchProps> = ({
     const isMobile = useMediaQuery('(max-width: 768px)');
 
     const isMainPage = pathname === '/';
+    const isFavoritesPage = pathname === '/favorites';
+    const isFilterablePage = isMainPage || isFavoritesPage;
     const currentSearch = searchParams?.get('search') || '';
     const isFiltering = searchParams?.get('category') || '';
 
@@ -48,14 +50,21 @@ const Search: React.FC<SearchProps> = ({
 
     useEffect(() => {
         debouncedUrlUpdate.current = debounce((value: string) => {
-            if (!isMainPage) return;
+            if (!isFilterablePage) return;
             const params = new URLSearchParams(searchParams?.toString() || '');
             if (value.trim()) {
                 params.set('search', value.trim());
             } else {
                 params.delete('search');
             }
-            router.replace(params.toString() ? `/?${params.toString()}` : '/');
+            const newUrl = isMainPage
+                ? params.toString()
+                    ? `/?${params.toString()}`
+                    : '/'
+                : params.toString()
+                  ? `${pathname}?${params.toString()}`
+                  : pathname;
+            router.replace(newUrl);
         }, 1000); // 1 second debounce on URL update in order to avoid request and typing conflicts
 
         // Initialize search query from URL - but don't automatically exit search mode
@@ -78,7 +87,9 @@ const Search: React.FC<SearchProps> = ({
         }
     }, [
         searchParams,
+        isFilterablePage,
         isMainPage,
+        pathname,
         router,
         currentSearch,
         isSearchMode,
@@ -92,14 +103,21 @@ const Search: React.FC<SearchProps> = ({
             setIsExplicitlyExiting(true);
             setSearchQuery('');
             // Always clear search from URL when exiting search mode and search content is present
-            if (isMainPage && searchQuery.trim()) {
+            if (isFilterablePage && searchQuery.trim()) {
                 const params = new URLSearchParams(
                     searchParams?.toString() || ''
                 );
                 params.delete('search');
-                router.push(params.toString() ? `/?${params.toString()}` : '/');
+                const newUrl = isMainPage
+                    ? params.toString()
+                        ? `/?${params.toString()}`
+                        : '/'
+                    : params.toString()
+                      ? `${pathname}?${params.toString()}`
+                      : pathname;
+                router.push(newUrl);
             } else {
-                // If not on main page, exit immediately
+                // If not on filterable page, exit immediately
                 setIsSearchMode(false);
                 onSearchModeChange?.(false);
                 setIsExplicitlyExiting(false);
@@ -129,8 +147,8 @@ const Search: React.FC<SearchProps> = ({
         }
     };
 
-    if (!isMainPage) {
-        // On non-main pages, just show logo
+    if (!isFilterablePage) {
+        // On non-filterable pages, just show logo
         return (
             <div className="flex flex-row items-center gap-1 md:gap-3">
                 <Logo />
