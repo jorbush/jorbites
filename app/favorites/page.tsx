@@ -30,11 +30,12 @@ const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
 
     if (favoriteRecipesResponse.totalRecipes === 0) {
         // Check if it's because of filters or truly no favorites
-        const hasFilters =
+        const hasFilters = !!(
             resolvedParams.category ||
             resolvedParams.search ||
             resolvedParams.startDate ||
-            resolvedParams.endDate;
+            resolvedParams.endDate
+        );
 
         return (
             <ClientOnly>
