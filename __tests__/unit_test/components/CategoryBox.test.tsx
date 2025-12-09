@@ -1,13 +1,14 @@
 import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import CategoryBox from '@/app/components/CategoryBox';
 import { FaHome } from 'react-icons/fa';
 
 vi.mock('next/navigation', () => ({
     useRouter: vi.fn(),
     useSearchParams: vi.fn(),
+    usePathname: vi.fn(),
 }));
 
 vi.mock('react-i18next', () => ({
@@ -30,6 +31,7 @@ describe('<CategoryBox />', () => {
             get: mockGet,
             toString: mockToString,
         });
+        (usePathname as any).mockReturnValue('/');
     });
 
     afterEach(() => {
