@@ -108,9 +108,7 @@ const Categories = () => {
     const params = useSearchParams();
     const category = params?.get('category');
     const pathname = usePathname();
-    const isMainPage = pathname === '/';
-    const isFavoritesPage = pathname === '/favorites';
-    const isFilterablePage = isMainPage || isFavoritesPage;
+    const isFilterablePage = pathname === '/';
 
     if (!isFilterablePage) {
         return null;
