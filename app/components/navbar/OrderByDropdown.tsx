@@ -11,7 +11,13 @@ import {
 } from '@/app/utils/filter';
 import Dropdown from '@/app/components/utils/Dropdown';
 
-const OrderByDropdown: React.FC = () => {
+interface OrderByDropdownProps {
+    renderAsIcon?: boolean;
+}
+
+const OrderByDropdown: React.FC<OrderByDropdownProps> = ({
+    renderAsIcon,
+}) => {
     const { t } = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -56,26 +62,32 @@ const OrderByDropdown: React.FC = () => {
 
     const buttonContent = (
         <>
-            {/* Mobile: Show reorder icon only on main page, show text on profile and favorites */}
-            <div
-                className={`flex items-center gap-1 ${isProfilePage || isFavoritesPage ? '' : 'lg:hidden'}`}
-            >
-                {isProfilePage || isFavoritesPage ? (
-                    <span className="text-sm">
-                        {getOrderLabel(currentOrderBy)}
-                    </span>
-                ) : (
-                    <IoReorderThree size={18} />
-                )}
-            </div>
+            {renderAsIcon ? (
+                <IoReorderThree size={18} />
+            ) : (
+                <>
+                    {/* Mobile: Show reorder icon only on main page, show text on profile and favorites */}
+                    <div
+                        className={`flex items-center gap-1 ${isProfilePage || isFavoritesPage ? '' : 'lg:hidden'}`}
+                    >
+                        {isProfilePage || isFavoritesPage ? (
+                            <span className="text-sm">
+                                {getOrderLabel(currentOrderBy)}
+                            </span>
+                        ) : (
+                            <IoReorderThree size={18} />
+                        )}
+                    </div>
 
-            {/* Desktop: Show text on main page */}
-            {!isProfilePage && !isFavoritesPage && (
-                <div className="hidden items-center gap-1 lg:flex">
-                    <span className="text-sm">
-                        {getOrderLabel(currentOrderBy)}
-                    </span>
-                </div>
+                    {/* Desktop: Show text on main page */}
+                    {!isProfilePage && !isFavoritesPage && (
+                        <div className="hidden items-center gap-1 lg:flex">
+                            <span className="text-sm">
+                                {getOrderLabel(currentOrderBy)}
+                            </span>
+                        </div>
+                    )}
+                </>
             )}
         </>
     );
@@ -89,7 +101,11 @@ const OrderByDropdown: React.FC = () => {
             ariaLabel={t('order_by') || 'Order by'}
             showNotification={currentOrderBy !== OrderByType.NEWEST}
             chevronClassName={
-                isProfilePage || isFavoritesPage ? '' : 'hidden lg:inline'
+                renderAsIcon
+                    ? 'hidden'
+                    : isProfilePage || isFavoritesPage
+                      ? ''
+                      : 'hidden lg:inline'
             }
         />
     );

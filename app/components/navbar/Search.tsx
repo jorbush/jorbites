@@ -203,7 +203,7 @@ const Search: React.FC<SearchProps> = ({
                             )}
                         </div>
 
-                        <OrderByDropdown />
+                        <OrderByDropdown renderAsIcon />
 
                         <PeriodFilter />
 
@@ -297,7 +297,7 @@ const Search: React.FC<SearchProps> = ({
                             </div>
                         </form>
 
-                        <OrderByDropdown />
+                        <OrderByDropdown renderAsIcon />
 
                         <PeriodFilter />
 
