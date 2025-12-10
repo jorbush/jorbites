@@ -57,6 +57,9 @@ const Search: React.FC<SearchProps> = ({
             } else {
                 params.delete('search');
             }
+            // Reset page to 1 on new search
+            params.delete('page');
+
             const newUrl = isMainPage
                 ? params.toString()
                     ? `/?${params.toString()}`
