@@ -31,10 +31,7 @@ const OrderByDropdown: React.FC = () => {
         } else {
             params.set('orderBy', orderBy);
         }
-        // Reset pagination to page 1 when order changes
-        if (isProfilePage || isFavoritesPage) {
-            params.set('page', '1');
-        }
+        params.set('page', '1');
         const newUrl = isMainPage
             ? params.toString()
                 ? `/?${params.toString()}`
@@ -56,11 +53,11 @@ const OrderByDropdown: React.FC = () => {
 
     const buttonContent = (
         <>
-            {/* Mobile: Show reorder icon only on main page, show text on profile and favorites */}
+            {/* Mobile: Show reorder icon only on main page, show text on profile */}
             <div
-                className={`flex items-center gap-1 ${isProfilePage || isFavoritesPage ? '' : 'lg:hidden'}`}
+                className={`flex items-center gap-1 ${isProfilePage ? '' : 'lg:hidden'}`}
             >
-                {isProfilePage || isFavoritesPage ? (
+                {isProfilePage ? (
                     <span className="text-sm">
                         {getOrderLabel(currentOrderBy)}
                     </span>
@@ -70,7 +67,7 @@ const OrderByDropdown: React.FC = () => {
             </div>
 
             {/* Desktop: Show text on main page */}
-            {!isProfilePage && !isFavoritesPage && (
+            {!isProfilePage && (
                 <div className="hidden items-center gap-1 lg:flex">
                     <span className="text-sm">
                         {getOrderLabel(currentOrderBy)}
@@ -88,9 +85,7 @@ const OrderByDropdown: React.FC = () => {
             buttonContent={buttonContent}
             ariaLabel={t('order_by') || 'Order by'}
             showNotification={currentOrderBy !== OrderByType.NEWEST}
-            chevronClassName={
-                isProfilePage || isFavoritesPage ? '' : 'hidden lg:inline'
-            }
+            chevronClassName={isProfilePage ? '' : 'hidden lg:inline'}
         />
     );
 };
