@@ -31,10 +31,7 @@ const OrderByDropdown: React.FC = () => {
         } else {
             params.set('orderBy', orderBy);
         }
-        // Reset pagination to page 1 when order changes
-        if (isProfilePage || isFavoritesPage) {
-            params.set('page', '1');
-        }
+        params.set('page', '1');
         const newUrl = isMainPage
             ? params.toString()
                 ? `/?${params.toString()}`
@@ -88,9 +85,7 @@ const OrderByDropdown: React.FC = () => {
             buttonContent={buttonContent}
             ariaLabel={t('order_by') || 'Order by'}
             showNotification={currentOrderBy !== OrderByType.NEWEST}
-            chevronClassName={
-                isProfilePage || isFavoritesPage ? '' : 'hidden lg:inline'
-            }
+            chevronClassName={isProfilePage ? '' : 'hidden lg:inline'}
         />
     );
 };

@@ -208,9 +208,12 @@ describe('<OrderByDropdown />', () => {
             );
             fireEvent.click(titleAscOption!);
 
-            expect(mockReplace).toHaveBeenCalledWith('/?orderBy=title_asc', {
-                scroll: false,
-            });
+            expect(mockReplace).toHaveBeenCalledWith(
+                '/?orderBy=title_asc&page=1',
+                {
+                    scroll: false,
+                }
+            );
         });
 
         it('removes orderBy param when selecting "Newest first" (default)', () => {
@@ -224,7 +227,9 @@ describe('<OrderByDropdown />', () => {
             const newestOption = screen.getByText('Newest first');
             fireEvent.click(newestOption);
 
-            expect(mockReplace).toHaveBeenCalledWith('/', { scroll: false });
+            expect(mockReplace).toHaveBeenCalledWith('/?page=1', {
+                scroll: false,
+            });
         });
 
         it('preserves existing URL params when changing order', () => {
@@ -240,7 +245,7 @@ describe('<OrderByDropdown />', () => {
             fireEvent.click(oldestOption);
 
             expect(mockReplace).toHaveBeenCalledWith(
-                '/?search=pizza&category=italian&orderBy=oldest',
+                '/?search=pizza&category=italian&orderBy=oldest&page=1',
                 { scroll: false }
             );
         });
