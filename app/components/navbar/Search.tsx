@@ -39,7 +39,6 @@ const Search: React.FC<SearchProps> = ({
     const currentSearch = searchParams?.get('search') || '';
     const isFiltering = searchParams?.get('category') || '';
 
-    // Check if any filters are active
     const currentStartDate = searchParams?.get('startDate') || '';
     const currentEndDate = searchParams?.get('endDate') || '';
     const currentOrderBy = searchParams?.get('orderBy') || '';
@@ -57,9 +56,7 @@ const Search: React.FC<SearchProps> = ({
             } else {
                 params.delete('search');
             }
-            // Reset page to 1 on new search
             params.delete('page');
-
             const newUrl = isMainPage
                 ? params.toString()
                     ? `/?${params.toString()}`
@@ -70,18 +67,14 @@ const Search: React.FC<SearchProps> = ({
             router.replace(newUrl);
         }, 1000); // 1 second debounce on URL update in order to avoid request and typing conflicts
 
-        // Initialize search query from URL - but don't automatically exit search mode
         if (currentSearch) {
             setSearchQuery(currentSearch);
-            // If we have a search query, enter search mode (but not if we're explicitly exiting)
             if (!isSearchMode && !isExplicitlyExiting) {
                 setIsSearchMode(true);
                 onSearchModeChange?.(true);
             }
         } else {
-            // If no search query, clear the input
             setSearchQuery('');
-            // If we were explicitly exiting, complete the exit now
             if (isExplicitlyExiting) {
                 setIsSearchMode(false);
                 onSearchModeChange?.(false);
@@ -102,10 +95,8 @@ const Search: React.FC<SearchProps> = ({
 
     const handleSearchToggle = () => {
         if (isSearchMode) {
-            // Exit search mode - set flag to prevent useEffect from interfering
             setIsExplicitlyExiting(true);
             setSearchQuery('');
-            // Always clear search from URL when exiting search mode and search content is present
             if (isFilterablePage && searchQuery.trim()) {
                 const params = new URLSearchParams(
                     searchParams?.toString() || ''
@@ -120,13 +111,11 @@ const Search: React.FC<SearchProps> = ({
                       : pathname;
                 router.push(newUrl);
             } else {
-                // If not on filterable page, exit immediately
                 setIsSearchMode(false);
                 onSearchModeChange?.(false);
                 setIsExplicitlyExiting(false);
             }
         } else {
-            // Enter search mode
             setIsSearchMode(true);
             setTimeout(() => inputRef.current?.focus(), 200);
             onSearchModeChange?.(true);
@@ -135,8 +124,6 @@ const Search: React.FC<SearchProps> = ({
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Focus stays on input, no navigation change needed
-        // Search results update automatically via URL changes in handleSearchChange
     };
 
     const handleSearchChange = (value: string) => {
@@ -151,7 +138,6 @@ const Search: React.FC<SearchProps> = ({
     };
 
     if (!isFilterablePage) {
-        // On non-filterable pages, just show logo
         return (
             <div className="flex flex-row items-center gap-1 md:gap-3">
                 <Logo />

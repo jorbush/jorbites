@@ -7,7 +7,7 @@ import { GiTrophyCup } from 'react-icons/gi';
 import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { memo, useMemo } from 'react';
-import Avatar from '../utils/Avatar';
+import Avatar from '@/app/components/utils/Avatar';
 
 interface RecipeCardProps {
     data: SafeRecipe;
