@@ -185,6 +185,23 @@ describe('<Search />', () => {
             });
         });
 
+        it('resets pagination when performing a search', async () => {
+            mockSearchParams.set('page', '3');
+            mockSearchParams.set('search', 'test');
+
+            render(<Search onSearchModeChange={mockOnSearchModeChange} />);
+
+            const searchInput =
+                screen.getByPlaceholderText('search_recipes...');
+            fireEvent.change(searchInput, { target: { value: 'new search' } });
+
+            await waitFor(() => {
+                const lastCall =
+                    mockReplace.mock.calls[mockReplace.mock.calls.length - 1];
+                expect(lastCall[0]).not.toContain('page=');
+            });
+        });
+
         it('clears search when back button is clicked', () => {
             mockSearchParams.set('search', 'test');
 
