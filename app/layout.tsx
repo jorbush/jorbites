@@ -1,4 +1,5 @@
 import '@/app/globals.css';
+import type { Metadata, Viewport } from 'next';
 import { Nunito } from 'next/font/google';
 import Navbar from '@/app/components/navbar/Navbar';
 import ClientOnly from '@/app/components/utils/ClientOnly';
@@ -44,7 +45,16 @@ const font = Nunito({
     display: 'swap',
 });
 
-export const metadata = {
+export const viewport: Viewport = {
+    themeColor: [
+        { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+        { media: '(prefers-color-scheme: dark)', color: '#0F0F0F' },
+    ],
+    width: 'device-width',
+    initialScale: 1,
+};
+
+export const metadata: Metadata = {
     metadataBase: new URL('https://jorbites.com'),
     title: 'Jorbites',
     description:
@@ -81,6 +91,11 @@ export const metadata = {
     alternates: {
         canonical: 'https://jorbites.com',
     },
+    appleWebApp: {
+        title: 'Jorbites',
+        statusBarStyle: 'default',
+        capable: true,
+    },
 };
 
 export default async function RootLayout({
@@ -96,16 +111,7 @@ export default async function RootLayout({
             translate="no"
         >
             <WebVitals />
-            <head>
-                <meta
-                    name="viewport"
-                    content="width=device-width, initial-scale=1"
-                />
-                <meta
-                    name="apple-mobile-web-app-title"
-                    content="Jorbites"
-                />
-            </head>
+
             <body
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
             >
