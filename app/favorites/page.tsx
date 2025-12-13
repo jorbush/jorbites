@@ -51,6 +51,7 @@ const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
                             : 'Looks like you have no favorite recipes.'
                     }
                     showReset={hasFilters}
+                    height="h-auto"
                 />
             </ClientOnly>
         );
