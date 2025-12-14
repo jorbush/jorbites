@@ -3,7 +3,7 @@ title: 'Privacy Policy'
 description: 'Jorbites Privacy Policy'
 ---
 
-Last Updated: December 6, 2025
+Last Updated: December 14, 2025
 
 This Privacy Policy explains how **Jorbites** ("we", "us", or "our") collects, uses, and discloses your personal information when you use our website, accessible at [https://jorbites.com](https://jorbites.com) (the "Website").
 
@@ -14,11 +14,12 @@ We collect various types of information to provide and improve our services to y
 -   **User Data**:
     -   **Identification and Contact**: Name, email address, username.
     -   **Authentication**: We use third-party authentication services, such as Google and GitHub, to verify your identity.
-    -   **Preferences and Settings**: Language, theme, and other personalized settings.
+    -   **Preferences and Settings**: Language, theme, ad preferences, and other personalized settings.
 -   **Activity Data**:
     -   **Recipes**: Recipes you create, save, or interact with.
     -   **Comments**: Comments you post on recipes and other content.
 -   **Images**: Images you upload are stored on [Cloudinary](https://cloudinary.com/).
+-   **Advertising (Optional)**: If you choose to enable ads in Settings, Google AdSense may collect information and set cookies. Ad scripts are only loaded when you explicitly opt-in. For more information, see Google's [Privacy & Terms](https://policies.google.com/technologies/ads).
 
 ## How We Use Your Information
 

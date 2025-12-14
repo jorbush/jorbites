@@ -3,7 +3,7 @@ title: 'Política de Privacidad'
 description: 'Política de Privacidad de Jorbites'
 ---
 
-Última actualización: 6 de diciembre de 2025
+Última actualización: 14 de diciembre de 2025
 
 Esta Política de Privacidad explica cómo **Jorbites** ("nosotros", "nos" o "nuestro") recopila, utiliza y divulga su información personal cuando utiliza nuestro sitio web, accesible en [https://jorbites.com](https://jorbites.com) (el "Sitio Web").
 
@@ -14,11 +14,12 @@ Recopilamos varios tipos de información para proporcionar y mejorar nuestros se
 -   **Datos del Usuario**:
     -   **Identificación y Contacto**: Nombre, dirección de correo electrónico, nombre de usuario.
     -   **Autenticación**: Utilizamos servicios de autenticación de terceros, como Google y GitHub, para verificar su identidad.
-    -   **Preferencias y Configuración**: Idioma, tema y otras configuraciones personalizadas.
+    -   **Preferencias y Configuración**: Idioma, tema, preferencias de anuncios y otras configuraciones personalizadas.
 -   **Datos de Actividad**:
     -   **Recetas**: Recetas que crea, guarda o con las que interactúa.
     -   **Comentarios**: Comentarios que publica en recetas y otro contenido.
 -   **Imágenes**: Las imágenes que carga se almacenan en [Cloudinary](https://cloudinary.com/).
+-   **Publicidad (Opcional)**: Si elige habilitar anuncios en Configuración, Google AdSense puede recopilar información y establecer cookies. Los scripts de anuncios solo se cargan cuando usted opta explícitamente. Para obtener más información, consulte la [Política de Privacidad de Google](https://policies.google.com/technologies/ads).
 
 ## Cómo Usamos Su Información
 

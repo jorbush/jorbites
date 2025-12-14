@@ -6,6 +6,7 @@ import ThemeSelector from '@/app/components/settings/ThemeSelector';
 import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import { useTranslation } from 'react-i18next';
 import EmailNotificationsSelector from '@/app/components/settings/EmailNotificationsSelector';
+import VoluntarySupportToggle from '@/app/components/settings/VoluntarySupportToggle';
 import { SafeUser } from '@/app/types';
 import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
 import ChangeUserNameSelector from '@/app/components/settings/ChangeUserName';
@@ -55,6 +56,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
                     >
                         <ThemeSelector />
                         <LanguageSelector />
+                        <VoluntarySupportToggle />
                     </div>
                 );
             case 'account':

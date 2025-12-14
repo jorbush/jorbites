@@ -3,7 +3,7 @@ title: 'Política de Privadesa'
 description: 'Política de Privadesa de Jorbites'
 ---
 
-Darrera actualització: 6 de desembre de 2025
+Darrera actualització: 14 de desembre de 2025
 
 Aquesta Política de Privadesa explica com **Jorbites** ("nosaltres", "ens" o "nostre") recopila, utilitza i divulga la vostra informació personal quan utilitzeu el nostre lloc web, accessible a [https://jorbites.com](https://jorbites.com) (el "Lloc Web").
 
@@ -19,6 +19,7 @@ Recopilem diversos tipus d’informació per proporcionar i millorar els nostres
     -   **Receptes**: Receptes que creeu, deseu o amb les quals interactueu.
     -   **Comentaris**: Comentaris que publiqueu en receptes i altre contingut.
 -   **Imatges**: Les imatges que pengeu s’emmagatzemen a [Cloudinary](https://cloudinary.com/).
+-   **Publicitat (Opcional)**: Si trieu habilitar anuncis a Configuració, Google AdSense pot recopilar informació i establir cookies. Els scripts d'anuncis només es carreguen quan opteu explícitament. Per obtenir més informació, consulteu la [Política de Privadesa de Google](https://policies.google.com/technologies/ads).
 
 ## Com Utilitzem la Vostra Informació
 

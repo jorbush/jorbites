@@ -34,6 +34,14 @@ vi.mock('@/app/components/settings/LanguageSelector', () => ({
     default: () => <div data-testid="language-selector">LanguageSelector</div>,
 }));
 
+vi.mock('@/app/components/settings/VoluntarySupportToggle', () => ({
+    default: () => (
+        <div data-testid="voluntary-support-toggle">
+            VoluntarySupportToggle
+        </div>
+    ),
+}));
+
 vi.mock('@/app/components/settings/EmailNotificationsSelector', () => ({
     default: () => (
         <div data-testid="email-notifications-selector">
@@ -173,6 +181,7 @@ describe('SettingsModal', () => {
 
         expect(screen.getByTestId('theme-selector')).toBeDefined();
         expect(screen.getByTestId('language-selector')).toBeDefined();
+        expect(screen.getByTestId('voluntary-support-toggle')).toBeDefined();
 
         // Account settings should not be visible
         expect(screen.queryByTestId('change-user-name-selector')).toBeNull();
@@ -191,6 +200,7 @@ describe('SettingsModal', () => {
         // Initially shows preferences content
         expect(screen.getByTestId('theme-selector')).toBeDefined();
         expect(screen.getByTestId('language-selector')).toBeDefined();
+        expect(screen.getByTestId('voluntary-support-toggle')).toBeDefined();
 
         // Click account tab
         fireEvent.click(screen.getByTestId('tab-account'));
@@ -210,6 +220,7 @@ describe('SettingsModal', () => {
             // Preferences content should still be in DOM but not visible
             expect(screen.queryByTestId('theme-selector')).toBeNull();
             expect(screen.queryByTestId('language-selector')).toBeNull();
+            expect(screen.queryByTestId('voluntary-support-toggle')).toBeNull();
         });
     });
 
@@ -240,6 +251,7 @@ describe('SettingsModal', () => {
             // Should show preferences content again
             expect(screen.getByTestId('theme-selector')).toBeDefined();
             expect(screen.getByTestId('language-selector')).toBeDefined();
+            expect(screen.getByTestId('voluntary-support-toggle')).toBeDefined();
 
             // Account content should not be visible
             expect(
@@ -263,6 +275,7 @@ describe('SettingsModal', () => {
         // Always shows preferences content when no user
         expect(screen.getByTestId('theme-selector')).toBeDefined();
         expect(screen.getByTestId('language-selector')).toBeDefined();
+        expect(screen.getByTestId('voluntary-support-toggle')).toBeDefined();
     });
 
     it('renders correct tab labels with icons', () => {

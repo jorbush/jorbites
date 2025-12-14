@@ -578,5 +578,8 @@
     "month_dec": "Dic",
     "cookies_policy": "Política de cookies",
     "privacy_policy": "Política de privacidad",
-    "max_categories_reached": "Máximo de 3 categorías permitidas"
+    "max_categories_reached": "Máximo de 3 categorías permitidas",
+    "enable_ads_support": "Habilitar anuncios para apoyar a Jorbites",
+    "enable_ads_support_description": "Apóyanos: Habilita anuncios para ayudar a mantener Jorbites gratis.",
+    "thank_you_for_support": "¡Gracias por tu apoyo! ❤️"
 }
