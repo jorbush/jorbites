@@ -16,16 +16,26 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         // Read from localStorage on mount
-        const storedValue = localStorage.getItem('jorbites_ads_enabled');
-        if (storedValue === 'true') {
-            setShowAdsState(true);
+        try {
+            const storedValue = localStorage.getItem('jorbites_ads_enabled');
+            if (storedValue === 'true') {
+                setShowAdsState(true);
+            }
+        } catch (error) {
+            // localStorage may not be available in private browsing mode
+            console.warn('Could not access localStorage:', error);
         }
         setIsLoading(false);
     }, []);
 
     const setShowAds = (value: boolean) => {
         setShowAdsState(value);
-        localStorage.setItem('jorbites_ads_enabled', String(value));
+        try {
+            localStorage.setItem('jorbites_ads_enabled', String(value));
+        } catch (error) {
+            // localStorage may not be available in private browsing mode
+            console.warn('Could not save to localStorage:', error);
+        }
     };
 
     return (

@@ -14,7 +14,7 @@ Recopilem diversos tipus d’informació per proporcionar i millorar els nostres
 -   **Dades de l’Usuari**:
     -   **Identificació i Contacte**: Nom, adreça de correu electrònic, nom d’usuari.
     -   **Autenticació**: Utilitzem serveis d’autenticació de tercers, com ara Google i GitHub, per verificar la vostra identitat.
-    -   **Preferències i Configuració**: Idioma, tema i altres configuracions personalitzades.
+    -   **Preferències i Configuració**: Idioma, tema, preferències d'anuncis i altres configuracions personalitzades.
 -   **Dades d’Activitat**:
     -   **Receptes**: Receptes que creeu, deseu o amb les quals interactueu.
     -   **Comentaris**: Comentaris que publiqueu en receptes i altre contingut.

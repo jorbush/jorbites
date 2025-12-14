@@ -15,7 +15,7 @@ const VoluntarySupportToggle: React.FC = () => {
         setShowAds(newValue);
         
         if (newValue) {
-            toast.success(t('thank_you_for_support') || 'Thank you for your support! ❤️', {
+            toast.success(t('thank_you_for_support'), {
                 duration: 3000,
             });
         }
