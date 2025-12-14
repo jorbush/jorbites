@@ -38,15 +38,15 @@ const useTheme = () => {
             'content',
             isDark ? 'black-translucent' : 'default'
         );
-        let themeColorMeta = document.querySelector('meta[name="theme-color"]');
 
-        if (!themeColorMeta) {
-            themeColorMeta = document.createElement('meta');
-            themeColorMeta.setAttribute('name', 'theme-color');
-            document.head.appendChild(themeColorMeta);
-        }
-
+        const existingThemeTags = document.querySelectorAll(
+            'meta[name="theme-color"]'
+        );
+        existingThemeTags.forEach((tag) => tag.remove());
+        const themeColorMeta = document.createElement('meta');
+        themeColorMeta.setAttribute('name', 'theme-color');
         themeColorMeta.setAttribute('content', isDark ? '#0F0F0F' : '#ffffff');
+        document.head.appendChild(themeColorMeta);
     };
 };
 

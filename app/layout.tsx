@@ -94,7 +94,6 @@ export const metadata: Metadata = {
     },
     appleWebApp: {
         title: 'Jorbites',
-        statusBarStyle: 'default',
         capable: true,
     },
 };
