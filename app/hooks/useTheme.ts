@@ -34,10 +34,7 @@ const useTheme = () => {
             );
             document.head.appendChild(statusBarMeta);
         }
-        statusBarMeta.setAttribute(
-            'content',
-            isDark ? 'black-translucent' : 'default'
-        );
+        statusBarMeta.setAttribute('content', 'default');
 
         const existingThemeTags = document.querySelectorAll(
             'meta[name="theme-color"]'
