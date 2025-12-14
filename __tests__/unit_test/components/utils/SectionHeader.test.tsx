@@ -89,4 +89,20 @@ describe('<SectionHeader />', () => {
         expect(containerElement.className).toContain('mb-10');
         expect(containerElement.className).toContain('text-center');
     });
+
+    it('applies custom className to the container', () => {
+        const customClass = 'my-custom-class';
+        const { container } = render(
+            <SectionHeader
+                icon={FcLike}
+                title="Test Title"
+                className={customClass}
+            />
+        );
+        const containerElement = container.firstChild as HTMLElement;
+        expect(containerElement).toBeDefined();
+        expect(containerElement.className).toContain('mb-10');
+        expect(containerElement.className).toContain('text-center');
+        expect(containerElement.className).toContain(customClass);
+    });
 });
