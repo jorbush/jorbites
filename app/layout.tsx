@@ -7,6 +7,8 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import SmartFooter from '@/app/components/footer/SmartFooter';
 import { dynamicImport } from '@/app/utils/dynamicImport';
 import { WebVitals } from '@/app/lib/axiom/client';
+import Script from 'next/script';
+import { ADSENSE_PUBLISHER_ID } from '@/app/utils/constants';
 
 const RegisterModal = dynamicImport(
     () => import('@/app/components/modals/RegisterModal')
@@ -109,6 +111,14 @@ export default async function RootLayout({
             <body
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
             >
+                {process.env.NODE_ENV === 'production' && (
+                    <Script
+                        id="adsense-init"
+                        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}`}
+                        crossOrigin="anonymous"
+                        strategy="lazyOnload"
+                    />
+                )}
                 <ClientOnly>
                     <ToasterProvider />
                     <LoginModal />
