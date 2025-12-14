@@ -1,4 +1,9 @@
+import { expect } from 'vitest';
+import * as matchers from '@testing-library/jest-dom/matchers';
+
 (globalThis as { [key: string]: any }).IS_REACT_ACT_ENVIRONMENT = true;
+
+expect.extend(matchers);
 
 // Mock Axiom modules to prevent import errors in tests
 import { vi } from 'vitest';

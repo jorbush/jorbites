@@ -2,6 +2,8 @@
 
 import { IconType } from 'react-icons';
 
+import { cn } from '@/app/lib/utils';
+
 interface SectionHeaderProps {
     icon: IconType;
     title: string;
@@ -16,7 +18,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
     className,
 }) => {
     return (
-        <div className={`mb-10 text-center ${className}`}>
+        <div className={cn('mb-10 text-center', className)}>
             <h1 className="mb-3 flex items-center justify-center text-3xl font-bold sm:text-4xl dark:text-neutral-100">
                 <Icon
                     className="mr-2 text-3xl sm:text-4xl"
