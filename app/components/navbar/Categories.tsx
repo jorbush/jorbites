@@ -20,6 +20,7 @@ import { LuVegan } from 'react-icons/lu';
 import { IconPasta } from '@/app/components/icons/IconPasta';
 import { UnsaltedIcon } from '@/app/components/icons/UnsaltedIcon';
 import { GlutenFreeIcon } from '@/app/components/icons/GlutenFreeIcon';
+import { IconBreakfast } from '../icons/IconBreakfast';
 
 export const categories = [
     {
@@ -96,6 +97,11 @@ export const categories = [
         label: 'Vegan',
         icon: LuVegan,
         description: 'Vegan recipes',
+    },
+    {
+        label: 'Breakfast',
+        icon: IconBreakfast,
+        description: 'Breakfast recipes',
     },
     {
         label: 'Award-Winning',
