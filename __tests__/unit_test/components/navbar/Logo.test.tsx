@@ -44,34 +44,43 @@ describe('<Logo />', () => {
         });
     });
 
-    it('renders the logo with default light theme', () => {
+    it('renders both light and dark mode logos', () => {
         render(<Logo />);
-        const logo = screen.getByAltText('Logo') as HTMLImageElement;
-        expect(logo).toBeDefined();
-        expect(logo.src).toContain('/images/logo-nobg.webp');
-    });
+        const logos = screen.getAllByAltText('Logo') as HTMLImageElement[];
+        expect(logos).toHaveLength(2);
 
-    it('renders the logo with dark theme', () => {
-        vi.mocked(localStorage.getItem).mockReturnValue('dark');
-        render(<Logo />);
-        const logo = screen.getByAltText('Logo') as HTMLImageElement;
-        expect(logo).toBeDefined();
-        expect(logo.src).toContain('/images/no_bg_white.webp');
+        const lightLogo = logos.find((img) =>
+            img.src.includes('logo-nobg.webp')
+        );
+        const darkLogo = logos.find((img) =>
+            img.src.includes('no_bg_white.webp')
+        );
+
+        expect(lightLogo).toBeDefined();
+        expect(lightLogo?.className).toContain('dark:hidden');
+
+        expect(darkLogo).toBeDefined();
+        expect(darkLogo?.className).toContain('dark:block');
     });
 
     it('navigates to home page when clicked', () => {
         render(<Logo />);
-        const logo = screen.getByAltText('Logo');
-        fireEvent.click(logo);
+        const logos = screen.getAllByAltText('Logo');
+        fireEvent.click(logos[0]);
         expect(mockRouter.push).toHaveBeenCalledWith('/');
     });
 
     it('has correct CSS classes and attributes', () => {
         render(<Logo />);
-        const logo = screen.getByAltText('Logo');
-        expect(logo.className).contain('cursor-pointer');
-        expect(logo.className).contain('md:block');
-        expect(logo).toHaveProperty('width', 128);
-        expect(logo).toHaveProperty('height', 29);
+        const logos = screen.getAllByAltText('Logo') as HTMLImageElement[];
+        const lightLogo = logos.find((img) =>
+            img.src.includes('logo-nobg.webp')
+        );
+
+        expect(lightLogo).toHaveProperty('width', 128);
+        expect(lightLogo).toHaveProperty('height', 29);
+        const container = lightLogo?.closest('div');
+        expect(container?.className).toContain('cursor-pointer');
+        expect(container?.className).toContain('md:block');
     });
 });

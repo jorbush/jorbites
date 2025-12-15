@@ -40,12 +40,8 @@ export default function CustomProxyImage({
 
     const useMaxQuality = maxQuality || quality === 'auto:best';
 
-    const actualWidth = fill ? (sizes.includes('250px') ? 250 : width) : width;
-    const actualHeight = fill
-        ? sizes.includes('250px')
-            ? 250
-            : height
-        : height;
+    const actualWidth = width;
+    const actualHeight = height;
 
     useEffect(() => {
         const fallbackImage = '/avocado.webp';
@@ -78,6 +74,7 @@ export default function CustomProxyImage({
                 const placeholderUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
 
                 setOptimizedSrc(proxyUrl);
+
                 setPlaceholderSrc(placeholderUrl);
 
                 if (preloadViaProxy && typeof window !== 'undefined') {

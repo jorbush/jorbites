@@ -41,12 +41,12 @@ export async function GET(request: NextRequest) {
 
                     // For maximum quality without dimensions, only apply format and quality transformations
                     if (quality === 'auto:best' && !width && !height) {
-                        imageUrl = `${baseUrl}/image/upload/f_auto,${qualityParam}/${imagePath}`;
+                        imageUrl = `${baseUrl}/image/upload/f_webp,${qualityParam}/${imagePath}`;
                     } else {
                         // Use provided dimensions or defaults
                         const w = width || '400';
                         const h = height || '400';
-                        imageUrl = `${baseUrl}/image/upload/f_auto,${qualityParam},w_${w},h_${h},c_fill/${imagePath}`;
+                        imageUrl = `${baseUrl}/image/upload/f_webp,${qualityParam},w_${w},h_${h},c_fill/${imagePath}`;
                     }
                 } else {
                     console.error(
