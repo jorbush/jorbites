@@ -16,7 +16,6 @@ interface CustomProxyImageProps {
     style?: React.CSSProperties;
     circular?: boolean;
     maxQuality?: boolean;
-    disablePlaceholder?: boolean;
 }
 
 export default function CustomProxyImage({
@@ -33,7 +32,6 @@ export default function CustomProxyImage({
     style,
     circular = false,
     maxQuality = false,
-    disablePlaceholder = false,
 }: CustomProxyImageProps) {
     const [isLoaded, setIsLoaded] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
@@ -77,11 +75,7 @@ export default function CustomProxyImage({
 
                 setOptimizedSrc(proxyUrl);
 
-                if (!disablePlaceholder) {
-                    setPlaceholderSrc(placeholderUrl);
-                } else {
-                    setPlaceholderSrc(null);
-                }
+                setPlaceholderSrc(placeholderUrl);
 
                 if (preloadViaProxy && typeof window !== 'undefined') {
                     const link = document.createElement('link');
@@ -110,7 +104,6 @@ export default function CustomProxyImage({
         sizes,
         quality,
         useMaxQuality,
-        disablePlaceholder,
     ]);
 
     useEffect(() => {
