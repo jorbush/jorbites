@@ -6,23 +6,30 @@ import Image from 'next/image';
 const Logo = () => {
     const router = useRouter();
 
-    let logoPath = '/images/logo-nobg.webp';
-
-    if (localStorage.getItem('theme') === 'dark') {
-        logoPath = '/images/no_bg_white.webp';
-    }
-
     return (
-        <Image
+        <div
             onClick={() => router.push('/')}
-            alt="Logo"
-            className="w-32 cursor-pointer md:block"
-            height={29}
-            width={128}
-            src={logoPath}
-            data-cy="logo"
-            priority
-        />
+            className="cursor-pointer md:block"
+        >
+            <Image
+                alt="Logo"
+                className="w-32 dark:hidden"
+                height={29}
+                width={128}
+                src="/images/logo-nobg.webp"
+                data-cy="logo"
+                priority
+            />
+            <Image
+                alt="Logo"
+                className="hidden w-32 dark:block"
+                height={29}
+                width={128}
+                src="/images/no_bg_white.webp"
+                data-cy="logo-dark"
+                priority
+            />
+        </div>
     );
 };
 

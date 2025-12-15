@@ -18,7 +18,7 @@ export default function LcpPreloader({ imageUrl }: LcpPreloaderProps) {
                     )
                     .forEach((el) => el.remove());
 
-                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(imageUrl)}&w=250&h=250&q=auto:good`;
+                const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(imageUrl)}&w=209&h=209&q=auto:eco`;
 
                 const preloadLink = document.createElement('link');
                 preloadLink.rel = 'preload';
@@ -26,17 +26,6 @@ export default function LcpPreloader({ imageUrl }: LcpPreloaderProps) {
                 preloadLink.href = proxyUrl;
                 preloadLink.setAttribute('fetchpriority', 'high');
                 document.head.appendChild(preloadLink);
-
-                if (
-                    !document.querySelector(
-                        `link[rel="preconnect"][href="${window.location.origin}"]`
-                    )
-                ) {
-                    const preconnect = document.createElement('link');
-                    preconnect.rel = 'preconnect';
-                    preconnect.href = window.location.origin;
-                    document.head.appendChild(preconnect);
-                }
             } catch (e) {
                 console.error('Error injecting preload:', e);
             }

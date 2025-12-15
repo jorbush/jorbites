@@ -186,29 +186,6 @@ describe('LcpPreloader', () => {
         expect(removedLinks).toBe(2);
     });
 
-    it('creates preconnect link when not present', () => {
-        // Reset mocks before this specific test
-        vi.clearAllMocks();
-        createdLinks = [];
-
-        render(<LcpPreloader imageUrl="https://example.com/image.jpg" />);
-
-        expect(document.querySelector).toHaveBeenCalledWith(
-            'link[rel="preconnect"][href="https://test-domain.com"]'
-        );
-
-        // Verify that exactly 2 links were created
-        expect(createdLinks.length).toBe(2);
-
-        // Verify the preconnect link (second created link)
-        const preconnectLink = createdLinks[1];
-        expect(preconnectLink.rel).toBe('preconnect');
-        expect(preconnectLink.href).toBe('https://test-domain.com');
-
-        // Verify that 2 links were added to the head
-        expect(appendedLinks.length).toBe(2);
-    });
-
     it('does not create preconnect link when already present', () => {
         // Reset mocks and make querySelector return an element (preconnect already exists)
         vi.clearAllMocks();
