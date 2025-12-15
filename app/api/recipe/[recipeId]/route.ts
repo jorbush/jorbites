@@ -172,7 +172,6 @@ export async function PATCH(
             title,
             description,
             imageSrc,
-            category, // Legacy field for backward compatibility
             categories,
             method,
             ingredients,
@@ -187,25 +186,17 @@ export async function PATCH(
             questId,
         } = body;
 
-        // Handle both legacy 'category' and new 'categories' field
-        let finalCategories: string[] | undefined = undefined;
-        if (Array.isArray(categories)) {
-            finalCategories = categories;
-        } else if (typeof category === 'string' && category.trim() !== '') {
-            // Migrate legacy single category to array
-            finalCategories = [category];
-        } else if (categories === undefined && category === undefined) {
-            // If neither is provided, keep existing categories
-            finalCategories = undefined;
-        }
-
         // Validate categories if provided
-        if (finalCategories !== undefined) {
-            if (finalCategories.length === 0) {
+        if (categories !== undefined) {
+            if (!Array.isArray(categories)) {
+                return badRequest('Categories must be an array');
+            }
+
+            if (categories.length === 0) {
                 return badRequest('At least one category is required');
             }
 
-            if (finalCategories.length > RECIPE_MAX_CATEGORIES) {
+            if (categories.length > RECIPE_MAX_CATEGORIES) {
                 return validationError(
                     `Recipe cannot have more than ${RECIPE_MAX_CATEGORIES} categories`
                 );
@@ -213,9 +204,7 @@ export async function PATCH(
 
             // Validate each category is a non-empty string
             if (
-                finalCategories.some(
-                    (cat) => typeof cat !== 'string' || !cat.trim()
-                )
+                categories.some((cat) => typeof cat !== 'string' || !cat.trim())
             ) {
                 return badRequest('All categories must be non-empty strings');
             }
@@ -227,7 +216,7 @@ export async function PATCH(
             );
 
             if (
-                finalCategories.some(
+                categories.some(
                     (cat) => cat.toLowerCase() === 'award-winning'
                 ) &&
                 !hasAwardWinning
@@ -240,9 +229,7 @@ export async function PATCH(
             // Prevent removal of the Award-winning category
             if (
                 hasAwardWinning &&
-                !finalCategories.some(
-                    (cat) => cat.toLowerCase() === 'award-winning'
-                )
+                !categories.some((cat) => cat.toLowerCase() === 'award-winning')
             ) {
                 return badRequest('Cannot remove the Award-winning category');
             }
@@ -364,8 +351,8 @@ export async function PATCH(
         };
 
         // Only update categories if provided
-        if (finalCategories !== undefined) {
-            updateData.categories = finalCategories;
+        if (categories !== undefined) {
+            updateData.categories = categories;
         }
 
         const updatedRecipe = await prisma.recipe.update({
