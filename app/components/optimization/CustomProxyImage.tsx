@@ -16,6 +16,7 @@ interface CustomProxyImageProps {
     style?: React.CSSProperties;
     circular?: boolean;
     maxQuality?: boolean;
+    disablePlaceholder?: boolean;
 }
 
 export default function CustomProxyImage({
@@ -32,6 +33,7 @@ export default function CustomProxyImage({
     style,
     circular = false,
     maxQuality = false,
+    disablePlaceholder = false,
 }: CustomProxyImageProps) {
     const [isLoaded, setIsLoaded] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
@@ -40,12 +42,8 @@ export default function CustomProxyImage({
 
     const useMaxQuality = maxQuality || quality === 'auto:best';
 
-    const actualWidth = fill ? (sizes.includes('250px') ? 250 : width) : width;
-    const actualHeight = fill
-        ? sizes.includes('250px')
-            ? 250
-            : height
-        : height;
+    const actualWidth = width;
+    const actualHeight = height;
 
     useEffect(() => {
         const fallbackImage = '/avocado.webp';
@@ -78,7 +76,12 @@ export default function CustomProxyImage({
                 const placeholderUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
 
                 setOptimizedSrc(proxyUrl);
-                setPlaceholderSrc(placeholderUrl);
+
+                if (!disablePlaceholder) {
+                    setPlaceholderSrc(placeholderUrl);
+                } else {
+                    setPlaceholderSrc(null);
+                }
 
                 if (preloadViaProxy && typeof window !== 'undefined') {
                     const link = document.createElement('link');
@@ -107,6 +110,7 @@ export default function CustomProxyImage({
         sizes,
         quality,
         useMaxQuality,
+        disablePlaceholder,
     ]);
 
     useEffect(() => {
