@@ -84,7 +84,7 @@ describe('Image Proxy API Error Handling', () => {
             expect(response.status).toBe(200);
             expect(mockFetch).toHaveBeenCalledWith(
                 expect.stringContaining(
-                    'f_auto,q_auto:good,w_800,h_600,c_fill'
+                    'f_webp,q_auto:good,w_800,h_600,c_fill'
                 ),
                 expect.any(Object)
             );
