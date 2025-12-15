@@ -106,17 +106,17 @@ export default async function RootLayout({
                     name="apple-mobile-web-app-title"
                     content="Jorbites"
                 />
+                {process.env.NODE_ENV === 'production' && (
+                    <script
+                        async
+                        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-${ADSENSE_PUBLISHER_ID}`}
+                        crossOrigin="anonymous"
+                    ></script>
+                )}
             </head>
             <body
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
             >
-                {process.env.NODE_ENV === 'production' && (
-                    <script
-                        async
-                        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}`}
-                        crossOrigin="anonymous"
-                    ></script>
-                )}
                 <ClientOnly>
                     <ToasterProvider />
                     <LoginModal />
