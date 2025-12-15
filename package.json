@@ -32,6 +32,7 @@
     "canvas-confetti": "^1.9.3",
     "cloudinary": "^2.7.0",
     "date-fns": "^2.30.0",
+    "dotenv": "^17.2.3",
     "eslint": "^9.23.0",
     "eslint-config-next": "15.2.3",
     "eslint-plugin-unused-imports": "^4.1.4",
