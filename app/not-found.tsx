@@ -4,6 +4,8 @@ import { FaHome } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import Button from '@/app/components/buttons/Button';
 
+export const dynamic = 'force-dynamic';
+
 export default function NotFound() {
     const router = useRouter();
 

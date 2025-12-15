@@ -2,82 +2,120 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import React from 'react';
 
-// Mock components with string literals to avoid hoisting issues
-vi.mock('next/dynamic', () => ({
-    default: () => {
-        return function MockedDynamicComponent() {
-            return <div data-testid="client-footer">Client Footer Content</div>;
-        };
-    },
+// Mock Next.js Link and Image components
+vi.mock('next/link', () => ({
+    default: ({
+        children,
+        href,
+    }: {
+        children: React.ReactNode;
+        href: string;
+    }) => <a href={href}>{children}</a>,
 }));
 
-// Mock FooterSkeleton component with string literals
-vi.mock('@/app/components/footer/FooterSkeleton', () => ({
-    default: function MockedFooterSkeleton() {
-        return (
-            <div data-testid="footer-skeleton-component">Footer Skeleton</div>
-        );
-    },
+vi.mock('next/image', () => ({
+    default: ({
+        src,
+        alt,
+        width,
+        height,
+    }: {
+        src: string;
+        alt: string;
+        width: number;
+        height: number;
+    }) => (
+        <img
+            src={src}
+            alt={alt}
+            width={width}
+            height={height}
+        />
+    ),
 }));
 
-// Create mock functions for useState and useEffect
-const mockSetState = vi.fn();
-let mockIsMounted = false;
+// Mock react-icons
+vi.mock('react-icons/fa', () => ({
+    FaGithub: () => <svg data-testid="icon-github" />,
+    FaTwitter: () => <svg data-testid="icon-twitter" />,
+    FaInstagram: () => <svg data-testid="icon-instagram" />,
+    FaEnvelope: () => <svg data-testid="icon-email" />,
+}));
 
-// Mock React's useState and useEffect
-vi.mock('react', async () => {
-    const actual = await vi.importActual('react');
-    return {
-        ...actual,
-        useState: vi.fn(() => [mockIsMounted, mockSetState]),
-        useEffect: vi.fn((callback) => callback()),
-    };
-});
+vi.mock('react-icons/ri', () => ({
+    RiGitRepositoryLine: () => <svg data-testid="icon-repository" />,
+}));
+
+// Mock package.json
+vi.mock('@/package.json', () => ({
+    default: {
+        version: '1.0.0',
+    },
+}));
 
 // Import the component after all mocks are set up
 import SmartFooter from '@/app/components/footer/SmartFooter';
 
 describe('SmartFooter', () => {
     beforeEach(() => {
-        // Reset all mocks
         vi.clearAllMocks();
-        mockSetState.mockClear();
-        mockIsMounted = false;
     });
 
     afterEach(() => {
         cleanup();
     });
 
-    it('renders FooterSkeleton initially when not mounted', () => {
-        // Ensure useState returns false for mounted
-        mockIsMounted = false;
-
+    it('renders footer element', () => {
         render(<SmartFooter />);
-        expect(screen.getByTestId('footer-skeleton-component')).toBeDefined();
+        const footer = screen.getByTestId('footer');
+        expect(footer).toBeDefined();
+        expect(footer.tagName).toBe('FOOTER');
     });
 
-    it('renders ClientFooter when mounted', () => {
-        // Mock useState to return true for mounted
-        mockIsMounted = true;
-
+    it('renders all social media links', () => {
         render(<SmartFooter />);
-        expect(screen.getByTestId('client-footer')).toBeDefined();
+
+        expect(screen.getByTestId('icon-email')).toBeDefined();
+        expect(screen.getByTestId('icon-repository')).toBeDefined();
+        expect(screen.getByTestId('icon-github')).toBeDefined();
+        expect(screen.getByTestId('icon-instagram')).toBeDefined();
+        expect(screen.getByTestId('icon-twitter')).toBeDefined();
     });
 
-    it('calls useEffect which updates the mounted state', () => {
-        // Verify effect behavior by checking if setState was called
+    it('renders navigation links', () => {
         render(<SmartFooter />);
 
-        // Since we mocked useEffect to immediately run its callback,
-        // setMounted should have been called with true
-        expect(mockSetState).toHaveBeenCalledWith(true);
+        const aboutLink = screen.getByText('Sobre Jorbites');
+        const privacyLink = screen.getByText('Política de Privacidad');
+        const cookiesLink = screen.getByText('Política de Cookies');
+
+        expect(aboutLink).toBeDefined();
+        expect(privacyLink).toBeDefined();
+        expect(cookiesLink).toBeDefined();
     });
 
-    it('sets mounted state to true after mounting', () => {
+    it('renders version information', () => {
         render(<SmartFooter />);
 
-        // Check that setMounted was called with true
-        expect(mockSetState).toHaveBeenCalledWith(true);
+        const versionText = screen.getByText(/v1\.0\.0/);
+        expect(versionText).toBeDefined();
+    });
+
+    it('renders copyright notice', () => {
+        render(<SmartFooter />);
+
+        const currentYear = new Date().getFullYear();
+        const copyrightText = screen.getByText(
+            new RegExp(`© ${currentYear} Jorbites`)
+        );
+        expect(copyrightText).toBeDefined();
+    });
+
+    it('renders logo image', () => {
+        render(<SmartFooter />);
+
+        const logo = screen.getByAltText('Jorbites');
+        expect(logo).toBeDefined();
+        expect(logo.getAttribute('src')).toBe('/android-chrome-192x192.png');
     });
 });

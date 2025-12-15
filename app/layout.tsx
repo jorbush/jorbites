@@ -7,6 +7,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import SmartFooter from '@/app/components/footer/SmartFooter';
 import { dynamicImport } from '@/app/utils/dynamicImport';
 import { WebVitals } from '@/app/lib/axiom/client';
+import { Suspense } from 'react';
 import { ADSENSE_PUBLISHER_ID } from '@/app/utils/constants';
 
 const RegisterModal = dynamicImport(
@@ -106,19 +107,19 @@ export default async function RootLayout({
                     name="apple-mobile-web-app-title"
                     content="Jorbites"
                 />
+                {process.env.NODE_ENV === 'production' && (
+                    <script
+                        async
+                        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-${ADSENSE_PUBLISHER_ID}`}
+                        crossOrigin="anonymous"
+                    ></script>
+                )}
             </head>
             <body
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
             >
-                {process.env.NODE_ENV === 'production' && (
-                    <script
-                        async
-                        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}`}
-                        crossOrigin="anonymous"
-                    ></script>
-                )}
+                <ToasterProvider />
                 <ClientOnly>
-                    <ToasterProvider />
                     <LoginModal />
                     <SettingsModal currentUser={currentUser} />
                     <RecipeModal currentUser={currentUser} />
@@ -126,12 +127,14 @@ export default async function RootLayout({
                     <RegisterModal />
                     <ForgotPasswordModal />
                     <QuestModal />
-                    <Navbar currentUser={currentUser} />
                     <PullToRefresh
                         threshold={150}
                         indicator={true}
                     />
                 </ClientOnly>
+                <Suspense fallback={<div className="h-28" />}>
+                    <Navbar currentUser={currentUser} />
+                </Suspense>
                 <main
                     id="main-content"
                     className="grow pt-28 pb-20"
