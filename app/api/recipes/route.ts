@@ -87,11 +87,6 @@ export async function POST(request: Request) {
             finalCategories = [category];
         }
 
-        // Validate categories
-        if (finalCategories.length === 0) {
-            return badRequest('At least one category is required');
-        }
-
         if (finalCategories.length > RECIPE_MAX_CATEGORIES) {
             return validationError(
                 `Recipe cannot have more than ${RECIPE_MAX_CATEGORIES} categories`
