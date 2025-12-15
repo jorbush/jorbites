@@ -192,18 +192,15 @@ export async function PATCH(
                 return badRequest('Categories must be an array');
             }
 
-            if (categories.length === 0) {
-                return badRequest('At least one category is required');
-            }
-
             if (categories.length > RECIPE_MAX_CATEGORIES) {
                 return validationError(
                     `Recipe cannot have more than ${RECIPE_MAX_CATEGORIES} categories`
                 );
             }
 
-            // Validate each category is a non-empty string
+            // Validate each category is a non-empty string (only if array is not empty)
             if (
+                categories.length > 0 &&
                 categories.some((cat) => typeof cat !== 'string' || !cat.trim())
             ) {
                 return badRequest('All categories must be non-empty strings');
@@ -348,12 +345,8 @@ export async function PATCH(
             linkedRecipeIds: linkedRecipeIds || [],
             youtubeUrl: youtubeUrl?.trim() || null,
             questId: finalQuestId,
+            ...(categories !== undefined && { categories }),
         };
-
-        // Only update categories if provided
-        if (categories !== undefined) {
-            updateData.categories = categories;
-        }
 
         const updatedRecipe = await prisma.recipe.update({
             where: {
