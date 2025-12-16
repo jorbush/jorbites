@@ -5,16 +5,16 @@ import Pagination from '@/app/components/navigation/Pagination';
 import { isMobile } from '@/app/utils/deviceDetector';
 import getRecipes, { IRecipesParams } from '@/app/actions/getRecipes';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import ClientOnly from '@/app/components/utils/ClientOnly';
+
 import { headers } from 'next/headers';
 import ErrorDisplay from '@/app/components/utils/ErrorDisplay';
 import { getFirstRecipeImageUrl } from '@/app/utils/imageOptimizer';
 import LcpPreloader from '@/app/components/optimization/LcpPreloader';
-import { RecipeGrid } from '@/app/components/recipes/RecipeGrid';
 import { dynamicImport } from '@/app/utils/dynamicImport';
 import {
     MOBILE_RECIPES_LIMIT,
     DESKTOP_RECIPES_LIMIT,
+    ADSENSE_PUBLISHER_ID,
 } from '@/app/utils/constants';
 
 interface HomeProps {
@@ -36,18 +36,14 @@ const Home = async ({ searchParams }: HomeProps) => {
     const firstImageUrl = getFirstRecipeImageUrl(response.data?.recipes);
     const currentUser = await getCurrentUser();
     return (
-        <ClientOnly
-            fallback={
-                <Container>
-                    <section
-                        aria-label="Loading"
-                        className="min-h-[60vh]"
-                    >
-                        <RecipeGrid />
-                    </section>
-                </Container>
-            }
-        >
+        <>
+            {process.env.NODE_ENV === 'production' && (
+                <script
+                    async
+                    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-${ADSENSE_PUBLISHER_ID}`}
+                    crossOrigin="anonymous"
+                ></script>
+            )}
             <Container>
                 <TopScroller />
                 {firstImageUrl && <LcpPreloader imageUrl={firstImageUrl} />}
@@ -87,7 +83,7 @@ const Home = async ({ searchParams }: HomeProps) => {
                     </>
                 )}
             </Container>
-        </ClientOnly>
+        </>
     );
 };
 
