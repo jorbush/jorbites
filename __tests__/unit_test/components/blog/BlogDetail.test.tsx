@@ -46,7 +46,7 @@ vi.mock('i18next-browser-languagedetector', () => ({
 
 // Mock date-utils
 vi.mock('@/app/utils/date-utils', () => ({
-    formatDate: (date: string) => 'August 29, 2025',
+    formatDate: () => 'August 29, 2025',
 }));
 
 vi.mock('next/image', () => ({

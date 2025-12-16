@@ -45,7 +45,7 @@ vi.mock('i18next-browser-languagedetector', () => ({
 
 // Mock date-utils to avoid i18n dependency
 vi.mock('@/app/utils/date-utils', () => ({
-    formatDate: (date: string) => {
+    formatDate: () => {
         return 'August 29, 2025';
     },
 }));
