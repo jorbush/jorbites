@@ -1,0 +1,77 @@
+name: New Blog Notification
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'app/content/blogs/**/*.md'
+
+jobs:
+  notify-new-blog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Get changed blog files
+        id: changed-files
+        run: |
+          # Get the list of changed markdown files in the blogs directory
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD -- 'app/content/blogs/**/*.md' | grep -E 'app/content/blogs/[^/]+/[^/]+\.md$' || true)
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No blog files changed"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changed blog files:"
+            echo "$CHANGED_FILES"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+
+            # Extract unique blog IDs (filename without extension and language path)
+            BLOG_IDS=$(echo "$CHANGED_FILES" | sed -E 's|app/content/blogs/[^/]+/(.+)\.md|\1|' | sort -u)
+            echo "Blog IDs: $BLOG_IDS"
+
+            # Convert to JSON array for easier processing
+            BLOG_IDS_JSON=$(echo "$BLOG_IDS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            echo "blog_ids=$BLOG_IDS_JSON" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send notifications for new blogs
+        if: steps.changed-files.outputs.has_changes == 'true'
+        env:
+          JORBITES_NOTIFIER_URL: ${{ secrets.JORBITES_NOTIFIER_URL }}
+        run: |
+          BLOG_IDS='${{ steps.changed-files.outputs.blog_ids }}'
+
+          # Parse the JSON array and send a notification for each blog ID
+          echo "$BLOG_IDS" | jq -r '.[]' | while read -r blog_id; do
+            if [ -n "$blog_id" ]; then
+              echo "Sending notification for blog: $blog_id"
+
+              # Send POST request to the notifier
+              response=$(curl -s -w "\n%{http_code}" -X POST "$JORBITES_NOTIFIER_URL" \
+                -H "Content-Type: application/json" \
+                -d "{\"type\":\"NEW_BLOG\",\"blog_id\":\"$blog_id\"}")
+
+              http_code=$(echo "$response" | tail -n1)
+              body=$(echo "$response" | sed '$d')
+
+              if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+                echo "✓ Successfully notified for blog: $blog_id (HTTP $http_code)"
+              else
+                echo "✗ Failed to notify for blog: $blog_id (HTTP $http_code)"
+                echo "Response: $body"
+              fi
+            fi
+          done
+
+      - name: Summary
+        if: steps.changed-files.outputs.has_changes == 'true'
+        run: |
+          echo "Notifications sent for new blog posts"
+          echo "Blog IDs: ${{ steps.changed-files.outputs.blog_ids }}"
+
