@@ -63,7 +63,6 @@ export async function POST(request: Request) {
             title,
             description,
             imageSrc,
-            category, // Legacy field for backward compatibility
             categories,
             method,
             ingredients,
@@ -78,34 +77,23 @@ export async function POST(request: Request) {
             questId,
         } = body;
 
-        // Handle both legacy 'category' and new 'categories' field
-        let finalCategories: string[] = [];
-        if (Array.isArray(categories)) {
-            finalCategories = categories;
-        } else if (typeof category === 'string' && category.trim() !== '') {
-            // Migrate legacy single category to array
-            finalCategories = [category];
+        if (!Array.isArray(categories)) {
+            return badRequest('Categories must be an array');
         }
 
-        if (finalCategories.length > RECIPE_MAX_CATEGORIES) {
+        if (categories.length > RECIPE_MAX_CATEGORIES) {
             return validationError(
                 `Recipe cannot have more than ${RECIPE_MAX_CATEGORIES} categories`
             );
         }
 
         // Validate each category is a non-empty string
-        if (
-            finalCategories.some(
-                (cat) => typeof cat !== 'string' || !cat.trim()
-            )
-        ) {
+        if (categories.some((cat) => typeof cat !== 'string' || !cat.trim())) {
             return badRequest('All categories must be non-empty strings');
         }
 
         // Check for award-winning category
-        if (
-            finalCategories.some((cat) => cat.toLowerCase() === 'award-winning')
-        ) {
+        if (categories.some((cat) => cat.toLowerCase() === 'award-winning')) {
             return forbidden(
                 'The Award-winning category cannot be set via API'
             );
@@ -209,7 +197,7 @@ export async function POST(request: Request) {
                 title,
                 description,
                 imageSrc,
-                categories: finalCategories,
+                categories,
                 method,
                 ingredients,
                 steps,
