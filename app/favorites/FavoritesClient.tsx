@@ -28,7 +28,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
 
     return (
         <Container>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-center">
                 <SectionHeader
                     icon={FcLike}
                     title={t('favorites')}
