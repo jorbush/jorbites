@@ -198,9 +198,8 @@ export async function PATCH(
                 );
             }
 
-            // Validate each category is a non-empty string (only if array is not empty)
+            // Validate each category is a non-empty string
             if (
-                categories.length > 0 &&
                 categories.some((cat) => typeof cat !== 'string' || !cat.trim())
             ) {
                 return badRequest('All categories must be non-empty strings');
