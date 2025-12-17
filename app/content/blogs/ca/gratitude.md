@@ -6,7 +6,7 @@ image: /images/blogs/gratitude.webp
 description: Un agraïment especial a Jorbites per inspirar la meva passió per la cuina
 ---
 
-Vull agrair a aquesta web, la meva motivació per la cuina, que sempre m'ha agradat, sobretot crear, i aquesta web no només em motiva a fer-ho, sinó que em repte a fer-ho.
+Vull agrair a aquesta web, la meva motivació per la cuina, que sempre m'ha agradat, sobretot crear, i aquesta web no només em motiva a fer-ho, sinó que em reta a fer-ho.
 
 ## Ingredients
 
