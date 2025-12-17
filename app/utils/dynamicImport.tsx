@@ -2,6 +2,16 @@ import dynamic from 'next/dynamic';
 import React from 'react';
 
 /**
+ * Default options for dynamic imports.
+ * - ssr: false - Disables Server-Side Rendering for deprioritized loading
+ * - loading: () => null - Shows no loading state for seamless transitions
+ */
+const DEFAULT_OPTIONS = {
+    ssr: false,
+    loading: () => null,
+};
+
+/**
  * Wrapper around Next.js dynamic import with sensible defaults for deprioritized loading.
  *
  * By default, this function:
@@ -35,10 +45,10 @@ import React from 'react';
  */
 export function dynamicImport<T>(
     importFunc: () => Promise<{ default: React.ComponentType<T> }>,
-    options = { ssr: false }
+    options = {}
 ) {
     return dynamic(importFunc, {
-        loading: () => null,
+        ...DEFAULT_OPTIONS,
         ...options,
     });
 }
