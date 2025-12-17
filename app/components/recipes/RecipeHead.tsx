@@ -21,6 +21,8 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(false);
+    const [dragOffset, setDragOffset] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
     const touchStartX = useRef<number>(0);
     const touchEndX = useRef<number>(0);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -87,21 +89,31 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
         }
     }, [isTransitioning]);
 
-    // Touch handlers for swipe functionality
+    // Touch handlers for swipe functionality with visual feedback
     const handleTouchStart = (e: React.TouchEvent) => {
-        if (imagesSrc.length <= 1) return;
+        if (imagesSrc.length <= 1 || isTransitioning) return;
         touchStartX.current = e.touches[0].clientX;
+        touchEndX.current = e.touches[0].clientX;
+        setIsDragging(true);
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
-        if (imagesSrc.length <= 1) return;
+        if (imagesSrc.length <= 1 || !isDragging) return;
         touchEndX.current = e.touches[0].clientX;
+        const diff = touchEndX.current - touchStartX.current;
+        
+        // Apply drag offset with some resistance for better UX
+        setDragOffset(diff * 0.5);
     };
 
     const handleTouchEnd = () => {
-        if (imagesSrc.length <= 1) return;
+        if (imagesSrc.length <= 1 || !isDragging) return;
+        
         const swipeThreshold = 50; // Minimum swipe distance in pixels
         const diff = touchStartX.current - touchEndX.current;
+
+        setIsDragging(false);
+        setDragOffset(0);
 
         if (Math.abs(diff) > swipeThreshold) {
             if (diff > 0) {
@@ -146,30 +158,71 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
             >
-                {imagesSrc.map((src, index) => (
-                    <div
-                        key={index}
-                        className="absolute h-full w-full overflow-hidden rounded-xl transition-opacity duration-300 ease-in-out"
-                        style={{
-                            opacity: index === currentImageIndex ? 1 : 0,
-                            pointerEvents:
-                                index === currentImageIndex ? 'auto' : 'none',
-                            zIndex: index === currentImageIndex ? 1 : 0,
-                        }}
-                    >
-                        <CustomProxyImage
-                            src={src || '/avocado.webp'}
-                            fill
-                            priority={index === 0}
-                            className="rounded-xl object-cover"
-                            alt="Recipe Image"
-                            maxQuality={true}
-                            quality="auto:best"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                            preloadViaProxy={index === 0}
-                        />
-                    </div>
-                ))}
+                {imagesSrc.map((src, index) => {
+                    // Calculate which images to show
+                    const isCurrentImage = index === currentImageIndex;
+                    const isPreviousImage =
+                        index ===
+                        (currentImageIndex === 0
+                            ? imagesSrc.length - 1
+                            : currentImageIndex - 1);
+                    const isNextImage =
+                        index ===
+                        (currentImageIndex === imagesSrc.length - 1
+                            ? 0
+                            : currentImageIndex + 1);
+
+                    let translateX = 0;
+                    let opacity = 0;
+                    let zIndex = 0;
+
+                    if (isCurrentImage) {
+                        translateX = dragOffset;
+                        opacity = 1;
+                        zIndex = 2;
+                    } else if (isPreviousImage && dragOffset > 0) {
+                        // Show previous image when dragging right
+                        translateX = -100 + (dragOffset / containerRef.current?.offsetWidth || 1) * 100;
+                        opacity = Math.min(1, dragOffset / 100);
+                        zIndex = 1;
+                    } else if (isNextImage && dragOffset < 0) {
+                        // Show next image when dragging left
+                        translateX = 100 + (dragOffset / containerRef.current?.offsetWidth || 1) * 100;
+                        opacity = Math.min(1, Math.abs(dragOffset) / 100);
+                        zIndex = 1;
+                    }
+
+                    const shouldRender = isCurrentImage || isPreviousImage || isNextImage;
+                    if (!shouldRender) return null;
+
+                    return (
+                        <div
+                            key={index}
+                            className="absolute h-full w-full overflow-hidden rounded-xl"
+                            style={{
+                                transform: `translateX(${translateX}px)`,
+                                opacity: opacity,
+                                pointerEvents: isCurrentImage ? 'auto' : 'none',
+                                zIndex: zIndex,
+                                transition: isDragging
+                                    ? 'none'
+                                    : 'transform 300ms ease-out, opacity 300ms ease-out',
+                            }}
+                        >
+                            <CustomProxyImage
+                                src={src || '/avocado.webp'}
+                                fill
+                                priority={index === 0}
+                                className="rounded-xl object-cover"
+                                alt="Recipe Image"
+                                maxQuality={true}
+                                quality="auto:best"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                                preloadViaProxy={index === 0}
+                            />
+                        </div>
+                    );
+                })}
                 {imagesSrc.length > 1 && (
                     <>
                         <div
