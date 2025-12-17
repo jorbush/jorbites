@@ -166,8 +166,6 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                             maxQuality={true}
                             quality="auto:best"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                            // Load first 2 images eagerly, rest lazily
-                            loading={index < 2 ? 'eager' : 'lazy'}
                             preloadViaProxy={index === 0}
                         />
                     </div>
