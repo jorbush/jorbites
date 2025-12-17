@@ -45,6 +45,10 @@ jobs:
         env:
           JORBITES_NOTIFIER_URL: ${{ secrets.JORBITES_NOTIFIER_URL }}
         run: |
+          if [ -z "$JORBITES_NOTIFIER_URL" ]; then
+            echo "JORBITES_NOTIFIER_URL secret is not set. Skipping notification step."
+            exit 0
+          fi
           BLOG_IDS='${{ steps.changed-files.outputs.blog_ids }}'
 
           # Parse the JSON array and send a notification for each blog ID
