@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import EventsClient from './events-client';
 
 export const metadata: Metadata = {
@@ -16,11 +15,7 @@ export const metadata: Metadata = {
 };
 
 const EventsPage = () => {
-    return (
-        <ClientOnly>
-            <EventsClient />
-        </ClientOnly>
-    );
+    return <EventsClient />;
 };
 
 export default EventsPage;

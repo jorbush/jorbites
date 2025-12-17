@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import ClientOnly from '@/app/components/utils/ClientOnly';
+import { Suspense } from 'react';
 import ResetPasswordClient from './ResetPasswordClient';
 import EmptyState from '@/app/components/utils/EmptyState';
 
@@ -17,16 +17,16 @@ const ResetPasswordPage = async (props: { params: Promise<IParams> }) => {
     const { token } = await props.params;
     if (!token) {
         return (
-            <ClientOnly>
+            <Suspense fallback={<div className="min-h-[60vh]" />}>
                 <EmptyState />
-            </ClientOnly>
+            </Suspense>
         );
     }
 
     return (
-        <ClientOnly>
+        <Suspense fallback={<div className="min-h-[60vh]" />}>
             <ResetPasswordClient token={token} />
-        </ClientOnly>
+        </Suspense>
     );
 };
 

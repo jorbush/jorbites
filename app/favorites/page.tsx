@@ -1,5 +1,5 @@
+import { Suspense } from 'react';
 import EmptyState from '@/app/components/utils/EmptyState';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import { isMobile } from '@/app/utils/deviceDetector';
 import { headers } from 'next/headers';
 import {
@@ -38,7 +38,7 @@ const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
         );
 
         return (
-            <ClientOnly>
+            <Suspense fallback={<div className="h-auto" />}>
                 <EmptyState
                     title={
                         hasFilters
@@ -53,12 +53,12 @@ const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
                     showReset={hasFilters}
                     height="h-auto"
                 />
-            </ClientOnly>
+            </Suspense>
         );
     }
 
     return (
-        <ClientOnly>
+        <Suspense fallback={<div className="min-h-[60vh]" />}>
             <FavoritesClient
                 recipes={favoriteRecipesResponse.recipes}
                 currentUser={currentUser}
@@ -66,7 +66,7 @@ const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
                 currentPage={favoriteRecipesResponse.currentPage}
                 searchParams={resolvedParams}
             />
-        </ClientOnly>
+        </Suspense>
     );
 };
 

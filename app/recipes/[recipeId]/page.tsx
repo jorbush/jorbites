@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getRecipeById from '@/app/actions/getRecipeById';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
@@ -79,20 +79,20 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
 
     if (!recipe) {
         return (
-            <ClientOnly>
+            <Suspense fallback={<div className="min-h-[60vh]" />}>
                 <EmptyState />
-            </ClientOnly>
+            </Suspense>
         );
     }
 
     return (
-        <ClientOnly fallback={<RecipeClientSkeleton />}>
+        <Suspense fallback={<RecipeClientSkeleton />}>
             <RecipeClient
                 recipe={recipe}
                 currentUser={currentUser}
                 comments={comments}
             />
-        </ClientOnly>
+        </Suspense>
     );
 };
 

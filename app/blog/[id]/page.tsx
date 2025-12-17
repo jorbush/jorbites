@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import BlogDetailClient from './blog-detail-client';
 import { getBlogById } from '@/app/utils/blog-utils';
 
@@ -51,11 +50,7 @@ export async function generateMetadata(props: {
 
 const BlogPage = async (props: PageProps) => {
     const params = await props.params;
-    return (
-        <ClientOnly>
-            <BlogDetailClient id={params.id} />
-        </ClientOnly>
-    );
+    return <BlogDetailClient id={params.id} />;
 };
 
 export default BlogPage;

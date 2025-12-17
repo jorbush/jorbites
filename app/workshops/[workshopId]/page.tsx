@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getWorkshopById from '@/app/actions/getWorkshopById';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import WorkshopClient from '@/app/workshops/[workshopId]/WorkshopClient';
 import WorkshopClientSkeleton from '@/app/components/workshops/WorkshopClientSkeleton';
@@ -54,22 +54,22 @@ const WorkshopPage = async (props: { params: Promise<IParams> }) => {
 
     if (!workshop) {
         return (
-            <ClientOnly>
+            <Suspense fallback={<div className="min-h-[60vh]" />}>
                 <EmptyState
                     title="Workshop not found"
                     subtitle="The workshop you're looking for doesn't exist"
                 />
-            </ClientOnly>
+            </Suspense>
         );
     }
 
     return (
-        <ClientOnly fallback={<WorkshopClientSkeleton />}>
+        <Suspense fallback={<WorkshopClientSkeleton />}>
             <WorkshopClient
                 workshop={workshop}
                 currentUser={currentUser}
             />
-        </ClientOnly>
+        </Suspense>
     );
 };
 

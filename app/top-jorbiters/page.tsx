@@ -1,5 +1,5 @@
+import { Suspense } from 'react';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import getTopJorbiters from '../actions/getTopJorbiters';
 import TopJorbitersClient from './TopJorbitersClient';
@@ -11,19 +11,19 @@ const TopJorbitersPage = async () => {
 
     if (!topJorbiters) {
         return (
-            <ClientOnly>
+            <Suspense fallback={<div className="min-h-[60vh]" />}>
                 <EmptyState />
-            </ClientOnly>
+            </Suspense>
         );
     }
 
     return (
-        <ClientOnly fallback={<TopJorbitersClientSkeleton />}>
+        <Suspense fallback={<TopJorbitersClientSkeleton />}>
             <TopJorbitersClient
                 currentUser={currentUser}
                 topJorbiters={topJorbiters}
             />
-        </ClientOnly>
+        </Suspense>
     );
 };
 
