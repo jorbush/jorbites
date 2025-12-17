@@ -120,7 +120,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ blog, author }) => {
                 <button
                     className="mr-4 flex translate-y-3 cursor-pointer items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
                     onClick={() => router.back()}
-                    aria-label={t('back')}
+                    aria-label={t('back') as string}
                 >
                     <FiChevronLeft className="text-xl" />
                 </button>
