@@ -1,13 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FiChevronLeft, FiChevronRight, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/navigation/Heading';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface RecipeHeadProps {
     title: string;
@@ -21,7 +20,10 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     imagesSrc,
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [[_page, direction], setPage] = useState([0, 0]);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const touchStartX = useRef<number>(0);
+    const touchEndX = useRef<number>(0);
+    const containerRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const { t } = useTranslation();
 
@@ -50,48 +52,69 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     };
 
     const goToPreviousImage = () => {
+        if (isTransitioning || imagesSrc.length <= 1) return;
+        setIsTransitioning(true);
         const newIndex =
             currentImageIndex === 0
                 ? imagesSrc.length - 1
                 : currentImageIndex - 1;
-        setPage([newIndex, -1]);
         setCurrentImageIndex(newIndex);
     };
 
     const goToNextImage = () => {
+        if (isTransitioning || imagesSrc.length <= 1) return;
+        setIsTransitioning(true);
         const newIndex =
             currentImageIndex === imagesSrc.length - 1
                 ? 0
                 : currentImageIndex + 1;
-        setPage([newIndex, 1]);
         setCurrentImageIndex(newIndex);
     };
 
-    // Swipe threshold for touch gesture detection
-    // Higher values require more deliberate swipes to prevent accidental navigation
-    const SWIPE_CONFIDENCE_THRESHOLD = 10000;
-    const swipePower = (offset: number, velocity: number) => {
-        return Math.abs(offset) * velocity;
+    const goToImage = (index: number) => {
+        if (isTransitioning || index === currentImageIndex) return;
+        setIsTransitioning(true);
+        setCurrentImageIndex(index);
     };
 
-    const paginate = (newDirection: number) => {
-        if (newDirection === 1) {
-            goToNextImage();
-        } else {
-            goToPreviousImage();
+    // Reset transition state after animation completes
+    useEffect(() => {
+        if (isTransitioning) {
+            const timer = setTimeout(() => {
+                setIsTransitioning(false);
+            }, 300); // Match CSS transition duration
+            return () => clearTimeout(timer);
         }
+    }, [isTransitioning]);
+
+    // Touch handlers for swipe functionality
+    const handleTouchStart = (e: React.TouchEvent) => {
+        if (imagesSrc.length <= 1) return;
+        touchStartX.current = e.touches[0].clientX;
     };
 
-    const handleDragEnd = (
-        _e: MouseEvent | TouchEvent | PointerEvent,
-        { offset, velocity }: { offset: { x: number }; velocity: { x: number } }
-    ) => {
-        const swipe = swipePower(offset.x, velocity.x);
-        if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) {
-            paginate(1);
-        } else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) {
-            paginate(-1);
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (imagesSrc.length <= 1) return;
+        touchEndX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+        if (imagesSrc.length <= 1) return;
+        const swipeThreshold = 50; // Minimum swipe distance in pixels
+        const diff = touchStartX.current - touchEndX.current;
+
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                // Swiped left, go to next image
+                goToNextImage();
+            } else {
+                // Swiped right, go to previous image
+                goToPreviousImage();
+            }
         }
+
+        touchStartX.current = 0;
+        touchEndX.current = 0;
     };
 
     return (
@@ -116,54 +139,37 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                     <FiShare2 className="text-xl" />
                 </button>
             </div>
-            <div className="relative h-[60vh] w-full overflow-hidden rounded-xl">
-                <AnimatePresence
-                    initial={false}
-                    custom={direction}
-                >
-                    <motion.div
-                        key={currentImageIndex}
-                        custom={direction}
-                        variants={{
-                            enter: (direction: number) => ({
-                                x: direction > 0 ? '100%' : '-100%',
-                            }),
-                            center: {
-                                zIndex: 1,
-                                x: 0,
-                            },
-                            exit: (direction: number) => ({
-                                zIndex: 0,
-                                x: direction < 0 ? '100%' : '-100%',
-                            }),
+            <div
+                ref={containerRef}
+                className="relative h-[60vh] w-full overflow-hidden rounded-xl"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+            >
+                {imagesSrc.map((src, index) => (
+                    <div
+                        key={index}
+                        className="absolute h-full w-full overflow-hidden rounded-xl transition-opacity duration-300 ease-in-out"
+                        style={{
+                            opacity: index === currentImageIndex ? 1 : 0,
+                            pointerEvents:
+                                index === currentImageIndex ? 'auto' : 'none',
+                            zIndex: index === currentImageIndex ? 1 : 0,
                         }}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        transition={{
-                            x: { type: 'spring', stiffness: 300, damping: 30 },
-                        }}
-                        drag={imagesSrc.length > 1 ? 'x' : false}
-                        dragConstraints={{ left: 0, right: 0 }}
-                        dragElastic={1}
-                        onDragEnd={handleDragEnd}
-                        className="absolute h-full w-full overflow-hidden rounded-xl"
                     >
                         <CustomProxyImage
-                            src={
-                                imagesSrc[currentImageIndex] || '/avocado.webp'
-                            }
+                            src={src || '/avocado.webp'}
                             fill
-                            priority={true}
+                            priority={index === 0}
                             className="rounded-xl object-cover"
                             alt="Recipe Image"
                             maxQuality={true}
                             quality="auto:best"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                            preloadViaProxy={true}
+                            preloadViaProxy={index === 0}
                         />
-                    </motion.div>
-                </AnimatePresence>
+                    </div>
+                ))}
                 {imagesSrc.length > 1 && (
                     <>
                         <div
@@ -197,12 +203,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                             {imagesSrc.map((_, index) => (
                                 <button
                                     key={index}
-                                    onClick={() => {
-                                        const newDirection =
-                                            index > currentImageIndex ? 1 : -1;
-                                        setPage([index, newDirection]);
-                                        setCurrentImageIndex(index);
-                                    }}
+                                    onClick={() => goToImage(index)}
                                     className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${
                                         index === currentImageIndex
                                             ? 'w-8 bg-white'
