@@ -17,10 +17,19 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
         router.push(`/blog/${blog.id}`);
     };
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handleClick();
+        }
+    };
+
     return (
         <div
             className="group cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
             onClick={handleClick}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
         >
             <div className="relative aspect-[16/9] w-full overflow-hidden">
                 <Image
