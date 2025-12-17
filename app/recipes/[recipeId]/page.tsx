@@ -1,9 +1,11 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getRecipeById from '@/app/actions/getRecipeById';
 import EmptyState from '@/app/components/utils/EmptyState';
 import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
+import RecipeClientSkeleton from '@/app/components/recipes/RecipeClientSkeleton';
 
 interface IParams {
     recipeId?: string;
@@ -76,15 +78,21 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
     const comments = await getCommentsByRecipeId(params);
 
     if (!recipe) {
-        return <EmptyState />;
+        return (
+            <Suspense fallback={<div className="min-h-[60vh]" />}>
+                <EmptyState />
+            </Suspense>
+        );
     }
 
     return (
-        <RecipeClient
-            recipe={recipe}
-            currentUser={currentUser}
-            comments={comments}
-        />
+        <Suspense fallback={<RecipeClientSkeleton />}>
+            <RecipeClient
+                recipe={recipe}
+                currentUser={currentUser}
+                comments={comments}
+            />
+        </Suspense>
     );
 };
 

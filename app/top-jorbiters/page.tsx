@@ -1,21 +1,29 @@
+import { Suspense } from 'react';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import EmptyState from '@/app/components/utils/EmptyState';
 import getTopJorbiters from '../actions/getTopJorbiters';
 import TopJorbitersClient from './TopJorbitersClient';
+import TopJorbitersClientSkeleton from '@/app/components/top-jorbiters/TopJorbitersClientSkeleton';
 
 const TopJorbitersPage = async () => {
     const currentUser = await getCurrentUser();
     const topJorbiters = await getTopJorbiters();
 
     if (!topJorbiters) {
-        return <EmptyState />;
+        return (
+            <Suspense fallback={<div className="min-h-[60vh]" />}>
+                <EmptyState />
+            </Suspense>
+        );
     }
 
     return (
-        <TopJorbitersClient
-            currentUser={currentUser}
-            topJorbiters={topJorbiters}
-        />
+        <Suspense fallback={<TopJorbitersClientSkeleton />}>
+            <TopJorbitersClient
+                currentUser={currentUser}
+                topJorbiters={topJorbiters}
+            />
+        </Suspense>
     );
 };
 

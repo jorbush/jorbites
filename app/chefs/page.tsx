@@ -1,8 +1,10 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import ChefsClient from './ChefsClient';
 import getChefs, { ChefOrderByType } from '@/app/actions/getChefs';
 import Container from '@/app/components/utils/Container';
 import ErrorDisplay from '@/app/components/utils/ErrorDisplay';
+import ChefsListSkeleton from '@/app/components/chefs/ChefsListSkeleton';
 
 interface ChefsPageProps {
     searchParams: Promise<{
@@ -41,11 +43,21 @@ const ChefsPage = async ({ searchParams }: ChefsPageProps) => {
     }
 
     return (
-        <ChefsClient
-            chefs={response.data?.chefs || []}
-            totalPages={response.data?.totalPages || 1}
-            currentPage={response.data?.currentPage || 1}
-        />
+        <Suspense
+            fallback={
+                <Container>
+                    <div className="min-h-[60vh]">
+                        <ChefsListSkeleton />
+                    </div>
+                </Container>
+            }
+        >
+            <ChefsClient
+                chefs={response.data?.chefs || []}
+                totalPages={response.data?.totalPages || 1}
+                currentPage={response.data?.currentPage || 1}
+            />
+        </Suspense>
     );
 };
 
