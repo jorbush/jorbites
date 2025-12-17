@@ -1,10 +1,8 @@
 import { Metadata } from 'next';
 import ChefsClient from './ChefsClient';
 import getChefs, { ChefOrderByType } from '@/app/actions/getChefs';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import Container from '@/app/components/utils/Container';
 import ErrorDisplay from '@/app/components/utils/ErrorDisplay';
-import ChefsListSkeleton from '@/app/components/chefs/ChefsListSkeleton';
 
 interface ChefsPageProps {
     searchParams: Promise<{
@@ -29,33 +27,25 @@ const ChefsPage = async ({ searchParams }: ChefsPageProps) => {
         limit: 12,
     });
 
+    if (response.error) {
+        return (
+            <Container>
+                <div className="min-h-[60vh]">
+                    <ErrorDisplay
+                        code={response.error.code}
+                        message={response.error.message}
+                    />
+                </div>
+            </Container>
+        );
+    }
+
     return (
-        <ClientOnly
-            fallback={
-                <Container>
-                    <div className="min-h-[60vh]">
-                        <ChefsListSkeleton />
-                    </div>
-                </Container>
-            }
-        >
-            {response.error ? (
-                <Container>
-                    <div className="min-h-[60vh]">
-                        <ErrorDisplay
-                            code={response.error.code}
-                            message={response.error.message}
-                        />
-                    </div>
-                </Container>
-            ) : (
-                <ChefsClient
-                    chefs={response.data?.chefs || []}
-                    totalPages={response.data?.totalPages || 1}
-                    currentPage={response.data?.currentPage || 1}
-                />
-            )}
-        </ClientOnly>
+        <ChefsClient
+            chefs={response.data?.chefs || []}
+            totalPages={response.data?.totalPages || 1}
+            currentPage={response.data?.currentPage || 1}
+        />
     );
 };
 
