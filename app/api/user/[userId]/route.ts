@@ -14,6 +14,55 @@ interface IParams {
     userId?: string;
 }
 
+export async function GET(
+    request: Request,
+    props: { params: Promise<IParams> }
+) {
+    try {
+        const params = await props.params;
+        const { userId } = params;
+
+        logger.info('GET /api/user/[userId] - start', { userId });
+
+        if (!userId || typeof userId !== 'string') {
+            return invalidInput(
+                'User ID is required and must be a valid string'
+            );
+        }
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+            select: {
+                id: true,
+                name: true,
+                email: false, // Don't expose email
+                image: true,
+                level: true,
+                verified: true,
+                createdAt: true,
+            },
+        });
+
+        if (!user) {
+            return notFound('User not found');
+        }
+
+        logger.info('GET /api/user/[userId] - success', { userId });
+        return NextResponse.json({
+            ...user,
+            createdAt: user.createdAt.toISOString(),
+        });
+    } catch (error: any) {
+        logger.error('GET /api/user/[userId] - error', {
+            error: error.message,
+            userId: (await props.params).userId,
+        });
+        return internalServerError('Failed to fetch user');
+    }
+}
+
 export async function DELETE(
     request: Request,
     props: { params: Promise<IParams> }

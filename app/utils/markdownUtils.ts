@@ -18,6 +18,22 @@ export interface Event {
     language: string;
 }
 
+export interface BlogFrontmatter {
+    title: string;
+    user_id: string;
+    date: string;
+    image: string;
+    description: string;
+}
+
+export interface Blog {
+    id: string; // slug without extension
+    slug: string;
+    frontmatter: BlogFrontmatter;
+    content: string;
+    language: string;
+}
+
 /**
  * Parse markdown content with frontmatter
  */

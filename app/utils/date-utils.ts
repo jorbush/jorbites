@@ -41,3 +41,13 @@ export const formatDateLanguage = (
     const parsedDate = date instanceof Date ? date : new Date(date);
     return format(parsedDate, formatString, { locale });
 };
+
+/**
+ * Formats a single date based on the current locale
+ */
+export const formatDate = (date: Date | string): string => {
+    const parsedDate = date instanceof Date ? date : new Date(date);
+    const currentLocale = (i18n.language as LocaleType) || 'es';
+    const locale = locales[currentLocale];
+    return format(parsedDate, 'PPP', { locale });
+};
