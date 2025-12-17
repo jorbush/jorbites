@@ -182,12 +182,14 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                         zIndex = 2;
                     } else if (isPreviousImage && dragOffset > 0) {
                         // Show previous image when dragging right
-                        translateX = -100 + (dragOffset / containerRef.current?.offsetWidth || 1) * 100;
+                        const containerWidth = containerRef.current?.offsetWidth || 1;
+                        translateX = -100 + (dragOffset / containerWidth) * 100;
                         opacity = Math.min(1, dragOffset / 100);
                         zIndex = 1;
                     } else if (isNextImage && dragOffset < 0) {
                         // Show next image when dragging left
-                        translateX = 100 + (dragOffset / containerRef.current?.offsetWidth || 1) * 100;
+                        const containerWidth = containerRef.current?.offsetWidth || 1;
+                        translateX = 100 + (dragOffset / containerWidth) * 100;
                         opacity = Math.min(1, Math.abs(dragOffset) / 100);
                         zIndex = 1;
                     }
