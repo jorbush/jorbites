@@ -7,6 +7,7 @@ import {
     FcAbout,
     FcConferenceCall,
     FcManager,
+    FcNews,
 } from 'react-icons/fc';
 
 interface FooterMenuItem {
@@ -33,6 +34,11 @@ const FooterMenu = () => {
             href: '/workshops',
             labelKey: 'workshops',
             icon: FcConferenceCall,
+        },
+        {
+            href: '/blog',
+            labelKey: 'blog',
+            icon: FcNews,
         },
         {
             href: '/about',

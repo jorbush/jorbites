@@ -53,6 +53,12 @@ vi.mock('react-icons/fc', () => ({
             className={className}
         />
     ),
+    FcNews: ({ className }: { className?: string }) => (
+        <div
+            data-testid="fc-news-icon"
+            className={className}
+        />
+    ),
 }));
 
 const mockT = vi.fn((key: string) => key);
@@ -74,14 +80,14 @@ describe('FooterMenu', () => {
 
     it('renders without crashing', () => {
         render(<FooterMenu />);
-        expect(screen.getAllByTestId('footer-menu-link')).toHaveLength(4);
+        expect(screen.getAllByTestId('footer-menu-link')).toHaveLength(5);
     });
 
     it('renders all menu items', () => {
         render(<FooterMenu />);
 
         const menuLinks = screen.getAllByTestId('footer-menu-link');
-        expect(menuLinks).toHaveLength(4);
+        expect(menuLinks).toHaveLength(5);
     });
 
     it('renders Top Jorbiters link with correct props', () => {
@@ -132,6 +138,7 @@ describe('FooterMenu', () => {
         expect(screen.getAllByTestId('fc-conference-call-icon')).toHaveLength(
             1
         );
+        expect(screen.getAllByTestId('fc-news-icon')).toHaveLength(1);
         expect(screen.getAllByTestId('fc-about-icon')).toHaveLength(1);
     });
 
@@ -181,6 +188,7 @@ describe('FooterMenu', () => {
         expect(mockT).toHaveBeenCalledWith('top_jorbiters');
         expect(mockT).toHaveBeenCalledWith('chefs');
         expect(mockT).toHaveBeenCalledWith('workshops');
+        expect(mockT).toHaveBeenCalledWith('blog');
         expect(mockT).toHaveBeenCalledWith('about');
     });
 
@@ -190,6 +198,7 @@ describe('FooterMenu', () => {
         expect(screen.getAllByText('top_jorbiters')).toHaveLength(1);
         expect(screen.getAllByText('chefs')).toHaveLength(1);
         expect(screen.getAllByText('workshops')).toHaveLength(1);
+        expect(screen.getAllByText('blog')).toHaveLength(1);
         expect(screen.getAllByText('about')).toHaveLength(1);
     });
 
@@ -203,6 +212,7 @@ describe('FooterMenu', () => {
         expect(container.textContent).toContain('top_jorbiters');
         expect(container.textContent).toContain('chefs');
         expect(container.textContent).toContain('workshops');
+        expect(container.textContent).toContain('blog');
         expect(container.textContent).toContain('about');
     });
 
@@ -233,22 +243,27 @@ describe('FooterMenu', () => {
         expect(menuLinks[2].getAttribute('data-href')).toBe('/workshops');
         expect(menuLinks[2].textContent).toContain('workshops');
 
-        // Fourth should be About
-        expect(menuLinks[3].getAttribute('data-href')).toBe('/about');
-        expect(menuLinks[3].textContent).toContain('about');
+        // Fourth should be Blog
+        expect(menuLinks[3].getAttribute('data-href')).toBe('/blog');
+        expect(menuLinks[3].textContent).toContain('blog');
+
+        // Fifth should be About
+        expect(menuLinks[4].getAttribute('data-href')).toBe('/about');
+        expect(menuLinks[4].textContent).toContain('about');
     });
 
     it('has accessible structure with spans for text', () => {
         const { container } = render(<FooterMenu />);
 
         const spans = container.querySelectorAll('span');
-        expect(spans.length).toBeGreaterThanOrEqual(4);
+        expect(spans.length).toBeGreaterThanOrEqual(5);
 
         // Check that spans contain the expected text
         const spanTexts = Array.from(spans).map((span) => span.textContent);
         expect(spanTexts).toContain('top_jorbiters');
         expect(spanTexts).toContain('chefs');
         expect(spanTexts).toContain('workshops');
+        expect(spanTexts).toContain('blog');
         expect(spanTexts).toContain('about');
     });
 });
