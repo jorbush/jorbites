@@ -25,6 +25,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     const [isDragging, setIsDragging] = useState(false);
     const touchStartX = useRef<number>(0);
     const touchEndX = useRef<number>(0);
+    const rafId = useRef<number>(0);
     const containerRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const { t } = useTranslation();
@@ -84,10 +85,19 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
         if (isTransitioning) {
             const timer = setTimeout(() => {
                 setIsTransitioning(false);
-            }, 300); // Match CSS transition duration
+            }, 400); // Match CSS transition duration
             return () => clearTimeout(timer);
         }
     }, [isTransitioning]);
+
+    // Cleanup animation frame on unmount
+    useEffect(() => {
+        return () => {
+            if (rafId.current) {
+                cancelAnimationFrame(rafId.current);
+            }
+        };
+    }, []);
 
     // Touch handlers for swipe functionality with visual feedback
     const handleTouchStart = (e: React.TouchEvent) => {
@@ -100,10 +110,18 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     const handleTouchMove = (e: React.TouchEvent) => {
         if (imagesSrc.length <= 1 || !isDragging) return;
         touchEndX.current = e.touches[0].clientX;
-        const diff = touchEndX.current - touchStartX.current;
         
-        // Apply drag offset with some resistance for better UX
-        setDragOffset(diff * 0.5);
+        // Use requestAnimationFrame for smoother updates
+        if (rafId.current) {
+            cancelAnimationFrame(rafId.current);
+        }
+        
+        rafId.current = requestAnimationFrame(() => {
+            const diff = touchEndX.current - touchStartX.current;
+            // Apply drag offset with rubber band effect for better UX
+            const resistance = 0.6;
+            setDragOffset(diff * resistance);
+        });
     };
 
     const handleTouchEnd = () => {
@@ -178,19 +196,21 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
 
                     if (isCurrentImage) {
                         translateX = dragOffset;
-                        opacity = 1;
+                        opacity = 1 - Math.abs(dragOffset) / 400; // Fade out current image slightly
                         zIndex = 2;
                     } else if (isPreviousImage && dragOffset > 0) {
                         // Show previous image when dragging right
                         const containerWidth = containerRef.current?.offsetWidth || 1;
-                        translateX = -100 + (dragOffset / containerWidth) * 100;
-                        opacity = Math.min(1, dragOffset / 100);
+                        const progress = Math.min(1, dragOffset / (containerWidth * 0.5));
+                        translateX = -containerWidth + dragOffset;
+                        opacity = progress * 0.8 + 0.2; // Fade in more gradually
                         zIndex = 1;
                     } else if (isNextImage && dragOffset < 0) {
                         // Show next image when dragging left
                         const containerWidth = containerRef.current?.offsetWidth || 1;
-                        translateX = 100 + (dragOffset / containerWidth) * 100;
-                        opacity = Math.min(1, Math.abs(dragOffset) / 100);
+                        const progress = Math.min(1, Math.abs(dragOffset) / (containerWidth * 0.5));
+                        translateX = containerWidth + dragOffset;
+                        opacity = progress * 0.8 + 0.2; // Fade in more gradually
                         zIndex = 1;
                     }
 
@@ -202,13 +222,14 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                             key={index}
                             className="absolute h-full w-full overflow-hidden rounded-xl"
                             style={{
-                                transform: `translateX(${translateX}px)`,
+                                transform: `translate3d(${translateX}px, 0, 0)`,
                                 opacity: opacity,
                                 pointerEvents: isCurrentImage ? 'auto' : 'none',
                                 zIndex: zIndex,
                                 transition: isDragging
                                     ? 'none'
-                                    : 'transform 300ms ease-out, opacity 300ms ease-out',
+                                    : 'transform 400ms cubic-bezier(0.4, 0, 0.2, 1), opacity 400ms cubic-bezier(0.4, 0, 0.2, 1)',
+                                willChange: isDragging ? 'transform, opacity' : 'auto',
                             }}
                         >
                             <CustomProxyImage
