@@ -169,7 +169,10 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ blog, author }) => {
                                 {author.name}
                             </div>
                             {author.verified && (
-                                <VerificationBadge className="mt-1 ml-1" />
+                                <VerificationBadge
+                                    className="mt-1 ml-1"
+                                    size={20}
+                                />
                             )}
                         </div>
                         {typeof author.level === 'number' && (
