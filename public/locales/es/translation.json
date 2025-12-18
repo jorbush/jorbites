@@ -369,7 +369,7 @@
     "about": "Acerca de",
     "about_subtitle": "Conoce más sobre Jorbites y nuestra misión",
     "blog": "Blog",
-    "blog_description": "Artículos de gastronomía, recetas, consejos y novedades de Jorbites",
+    "blog_description": "Artículos de gastronomía, consejos y novedades de Jorbites",
     "no_blogs_found": "No se encontraron artículos",
     "blog_not_found_message": "El artículo que buscas no pudo ser encontrado.",
     "back_to_blog": "Volver al Blog",
@@ -586,5 +586,11 @@
     "month_dec": "Dic",
     "cookies_policy": "Política de cookies",
     "privacy_policy": "Política de privacidad",
-    "max_categories_reached": "Máximo de 3 categorías permitidas"
+    "max_categories_reached": "Máximo de 3 categorías permitidas",
+    "latest_stories": "Últimas Historias",
+    "whats_new": "Novedades",
+    "no_releases": "Sin actualizaciones.",
+    "jorbites_releases": "Lanzamientos de Jorbites",
+    "back_to_stories": "Volver a historias",
+    "view_all": "Ver Todo"
 }
