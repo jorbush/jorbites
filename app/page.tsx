@@ -14,7 +14,6 @@ import { dynamicImport } from '@/app/utils/dynamicImport';
 import {
     MOBILE_RECIPES_LIMIT,
     DESKTOP_RECIPES_LIMIT,
-    ADSENSE_PUBLISHER_ID,
 } from '@/app/utils/constants';
 
 interface HomeProps {
@@ -37,13 +36,6 @@ const Home = async ({ searchParams }: HomeProps) => {
     const currentUser = await getCurrentUser();
     return (
         <>
-            {process.env.NODE_ENV === 'production' && (
-                <script
-                    async
-                    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-${ADSENSE_PUBLISHER_ID}`}
-                    crossOrigin="anonymous"
-                ></script>
-            )}
             <Container>
                 <TopScroller />
                 {firstImageUrl && <LcpPreloader imageUrl={firstImageUrl} />}
