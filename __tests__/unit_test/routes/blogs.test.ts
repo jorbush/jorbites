@@ -47,7 +47,12 @@ describe('Blogs API Routes', () => {
 
             expect(response.status).toBe(200);
             expect(data).toEqual(mockResult);
-            expect(getPaginatedBlogs).toHaveBeenCalledWith('en', 1, 10);
+            expect(getPaginatedBlogs).toHaveBeenCalledWith(
+                'en',
+                1,
+                10,
+                'general'
+            );
         });
 
         it('should handle language parameter correctly', async () => {
@@ -66,7 +71,12 @@ describe('Blogs API Routes', () => {
             const response = await BlogsGET(request);
 
             expect(response.status).toBe(200);
-            expect(getPaginatedBlogs).toHaveBeenCalledWith('es', 1, 10);
+            expect(getPaginatedBlogs).toHaveBeenCalledWith(
+                'es',
+                1,
+                10,
+                'general'
+            );
         });
 
         it('should handle page parameter', async () => {
@@ -85,7 +95,12 @@ describe('Blogs API Routes', () => {
             const response = await BlogsGET(request);
 
             expect(response.status).toBe(200);
-            expect(getPaginatedBlogs).toHaveBeenCalledWith('en', 2, 10);
+            expect(getPaginatedBlogs).toHaveBeenCalledWith(
+                'en',
+                2,
+                10,
+                'general'
+            );
         });
 
         it('should handle pageSize parameter', async () => {
@@ -104,7 +119,12 @@ describe('Blogs API Routes', () => {
             const response = await BlogsGET(request);
 
             expect(response.status).toBe(200);
-            expect(getPaginatedBlogs).toHaveBeenCalledWith('en', 1, 20);
+            expect(getPaginatedBlogs).toHaveBeenCalledWith(
+                'en',
+                1,
+                20,
+                'general'
+            );
         });
 
         it('should handle all query parameters together', async () => {
@@ -123,7 +143,12 @@ describe('Blogs API Routes', () => {
             const response = await BlogsGET(request);
 
             expect(response.status).toBe(200);
-            expect(getPaginatedBlogs).toHaveBeenCalledWith('ca', 2, 20);
+            expect(getPaginatedBlogs).toHaveBeenCalledWith(
+                'ca',
+                2,
+                20,
+                'general'
+            );
         });
 
         it('should default to en for invalid language', async () => {
@@ -142,7 +167,12 @@ describe('Blogs API Routes', () => {
             const response = await BlogsGET(request);
 
             expect(response.status).toBe(200);
-            expect(getPaginatedBlogs).toHaveBeenCalledWith('en', 1, 10);
+            expect(getPaginatedBlogs).toHaveBeenCalledWith(
+                'en',
+                1,
+                10,
+                'general'
+            );
         });
 
         it('should handle invalid page numbers gracefully', async () => {
@@ -162,7 +192,12 @@ describe('Blogs API Routes', () => {
 
             expect(response.status).toBe(200);
             // NaN from parseInt should become 1
-            expect(getPaginatedBlogs).toHaveBeenCalled();
+            expect(getPaginatedBlogs).toHaveBeenCalledWith(
+                'en',
+                1,
+                10,
+                'general'
+            );
         });
 
         it('should return 500 when getPaginatedBlogs throws an error', async () => {
