@@ -48,7 +48,7 @@
     "methods_title": "What method will you use to prepare this recipe?",
     "methods_subtitle": "Pick a preparation method",
     "images": "Images",
-    "images_subtitle":"Post images of your recipe",
+    "images_subtitle": "Post images of your recipe",
     "logged_in": "Logged in",
     "welcome_back": "Welcome back",
     "login_subtitle": "Login to your account!",
@@ -368,7 +368,7 @@
     "about": "About",
     "about_subtitle": "Learn more about Jorbites and our mission",
     "blog": "Blog",
-    "blog_description": "Food articles, recipes, tips and Jorbites news",
+    "blog_description": "Food articles, tips and Jorbites news",
     "no_blogs_found": "No blog posts found",
     "blog_not_found_message": "The blog post you're looking for could not be found.",
     "back_to_blog": "Back to Blog",
@@ -585,5 +585,12 @@
     "month_dec": "Dec",
     "cookies_policy": "Cookies policy",
     "privacy_policy": "Privacy policy",
-    "max_categories_reached": "Maximum of 3 categories allowed"
+    "max_categories_reached": "Maximum of 3 categories allowed",
+    "latest_stories": "Latest Stories",
+    "whats_new": "What's New",
+    "no_releases": "No updates yet.",
+    "release": "Release",
+    "jorbites_releases": "Jorbites Releases",
+    "back_to_stories": "Back to stories",
+    "view_all": "View All"
 }

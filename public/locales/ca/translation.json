@@ -368,7 +368,7 @@
     "about": "Quant a",
     "about_subtitle": "Descobreix més sobre Jorbites i la nostra missió",
     "blog": "Blog",
-    "blog_description": "Articles de gastronomia, receptes, consells i novetats de Jorbites",
+    "blog_description": "Articles de gastronomia, consells i novetats de Jorbites",
     "no_blogs_found": "No s'han trobat articles",
     "blog_not_found_message": "L'article que cerques no s'ha pogut trobar.",
     "back_to_blog": "Tornar al Blog",
@@ -583,5 +583,12 @@
     "month_dec": "Des",
     "cookies_policy": "Política de cookies",
     "privacy_policy": "Política de privacitat",
-    "max_categories_reached": "Màxim de 3 categories permeses"
+    "max_categories_reached": "Màxim de 3 categories permeses",
+    "latest_stories": "Últimes Històries",
+    "whats_new": "Novetats",
+    "no_releases": "Sense actualitzacions.",
+    "release": "Llançament",
+    "jorbites_releases": "Llançaments de Jorbites",
+    "back_to_stories": "Tornar a històries",
+    "view_all": "Veure-ho tot"
 }

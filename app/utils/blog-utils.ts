@@ -45,24 +45,28 @@ export async function getBlogById(
         (lang, index, self) => self.indexOf(lang) === index
     );
 
+    const subdirs = ['', 'releases']; // Check root and releases folder
+
     for (const lang of languages) {
         const blogsDirectory = path.join(
             process.cwd(),
             'app/content/blogs',
             lang
         );
-        const filePath = path.join(blogsDirectory, `${id}.md`);
 
-        if (fs.existsSync(filePath)) {
-            const { frontmatter, content } = readBlogFile(filePath);
+        for (const subdir of subdirs) {
+            const filePath = path.join(blogsDirectory, subdir, `${id}.md`);
+            if (fs.existsSync(filePath)) {
+                const { frontmatter, content } = readBlogFile(filePath);
 
-            return {
-                id,
-                slug: id,
-                frontmatter,
-                content,
-                language: lang,
-            };
+                return {
+                    id,
+                    slug: id,
+                    frontmatter,
+                    content,
+                    language: lang,
+                };
+            }
         }
     }
 
@@ -70,13 +74,17 @@ export async function getBlogById(
 }
 
 /**
- * Get all blogs for a specific language, sorted by date (newest first)
+ * Get all blogs for a specific language and category, sorted by date (newest first)
  */
-export async function getAllBlogs(language: string = 'en'): Promise<Blog[]> {
+export async function getAllBlogs(
+    language: string = 'en',
+    category: 'general' | 'releases' = 'general'
+): Promise<Blog[]> {
     const blogsDirectory = path.join(
         process.cwd(),
         'app/content/blogs',
-        language
+        language,
+        category === 'releases' ? 'releases' : ''
     );
 
     // Check if directory exists
@@ -123,14 +131,15 @@ export async function getAllBlogs(language: string = 'en'): Promise<Blog[]> {
 export async function getPaginatedBlogs(
     language: string = 'en',
     page: number = 1,
-    pageSize: number = 10
+    pageSize: number = 10,
+    category: 'general' | 'releases' = 'general'
 ): Promise<{
     blogs: Blog[];
     total: number;
     totalPages: number;
     currentPage: number;
 }> {
-    const allBlogs = await getAllBlogs(language);
+    const allBlogs = await getAllBlogs(language, category);
     const total = allBlogs.length;
     const totalPages = Math.ceil(total / pageSize);
     const startIndex = (page - 1) * pageSize;
