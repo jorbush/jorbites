@@ -14,7 +14,7 @@ vi.mock('path');
 
 // Mock gray-matter
 vi.mock('gray-matter', () => ({
-    default: vi.fn((content: string) => {
+    default: vi.fn((content: any) => {
         if (content.includes('error')) {
             throw new Error('Invalid frontmatter');
         }
@@ -118,11 +118,10 @@ Test content`;
                 args.join('/')
             );
 
-            let callCount = 0;
-            vi.mocked(fs.existsSync).mockImplementation(() => {
-                callCount++;
-                // First call (fr) returns false, second call (en) returns true
-                return callCount > 1;
+            vi.mocked(fs.existsSync).mockImplementation((filePath) => {
+                const pathStr = filePath.toString();
+                // Return true only if it's checking the English directory
+                return pathStr.includes('/en/');
             });
 
             vi.mocked(fs.readFileSync).mockReturnValue('valid content');
@@ -193,7 +192,7 @@ New content`;
             });
 
             const matter = await import('gray-matter');
-            vi.mocked(matter.default).mockImplementation((content: string) => {
+            vi.mocked(matter.default).mockImplementation((content: any) => {
                 if (content.includes('Old')) {
                     return {
                         data: {
