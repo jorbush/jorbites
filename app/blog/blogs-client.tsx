@@ -113,7 +113,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                             {currentCategory === 'releases' && (
                                 <button
                                     onClick={handleBackToStories}
-                                    className="text-primary-600 hover:text-primary-700 dark:text-primary-400 text-sm font-medium"
+                                    className="text-primary-600 hover:text-primary-700 cursor-pointer text-sm font-medium dark:text-white"
                                 >
                                     &larr;{' '}
                                     {t('back_to_stories', 'Back to stories')}
