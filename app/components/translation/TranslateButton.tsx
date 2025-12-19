@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiGlobe } from 'react-icons/fi';
 import i18n from '@/app/i18n';
@@ -55,18 +55,7 @@ export function TranslateButton({
         null
     );
 
-    useEffect(() => {
-        // Mark as mounted to prevent hydration mismatch
-        setMounted(true);
-
-        // Check if APIs are available
-        if ('Translator' in window && 'LanguageDetector' in window) {
-            setIsAvailable(true);
-            detectLanguage();
-        }
-    }, [text]);
-
-    const detectLanguage = async () => {
+    const detectLanguage = useCallback(async () => {
         if (!text || text.trim().length === 0) return;
 
         try {
@@ -97,7 +86,18 @@ export function TranslateButton({
         } catch (error) {
             console.error('Language detection failed:', error);
         }
-    };
+    }, [text]);
+
+    useEffect(() => {
+        // Mark as mounted to prevent hydration mismatch
+        setMounted(true);
+
+        // Check if APIs are available
+        if ('Translator' in window && 'LanguageDetector' in window) {
+            setIsAvailable(true);
+            detectLanguage();
+        }
+    }, [text, detectLanguage]);
 
     const handleTranslate = async () => {
         if (!text || isTranslating) return;

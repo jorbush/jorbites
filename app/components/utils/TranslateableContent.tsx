@@ -51,24 +51,25 @@ export function TranslateableContent({
             return node;
         }
         if (React.isValidElement(node)) {
+            const props = node.props as any;
             // Try to extract text from React element
-            if (node.props?.children) {
-                const childrenText = getTextContent(node.props.children);
+            if (props?.children) {
+                const childrenText = getTextContent(props.children);
                 if (childrenText) return childrenText;
             }
             // Try to get text from dangerouslySetInnerHTML if available
             if (
-                node.props?.dangerouslySetInnerHTML &&
+                props?.dangerouslySetInnerHTML &&
                 typeof document !== 'undefined'
             ) {
-                const html = node.props.dangerouslySetInnerHTML.__html;
+                const html = props.dangerouslySetInnerHTML.__html;
                 const div = document.createElement('div');
                 div.innerHTML = html;
                 return div.textContent || '';
             }
             // Try to get text from textContent prop if available
-            if (node.props?.textContent) {
-                return String(node.props.textContent);
+            if (props?.textContent) {
+                return String(props.textContent);
             }
         }
         // Handle arrays of nodes
@@ -129,11 +130,14 @@ export function TranslateableContent({
         detectLanguage();
     }, [isAvailable, mounted, textContent]);
 
+    // Get current language for dependency tracking
+    const currentLanguage = i18n.language;
+
     // Reset translation when content or language changes
     useEffect(() => {
         setTranslatedContent(null);
         setIsTranslated(false);
-    }, [textContent, i18n.language]);
+    }, [textContent, currentLanguage]);
 
     const handleTranslate = (translated: string) => {
         setTranslatedContent(translated);

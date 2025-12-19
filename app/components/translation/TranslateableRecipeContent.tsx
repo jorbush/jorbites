@@ -21,9 +21,9 @@ interface TranslateableRecipeContentProps {
 export function TranslateableRecipeContent({
     description,
     descriptionText,
-    ingredients,
+    ingredients: _ingredients,
     ingredientsText,
-    steps,
+    steps: _steps,
     stepsText,
     renderDescription,
     renderIngredients,
@@ -59,6 +59,10 @@ export function TranslateableRecipeContent({
             setIsAvailable(true);
         }
     }, []);
+
+    // Extract joined strings for dependency array
+    const ingredientsTextJoined = ingredientsText?.join('\n');
+    const stepsTextJoined = stepsText?.join('\n');
 
     // Detect language when API becomes available and content changes
     useEffect(() => {
@@ -112,8 +116,10 @@ export function TranslateableRecipeContent({
         isAvailable,
         mounted,
         descriptionText,
-        ingredientsText?.join('\n'),
-        stepsText?.join('\n'),
+        ingredientsText,
+        stepsText,
+        ingredientsTextJoined,
+        stepsTextJoined,
     ]);
 
     // Check if we have content to translate
@@ -123,6 +129,9 @@ export function TranslateableRecipeContent({
             (stepsText && stepsText.length > 0)
     );
 
+    // Get current language for dependency tracking
+    const currentLanguage = i18n.language;
+
     // Reset translation when content or language changes
     useEffect(() => {
         setTranslatedDescription(null);
@@ -131,9 +140,9 @@ export function TranslateableRecipeContent({
         setIsTranslated(false);
     }, [
         descriptionText,
-        ingredientsText?.join('\n'),
-        stepsText?.join('\n'),
-        i18n.language,
+        ingredientsTextJoined,
+        stepsTextJoined,
+        currentLanguage,
     ]);
 
     const handleTranslate = async () => {
