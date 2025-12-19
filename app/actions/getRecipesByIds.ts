@@ -1,9 +1,9 @@
 import prisma from '@/app/lib/prismadb';
-import { SafeRecipe } from '@/app/types';
+import { SafeRecipe, SafeUser } from '@/app/types';
 
 export default async function getRecipesByIds(
     ids: string[]
-): Promise<SafeRecipe[]> {
+): Promise<(SafeRecipe & { user: SafeUser })[]> {
     if (!ids || ids.length === 0) {
         return [];
     }
@@ -20,7 +20,6 @@ export default async function getRecipesByIds(
             },
         });
 
-        // Transform to SafeRecipe format
         return recipes.map((recipe) => ({
             ...recipe,
             createdAt: recipe.createdAt.toISOString(),
@@ -32,7 +31,7 @@ export default async function getRecipesByIds(
                 resetTokenExpiry:
                     recipe.user.resetTokenExpiry?.toISOString() || null,
             },
-        })) as SafeRecipe[];
+        })) as (SafeRecipe & { user: SafeUser })[];
     } catch (error) {
         console.error('Failed to fetch recipes:', error);
         return [];
