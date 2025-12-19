@@ -14,7 +14,12 @@ const ButtonSelector: React.FC<ButtonSelectorProps> = ({
     onSortChange,
 }) => {
     const [currentOrder, setCurrentOrder] = useState<'asc' | 'desc'>(sortOrder);
+    const [mounted, setMounted] = useState(false);
     const { t } = useTranslation();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         setCurrentOrder(sortOrder);
@@ -32,7 +37,13 @@ const ButtonSelector: React.FC<ButtonSelectorProps> = ({
             className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1 text-sm font-medium text-neutral-700 hover:bg-neutral-200 dark:text-neutral-200 dark:hover:bg-neutral-800"
         >
             {currentOrder === 'asc' ? <FaSortAmountUp /> : <FaSortAmountDown />}
-            {currentOrder === 'asc' ? t('oldest_first') : t('newest_first')}
+            {currentOrder === 'asc'
+                ? mounted
+                    ? t('oldest_first')
+                    : 'oldest_first'
+                : mounted
+                  ? t('newest_first')
+                  : 'newest_first'}
         </button>
     );
 };

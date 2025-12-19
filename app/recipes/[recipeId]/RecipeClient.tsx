@@ -27,12 +27,22 @@ interface RecipeClientProps {
         linkedRecipeIds?: string[];
     };
     currentUser?: SafeUser | null;
+    coCooks?: Array<{
+        id: string;
+        name: string | null;
+        image: string | null;
+        level: number;
+        verified: boolean;
+    }>;
+    linkedRecipes?: (SafeRecipe & { user: SafeUser })[];
 }
 
 const RecipeClient: React.FC<RecipeClientProps> = ({
     recipe,
     currentUser,
     comments,
+    coCooks = [],
+    linkedRecipes = [],
 }) => {
     const loginModal = useLoginModal();
     const router = useRouter();
@@ -129,10 +139,13 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             categories={categoryObjects}
                             method={method}
                             description={formattedDescription}
+                            descriptionText={recipe.description}
                             ingredients={formattedIngredients}
+                            ingredientsText={recipe.ingredients}
                             steps={formattedSteps}
-                            coCooksIds={recipe.coCooksIds || []}
-                            linkedRecipeIds={recipe.linkedRecipeIds || []}
+                            stepsText={recipe.steps}
+                            coCooks={coCooks}
+                            linkedRecipes={linkedRecipes}
                             youtubeUrl={recipe.youtubeUrl || undefined}
                         />
                     </div>

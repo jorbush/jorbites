@@ -590,5 +590,9 @@
     "release": "Llançament",
     "jorbites_releases": "Llançaments de Jorbites",
     "back_to_stories": "Tornar a històries",
-    "view_all": "Veure-ho tot"
+    "view_all": "Veure-ho tot",
+    "translate": "Traduir",
+    "translating": "Traduint...",
+    "translation_failed": "Error en la traducció",
+    "show_original": "Mostrar original"
 }

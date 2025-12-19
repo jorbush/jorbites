@@ -5,6 +5,8 @@ import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
+import getUsersByIds from '@/app/actions/getUsersByIds';
+import getRecipesByIds from '@/app/actions/getRecipesByIds';
 import { ADSENSE_PUBLISHER_ID } from '@/app/utils/constants';
 
 interface IParams {
@@ -85,6 +87,17 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
         );
     }
 
+    // Fetch related data server-side
+    const coCooksIds = recipe.coCooksIds || [];
+    const linkedRecipeIds = recipe.linkedRecipeIds || [];
+
+    const [coCooks, linkedRecipes] = await Promise.all([
+        coCooksIds.length > 0 ? getUsersByIds(coCooksIds) : Promise.resolve([]),
+        linkedRecipeIds.length > 0
+            ? getRecipesByIds(linkedRecipeIds)
+            : Promise.resolve([]),
+    ]);
+
     return (
         <>
             {process.env.NODE_ENV === 'production' && (
@@ -98,6 +111,8 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
                 recipe={recipe}
                 currentUser={currentUser}
                 comments={comments}
+                coCooks={coCooks}
+                linkedRecipes={linkedRecipes}
             />
         </>
     );
