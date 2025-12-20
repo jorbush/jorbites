@@ -5,8 +5,6 @@ import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
-import getUsersByIds from '@/app/actions/getUsersByIds';
-import getRecipesByIds from '@/app/actions/getRecipesByIds';
 import { ADSENSE_PUBLISHER_ID } from '@/app/utils/constants';
 
 interface IParams {
@@ -75,11 +73,19 @@ export async function generateMetadata(props: {
 
 const RecipePage = async (props: { params: Promise<IParams> }) => {
     const params = await props.params;
-    const recipe = await getRecipeById(params);
-    const currentUser = await getCurrentUser();
-    const comments = await getCommentsByRecipeId(params);
 
-    if (!recipe) {
+    // Fetch recipe with related data (co-cooks and linked recipes) in a single optimized call
+    const recipeData = await getRecipeById({
+        ...params,
+        includeRelatedData: true as const,
+    });
+
+    const [currentUser, comments] = await Promise.all([
+        getCurrentUser(),
+        getCommentsByRecipeId(params),
+    ]);
+
+    if (!recipeData) {
         return (
             <ClientOnly>
                 <EmptyState />
@@ -87,16 +93,13 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
         );
     }
 
-    // Fetch related data server-side
-    const coCooksIds = recipe.coCooksIds || [];
-    const linkedRecipeIds = recipe.linkedRecipeIds || [];
+    // TypeScript knows recipeData has coCooks and linkedRecipes when includeRelatedData is true
+    const coCooks = 'coCooks' in recipeData ? recipeData.coCooks : [];
+    const linkedRecipes =
+        'linkedRecipes' in recipeData ? recipeData.linkedRecipes : [];
 
-    const [coCooks, linkedRecipes] = await Promise.all([
-        coCooksIds.length > 0 ? getUsersByIds(coCooksIds) : Promise.resolve([]),
-        linkedRecipeIds.length > 0
-            ? getRecipesByIds(linkedRecipeIds)
-            : Promise.resolve([]),
-    ]);
+    // Extract recipe data without the extra fields
+    const { coCooks: _, linkedRecipes: __, ...recipe } = recipeData as any;
 
     return (
         <>
