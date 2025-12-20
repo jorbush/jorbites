@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useLoginModal from '@/app/hooks/useLoginModal';
@@ -27,27 +27,83 @@ interface RecipeClientProps {
         linkedRecipeIds?: string[];
     };
     currentUser?: SafeUser | null;
-    coCooks?: Array<{
-        id: string;
-        name: string | null;
-        image: string | null;
-        level: number;
-        verified: boolean;
-    }>;
-    linkedRecipes?: (SafeRecipe & { user: SafeUser })[];
 }
 
 const RecipeClient: React.FC<RecipeClientProps> = ({
     recipe,
     currentUser,
     comments,
-    coCooks = [],
-    linkedRecipes = [],
 }) => {
     const loginModal = useLoginModal();
     const router = useRouter();
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
+    const [coCooks, setCoCooks] = useState<
+        Array<{
+            id: string;
+            name: string | null;
+            image: string | null;
+            level: number;
+            verified: boolean;
+        }>
+    >([]);
+    const [linkedRecipes, setLinkedRecipes] = useState<
+        (SafeRecipe & { user: SafeUser })[]
+    >([]);
+    const [isLoadingRelatedData, setIsLoadingRelatedData] = useState(true);
+
+    // Fetch related data (co-cooks and linked recipes) client-side to avoid server timeout
+    useEffect(() => {
+        const fetchRelatedData = async () => {
+            const coCooksIds = recipe.coCooksIds || [];
+            const linkedRecipeIds = recipe.linkedRecipeIds || [];
+
+            // Skip if no related data to fetch
+            if (coCooksIds.length === 0 && linkedRecipeIds.length === 0) {
+                setIsLoadingRelatedData(false);
+                return;
+            }
+
+            try {
+                const promises = [];
+
+                if (coCooksIds.length > 0) {
+                    promises.push(
+                        axios
+                            .get(
+                                `/api/users/multiple?ids=${coCooksIds.join(',')}`
+                            )
+                            .then((response) => setCoCooks(response.data))
+                            .catch((error) => {
+                                console.error('Failed to load co-cooks', error);
+                            })
+                    );
+                }
+
+                if (linkedRecipeIds.length > 0) {
+                    promises.push(
+                        axios
+                            .get(
+                                `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
+                            )
+                            .then((response) => setLinkedRecipes(response.data))
+                            .catch((error) => {
+                                console.error(
+                                    'Failed to load linked recipes',
+                                    error
+                                );
+                            })
+                    );
+                }
+
+                await Promise.all(promises);
+            } finally {
+                setIsLoadingRelatedData(false);
+            }
+        };
+
+        fetchRelatedData();
+    }, [recipe.coCooksIds, recipe.linkedRecipeIds]);
 
     const recipeCategories = useMemo(() => {
         return recipe.categories || [];
@@ -147,6 +203,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             coCooks={coCooks}
                             linkedRecipes={linkedRecipes}
                             youtubeUrl={recipe.youtubeUrl || undefined}
+                            isLoadingRelatedData={isLoadingRelatedData}
                         />
                     </div>
                     <Comments

@@ -58,8 +58,6 @@ describe('RecipePage', () => {
         vi.mocked(getRecipeByIdMock.default).mockResolvedValue({
             id: '1',
             title: 'Test Recipe',
-            coCooks: [],
-            linkedRecipes: [],
         } as any);
 
         const getCurrentUserMock = await import('@/app/actions/getCurrentUser');

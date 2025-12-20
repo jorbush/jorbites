@@ -74,32 +74,21 @@ export async function generateMetadata(props: {
 const RecipePage = async (props: { params: Promise<IParams> }) => {
     const params = await props.params;
 
-    // Fetch recipe with related data (co-cooks and linked recipes) in a single optimized call
-    const recipeData = await getRecipeById({
-        ...params,
-        includeRelatedData: true as const,
-    });
-
-    const [currentUser, comments] = await Promise.all([
+    // Fetch only essential data server-side to avoid timeouts
+    // Related data (co-cooks, linked recipes) will be fetched client-side
+    const [recipe, currentUser, comments] = await Promise.all([
+        getRecipeById(params),
         getCurrentUser(),
         getCommentsByRecipeId(params),
     ]);
 
-    if (!recipeData) {
+    if (!recipe) {
         return (
             <ClientOnly>
                 <EmptyState />
             </ClientOnly>
         );
     }
-
-    // TypeScript knows recipeData has coCooks and linkedRecipes when includeRelatedData is true
-    const coCooks = 'coCooks' in recipeData ? recipeData.coCooks : [];
-    const linkedRecipes =
-        'linkedRecipes' in recipeData ? recipeData.linkedRecipes : [];
-
-    // Extract recipe data without the extra fields
-    const { coCooks: _, linkedRecipes: __, ...recipe } = recipeData as any;
 
     return (
         <>
@@ -114,8 +103,6 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
                 recipe={recipe}
                 currentUser={currentUser}
                 comments={comments}
-                coCooks={coCooks}
-                linkedRecipes={linkedRecipes}
             />
         </>
     );

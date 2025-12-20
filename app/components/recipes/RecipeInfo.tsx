@@ -47,6 +47,7 @@ interface RecipeInfoProps {
     }>;
     linkedRecipes?: (SafeRecipe & { user: SafeUser })[];
     youtubeUrl?: string | null;
+    isLoadingRelatedData?: boolean;
 }
 
 const RecipeInfo: React.FC<RecipeInfoProps> = ({
@@ -65,6 +66,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     coCooks = [],
     linkedRecipes = [],
     youtubeUrl,
+    isLoadingRelatedData = false,
 }) => {
     const { t } = useTranslation();
     const router = useRouter();
@@ -140,37 +142,50 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
             </div>
 
             {/* Co-cooks section */}
-            {coCooks.length > 0 && (
+            {isLoadingRelatedData ? (
                 <div className="flex flex-col gap-2">
                     <h3 className="text-md font-semibold dark:text-neutral-100">
                         {mounted ? t('co_cooks') || 'Co-Cooks' : 'co_cooks'}
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                        {coCooks.map((cook) => (
-                            <div
-                                key={cook.id}
-                                className="flex cursor-pointer items-center gap-2 rounded-full bg-gray-100 px-2 py-1 dark:bg-gray-800"
-                                onClick={() =>
-                                    router.push(`/profile/${cook.id}`)
-                                }
-                            >
-                                <Avatar
-                                    src={cook.image}
-                                    size={24}
-                                />
-                                <span className="text-sm dark:text-neutral-100">
-                                    {cook.name}
-                                </span>
-                                {cook.verified && (
-                                    <VerificationBadge
-                                        className="ml-1"
-                                        size={16}
-                                    />
-                                )}
-                            </div>
-                        ))}
+                        {/* Loading skeleton */}
+                        <div className="h-8 w-32 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+                        <div className="h-8 w-28 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
                     </div>
                 </div>
+            ) : (
+                coCooks.length > 0 && (
+                    <div className="flex flex-col gap-2">
+                        <h3 className="text-md font-semibold dark:text-neutral-100">
+                            {mounted ? t('co_cooks') || 'Co-Cooks' : 'co_cooks'}
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                            {coCooks.map((cook) => (
+                                <div
+                                    key={cook.id}
+                                    className="flex cursor-pointer items-center gap-2 rounded-full bg-gray-100 px-2 py-1 dark:bg-gray-800"
+                                    onClick={() =>
+                                        router.push(`/profile/${cook.id}`)
+                                    }
+                                >
+                                    <Avatar
+                                        src={cook.image}
+                                        size={24}
+                                    />
+                                    <span className="text-sm dark:text-neutral-100">
+                                        {cook.name}
+                                    </span>
+                                    {cook.verified && (
+                                        <VerificationBadge
+                                            className="ml-1"
+                                            size={16}
+                                        />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )
             )}
 
             <RecipeCategoryAndMethod
@@ -269,7 +284,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
             )}
 
             {/* Linked recipes section */}
-            {linkedRecipes.length > 0 && (
+            {isLoadingRelatedData ? (
                 <>
                     <hr />
                     <div className="dark:text-neutral-100">
@@ -279,17 +294,35 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                 : 'linked_recipes'}
                         </div>
                         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {linkedRecipes.map((recipe) => (
-                                <RecipeCard
-                                    key={recipe.id}
-                                    data={recipe}
-                                    currentUser={currentUser}
-                                    user={recipe.user}
-                                />
-                            ))}
+                            {/* Loading skeletons */}
+                            <div className="h-64 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+                            <div className="hidden h-64 animate-pulse rounded-lg bg-gray-200 sm:block dark:bg-gray-700" />
                         </div>
                     </div>
                 </>
+            ) : (
+                linkedRecipes.length > 0 && (
+                    <>
+                        <hr />
+                        <div className="dark:text-neutral-100">
+                            <div className="flex flex-row items-center gap-2 text-xl font-semibold">
+                                {mounted
+                                    ? t('linked_recipes') || 'Linked Recipes'
+                                    : 'linked_recipes'}
+                            </div>
+                            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                {linkedRecipes.map((recipe) => (
+                                    <RecipeCard
+                                        key={recipe.id}
+                                        data={recipe}
+                                        currentUser={currentUser}
+                                        user={recipe.user}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                )
             )}
         </div>
     );
