@@ -593,5 +593,9 @@
     "release": "Lanzamiento",
     "jorbites_releases": "Lanzamientos de Jorbites",
     "back_to_stories": "Volver a historias",
-    "view_all": "Ver Todo"
+    "view_all": "Ver Todo",
+    "translate": "Traducir",
+    "translating": "Traduciendo...",
+    "translation_failed": "Error en la traducción",
+    "show_original": "Mostrar original"
 }

@@ -10,16 +10,21 @@ import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import getUserDisplayName from '@/app/utils/responsive';
 import VerificationBadge from '@/app/components/VerificationBadge';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import YouTubePreview from '@/app/components/utils/YouTubePreview';
+import { TranslateableRecipeContent } from '@/app/components/translation/TranslateableRecipeContent';
+import { formatText } from '@/app/utils/textFormatting';
+import axios from 'axios';
 
 interface RecipeInfoProps {
     user: SafeUser;
     description: React.ReactNode;
+    descriptionText?: string;
     ingredients: React.ReactNode[];
+    ingredientsText?: string[];
     steps: React.ReactNode[];
+    stepsText?: string[];
     categories?: Array<{
         icon: IconType;
         label: string;
@@ -42,8 +47,11 @@ interface RecipeInfoProps {
 const RecipeInfo: React.FC<RecipeInfoProps> = ({
     user,
     description,
+    descriptionText,
     ingredients,
+    ingredientsText,
     steps,
+    stepsText,
     categories,
     method,
     likes,
@@ -57,11 +65,48 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     const router = useRouter();
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
-
+    const [mounted, setMounted] = useState(false);
     const [coCooks, setCoCooks] = useState<any[]>([]);
     const [linkedRecipes, setLinkedRecipes] = useState<any[]>([]);
+    const [isLoadingRelatedData, setIsLoadingRelatedData] = useState(true);
 
+    // Use stable string representations - memoized to prevent recalculation
+    const coCooksIdsStr = useMemo(() => coCooksIds.join(','), [coCooksIds]);
+    const linkedRecipeIdsStr = useMemo(
+        () => linkedRecipeIds.join(','),
+        [linkedRecipeIds]
+    );
+
+    // Track previous values to prevent unnecessary fetches
+    const prevIdsRef = useRef({
+        coCooks: '',
+        linkedRecipes: '',
+    });
+
+    // Single useEffect to handle mounting and fetching related data
     useEffect(() => {
+        // First mount setup
+        if (!mounted) {
+            setMounted(true);
+        }
+
+        // Check if IDs actually changed (value comparison, not reference)
+        const idsChanged =
+            prevIdsRef.current.coCooks !== coCooksIdsStr ||
+            prevIdsRef.current.linkedRecipes !== linkedRecipeIdsStr;
+
+        if (!idsChanged && mounted) {
+            return; // Skip if IDs haven't actually changed
+        }
+
+        // Update ref with new values
+        prevIdsRef.current = {
+            coCooks: coCooksIdsStr,
+            linkedRecipes: linkedRecipeIdsStr,
+        };
+
+        setIsLoadingRelatedData(true);
+
         const fetchRelatedData = async () => {
             if (coCooksIds.length > 0) {
                 try {
@@ -72,6 +117,8 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 } catch (error) {
                     console.error('Failed to load co-cooks', error);
                 }
+            } else {
+                setCoCooks([]);
             }
 
             if (linkedRecipeIds.length > 0) {
@@ -83,11 +130,21 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 } catch (error) {
                     console.error('Failed to load linked recipes', error);
                 }
+            } else {
+                setLinkedRecipes([]);
             }
+            setIsLoadingRelatedData(false);
         };
 
         fetchRelatedData();
-    }, [coCooksIds, linkedRecipeIds]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        mounted,
+        coCooksIdsStr,
+        linkedRecipeIdsStr,
+        // Note: coCooksIds and linkedRecipeIds are intentionally NOT in deps
+        // We use their joined string representations to avoid infinite loops from array reference changes
+    ]);
 
     return (
         <div className="col-span-4 flex flex-col gap-8 pr-2 pl-2">
@@ -118,7 +175,11 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                     <VerificationBadge className="mt-1 ml-1" />
                                 )}
                             </div>
-                            <div className="text-sm text-gray-400">{`${t('level')} ${user?.level}`}</div>
+                            <div className="text-sm text-gray-400">
+                                {mounted
+                                    ? `${t('level')} ${user?.level}`
+                                    : `level ${user?.level}`}
+                            </div>
                         </div>
                     </div>
                     <div className="mr-4 mb-5 ml-auto flex flex-row items-end gap-2 text-xl">
@@ -136,106 +197,140 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 </div>
                 <div className="flex flex-row items-center gap-4 font-light text-neutral-500">
                     <div>
-                        {steps.length} {t('steps').toLowerCase()}
+                        {steps.length}{' '}
+                        {mounted ? t('steps').toLowerCase() : 'steps'}
                     </div>
                     <div>
-                        {ingredients.length} {t('ingredients').toLowerCase()}
+                        {ingredients.length}{' '}
+                        {mounted
+                            ? t('ingredients').toLowerCase()
+                            : 'ingredients'}
                     </div>
                 </div>
             </div>
 
             {/* Co-cooks section */}
-            {coCooks.length > 0 && (
+            {isLoadingRelatedData ? (
                 <div className="flex flex-col gap-2">
                     <h3 className="text-md font-semibold dark:text-neutral-100">
-                        {t('co_cooks') || 'Co-Cooks'}
+                        {mounted ? t('co_cooks') || 'Co-Cooks' : 'co_cooks'}
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                        {coCooks.map((cook) => (
-                            <div
-                                key={cook.id}
-                                className="flex cursor-pointer items-center gap-2 rounded-full bg-gray-100 px-2 py-1 dark:bg-gray-800"
-                                onClick={() =>
-                                    router.push(`/profile/${cook.id}`)
-                                }
-                            >
-                                <Avatar
-                                    src={cook.image}
-                                    size={24}
-                                />
-                                <span className="text-sm dark:text-neutral-100">
-                                    {cook.name}
-                                </span>
-                                {cook.verified && (
-                                    <VerificationBadge
-                                        className="ml-1"
-                                        size={16}
-                                    />
-                                )}
-                            </div>
-                        ))}
+                        {/* Loading skeleton */}
+                        <div className="h-8 w-32 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+                        <div className="h-8 w-28 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
                     </div>
                 </div>
+            ) : (
+                coCooks.length > 0 && (
+                    <div className="flex flex-col gap-2">
+                        <h3 className="text-md font-semibold dark:text-neutral-100">
+                            {mounted ? t('co_cooks') || 'Co-Cooks' : 'co_cooks'}
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                            {coCooks.map((cook) => (
+                                <div
+                                    key={cook.id}
+                                    className="flex cursor-pointer items-center gap-2 rounded-full bg-gray-100 px-2 py-1 dark:bg-gray-800"
+                                    onClick={() =>
+                                        router.push(`/profile/${cook.id}`)
+                                    }
+                                >
+                                    <Avatar
+                                        src={cook.image}
+                                        size={24}
+                                    />
+                                    <span className="text-sm dark:text-neutral-100">
+                                        {cook.name}
+                                    </span>
+                                    {cook.verified && (
+                                        <VerificationBadge
+                                            className="ml-1"
+                                            size={16}
+                                        />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )
             )}
 
             <RecipeCategoryAndMethod
                 categories={categories}
                 method={method}
             />
-            <hr />
-            <div
-                className="text-justify text-lg font-light text-neutral-500 dark:text-neutral-100"
-                data-cy="recipe-description-display"
-            >
-                {description}
-            </div>
-            {ingredients.length > 0 && (
-                <>
-                    <hr />
+            <TranslateableRecipeContent
+                description={description}
+                descriptionText={descriptionText}
+                ingredients={ingredients}
+                ingredientsText={ingredientsText}
+                steps={steps}
+                stepsText={stepsText}
+                renderDescription={(content) => (
                     <div
-                        className="dark:text-neutral-100"
-                        data-cy="ingredients-section"
+                        className="text-justify text-lg font-light text-neutral-500 dark:text-neutral-100"
+                        data-cy="recipe-description-display"
                     >
-                        <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                            {t('ingredients')}
-                        </div>
-                        <ul className="list-disc pt-4 pl-9">
-                            {ingredients.map((ingredient, index) => (
-                                <li
-                                    key={index}
-                                    className="mb-2"
-                                >
-                                    {ingredient}
-                                </li>
-                            ))}
-                        </ul>
+                        {typeof content === 'string'
+                            ? formatText(content)
+                            : content}
                     </div>
-                </>
-            )}
-            {steps.length > 0 && (
-                <>
-                    <hr />
-                    <div
-                        className="dark:text-neutral-100"
-                        data-cy="steps-section"
-                    >
-                        <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                            {t('steps')}
-                        </div>
-                        <ol className="list-decimal pt-4 pl-9">
-                            {steps.map((step, index) => (
-                                <li
-                                    key={index}
-                                    className="overflow-wrap-anywhere mb-2 break-words"
-                                    data-cy={`step-${index}`}
-                                >
-                                    {step}
-                                </li>
-                            ))}
-                        </ol>
-                    </div>
-                </>
-            )}
+                )}
+                renderIngredients={(items) => {
+                    if (items.length === 0) return null;
+                    return (
+                        <>
+                            <hr />
+                            <div
+                                className="dark:text-neutral-100"
+                                data-cy="ingredients-section"
+                            >
+                                <div className="flex flex-row items-center gap-2 text-xl font-semibold">
+                                    {mounted ? t('ingredients') : 'ingredients'}
+                                </div>
+                                <ul className="list-disc pt-4 pl-9">
+                                    {items.map((item, index) => (
+                                        <li
+                                            key={index}
+                                            className="mb-2"
+                                        >
+                                            {formatText(item)}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </>
+                    );
+                }}
+                renderSteps={(items) => {
+                    if (items.length === 0) return null;
+                    return (
+                        <>
+                            <hr />
+                            <div
+                                className="dark:text-neutral-100"
+                                data-cy="steps-section"
+                            >
+                                <div className="flex flex-row items-center gap-2 text-xl font-semibold">
+                                    {mounted ? t('steps') : 'steps'}
+                                </div>
+                                <ol className="list-decimal pt-4 pl-9">
+                                    {items.map((item, index) => (
+                                        <li
+                                            key={index}
+                                            className="overflow-wrap-anywhere mb-2 break-words"
+                                            data-cy={`step-${index}`}
+                                        >
+                                            {formatText(item)}
+                                        </li>
+                                    ))}
+                                </ol>
+                            </div>
+                        </>
+                    );
+                }}
+            />
 
             {/* YouTube video section */}
             {youtubeUrl && (
@@ -256,25 +351,45 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
             )}
 
             {/* Linked recipes section */}
-            {linkedRecipes.length > 0 && (
+            {isLoadingRelatedData ? (
                 <>
                     <hr />
                     <div className="dark:text-neutral-100">
                         <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                            {t('linked_recipes') || 'Linked Recipes'}
+                            {mounted
+                                ? t('linked_recipes') || 'Linked Recipes'
+                                : 'linked_recipes'}
                         </div>
                         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {linkedRecipes.map((recipe) => (
-                                <RecipeCard
-                                    key={recipe.id}
-                                    data={recipe}
-                                    currentUser={currentUser}
-                                    user={recipe.user}
-                                />
-                            ))}
+                            {/* Loading skeletons */}
+                            <div className="h-64 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+                            <div className="hidden h-64 animate-pulse rounded-lg bg-gray-200 sm:block dark:bg-gray-700" />
                         </div>
                     </div>
                 </>
+            ) : (
+                linkedRecipes.length > 0 && (
+                    <>
+                        <hr />
+                        <div className="dark:text-neutral-100">
+                            <div className="flex flex-row items-center gap-2 text-xl font-semibold">
+                                {mounted
+                                    ? t('linked_recipes') || 'Linked Recipes'
+                                    : 'linked_recipes'}
+                            </div>
+                            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                {linkedRecipes.map((recipe) => (
+                                    <RecipeCard
+                                        key={recipe.id}
+                                        data={recipe}
+                                        currentUser={currentUser}
+                                        user={recipe.user}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                )
             )}
         </div>
     );

@@ -17,7 +17,17 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key: string) => key }),
+    useTranslation: () => ({
+        t: (key: string) => key,
+        i18n: {
+            changeLanguage: vi.fn(),
+            language: 'en',
+        },
+    }),
+    initReactI18next: {
+        type: '3rdParty',
+        init: vi.fn(),
+    },
 }));
 
 vi.mock('../Avatar', () => ({
@@ -63,8 +73,11 @@ describe('RecipeInfo', () => {
     const mockProps = {
         user: mockUser,
         description: 'A delicious recipe',
+        descriptionText: 'A delicious recipe',
         steps: ['Step 1', 'Step 2'],
+        stepsText: ['Step 1', 'Step 2'],
         ingredients: ['Ingredient 1', 'Ingredient 2'],
+        ingredientsText: ['Ingredient 1', 'Ingredient 2'],
         category: {
             icon: vi.fn(),
             label: 'Dinner',
@@ -98,6 +111,8 @@ describe('RecipeInfo', () => {
 
     it('renders ingredients and steps', () => {
         render(<RecipeInfo {...mockProps} />);
+        // The component uses mounted state, so we need to check for either the key or the translated value
+        // Since the mock returns the key, both should be 'ingredients' and 'steps'
         expect(screen.getByText('ingredients')).toBeDefined();
         expect(screen.getByText('Ingredient 1')).toBeDefined();
         expect(screen.getByText('Ingredient 2')).toBeDefined();

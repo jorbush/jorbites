@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
@@ -24,7 +24,12 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 }) => {
     const [comment, setComment] = useState('');
     const [isButtonDisabled, setButtonDisabled] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const { t } = useTranslation();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleInputChange = (value: string) => {
         setComment(value);
@@ -62,7 +67,11 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                     <MentionInput
                         value={comment}
                         onChange={handleInputChange}
-                        placeholder={t('write_comment') ?? 'Write a comment...'}
+                        placeholder={
+                            mounted
+                                ? (t('write_comment') ?? 'Write a comment...')
+                                : 'write_comment'
+                        }
                         className="h-12 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 font-light text-zinc-900 focus:ring-0 focus:outline-hidden dark:border-neutral-600 dark:bg-zinc-800 dark:text-zinc-100"
                         disabled={isLoading || isButtonDisabled}
                         maxLength={COMMENT_MAX_LENGTH}

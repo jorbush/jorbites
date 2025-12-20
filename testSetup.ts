@@ -29,3 +29,19 @@ vi.mock('@/app/lib/axiom/client', () => ({
     },
     WebVitals: () => null,
 }));
+
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key: string) => key,
+        i18n: {
+            changeLanguage: vi.fn(),
+            language: 'en',
+        },
+    }),
+    initReactI18next: {
+        type: '3rdParty',
+        init: vi.fn(),
+    },
+    Trans: ({ children }: any) => children,
+}));

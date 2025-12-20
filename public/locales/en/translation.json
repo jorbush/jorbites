@@ -592,5 +592,9 @@
     "release": "Release",
     "jorbites_releases": "Jorbites Releases",
     "back_to_stories": "Back to stories",
-    "view_all": "View All"
+    "view_all": "View All",
+    "translate": "Translate",
+    "translating": "Translating...",
+    "translation_failed": "Translation failed",
+    "show_original": "Show original"
 }

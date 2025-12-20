@@ -22,9 +22,14 @@ const Comments: React.FC<CommentsProps> = ({
     isLoading = false,
 }) => {
     const { t } = useTranslation();
+    const [mounted, setMounted] = useState(false);
     const [sortedComments, setSortedComments] =
         useState<SafeComment[]>(comments);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const sortComments = useCallback(
         (order: 'asc' | 'desc') => {
@@ -63,7 +68,7 @@ const Comments: React.FC<CommentsProps> = ({
             <div className="mt-8 mb-4 flex flex-row items-center justify-between">
                 <div className="flex flex-row items-center">
                     <div className="text-xl font-semibold dark:text-neutral-100">
-                        {t('comments')}
+                        {mounted ? t('comments') : 'comments'}
                     </div>
                     <div className="text-md ml-2 text-neutral-500">
                         {comments.length}

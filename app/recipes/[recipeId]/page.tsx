@@ -73,9 +73,14 @@ export async function generateMetadata(props: {
 
 const RecipePage = async (props: { params: Promise<IParams> }) => {
     const params = await props.params;
-    const recipe = await getRecipeById(params);
-    const currentUser = await getCurrentUser();
-    const comments = await getCommentsByRecipeId(params);
+
+    // Fetch only essential data server-side to avoid timeouts
+    // Related data (co-cooks, linked recipes) will be fetched client-side
+    const [recipe, currentUser, comments] = await Promise.all([
+        getRecipeById(params),
+        getCurrentUser(),
+        getCommentsByRecipeId(params),
+    ]);
 
     if (!recipe) {
         return (

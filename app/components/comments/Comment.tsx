@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import Avatar from '@/app/components/utils/Avatar';
 import { MdDelete } from 'react-icons/md';
@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import VerificationBadge from '@/app/components/VerificationBadge';
 import { formatText } from '@/app/utils/textFormatting';
+import { TranslateableContent } from '@/app/components/utils/TranslateableContent';
 
 interface CommentProps {
     userId: string;
@@ -37,8 +38,15 @@ const Comment: React.FC<CommentProps> = ({
 }) => {
     const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    const [translateButton, setTranslateButton] =
+        useState<React.ReactNode | null>(null);
     const router = useRouter();
     const { t } = useTranslation();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const deleteComment = () => {
         axios
@@ -63,7 +71,7 @@ const Comment: React.FC<CommentProps> = ({
                 />
             </div>
             <div className="mt-2 ml-4 grow">
-                <div className="flex flex-row">
+                <div className="mb-1 flex flex-row">
                     <p
                         className="cursor-pointer truncate text-justify font-bold whitespace-normal text-gray-800 dark:text-neutral-100"
                         onClick={() => router.push('/profile/' + userId)}
@@ -71,16 +79,31 @@ const Comment: React.FC<CommentProps> = ({
                         {userName}
                     </p>
                     {verified && <VerificationBadge className="mt-1 ml-1" />}
-                    <div className="mt-0.5 ml-1.5 text-sm text-gray-400">{`${t('level')} ${userLevel}`}</div>
+                    <div className="mt-0.5 ml-1.5 text-sm text-gray-400">
+                        {mounted
+                            ? `${t('level')} ${userLevel}`
+                            : `level ${userLevel}`}
+                    </div>
                 </div>
-                <p
+                <TranslateableContent
+                    content={comment}
+                    renderButton={false}
+                    onButtonStateChange={setTranslateButton}
                     className="text-justify break-words whitespace-normal text-gray-800 dark:text-neutral-100"
-                    data-cy="comment-text"
-                >
-                    {formatText(comment)}
-                </p>
-                <div className="flex flex-col items-end text-sm text-gray-400">
-                    {formattedDate}
+                    renderContent={(content) => (
+                        <p
+                            className="text-justify break-words whitespace-normal text-gray-800 dark:text-neutral-100"
+                            data-cy="comment-text"
+                        >
+                            {typeof content === 'string'
+                                ? formatText(content)
+                                : content}
+                        </p>
+                    )}
+                />
+                <div className="mt-2 flex min-h-[24px] items-center justify-between text-sm text-gray-400">
+                    <div className="shrink-0">{translateButton}</div>
+                    <div className="ml-auto">{formattedDate}</div>
                 </div>
                 {canDelete && (
                     <MdDelete
