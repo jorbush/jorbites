@@ -52,13 +52,11 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     >([]);
     const [isLoadingRelatedData, setIsLoadingRelatedData] = useState(true);
 
-    // Fetch related data (co-cooks and linked recipes) client-side to avoid server timeout
     useEffect(() => {
         const fetchRelatedData = async () => {
             const coCooksIds = recipe.coCooksIds || [];
             const linkedRecipeIds = recipe.linkedRecipeIds || [];
 
-            // Skip if no related data to fetch
             if (coCooksIds.length === 0 && linkedRecipeIds.length === 0) {
                 setIsLoadingRelatedData(false);
                 return;
