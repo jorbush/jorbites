@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TranslateButton } from '@/app/components/translation/TranslateButton';
 import { FiGlobe } from 'react-icons/fi';
@@ -80,7 +80,11 @@ export function TranslateableContent({
     };
 
     // Use rawText if provided, otherwise extract from content
-    const textContent = rawText || getTextContent(content);
+    // Memoize to prevent recalculation on every render
+    const textContent = useMemo(
+        () => rawText || getTextContent(content),
+        [rawText, content]
+    );
 
     // Detect language when API becomes available and content changes
     useEffect(() => {
@@ -137,6 +141,8 @@ export function TranslateableContent({
     useEffect(() => {
         setTranslatedContent(null);
         setIsTranslated(false);
+        // Also reset detection when content changes
+        setDetectedLanguage(null);
     }, [textContent, currentLanguage]);
 
     const handleTranslate = (translated: string) => {

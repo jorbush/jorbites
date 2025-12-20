@@ -70,6 +70,10 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     const [linkedRecipes, setLinkedRecipes] = useState<any[]>([]);
     const [isLoadingRelatedData, setIsLoadingRelatedData] = useState(true);
 
+    // Use stable string representations for dependency comparison
+    const coCooksIdsStr = coCooksIds.join(',');
+    const linkedRecipeIdsStr = linkedRecipeIds.join(',');
+
     useEffect(() => {
         setIsLoadingRelatedData(true);
         const fetchRelatedData = async () => {
@@ -82,6 +86,8 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 } catch (error) {
                     console.error('Failed to load co-cooks', error);
                 }
+            } else {
+                setCoCooks([]);
             }
 
             if (linkedRecipeIds.length > 0) {
@@ -93,12 +99,14 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 } catch (error) {
                     console.error('Failed to load linked recipes', error);
                 }
+            } else {
+                setLinkedRecipes([]);
             }
             setIsLoadingRelatedData(false);
         };
 
         fetchRelatedData();
-    }, [coCooksIds, linkedRecipeIds]);
+    }, [coCooksIdsStr, linkedRecipeIdsStr]);
 
     useEffect(() => {
         setMounted(true);

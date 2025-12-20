@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiGlobe } from 'react-icons/fi';
 import i18n from '@/app/i18n';
@@ -60,9 +60,15 @@ export function TranslateableRecipeContent({
         }
     }, []);
 
-    // Extract joined strings for dependency array
-    const ingredientsTextJoined = ingredientsText?.join('\n');
-    const stepsTextJoined = stepsText?.join('\n');
+    // Extract joined strings for dependency array - memoized to prevent recalculation
+    const ingredientsTextJoined = useMemo(
+        () => ingredientsText?.join('\n') || '',
+        [ingredientsText]
+    );
+    const stepsTextJoined = useMemo(
+        () => stepsText?.join('\n') || '',
+        [stepsText]
+    );
 
     // Detect language when API becomes available and content changes
     useEffect(() => {
@@ -116,8 +122,6 @@ export function TranslateableRecipeContent({
         isAvailable,
         mounted,
         descriptionText,
-        ingredientsText,
-        stepsText,
         ingredientsTextJoined,
         stepsTextJoined,
     ]);
@@ -138,6 +142,8 @@ export function TranslateableRecipeContent({
         setTranslatedIngredients(null);
         setTranslatedSteps(null);
         setIsTranslated(false);
+        // Also reset detection when content changes
+        setDetectedLanguage(null);
     }, [
         descriptionText,
         ingredientsTextJoined,
