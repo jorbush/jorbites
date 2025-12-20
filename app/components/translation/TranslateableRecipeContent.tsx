@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiGlobe } from 'react-icons/fi';
 import i18n from '@/app/i18n';
@@ -47,7 +47,7 @@ export function TranslateableRecipeContent({
         null
     );
 
-    // Extract joined strings for dependency array - memoized to prevent recalculation
+    // Create stable string representations
     const ingredientsTextJoined = useMemo(
         () => ingredientsText?.join('\n') || '',
         [ingredientsText]
@@ -57,20 +57,50 @@ export function TranslateableRecipeContent({
         [stepsText]
     );
 
-    // Get current language for dependency tracking
+    // Get current language
     const currentLanguage = i18n.language;
+
+    // Track previous values to prevent unnecessary effect runs
+    const prevContentRef = useRef({
+        description: '',
+        ingredients: '',
+        steps: '',
+        language: '',
+    });
 
     // Single useEffect to handle mounting, API availability, language detection, and reset
     useEffect(() => {
-        setMounted(true);
+        // First mount setup
+        if (!mounted) {
+            setMounted(true);
 
-        // Check if Translator API is available
-        const apiAvailable =
-            typeof window !== 'undefined' &&
-            'Translator' in window &&
-            'LanguageDetector' in window;
+            // Check if Translator API is available
+            const apiAvailable =
+                typeof window !== 'undefined' &&
+                'Translator' in window &&
+                'LanguageDetector' in window;
 
-        setIsAvailable(apiAvailable);
+            setIsAvailable(apiAvailable);
+        }
+
+        // Check if content actually changed (value comparison, not reference)
+        const contentChanged =
+            prevContentRef.current.description !== descriptionText ||
+            prevContentRef.current.ingredients !== ingredientsTextJoined ||
+            prevContentRef.current.steps !== stepsTextJoined ||
+            prevContentRef.current.language !== currentLanguage;
+
+        if (!contentChanged) {
+            return; // Skip if content hasn't actually changed
+        }
+
+        // Update ref with new values
+        prevContentRef.current = {
+            description: descriptionText || '',
+            ingredients: ingredientsTextJoined,
+            steps: stepsTextJoined,
+            language: currentLanguage,
+        };
 
         // Reset translation state when content or language changes
         setTranslatedDescription(null);
@@ -79,6 +109,11 @@ export function TranslateableRecipeContent({
         setIsTranslated(false);
 
         // Detect language if API is available
+        const apiAvailable =
+            typeof window !== 'undefined' &&
+            'Translator' in window &&
+            'LanguageDetector' in window;
+
         if (apiAvailable) {
             const detectLanguage = async () => {
                 const sampleText =
@@ -130,11 +165,15 @@ export function TranslateableRecipeContent({
         } else {
             setDetectedLanguage(null);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
+        mounted,
         descriptionText,
         ingredientsTextJoined,
         stepsTextJoined,
         currentLanguage,
+        // Note: ingredientsText and stepsText are intentionally NOT in deps
+        // We use their joined string representations to avoid infinite loops from array reference changes
     ]);
 
     // Check if we have content to translate

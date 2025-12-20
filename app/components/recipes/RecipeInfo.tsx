@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import getUserDisplayName from '@/app/utils/responsive';
 import VerificationBadge from '@/app/components/VerificationBadge';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import YouTubePreview from '@/app/components/utils/YouTubePreview';
 import { TranslateableRecipeContent } from '@/app/components/translation/TranslateableRecipeContent';
@@ -70,13 +70,41 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     const [linkedRecipes, setLinkedRecipes] = useState<any[]>([]);
     const [isLoadingRelatedData, setIsLoadingRelatedData] = useState(true);
 
-    // Use stable string representations for dependency comparison
-    const coCooksIdsStr = coCooksIds.join(',');
-    const linkedRecipeIdsStr = linkedRecipeIds.join(',');
+    // Use stable string representations - memoized to prevent recalculation
+    const coCooksIdsStr = useMemo(() => coCooksIds.join(','), [coCooksIds]);
+    const linkedRecipeIdsStr = useMemo(
+        () => linkedRecipeIds.join(','),
+        [linkedRecipeIds]
+    );
+
+    // Track previous values to prevent unnecessary fetches
+    const prevIdsRef = useRef({
+        coCooks: '',
+        linkedRecipes: '',
+    });
 
     // Single useEffect to handle mounting and fetching related data
     useEffect(() => {
-        setMounted(true);
+        // First mount setup
+        if (!mounted) {
+            setMounted(true);
+        }
+
+        // Check if IDs actually changed (value comparison, not reference)
+        const idsChanged =
+            prevIdsRef.current.coCooks !== coCooksIdsStr ||
+            prevIdsRef.current.linkedRecipes !== linkedRecipeIdsStr;
+
+        if (!idsChanged && mounted) {
+            return; // Skip if IDs haven't actually changed
+        }
+
+        // Update ref with new values
+        prevIdsRef.current = {
+            coCooks: coCooksIdsStr,
+            linkedRecipes: linkedRecipeIdsStr,
+        };
+
         setIsLoadingRelatedData(true);
 
         const fetchRelatedData = async () => {
@@ -109,7 +137,14 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
         };
 
         fetchRelatedData();
-    }, [coCooksIdsStr, linkedRecipeIdsStr]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        mounted,
+        coCooksIdsStr,
+        linkedRecipeIdsStr,
+        // Note: coCooksIds and linkedRecipeIds are intentionally NOT in deps
+        // We use their joined string representations to avoid infinite loops from array reference changes
+    ]);
 
     return (
         <div className="col-span-4 flex flex-col gap-8 pr-2 pl-2">

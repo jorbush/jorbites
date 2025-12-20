@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TranslateButton } from '@/app/components/translation/TranslateButton';
 import { FiGlobe } from 'react-icons/fi';
@@ -13,6 +13,37 @@ interface TranslateableContentProps {
     showButton?: boolean;
     renderContent?: (content: string | React.ReactNode) => React.ReactNode;
 }
+
+// Extract text content from React node - defined outside component to avoid recreation
+const getTextContent = (node: string | React.ReactNode): string => {
+    if (typeof node === 'string') {
+        return node;
+    }
+    if (React.isValidElement(node)) {
+        const props = node.props as any;
+        // Try to extract text from React element
+        if (props?.children) {
+            const childrenText = getTextContent(props.children);
+            if (childrenText) return childrenText;
+        }
+        // Try to get text from dangerouslySetInnerHTML if available
+        if (props?.dangerouslySetInnerHTML && typeof document !== 'undefined') {
+            const html = props.dangerouslySetInnerHTML.__html;
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            return div.textContent || '';
+        }
+        // Try to get text from textContent prop if available
+        if (props?.textContent) {
+            return String(props.textContent);
+        }
+    }
+    // Handle arrays of nodes
+    if (Array.isArray(node)) {
+        return node.map(getTextContent).join(' ');
+    }
+    return '';
+};
 
 export function TranslateableContent({
     content,
@@ -32,40 +63,6 @@ export function TranslateableContent({
     );
     const [isTranslated, setIsTranslated] = useState(false);
 
-    // Extract text content if it's a React node
-    const getTextContent = (node: string | React.ReactNode): string => {
-        if (typeof node === 'string') {
-            return node;
-        }
-        if (React.isValidElement(node)) {
-            const props = node.props as any;
-            // Try to extract text from React element
-            if (props?.children) {
-                const childrenText = getTextContent(props.children);
-                if (childrenText) return childrenText;
-            }
-            // Try to get text from dangerouslySetInnerHTML if available
-            if (
-                props?.dangerouslySetInnerHTML &&
-                typeof document !== 'undefined'
-            ) {
-                const html = props.dangerouslySetInnerHTML.__html;
-                const div = document.createElement('div');
-                div.innerHTML = html;
-                return div.textContent || '';
-            }
-            // Try to get text from textContent prop if available
-            if (props?.textContent) {
-                return String(props.textContent);
-            }
-        }
-        // Handle arrays of nodes
-        if (Array.isArray(node)) {
-            return node.map(getTextContent).join(' ');
-        }
-        return '';
-    };
-
     // Use rawText if provided, otherwise extract from content
     // Memoize to prevent recalculation on every render
     const textContent = useMemo(
@@ -73,26 +70,55 @@ export function TranslateableContent({
         [rawText, content]
     );
 
-    // Get current language for dependency tracking
+    // Get current language
     const currentLanguage = i18n.language;
+
+    // Track previous values to prevent unnecessary effect runs
+    const prevContentRef = useRef({
+        text: '',
+        language: '',
+    });
 
     // Single useEffect to handle mounting, API availability, language detection, and reset
     useEffect(() => {
-        setMounted(true);
+        // First mount setup
+        if (!mounted) {
+            setMounted(true);
 
-        // Check if Translator API is available
-        const apiAvailable =
-            typeof window !== 'undefined' &&
-            'Translator' in window &&
-            'LanguageDetector' in window;
+            // Check if Translator API is available
+            const apiAvailable =
+                typeof window !== 'undefined' &&
+                'Translator' in window &&
+                'LanguageDetector' in window;
 
-        setIsAvailable(apiAvailable);
+            setIsAvailable(apiAvailable);
+        }
+
+        // Check if content actually changed (value comparison, not reference)
+        const contentChanged =
+            prevContentRef.current.text !== textContent ||
+            prevContentRef.current.language !== currentLanguage;
+
+        if (!contentChanged) {
+            return; // Skip if content hasn't actually changed
+        }
+
+        // Update ref with new values
+        prevContentRef.current = {
+            text: textContent,
+            language: currentLanguage,
+        };
 
         // Reset translation state when content or language changes
         setTranslatedContent(null);
         setIsTranslated(false);
 
         // Detect language if API is available and we have content
+        const apiAvailable =
+            typeof window !== 'undefined' &&
+            'Translator' in window &&
+            'LanguageDetector' in window;
+
         if (apiAvailable) {
             const detectLanguage = async () => {
                 if (!textContent || textContent.trim().length < 10) {
@@ -139,7 +165,7 @@ export function TranslateableContent({
         } else {
             setDetectedLanguage(null);
         }
-    }, [textContent, currentLanguage]);
+    }, [mounted, textContent, currentLanguage]);
 
     const handleTranslate = (translated: string) => {
         setTranslatedContent(translated);
