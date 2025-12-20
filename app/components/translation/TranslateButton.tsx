@@ -57,13 +57,18 @@ export function TranslateButton({
     const detectLanguage = useCallback(async () => {
         if (!text || text.trim().length === 0) return;
 
+        let cancelled = false;
+
         try {
             const detector = await window.LanguageDetector.create();
             const results = await detector.detect(text);
 
+            if (cancelled) return;
+
             if (results && results.length > 0) {
                 const topResult = results[0];
                 if (topResult.confidence > 0.5) {
+                    if (cancelled) return; // Check again before state update
                     const lang = topResult.detectedLanguage;
                     if (['en', 'ca', 'es'].includes(lang)) {
                         setDetectedLanguage(lang);
@@ -80,8 +85,14 @@ export function TranslateButton({
                 }
             }
         } catch (error) {
-            console.error('Language detection failed:', error);
+            if (!cancelled) {
+                console.error('Language detection failed:', error);
+            }
         }
+
+        return () => {
+            cancelled = true;
+        };
     }, [text]);
 
     useEffect(() => {

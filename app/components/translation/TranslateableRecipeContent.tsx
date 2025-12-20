@@ -146,6 +146,7 @@ export function TranslateableRecipeContent({
                     const topResult = results[0];
                     // Only use detection if confidence is high enough
                     if (topResult.confidence > 0.5) {
+                        if (cancelled) return; // Check again before state update
                         const lang = topResult.detectedLanguage;
                         // Map to supported languages (en, ca, es)
                         if (['en', 'ca', 'es'].includes(lang)) {
@@ -179,8 +180,8 @@ export function TranslateableRecipeContent({
 
     const hasContent = Boolean(
         descriptionText ||
-        (ingredientsText && ingredientsText.length > 0) ||
-        (stepsText && stepsText.length > 0)
+            (ingredientsText && ingredientsText.length > 0) ||
+            (stepsText && stepsText.length > 0)
     );
 
     const handleTranslate = async () => {
@@ -203,31 +204,10 @@ export function TranslateableRecipeContent({
                     ? i18n.language
                     : i18n.resolvedLanguage) || 'es';
 
-            let sourceLanguage = 'en';
-            try {
-                const detector = await window.LanguageDetector.create();
-                const sampleText =
-                    descriptionText ||
-                    ingredientsText?.[0] ||
-                    stepsText?.[0] ||
-                    '';
-                if (sampleText) {
-                    const results = await detector.detect(sampleText);
-                    if (
-                        results &&
-                        results.length > 0 &&
-                        results[0].confidence > 0.5
-                    ) {
-                        const detected = results[0].detectedLanguage;
-                        if (['en', 'ca', 'es'].includes(detected)) {
-                            sourceLanguage = detected;
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Language detection failed:', error);
-            }
+            // Reuse the already detected language from state
+            let sourceLanguage = detectedLanguage || 'es';
 
+            // If source matches target, use fallback
             if (sourceLanguage === targetLanguage) {
                 sourceLanguage = targetLanguage === 'en' ? 'es' : 'en';
             }
@@ -261,17 +241,17 @@ export function TranslateableRecipeContent({
             const ingredientsPromise =
                 ingredientsText && ingredientsText.length > 0
                     ? Promise.all(
-                        ingredientsText.map((item) =>
-                            translator.translate(item)
-                        )
-                    )
+                          ingredientsText.map((item) =>
+                              translator.translate(item)
+                          )
+                      )
                     : Promise.resolve([]);
 
             const stepsPromise =
                 stepsText && stepsText.length > 0
                     ? Promise.all(
-                        stepsText.map((item) => translator.translate(item))
-                    )
+                          stepsText.map((item) => translator.translate(item))
+                      )
                     : Promise.resolve([]);
 
             const [translatedDesc, translatedIngArray, translatedStpsArray] =
@@ -320,6 +300,10 @@ export function TranslateableRecipeContent({
             setIsTranslated(true);
         } catch (error) {
             console.error('Translation failed:', error);
+            toast.error(
+                t('translation_failed') ||
+                    'Translation failed. Please try again.'
+            );
         } finally {
             setIsTranslating(false);
         }
@@ -339,8 +323,8 @@ export function TranslateableRecipeContent({
 
     const displayIngredients =
         isTranslated &&
-            translatedIngredients &&
-            translatedIngredients.length > 0
+        translatedIngredients &&
+        translatedIngredients.length > 0
             ? translatedIngredients
             : ingredientsText || [];
 

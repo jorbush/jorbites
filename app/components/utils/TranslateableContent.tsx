@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, {
+    useState,
+    useEffect,
+    useMemo,
+    useRef,
+    useCallback,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { TranslateButton } from '@/app/components/translation/TranslateButton';
 import { FiGlobe } from 'react-icons/fi';
@@ -23,19 +29,12 @@ const getTextContent = (node: string | React.ReactNode): string => {
     }
     if (React.isValidElement(node)) {
         const props = node.props as any;
-        // Try to extract text from React element
+        // Extract text from React element children
         if (props?.children) {
             const childrenText = getTextContent(props.children);
             if (childrenText) return childrenText;
         }
-        // Try to get text from dangerouslySetInnerHTML if available
-        if (props?.dangerouslySetInnerHTML && typeof document !== 'undefined') {
-            const html = props.dangerouslySetInnerHTML.__html;
-            const div = document.createElement('div');
-            div.innerHTML = html;
-            return div.textContent || '';
-        }
-        // Try to get text from textContent prop if available
+        // Extract text from textContent prop if available
         if (props?.textContent) {
             return String(props.textContent);
         }
@@ -137,14 +136,12 @@ export function TranslateableContent({
 
                 if (results && results.length > 0) {
                     const topResult = results[0];
-                    // Only use detection if confidence is high enough
                     if (topResult.confidence > 0.5) {
+                        if (cancelled) return; // Check again before state update
                         const lang = topResult.detectedLanguage;
-                        // Map to supported languages (en, ca, es)
                         if (['en', 'ca', 'es'].includes(lang)) {
                             setDetectedLanguage(lang);
                         } else {
-                            // Try to map common language codes
                             const langMap: Record<string, string> = {
                                 'en-US': 'en',
                                 'en-GB': 'en',
@@ -212,7 +209,14 @@ export function TranslateableContent({
                     </button>
                 )
             ) : null,
-        [showTranslateButton, isTranslated, textContent, handleTranslate, handleShowOriginal, t]
+        [
+            showTranslateButton,
+            isTranslated,
+            textContent,
+            handleTranslate,
+            handleShowOriginal,
+            t,
+        ]
     );
 
     // Track previous button state to avoid infinite loop
