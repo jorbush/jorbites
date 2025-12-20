@@ -324,10 +324,7 @@ export function TranslateableRecipeContent({
     const needsTranslation =
         detectedLanguage && detectedLanguage !== targetLanguage;
     const showTranslateButton =
-        mounted &&
-        hasContent &&
-        isAvailable &&
-        (needsTranslation || detectedLanguage === null);
+        mounted && hasContent && isAvailable && needsTranslation;
 
     return (
         <>
