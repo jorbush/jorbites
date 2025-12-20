@@ -75,18 +75,18 @@ export function TranslateableRecipeContent({
         return '';
     }, [descriptionText, ingredientsTextJoined, stepsTextJoined]);
 
-    const contentKey = useMemo(
-        () => {
-            const currentLang = (typeof i18n.language === 'string' ? i18n.language : i18n.resolvedLanguage) || 'es';
-            return `${descriptionText}|${ingredientsTextJoined}|${stepsTextJoined}|${currentLang}`;
-        },
-        [
-            descriptionText,
-            ingredientsTextJoined,
-            stepsTextJoined,
-            i18n.language,
-        ]
-    );
+    const contentKey = useMemo(() => {
+        const currentLang =
+            (typeof i18n.language === 'string'
+                ? i18n.language
+                : i18n.resolvedLanguage) || 'es';
+        return `${descriptionText}|${ingredientsTextJoined}|${stepsTextJoined}|${currentLang}`;
+    }, [
+        descriptionText,
+        ingredientsTextJoined,
+        stepsTextJoined,
+        i18n.language,
+    ]);
 
     const prevContentKeyRef = useRef('');
 
@@ -101,7 +101,9 @@ export function TranslateableRecipeContent({
         }
 
         const contentChanged = prevContentKeyRef.current !== contentKey;
-        const needsInitialDetection = detectedLanguage === null && sampleTextForDetection.trim().length >= 10;
+        const needsInitialDetection =
+            detectedLanguage === null &&
+            sampleTextForDetection.trim().length >= 10;
 
         if (!contentChanged && !needsInitialDetection) {
             return;
@@ -183,8 +185,8 @@ export function TranslateableRecipeContent({
     // Check if we have content to translate
     const hasContent = Boolean(
         descriptionText ||
-        (ingredientsText && ingredientsText.length > 0) ||
-        (stepsText && stepsText.length > 0)
+            (ingredientsText && ingredientsText.length > 0) ||
+            (stepsText && stepsText.length > 0)
     );
 
     const handleTranslate = async () => {
@@ -202,7 +204,10 @@ export function TranslateableRecipeContent({
         setIsTranslating(true);
 
         try {
-            const targetLanguage = (typeof i18n.language === 'string' ? i18n.language : i18n.resolvedLanguage) || 'es';
+            const targetLanguage =
+                (typeof i18n.language === 'string'
+                    ? i18n.language
+                    : i18n.resolvedLanguage) || 'es';
 
             let sourceLanguage = 'en';
             try {
@@ -262,17 +267,17 @@ export function TranslateableRecipeContent({
             const ingredientsPromise =
                 ingredientsText && ingredientsText.length > 0
                     ? Promise.all(
-                        ingredientsText.map((item) =>
-                            translator.translate(item)
-                        )
-                    )
+                          ingredientsText.map((item) =>
+                              translator.translate(item)
+                          )
+                      )
                     : Promise.resolve([]);
 
             const stepsPromise =
                 stepsText && stepsText.length > 0
                     ? Promise.all(
-                        stepsText.map((item) => translator.translate(item))
-                    )
+                          stepsText.map((item) => translator.translate(item))
+                      )
                     : Promise.resolve([]);
 
             const [translatedDesc, translatedIngArray, translatedStpsArray] =
@@ -340,8 +345,8 @@ export function TranslateableRecipeContent({
 
     const displayIngredients =
         isTranslated &&
-            translatedIngredients &&
-            translatedIngredients.length > 0
+        translatedIngredients &&
+        translatedIngredients.length > 0
             ? translatedIngredients
             : ingredientsText || [];
 
@@ -350,7 +355,10 @@ export function TranslateableRecipeContent({
             ? translatedSteps
             : stepsText || [];
 
-    const targetLanguage = (typeof i18n.language === 'string' ? i18n.language : i18n.resolvedLanguage) || 'es';
+    const targetLanguage =
+        (typeof i18n.language === 'string'
+            ? i18n.language
+            : i18n.resolvedLanguage) || 'es';
     const needsTranslation =
         detectedLanguage && detectedLanguage !== targetLanguage;
     const showTranslateButton =

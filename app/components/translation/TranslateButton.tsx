@@ -99,7 +99,10 @@ export function TranslateButton({
         setIsTranslating(true);
 
         try {
-            const targetLanguage = (typeof i18n.language === 'string' ? i18n.language : i18n.resolvedLanguage) || 'es';
+            const targetLanguage =
+                (typeof i18n.language === 'string'
+                    ? i18n.language
+                    : i18n.resolvedLanguage) || 'es';
             let sourceLanguage = detectedLanguage || 'en';
 
             if (sourceLanguage === targetLanguage) {
@@ -145,7 +148,10 @@ export function TranslateButton({
     if (!text || text.trim().length < 10) {
         return null;
     }
-    const targetLanguage = (typeof i18n.language === 'string' ? i18n.language : i18n.resolvedLanguage) || 'es';
+    const targetLanguage =
+        (typeof i18n.language === 'string'
+            ? i18n.language
+            : i18n.resolvedLanguage) || 'es';
     if (detectedLanguage === targetLanguage) {
         return null;
     }
