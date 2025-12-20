@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { FiGlobe } from 'react-icons/fi';
 import i18n from '@/app/i18n';
 
-// Chrome's built-in AI APIs
 declare global {
     interface Window {
         LanguageDetector: {
@@ -64,14 +63,11 @@ export function TranslateButton({
 
             if (results && results.length > 0) {
                 const topResult = results[0];
-                // Only use detection if confidence is high enough
                 if (topResult.confidence > 0.5) {
                     const lang = topResult.detectedLanguage;
-                    // Map to supported languages (en, ca, es)
                     if (['en', 'ca', 'es'].includes(lang)) {
                         setDetectedLanguage(lang);
                     } else {
-                        // Try to map common language codes
                         const langMap: Record<string, string> = {
                             'en-US': 'en',
                             'en-GB': 'en',
@@ -89,10 +85,8 @@ export function TranslateButton({
     }, [text]);
 
     useEffect(() => {
-        // Mark as mounted to prevent hydration mismatch
         setMounted(true);
 
-        // Check if APIs are available
         if ('Translator' in window && 'LanguageDetector' in window) {
             setIsAvailable(true);
             detectLanguage();
@@ -105,16 +99,13 @@ export function TranslateButton({
         setIsTranslating(true);
 
         try {
-            const targetLanguage = i18n.language || 'en';
+            const targetLanguage = (typeof i18n.language === 'string' ? i18n.language : i18n.resolvedLanguage) || 'es';
             let sourceLanguage = detectedLanguage || 'en';
 
-            // If detected language is same as target, try to detect again or use fallback
             if (sourceLanguage === targetLanguage) {
-                // Try to use a different source language if available
                 sourceLanguage = targetLanguage === 'en' ? 'es' : 'en';
             }
 
-            // Check availability for the language pair
             const availability = await window.Translator.availability({
                 sourceLanguage,
                 targetLanguage,
@@ -143,7 +134,6 @@ export function TranslateButton({
         }
     };
 
-    // Don't render until mounted to prevent hydration mismatch
     if (!mounted) {
         return null;
     }
@@ -152,13 +142,10 @@ export function TranslateButton({
         return null;
     }
 
-    // Don't show button if text is empty or too short
     if (!text || text.trim().length < 10) {
         return null;
     }
-
-    // Don't show button if detected language matches target language
-    const targetLanguage = i18n.language || 'en';
+    const targetLanguage = (typeof i18n.language === 'string' ? i18n.language : i18n.resolvedLanguage) || 'es';
     if (detectedLanguage === targetLanguage) {
         return null;
     }

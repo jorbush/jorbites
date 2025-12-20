@@ -47,7 +47,6 @@ export function TranslateableRecipeContent({
         null
     );
 
-    // Create stable string representations
     const ingredientsTextJoined = useMemo(
         () => ingredientsText?.join('\n') || '',
         [ingredientsText]
@@ -57,19 +56,16 @@ export function TranslateableRecipeContent({
         [stepsText]
     );
 
-    // Get the first non-empty text for language detection from string values
     const sampleTextForDetection = useMemo(() => {
         if (descriptionText && descriptionText.trim().length >= 10) {
             return descriptionText;
         }
-        // Extract first line from joined ingredients
         if (ingredientsTextJoined) {
             const firstIngredient = ingredientsTextJoined.split('\n')[0];
             if (firstIngredient && firstIngredient.trim().length >= 10) {
                 return firstIngredient;
             }
         }
-        // Extract first line from joined steps
         if (stepsTextJoined) {
             const firstStep = stepsTextJoined.split('\n')[0];
             if (firstStep && firstStep.trim().length >= 10) {
@@ -79,27 +75,22 @@ export function TranslateableRecipeContent({
         return '';
     }, [descriptionText, ingredientsTextJoined, stepsTextJoined]);
 
-    // Get current language (i18n.language changes trigger re-renders via useTranslation)
-    const currentLanguage = i18n.language;
-
-    // Create a stable content key to track when content actually changes
     const contentKey = useMemo(
-        () =>
-            `${descriptionText}|${ingredientsTextJoined}|${stepsTextJoined}|${currentLanguage}`,
+        () => {
+            const currentLang = (typeof i18n.language === 'string' ? i18n.language : i18n.resolvedLanguage) || 'es';
+            return `${descriptionText}|${ingredientsTextJoined}|${stepsTextJoined}|${currentLang}`;
+        },
         [
             descriptionText,
             ingredientsTextJoined,
             stepsTextJoined,
-            currentLanguage,
+            i18n.language,
         ]
     );
 
-    // Track previous content key
     const prevContentKeyRef = useRef('');
 
-    // Single useEffect to handle mounting, API availability, language detection, and reset
     useEffect(() => {
-        // Mount and API availability check (only on first mount)
         if (!mounted) {
             setMounted(true);
             const apiAvailable =
@@ -109,21 +100,24 @@ export function TranslateableRecipeContent({
             setIsAvailable(apiAvailable);
         }
 
-        // Check if content actually changed
-        if (prevContentKeyRef.current === contentKey) {
-            return; // Content hasn't changed, skip
+        const contentChanged = prevContentKeyRef.current !== contentKey;
+        const needsInitialDetection = detectedLanguage === null && sampleTextForDetection.trim().length >= 10;
+
+        if (!contentChanged && !needsInitialDetection) {
+            return;
         }
 
-        prevContentKeyRef.current = contentKey;
+        if (contentChanged) {
+            prevContentKeyRef.current = contentKey;
 
-        // Reset translation state when content or language changes
-        setTranslatedDescription(null);
-        setTranslatedIngredients(null);
-        setTranslatedSteps(null);
-        setIsTranslated(false);
-        setDetectedLanguage(null);
+            setTranslatedDescription(null);
+            setTranslatedIngredients(null);
+            setTranslatedSteps(null);
+            setIsTranslated(false);
+            setDetectedLanguage(null);
+        } else {
+        }
 
-        // Only detect language if we have valid sample text
         if (
             !sampleTextForDetection ||
             sampleTextForDetection.trim().length < 10
@@ -131,7 +125,6 @@ export function TranslateableRecipeContent({
             return;
         }
 
-        // Check API availability
         const apiAvailable =
             typeof window !== 'undefined' &&
             'Translator' in window &&
@@ -141,7 +134,6 @@ export function TranslateableRecipeContent({
             return;
         }
 
-        // Detect language asynchronously
         let cancelled = false;
 
         const detectLanguage = async () => {
@@ -149,7 +141,9 @@ export function TranslateableRecipeContent({
                 const detector = await window.LanguageDetector.create();
                 const results = await detector.detect(sampleTextForDetection);
 
-                if (cancelled) return;
+                if (cancelled) {
+                    return;
+                }
 
                 if (results && results.length > 0) {
                     const topResult = results[0];
@@ -181,23 +175,21 @@ export function TranslateableRecipeContent({
 
         detectLanguage();
 
-        // Cleanup function to prevent state updates if component unmounts
         return () => {
             cancelled = true;
         };
-    }, [mounted, contentKey, sampleTextForDetection]);
+    }, [mounted, contentKey, sampleTextForDetection, detectedLanguage]);
 
     // Check if we have content to translate
     const hasContent = Boolean(
         descriptionText ||
-            (ingredientsText && ingredientsText.length > 0) ||
-            (stepsText && stepsText.length > 0)
+        (ingredientsText && ingredientsText.length > 0) ||
+        (stepsText && stepsText.length > 0)
     );
 
     const handleTranslate = async () => {
         if (isTranslating || !isAvailable) return;
 
-        // Double-check API availability
         if (
             typeof window === 'undefined' ||
             !('Translator' in window) ||
@@ -210,9 +202,8 @@ export function TranslateableRecipeContent({
         setIsTranslating(true);
 
         try {
-            const targetLanguage = i18n.language || 'en';
+            const targetLanguage = (typeof i18n.language === 'string' ? i18n.language : i18n.resolvedLanguage) || 'es';
 
-            // Detect source language for each section
             let sourceLanguage = 'en';
             try {
                 const detector = await window.LanguageDetector.create();
@@ -238,12 +229,10 @@ export function TranslateableRecipeContent({
                 console.error('Language detection failed:', error);
             }
 
-            // If detected language matches target, use fallback
             if (sourceLanguage === targetLanguage) {
                 sourceLanguage = targetLanguage === 'en' ? 'es' : 'en';
             }
 
-            // Check availability
             const availability = await window.Translator.availability({
                 sourceLanguage,
                 targetLanguage,
@@ -261,13 +250,11 @@ export function TranslateableRecipeContent({
                 return;
             }
 
-            // Create translator
             const translator = await window.Translator.create({
                 sourceLanguage,
                 targetLanguage,
             });
 
-            // Translate each section separately
             const descriptionPromise = descriptionText
                 ? translator.translate(descriptionText)
                 : Promise.resolve('');
@@ -275,17 +262,17 @@ export function TranslateableRecipeContent({
             const ingredientsPromise =
                 ingredientsText && ingredientsText.length > 0
                     ? Promise.all(
-                          ingredientsText.map((item) =>
-                              translator.translate(item)
-                          )
-                      )
+                        ingredientsText.map((item) =>
+                            translator.translate(item)
+                        )
+                    )
                     : Promise.resolve([]);
 
             const stepsPromise =
                 stepsText && stepsText.length > 0
                     ? Promise.all(
-                          stepsText.map((item) => translator.translate(item))
-                      )
+                        stepsText.map((item) => translator.translate(item))
+                    )
                     : Promise.resolve([]);
 
             const [translatedDesc, translatedIngArray, translatedStpsArray] =
@@ -295,12 +282,9 @@ export function TranslateableRecipeContent({
                     stepsPromise,
                 ]);
 
-            // Process translated description
             if (descriptionText && translatedDesc) {
                 setTranslatedDescription(translatedDesc.trim());
             }
-
-            // Process translated ingredients (already an array)
             if (
                 Array.isArray(translatedIngArray) &&
                 translatedIngArray.length > 0
@@ -319,7 +303,6 @@ export function TranslateableRecipeContent({
                 }
             }
 
-            // Process translated steps (already an array)
             if (
                 Array.isArray(translatedStpsArray) &&
                 translatedStpsArray.length > 0
@@ -355,11 +338,10 @@ export function TranslateableRecipeContent({
             ? translatedDescription
             : description;
 
-    // For ingredients and steps, use translated arrays if available, otherwise use original
     const displayIngredients =
         isTranslated &&
-        translatedIngredients &&
-        translatedIngredients.length > 0
+            translatedIngredients &&
+            translatedIngredients.length > 0
             ? translatedIngredients
             : ingredientsText || [];
 
@@ -368,8 +350,7 @@ export function TranslateableRecipeContent({
             ? translatedSteps
             : stepsText || [];
 
-    // Check if translation is needed (detected language differs from target)
-    const targetLanguage = i18n.language || 'en';
+    const targetLanguage = (typeof i18n.language === 'string' ? i18n.language : i18n.resolvedLanguage) || 'es';
     const needsTranslation =
         detectedLanguage && detectedLanguage !== targetLanguage;
     const showTranslateButton =
