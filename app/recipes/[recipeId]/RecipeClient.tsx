@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useLoginModal from '@/app/hooks/useLoginModal';
@@ -38,70 +38,6 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const router = useRouter();
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
-    const [coCooks, setCoCooks] = useState<
-        Array<{
-            id: string;
-            name: string | null;
-            image: string | null;
-            level: number;
-            verified: boolean;
-        }>
-    >([]);
-    const [linkedRecipes, setLinkedRecipes] = useState<
-        (SafeRecipe & { user: SafeUser })[]
-    >([]);
-    const [isLoadingRelatedData, setIsLoadingRelatedData] = useState(true);
-
-    useEffect(() => {
-        const fetchRelatedData = async () => {
-            const coCooksIds = recipe.coCooksIds || [];
-            const linkedRecipeIds = recipe.linkedRecipeIds || [];
-
-            if (coCooksIds.length === 0 && linkedRecipeIds.length === 0) {
-                setIsLoadingRelatedData(false);
-                return;
-            }
-
-            try {
-                const promises = [];
-
-                if (coCooksIds.length > 0) {
-                    promises.push(
-                        axios
-                            .get(
-                                `/api/users/multiple?ids=${coCooksIds.join(',')}`
-                            )
-                            .then((response) => setCoCooks(response.data))
-                            .catch((error) => {
-                                console.error('Failed to load co-cooks', error);
-                            })
-                    );
-                }
-
-                if (linkedRecipeIds.length > 0) {
-                    promises.push(
-                        axios
-                            .get(
-                                `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
-                            )
-                            .then((response) => setLinkedRecipes(response.data))
-                            .catch((error) => {
-                                console.error(
-                                    'Failed to load linked recipes',
-                                    error
-                                );
-                            })
-                    );
-                }
-
-                await Promise.all(promises);
-            } finally {
-                setIsLoadingRelatedData(false);
-            }
-        };
-
-        fetchRelatedData();
-    }, [recipe.coCooksIds, recipe.linkedRecipeIds]);
 
     const recipeCategories = useMemo(() => {
         return recipe.categories || [];
@@ -198,10 +134,9 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             ingredientsText={recipe.ingredients}
                             steps={formattedSteps}
                             stepsText={recipe.steps}
-                            coCooks={coCooks}
-                            linkedRecipes={linkedRecipes}
+                            coCooksIds={recipe.coCooksIds || []}
+                            linkedRecipeIds={recipe.linkedRecipeIds || []}
                             youtubeUrl={recipe.youtubeUrl || undefined}
-                            isLoadingRelatedData={isLoadingRelatedData}
                         />
                     </div>
                     <Comments

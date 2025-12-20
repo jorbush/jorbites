@@ -1,7 +1,7 @@
 'use client';
 
 import { IconType } from 'react-icons';
-import { SafeUser, SafeRecipe } from '@/app/types';
+import { SafeUser } from '@/app/types';
 import Avatar from '@/app/components/utils/Avatar';
 import RecipeCategoryAndMethod from '@/app/components/recipes/RecipeCategoryAndMethod';
 import HeartButton from '@/app/components/buttons/HeartButton';
@@ -15,15 +15,16 @@ import RecipeCard from '@/app/components/recipes/RecipeCard';
 import YouTubePreview from '@/app/components/utils/YouTubePreview';
 import { TranslateableRecipeContent } from '@/app/components/translation/TranslateableRecipeContent';
 import { formatText } from '@/app/utils/textFormatting';
+import axios from 'axios';
 
 interface RecipeInfoProps {
     user: SafeUser;
     description: React.ReactNode;
-    descriptionText?: string; // Raw description text for translation
+    descriptionText?: string;
     ingredients: React.ReactNode[];
-    ingredientsText?: string[]; // Raw ingredients text for translation
+    ingredientsText?: string[];
     steps: React.ReactNode[];
-    stepsText?: string[]; // Raw steps text for translation
+    stepsText?: string[];
     categories?: Array<{
         icon: IconType;
         label: string;
@@ -38,16 +39,9 @@ interface RecipeInfoProps {
     currentUser?: SafeUser | null;
     id: string;
     likes: number;
-    coCooks?: Array<{
-        id: string;
-        name: string | null;
-        image: string | null;
-        level: number;
-        verified: boolean;
-    }>;
-    linkedRecipes?: (SafeRecipe & { user: SafeUser })[];
+    coCooksIds?: string[];
+    linkedRecipeIds?: string[];
     youtubeUrl?: string | null;
-    isLoadingRelatedData?: boolean;
 }
 
 const RecipeInfo: React.FC<RecipeInfoProps> = ({
@@ -63,16 +57,48 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     likes,
     id,
     currentUser,
-    coCooks = [],
-    linkedRecipes = [],
+    coCooksIds = [],
+    linkedRecipeIds = [],
     youtubeUrl,
-    isLoadingRelatedData = false,
 }) => {
     const { t } = useTranslation();
     const router = useRouter();
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
     const [mounted, setMounted] = useState(false);
+    const [coCooks, setCoCooks] = useState<any[]>([]);
+    const [linkedRecipes, setLinkedRecipes] = useState<any[]>([]);
+    const [isLoadingRelatedData, setIsLoadingRelatedData] = useState(true);
+
+    useEffect(() => {
+        setIsLoadingRelatedData(true);
+        const fetchRelatedData = async () => {
+            if (coCooksIds.length > 0) {
+                try {
+                    const { data } = await axios.get(
+                        `/api/users/multiple?ids=${coCooksIds.join(',')}`
+                    );
+                    setCoCooks(data);
+                } catch (error) {
+                    console.error('Failed to load co-cooks', error);
+                }
+            }
+
+            if (linkedRecipeIds.length > 0) {
+                try {
+                    const { data } = await axios.get(
+                        `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
+                    );
+                    setLinkedRecipes(data);
+                } catch (error) {
+                    console.error('Failed to load linked recipes', error);
+                }
+            }
+            setIsLoadingRelatedData(false);
+        };
+
+        fetchRelatedData();
+    }, [coCooksIds, linkedRecipeIds]);
 
     useEffect(() => {
         setMounted(true);
