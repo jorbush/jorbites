@@ -182,7 +182,6 @@ export function TranslateableRecipeContent({
         };
     }, [mounted, contentKey, sampleTextForDetection, detectedLanguage]);
 
-    // Check if we have content to translate
     const hasContent = Boolean(
         descriptionText ||
             (ingredientsText && ingredientsText.length > 0) ||
@@ -367,7 +366,8 @@ export function TranslateableRecipeContent({
     return (
         <>
             <div className="mb-2">
-                <div className="flex min-h-[28px] items-center justify-end">
+                <hr className="mb-2" />
+                <div className="mb-2 flex min-h-[28px] items-center justify-end">
                     {showTranslateButton && (
                         <>
                             {!isTranslated ? (

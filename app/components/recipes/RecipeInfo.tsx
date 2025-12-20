@@ -260,7 +260,6 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 categories={categories}
                 method={method}
             />
-            <hr />
             <TranslateableRecipeContent
                 description={description}
                 descriptionText={descriptionText}
