@@ -127,12 +127,6 @@ export function TranslateButton({
                 const translator = await window.Translator.create({
                     sourceLanguage,
                     targetLanguage,
-                    monitor(m: any) {
-                        m.addEventListener('downloadprogress', (e: any) => {
-                            // Optional: show download progress
-                            console.log(`Downloaded ${e.loaded * 100}%`);
-                        });
-                    },
                 });
 
                 const translated = await translator.translate(text);
