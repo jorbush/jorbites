@@ -81,12 +81,7 @@ export function TranslateableRecipeContent({
                 ? i18n.language
                 : i18n.resolvedLanguage) || 'es';
         return `${descriptionText}|${ingredientsTextJoined}|${stepsTextJoined}|${currentLang}`;
-    }, [
-        descriptionText,
-        ingredientsTextJoined,
-        stepsTextJoined,
-        i18n.language,
-    ]);
+    }, [descriptionText, ingredientsTextJoined, stepsTextJoined]);
 
     const prevContentKeyRef = useRef('');
 
@@ -184,8 +179,8 @@ export function TranslateableRecipeContent({
 
     const hasContent = Boolean(
         descriptionText ||
-            (ingredientsText && ingredientsText.length > 0) ||
-            (stepsText && stepsText.length > 0)
+        (ingredientsText && ingredientsText.length > 0) ||
+        (stepsText && stepsText.length > 0)
     );
 
     const handleTranslate = async () => {
@@ -266,17 +261,17 @@ export function TranslateableRecipeContent({
             const ingredientsPromise =
                 ingredientsText && ingredientsText.length > 0
                     ? Promise.all(
-                          ingredientsText.map((item) =>
-                              translator.translate(item)
-                          )
-                      )
+                        ingredientsText.map((item) =>
+                            translator.translate(item)
+                        )
+                    )
                     : Promise.resolve([]);
 
             const stepsPromise =
                 stepsText && stepsText.length > 0
                     ? Promise.all(
-                          stepsText.map((item) => translator.translate(item))
-                      )
+                        stepsText.map((item) => translator.translate(item))
+                    )
                     : Promise.resolve([]);
 
             const [translatedDesc, translatedIngArray, translatedStpsArray] =
@@ -344,8 +339,8 @@ export function TranslateableRecipeContent({
 
     const displayIngredients =
         isTranslated &&
-        translatedIngredients &&
-        translatedIngredients.length > 0
+            translatedIngredients &&
+            translatedIngredients.length > 0
             ? translatedIngredients
             : ingredientsText || [];
 

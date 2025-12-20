@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TranslateButton } from '@/app/components/translation/TranslateButton';
 import { FiGlobe } from 'react-icons/fi';
@@ -171,14 +171,14 @@ export function TranslateableContent({
         };
     }, [mounted, contentKey, textContent]);
 
-    const handleTranslate = (translated: string) => {
+    const handleTranslate = useCallback((translated: string) => {
         setTranslatedContent(translated);
         setIsTranslated(true);
-    };
+    }, []);
 
-    const handleShowOriginal = () => {
+    const handleShowOriginal = useCallback(() => {
         setIsTranslated(false);
-    };
+    }, []);
 
     const displayContent =
         isTranslated && translatedContent ? translatedContent : content;
@@ -194,22 +194,26 @@ export function TranslateableContent({
         isAvailable &&
         (needsTranslation || detectedLanguage === null);
 
-    const translateButtonElement = showTranslateButton ? (
-        !isTranslated ? (
-            <TranslateButton
-                text={textContent}
-                onTranslate={handleTranslate}
-            />
-        ) : (
-            <button
-                onClick={handleShowOriginal}
-                className="inline-flex cursor-pointer items-center gap-1 text-xs text-gray-600 hover:text-gray-800 dark:text-neutral-400 dark:hover:text-neutral-200"
-            >
-                <FiGlobe size={18} />
-                <span>{t('show_original')}</span>
-            </button>
-        )
-    ) : null;
+    const translateButtonElement = useMemo(
+        () =>
+            showTranslateButton ? (
+                !isTranslated ? (
+                    <TranslateButton
+                        text={textContent}
+                        onTranslate={handleTranslate}
+                    />
+                ) : (
+                    <button
+                        onClick={handleShowOriginal}
+                        className="inline-flex cursor-pointer items-center gap-1 text-xs text-gray-600 hover:text-gray-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+                    >
+                        <FiGlobe size={18} />
+                        <span>{t('show_original')}</span>
+                    </button>
+                )
+            ) : null,
+        [showTranslateButton, isTranslated, textContent, handleTranslate, handleShowOriginal, t]
+    );
 
     // Track previous button state to avoid infinite loop
     const prevButtonStateRef = useRef<string | null>(null);
