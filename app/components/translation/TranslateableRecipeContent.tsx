@@ -47,19 +47,6 @@ export function TranslateableRecipeContent({
         null
     );
 
-    useEffect(() => {
-        setMounted(true);
-
-        // Check if Translator API is available
-        if (
-            typeof window !== 'undefined' &&
-            'Translator' in window &&
-            'LanguageDetector' in window
-        ) {
-            setIsAvailable(true);
-        }
-    }, []);
-
     // Extract joined strings for dependency array - memoized to prevent recalculation
     const ingredientsTextJoined = useMemo(
         () => ingredientsText?.join('\n') || '',
@@ -70,60 +57,84 @@ export function TranslateableRecipeContent({
         [stepsText]
     );
 
-    // Detect language when API becomes available and content changes
+    // Get current language for dependency tracking
+    const currentLanguage = i18n.language;
+
+    // Single useEffect to handle mounting, API availability, language detection, and reset
     useEffect(() => {
-        if (!isAvailable || !mounted) return;
+        setMounted(true);
 
-        const detectLanguage = async () => {
-            const sampleText =
-                descriptionText || ingredientsText?.[0] || stepsText?.[0] || '';
-            if (!sampleText || sampleText.trim().length < 10) {
-                setDetectedLanguage(null);
-                return;
-            }
+        // Check if Translator API is available
+        const apiAvailable =
+            typeof window !== 'undefined' &&
+            'Translator' in window &&
+            'LanguageDetector' in window;
 
-            try {
-                const detector = await window.LanguageDetector.create();
-                const results = await detector.detect(sampleText);
+        setIsAvailable(apiAvailable);
 
-                if (results && results.length > 0) {
-                    const topResult = results[0];
-                    // Only use detection if confidence is high enough
-                    if (topResult.confidence > 0.5) {
-                        const lang = topResult.detectedLanguage;
-                        // Map to supported languages (en, ca, es)
-                        if (['en', 'ca', 'es'].includes(lang)) {
-                            setDetectedLanguage(lang);
+        // Reset translation state when content or language changes
+        setTranslatedDescription(null);
+        setTranslatedIngredients(null);
+        setTranslatedSteps(null);
+        setIsTranslated(false);
+
+        // Detect language if API is available
+        if (apiAvailable) {
+            const detectLanguage = async () => {
+                const sampleText =
+                    descriptionText ||
+                    ingredientsText?.[0] ||
+                    stepsText?.[0] ||
+                    '';
+                if (!sampleText || sampleText.trim().length < 10) {
+                    setDetectedLanguage(null);
+                    return;
+                }
+
+                try {
+                    const detector = await window.LanguageDetector.create();
+                    const results = await detector.detect(sampleText);
+
+                    if (results && results.length > 0) {
+                        const topResult = results[0];
+                        // Only use detection if confidence is high enough
+                        if (topResult.confidence > 0.5) {
+                            const lang = topResult.detectedLanguage;
+                            // Map to supported languages (en, ca, es)
+                            if (['en', 'ca', 'es'].includes(lang)) {
+                                setDetectedLanguage(lang);
+                            } else {
+                                // Try to map common language codes
+                                const langMap: Record<string, string> = {
+                                    'en-US': 'en',
+                                    'en-GB': 'en',
+                                    'es-ES': 'es',
+                                    'es-MX': 'es',
+                                    'ca-ES': 'ca',
+                                };
+                                setDetectedLanguage(langMap[lang] || null);
+                            }
                         } else {
-                            // Try to map common language codes
-                            const langMap: Record<string, string> = {
-                                'en-US': 'en',
-                                'en-GB': 'en',
-                                'es-ES': 'es',
-                                'es-MX': 'es',
-                                'ca-ES': 'ca',
-                            };
-                            setDetectedLanguage(langMap[lang] || null);
+                            setDetectedLanguage(null);
                         }
                     } else {
                         setDetectedLanguage(null);
                     }
-                } else {
+                } catch (error) {
+                    console.error('Language detection failed:', error);
                     setDetectedLanguage(null);
                 }
-            } catch (error) {
-                console.error('Language detection failed:', error);
-                setDetectedLanguage(null);
-            }
-        };
+            };
 
-        detectLanguage();
+            detectLanguage();
+        } else {
+            setDetectedLanguage(null);
+        }
     }, [
-        isAvailable,
-        mounted,
         descriptionText,
         ingredientsTextJoined,
         stepsTextJoined,
+        currentLanguage,
     ]);
 
     // Check if we have content to translate
@@ -132,24 +143,6 @@ export function TranslateableRecipeContent({
             (ingredientsText && ingredientsText.length > 0) ||
             (stepsText && stepsText.length > 0)
     );
-
-    // Get current language for dependency tracking
-    const currentLanguage = i18n.language;
-
-    // Reset translation when content or language changes
-    useEffect(() => {
-        setTranslatedDescription(null);
-        setTranslatedIngredients(null);
-        setTranslatedSteps(null);
-        setIsTranslated(false);
-        // Also reset detection when content changes
-        setDetectedLanguage(null);
-    }, [
-        descriptionText,
-        ingredientsTextJoined,
-        stepsTextJoined,
-        currentLanguage,
-    ]);
 
     const handleTranslate = async () => {
         if (isTranslating || !isAvailable) return;

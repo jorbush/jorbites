@@ -74,8 +74,11 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     const coCooksIdsStr = coCooksIds.join(',');
     const linkedRecipeIdsStr = linkedRecipeIds.join(',');
 
+    // Single useEffect to handle mounting and fetching related data
     useEffect(() => {
+        setMounted(true);
         setIsLoadingRelatedData(true);
+
         const fetchRelatedData = async () => {
             if (coCooksIds.length > 0) {
                 try {
@@ -107,10 +110,6 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
 
         fetchRelatedData();
     }, [coCooksIdsStr, linkedRecipeIdsStr]);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     return (
         <div className="col-span-4 flex flex-col gap-8 pr-2 pl-2">
