@@ -22,7 +22,7 @@ const RecipeCategoryView: React.FC<CategoryViewProps> = ({
         setMounted(true);
     }, []);
 
-    const translationKey = label.toLocaleLowerCase();
+    const translationKey = label.toLowerCase();
     const displayLabel = mounted ? t(translationKey) : translationKey;
 
     return (
