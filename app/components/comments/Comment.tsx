@@ -39,6 +39,8 @@ const Comment: React.FC<CommentProps> = ({
     const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const [translateButton, setTranslateButton] =
+        useState<React.ReactNode | null>(null);
     const router = useRouter();
     const { t } = useTranslation();
 
@@ -85,6 +87,8 @@ const Comment: React.FC<CommentProps> = ({
                 </div>
                 <TranslateableContent
                     content={comment}
+                    renderButton={false}
+                    onButtonStateChange={setTranslateButton}
                     className="text-justify break-words whitespace-normal text-gray-800 dark:text-neutral-100"
                     renderContent={(content) => (
                         <p
@@ -97,8 +101,9 @@ const Comment: React.FC<CommentProps> = ({
                         </p>
                     )}
                 />
-                <div className="flex flex-col items-end text-sm text-gray-400">
-                    {formattedDate}
+                <div className="mt-2 flex min-h-[24px] items-center justify-between text-sm text-gray-400">
+                    <div className="shrink-0">{translateButton}</div>
+                    <div className="ml-auto">{formattedDate}</div>
                 </div>
                 {canDelete && (
                     <MdDelete

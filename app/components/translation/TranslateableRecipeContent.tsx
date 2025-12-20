@@ -366,40 +366,46 @@ export function TranslateableRecipeContent({
 
     return (
         <>
-            {showTranslateButton && (
-                <div className="mb-4 flex items-center justify-end">
-                    {!isTranslated ? (
-                        <button
-                            onClick={handleTranslate}
-                            disabled={isTranslating}
-                            className="inline-flex cursor-pointer items-center gap-1 text-sm text-gray-600 hover:text-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-400 dark:hover:text-neutral-200"
-                            title={t('translate') || 'Translate'}
-                            aria-label={t('translate') || 'Translate'}
-                        >
-                            <FiGlobe
-                                size={18}
-                                className={isTranslating ? 'animate-spin' : ''}
-                            />
-                            <span className="text-xs">
-                                {isTranslating
-                                    ? t('translating')
-                                    : t('translate')}
-                            </span>
-                        </button>
-                    ) : (
-                        <button
-                            onClick={handleShowOriginal}
-                            className="inline-flex cursor-pointer items-center gap-1 text-sm text-gray-600 hover:text-gray-800 dark:text-neutral-400 dark:hover:text-neutral-200"
-                        >
-                            <FiGlobe size={18} />
-                            <span className="text-xs">
-                                {t('show_original')}
-                            </span>
-                        </button>
+            <div className="mb-2">
+                <div className="flex min-h-[28px] items-center justify-end">
+                    {showTranslateButton && (
+                        <>
+                            {!isTranslated ? (
+                                <button
+                                    onClick={handleTranslate}
+                                    disabled={isTranslating}
+                                    className="inline-flex cursor-pointer items-center gap-1 text-sm text-gray-600 hover:text-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-400 dark:hover:text-neutral-200"
+                                    title={t('translate') || 'Translate'}
+                                    aria-label={t('translate') || 'Translate'}
+                                >
+                                    <FiGlobe
+                                        size={18}
+                                        className={
+                                            isTranslating ? 'animate-spin' : ''
+                                        }
+                                    />
+                                    <span className="text-xs">
+                                        {isTranslating
+                                            ? t('translating')
+                                            : t('translate')}
+                                    </span>
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleShowOriginal}
+                                    className="inline-flex cursor-pointer items-center gap-1 text-sm text-gray-600 hover:text-gray-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+                                >
+                                    <FiGlobe size={18} />
+                                    <span className="text-xs">
+                                        {t('show_original')}
+                                    </span>
+                                </button>
+                            )}
+                        </>
                     )}
                 </div>
-            )}
-            {renderDescription(displayDescription)}
+                {renderDescription(displayDescription)}
+            </div>
             {renderIngredients(displayIngredients)}
             {renderSteps(displaySteps)}
         </>

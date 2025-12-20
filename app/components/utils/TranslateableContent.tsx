@@ -8,10 +8,12 @@ import i18n from '@/app/i18n';
 
 interface TranslateableContentProps {
     content: string | React.ReactNode;
-    rawText?: string; // Raw text for translation (if content is a React node)
+    rawText?: string;
     className?: string;
     showButton?: boolean;
+    renderButton?: boolean;
     renderContent?: (content: string | React.ReactNode) => React.ReactNode;
+    onButtonStateChange?: (button: React.ReactNode | null) => void;
 }
 
 // Extract text content from React node - defined outside component to avoid recreation
@@ -50,7 +52,9 @@ export function TranslateableContent({
     rawText,
     className = '',
     showButton = true,
+    renderButton = true,
     renderContent,
+    onButtonStateChange,
 }: TranslateableContentProps) {
     const { t } = useTranslation();
     const [mounted, setMounted] = useState(false);
@@ -190,24 +194,46 @@ export function TranslateableContent({
         isAvailable &&
         (needsTranslation || detectedLanguage === null);
 
+    const translateButtonElement = showTranslateButton ? (
+        !isTranslated ? (
+            <TranslateButton
+                text={textContent}
+                onTranslate={handleTranslate}
+            />
+        ) : (
+            <button
+                onClick={handleShowOriginal}
+                className="inline-flex cursor-pointer items-center gap-1 text-xs text-gray-600 hover:text-gray-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+            >
+                <FiGlobe size={18} />
+                <span>{t('show_original')}</span>
+            </button>
+        )
+    ) : null;
+
+    // Track previous button state to avoid infinite loop
+    const prevButtonStateRef = useRef<string | null>(null);
+    const buttonStateKey = showTranslateButton
+        ? isTranslated
+            ? 'translated'
+            : 'translate'
+        : null;
+
+    useEffect(() => {
+        if (
+            onButtonStateChange &&
+            prevButtonStateRef.current !== buttonStateKey
+        ) {
+            prevButtonStateRef.current = buttonStateKey;
+            onButtonStateChange(translateButtonElement);
+        }
+    }, [buttonStateKey, translateButtonElement, onButtonStateChange]);
+
     return (
         <div className={`relative ${className}`}>
-            {showTranslateButton && (
+            {renderButton && translateButtonElement && (
                 <div className="flex items-center justify-end">
-                    {!isTranslated ? (
-                        <TranslateButton
-                            text={textContent}
-                            onTranslate={handleTranslate}
-                        />
-                    ) : (
-                        <button
-                            onClick={handleShowOriginal}
-                            className="inline-flex cursor-pointer items-center gap-1 text-xs text-gray-600 hover:text-gray-800 dark:text-neutral-400 dark:hover:text-neutral-200"
-                        >
-                            <FiGlobe size={18} />
-                            <span>{t('show_original')}</span>
-                        </button>
-                    )}
+                    {translateButtonElement}
                 </div>
             )}
             <div>
