@@ -70,102 +70,102 @@ export function TranslateableContent({
         [rawText, content]
     );
 
-    // Get current language
+    // Get current language (i18n.language changes trigger re-renders via useTranslation)
     const currentLanguage = i18n.language;
 
-    // Track previous values to prevent unnecessary effect runs
-    const prevContentRef = useRef({
-        text: '',
-        language: '',
-    });
+    // Create a stable content key to track when content actually changes
+    const contentKey = useMemo(
+        () => `${textContent}|${currentLanguage}`,
+        [textContent, currentLanguage]
+    );
+
+    // Track previous content key
+    const prevContentKeyRef = useRef('');
 
     // Single useEffect to handle mounting, API availability, language detection, and reset
     useEffect(() => {
-        // First mount setup
+        // Mount and API availability check (only on first mount)
         if (!mounted) {
             setMounted(true);
-
-            // Check if Translator API is available
             const apiAvailable =
                 typeof window !== 'undefined' &&
                 'Translator' in window &&
                 'LanguageDetector' in window;
-
             setIsAvailable(apiAvailable);
         }
 
-        // Check if content actually changed (value comparison, not reference)
-        const contentChanged =
-            prevContentRef.current.text !== textContent ||
-            prevContentRef.current.language !== currentLanguage;
-
-        if (!contentChanged) {
-            return; // Skip if content hasn't actually changed
+        // Check if content actually changed
+        if (prevContentKeyRef.current === contentKey) {
+            return; // Content hasn't changed, skip
         }
 
-        // Update ref with new values
-        prevContentRef.current = {
-            text: textContent,
-            language: currentLanguage,
-        };
+        prevContentKeyRef.current = contentKey;
 
         // Reset translation state when content or language changes
         setTranslatedContent(null);
         setIsTranslated(false);
+        setDetectedLanguage(null);
 
-        // Detect language if API is available and we have content
+        // Only detect language if we have valid content
+        if (!textContent || textContent.trim().length < 10) {
+            return;
+        }
+
+        // Check API availability
         const apiAvailable =
             typeof window !== 'undefined' &&
             'Translator' in window &&
             'LanguageDetector' in window;
 
-        if (apiAvailable) {
-            const detectLanguage = async () => {
-                if (!textContent || textContent.trim().length < 10) {
-                    setDetectedLanguage(null);
-                    return;
-                }
-
-                try {
-                    const detector = await window.LanguageDetector.create();
-                    const results = await detector.detect(textContent);
-
-                    if (results && results.length > 0) {
-                        const topResult = results[0];
-                        // Only use detection if confidence is high enough
-                        if (topResult.confidence > 0.5) {
-                            const lang = topResult.detectedLanguage;
-                            // Map to supported languages (en, ca, es)
-                            if (['en', 'ca', 'es'].includes(lang)) {
-                                setDetectedLanguage(lang);
-                            } else {
-                                // Try to map common language codes
-                                const langMap: Record<string, string> = {
-                                    'en-US': 'en',
-                                    'en-GB': 'en',
-                                    'es-ES': 'es',
-                                    'es-MX': 'es',
-                                    'ca-ES': 'ca',
-                                };
-                                setDetectedLanguage(langMap[lang] || null);
-                            }
-                        } else {
-                            setDetectedLanguage(null);
-                        }
-                    } else {
-                        setDetectedLanguage(null);
-                    }
-                } catch (error) {
-                    console.error('Language detection failed:', error);
-                    setDetectedLanguage(null);
-                }
-            };
-
-            detectLanguage();
-        } else {
-            setDetectedLanguage(null);
+        if (!apiAvailable) {
+            return;
         }
-    }, [mounted, textContent, currentLanguage]);
+
+        // Detect language asynchronously
+        let cancelled = false;
+
+        const detectLanguage = async () => {
+            try {
+                const detector = await window.LanguageDetector.create();
+                const results = await detector.detect(textContent);
+
+                if (cancelled) return;
+
+                if (results && results.length > 0) {
+                    const topResult = results[0];
+                    // Only use detection if confidence is high enough
+                    if (topResult.confidence > 0.5) {
+                        const lang = topResult.detectedLanguage;
+                        // Map to supported languages (en, ca, es)
+                        if (['en', 'ca', 'es'].includes(lang)) {
+                            setDetectedLanguage(lang);
+                        } else {
+                            // Try to map common language codes
+                            const langMap: Record<string, string> = {
+                                'en-US': 'en',
+                                'en-GB': 'en',
+                                'es-ES': 'es',
+                                'es-MX': 'es',
+                                'ca-ES': 'ca',
+                            };
+                            setDetectedLanguage(langMap[lang] || null);
+                        }
+                    }
+                }
+            } catch (error) {
+                if (!cancelled) {
+                    console.error('Language detection failed:', error);
+                }
+            }
+        };
+
+        detectLanguage();
+
+        // Cleanup function to prevent state updates if component unmounts
+        return () => {
+            cancelled = true;
+        };
+    }, [mounted, contentKey, textContent]);
 
     const handleTranslate = (translated: string) => {
         setTranslatedContent(translated);

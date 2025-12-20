@@ -57,124 +57,135 @@ export function TranslateableRecipeContent({
         [stepsText]
     );
 
-    // Get current language
+    // Get the first non-empty text for language detection from string values
+    const sampleTextForDetection = useMemo(() => {
+        if (descriptionText && descriptionText.trim().length >= 10) {
+            return descriptionText;
+        }
+        // Extract first line from joined ingredients
+        if (ingredientsTextJoined) {
+            const firstIngredient = ingredientsTextJoined.split('\n')[0];
+            if (firstIngredient && firstIngredient.trim().length >= 10) {
+                return firstIngredient;
+            }
+        }
+        // Extract first line from joined steps
+        if (stepsTextJoined) {
+            const firstStep = stepsTextJoined.split('\n')[0];
+            if (firstStep && firstStep.trim().length >= 10) {
+                return firstStep;
+            }
+        }
+        return '';
+    }, [descriptionText, ingredientsTextJoined, stepsTextJoined]);
+
+    // Get current language (i18n.language changes trigger re-renders via useTranslation)
     const currentLanguage = i18n.language;
 
-    // Track previous values to prevent unnecessary effect runs
-    const prevContentRef = useRef({
-        description: '',
-        ingredients: '',
-        steps: '',
-        language: '',
-    });
+    // Create a stable content key to track when content actually changes
+    const contentKey = useMemo(
+        () =>
+            `${descriptionText}|${ingredientsTextJoined}|${stepsTextJoined}|${currentLanguage}`,
+        [
+            descriptionText,
+            ingredientsTextJoined,
+            stepsTextJoined,
+            currentLanguage,
+        ]
+    );
+
+    // Track previous content key
+    const prevContentKeyRef = useRef('');
 
     // Single useEffect to handle mounting, API availability, language detection, and reset
     useEffect(() => {
-        // First mount setup
+        // Mount and API availability check (only on first mount)
         if (!mounted) {
             setMounted(true);
-
-            // Check if Translator API is available
             const apiAvailable =
                 typeof window !== 'undefined' &&
                 'Translator' in window &&
                 'LanguageDetector' in window;
-
             setIsAvailable(apiAvailable);
         }
 
-        // Check if content actually changed (value comparison, not reference)
-        const contentChanged =
-            prevContentRef.current.description !== descriptionText ||
-            prevContentRef.current.ingredients !== ingredientsTextJoined ||
-            prevContentRef.current.steps !== stepsTextJoined ||
-            prevContentRef.current.language !== currentLanguage;
-
-        if (!contentChanged) {
-            return; // Skip if content hasn't actually changed
+        // Check if content actually changed
+        if (prevContentKeyRef.current === contentKey) {
+            return; // Content hasn't changed, skip
         }
 
-        // Update ref with new values
-        prevContentRef.current = {
-            description: descriptionText || '',
-            ingredients: ingredientsTextJoined,
-            steps: stepsTextJoined,
-            language: currentLanguage,
-        };
+        prevContentKeyRef.current = contentKey;
 
         // Reset translation state when content or language changes
         setTranslatedDescription(null);
         setTranslatedIngredients(null);
         setTranslatedSteps(null);
         setIsTranslated(false);
+        setDetectedLanguage(null);
 
-        // Detect language if API is available
+        // Only detect language if we have valid sample text
+        if (
+            !sampleTextForDetection ||
+            sampleTextForDetection.trim().length < 10
+        ) {
+            return;
+        }
+
+        // Check API availability
         const apiAvailable =
             typeof window !== 'undefined' &&
             'Translator' in window &&
             'LanguageDetector' in window;
 
-        if (apiAvailable) {
-            const detectLanguage = async () => {
-                const sampleText =
-                    descriptionText ||
-                    ingredientsText?.[0] ||
-                    stepsText?.[0] ||
-                    '';
-                if (!sampleText || sampleText.trim().length < 10) {
-                    setDetectedLanguage(null);
-                    return;
-                }
-
-                try {
-                    const detector = await window.LanguageDetector.create();
-                    const results = await detector.detect(sampleText);
-
-                    if (results && results.length > 0) {
-                        const topResult = results[0];
-                        // Only use detection if confidence is high enough
-                        if (topResult.confidence > 0.5) {
-                            const lang = topResult.detectedLanguage;
-                            // Map to supported languages (en, ca, es)
-                            if (['en', 'ca', 'es'].includes(lang)) {
-                                setDetectedLanguage(lang);
-                            } else {
-                                // Try to map common language codes
-                                const langMap: Record<string, string> = {
-                                    'en-US': 'en',
-                                    'en-GB': 'en',
-                                    'es-ES': 'es',
-                                    'es-MX': 'es',
-                                    'ca-ES': 'ca',
-                                };
-                                setDetectedLanguage(langMap[lang] || null);
-                            }
-                        } else {
-                            setDetectedLanguage(null);
-                        }
-                    } else {
-                        setDetectedLanguage(null);
-                    }
-                } catch (error) {
-                    console.error('Language detection failed:', error);
-                    setDetectedLanguage(null);
-                }
-            };
-
-            detectLanguage();
-        } else {
-            setDetectedLanguage(null);
+        if (!apiAvailable) {
+            return;
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        mounted,
-        descriptionText,
-        ingredientsTextJoined,
-        stepsTextJoined,
-        currentLanguage,
-        // Note: ingredientsText and stepsText are intentionally NOT in deps
-        // We use their joined string representations to avoid infinite loops from array reference changes
-    ]);
+
+        // Detect language asynchronously
+        let cancelled = false;
+
+        const detectLanguage = async () => {
+            try {
+                const detector = await window.LanguageDetector.create();
+                const results = await detector.detect(sampleTextForDetection);
+
+                if (cancelled) return;
+
+                if (results && results.length > 0) {
+                    const topResult = results[0];
+                    // Only use detection if confidence is high enough
+                    if (topResult.confidence > 0.5) {
+                        const lang = topResult.detectedLanguage;
+                        // Map to supported languages (en, ca, es)
+                        if (['en', 'ca', 'es'].includes(lang)) {
+                            setDetectedLanguage(lang);
+                        } else {
+                            // Try to map common language codes
+                            const langMap: Record<string, string> = {
+                                'en-US': 'en',
+                                'en-GB': 'en',
+                                'es-ES': 'es',
+                                'es-MX': 'es',
+                                'ca-ES': 'ca',
+                            };
+                            setDetectedLanguage(langMap[lang] || null);
+                        }
+                    }
+                }
+            } catch (error) {
+                if (!cancelled) {
+                    console.error('Language detection failed:', error);
+                }
+            }
+        };
+
+        detectLanguage();
+
+        // Cleanup function to prevent state updates if component unmounts
+        return () => {
+            cancelled = true;
+        };
+    }, [mounted, contentKey, sampleTextForDetection]);
 
     // Check if we have content to translate
     const hasContent = Boolean(
