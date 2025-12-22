@@ -31,4 +31,3 @@ export enum STEPS {
 export const STEPS_LENGTH = Object.keys(STEPS).length;
 export const QUEST_TITLE_MAX_LENGTH = 200;
 export const QUEST_DESCRIPTION_MAX_LENGTH = 1000;
-export const ADSENSE_PUBLISHER_ID = '1922304637237553';

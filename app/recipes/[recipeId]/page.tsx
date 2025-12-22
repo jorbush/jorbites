@@ -5,7 +5,6 @@ import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
-import { ADSENSE_PUBLISHER_ID } from '@/app/utils/constants';
 
 interface IParams {
     recipeId?: string;
@@ -91,20 +90,11 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
     }
 
     return (
-        <>
-            {process.env.NODE_ENV === 'production' && (
-                <script
-                    async
-                    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-${ADSENSE_PUBLISHER_ID}`}
-                    crossOrigin="anonymous"
-                ></script>
-            )}
-            <RecipeClient
-                recipe={recipe}
-                currentUser={currentUser}
-                comments={comments}
-            />
-        </>
+        <RecipeClient
+            recipe={recipe}
+            currentUser={currentUser}
+            comments={comments}
+        />
     );
 };
 
