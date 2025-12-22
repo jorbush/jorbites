@@ -49,11 +49,15 @@ describe('<Logo />', () => {
         const logos = screen.getAllByAltText('Logo') as HTMLImageElement[];
         expect(logos).toHaveLength(2);
 
-        const lightLogo = logos.find((img) =>
-            img.src.includes('logo-nobg.webp')
+        const lightLogo = logos.find(
+            (img) =>
+                img.src.includes('logo-nobg.webp') ||
+                img.src.includes('logo_christmas_black.webp')
         );
-        const darkLogo = logos.find((img) =>
-            img.src.includes('no_bg_white.webp')
+        const darkLogo = logos.find(
+            (img) =>
+                img.src.includes('no_bg_white.webp') ||
+                img.src.includes('logo_christmas_white.webp')
         );
 
         expect(lightLogo).toBeDefined();
@@ -73,8 +77,10 @@ describe('<Logo />', () => {
     it('has correct CSS classes and attributes', () => {
         render(<Logo />);
         const logos = screen.getAllByAltText('Logo') as HTMLImageElement[];
-        const lightLogo = logos.find((img) =>
-            img.src.includes('logo-nobg.webp')
+        const lightLogo = logos.find(
+            (img) =>
+                img.src.includes('logo-nobg.webp') ||
+                img.src.includes('logo_christmas_black.webp')
         );
 
         expect(lightLogo).toHaveProperty('width', 128);
