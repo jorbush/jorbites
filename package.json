@@ -1,6 +1,6 @@
 {
   "name": "jorbites",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -48,8 +48,8 @@
     "postcss": "8.4.41",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "query-string": "^8.1.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "react-hook-form": "^7.44.2",
     "react-hot-toast": "^2.4.1",
     "react-i18next": "^12.3.1",
