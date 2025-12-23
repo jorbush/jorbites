@@ -60,19 +60,23 @@ describe('<RecipeHead />', () => {
         const nextButton = nextButtonContainer.querySelector(
             'div[style*="pointer-events: auto"]'
         );
-        let image = screen.getByAltText('Recipe Image');
-        expect(image).toHaveProperty(
-            'src',
-            expect.stringContaining('image1.jpg')
-        );
+        const images = screen.getAllByAltText('Recipe Image');
+        // Initially first image should be visible (opacity 1)
+        const firstImageContainer = images[0].parentElement?.parentElement;
+        const secondImageContainer = images[1].parentElement?.parentElement;
+        expect(firstImageContainer?.style.opacity).toBe('1');
+        expect(secondImageContainer?.style.opacity).toBe('0');
+
         fireEvent.click(nextButton!);
         // Wait for the animation and state update
         await waitFor(() => {
-            image = screen.getByAltText('Recipe Image');
-            expect(image).toHaveProperty(
-                'src',
-                expect.stringContaining('image2.jpg')
-            );
+            const updatedImages = screen.getAllByAltText('Recipe Image');
+            const updatedFirstContainer =
+                updatedImages[0].parentElement?.parentElement;
+            const updatedSecondContainer =
+                updatedImages[1].parentElement?.parentElement;
+            expect(updatedFirstContainer?.style.opacity).toBe('0');
+            expect(updatedSecondContainer?.style.opacity).toBe('1');
         });
     });
 
@@ -82,14 +86,21 @@ describe('<RecipeHead />', () => {
         const prevButton = prevButtonContainer.querySelector(
             'div[style*="pointer-events: auto"]'
         );
+        const images = screen.getAllByAltText('Recipe Image');
+        // Initially first image should be visible
+        const firstImageContainer = images[0].parentElement?.parentElement;
+        expect(firstImageContainer?.style.opacity).toBe('1');
+
         fireEvent.click(prevButton!);
-        // Wait for the animation and state update
+        // Wait for the animation and state update - should wrap to last image
         await waitFor(() => {
-            const image = screen.getByAltText('Recipe Image');
-            expect(image).toHaveProperty(
-                'src',
-                expect.stringContaining('image2.jpg')
-            );
+            const updatedImages = screen.getAllByAltText('Recipe Image');
+            const updatedFirstContainer =
+                updatedImages[0].parentElement?.parentElement;
+            const updatedSecondContainer =
+                updatedImages[1].parentElement?.parentElement;
+            expect(updatedFirstContainer?.style.opacity).toBe('0');
+            expect(updatedSecondContainer?.style.opacity).toBe('1');
         });
     });
 
@@ -136,15 +147,22 @@ describe('<RecipeHead />', () => {
 
     it('changes image when clicking on dot indicator', async () => {
         render(<RecipeHead {...mockProps} />);
+        const images = screen.getAllByAltText('Recipe Image');
+        // Initially first image should be visible
+        const firstImageContainer = images[0].parentElement?.parentElement;
+        expect(firstImageContainer?.style.opacity).toBe('1');
+
         const dotIndicator1 = screen.getByTestId('dot-indicator-1');
         fireEvent.click(dotIndicator1);
         // Wait for the animation and state update
         await waitFor(() => {
-            const image = screen.getByAltText('Recipe Image');
-            expect(image).toHaveProperty(
-                'src',
-                expect.stringContaining('image2.jpg')
-            );
+            const updatedImages = screen.getAllByAltText('Recipe Image');
+            const updatedFirstContainer =
+                updatedImages[0].parentElement?.parentElement;
+            const updatedSecondContainer =
+                updatedImages[1].parentElement?.parentElement;
+            expect(updatedFirstContainer?.style.opacity).toBe('0');
+            expect(updatedSecondContainer?.style.opacity).toBe('1');
         });
     });
 
@@ -157,5 +175,95 @@ describe('<RecipeHead />', () => {
         render(<RecipeHead {...singleImageProps} />);
         const dotIndicator = screen.queryByTestId('dot-indicator-0');
         expect(dotIndicator).toBeNull();
+    });
+
+    it('changes image on swipe left', async () => {
+        const { container } = render(<RecipeHead {...mockProps} />);
+        const imageContainer = container.querySelector(
+            '.relative.h-\\[60vh\\]'
+        );
+        const images = screen.getAllByAltText('Recipe Image');
+
+        // Initially first image should be visible
+        const firstImageContainer = images[0].parentElement?.parentElement;
+        expect(firstImageContainer?.style.opacity).toBe('1');
+
+        // Simulate swipe left (next image)
+        fireEvent.touchStart(imageContainer!, {
+            touches: [{ clientX: 200 }],
+        });
+        fireEvent.touchMove(imageContainer!, {
+            touches: [{ clientX: 100 }],
+        });
+        fireEvent.touchEnd(imageContainer!);
+
+        // Wait for the state update
+        await waitFor(() => {
+            const updatedImages = screen.getAllByAltText('Recipe Image');
+            const updatedFirstContainer =
+                updatedImages[0].parentElement?.parentElement;
+            const updatedSecondContainer =
+                updatedImages[1].parentElement?.parentElement;
+            expect(updatedFirstContainer?.style.opacity).toBe('0');
+            expect(updatedSecondContainer?.style.opacity).toBe('1');
+        });
+    });
+
+    it('changes image on swipe right', async () => {
+        const { container } = render(<RecipeHead {...mockProps} />);
+        const imageContainer = container.querySelector(
+            '.relative.h-\\[60vh\\]'
+        );
+        const images = screen.getAllByAltText('Recipe Image');
+
+        // Initially first image should be visible
+        const firstImageContainer = images[0].parentElement?.parentElement;
+        expect(firstImageContainer?.style.opacity).toBe('1');
+
+        // Simulate swipe right (previous image, wraps to last)
+        fireEvent.touchStart(imageContainer!, {
+            touches: [{ clientX: 100 }],
+        });
+        fireEvent.touchMove(imageContainer!, {
+            touches: [{ clientX: 200 }],
+        });
+        fireEvent.touchEnd(imageContainer!);
+
+        // Wait for the state update
+        await waitFor(() => {
+            const updatedImages = screen.getAllByAltText('Recipe Image');
+            const updatedFirstContainer =
+                updatedImages[0].parentElement?.parentElement;
+            const updatedSecondContainer =
+                updatedImages[1].parentElement?.parentElement;
+            expect(updatedFirstContainer?.style.opacity).toBe('0');
+            expect(updatedSecondContainer?.style.opacity).toBe('1');
+        });
+    });
+
+    it('does not change image on small swipe', () => {
+        const { container } = render(<RecipeHead {...mockProps} />);
+        const imageContainer = container.querySelector(
+            '.relative.h-\\[60vh\\]'
+        );
+        const images = screen.getAllByAltText('Recipe Image');
+
+        // Initially first image should be visible
+        const firstImageContainer = images[0].parentElement?.parentElement;
+        const secondImageContainer = images[1].parentElement?.parentElement;
+        expect(firstImageContainer?.style.opacity).toBe('1');
+
+        // Simulate small swipe (less than threshold)
+        fireEvent.touchStart(imageContainer!, {
+            touches: [{ clientX: 100 }],
+        });
+        fireEvent.touchMove(imageContainer!, {
+            touches: [{ clientX: 120 }],
+        });
+        fireEvent.touchEnd(imageContainer!);
+
+        // Image should remain the same
+        expect(firstImageContainer?.style.opacity).toBe('1');
+        expect(secondImageContainer?.style.opacity).toBe('0');
     });
 });

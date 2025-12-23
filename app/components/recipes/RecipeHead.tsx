@@ -1,13 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FiChevronLeft, FiChevronRight, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/navigation/Heading';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface RecipeHeadProps {
     title: string;
@@ -21,7 +20,13 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     imagesSrc,
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [[_page, direction], setPage] = useState([0, 0]);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const [dragOffset, setDragOffset] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
+    const touchStartX = useRef<number>(0);
+    const touchEndX = useRef<number>(0);
+    const rafId = useRef<number>(0);
+    const containerRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const { t } = useTranslation();
 
@@ -50,48 +55,96 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     };
 
     const goToPreviousImage = () => {
+        if (isTransitioning || imagesSrc.length <= 1) return;
+        setIsTransitioning(true);
         const newIndex =
             currentImageIndex === 0
                 ? imagesSrc.length - 1
                 : currentImageIndex - 1;
-        setPage([newIndex, -1]);
         setCurrentImageIndex(newIndex);
     };
 
     const goToNextImage = () => {
+        if (isTransitioning || imagesSrc.length <= 1) return;
+        setIsTransitioning(true);
         const newIndex =
             currentImageIndex === imagesSrc.length - 1
                 ? 0
                 : currentImageIndex + 1;
-        setPage([newIndex, 1]);
         setCurrentImageIndex(newIndex);
     };
 
-    // Swipe threshold for touch gesture detection
-    // Higher values require more deliberate swipes to prevent accidental navigation
-    const SWIPE_CONFIDENCE_THRESHOLD = 10000;
-    const swipePower = (offset: number, velocity: number) => {
-        return Math.abs(offset) * velocity;
+    const goToImage = (index: number) => {
+        if (isTransitioning || index === currentImageIndex) return;
+        setIsTransitioning(true);
+        setCurrentImageIndex(index);
     };
 
-    const paginate = (newDirection: number) => {
-        if (newDirection === 1) {
-            goToNextImage();
-        } else {
-            goToPreviousImage();
+    // Reset transition state after animation completes
+    useEffect(() => {
+        if (isTransitioning) {
+            const timer = setTimeout(() => {
+                setIsTransitioning(false);
+            }, 400); // Match CSS transition duration
+            return () => clearTimeout(timer);
         }
+    }, [isTransitioning]);
+
+    // Cleanup animation frame on unmount
+    useEffect(() => {
+        return () => {
+            if (rafId.current) {
+                cancelAnimationFrame(rafId.current);
+            }
+        };
+    }, []);
+
+    // Touch handlers for swipe functionality with visual feedback
+    const handleTouchStart = (e: React.TouchEvent) => {
+        if (imagesSrc.length <= 1 || isTransitioning) return;
+        touchStartX.current = e.touches[0].clientX;
+        touchEndX.current = e.touches[0].clientX;
+        setIsDragging(true);
     };
 
-    const handleDragEnd = (
-        _e: MouseEvent | TouchEvent | PointerEvent,
-        { offset, velocity }: { offset: { x: number }; velocity: { x: number } }
-    ) => {
-        const swipe = swipePower(offset.x, velocity.x);
-        if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) {
-            paginate(1);
-        } else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) {
-            paginate(-1);
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (imagesSrc.length <= 1 || !isDragging) return;
+        touchEndX.current = e.touches[0].clientX;
+        
+        // Use requestAnimationFrame for smoother updates
+        if (rafId.current) {
+            cancelAnimationFrame(rafId.current);
         }
+        
+        rafId.current = requestAnimationFrame(() => {
+            const diff = touchEndX.current - touchStartX.current;
+            // Apply drag offset with rubber band effect for better UX
+            const resistance = 0.6;
+            setDragOffset(diff * resistance);
+        });
+    };
+
+    const handleTouchEnd = () => {
+        if (imagesSrc.length <= 1 || !isDragging) return;
+        
+        const swipeThreshold = 50; // Minimum swipe distance in pixels
+        const diff = touchStartX.current - touchEndX.current;
+
+        setIsDragging(false);
+        setDragOffset(0);
+
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                // Swiped left, go to next image
+                goToNextImage();
+            } else {
+                // Swiped right, go to previous image
+                goToPreviousImage();
+            }
+        }
+
+        touchStartX.current = null as unknown as number;
+        touchEndX.current = null as unknown as number;
     };
 
     return (
@@ -116,54 +169,83 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                     <FiShare2 className="text-xl" />
                 </button>
             </div>
-            <div className="relative h-[60vh] w-full overflow-hidden rounded-xl">
-                <AnimatePresence
-                    initial={false}
-                    custom={direction}
-                >
-                    <motion.div
-                        key={currentImageIndex}
-                        custom={direction}
-                        variants={{
-                            enter: (direction: number) => ({
-                                x: direction > 0 ? '100%' : '-100%',
-                            }),
-                            center: {
-                                zIndex: 1,
-                                x: 0,
-                            },
-                            exit: (direction: number) => ({
-                                zIndex: 0,
-                                x: direction < 0 ? '100%' : '-100%',
-                            }),
-                        }}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        transition={{
-                            x: { type: 'spring', stiffness: 300, damping: 30 },
-                        }}
-                        drag={imagesSrc.length > 1 ? 'x' : false}
-                        dragConstraints={{ left: 0, right: 0 }}
-                        dragElastic={1}
-                        onDragEnd={handleDragEnd}
-                        className="absolute h-full w-full overflow-hidden rounded-xl"
-                    >
-                        <CustomProxyImage
-                            src={
-                                imagesSrc[currentImageIndex] || '/avocado.webp'
-                            }
-                            fill
-                            priority={true}
-                            className="rounded-xl object-cover"
-                            alt="Recipe Image"
-                            maxQuality={true}
-                            quality="auto:best"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                            preloadViaProxy={true}
-                        />
-                    </motion.div>
-                </AnimatePresence>
+            <div
+                ref={containerRef}
+                className="relative h-[60vh] w-full overflow-hidden rounded-xl"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+            >
+                {imagesSrc.map((src, index) => {
+                    // Calculate which images to show
+                    const isCurrentImage = index === currentImageIndex;
+                    const isPreviousImage =
+                        index ===
+                        (currentImageIndex === 0
+                            ? imagesSrc.length - 1
+                            : currentImageIndex - 1);
+                    const isNextImage =
+                        index ===
+                        (currentImageIndex === imagesSrc.length - 1
+                            ? 0
+                            : currentImageIndex + 1);
+
+                    let translateX = 0;
+                    let opacity = 0;
+                    let zIndex = 0;
+
+                    if (isCurrentImage) {
+                        translateX = dragOffset;
+                        opacity = 1 - Math.abs(dragOffset) / 400; // Fade out current image slightly
+                        zIndex = 2;
+                    } else if (isPreviousImage && dragOffset > 0) {
+                        // Show previous image when dragging right
+                        const containerWidth = containerRef.current?.offsetWidth || 1;
+                        const progress = Math.min(1, dragOffset / (containerWidth * 0.5));
+                        translateX = -containerWidth + dragOffset;
+                        opacity = progress * 0.8 + 0.2; // Fade in more gradually
+                        zIndex = 1;
+                    } else if (isNextImage && dragOffset < 0) {
+                        // Show next image when dragging left
+                        const containerWidth = containerRef.current?.offsetWidth || 1;
+                        const progress = Math.min(1, Math.abs(dragOffset) / (containerWidth * 0.5));
+                        translateX = containerWidth + dragOffset;
+                        opacity = progress * 0.8 + 0.2; // Fade in more gradually
+                        zIndex = 1;
+                    }
+
+                    const shouldRender = isCurrentImage || isPreviousImage || isNextImage;
+                    if (!shouldRender) return null;
+
+                    return (
+                        <div
+                            key={index}
+                            className="absolute h-full w-full overflow-hidden rounded-xl"
+                            style={{
+                                transform: `translate3d(${translateX}px, 0, 0)`,
+                                opacity: opacity,
+                                pointerEvents: isCurrentImage ? 'auto' : 'none',
+                                zIndex: zIndex,
+                                transition: isDragging
+                                    ? 'none'
+                                    : 'transform 400ms cubic-bezier(0.4, 0, 0.2, 1), opacity 400ms cubic-bezier(0.4, 0, 0.2, 1)',
+                                willChange: isDragging ? 'transform, opacity' : 'auto',
+                            }}
+                        >
+                            <CustomProxyImage
+                                src={src || '/avocado.webp'}
+                                fill
+                                priority={index === 0}
+                                className="rounded-xl object-cover"
+                                alt="Recipe Image"
+                                maxQuality={true}
+                                quality="auto:best"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                                preloadViaProxy={index === 0}
+                            />
+                        </div>
+                    );
+                })}
                 {imagesSrc.length > 1 && (
                     <>
                         <div
@@ -197,12 +279,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                             {imagesSrc.map((_, index) => (
                                 <button
                                     key={index}
-                                    onClick={() => {
-                                        const newDirection =
-                                            index > currentImageIndex ? 1 : -1;
-                                        setPage([index, newDirection]);
-                                        setCurrentImageIndex(index);
-                                    }}
+                                    onClick={() => goToImage(index)}
                                     className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${
                                         index === currentImageIndex
                                             ? 'w-8 bg-white'
