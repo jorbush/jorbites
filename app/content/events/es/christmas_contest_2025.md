@@ -1,34 +1,25 @@
 ---
 title: 🎄 Concurso de Navidad 2025 🎄
-date: 2025-12-25
-endDate: 2025-12-25T21:59:59
+date: 2025-12-24
+endDate: 2025-12-29T23:59:59
 image: /images/events/christmas_contest.webp
 description: Un concurso festivo y delicioso para celebrar Navidad en Jorbites
 ---
 
 # 🎄 Concurso de Navidad 2025 🎄
 
-¡Es la época más maravillosa del año en Jorbites! Casas de jengibre, magia de arándanos, calidez de canela y bocados festivos que traen alegría a cada mesa.
+¡Este año, nuestro concurso de Navidad será completamente online! Todos los Jorbiters están invitados a compartir sus recetas más festivas para tener la oportunidad de ganar una insignia exclusiva. El ganador será decidido por la comunidad a través de una serie de votaciones en Instagram.
 
-## 🧁 Temática
+## 🧁 Cómo Participar
 
-Dulces festivos, clásicos navideños y platos creativos de Navidad. Piensa en especias cálidas, ingredientes de temporada, presentaciones acogedoras y sabores que celebran la temporada.
+Comparte tu mejor receta navideña entre el 24 y el 29 de diciembre de 2025. Ya sea un plato familiar tradicional o una creación festiva moderna, ¡queremos ver qué estás cocinando para las fiestas!
 
-Mini aperitivos, principales tradicionales y postres con espíritu navideño—todo es bienvenido.
+## 🗳️ Votación
 
-## 📆 Fecha
-
-Miércoles: 25 de diciembre de 2025
+La votación se llevará a cabo en diferentes fases en nuestra cuenta de Instagram el 30 de diciembre. ¡Mantente atento a nuestras historias y publicaciones para apoyar tus recetas favoritas!
 
 ## 🏆 Premio
-- Un regalo navideño de edición limitada de Jorbites
-- Una medalla exclusiva navideña para el ganador
 
-## 📌 Normas
-- ✅ La receta debe estar en modo borrador (icono de la nube arriba a la derecha) antes de que empiece el evento
-- ✅ Debe publicarse durante la ventana del concurso
-- ❌ Publicarla antes o después restará 2 puntos
-- 👫 ¿En equipo? Sí, con coautoría
-- 🎭 ¿Bonus? Sí: Vestimenta navideña puede sumar +1 a +2 puntos según el esfuerzo
+El creador de la receta ganadora recibirá una insignia exclusiva de Navidad 2025 en su perfil de Jorbites. El ganador será anunciado en esta publicación del evento después de la votación de la comunidad.
 
-Trae a la mesa tu creatividad más festiva. ¡Feliz cocina y felices fiestas! 🎅🎁
+¡Mucha suerte a todos los participantes y que gane la mejor receta! ¡Feliz cocina y felices fiestas! 🎅🎁
