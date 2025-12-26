@@ -1,34 +1,25 @@
 ---
 title: 🎄 Concurs de Nadal 2025 🎄
-date: 2025-12-25
-endDate: 2025-12-25T21:59:59
+date: 2025-12-24
+endDate: 2025-12-29T23:59:59
 image: /images/events/christmas_contest.webp
 description: Un concurs festiu i deliciós per celebrar Nadal a Jorbites
 ---
 
 # 🎄 Concurs de Nadal 2025 🎄
 
-És l'època més meravellosa de l'any a Jorbites! Cases de gingebre, màgia de nabius vermells, escalfor de canyella i mossegades festives que porten alegria a cada taula.
+Aquest any, el nostre concurs de Nadal serà totalment en línia! Tots els Jorbiters esteu convidats a compartir les vostres receptes més festives per tenir l'oportunitat de guanyar una insígnia exclusiva. El guanyador serà decidit per la comunitat a través d'una sèrie de votacions a Instagram.
 
-## 🧁 Temàtica
+## 🧁 Com Participar
 
-Delícies festives, clàssics nadalencs i plats creatius de Nadal. Pensa en espècies càlides, ingredients de temporada, presentacions acollidores i sabors que celebren la temporada.
+Comparteix la teva millor recepta nadalenca entre el 24 i el 29 de desembre de 2025. Ja sigui un plat familiar tradicional o una creació festiva moderna, volem veure què esteu cuinant per a les festes!
 
-Mini aperitius, plats principals tradicionals i postres amb esperit nadalenc—tot hi té cabuda.
+## 🗳️ Votació
 
-## 📆 Data
-
-Dimecres: 25 de desembre de 2025
+La votació es durà a terme en diferents fases al nostre compte d'Instagram el 30 de desembre. Estigueu atents a les nostres històries i publicacions per donar suport a les vostres receptes preferides!
 
 ## 🏆 Premi
-- Un regal de Nadal d'edició limitada de Jorbites
-- Una medalla exclusiva nadalenca per al guanyador
 
-## 📌 Normes
-- ✅ La recepta ha d'estar en mode esborrany (icona del núvol a dalt a la dreta) abans que comenci l'esdeveniment
-- ✅ S'ha de publicar durant la finestra del concurs
-- ❌ Publicar abans o després restarà 2 punts
-- 👫 Es pot fer en equip? Sí, amb coautoria
-- 🎭 Bonus? Sí: Vestimenta nadalenca pot sumar +1 a +2 punts segons l'esforç
+El creador de la recepta guanyadora rebrà una insígnia exclusiva de Nadal 2025 al seu perfil de Jorbites. El guanyador serà anunciat en aquesta publicació de l'esdeveniment després de la votació de la comunitat.
 
-Porta a taula la teva creativitat més festiva. Bon cuinar i bones festes! 🎅🎁
+Molta sort a tots els participants i que guanyi la millor recepta! Bon cuinar i bones festes! 🎅🎁
