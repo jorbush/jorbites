@@ -21,7 +21,7 @@ export const formatText = (
                     href={match}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={linkClassName}
+                    className={`${linkClassName} inline-block max-w-full break-all`}
                 >
                     {match}
                 </a>
