@@ -45,6 +45,7 @@ vi.mock('react-i18next', async (importOriginal) => {
                 const translations: Record<string, string> = {
                     level: 'Lv.',
                     since: 'Since',
+                    link_copied: 'Link copied to clipboard',
                 };
                 return translations[key] || key;
             },
@@ -60,6 +61,8 @@ vi.mock('react-i18next', async (importOriginal) => {
 vi.mock('react-icons/fi', () => ({
     FiCalendar: () =>
         React.createElement('div', { 'data-testid': 'calendar-icon' }),
+    FiShare2: () =>
+        React.createElement('div', { 'data-testid': 'share-icon' }),
 }));
 
 // Mock date-fns
@@ -72,6 +75,13 @@ vi.mock('date-fns/locale', () => ({
     es: {},
     enUS: {},
     ca: {},
+}));
+
+// Mock react-hot-toast
+vi.mock('react-hot-toast', () => ({
+    toast: {
+        success: vi.fn(),
+    },
 }));
 
 describe('ProfileHeader', () => {
@@ -143,5 +153,36 @@ describe('ProfileHeader', () => {
         // Assert member since is not rendered when createdAt is empty
         expect(queryByText('Since 2023')).toBeNull();
         expect(queryByTestId('calendar-icon')).toBeNull();
+    });
+
+    it('renders share button', () => {
+        const router = { push: vi.fn() };
+        (useRouter as any).mockReturnValue(router);
+
+        const { getByTestId } = render(<ProfileHeader user={mockUser} />);
+
+        // Assert share button is rendered
+        expect(getByTestId('share-icon')).toBeDefined();
+    });
+
+    it('calls navigator.clipboard.writeText when share button is clicked and navigator.share is not available', async () => {
+        const router = { push: vi.fn() };
+        (useRouter as any).mockReturnValue(router);
+
+        // Mock clipboard API
+        const mockWriteText = vi.fn();
+        Object.assign(navigator, {
+            clipboard: {
+                writeText: mockWriteText,
+            },
+        });
+
+        const { getByLabelText } = render(<ProfileHeader user={mockUser} />);
+
+        // Click share button
+        fireEvent.click(getByLabelText('Share'));
+
+        // Assert clipboard was called
+        expect(mockWriteText).toHaveBeenCalled();
     });
 });

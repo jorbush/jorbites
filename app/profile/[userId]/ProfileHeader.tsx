@@ -12,7 +12,8 @@ import getUserDisplayName from '@/app/utils/responsive';
 import VerificationBadge from '@/app/components/VerificationBadge';
 import ScrollableContainer from '@/app/components/utils/ScrollableContainer';
 import { formatDateLanguage } from '@/app/utils/date-utils';
-import { FiCalendar } from 'react-icons/fi';
+import { FiCalendar, FiShare2 } from 'react-icons/fi';
+import { toast } from 'react-hot-toast';
 
 interface ProfileHeaderProps {
     user?: SafeUser | null;
@@ -36,40 +37,74 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
         return formatDateLanguage(new Date(createdAt), 'yyyy');
     };
 
+    const copyToClipboard = () => {
+        const currentURL = window.location.href;
+        navigator.clipboard.writeText(currentURL);
+        toast.success(t('link_copied'));
+    };
+
+    const share = () => {
+        if (navigator.share) {
+            navigator
+                .share({
+                    title: document.title,
+                    url: window.location.href,
+                })
+                .then(() => {
+                    console.log('Successfully shared');
+                })
+                .catch((error) => {
+                    console.error('Error sharing:', error);
+                });
+        } else {
+            copyToClipboard();
+        }
+    };
+
     return (
         <Container>
-            <div className="col-span-2 flex flex-row items-center gap-4 p-2 text-xl font-semibold dark:text-neutral-100">
-                <Avatar
-                    src={user?.image}
-                    size={100}
-                    onClick={() => router.push('/profile/' + user?.id)}
-                />
-                <div className="flex flex-col gap-2 text-2xl md:text-3xl">
-                    <div className="flex flex-row gap-2">
-                        <div
-                            className="cursor-pointer"
-                            onClick={() => router.push('/profile/' + user?.id)}
-                        >
-                            {getUserDisplayName(
-                                user,
-                                isMdOrSmaller,
-                                isSmOrSmaller
+            <div className="col-span-2 flex flex-row items-center justify-between gap-4 p-2 text-xl font-semibold dark:text-neutral-100">
+                <div className="flex flex-row items-center gap-4">
+                    <Avatar
+                        src={user?.image}
+                        size={100}
+                        onClick={() => router.push('/profile/' + user?.id)}
+                    />
+                    <div className="flex flex-col gap-2 text-2xl md:text-3xl">
+                        <div className="flex flex-row gap-2">
+                            <div
+                                className="cursor-pointer"
+                                onClick={() => router.push('/profile/' + user?.id)}
+                            >
+                                {getUserDisplayName(
+                                    user,
+                                    isMdOrSmaller,
+                                    isSmOrSmaller
+                                )}
+                            </div>
+                            {user?.verified && (
+                                <VerificationBadge className="mt-1 ml-1" />
                             )}
                         </div>
-                        {user?.verified && (
-                            <VerificationBadge className="mt-1 ml-1" />
+                        <div className="text-lg text-gray-400 md:text-xl">{`${t('level')} ${user?.level}`}</div>
+                        {user?.createdAt && (
+                            <div className="flex items-center gap-1 text-xs text-gray-500">
+                                <FiCalendar className="h-3 w-3" />
+                                <span>
+                                    {t('since')}{' '}
+                                    {formatMemberSince(user.createdAt)}
+                                </span>
+                            </div>
                         )}
                     </div>
-                    <div className="text-lg text-gray-400 md:text-xl">{`${t('level')} ${user?.level}`}</div>
-                    {user?.createdAt && (
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
-                            <FiCalendar className="h-3 w-3" />
-                            <span>
-                                {t('since')} {formatMemberSince(user.createdAt)}
-                            </span>
-                        </div>
-                    )}
                 </div>
+                <button
+                    className="flex cursor-pointer items-center space-x-2 text-gray-600 focus:outline-hidden dark:text-neutral-100"
+                    onClick={share}
+                    aria-label="Share"
+                >
+                    <FiShare2 className="text-xl" />
+                </button>
             </div>
             <hr className="mt-2" />
             {user?.badges &&
