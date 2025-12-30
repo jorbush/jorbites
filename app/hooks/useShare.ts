@@ -9,30 +9,33 @@ interface UseShareOptions {
 const useShare = () => {
     const { t } = useTranslation();
 
-    const copyToClipboard = (url?: string) => {
+    const copyToClipboard = async (url?: string) => {
         const urlToCopy = url || window.location.href;
-        navigator.clipboard.writeText(urlToCopy);
-        toast.success(t('link_copied'));
+        try {
+            await navigator.clipboard.writeText(urlToCopy);
+            toast.success(t('link_copied'));
+        } catch (error) {
+            console.error('Failed to copy to clipboard:', error);
+            toast.error(t('copy_failed') || 'Failed to copy link');
+        }
     };
 
-    const share = (options?: UseShareOptions) => {
+    const share = async (options?: UseShareOptions) => {
         const shareTitle = options?.title || document.title;
         const shareUrl = options?.url || window.location.href;
 
         if (navigator.share) {
-            navigator
-                .share({
+            try {
+                await navigator.share({
                     title: shareTitle,
                     url: shareUrl,
-                })
-                .then(() => {
-                    console.log('Successfully shared');
-                })
-                .catch((error) => {
-                    console.error('Error sharing:', error);
                 });
+                console.log('Successfully shared');
+            } catch (error) {
+                console.error('Error sharing:', error);
+            }
         } else {
-            copyToClipboard(shareUrl);
+            await copyToClipboard(shareUrl);
         }
     };
 
