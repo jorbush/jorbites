@@ -79,7 +79,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                 </div>
                 <button
                     className="flex cursor-pointer items-center space-x-2 text-gray-600 focus:outline-hidden dark:text-neutral-100"
-                    onClick={share}
+                    onClick={() => share()}
                     aria-label="Share"
                 >
                     <FiShare2 className="text-xl" />

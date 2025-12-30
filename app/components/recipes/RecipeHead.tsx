@@ -85,7 +85,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 />
                 <button
                     className="ml-4 flex translate-y-3 cursor-pointer items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
-                    onClick={share}
+                    onClick={() => share()}
                     aria-label="Share"
                 >
                     <FiShare2 className="text-xl" />
