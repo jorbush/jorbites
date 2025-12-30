@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import BlogsClient from './blogs-client';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
@@ -26,12 +25,10 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
     const page = parseInt(resolvedParams.page || '1');
 
     return (
-        <ClientOnly>
-            <BlogsClient
-                currentUser={currentUser}
-                initialPage={page}
-            />
-        </ClientOnly>
+        <BlogsClient
+            currentUser={currentUser}
+            initialPage={page}
+        />
     );
 };
 

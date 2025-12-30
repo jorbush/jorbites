@@ -1,5 +1,4 @@
 import EmptyState from '@/app/components/utils/EmptyState';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import ProfileClient from '@/app/profile/[userId]/ProfileClient';
 import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
@@ -8,10 +7,6 @@ import getUserById from '@/app/actions/getUserById';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
 import UserStats from '@/app/components/stats/UserStats';
 import RecipeContributionGraph from '@/app/components/stats/RecipeContributionGraph';
-import RecipeContributionGraphSkeleton from '@/app/components/stats/RecipeContributionGraphSkeleton';
-import ProfileHeaderSkeleton from '@/app/components/profile/ProfileHeaderSkeleton';
-import UserStatsSkeleton from '@/app/components/stats/UserStatsSkeleton';
-import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
 import { Metadata } from 'next';
 import { OrderByType } from '@/app/utils/filter';
 
@@ -93,50 +88,38 @@ const ProfilePage = async (props: {
 
     if (!user && recipesResponse.recipes.length === 0) {
         return (
-            <ClientOnly>
-                <EmptyState
-                    title="No recipes found"
-                    subtitle="Looks like this user has not created recipes."
-                />
-            </ClientOnly>
+            <EmptyState
+                title="No recipes found"
+                subtitle="Looks like this user has not created recipes."
+            />
         );
     }
 
     return (
         <>
-            <ClientOnly fallback={<ProfileHeaderSkeleton />}>
-                <ProfileHeader user={user} />
-            </ClientOnly>
+            <ProfileHeader user={user} />
 
-            <ClientOnly fallback={<UserStatsSkeleton />}>
-                <UserStats user={user} />
-            </ClientOnly>
+            <UserStats user={user} />
 
             {graphRecipes.length > 0 && (
-                <ClientOnly fallback={<RecipeContributionGraphSkeleton />}>
-                    <RecipeContributionGraph recipes={graphRecipes} />
-                </ClientOnly>
+                <RecipeContributionGraph recipes={graphRecipes} />
             )}
 
             {recipesResponse.recipes.length > 0 && (
-                <ClientOnly fallback={<ProfileClientSkeleton />}>
-                    <ProfileClient
-                        recipes={recipesResponse.recipes}
-                        currentUser={currentUser}
-                        totalPages={recipesResponse.totalPages}
-                        currentPage={recipesResponse.currentPage}
-                        searchParams={searchParams}
-                    />
-                </ClientOnly>
+                <ProfileClient
+                    recipes={recipesResponse.recipes}
+                    currentUser={currentUser}
+                    totalPages={recipesResponse.totalPages}
+                    currentPage={recipesResponse.currentPage}
+                    searchParams={searchParams}
+                />
             )}
 
             {recipesResponse.recipes.length === 0 && (
-                <ClientOnly>
-                    <EmptyState
-                        title="No recipes found"
-                        subtitle="Looks like this user has not created recipes."
-                    />
-                </ClientOnly>
+                <EmptyState
+                    title="No recipes found"
+                    subtitle="Looks like this user has not created recipes."
+                />
             )}
         </>
     );

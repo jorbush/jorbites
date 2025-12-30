@@ -1,5 +1,4 @@
 import EmptyState from '@/app/components/utils/EmptyState';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import { isMobile } from '@/app/utils/deviceDetector';
 import { headers } from 'next/headers';
 import {
@@ -38,35 +37,31 @@ const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
         );
 
         return (
-            <ClientOnly>
-                <EmptyState
-                    title={
-                        hasFilters
-                            ? 'No matching favorites found'
-                            : 'No favorites found'
-                    }
-                    subtitle={
-                        hasFilters
-                            ? 'Try changing or removing some of your filters.'
-                            : 'Looks like you have no favorite recipes.'
-                    }
-                    showReset={hasFilters}
-                    height="h-auto"
-                />
-            </ClientOnly>
+            <EmptyState
+                title={
+                    hasFilters
+                        ? 'No matching favorites found'
+                        : 'No favorites found'
+                }
+                subtitle={
+                    hasFilters
+                        ? 'Try changing or removing some of your filters.'
+                        : 'Looks like you have no favorite recipes.'
+                }
+                showReset={hasFilters}
+                height="h-auto"
+            />
         );
     }
 
     return (
-        <ClientOnly>
-            <FavoritesClient
-                recipes={favoriteRecipesResponse.recipes}
-                currentUser={currentUser}
-                totalPages={favoriteRecipesResponse.totalPages}
-                currentPage={favoriteRecipesResponse.currentPage}
-                searchParams={resolvedParams}
-            />
-        </ClientOnly>
+        <FavoritesClient
+            recipes={favoriteRecipesResponse.recipes}
+            currentUser={currentUser}
+            totalPages={favoriteRecipesResponse.totalPages}
+            currentPage={favoriteRecipesResponse.currentPage}
+            searchParams={resolvedParams}
+        />
     );
 };
 

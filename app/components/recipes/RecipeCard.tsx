@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { memo, useMemo } from 'react';
 import Avatar from '@/app/components/utils/Avatar';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 
 interface RecipeCardProps {
     data: SafeRecipe;
@@ -59,17 +58,15 @@ const RecipeCard = memo(function RecipeCard({
                             currentUser={currentUser}
                         />
                     </div>
-                    <ClientOnly>
-                        {isAwardWinning && (
-                            <div className="absolute bottom-0 flex w-full items-center justify-center bg-gray-900/50 p-2 text-white">
-                                <GiTrophyCup
-                                    className="mr-1 inline-block"
-                                    size={20}
-                                />
-                                {t('award-winning')}
-                            </div>
-                        )}
-                    </ClientOnly>
+                    {isAwardWinning && (
+                        <div className="absolute bottom-0 flex w-full items-center justify-center bg-gray-900/50 p-2 text-white">
+                            <GiTrophyCup
+                                className="mr-1 inline-block"
+                                size={20}
+                            />
+                            {t('award-winning')}
+                        </div>
+                    )}
                 </div>
                 <div
                     className="text-lg font-semibold dark:text-neutral-100"
