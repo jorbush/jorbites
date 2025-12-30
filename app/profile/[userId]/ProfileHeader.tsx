@@ -74,7 +74,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                         <div className="flex flex-row gap-2">
                             <div
                                 className="cursor-pointer"
-                                onClick={() => router.push('/profile/' + user?.id)}
+                                onClick={() =>
+                                    router.push('/profile/' + user?.id)
+                                }
                             >
                                 {getUserDisplayName(
                                     user,

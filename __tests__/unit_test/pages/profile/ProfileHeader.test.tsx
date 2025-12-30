@@ -61,8 +61,7 @@ vi.mock('react-i18next', async (importOriginal) => {
 vi.mock('react-icons/fi', () => ({
     FiCalendar: () =>
         React.createElement('div', { 'data-testid': 'calendar-icon' }),
-    FiShare2: () =>
-        React.createElement('div', { 'data-testid': 'share-icon' }),
+    FiShare2: () => React.createElement('div', { 'data-testid': 'share-icon' }),
 }));
 
 // Mock date-fns
