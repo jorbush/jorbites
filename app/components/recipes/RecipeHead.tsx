@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { FiChevronLeft, FiChevronRight, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/navigation/Heading';
 import { toast } from 'react-hot-toast';
@@ -23,7 +23,6 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [touchStart, setTouchStart] = useState(0);
     const [touchEnd, setTouchEnd] = useState(0);
-    const containerRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const { t } = useTranslation();
 
@@ -139,7 +138,6 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
             </div>
             <div 
                 className="relative h-[60vh] w-full overflow-hidden rounded-xl"
-                ref={containerRef}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -150,16 +148,13 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                     return (
                         <div
                             key={index}
-                            className={`absolute h-full w-full transition-all duration-300 ease-out ${
+                            className={`absolute h-full w-full transition-transform transition-opacity duration-300 ease-out ${
                                 isActive
                                     ? 'translate-x-0 opacity-100 z-10'
                                     : index < currentImageIndex
                                     ? '-translate-x-full opacity-0 z-0'
                                     : 'translate-x-full opacity-0 z-0'
                             }`}
-                            style={{
-                                transitionProperty: 'transform, opacity',
-                            }}
                             aria-hidden={!isActive}
                         >
                             {isActive && (
