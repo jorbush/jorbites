@@ -4,6 +4,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
 import { SafeUser } from '@/app/types';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 // Mock data
 vi.mock('@/app/hooks/useMediaQuery', () => ({
@@ -45,7 +46,6 @@ vi.mock('react-i18next', async (importOriginal) => {
                 const translations: Record<string, string> = {
                     level: 'Lv.',
                     since: 'Since',
-                    link_copied: 'Link copied to clipboard',
                 };
                 return translations[key] || key;
             },
@@ -169,12 +169,13 @@ describe('ProfileHeader', () => {
         const router = { push: vi.fn() };
         (useRouter as any).mockReturnValue(router);
 
-        // Mock clipboard API
+        // Mock clipboard API and ensure share is not available
         const mockWriteText = vi.fn();
         Object.assign(navigator, {
             clipboard: {
                 writeText: mockWriteText,
             },
+            share: undefined,
         });
 
         const { getByLabelText } = render(<ProfileHeader user={mockUser} />);
@@ -184,5 +185,80 @@ describe('ProfileHeader', () => {
 
         // Assert clipboard was called
         expect(mockWriteText).toHaveBeenCalled();
+    });
+
+    it('verifies toast.success is called with link_copied', () => {
+        const router = { push: vi.fn() };
+        (useRouter as any).mockReturnValue(router);
+
+        // Mock clipboard API
+        const mockWriteText = vi.fn();
+        Object.assign(navigator, {
+            clipboard: {
+                writeText: mockWriteText,
+            },
+            share: undefined, // Ensure navigator.share is not available
+        });
+
+        const { getByLabelText } = render(<ProfileHeader user={mockUser} />);
+
+        // Click share button
+        fireEvent.click(getByLabelText('Share'));
+
+        // Assert toast.success was called with correct message
+        expect(toast.success).toHaveBeenCalledWith('link_copied');
+    });
+
+    it('verifies the correct URL is passed to clipboard.writeText', () => {
+        const router = { push: vi.fn() };
+        (useRouter as any).mockReturnValue(router);
+
+        // Mock clipboard API and ensure share is not available
+        const mockWriteText = vi.fn();
+        Object.assign(navigator, {
+            clipboard: {
+                writeText: mockWriteText,
+            },
+            share: undefined,
+        });
+
+        const { getByLabelText } = render(<ProfileHeader user={mockUser} />);
+
+        // Click share button
+        fireEvent.click(getByLabelText('Share'));
+
+        // Assert clipboard.writeText was called with current URL
+        expect(mockWriteText).toHaveBeenCalledWith(window.location.href);
+    });
+
+    it('uses native share API when available', () => {
+        const router = { push: vi.fn() };
+        (useRouter as any).mockReturnValue(router);
+
+        const mockShare = vi.fn().mockResolvedValue(undefined);
+        Object.assign(navigator, {
+            share: mockShare,
+        });
+
+        const { getByLabelText } = render(<ProfileHeader user={mockUser} />);
+
+        // Click share button
+        fireEvent.click(getByLabelText('Share'));
+
+        // Assert native share was called
+        expect(mockShare).toHaveBeenCalled();
+    });
+
+    it('verifies cursor-pointer class is present on share button', () => {
+        const router = { push: vi.fn() };
+        (useRouter as any).mockReturnValue(router);
+
+        const { getByLabelText } = render(<ProfileHeader user={mockUser} />);
+
+        const shareButton = getByLabelText('Share');
+        expect(shareButton).toHaveProperty(
+            'className',
+            expect.stringContaining('cursor-pointer')
+        );
     });
 });
