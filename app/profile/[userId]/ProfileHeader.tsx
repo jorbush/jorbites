@@ -13,7 +13,7 @@ import VerificationBadge from '@/app/components/VerificationBadge';
 import ScrollableContainer from '@/app/components/utils/ScrollableContainer';
 import { formatDateLanguage } from '@/app/utils/date-utils';
 import { FiCalendar, FiShare2 } from 'react-icons/fi';
-import { toast } from 'react-hot-toast';
+import useShare from '@/app/hooks/useShare';
 
 interface ProfileHeaderProps {
     user?: SafeUser | null;
@@ -24,6 +24,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
     const { t } = useTranslation();
     const isMdOrSmaller = useMediaQuery('(max-width: 415px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
+    const { share } = useShare();
 
     const handleBadgeClick = () => {
         confetti({
@@ -35,30 +36,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
 
     const formatMemberSince = (createdAt: string) => {
         return formatDateLanguage(new Date(createdAt), 'yyyy');
-    };
-
-    const copyToClipboard = () => {
-        const currentURL = window.location.href;
-        navigator.clipboard.writeText(currentURL);
-        toast.success(t('link_copied'));
-    };
-
-    const share = () => {
-        if (navigator.share) {
-            navigator
-                .share({
-                    title: document.title,
-                    url: window.location.href,
-                })
-                .then(() => {
-                    console.log('Successfully shared');
-                })
-                .catch((error) => {
-                    console.error('Error sharing:', error);
-                });
-        } else {
-            copyToClipboard();
-        }
     };
 
     return (

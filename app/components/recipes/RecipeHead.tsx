@@ -3,11 +3,10 @@
 import { useState } from 'react';
 import { FiChevronLeft, FiChevronRight, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/navigation/Heading';
-import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { motion, AnimatePresence } from 'framer-motion';
+import useShare from '@/app/hooks/useShare';
 
 interface RecipeHeadProps {
     title: string;
@@ -23,31 +22,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [[_page, direction], setPage] = useState([0, 0]);
     const router = useRouter();
-    const { t } = useTranslation();
-
-    const copyToClipboard = () => {
-        const currentURL = window.location.href;
-        navigator.clipboard.writeText(currentURL);
-        toast.success(t('link_copied'));
-    };
-
-    const share = () => {
-        if (navigator.share) {
-            navigator
-                .share({
-                    title: document.title,
-                    url: window.location.href,
-                })
-                .then(() => {
-                    console.log('Successfully shared');
-                })
-                .catch((error) => {
-                    console.error('Error sharing:', error);
-                });
-        } else {
-            copyToClipboard();
-        }
-    };
+    const { share } = useShare();
 
     const goToPreviousImage = () => {
         const newIndex =

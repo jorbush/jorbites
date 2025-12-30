@@ -22,6 +22,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useState } from 'react';
 import Button from '@/app/components/buttons/Button';
+import useShare from '@/app/hooks/useShare';
 
 interface Quest {
     id: string;
@@ -78,6 +79,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
     const recipeModal = useRecipeModal();
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const { share } = useShare();
 
     const isOwner = currentUser?.id === quest.user.id;
 
@@ -140,30 +142,6 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
         }
     };
 
-    const copyToClipboard = () => {
-        const currentURL = window.location.href;
-        navigator.clipboard.writeText(currentURL);
-        toast.success(t('link_copied') || 'Link copied to clipboard');
-    };
-
-    const handleShare = () => {
-        if (navigator.share) {
-            navigator
-                .share({
-                    title: quest.title,
-                    url: window.location.href,
-                })
-                .then(() => {
-                    console.log('Successfully shared');
-                })
-                .catch((error) => {
-                    console.error('Error sharing:', error);
-                });
-        } else {
-            copyToClipboard();
-        }
-    };
-
     return (
         <>
             <ConfirmModal
@@ -201,7 +179,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                         </div>
                         <div className="flex gap-2">
                             <button
-                                onClick={handleShare}
+                                onClick={() => share({ title: quest.title })}
                                 aria-label={t('share_quest') || 'Share Quest'}
                                 className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                                 data-cy="share-quest"

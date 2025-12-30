@@ -2,10 +2,9 @@
 
 import { FiChevronLeft, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/navigation/Heading';
-import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
+import useShare from '@/app/hooks/useShare';
 
 interface WorkshopHeadProps {
     title: string;
@@ -19,7 +18,7 @@ const WorkshopHead: React.FC<WorkshopHeadProps> = ({
     imageSrc,
 }) => {
     const router = useRouter();
-    const { t } = useTranslation();
+    const { share } = useShare();
 
     const workshopDate = new Date(date);
     const formattedDate = new Intl.DateTimeFormat('default', {
@@ -27,30 +26,6 @@ const WorkshopHead: React.FC<WorkshopHeadProps> = ({
         day: 'numeric',
         year: 'numeric',
     }).format(workshopDate);
-
-    const copyToClipboard = () => {
-        const currentURL = window.location.href;
-        navigator.clipboard.writeText(currentURL);
-        toast.success(t('link_copied'));
-    };
-
-    const share = () => {
-        if (navigator.share) {
-            navigator
-                .share({
-                    title: document.title,
-                    url: window.location.href,
-                })
-                .then(() => {
-                    console.log('Successfully shared');
-                })
-                .catch((error) => {
-                    console.error('Error sharing:', error);
-                });
-        } else {
-            copyToClipboard();
-        }
-    };
 
     return (
         <>
