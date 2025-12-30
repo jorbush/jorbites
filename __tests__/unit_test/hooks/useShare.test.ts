@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 vi.mock('react-hot-toast', () => ({
     toast: {
         success: vi.fn(),
+        error: vi.fn(),
     },
 }));
 
@@ -63,6 +64,24 @@ describe('useShare', () => {
 
             expect(mockWriteText).toHaveBeenCalledWith(customUrl);
             expect(toast.success).toHaveBeenCalledWith('link_copied');
+        });
+
+        it('should handle clipboard errors gracefully', async () => {
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            const clipboardError = new Error('Clipboard failed');
+            mockWriteText.mockRejectedValue(clipboardError);
+
+            const { result } = renderHook(() => useShare());
+
+            await act(async () => {
+                result.current.copyToClipboard();
+            });
+
+            expect(mockWriteText).toHaveBeenCalled();
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to copy to clipboard:', clipboardError);
+            expect(toast.error).toHaveBeenCalledWith('copy_failed');
+
+            consoleErrorSpy.mockRestore();
         });
     });
 
@@ -163,6 +182,29 @@ describe('useShare', () => {
 
             expect(mockShare).toHaveBeenCalled();
             expect(consoleErrorSpy).toHaveBeenCalledWith('Error sharing:', shareError);
+
+            consoleErrorSpy.mockRestore();
+        });
+
+        it('should silently ignore AbortError when user cancels share dialog', async () => {
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            const abortError = new DOMException('User canceled', 'AbortError');
+            mockShare.mockRejectedValue(abortError);
+
+            Object.defineProperty(global.navigator, 'share', {
+                value: mockShare,
+                writable: true,
+                configurable: true,
+            });
+
+            const { result } = renderHook(() => useShare());
+
+            await act(async () => {
+                result.current.share();
+            });
+
+            expect(mockShare).toHaveBeenCalled();
+            expect(consoleErrorSpy).not.toHaveBeenCalled();
 
             consoleErrorSpy.mockRestore();
         });

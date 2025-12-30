@@ -32,6 +32,10 @@ const useShare = () => {
                 });
                 console.log('Successfully shared');
             } catch (error) {
+                // User canceled the share dialog; ignore silently
+                if ((error as DOMException)?.name === 'AbortError') {
+                    return;
+                }
                 console.error('Error sharing:', error);
             }
         } else {
