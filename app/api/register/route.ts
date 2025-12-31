@@ -44,6 +44,9 @@ export async function POST(request: Request) {
 
         logger.info('POST /api/register - start', { email });
 
+        // Normalize email to lowercase for consistency
+        const normalizedEmail = email?.toLowerCase();
+
         if (!email || !name || !password) {
             return badRequest('Email, name, and password are required');
         }
@@ -52,9 +55,12 @@ export async function POST(request: Request) {
             return badRequest('Password must be at least 6 characters long');
         }
 
-        const existingUser = await prisma.user.findUnique({
+        const existingUser = await prisma.user.findFirst({
             where: {
-                email,
+                email: {
+                    equals: normalizedEmail,
+                    mode: 'insensitive',
+                },
             },
         });
 
@@ -66,13 +72,16 @@ export async function POST(request: Request) {
 
         const user = await prisma.user.create({
             data: {
-                email,
+                email: normalizedEmail,
                 name,
                 hashedPassword,
             },
         });
 
-        logger.info('POST /api/register - success', { userId: user.id, email });
+        logger.info('POST /api/register - success', {
+            userId: user.id,
+            email: normalizedEmail,
+        });
         return NextResponse.json(user);
     } catch (error: any) {
         logger.error('POST /api/register - error', { error: error.message });
