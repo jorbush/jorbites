@@ -88,8 +88,26 @@ describe('BlogCard', () => {
         // Check if description is displayed
         expect(screen.getByText('This is a test blog post')).toBeDefined();
 
-        // Check if image is rendered
+        // Check if image is rendered when image is provided
         expect(screen.getByTestId('blog-image')).toBeDefined();
+    });
+
+    it('does not render image when image is not provided', () => {
+        const blogWithoutImage = {
+            ...mockBlog,
+            frontmatter: {
+                ...mockBlog.frontmatter,
+                image: undefined,
+            },
+        };
+
+        render(<BlogCard blog={blogWithoutImage} />);
+
+        // Check if the title is still displayed
+        expect(screen.getByText('Test Blog Post')).toBeDefined();
+
+        // Check if image is not rendered
+        expect(screen.queryByTestId('blog-image')).toBeNull();
     });
 
     it('displays the date correctly', () => {

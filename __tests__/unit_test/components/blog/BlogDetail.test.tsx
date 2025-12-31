@@ -140,7 +140,7 @@ describe('BlogDetail', () => {
         // Check if the title is displayed
         expect(screen.getByText('Test Blog Post')).toBeDefined();
 
-        // Check if image is rendered
+        // Check if image is rendered when image is provided
         expect(screen.getByTestId('blog-image')).toBeDefined();
 
         // Check if date is displayed
@@ -148,6 +148,29 @@ describe('BlogDetail', () => {
 
         // Check if author is displayed
         expect(screen.getByText('Test Author')).toBeDefined();
+    });
+
+    it('does not render image when image is not provided', () => {
+        const blogWithoutImage = {
+            ...mockBlog,
+            frontmatter: {
+                ...mockBlog.frontmatter,
+                image: undefined,
+            },
+        };
+
+        render(
+            <BlogDetail
+                blog={blogWithoutImage}
+                author={mockAuthor}
+            />
+        );
+
+        // Check if the title is still displayed
+        expect(screen.getByText('Test Blog Post')).toBeDefined();
+
+        // Check if image is not rendered when image is not provided
+        expect(screen.queryByTestId('blog-image')).toBeNull();
     });
 
     it('displays author information when provided', () => {

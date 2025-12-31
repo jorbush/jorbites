@@ -31,15 +31,17 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
             tabIndex={0}
             onKeyDown={handleKeyDown}
         >
-            <div className="relative aspect-[16/9] w-full overflow-hidden">
-                <Image
-                    src={blog.frontmatter.image || '/avocado.webp'}
-                    alt={blog.frontmatter.title}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-            </div>
+            {blog.frontmatter.image && (
+                <div className="relative aspect-[16/9] w-full overflow-hidden">
+                    <Image
+                        src={blog.frontmatter.image}
+                        alt={blog.frontmatter.title}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                </div>
+            )}
             <div className="p-4">
                 <h3 className="mb-2 line-clamp-2 text-xl font-bold text-neutral-800 dark:text-neutral-100">
                     {blog.frontmatter.title}

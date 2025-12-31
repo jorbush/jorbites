@@ -114,17 +114,19 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ blog, author }) => {
                 </button>
             </div>
 
-            <div className="mb-6 w-full overflow-hidden rounded-xl">
-                <Image
-                    src={blog.frontmatter.image || '/avocado.webp'}
-                    alt={blog.frontmatter.title}
-                    width={800}
-                    height={600}
-                    className="w-full object-contain"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
-                    priority
-                />
-            </div>
+            {blog.frontmatter.image && (
+                <div className="mb-6 w-full overflow-hidden rounded-xl">
+                    <Image
+                        src={blog.frontmatter.image}
+                        alt={blog.frontmatter.title}
+                        width={800}
+                        height={600}
+                        className="w-full object-contain"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
+                        priority
+                    />
+                </div>
+            )}
 
             {/* Author Section - matching RecipeInfo styling */}
             {author && (
