@@ -10,7 +10,7 @@ jest.mock('bcrypt', () => ({
 // Mock prisma
 jest.mock('@/app/lib/prismadb', () => ({
     user: {
-        findUnique: jest.fn(),
+        findFirst: jest.fn(),
         create: jest.fn(),
     },
 }));
@@ -95,7 +95,7 @@ describe('Register API Error Handling', () => {
         });
 
         it('should return 409 when email already exists', async () => {
-            (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce({
+            (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce({
                 id: '1',
                 email: 'test@example.com',
             });
@@ -117,8 +117,39 @@ describe('Register API Error Handling', () => {
             expect(data.timestamp).toBeDefined();
         });
 
+        it('should return 409 when email already exists with different case', async () => {
+            (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce({
+                id: '1',
+                email: 'test@example.com',
+            });
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    email: 'TEST@EXAMPLE.COM',
+                    name: 'Test User',
+                    password: 'password123',
+                }),
+            } as unknown as Request;
+
+            const response = await RegisterPOST(mockRequest);
+            const data = await response.json();
+
+            expect(response.status).toBe(409);
+            expect(data.error).toBe('Email already exists');
+            expect(data.code).toBe('CONFLICT');
+            expect(data.timestamp).toBeDefined();
+            expect(prisma.user.findFirst).toHaveBeenCalledWith({
+                where: {
+                    email: {
+                        equals: 'TEST@EXAMPLE.COM',
+                        mode: 'insensitive',
+                    },
+                },
+            });
+        });
+
         it('should create user successfully when all data is valid', async () => {
-            (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce(null);
+            (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce(null);
             (bcrypt.hash as jest.Mock).mockResolvedValueOnce('hashedPassword');
 
             const mockUser = {
@@ -153,7 +184,7 @@ describe('Register API Error Handling', () => {
         });
 
         it('should return 500 when database operation fails', async () => {
-            (prisma.user.findUnique as jest.Mock).mockRejectedValueOnce(
+            (prisma.user.findFirst as jest.Mock).mockRejectedValueOnce(
                 new Error('Database error')
             );
 

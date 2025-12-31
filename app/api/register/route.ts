@@ -52,9 +52,12 @@ export async function POST(request: Request) {
             return badRequest('Password must be at least 6 characters long');
         }
 
-        const existingUser = await prisma.user.findUnique({
+        const existingUser = await prisma.user.findFirst({
             where: {
-                email,
+                email: {
+                    equals: email,
+                    mode: 'insensitive',
+                },
             },
         });
 
