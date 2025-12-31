@@ -10,6 +10,7 @@ import BlogCard, { BlogCardSkeleton } from '@/app/components/blog/BlogCard';
 import ActionCard from '@/app/components/shared/ActionCard';
 import Pagination from '@/app/components/navigation/Pagination';
 import { SafeUser } from '@/app/types';
+import { JORBITES_EMAIL } from '@/app/constants';
 
 interface BlogsClientProps {
     currentUser?: SafeUser | null;
@@ -75,7 +76,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
     }, [i18n.language, currentPage, currentCategory]);
 
     const handleContactEmail = () => {
-        window.location.href = 'mailto:jbonetv5@gmail.com';
+        window.location.href = `mailto:${JORBITES_EMAIL}`;
     };
 
     const handleViewAllReleases = () => {

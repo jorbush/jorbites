@@ -8,6 +8,7 @@ import packageJson from '@/package.json';
 import { FaGithub, FaTwitter, FaInstagram, FaEnvelope } from 'react-icons/fa';
 import { RiGitRepositoryLine } from 'react-icons/ri';
 import FooterMenu from './FooterMenu';
+import { JORBITES_EMAIL } from '@/app/constants';
 
 const Footer = () => {
     useTheme();
@@ -17,7 +18,7 @@ const Footer = () => {
     const socialLinks = [
         {
             icon: FaEnvelope,
-            href: 'mailto:jbonetv5@gmail.com',
+            href: `mailto:${JORBITES_EMAIL}`,
             label: 'Email',
         },
         {
