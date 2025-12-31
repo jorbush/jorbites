@@ -141,9 +141,42 @@ describe('Register API Error Handling', () => {
             expect(prisma.user.findFirst).toHaveBeenCalledWith({
                 where: {
                     email: {
-                        equals: 'TEST@EXAMPLE.COM',
+                        equals: 'test@example.com',
                         mode: 'insensitive',
                     },
+                },
+            });
+        });
+
+        it('should normalize email to lowercase when creating user', async () => {
+            (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce(null);
+            (bcrypt.hash as jest.Mock).mockResolvedValueOnce('hashedPassword');
+
+            const mockUser = {
+                id: '1',
+                email: 'test@example.com',
+                name: 'Test User',
+                hashedPassword: 'hashedPassword',
+            };
+            (prisma.user.create as jest.Mock).mockResolvedValueOnce(mockUser);
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    email: 'Test@Example.COM',
+                    name: 'Test User',
+                    password: 'password123',
+                }),
+            } as unknown as Request;
+
+            const response = await RegisterPOST(mockRequest);
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(prisma.user.create).toHaveBeenCalledWith({
+                data: {
+                    email: 'test@example.com',
+                    name: 'Test User',
+                    hashedPassword: 'hashedPassword',
                 },
             });
         });
