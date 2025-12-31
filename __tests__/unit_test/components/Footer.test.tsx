@@ -3,6 +3,7 @@ import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Footer from '@/app/components/footer/Footer';
 import { version } from '@/package.json';
+import { CONTACT_EMAIL } from '@/app/utils/constants';
 
 // Mock the react-i18next module
 vi.mock('react-i18next', () => ({
@@ -64,7 +65,7 @@ describe('<Footer />', () => {
     it('renders all social media links', () => {
         render(<Footer />);
         const socialLinks = [
-            { label: 'Email', href: 'mailto:jbonetv5@gmail.com' },
+            { label: 'Email', href: `mailto:${CONTACT_EMAIL}` },
             {
                 label: 'Repository',
                 href: 'https://github.com/jorbush/jorbites',

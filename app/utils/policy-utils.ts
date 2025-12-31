@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { CONTACT_EMAIL } from './constants';
 
 export interface PolicyFrontmatter {
     title: string;
@@ -25,9 +26,15 @@ export function readPolicyFile(filePath: string): {
         const fileContents = fs.readFileSync(filePath, 'utf8');
         const { data, content } = matter(fileContents);
 
+        // Replace email placeholders with the actual contact email
+        const processedContent = content.replace(
+            /jbonetv5@gmail\.com/g,
+            CONTACT_EMAIL
+        );
+
         return {
             frontmatter: data as PolicyFrontmatter,
-            content,
+            content: processedContent,
         };
     } catch (error) {
         console.error(`Error reading markdown file: ${filePath}`, error);
