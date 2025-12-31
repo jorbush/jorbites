@@ -109,7 +109,6 @@ describe('BlogDetail', () => {
             title: 'Test Blog Post',
             description: 'This is a test blog post',
             date: '2025-08-29',
-            image: '/avocado.webp',
             user_id: '123456',
         },
         content: 'This is the blog content',
@@ -130,9 +129,17 @@ describe('BlogDetail', () => {
     });
 
     it('renders the blog detail correctly', () => {
+        const blogWithImage = {
+            ...mockBlog,
+            frontmatter: {
+                ...mockBlog.frontmatter,
+                image: '/test-image.webp',
+            },
+        };
+
         render(
             <BlogDetail
-                blog={mockBlog}
+                blog={blogWithImage}
                 author={mockAuthor}
             />
         );

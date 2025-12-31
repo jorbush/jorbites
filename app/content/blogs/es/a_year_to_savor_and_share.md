@@ -2,7 +2,6 @@
 title: Un año para saborear y compartir
 user_id: 648c977267cc922db130b920
 date: 2025-12-31
-image: /images/blogs/a_year_to_savor_and_share.webp
 description: Un repaso por un año lleno de sabores, retos y momentos compartidos en la cocina de Jorbites, celebrando la conexión a través de la gastronomía.
 ---
 

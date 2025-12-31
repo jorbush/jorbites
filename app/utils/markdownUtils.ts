@@ -22,7 +22,7 @@ export interface BlogFrontmatter {
     title: string;
     user_id: string;
     date: string;
-    image: string;
+    image?: string;
     description: string;
 }
 

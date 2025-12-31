@@ -2,7 +2,6 @@
 title: Agradecimiento
 user_id: 647dc211c022db3002ccb79f
 date: 2025-08-29
-image: /images/blogs/gratitude.webp
 description: Un agradecimiento especial a Jorbites por inspirar mi pasión por la cocina
 ---
 

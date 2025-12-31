@@ -2,7 +2,6 @@
 title: A Year to Savor and Share
 user_id: 648c977267cc922db130b920
 date: 2025-12-31
-image: /images/blogs/a_year_to_savor_and_share.webp
 description: A year full of flavors, challenges, and moments that have brought us together around the kitchen, celebrating the connection through gastronomy.
 ---
 

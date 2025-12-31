@@ -68,7 +68,6 @@ describe('BlogCard', () => {
             title: 'Test Blog Post',
             description: 'This is a test blog post',
             date: '2025-08-29',
-            image: '/avocado.webp',
             user_id: '123456',
         },
         content: 'Blog content',
@@ -80,7 +79,15 @@ describe('BlogCard', () => {
     });
 
     it('renders the blog card correctly', () => {
-        render(<BlogCard blog={mockBlog} />);
+        const blogWithImage = {
+            ...mockBlog,
+            frontmatter: {
+                ...mockBlog.frontmatter,
+                image: '/test-image.webp',
+            },
+        };
+
+        render(<BlogCard blog={blogWithImage} />);
 
         // Check if the title is displayed
         expect(screen.getByText('Test Blog Post')).toBeDefined();
