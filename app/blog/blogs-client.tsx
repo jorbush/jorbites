@@ -75,7 +75,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
     }, [i18n.language, currentPage, currentCategory]);
 
     const handleContactEmail = () => {
-        window.location.href = 'mailto:jorbites@gmail.com';
+        window.location.href = 'mailto:jbonetv5@gmail.com';
     };
 
     const handleViewAllReleases = () => {
