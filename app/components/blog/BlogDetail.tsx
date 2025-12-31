@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { FiChevronLeft, FiShare2, FiCalendar } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 import Heading from '@/app/components/navigation/Heading';
-import { toast } from 'react-hot-toast';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Components } from 'react-markdown';
@@ -14,6 +13,7 @@ import { formatDate } from '@/app/utils/date-utils';
 import { SafeUser } from '@/app/types';
 import Avatar from '@/app/components/utils/Avatar';
 import VerificationBadge from '@/app/components/VerificationBadge';
+import useShare from '@/app/hooks/useShare';
 
 interface BlogDetailProps {
     blog: Blog;
@@ -23,32 +23,9 @@ interface BlogDetailProps {
 const BlogDetail: React.FC<BlogDetailProps> = ({ blog, author }) => {
     const { t } = useTranslation();
     const router = useRouter();
+    const { share } = useShare();
 
     const dateDisplay = formatDate(blog.frontmatter.date);
-
-    const copyToClipboard = () => {
-        const currentURL = window.location.href;
-        navigator.clipboard.writeText(currentURL);
-        toast.success(t('link_copied'));
-    };
-
-    const share = () => {
-        if (navigator.share) {
-            navigator
-                .share({
-                    title: blog.frontmatter.title,
-                    url: window.location.href,
-                })
-                .then(() => {
-                    console.log('Successfully shared');
-                })
-                .catch((error) => {
-                    console.error('Error sharing:', error);
-                });
-        } else {
-            copyToClipboard();
-        }
-    };
 
     const markdownComponents: Components = {
         h1: (props) => (
@@ -130,7 +107,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ blog, author }) => {
                 />
                 <button
                     className="ml-4 flex translate-y-3 cursor-pointer items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
-                    onClick={share}
+                    onClick={() => share({ title: blog.frontmatter.title })}
                     aria-label="Share"
                 >
                     <FiShare2 className="text-xl" />

@@ -1,24 +1,23 @@
 'use client';
 
 import { Event } from '@/app/utils/markdownUtils';
-import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import { FiChevronLeft, FiShare2, FiCalendar } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 import Heading from '@/app/components/navigation/Heading';
-import { toast } from 'react-hot-toast';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Components } from 'react-markdown';
 import { formatDateRange } from '@/app/utils/date-utils';
+import useShare from '@/app/hooks/useShare';
 
 interface EventDetailProps {
     event: Event;
 }
 
 const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
-    const { t } = useTranslation();
     const router = useRouter();
+    const { share } = useShare();
 
     // Don't process dates for permanent events
     const isPermanent = event.frontmatter.permanent === true;
@@ -30,30 +29,6 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
             event.frontmatter.endDate
         );
     }
-
-    const copyToClipboard = () => {
-        const currentURL = window.location.href;
-        navigator.clipboard.writeText(currentURL);
-        toast.success(t('link_copied'));
-    };
-
-    const share = () => {
-        if (navigator.share) {
-            navigator
-                .share({
-                    title: event.frontmatter.title,
-                    url: window.location.href,
-                })
-                .then(() => {
-                    console.log('Successfully shared');
-                })
-                .catch((error) => {
-                    console.error('Error sharing:', error);
-                });
-        } else {
-            copyToClipboard();
-        }
-    };
 
     const markdownComponents: Components = {
         h1: (props) => (
@@ -134,7 +109,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                 />
                 <button
                     className="ml-4 flex translate-y-3 cursor-pointer items-center space-x-2 text-gray-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
-                    onClick={share}
+                    onClick={() => share({ title: event.frontmatter.title })}
                     aria-label="Share"
                 >
                     <FiShare2 className="text-xl" />

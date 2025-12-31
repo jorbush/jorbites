@@ -1,5 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import {
+    render,
+    screen,
+    fireEvent,
+    cleanup,
+    waitFor,
+} from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import WorkshopHead from '@/app/components/workshops/WorkshopHead';
 import { useRouter } from 'next/navigation';
@@ -127,8 +133,10 @@ describe('<WorkshopHead />', () => {
         const shareButton = buttons[1];
         fireEvent.click(shareButton);
 
-        expect(navigator.clipboard.writeText).toHaveBeenCalled();
-        expect(toast.success).toHaveBeenCalledWith('link_copied');
+        await waitFor(() => {
+            expect(navigator.clipboard.writeText).toHaveBeenCalled();
+            expect(toast.success).toHaveBeenCalledWith('link_copied');
+        });
     });
 
     it('uses native share API when available', () => {
