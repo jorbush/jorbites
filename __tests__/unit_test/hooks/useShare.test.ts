@@ -67,7 +67,9 @@ describe('useShare', () => {
         });
 
         it('should handle clipboard errors gracefully', async () => {
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            const consoleErrorSpy = vi
+                .spyOn(console, 'error')
+                .mockImplementation(() => {});
             const clipboardError = new Error('Clipboard failed');
             mockWriteText.mockRejectedValue(clipboardError);
 
@@ -78,7 +80,10 @@ describe('useShare', () => {
             });
 
             expect(mockWriteText).toHaveBeenCalled();
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to copy to clipboard:', clipboardError);
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+                'Failed to copy to clipboard:',
+                clipboardError
+            );
             expect(toast.error).toHaveBeenCalledWith('copy_failed');
 
             consoleErrorSpy.mockRestore();
@@ -164,7 +169,9 @@ describe('useShare', () => {
         });
 
         it('should handle Web Share API errors gracefully', async () => {
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            const consoleErrorSpy = vi
+                .spyOn(console, 'error')
+                .mockImplementation(() => {});
             const shareError = new Error('Share failed');
             mockShare.mockRejectedValue(shareError);
 
@@ -181,13 +188,18 @@ describe('useShare', () => {
             });
 
             expect(mockShare).toHaveBeenCalled();
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Error sharing:', shareError);
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+                'Error sharing:',
+                shareError
+            );
 
             consoleErrorSpy.mockRestore();
         });
 
         it('should silently ignore AbortError when user cancels share dialog', async () => {
-            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            const consoleErrorSpy = vi
+                .spyOn(console, 'error')
+                .mockImplementation(() => {});
             const abortError = new DOMException('User canceled', 'AbortError');
             mockShare.mockRejectedValue(abortError);
 
