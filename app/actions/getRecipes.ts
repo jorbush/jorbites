@@ -112,6 +112,7 @@ export default async function getRecipes(
         const safeRecipes = recipes.map((recipe) => ({
             ...recipe,
             createdAt: recipe.createdAt.toISOString(),
+            updatedAt: recipe.updatedAt.toISOString(),
         }));
 
         logger.info('getRecipes - success', { totalRecipes, page, limit });

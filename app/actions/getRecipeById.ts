@@ -28,6 +28,7 @@ export default async function getRecipeById(params: IParams) {
         return {
             ...recipe,
             createdAt: recipe.createdAt.toISOString(),
+            updatedAt: recipe.updatedAt.toISOString(),
             user: {
                 ...recipe.user,
                 createdAt: recipe.user.createdAt.toISOString(),

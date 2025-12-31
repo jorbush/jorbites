@@ -18,6 +18,7 @@ import MethodsStep from '@/app/components/modals/recipe-steps/MethodsStep';
 import RecipeStepsStep from '@/app/components/modals/recipe-steps/RecipeStepsStep';
 import ImagesStep from '@/app/components/modals/recipe-steps/ImagesStep';
 import Loader from '@/app/components/shared/Loader';
+import { format } from 'date-fns';
 import {
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
@@ -712,6 +713,43 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
     }
 
+    // Wrap bodyContent with timestamp info when in edit mode
+    const finalBodyContent = useMemo(() => {
+        if (
+            recipeModal.isEditMode &&
+            recipeModal.editRecipeData?.createdAt &&
+            recipeModal.editRecipeData?.updatedAt
+        ) {
+            const createdAtDate = new Date(recipeModal.editRecipeData.createdAt);
+            const updatedAtDate = new Date(recipeModal.editRecipeData.updatedAt);
+            const formattedCreatedAt = format(createdAtDate, 'dd/MM/yyyy HH:mm');
+            const formattedUpdatedAt = format(updatedAtDate, 'dd/MM/yyyy HH:mm');
+
+            return (
+                <div className="flex flex-col gap-4">
+                    <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                        <div className="flex flex-col gap-1">
+                            <div>
+                                <span className="font-semibold">
+                                    {t('created_at') || 'Created at'}:
+                                </span>{' '}
+                                {formattedCreatedAt}
+                            </div>
+                            <div>
+                                <span className="font-semibold">
+                                    {t('updated_at') || 'Updated at'}:
+                                </span>{' '}
+                                {formattedUpdatedAt}
+                            </div>
+                        </div>
+                    </div>
+                    {bodyContent}
+                </div>
+            );
+        }
+        return bodyContent;
+    }, [bodyContent, recipeModal.isEditMode, recipeModal.editRecipeData, t]);
+
     return (
         <Modal
             isOpen={recipeModal.isOpen}
@@ -725,7 +763,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     ? (t('edit_recipe') ?? 'Edit recipe')
                     : (t('post_recipe') ?? 'Post a recipe')
             }
-            body={bodyContent}
+            body={finalBodyContent}
             isLoading={isLoading}
             topButton={
                 !recipeModal.isEditMode ? (

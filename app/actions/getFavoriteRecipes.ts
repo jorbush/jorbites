@@ -108,6 +108,7 @@ export default async function getFavoriteRecipes(
         const safeFavorites = favorites.map((favorite) => ({
             ...favorite,
             createdAt: favorite.createdAt.toString(),
+            updatedAt: favorite.updatedAt.toString(),
         }));
 
         logger.info('getFavoriteRecipes - success', {

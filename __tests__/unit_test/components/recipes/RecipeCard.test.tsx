@@ -43,6 +43,7 @@ describe('<RecipeCard />', () => {
         extraImages: [],
         userId: '1',
         createdAt: '2022-01-01',
+        updatedAt: '2022-01-01',
         coCooksIds: [],
         linkedRecipeIds: [],
     };

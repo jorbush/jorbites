@@ -42,6 +42,8 @@ const EditRecipeButton: React.FC<EditRecipeButtonProps> = ({ recipe }) => {
                 linkedRecipeIds: recipe.linkedRecipeIds || [],
                 youtubeUrl: recipe.youtubeUrl || '',
                 questId: recipe.questId || '',
+                createdAt: recipe.createdAt,
+                updatedAt: recipe.updatedAt,
             };
 
             if (recipe.coCooksIds && recipe.coCooksIds.length > 0) {

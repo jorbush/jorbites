@@ -47,6 +47,7 @@ export default async function getRecipesByUserId(
         const safeRecipes = recipes.map((recipe) => ({
             ...recipe,
             createdAt: recipe.createdAt.toString(),
+            updatedAt: recipe.updatedAt.toString(),
         }));
 
         logger.info('getRecipesByUserId - success', {

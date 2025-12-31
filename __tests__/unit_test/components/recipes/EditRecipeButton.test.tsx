@@ -35,6 +35,7 @@ describe('EditRecipeButton', () => {
         numLikes: 5,
         userId: 'user1',
         createdAt: '2022-01-01',
+        updatedAt: '2022-01-01',
         coCooksIds: ['cook1', 'cook2'],
         linkedRecipeIds: ['recipe1'],
         user: {

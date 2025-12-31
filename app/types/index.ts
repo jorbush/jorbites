@@ -6,8 +6,9 @@ import {
     WorkshopParticipant,
 } from '@prisma/client';
 
-export type SafeRecipe = Omit<Recipe, 'createdAt'> & {
+export type SafeRecipe = Omit<Recipe, 'createdAt' | 'updatedAt'> & {
     createdAt: string;
+    updatedAt: string;
 };
 
 export type SafeComment = Omit<Comment, 'createdAt'> & {

@@ -20,6 +20,8 @@ export interface EditRecipeData {
     linkedRecipes?: SafeRecipe[];
     youtubeUrl?: string;
     questId?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 interface RecipeModalStore {

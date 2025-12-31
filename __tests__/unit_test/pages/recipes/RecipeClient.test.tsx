@@ -53,7 +53,8 @@ describe('RecipeClient', () => {
         linkedRecipeIds: [],
         youtubeUrl: '',
         questId: null,
-        createdAt: '2022-01-01', // Add the createdAt property with a valid date string
+        createdAt: '2022-01-01',
+        updatedAt: '2022-01-01',
         user: {
             id: 'user1',
             name: 'Test User',
