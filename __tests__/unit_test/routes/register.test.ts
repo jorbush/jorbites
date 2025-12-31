@@ -169,7 +169,6 @@ describe('Register API Error Handling', () => {
             } as unknown as Request;
 
             const response = await RegisterPOST(mockRequest);
-            const data = await response.json();
 
             expect(response.status).toBe(200);
             expect(prisma.user.create).toHaveBeenCalledWith({
