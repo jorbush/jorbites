@@ -611,21 +611,14 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         return t('back');
     }, [step, t]);
 
-    let bodyContent = (
-        <CategoryStep
-            selectedCategories={categories || []}
-            onCategorySelect={(selectedCategories) =>
-                setCustomValue('categories', selectedCategories)
-            }
-        />
-    );
+    const bodyContent = useMemo(() => {
+        // Show loader while loading draft or edit data
+        if (isLoadingDraft) {
+            return <Loader height="400px" />;
+        }
 
-    // Show loader while loading draft or edit data
-    if (isLoadingDraft) {
-        bodyContent = <Loader height="400px" />;
-    } else {
         if (step === STEPS.INGREDIENTS) {
-            bodyContent = (
+            return (
                 <IngredientsStep
                     numIngredients={numIngredients}
                     register={register}
@@ -640,7 +633,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
 
         if (step === STEPS.STEPS) {
-            bodyContent = (
+            return (
                 <RecipeStepsStep
                     numSteps={numSteps}
                     register={register}
@@ -655,7 +648,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
 
         if (step === STEPS.DESCRIPTION) {
-            bodyContent = (
+            return (
                 <DescriptionStep
                     isLoading={isLoading}
                     register={register}
@@ -669,7 +662,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
 
         if (step == STEPS.METHODS) {
-            bodyContent = (
+            return (
                 <MethodsStep
                     selectedMethod={method}
                     onMethodSelect={(selectedMethod) =>
@@ -680,7 +673,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
 
         if (step === STEPS.RELATED_CONTENT) {
-            bodyContent = (
+            return (
                 <RelatedContentStep
                     isLoading={isLoading}
                     selectedCoCooks={selectedCoCooks}
@@ -699,7 +692,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
 
         if (step === STEPS.IMAGES) {
-            bodyContent = (
+            return (
                 <ImagesStep
                     imageSrc={imageSrc}
                     imageSrc1={watch('imageSrc1')}
@@ -711,7 +704,31 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 />
             );
         }
-    }
+
+        // Default to CategoryStep
+        return (
+            <CategoryStep
+                selectedCategories={categories || []}
+                onCategorySelect={(selectedCategories) =>
+                    setCustomValue('categories', selectedCategories)
+                }
+            />
+        );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        isLoadingDraft,
+        step,
+        numIngredients,
+        numSteps,
+        isLoading,
+        minutes,
+        method,
+        selectedCoCooks,
+        selectedLinkedRecipes,
+        selectedQuest,
+        imageSrc,
+        categories,
+    ]);
 
     // Wrap bodyContent with timestamp info when in edit mode
     const finalBodyContent = useMemo(() => {
