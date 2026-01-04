@@ -33,16 +33,16 @@ export const ORDER_BY_FALLBACK_LABELS = {
 export const getPrismaOrderByClause = (orderBy: OrderByType) => {
     switch (orderBy) {
         case OrderByType.OLDEST:
-            return [{ createdAt: 'asc' }, { id: 'asc' }] as const;
+            return [{ createdAt: 'asc' }, { id: 'asc' }];
         case OrderByType.TITLE_ASC:
-            return [{ title: 'asc' }, { id: 'asc' }] as const;
+            return [{ title: 'asc' }, { id: 'asc' }];
         case OrderByType.TITLE_DESC:
-            return [{ title: 'desc' }, { id: 'asc' }] as const;
+            return [{ title: 'desc' }, { id: 'asc' }];
         case OrderByType.MOST_LIKED:
-            return [{ numLikes: 'desc' }, { id: 'asc' }] as const;
+            return [{ numLikes: 'desc' }, { id: 'asc' }];
         case OrderByType.NEWEST:
         default:
-            return [{ createdAt: 'desc' }, { id: 'asc' }] as const;
+            return [{ createdAt: 'desc' }, { id: 'asc' }];
     }
 };
 
