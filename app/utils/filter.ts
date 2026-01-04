@@ -30,7 +30,11 @@ export const ORDER_BY_FALLBACK_LABELS = {
     [OrderByType.MOST_LIKED]: 'Most liked',
 } as const;
 
-export const getPrismaOrderByClause = (orderBy: OrderByType) => {
+import { Prisma } from '@prisma/client';
+
+export const getPrismaOrderByClause = (
+    orderBy: OrderByType
+): Prisma.RecipeOrderByWithRelationInput[] => {
     switch (orderBy) {
         case OrderByType.OLDEST:
             return [{ createdAt: 'asc' }, { id: 'asc' }];
