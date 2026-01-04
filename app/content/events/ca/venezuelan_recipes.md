@@ -1,7 +1,7 @@
 ---
 title: 🇻🇪 Sabors Veneçolans 🫓
-date: 2025-01-05
-endDate: 2025-01-31T21:59:59
+date: 2026-01-05
+endDate: 2026-01-31T21:59:59
 image: /images/events/venezuelan_recipes.webp
 description: Celebra la rica i diversa cuina de Veneçuela amb receptes tradicionals!
 ---

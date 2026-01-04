@@ -1,7 +1,7 @@
 ---
 title: 🇻🇪 Venezuelan Flavors 🫓
-date: 2025-01-05
-endDate: 2025-01-31T21:59:59
+date: 2026-01-05
+endDate: 2026-01-31T21:59:59
 image: /images/events/venezuelan_recipes.webp
 description: Celebrate the rich and diverse cuisine of Venezuela with traditional recipes!
 ---
