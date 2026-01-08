@@ -198,7 +198,7 @@ const Search: React.FC<SearchProps> = ({
 
                         <button
                             onClick={onFilterToggle}
-                            className={`relative rounded-full p-2 shadow-xs transition hover:shadow-md ${
+                            className={`relative cursor-pointer rounded-full p-2 shadow-xs transition hover:shadow-md ${
                                 isFilterOpen
                                     ? 'bg-green-450 dark:text-dark text-white'
                                     : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
@@ -292,7 +292,7 @@ const Search: React.FC<SearchProps> = ({
 
                         <button
                             onClick={onFilterToggle}
-                            className={`relative rounded-full p-2 shadow-xs transition hover:shadow-md ${
+                            className={`relative cursor-pointer rounded-full p-2 shadow-xs transition hover:shadow-md ${
                                 isFilterOpen
                                     ? 'bg-green-450 dark:text-dark text-white'
                                     : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
