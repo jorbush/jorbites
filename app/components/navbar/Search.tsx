@@ -163,7 +163,7 @@ const Search: React.FC<SearchProps> = ({
                     >
                         <button
                             onClick={handleSearchToggle}
-                            className="flex min-h-[40px] min-w-[40px] flex-shrink-0 items-center justify-center rounded-full p-2 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                            className="flex min-h-[40px] min-w-[40px] flex-shrink-0 cursor-pointer items-center justify-center rounded-full p-2 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
                             aria-label={t('back') || 'Back'}
                         >
                             <FiChevronLeft size={20} />
@@ -219,7 +219,7 @@ const Search: React.FC<SearchProps> = ({
                     // Desktop button mode - only search button
                     <button
                         onClick={handleSearchToggle}
-                        className="bg-green-450 dark:text-dark relative flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
+                        className="bg-green-450 dark:text-dark relative flex min-h-[40px] min-w-[40px] cursor-pointer items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
                         aria-label={t('search_recipes') || 'Search recipes'}
                     >
                         <BiSearch size={18} />
@@ -252,7 +252,7 @@ const Search: React.FC<SearchProps> = ({
                     >
                         <button
                             onClick={handleSearchToggle}
-                            className="flex min-h-[40px] min-w-[40px] flex-shrink-0 items-center justify-center rounded-full p-2 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                            className="flex min-h-[40px] min-w-[40px] flex-shrink-0 cursor-pointer items-center justify-center rounded-full p-2 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
                             aria-label={t('back') || 'Back'}
                         >
                             <FiChevronLeft size={20} />
@@ -326,7 +326,7 @@ const Search: React.FC<SearchProps> = ({
                         <Logo />
                         <button
                             onClick={handleSearchToggle}
-                            className="bg-green-450 dark:text-dark relative flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
+                            className="bg-green-450 dark:text-dark relative flex min-h-[40px] min-w-[40px] cursor-pointer items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
                             aria-label={
                                 t('search_and_filter') || 'Search and filter'
                             }
