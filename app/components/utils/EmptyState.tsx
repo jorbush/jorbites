@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-
+import { Suspense } from 'react';
 import Button from '@/app/components/buttons/Button';
 import Heading from '@/app/components/navigation/Heading';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ interface EmptyStateProps {
     height?: string;
 }
 
-const EmptyState: React.FC<EmptyStateProps> = ({
+const EmptyStateContent: React.FC<EmptyStateProps> = ({
     title = 'No exact matches',
     subtitle = 'Try changing or removing some of your filters.',
     showReset,
@@ -76,6 +76,22 @@ const EmptyState: React.FC<EmptyStateProps> = ({
                 )}
             </div>
         </div>
+    );
+};
+
+const EmptyState: React.FC<EmptyStateProps> = (props) => {
+    return (
+        <Suspense
+            fallback={
+                <div
+                    className={`flex ${props.height || 'h-[60vh]'} flex-col items-center justify-center gap-2`}
+                >
+                    Loading...
+                </div>
+            }
+        >
+            <EmptyStateContent {...props} />
+        </Suspense>
     );
 };
 

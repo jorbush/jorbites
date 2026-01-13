@@ -26,13 +26,23 @@ body,
   height: 100%;
 }
 
+/* Custom text selection color */
+::selection {
+  background-color: #C5F0A4;
+  color: #0F0F0F;
+}
+
+::-moz-selection {
+  background-color: #C5F0A4;
+  color: #0F0F0F;
+}
 /* Hide scrollbar for horizontal scrolling */
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }

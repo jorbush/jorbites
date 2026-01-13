@@ -145,7 +145,7 @@ function Dropdown<T extends string>({
                 onKeyDown={handleKeyDown}
                 className={
                     className ||
-                    'relative flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-2 text-sm text-neutral-600 shadow-xs transition hover:bg-neutral-200 hover:shadow-md lg:px-3 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
+                    'relative flex cursor-pointer items-center gap-1 rounded-full bg-neutral-100 px-2 py-2 text-sm text-neutral-600 shadow-xs transition hover:bg-neutral-200 hover:shadow-md lg:px-3 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
                 }
                 aria-label={ariaLabel}
                 aria-expanded={isOpen}
