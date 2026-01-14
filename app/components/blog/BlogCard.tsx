@@ -34,7 +34,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
                 <div className="mb-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">
                     {formatDate(blog.frontmatter.date)}
                 </div>
-                <h3 className="group-hover:text-green-450 dark:group-hover:text-green-450 mb-2 text-lg leading-tight font-bold text-neutral-800 transition-colors dark:text-neutral-100">
+                <h3 className="group-hover:text-green-450 mb-2 text-lg leading-tight font-bold text-neutral-800 transition-colors dark:text-neutral-100">
                     {blog.frontmatter.title}
                 </h3>
                 <p className="line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
