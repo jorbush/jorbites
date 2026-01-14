@@ -91,6 +91,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ blog, author }) => {
         ),
         img: (props) => (
             <span className="my-6 block overflow-hidden rounded-xl">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     className="w-full object-cover"
                     {...props}
