@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { FiChevronLeft, FiShare2, FiCalendar } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 import Heading from '@/app/components/navigation/Heading';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Components } from 'react-markdown';
 import { formatDate } from '@/app/utils/date-utils';
