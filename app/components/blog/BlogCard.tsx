@@ -25,7 +25,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
 
     return (
         <div
-            className="group hover:border-green-450/50 dark:hover:border-green-450/50 cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800"
+            className="group hover:border-green-450/50 cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800"
             onClick={handleClick}
             tabIndex={0}
             onKeyDown={handleKeyDown}
