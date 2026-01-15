@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { FiChevronLeft, FiShare2, FiCalendar } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 import Heading from '@/app/components/navigation/Heading';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Components } from 'react-markdown';
 import { formatDate } from '@/app/utils/date-utils';
@@ -89,6 +88,16 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ blog, author }) => {
                 {...props}
             />
         ),
+        img: (props) => (
+            <span className="my-6 block overflow-hidden rounded-xl">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                    className="w-full object-cover"
+                    {...props}
+                    alt={props.alt || 'Blog Image'}
+                />
+            </span>
+        ),
     };
 
     return (
@@ -112,18 +121,6 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ blog, author }) => {
                 >
                     <FiShare2 className="text-xl" />
                 </button>
-            </div>
-
-            <div className="mb-6 w-full overflow-hidden rounded-xl">
-                <Image
-                    src={blog.frontmatter.image || '/avocado.webp'}
-                    alt={blog.frontmatter.title}
-                    width={800}
-                    height={600}
-                    className="w-full object-contain"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
-                    priority
-                />
             </div>
 
             {/* Author Section - matching RecipeInfo styling */}
@@ -182,10 +179,6 @@ export const BlogDetailSkeleton = () => {
                 <div className="h-6 w-6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                 <div className="mx-auto h-8 w-2/3 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-700"></div>
                 <div className="h-6 w-6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-            </div>
-
-            <div className="mb-6 w-full animate-pulse overflow-hidden rounded-xl">
-                <div className="aspect-[4/3] w-full bg-neutral-200 dark:bg-neutral-700"></div>
             </div>
 
             <div className="mb-6 flex items-center gap-3">

@@ -109,7 +109,6 @@ describe('BlogDetail', () => {
             title: 'Test Blog Post',
             description: 'This is a test blog post',
             date: '2025-08-29',
-            image: '/avocado.webp',
             user_id: '123456',
         },
         content: 'This is the blog content',
@@ -120,8 +119,18 @@ describe('BlogDetail', () => {
         id: '123456',
         name: 'Test Author',
         image: '/avatar.jpg',
+        email: 'test@example.com',
+        hashedPassword: null,
         level: 50,
         verified: true,
+        favoriteIds: [],
+        emailNotifications: true,
+        createdAt: '2023-01-01T00:00:00.000Z',
+        updatedAt: '2023-01-01T00:00:00.000Z',
+        resetToken: null,
+        resetTokenExpiry: null,
+        emailVerified: null,
+        badges: [],
     };
 
     afterEach(() => {
@@ -139,9 +148,6 @@ describe('BlogDetail', () => {
 
         // Check if the title is displayed
         expect(screen.getByText('Test Blog Post')).toBeDefined();
-
-        // Check if image is rendered
-        expect(screen.getByTestId('blog-image')).toBeDefined();
 
         // Check if date is displayed
         expect(screen.getByText(/August 29, 2025/i)).toBeDefined();

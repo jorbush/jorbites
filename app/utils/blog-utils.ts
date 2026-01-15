@@ -25,7 +25,6 @@ export function readBlogFile(filePath: string): {
                 title: 'Error',
                 user_id: '',
                 date: new Date().toISOString(),
-                image: '/avocado.webp',
                 description: 'Error loading blog post',
             },
             content: 'Error loading blog content.',
