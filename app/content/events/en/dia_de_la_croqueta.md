@@ -24,7 +24,7 @@ We're giving you extra time to perfect your recipe and share your croquette crea
 - **Creamy mushroom croquettes**: Earthy flavors in every bite
 - **Seafood croquettes**: Cod, shrimp, or mixed seafood delights
 - **Cheese croquettes**: Melty, gooey perfection
-- **Innovative veggie croquettes**: Spinach, pumpkin, or sweet potato
+- **Innovative vegan croquettes**: Spinach, pumpkin, or sweet potato
 - **Fusion croquettes**: Mix cultures and create unique combinations
 
 ### 💛 Why do we celebrate croquettes?
