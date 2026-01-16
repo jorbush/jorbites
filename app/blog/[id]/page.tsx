@@ -24,6 +24,10 @@ export async function generateMetadata(props: {
         };
     }
 
+    // Extract first image from content or use default
+    const imageMatch = blog.content.match(/!\[.*?\]\((.*?)\)/);
+    const ogImage = imageMatch ? imageMatch[1] : '/avocado.webp';
+
     return {
         title: `${blog.frontmatter.title} | Blog | Jorbites`,
         description: blog.frontmatter.description || 'Blog post',
@@ -32,7 +36,7 @@ export async function generateMetadata(props: {
             description: blog.frontmatter.description,
             images: [
                 {
-                    url: blog.frontmatter.image,
+                    url: ogImage,
                     width: 1200,
                     height: 630,
                     alt: blog.frontmatter.title,
@@ -44,7 +48,7 @@ export async function generateMetadata(props: {
             card: 'summary_large_image',
             title: `${blog.frontmatter.title} | Jorbites`,
             description: blog.frontmatter.description,
-            images: [blog.frontmatter.image],
+            images: [ogImage],
         },
     };
 }

@@ -68,7 +68,6 @@ describe('BlogCard', () => {
             title: 'Test Blog Post',
             description: 'This is a test blog post',
             date: '2025-08-29',
-            image: '/avocado.webp',
             user_id: '123456',
         },
         content: 'Blog content',
@@ -87,9 +86,6 @@ describe('BlogCard', () => {
 
         // Check if description is displayed
         expect(screen.getByText('This is a test blog post')).toBeDefined();
-
-        // Check if image is rendered
-        expect(screen.getByTestId('blog-image')).toBeDefined();
     });
 
     it('displays the date correctly', () => {

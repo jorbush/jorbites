@@ -1,10 +1,11 @@
 ---
 title: Gratitude
 user_id: 647dc211c022db3002ccb79f
-date: 2025-08-29
-image: /images/blogs/gratitude.webp
+date: 2025-08-29T00:00:00.000Z
 description: A special thank you to Jorbites for inspiring my passion for cooking
 ---
+
+![Gratitude](/images/blogs/gratitude.webp)
 
 I want to thank this website, my motivation for cooking, which I've always liked, especially creating, and this website not only motivates me to do it but also challenges me to do it.
 

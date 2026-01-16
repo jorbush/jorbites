@@ -1,10 +1,13 @@
 ---
 title: A Year to Savor and Share
 user_id: 648c977267cc922db130b920
-date: 2025-12-31
-image: /images/blogs/a_year_to_savor_and_share.webp
-description: A year full of flavors, challenges, and moments that have brought us together around the kitchen, celebrating the connection through gastronomy.
+date: 2025-12-31T00:00:00.000Z
+description: >-
+  A year full of flavors, challenges, and moments that have brought us together
+  around the kitchen, celebrating the connection through gastronomy.
 ---
+
+![A Year to Savor and Share](/images/blogs/a_year_to_savor_and_share.webp)
 
 This year has been about much more than just recipes and stoves, thanks to Jorbites. It has been a journey full of flavors, challenges, and moments that have brought us together around the kitchen. Every dish prepared, every contest experienced, and every idea shared has pushed us to give a little more of ourselves, to experiment without fear, and to enjoy the process as much as the result.
 

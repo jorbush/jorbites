@@ -23,7 +23,6 @@ vi.mock('gray-matter', () => ({
                 title: 'Test Blog',
                 user_id: '123',
                 date: '2025-01-01',
-                image: '/test.jpg',
                 description: 'Test description',
             },
             content: 'Test content',
@@ -46,7 +45,6 @@ describe('blog-utils', () => {
 title: Test Blog
 user_id: 123
 date: 2025-01-01
-image: /test.jpg
 description: Test description
 ---
 Test content`;
@@ -199,7 +197,6 @@ New content`;
                             title: 'Old Blog',
                             date: '2024-01-01',
                             user_id: '123',
-                            image: '/test.jpg',
                             description: 'Old',
                         },
                         content: 'Old content',
@@ -210,7 +207,6 @@ New content`;
                         title: 'New Blog',
                         date: '2025-01-01',
                         user_id: '123',
-                        image: '/test.jpg',
                         description: 'New',
                     },
                     content: 'New content',

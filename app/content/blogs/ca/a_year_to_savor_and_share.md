@@ -1,10 +1,13 @@
 ---
 title: Un any per assaborir i compartir
 user_id: 648c977267cc922db130b920
-date: 2025-12-31
-image: /images/blogs/a_year_to_savor_and_share.webp
-description: Un any ple de sabors, reptes i moments que ens han unit al voltant de la cuina, celebrant la connexió a través de la gastronomia.
+date: 2025-12-31T00:00:00.000Z
+description: >-
+  Un any ple de sabors, reptes i moments que ens han unit al voltant de la
+  cuina, celebrant la connexió a través de la gastronomia.
 ---
+
+![Un any per assaborir i compartir](/images/blogs/a_year_to_savor_and_share.webp)
 
 Aquest any ha estat molt més que receptes i fogons gràcies a Jorbites. Ha estat un recorregut ple de sabors, reptes i moments que ens han unit al voltant de la cuina. Cada plat preparat, cada concurs viscut i cada idea compartida ens ha empès a donar una mica més de nosaltres mateixos, a experimentar sense por i a gaudir del procés tant com del resultat.
 
