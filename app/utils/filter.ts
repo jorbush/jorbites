@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client';
+
 export enum OrderByType {
     NEWEST = 'newest',
     OLDEST = 'oldest',
@@ -29,8 +31,6 @@ export const ORDER_BY_FALLBACK_LABELS = {
     [OrderByType.TITLE_DESC]: 'Title Z-A',
     [OrderByType.MOST_LIKED]: 'Most liked',
 } as const;
-
-import { Prisma } from '@prisma/client';
 
 export const getPrismaOrderByClause = (
     orderBy: OrderByType

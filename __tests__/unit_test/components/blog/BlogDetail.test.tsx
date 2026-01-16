@@ -119,9 +119,19 @@ describe('BlogDetail', () => {
     const mockAuthor = {
         id: '123456',
         name: 'Test Author',
+        email: 'test@example.com',
         image: '/avatar.jpg',
+        hashedPassword: null,
+        createdAt: '2025-01-01T00:00:00.000Z',
+        updatedAt: '2025-01-01T00:00:00.000Z',
+        favoriteIds: [],
+        emailNotifications: false,
+        emailVerified: null,
         level: 50,
         verified: true,
+        badges: [],
+        resetToken: null,
+        resetTokenExpiry: null,
     };
 
     afterEach(() => {
