@@ -118,7 +118,6 @@ describe('BlogDetail', () => {
     const mockAuthor = {
         id: '123456',
         name: 'Test Author',
-        email: 'test@example.com',
         image: '/avatar.jpg',
         email: 'test@example.com',
         hashedPassword: null,
