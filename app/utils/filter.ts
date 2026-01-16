@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client';
+
 export enum OrderByType {
     NEWEST = 'newest',
     OLDEST = 'oldest',
@@ -30,19 +32,21 @@ export const ORDER_BY_FALLBACK_LABELS = {
     [OrderByType.MOST_LIKED]: 'Most liked',
 } as const;
 
-export const getPrismaOrderByClause = (orderBy: OrderByType) => {
+export const getPrismaOrderByClause = (
+    orderBy: OrderByType
+): Prisma.RecipeOrderByWithRelationInput[] => {
     switch (orderBy) {
         case OrderByType.OLDEST:
-            return { createdAt: 'asc' } as const;
+            return [{ createdAt: 'asc' }, { id: 'asc' }];
         case OrderByType.TITLE_ASC:
-            return { title: 'asc' } as const;
+            return [{ title: 'asc' }, { id: 'asc' }];
         case OrderByType.TITLE_DESC:
-            return { title: 'desc' } as const;
+            return [{ title: 'desc' }, { id: 'asc' }];
         case OrderByType.MOST_LIKED:
-            return { numLikes: 'desc' } as const;
+            return [{ numLikes: 'desc' }, { id: 'asc' }];
         case OrderByType.NEWEST:
         default:
-            return { createdAt: 'desc' } as const;
+            return [{ createdAt: 'desc' }, { id: 'asc' }];
     }
 };
 
