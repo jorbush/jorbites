@@ -33,7 +33,7 @@ export default function RecipeSchema({
         if (url.includes('cloudinary.com')) {
             try {
                 const matches = url.match(
-                    /^(https?:\/\/res\.cloudinary\.com\/[^\/]+)\/image\/upload(?:\/([^\/]+))?\/(.+)$/
+                    /^(https?:\/\/res\.cloudinary\.com\/[^/]+)\/image\/upload(?:\/([^/]+))?\/(.+)$/
                 );
                 if (matches) {
                     const [, baseUrl, segment, imagePath] = matches;
