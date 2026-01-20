@@ -38,8 +38,12 @@ export default function RecipeSchema({
                 if (matches) {
                     const [, baseUrl, segment, imagePath] = matches;
                     // Force 4:3 aspect ratio (w_1200, h_900) and fill crop
-                    // Reconstruct path preserving the segment (version usually) if it exists
-                    const fullPath = segment
+
+                    // Check if segment is a version (starts with 'v' followed by numbers)
+                    // If it's transformations (e.g. w_800,h_600), we discard it to avoid duplication
+                    const isVersion = segment && /^v\d+$/.test(segment);
+
+                    const fullPath = isVersion
                         ? `${segment}/${imagePath}`
                         : imagePath;
                     return `${baseUrl}/image/upload/w_1200,h_900,c_fill,q_auto:good/${fullPath}`;

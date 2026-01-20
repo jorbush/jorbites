@@ -64,4 +64,24 @@ describe('RecipeSchema', () => {
         // Check step 3 image (should fallback to main image as no extra image for index 2)
         expect(json.recipeInstructions[2].image).toBe(expectedMainImageUrl);
     });
+
+    it('replaces existing transformations in Cloudinary URLs', () => {
+        const propsWithTransforms = {
+            ...mockProps,
+            imageSrc:
+                'https://res.cloudinary.com/demo/image/upload/w_500,h_500/v1234567890/recipe.jpg',
+        };
+        render(<RecipeSchema {...propsWithTransforms} />);
+
+        const scriptTag = document.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const json = JSON.parse(scriptTag?.innerHTML || '{}');
+
+        const expectedImageUrl =
+            'https://res.cloudinary.com/demo/image/upload/w_1200,h_900,c_fill,q_auto:good/v1234567890/recipe.jpg';
+        // Should NOT contain w_500,h_500
+        expect(json.image).toBe(expectedImageUrl);
+        expect(json.image).not.toContain('w_500');
+    });
 });
