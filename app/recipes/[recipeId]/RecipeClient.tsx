@@ -112,6 +112,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 ingredients={recipe.ingredients}
                 steps={recipe.steps}
                 categories={recipeCategories}
+                extraImages={recipe.extraImages}
             />
             <div className="mx-auto max-w-[800px]">
                 <div className="flex flex-col gap-6">
