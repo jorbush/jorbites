@@ -7,6 +7,7 @@ import {
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { trackRecipeLike, trackRecipeUnlike } from '@/app/actions/tracking';
 
 interface IParams {
     recipeId?: string;
@@ -49,7 +50,7 @@ export async function POST(
                 favoriteIds,
             },
         });
-
+        await trackRecipeLike(recipeId, currentUser.id);
         logger.info('POST /api/favorites/[recipeId] - success', {
             recipeId,
             userId: user.id,
@@ -103,6 +104,7 @@ export async function DELETE(
             },
         });
 
+        await trackRecipeUnlike(recipeId, currentUser.id);
         logger.info('DELETE /api/favorites/[recipeId] - success', {
             recipeId,
             userId: user.id,

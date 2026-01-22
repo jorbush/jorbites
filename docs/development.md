@@ -51,6 +51,13 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 UPSTASH_REDIS_REST_URL=your_upstash_redis_url
 UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
 
+# Kafka (User Event Tracking for Recommendations)
+KAFKA_BROKER=your_kafka_broker_url
+# SSL Configuration (Optional - only required for production or SSL-enabled Kafka brokers)
+KAFKA_SSL_KEY=your_kafka_ssl_key
+KAFKA_SSL_CERT=your_kafka_ssl_certificate
+KAFKA_SSL_CA=your_kafka_ssl_certificate_authority
+
 # Microservices (Optional for local development)
 BADGE_FORGE_API_URL=http://localhost:8080
 BADGE_FORGE_API_KEY=your_badge_forge_api_key
