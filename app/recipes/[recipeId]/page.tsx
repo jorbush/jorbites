@@ -5,6 +5,7 @@ import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
+import { trackRecipeView } from '@/app/actions/tracking';
 
 interface IParams {
     recipeId?: string;
@@ -87,6 +88,10 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
                 <EmptyState />
             </ClientOnly>
         );
+    }
+
+    if (recipe?.id) {
+        await trackRecipeView(recipe.id, currentUser?.id);
     }
 
     return (
