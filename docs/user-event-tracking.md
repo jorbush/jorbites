@@ -47,8 +47,7 @@ All event types are defined in the `UserEventType` enum (`app/actions/tracking.t
 import {
     trackRecipeView,
     trackRecipeSave,
-    trackRecipeCooked,
-    UserEventType
+    trackRecipeCooked
 } from '@/app/actions/tracking';
 
 // Track a recipe view
@@ -70,7 +69,8 @@ await trackRecipeCooked(recipeId, userId, {
 For flexibility, you can use the generic `trackUserInteraction()` function:
 
 ```typescript
-import { trackUserInteraction, UserEventType } from '@/app/actions/tracking';
+import { trackUserInteraction } from '@/app/actions/tracking';
+import { UserEventType } from '@/app/types/tracking';
 
 await trackUserInteraction(UserEventType.RECIPE_VIEW, {
     recipeId,

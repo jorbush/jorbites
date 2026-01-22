@@ -2,21 +2,7 @@
 
 import producer from '@/app/lib/kafka';
 import { logger } from '@/app/lib/axiom/server';
-
-export enum UserEventType {
-    RECIPE_VIEW = 'RECIPE_VIEW',
-    RECIPE_LIKE = 'RECIPE_LIKE',
-    RECIPE_SAVE = 'RECIPE_SAVE', // TODO: Implement this
-    RECIPE_COOKED = 'RECIPE_COOKED', // TODO: Implement this
-    RECIPE_UNLIKE = 'RECIPE_UNLIKE',
-    RECIPE_UNSAVE = 'RECIPE_UNSAVE', // TODO: Implement this
-}
-
-interface UserInteractionData {
-    recipeId: string;
-    userId: string;
-    metadata?: Record<string, unknown>;
-}
+import { UserEventType, UserInteractionData } from '@/app/types/tracking';
 
 export async function trackUserInteraction(
     eventType: UserEventType,
