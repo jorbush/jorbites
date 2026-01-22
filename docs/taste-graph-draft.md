@@ -46,7 +46,7 @@ The consumer doesn't just count; it weighs interactions to build a "Taste Score"
   2.  Fetch `TasteProfile` for `userId`.
   3.  Get Tags/Categories from the Recipe (requires fetching Recipe metadata, potentially caching it in the service).
   4.  Update scores: `CurrentScore + NewInteractionScore`.
-  5.  *Optional:* Apple a generic "Decay Factor" (multiply all existing scores by 0.99) to keep recent interests fresher.
+  5.  *Optional:* Apply a generic "Decay Factor" (multiply all existing scores by 0.99) to keep recent interests fresher.
 
 #### 4. API Endpoint (`GET /recommendations/:userId`)
 - **Logic:**

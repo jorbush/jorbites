@@ -90,8 +90,8 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
         );
     }
 
-    if (recipe?.id) {
-        await trackRecipeView(recipe.id, currentUser?.id);
+    if (recipe?.id && currentUser?.id) {
+        await trackRecipeView(recipe.id, currentUser.id);
     }
 
     return (
