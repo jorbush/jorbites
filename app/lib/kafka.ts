@@ -1,5 +1,5 @@
-
 import { Kafka, Producer, LogEntry } from 'kafkajs';
+import { logger } from '@/app/lib/axiom/server';
 
 declare global {
     var kafkaProducer: Producer | undefined;
@@ -16,9 +16,10 @@ const kafka = new Kafka({
     },
     logCreator:
         () =>
-            ({ level, log }: LogEntry) => {
-                if (process.env.NODE_ENV === 'development' && level < 4) return;
-            },
+        ({ level, log }: LogEntry) => {
+            if (process.env.NODE_ENV === 'development' && level < 4) return;
+            logger.info(log.message);
+        },
 });
 
 const producer = global.kafkaProducer || kafka.producer();
