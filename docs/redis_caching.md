@@ -14,7 +14,7 @@ We use a dedicated Redis instance for caching to separate it from other operatio
 
 -   **Environment Variable**: `REDIS_URL_CACHING`
     -   This variable must be set in the environment to point to the Redis instance used for caching.
--   **Client**: A separate `Redis` client instance named `redisCache` is exported from `app/app/lib/redis.ts`.
+-   **Client**: A separate `Redis` client instance named `redisCache` is exported from `app/lib/redis.ts`.
 
 ## Cached Resources
 
