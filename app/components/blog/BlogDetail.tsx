@@ -13,13 +13,19 @@ import { SafeUser } from '@/app/types';
 import Avatar from '@/app/components/utils/Avatar';
 import VerificationBadge from '@/app/components/VerificationBadge';
 import useShare from '@/app/hooks/useShare';
+import BlogCard from '@/app/components/blog/BlogCard';
 
 interface BlogDetailProps {
     blog: Blog;
     author: SafeUser | null;
+    relatedBlogs?: Blog[];
 }
 
-const BlogDetail: React.FC<BlogDetailProps> = ({ blog, author }) => {
+const BlogDetail: React.FC<BlogDetailProps> = ({
+    blog,
+    author,
+    relatedBlogs = [],
+}) => {
     const { t } = useTranslation();
     const router = useRouter();
     const { share } = useShare();
@@ -168,6 +174,23 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ blog, author }) => {
                     {blog.content}
                 </ReactMarkdown>
             </div>
+
+            {/* See More Section */}
+            {relatedBlogs.length > 0 && (
+                <div className="mt-12 border-t border-neutral-200 pt-8 dark:border-neutral-700">
+                    <h2 className="mb-6 text-2xl font-bold dark:text-neutral-100">
+                        {t('see_more') || 'See more'}
+                    </h2>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {relatedBlogs.map((relatedBlog) => (
+                            <BlogCard
+                                key={relatedBlog.id}
+                                blog={relatedBlog}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

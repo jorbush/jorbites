@@ -21,6 +21,7 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
     const router = useRouter();
     const [blog, setBlog] = useState<Blog | null>(null);
     const [author, setAuthor] = useState<SafeUser | null>(null);
+    const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -61,6 +62,24 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
                         // Don't set error, just leave author as null
                     }
                 }
+
+                // Fetch other blogs for "See more" section
+                try {
+                    const blogsResponse = await fetch(
+                        `/api/blogs?lang=${i18n.language || 'en'}&pageSize=4`
+                    );
+                    if (blogsResponse.ok) {
+                        const blogsData = await blogsResponse.json();
+                        // Filter out the current blog and limit to 3
+                        const otherBlogs = blogsData.blogs
+                            .filter((b: Blog) => b.id !== id)
+                            .slice(0, 3);
+                        setRelatedBlogs(otherBlogs);
+                    }
+                } catch (error) {
+                    console.error('Failed to load related blogs', error);
+                    // Don't set error, just leave relatedBlogs as empty
+                }
             } catch (error) {
                 console.error('Error loading blog:', error);
                 setError('Failed to load blog');
@@ -96,6 +115,7 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
                 <BlogDetail
                     blog={blog}
                     author={author}
+                    relatedBlogs={relatedBlogs}
                 />
             ) : null}
         </Container>
