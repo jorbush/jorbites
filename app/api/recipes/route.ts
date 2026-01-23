@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
+import { redisCache } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import updateUserLevel from '@/app/actions/updateUserLevel';
@@ -149,7 +150,6 @@ export async function POST(request: Request) {
             }
         }
 
-        // Check for recipe with same image
         const recipeExist = await prisma.recipe.findFirst({
             where: {
                 imageSrc: imageSrc as string,
@@ -160,7 +160,6 @@ export async function POST(request: Request) {
             return conflict('A recipe with this image already exists');
         }
 
-        // Validate YouTube URL if provided
         if (youtubeUrl && youtubeUrl.trim() !== '') {
             if (!YOUTUBE_URL_REGEX.test(youtubeUrl.trim())) {
                 return validationError('Invalid YouTube URL format');
@@ -228,6 +227,11 @@ export async function POST(request: Request) {
             recipeId: recipe.id,
             userId: currentUser.id,
         });
+
+        // Invalidate cache
+        await redisCache.del(`recipes:graph:${currentUser.id}`);
+        await redisCache.incr('recipes:global:version');
+
         return NextResponse.json(recipe);
     } catch (error: any) {
         logger.error('POST /api/recipes - error', { error: error.message });

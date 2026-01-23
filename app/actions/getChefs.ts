@@ -1,9 +1,9 @@
 import prisma from '@/app/lib/prismadb';
+import { redisCache } from '@/app/lib/redis';
 import { SafeUser } from '@/app/types';
 import { logger } from '@/app/lib/axiom/server';
 import { ChefOrderByType } from '@/app/utils/filter';
 
-// Re-export for convenience in server components
 export { ChefOrderByType };
 
 export interface IChefsParams {
@@ -32,6 +32,14 @@ export default async function getChefs(
     params: IChefsParams
 ): Promise<ServerResponse<ChefsResponse>> {
     try {
+        const cacheKey = `chefs:${JSON.stringify(params)}`;
+        const cachedData = await redisCache.get(cacheKey);
+
+        if (cachedData) {
+            logger.info('getChefs - cache hit', { params });
+            return JSON.parse(cachedData);
+        }
+
         logger.info('getChefs - start', { params });
         const {
             search,
@@ -140,8 +148,8 @@ export default async function getChefs(
             const mostUsedCategory =
                 Object.keys(categoryCount).length > 0
                     ? Object.entries(categoryCount).reduce((a, b) =>
-                          a[1] > b[1] ? a : b
-                      )[0]
+                        a[1] > b[1] ? a : b
+                    )[0]
                     : null;
 
             return {
@@ -172,7 +180,7 @@ export default async function getChefs(
             totalChefs,
         });
 
-        return {
+        const response = {
             data: {
                 chefs: paginatedChefs,
                 totalChefs,
@@ -180,6 +188,10 @@ export default async function getChefs(
                 currentPage: page,
             },
         };
+
+        await redisCache.set(cacheKey, JSON.stringify(response), 'EX', 86400); // 1 day
+
+        return response;
     } catch (error: any) {
         logger.error('getChefs - error', { error: error.message });
         return {

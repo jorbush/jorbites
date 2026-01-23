@@ -244,7 +244,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                     alt="Jorbites Logo"
                                     width={80}
                                     height={80}
-                                    className="rounded-full"
+                                    className="h-20 w-22"
                                 />
                             </div>
                             <div className="flex-1 text-center md:text-left">

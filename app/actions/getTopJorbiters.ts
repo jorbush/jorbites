@@ -1,8 +1,17 @@
 import prisma from '@/app/lib/prismadb';
+import { redisCache } from '@/app/lib/redis';
 import { logger } from '@/app/lib/axiom/server';
 
 export default async function getTopJorbiters() {
     try {
+        const cacheKey = 'top_jorbiters';
+        const cachedData = await redisCache.get(cacheKey);
+
+        if (cachedData) {
+            logger.info('getTopJorbiters - cache hit');
+            return JSON.parse(cachedData);
+        }
+
         logger.info('getTopJorbiters - start');
         const users = await prisma.user.findMany({
             orderBy: {
@@ -42,6 +51,14 @@ export default async function getTopJorbiters() {
         logger.info('getTopJorbiters - success', {
             count: usersWithLikes.length,
         });
+
+        await redisCache.set(
+            cacheKey,
+            JSON.stringify(usersWithLikes),
+            'EX',
+            86400
+        ); // 1 day
+
         return usersWithLikes;
     } catch (error: any) {
         logger.error('getTopJorbiters - error', { error: error.message });
