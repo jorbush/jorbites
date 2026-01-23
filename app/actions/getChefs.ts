@@ -148,8 +148,8 @@ export default async function getChefs(
             const mostUsedCategory =
                 Object.keys(categoryCount).length > 0
                     ? Object.entries(categoryCount).reduce((a, b) =>
-                        a[1] > b[1] ? a : b
-                    )[0]
+                          a[1] > b[1] ? a : b
+                      )[0]
                     : null;
 
             return {
