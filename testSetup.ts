@@ -45,3 +45,19 @@ vi.mock('react-i18next', () => ({
     },
     Trans: ({ children }: any) => children,
 }));
+
+// Mock Redis
+vi.mock('@/app/lib/redis', () => ({
+    redis: {
+        get: vi.fn(),
+        set: vi.fn(),
+        del: vi.fn(),
+        incr: vi.fn(),
+    },
+    redisCache: {
+        get: vi.fn(),
+        set: vi.fn(),
+        del: vi.fn(),
+        incr: vi.fn(),
+    },
+}));
