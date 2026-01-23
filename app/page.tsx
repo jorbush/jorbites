@@ -10,7 +10,6 @@ import { headers } from 'next/headers';
 import ErrorDisplay from '@/app/components/utils/ErrorDisplay';
 import { getFirstRecipeImageUrl } from '@/app/utils/imageOptimizer';
 import LcpPreloader from '@/app/components/optimization/LcpPreloader';
-import { dynamicImport } from '@/app/utils/dynamicImport';
 import {
     MOBILE_RECIPES_LIMIT,
     DESKTOP_RECIPES_LIMIT,
@@ -19,10 +18,6 @@ import {
 interface HomeProps {
     searchParams: Promise<IRecipesParams>;
 }
-
-const TopScroller = dynamicImport(
-    () => import('@/app/components/utils/TopScroller')
-);
 
 const Home = async ({ searchParams }: HomeProps) => {
     const resolvedParams = await searchParams;
@@ -37,7 +32,6 @@ const Home = async ({ searchParams }: HomeProps) => {
     return (
         <>
             <Container>
-                <TopScroller />
                 {firstImageUrl && <LcpPreloader imageUrl={firstImageUrl} />}
                 {response.error ? (
                     <div className="min-h-[60vh]">
