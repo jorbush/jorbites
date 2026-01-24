@@ -34,12 +34,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
         };
     }, []);
 
-    const goToPreviousImage = () => {
-        if (isTransitioning) return;
-        const newIndex =
-            currentImageIndex === 0
-                ? imagesSrc.length - 1
-                : currentImageIndex - 1;
+    const startTransition = (newIndex: number) => {
         setIsTransitioning(true);
         setCurrentImageIndex(newIndex);
         
@@ -52,22 +47,22 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
         }, 300);
     };
 
+    const goToPreviousImage = () => {
+        if (isTransitioning) return;
+        const newIndex =
+            currentImageIndex === 0
+                ? imagesSrc.length - 1
+                : currentImageIndex - 1;
+        startTransition(newIndex);
+    };
+
     const goToNextImage = () => {
         if (isTransitioning) return;
         const newIndex =
             currentImageIndex === imagesSrc.length - 1
                 ? 0
                 : currentImageIndex + 1;
-        setIsTransitioning(true);
-        setCurrentImageIndex(newIndex);
-        
-        if (transitionTimeoutRef.current) {
-            clearTimeout(transitionTimeoutRef.current);
-        }
-        transitionTimeoutRef.current = setTimeout(() => {
-            setIsTransitioning(false);
-            transitionTimeoutRef.current = null;
-        }, 300);
+        startTransition(newIndex);
     };
 
     const handleTouchStart = (e: TouchEvent) => {
@@ -181,16 +176,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                     key={index}
                                     onClick={() => {
                                         if (isTransitioning) return;
-                                        setIsTransitioning(true);
-                                        setCurrentImageIndex(index);
-                                        
-                                        if (transitionTimeoutRef.current) {
-                                            clearTimeout(transitionTimeoutRef.current);
-                                        }
-                                        transitionTimeoutRef.current = setTimeout(() => {
-                                            setIsTransitioning(false);
-                                            transitionTimeoutRef.current = null;
-                                        }, 300);
+                                        startTransition(index);
                                     }}
                                     className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${
                                         index === currentImageIndex
