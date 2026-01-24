@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { getHighResImageUrl, getYoutubeVideoId } from '@/app/utils/seo-utils';
 
 interface RecipeSchemaProps {
     title: string;
@@ -12,7 +13,7 @@ interface RecipeSchemaProps {
     ingredients?: string[];
     steps?: string[];
     categories?: string[];
-    youtubeUrl?: string; // Optional YouTube ID or URL
+    youtubeUrl?: string; // Optional YouTube URL
 }
 
 export default function RecipeSchema({
@@ -30,46 +31,9 @@ export default function RecipeSchema({
 }: RecipeSchemaProps) {
     const recipeCategories = categories || [];
 
-    const getHighResImageUrl = (url?: string) => {
-        if (!url) return '';
-        if (url.includes('cloudinary.com')) {
-            try {
-                const matches = url.match(
-                    /^(https?:\/\/res\.cloudinary\.com\/[^/]+)\/image\/upload(?:\/([^/]+))?\/(.+)$/
-                );
-                if (matches) {
-                    const [, baseUrl, segment, imagePath] = matches;
-                    // Force 4:3 aspect ratio (w_1200, h_900) and fill crop
-
-                    // Check if segment is a version (starts with 'v' followed by numbers)
-                    // If it's transformations (e.g. w_800,h_600), we discard it to avoid duplication
-                    const isVersion = segment && /^v\d+$/.test(segment);
-
-                    const fullPath = isVersion
-                        ? `${segment}/${imagePath}`
-                        : imagePath;
-                    return `${baseUrl}/image/upload/w_1200,h_900,c_fill,q_auto:good/${fullPath}`;
-                }
-            } catch (e) {
-                console.error(
-                    'Error transforming Cloudinary URL for schema:',
-                    e
-                );
-            }
-        }
-        return url;
-    };
-
-    const getYoutubeVideoId = (url: string) => {
-        const regExp =
-            /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-        const match = url.match(regExp);
-        return match && match[2].length === 11 ? match[2] : null;
-    };
-
     const highResImage = getHighResImageUrl(imageSrc);
 
-    let videoSchema = undefined;
+    let videoSchema: any | undefined;
 
     if (youtubeUrl) {
         const videoId = getYoutubeVideoId(youtubeUrl);
