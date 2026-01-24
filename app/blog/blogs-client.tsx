@@ -9,6 +9,7 @@ import useTheme from '@/app/hooks/useTheme';
 import BlogCard, { BlogCardSkeleton } from '@/app/components/blog/BlogCard';
 import ActionCard from '@/app/components/shared/ActionCard';
 import Pagination from '@/app/components/navigation/Pagination';
+import { CONTACT_EMAIL } from '@/app/utils/constants';
 import { SafeUser } from '@/app/types';
 
 interface BlogsClientProps {
@@ -75,7 +76,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
     }, [i18n.language, currentPage, currentCategory]);
 
     const handleContactEmail = () => {
-        window.location.href = 'mailto:jbonetv5@gmail.com';
+        window.location.href = `mailto:${CONTACT_EMAIL}`;
     };
 
     const handleViewAllReleases = () => {
