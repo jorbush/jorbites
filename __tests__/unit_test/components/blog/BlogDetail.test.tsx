@@ -119,6 +119,7 @@ describe('BlogDetail', () => {
         },
         content: 'This is the blog content',
         language: 'en',
+        category: 'general',
     };
 
     const mockAuthor = {
@@ -215,6 +216,7 @@ describe('BlogDetail', () => {
                 },
                 content: 'Content 1',
                 language: 'en',
+                category: 'general',
             },
             {
                 id: 'related-2',
@@ -227,6 +229,7 @@ describe('BlogDetail', () => {
                 },
                 content: 'Content 2',
                 language: 'en',
+                category: 'general',
             },
         ];
 

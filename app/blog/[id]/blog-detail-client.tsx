@@ -64,9 +64,12 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
                 }
 
                 // Fetch other blogs for "See more" section
+                // If current blog is a release, show only release blogs
                 try {
+                    const category =
+                        blogData.category === 'releases' ? 'releases' : 'general';
                     const blogsResponse = await fetch(
-                        `/api/blogs?lang=${i18n.language || 'en'}&pageSize=4`
+                        `/api/blogs?lang=${i18n.language || 'en'}&pageSize=4&category=${category}`
                     );
                     if (blogsResponse.ok) {
                         const blogsData = await blogsResponse.json();
