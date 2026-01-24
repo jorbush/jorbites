@@ -33,7 +33,7 @@ export default function RecipeSchema({
 
     const highResImage = getHighResImageUrl(imageSrc);
 
-    let videoSchema: any | undefined;
+    let videoSchema: Record<string, unknown> | undefined;
 
     if (youtubeUrl) {
         const videoId = getYoutubeVideoId(youtubeUrl);

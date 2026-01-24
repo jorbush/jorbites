@@ -25,7 +25,9 @@ export const getHighResImageUrl = (url?: string) => {
     return url;
 };
 
-export const getYoutubeVideoId = (urlOrId: string) => {
+export const getYoutubeVideoId = (
+    urlOrId: string | null | undefined
+): string | null => {
     if (!urlOrId) return null;
     const input = urlOrId.trim();
     // If it looks like a bare YouTube ID, return it directly
