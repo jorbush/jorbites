@@ -60,9 +60,9 @@ describe('<RecipeHead />', () => {
         const nextButton = nextButtonContainer.querySelector(
             'div[style*="pointer-events: auto"]'
         );
-        
+
         fireEvent.click(nextButton!);
-        
+
         // Wait for the animation and state update
         await waitFor(() => {
             const images = screen.getAllByAltText('Recipe Image');
@@ -171,7 +171,7 @@ describe('<RecipeHead />', () => {
     it('navigates to next image on swipe left', async () => {
         render(<RecipeHead {...mockProps} />);
         const container = screen.getByTestId('next-button').parentElement;
-        
+
         fireEvent.touchStart(container!, {
             touches: [{ clientX: 200 }],
         });
@@ -190,7 +190,7 @@ describe('<RecipeHead />', () => {
     it('navigates to previous image on swipe right', async () => {
         render(<RecipeHead {...mockProps} />);
         const container = screen.getByTestId('prev-button').parentElement;
-        
+
         fireEvent.touchStart(container!, {
             touches: [{ clientX: 100 }],
         });
@@ -209,7 +209,7 @@ describe('<RecipeHead />', () => {
     it('does not navigate on short swipe distance', async () => {
         render(<RecipeHead {...mockProps} />);
         const container = screen.getByTestId('next-button').parentElement;
-        
+
         fireEvent.touchStart(container!, {
             touches: [{ clientX: 100 }],
         });
@@ -255,7 +255,7 @@ describe('<RecipeHead />', () => {
     it('resets touchEndX on new touch start to prevent stale values', () => {
         render(<RecipeHead {...mockProps} />);
         const container = screen.getByTestId('next-button').parentElement;
-        
+
         // First interaction: swipe left
         fireEvent.touchStart(container!, {
             touches: [{ clientX: 200 }],

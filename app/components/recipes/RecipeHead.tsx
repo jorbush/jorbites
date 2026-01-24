@@ -37,7 +37,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     const startTransition = (newIndex: number) => {
         setIsTransitioning(true);
         setCurrentImageIndex(newIndex);
-        
+
         if (transitionTimeoutRef.current) {
             clearTimeout(transitionTimeoutRef.current);
         }
@@ -110,7 +110,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                     <FiShare2 className="text-xl" />
                 </button>
             </div>
-            <div 
+            <div
                 className="relative h-[60vh] w-full overflow-hidden rounded-xl"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
@@ -125,7 +125,8 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                 (index - currentImageIndex) * 100
                             }%)`,
                             opacity: index === currentImageIndex ? 1 : 0,
-                            pointerEvents: index === currentImageIndex ? 'auto' : 'none',
+                            pointerEvents:
+                                index === currentImageIndex ? 'auto' : 'none',
                         }}
                     >
                         <CustomProxyImage
