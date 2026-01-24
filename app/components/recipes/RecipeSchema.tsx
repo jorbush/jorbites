@@ -12,6 +12,7 @@ interface RecipeSchemaProps {
     ingredients?: string[];
     steps?: string[];
     categories?: string[];
+    youtubeUrl?: string; // Optional YouTube ID or URL
 }
 
 export default function RecipeSchema({
@@ -25,6 +26,7 @@ export default function RecipeSchema({
     ingredients,
     steps,
     categories,
+    youtubeUrl,
 }: RecipeSchemaProps) {
     const recipeCategories = categories || [];
 
@@ -58,7 +60,34 @@ export default function RecipeSchema({
         return url;
     };
 
+    const getYoutubeVideoId = (url: string) => {
+        const regExp =
+            /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return match && match[2].length === 11 ? match[2] : null;
+    };
+
     const highResImage = getHighResImageUrl(imageSrc);
+
+    let videoSchema = undefined;
+
+    if (youtubeUrl) {
+        const videoId = getYoutubeVideoId(youtubeUrl);
+        if (videoId) {
+            videoSchema = {
+                '@type': 'VideoObject',
+                name: title,
+                description: description || `Video recipe for ${title}`,
+                thumbnailUrl: [
+                    `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                    `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                ],
+                contentUrl: youtubeUrl,
+                embedUrl: `https://www.youtube.com/embed/${videoId}`,
+                uploadDate: createdAt,
+            };
+        }
+    }
 
     const schemaData: any = {
         '@context': 'https://schema.org',
@@ -90,6 +119,7 @@ export default function RecipeSchema({
             recipeCategories.length === 1
                 ? recipeCategories[0]
                 : recipeCategories,
+        video: videoSchema,
     };
 
     return (
