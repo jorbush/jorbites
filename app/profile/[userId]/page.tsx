@@ -1,5 +1,4 @@
 import EmptyState from '@/app/components/utils/EmptyState';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import ProfileClient from '@/app/profile/[userId]/ProfileClient';
 import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
@@ -14,6 +13,7 @@ import UserStatsSkeleton from '@/app/components/stats/UserStatsSkeleton';
 import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
 import { Metadata } from 'next';
 import { OrderByType } from '@/app/utils/filter';
+import { Suspense } from 'react';
 
 interface IParams {
     userId?: string;
@@ -93,33 +93,31 @@ const ProfilePage = async (props: {
 
     if (!user && recipesResponse.recipes.length === 0) {
         return (
-            <ClientOnly>
-                <EmptyState
-                    title="No recipes found"
-                    subtitle="Looks like this user has not created recipes."
-                />
-            </ClientOnly>
+            <EmptyState
+                title="No recipes found"
+                subtitle="Looks like this user has not created recipes."
+            />
         );
     }
 
     return (
         <>
-            <ClientOnly fallback={<ProfileHeaderSkeleton />}>
+            <Suspense fallback={<ProfileHeaderSkeleton />}>
                 <ProfileHeader user={user} />
-            </ClientOnly>
+            </Suspense>
 
-            <ClientOnly fallback={<UserStatsSkeleton />}>
+            <Suspense fallback={<UserStatsSkeleton />}>
                 <UserStats user={user} />
-            </ClientOnly>
+            </Suspense>
 
             {graphRecipes.length > 0 && (
-                <ClientOnly fallback={<RecipeContributionGraphSkeleton />}>
+                <Suspense fallback={<RecipeContributionGraphSkeleton />}>
                     <RecipeContributionGraph recipes={graphRecipes} />
-                </ClientOnly>
+                </Suspense>
             )}
 
             {recipesResponse.recipes.length > 0 && (
-                <ClientOnly fallback={<ProfileClientSkeleton />}>
+                <Suspense fallback={<ProfileClientSkeleton />}>
                     <ProfileClient
                         recipes={recipesResponse.recipes}
                         currentUser={currentUser}
@@ -127,16 +125,14 @@ const ProfilePage = async (props: {
                         currentPage={recipesResponse.currentPage}
                         searchParams={searchParams}
                     />
-                </ClientOnly>
+                </Suspense>
             )}
 
             {recipesResponse.recipes.length === 0 && (
-                <ClientOnly>
-                    <EmptyState
-                        title="No recipes found"
-                        subtitle="Looks like this user has not created recipes."
-                    />
-                </ClientOnly>
+                <EmptyState
+                    title="No recipes found"
+                    subtitle="Looks like this user has not created recipes."
+                />
             )}
         </>
     );

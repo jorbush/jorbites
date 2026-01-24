@@ -2,9 +2,9 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import getQuests from '@/app/actions/getQuests';
 import QuestsClient from '@/app/quests/QuestsClient';
 import QuestsClientSkeleton from '@/app/components/quests/QuestsClientSkeleton';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import Container from '@/app/components/utils/Container';
 import ErrorDisplay from '@/app/components/utils/ErrorDisplay';
+import { Suspense } from 'react';
 
 interface QuestsPageProps {
     searchParams: Promise<{
@@ -26,7 +26,7 @@ const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
     });
 
     return (
-        <ClientOnly fallback={<QuestsClientSkeleton />}>
+        <Suspense fallback={<QuestsClientSkeleton />}>
             <Container>
                 {response.error ? (
                     <div className="min-h-[60vh]">
@@ -44,7 +44,7 @@ const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
                     />
                 )}
             </Container>
-        </ClientOnly>
+        </Suspense>
     );
 };
 

@@ -1,10 +1,10 @@
 import { Metadata } from 'next';
 import ChefsClient from './ChefsClient';
 import getChefs, { ChefOrderByType } from '@/app/actions/getChefs';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import Container from '@/app/components/utils/Container';
 import ErrorDisplay from '@/app/components/utils/ErrorDisplay';
 import ChefsListSkeleton from '@/app/components/chefs/ChefsListSkeleton';
+import { Suspense } from 'react';
 
 interface ChefsPageProps {
     searchParams: Promise<{
@@ -30,7 +30,7 @@ const ChefsPage = async ({ searchParams }: ChefsPageProps) => {
     });
 
     return (
-        <ClientOnly
+        <Suspense
             fallback={
                 <Container>
                     <div className="min-h-[60vh]">
@@ -55,7 +55,7 @@ const ChefsPage = async ({ searchParams }: ChefsPageProps) => {
                     currentPage={response.data?.currentPage || 1}
                 />
             )}
-        </ClientOnly>
+        </Suspense>
     );
 };
 

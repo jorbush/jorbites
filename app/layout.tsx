@@ -1,7 +1,6 @@
 import '@/app/globals.css';
 import { Nunito } from 'next/font/google';
 import Navbar from '@/app/components/navbar/Navbar';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import ToasterProvider from '@/app/providers/ToasterProvider';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import SmartFooter from '@/app/components/footer/SmartFooter';
@@ -109,21 +108,19 @@ export default async function RootLayout({
             <body
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
             >
-                <ClientOnly>
-                    <ToasterProvider />
-                    <LoginModal />
-                    <SettingsModal currentUser={currentUser} />
-                    <RecipeModal currentUser={currentUser} />
-                    <WorkshopModal currentUser={currentUser} />
-                    <RegisterModal />
-                    <ForgotPasswordModal />
-                    <QuestModal />
-                    <Navbar currentUser={currentUser} />
-                    <PullToRefresh
-                        threshold={150}
-                        indicator={true}
-                    />
-                </ClientOnly>
+                <ToasterProvider />
+                <LoginModal />
+                <SettingsModal currentUser={currentUser} />
+                <RecipeModal currentUser={currentUser} />
+                <WorkshopModal currentUser={currentUser} />
+                <RegisterModal />
+                <ForgotPasswordModal />
+                <QuestModal />
+                <Navbar currentUser={currentUser} />
+                <PullToRefresh
+                    threshold={150}
+                    indicator={true}
+                />
                 <main
                     id="main-content"
                     className="grow pt-28 pb-20"
