@@ -7,6 +7,7 @@ import Image from 'next/image';
 import packageJson from '@/package.json';
 import { FaGithub, FaTwitter, FaInstagram, FaEnvelope } from 'react-icons/fa';
 import { RiGitRepositoryLine } from 'react-icons/ri';
+import { CONTACT_EMAIL } from '@/app/utils/constants';
 import FooterMenu from './FooterMenu';
 
 const Footer = () => {
@@ -17,7 +18,7 @@ const Footer = () => {
     const socialLinks = [
         {
             icon: FaEnvelope,
-            href: 'mailto:jbonetv5@gmail.com',
+            href: `mailto:${CONTACT_EMAIL}`,
             label: 'Email',
         },
         {
