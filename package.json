@@ -9,7 +9,7 @@
     "lint": "next lint --max-warnings 0",
     "format": "prettier --write 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
     "check-format": "prettier --check 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
-    "vitest": "vitest run __tests__/unit_test/components __tests__/unit_test/pages __tests__/unit_test/utils",
+    "vitest": "vitest run __tests__/unit_test/components __tests__/unit_test/pages __tests__/unit_test/utils __tests__/unit_test/hooks",
     "jest": "jest __tests__/unit_test/routes",
     "cypress:open": "cypress open",
     "cypress": "cypress run"

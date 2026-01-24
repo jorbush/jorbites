@@ -68,10 +68,11 @@ export const getYoutubeVideoId = (urlOrId: string) => {
             }
         }
     } catch {
-        // If input is not a valid URL, fall back to regex-based extraction below
+        // If input is not a valid URL, fall back to regex-based extraction
+        const regExp =
+            /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+        const match = input.match(regExp);
+        return match && match[2].length === 11 ? match[2] : null;
     }
-    const regExp =
-        /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
-    const match = input.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null;
+    return null;
 };
