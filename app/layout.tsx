@@ -1,8 +1,8 @@
 import '@/app/globals.css';
-import '@/app/i18n';
 import { Nunito } from 'next/font/google';
 import Navbar from '@/app/components/navbar/Navbar';
 import ToasterProvider from '@/app/providers/ToasterProvider';
+import I18nProvider from '@/app/providers/I18nProvider';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import SmartFooter from '@/app/components/footer/SmartFooter';
 import { dynamicImport } from '@/app/utils/dynamicImport';
@@ -109,6 +109,7 @@ export default async function RootLayout({
             <body
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
             >
+                <I18nProvider />
                 <ToasterProvider />
                 <LoginModal />
                 <SettingsModal currentUser={currentUser} />
