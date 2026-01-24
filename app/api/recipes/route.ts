@@ -229,8 +229,15 @@ export async function POST(request: Request) {
         });
 
         // Invalidate cache
-        await redisCache.del(`recipes:graph:${currentUser.id}`);
-        await redisCache.incr('recipes:global:version');
+        try {
+            await redisCache.del(`recipes:graph:${currentUser.id}`);
+            await redisCache.incr('recipes:global:version');
+        } catch (error: any) {
+            logger.error('POST /api/recipes - cache invalidation error', {
+                error: error.message,
+                userId: currentUser.id,
+            });
+        }
 
         return NextResponse.json(recipe);
     } catch (error: any) {

@@ -358,7 +358,17 @@ export async function PATCH(
         logger.info('PATCH /api/recipe/[recipeId] - success', { recipeId });
 
         // Invalidate global recipe cache
-        await redisCache.incr('recipes:global:version');
+        try {
+            await redisCache.incr('recipes:global:version');
+        } catch (error: any) {
+            logger.error(
+                'PATCH /api/recipe/[recipeId] - cache invalidation error',
+                {
+                    error: error.message,
+                    recipeId,
+                }
+            );
+        }
 
         return NextResponse.json(updatedRecipe);
     } catch (error: any) {
@@ -448,8 +458,18 @@ export async function DELETE(
         });
 
         // Invalidate cache
-        await redisCache.del(`recipes:graph:${currentUser.id}`);
-        await redisCache.incr('recipes:global:version');
+        try {
+            await redisCache.del(`recipes:graph:${currentUser.id}`);
+            await redisCache.incr('recipes:global:version');
+        } catch (error: any) {
+            logger.error(
+                'DELETE /api/recipe/[recipeId] - cache invalidation error',
+                {
+                    error: error.message,
+                    recipeId,
+                }
+            );
+        }
 
         return NextResponse.json(deletedRecipe);
     } catch (error: any) {
