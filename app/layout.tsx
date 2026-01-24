@@ -1,5 +1,6 @@
 import '@/app/globals.css';
 import { Nunito } from 'next/font/google';
+import { Suspense } from 'react';
 import Navbar from '@/app/components/navbar/Navbar';
 import ToasterProvider from '@/app/providers/ToasterProvider';
 import I18nProvider from '@/app/providers/I18nProvider';
@@ -118,7 +119,9 @@ export default async function RootLayout({
                 <RegisterModal />
                 <ForgotPasswordModal />
                 <QuestModal />
-                <Navbar currentUser={currentUser} />
+                <Suspense fallback={<div className="h-20" />}>
+                    <Navbar currentUser={currentUser} />
+                </Suspense>
                 <PullToRefresh
                     threshold={150}
                     indicator={true}
