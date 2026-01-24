@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect, ReactNode, KeyboardEvent } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { FiChevronDown } from 'react-icons/fi';
 
 interface DropdownOption<T> {
@@ -164,47 +163,39 @@ function Dropdown<T extends string>({
                 )}
             </button>
 
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                        className={
-                            dropdownClassName ||
-                            'dark:bg-dark absolute top-full right-0 z-50 mt-2 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:text-neutral-100'
-                        }
+            {isOpen && (
+                <div
+                    className={`${
+                        dropdownClassName ||
+                        'dark:bg-dark absolute top-full right-0 z-50 mt-2 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:text-neutral-100'
+                    } animate-dropdown-open`}
+                    style={{
+                        animation: 'dropdownFadeIn 0.2s ease-out forwards',
+                    }}
+                >
+                    <div
+                        ref={listboxRef}
+                        role="listbox"
+                        aria-label={ariaLabel}
+                        className="w-max"
                     >
-                        <div
-                            ref={listboxRef}
-                            role="listbox"
-                            aria-label={ariaLabel}
-                            className="w-max"
-                        >
-                            {options.map((option, index) => (
-                                <button
-                                    key={option.value}
-                                    type="button"
-                                    role="option"
-                                    aria-selected={option.value === value}
-                                    onClick={() =>
-                                        handleOptionClick(option.value)
-                                    }
-                                    className={getOptionClassName(
-                                        option,
-                                        index
-                                    )}
-                                >
-                                    <span className="whitespace-nowrap">
-                                        {option.label}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        {options.map((option, index) => (
+                            <button
+                                key={option.value}
+                                type="button"
+                                role="option"
+                                aria-selected={option.value === value}
+                                onClick={() => handleOptionClick(option.value)}
+                                className={getOptionClassName(option, index)}
+                            >
+                                <span className="whitespace-nowrap">
+                                    {option.label}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
