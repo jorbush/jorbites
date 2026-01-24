@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
-import { vi, describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 describe('RecipeSchema', () => {
     const defaultProps = {
