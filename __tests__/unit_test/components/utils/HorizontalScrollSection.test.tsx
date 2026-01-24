@@ -2,20 +2,6 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import HorizontalScrollSection from '@/app/components/utils/HorizontalScrollSection';
 
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-    motion: {
-        button: ({ children, onClick, ...props }: any) => (
-            <button
-                onClick={onClick}
-                {...props}
-            >
-                {children}
-            </button>
-        ),
-    },
-}));
-
 describe('HorizontalScrollSection', () => {
     beforeEach(() => {
         // Mock scrollTo for testing
