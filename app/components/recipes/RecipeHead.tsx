@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, TouchEvent } from 'react';
+import { useState, useRef, useEffect, TouchEvent } from 'react';
 import { FiChevronLeft, FiChevronRight, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/navigation/Heading';
 import { useRouter } from 'next/navigation';
@@ -24,6 +24,15 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     const { share } = useShare();
     const touchStartX = useRef(0);
     const touchEndX = useRef(0);
+    const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (transitionTimeoutRef.current) {
+                clearTimeout(transitionTimeoutRef.current);
+            }
+        };
+    }, []);
 
     const goToPreviousImage = () => {
         if (isTransitioning) return;
@@ -33,7 +42,14 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 : currentImageIndex - 1;
         setIsTransitioning(true);
         setCurrentImageIndex(newIndex);
-        setTimeout(() => setIsTransitioning(false), 300);
+        
+        if (transitionTimeoutRef.current) {
+            clearTimeout(transitionTimeoutRef.current);
+        }
+        transitionTimeoutRef.current = setTimeout(() => {
+            setIsTransitioning(false);
+            transitionTimeoutRef.current = null;
+        }, 300);
     };
 
     const goToNextImage = () => {
@@ -44,12 +60,20 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 : currentImageIndex + 1;
         setIsTransitioning(true);
         setCurrentImageIndex(newIndex);
-        setTimeout(() => setIsTransitioning(false), 300);
+        
+        if (transitionTimeoutRef.current) {
+            clearTimeout(transitionTimeoutRef.current);
+        }
+        transitionTimeoutRef.current = setTimeout(() => {
+            setIsTransitioning(false);
+            transitionTimeoutRef.current = null;
+        }, 300);
     };
 
     const handleTouchStart = (e: TouchEvent) => {
         if (imagesSrc.length <= 1) return;
         touchStartX.current = e.touches[0].clientX;
+        touchEndX.current = touchStartX.current;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
@@ -58,7 +82,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     };
 
     const handleTouchEnd = () => {
-        if (imagesSrc.length <= 1) return;
+        if (imagesSrc.length <= 1 || isTransitioning) return;
         const swipeDistance = touchStartX.current - touchEndX.current;
         const minSwipeDistance = 50;
 
@@ -159,7 +183,14 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                         if (isTransitioning) return;
                                         setIsTransitioning(true);
                                         setCurrentImageIndex(index);
-                                        setTimeout(() => setIsTransitioning(false), 300);
+                                        
+                                        if (transitionTimeoutRef.current) {
+                                            clearTimeout(transitionTimeoutRef.current);
+                                        }
+                                        transitionTimeoutRef.current = setTimeout(() => {
+                                            setIsTransitioning(false);
+                                            transitionTimeoutRef.current = null;
+                                        }, 300);
                                     }}
                                     className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${
                                         index === currentImageIndex
