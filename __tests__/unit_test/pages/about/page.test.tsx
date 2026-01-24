@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import AboutPage from '@/app/about/page';
@@ -10,11 +10,16 @@ vi.mock('@/app/actions/getCurrentUser', () => ({
     default: vi.fn(),
 }));
 
-vi.mock('@/app/components/utils/ClientOnly', () => ({
-    default: ({ children }: { children: React.ReactNode }) => (
-        <div data-testid="client-only">{children}</div>
-    ),
-}));
+vi.mock('react', async () => {
+    const actual = await vi.importActual('react');
+    return {
+        ...actual,
+        Suspense: ({ children }: { children: React.ReactNode }) => (
+            <div data-testid="suspense">{children}</div>
+        ),
+    };
+});
+
 vi.mock('@/app/about/AboutClient', () => ({
     default: ({ currentUser }: { currentUser?: SafeUser | null }) => (
         <div
@@ -24,6 +29,10 @@ vi.mock('@/app/about/AboutClient', () => ({
             About Client Component
         </div>
     ),
+}));
+
+vi.mock('@/app/components/about/AboutClientSkeleton', () => ({
+    default: () => <div data-testid="about-skeleton">Loading...</div>,
 }));
 
 describe('AboutPage', () => {
@@ -58,7 +67,7 @@ describe('AboutPage', () => {
         const page = await AboutPage();
         render(page);
 
-        expect(screen.getByTestId('client-only')).toBeDefined();
+        expect(screen.getByTestId('suspense')).toBeDefined();
         expect(screen.getByTestId('about-client')).toBeDefined();
     });
 
@@ -84,18 +93,18 @@ describe('AboutPage', () => {
         expect(aboutClient.getAttribute('data-current-user')).toBe('null');
     });
 
-    it('wraps AboutClient in ClientOnly component', async () => {
+    it('wraps AboutClient in Suspense component', async () => {
         vi.mocked(getCurrentUser).mockResolvedValue(null);
 
         const page = await AboutPage();
         render(page);
 
-        const clientOnly = screen.getByTestId('client-only');
+        const suspense = screen.getByTestId('suspense');
         const aboutClient = screen.getByTestId('about-client');
 
-        expect(clientOnly).toBeDefined();
+        expect(suspense).toBeDefined();
         expect(aboutClient).toBeDefined();
-        expect(clientOnly.contains(aboutClient)).toBe(true);
+        expect(suspense.contains(aboutClient)).toBe(true);
     });
 
     it('calls getCurrentUser action', async () => {
