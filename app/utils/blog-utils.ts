@@ -57,6 +57,7 @@ export async function getBlogById(
             const filePath = path.join(blogsDirectory, subdir, `${id}.md`);
             if (fs.existsSync(filePath)) {
                 const { frontmatter, content } = readBlogFile(filePath);
+                const category = subdir === 'releases' ? 'releases' : 'general';
 
                 return {
                     id,
@@ -64,6 +65,7 @@ export async function getBlogById(
                     frontmatter,
                     content,
                     language: lang,
+                    category: category as 'general' | 'releases',
                 };
             }
         }
@@ -106,6 +108,7 @@ export async function getAllBlogs(
                 frontmatter,
                 content,
                 language,
+                category,
             };
         });
 

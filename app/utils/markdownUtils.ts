@@ -31,6 +31,7 @@ export interface Blog {
     frontmatter: BlogFrontmatter;
     content: string;
     language: string;
+    category?: 'general' | 'releases';
 }
 
 /**

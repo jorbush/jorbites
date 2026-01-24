@@ -101,6 +101,12 @@ vi.mock('@/app/components/VerificationBadge', () => ({
     ),
 }));
 
+vi.mock('@/app/components/blog/BlogCard', () => ({
+    default: ({ blog }: { blog: any }) => (
+        <div data-testid={`blog-card-${blog.id}`}>{blog.frontmatter.title}</div>
+    ),
+}));
+
 describe('BlogDetail', () => {
     const mockBlog: Blog = {
         id: 'test-blog',
@@ -113,6 +119,7 @@ describe('BlogDetail', () => {
         },
         content: 'This is the blog content',
         language: 'en',
+        category: 'general',
     };
 
     const mockAuthor = {
@@ -143,6 +150,7 @@ describe('BlogDetail', () => {
             <BlogDetail
                 blog={mockBlog}
                 author={mockAuthor}
+                relatedBlogs={[]}
             />
         );
 
@@ -161,6 +169,7 @@ describe('BlogDetail', () => {
             <BlogDetail
                 blog={mockBlog}
                 author={mockAuthor}
+                relatedBlogs={[]}
             />
         );
 
@@ -174,6 +183,7 @@ describe('BlogDetail', () => {
             <BlogDetail
                 blog={mockBlog}
                 author={mockAuthor}
+                relatedBlogs={[]}
             />
         );
 
@@ -185,10 +195,66 @@ describe('BlogDetail', () => {
             <BlogDetail
                 blog={mockBlog}
                 author={null}
+                relatedBlogs={[]}
             />
         );
 
         expect(screen.getByText('Test Blog Post')).toBeDefined();
         expect(screen.queryByText('Test Author')).toBeNull();
+    });
+
+    it('displays related blogs when provided', () => {
+        const relatedBlogs: Blog[] = [
+            {
+                id: 'related-1',
+                slug: 'related-1',
+                frontmatter: {
+                    title: 'Related Blog 1',
+                    description: 'First related blog',
+                    date: '2025-08-28',
+                    user_id: '789',
+                },
+                content: 'Content 1',
+                language: 'en',
+                category: 'general',
+            },
+            {
+                id: 'related-2',
+                slug: 'related-2',
+                frontmatter: {
+                    title: 'Related Blog 2',
+                    description: 'Second related blog',
+                    date: '2025-08-27',
+                    user_id: '790',
+                },
+                content: 'Content 2',
+                language: 'en',
+                category: 'general',
+            },
+        ];
+
+        render(
+            <BlogDetail
+                blog={mockBlog}
+                author={mockAuthor}
+                relatedBlogs={relatedBlogs}
+            />
+        );
+
+        // Check if "See more" section is displayed
+        expect(screen.getByText('see_more')).toBeDefined();
+    });
+
+    it('does not display "See more" section when no related blogs', () => {
+        render(
+            <BlogDetail
+                blog={mockBlog}
+                author={mockAuthor}
+                relatedBlogs={[]}
+            />
+        );
+
+        // Check if "See more" section is NOT displayed
+        expect(screen.queryByText('see_more')).toBeNull();
     });
 });
