@@ -76,7 +76,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                     {showLeftArrow && (
                         <button
                             onClick={() => scroll('left')}
-                            className="absolute top-1/2 left-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition-all duration-200 ease-in-out group-hover:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
+                            className="absolute top-1/2 left-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition-[opacity,background-color] duration-200 ease-in-out group-hover:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
                             aria-label="Scroll left"
                         >
                             <FiChevronLeft className="h-6 w-6 text-neutral-700 dark:text-neutral-200" />
@@ -102,7 +102,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                     {showRightArrow && (
                         <button
                             onClick={() => scroll('right')}
-                            className="absolute top-1/2 right-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition-all duration-200 ease-in-out group-hover:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
+                            className="absolute top-1/2 right-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition-[opacity,background-color] duration-200 ease-in-out group-hover:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
                             aria-label="Scroll right"
                         >
                             <FiChevronRight className="h-6 w-6 text-neutral-700 dark:text-neutral-200" />
