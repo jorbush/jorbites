@@ -67,7 +67,9 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
                 // If current blog is a release, show only release blogs
                 try {
                     const category =
-                        blogData.category === 'releases' ? 'releases' : 'general';
+                        blogData.category === 'releases'
+                            ? 'releases'
+                            : 'general';
                     const blogsResponse = await fetch(
                         `/api/blogs?lang=${i18n.language || 'en'}&pageSize=4&category=${category}`
                     );
