@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, TouchEvent } from 'react';
 import { FiChevronLeft, FiChevronRight, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/navigation/Heading';
 import { useRouter } from 'next/navigation';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
-import { motion, AnimatePresence } from 'framer-motion';
 import useShare from '@/app/hooks/useShare';
 
 interface RecipeHeadProps {
@@ -20,52 +19,53 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     imagesSrc,
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [[_page, direction], setPage] = useState([0, 0]);
+    const [isTransitioning, setIsTransitioning] = useState(false);
     const router = useRouter();
     const { share } = useShare();
+    const touchStartX = useRef(0);
+    const touchEndX = useRef(0);
 
     const goToPreviousImage = () => {
+        if (isTransitioning) return;
         const newIndex =
             currentImageIndex === 0
                 ? imagesSrc.length - 1
                 : currentImageIndex - 1;
-        setPage([newIndex, -1]);
+        setIsTransitioning(true);
         setCurrentImageIndex(newIndex);
+        setTimeout(() => setIsTransitioning(false), 300);
     };
 
     const goToNextImage = () => {
+        if (isTransitioning) return;
         const newIndex =
             currentImageIndex === imagesSrc.length - 1
                 ? 0
                 : currentImageIndex + 1;
-        setPage([newIndex, 1]);
+        setIsTransitioning(true);
         setCurrentImageIndex(newIndex);
+        setTimeout(() => setIsTransitioning(false), 300);
     };
 
-    // Swipe threshold for touch gesture detection
-    // Higher values require more deliberate swipes to prevent accidental navigation
-    const SWIPE_CONFIDENCE_THRESHOLD = 10000;
-    const swipePower = (offset: number, velocity: number) => {
-        return Math.abs(offset) * velocity;
+    const handleTouchStart = (e: TouchEvent) => {
+        if (imagesSrc.length <= 1) return;
+        touchStartX.current = e.touches[0].clientX;
     };
 
-    const paginate = (newDirection: number) => {
-        if (newDirection === 1) {
+    const handleTouchMove = (e: TouchEvent) => {
+        if (imagesSrc.length <= 1) return;
+        touchEndX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+        if (imagesSrc.length <= 1) return;
+        const swipeDistance = touchStartX.current - touchEndX.current;
+        const minSwipeDistance = 50;
+
+        if (swipeDistance > minSwipeDistance) {
             goToNextImage();
-        } else {
+        } else if (swipeDistance < -minSwipeDistance) {
             goToPreviousImage();
-        }
-    };
-
-    const handleDragEnd = (
-        _e: MouseEvent | TouchEvent | PointerEvent,
-        { offset, velocity }: { offset: { x: number }; velocity: { x: number } }
-    ) => {
-        const swipe = swipePower(offset.x, velocity.x);
-        if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) {
-            paginate(1);
-        } else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) {
-            paginate(-1);
         }
     };
 
@@ -91,54 +91,37 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                     <FiShare2 className="text-xl" />
                 </button>
             </div>
-            <div className="relative h-[60vh] w-full overflow-hidden rounded-xl">
-                <AnimatePresence
-                    initial={false}
-                    custom={direction}
-                >
-                    <motion.div
-                        key={currentImageIndex}
-                        custom={direction}
-                        variants={{
-                            enter: (direction: number) => ({
-                                x: direction > 0 ? '100%' : '-100%',
-                            }),
-                            center: {
-                                zIndex: 1,
-                                x: 0,
-                            },
-                            exit: (direction: number) => ({
-                                zIndex: 0,
-                                x: direction < 0 ? '100%' : '-100%',
-                            }),
+            <div 
+                className="relative h-[60vh] w-full overflow-hidden rounded-xl"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+            >
+                {imagesSrc.map((imageSrc, index) => (
+                    <div
+                        key={index}
+                        className="absolute h-full w-full transition-all duration-300 ease-in-out"
+                        style={{
+                            transform: `translateX(${
+                                (index - currentImageIndex) * 100
+                            }%)`,
+                            opacity: index === currentImageIndex ? 1 : 0,
+                            pointerEvents: index === currentImageIndex ? 'auto' : 'none',
                         }}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        transition={{
-                            x: { type: 'spring', stiffness: 300, damping: 30 },
-                        }}
-                        drag={imagesSrc.length > 1 ? 'x' : false}
-                        dragConstraints={{ left: 0, right: 0 }}
-                        dragElastic={1}
-                        onDragEnd={handleDragEnd}
-                        className="absolute h-full w-full overflow-hidden rounded-xl"
                     >
                         <CustomProxyImage
-                            src={
-                                imagesSrc[currentImageIndex] || '/avocado.webp'
-                            }
+                            src={imageSrc || '/avocado.webp'}
                             fill
-                            priority={true}
+                            priority={index === 0}
                             className="rounded-xl object-cover"
                             alt="Recipe Image"
                             maxQuality={true}
                             quality="auto:best"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                            preloadViaProxy={true}
+                            preloadViaProxy={index === 0}
                         />
-                    </motion.div>
-                </AnimatePresence>
+                    </div>
+                ))}
                 {imagesSrc.length > 1 && (
                     <>
                         <div
@@ -173,10 +156,10 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                 <button
                                     key={index}
                                     onClick={() => {
-                                        const newDirection =
-                                            index > currentImageIndex ? 1 : -1;
-                                        setPage([index, newDirection]);
+                                        if (isTransitioning) return;
+                                        setIsTransitioning(true);
                                         setCurrentImageIndex(index);
+                                        setTimeout(() => setIsTransitioning(false), 300);
                                     }}
                                     className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${
                                         index === currentImageIndex

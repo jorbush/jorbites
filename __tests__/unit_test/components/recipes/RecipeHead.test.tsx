@@ -60,19 +60,20 @@ describe('<RecipeHead />', () => {
         const nextButton = nextButtonContainer.querySelector(
             'div[style*="pointer-events: auto"]'
         );
-        let image = screen.getByAltText('Recipe Image');
-        expect(image).toHaveProperty(
-            'src',
-            expect.stringContaining('image1.jpg')
-        );
+        
         fireEvent.click(nextButton!);
+        
         // Wait for the animation and state update
         await waitFor(() => {
-            image = screen.getByAltText('Recipe Image');
-            expect(image).toHaveProperty(
+            const images = screen.getAllByAltText('Recipe Image');
+            // The second image should be visible now
+            expect(images[1]).toHaveProperty(
                 'src',
                 expect.stringContaining('image2.jpg')
             );
+            // Check that the parent container has the right opacity
+            const parent1 = images[1].parentElement?.parentElement;
+            expect(parent1?.style.opacity).toBe('1');
         });
     });
 
@@ -85,11 +86,15 @@ describe('<RecipeHead />', () => {
         fireEvent.click(prevButton!);
         // Wait for the animation and state update
         await waitFor(() => {
-            const image = screen.getByAltText('Recipe Image');
-            expect(image).toHaveProperty(
+            const images = screen.getAllByAltText('Recipe Image');
+            // The second image should be visible now (wraps around)
+            expect(images[1]).toHaveProperty(
                 'src',
                 expect.stringContaining('image2.jpg')
             );
+            // Check that the parent container has the right opacity
+            const parent1 = images[1].parentElement?.parentElement;
+            expect(parent1?.style.opacity).toBe('1');
         });
     });
 
@@ -140,11 +145,15 @@ describe('<RecipeHead />', () => {
         fireEvent.click(dotIndicator1);
         // Wait for the animation and state update
         await waitFor(() => {
-            const image = screen.getByAltText('Recipe Image');
-            expect(image).toHaveProperty(
+            const images = screen.getAllByAltText('Recipe Image');
+            // The second image should be visible now
+            expect(images[1]).toHaveProperty(
                 'src',
                 expect.stringContaining('image2.jpg')
             );
+            // Check that the parent container has the right opacity
+            const parent1 = images[1].parentElement?.parentElement;
+            expect(parent1?.style.opacity).toBe('1');
         });
     });
 
