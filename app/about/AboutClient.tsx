@@ -9,6 +9,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FaGithub, FaEnvelope, FaHeart } from 'react-icons/fa';
 import { RiGitRepositoryLine } from 'react-icons/ri';
+import { CONTACT_EMAIL } from '@/app/utils/constants';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
 
 interface AboutClientProps {
@@ -263,7 +264,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                             <span>{t('github')}</span>
                                         </a>
                                         <a
-                                            href="mailto:jbonetv5@gmail.com"
+                                            href={`mailto:${CONTACT_EMAIL}`}
                                             className="flex items-center space-x-2 text-neutral-600 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
                                         >
                                             <FaEnvelope className="h-5 w-5" />
