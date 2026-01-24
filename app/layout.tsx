@@ -1,4 +1,5 @@
 import '@/app/globals.css';
+import '@/app/i18n';
 import { Nunito } from 'next/font/google';
 import Navbar from '@/app/components/navbar/Navbar';
 import ToasterProvider from '@/app/providers/ToasterProvider';
