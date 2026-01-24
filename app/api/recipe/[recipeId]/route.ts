@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
+import { redisCache } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
 import getRecipeById from '@/app/actions/getRecipeById';
@@ -355,6 +356,20 @@ export async function PATCH(
         });
 
         logger.info('PATCH /api/recipe/[recipeId] - success', { recipeId });
+
+        // Invalidate global recipe cache
+        try {
+            await redisCache.incr('recipes:global:version');
+        } catch (error: any) {
+            logger.error(
+                'PATCH /api/recipe/[recipeId] - cache invalidation error',
+                {
+                    error: error.message,
+                    recipeId,
+                }
+            );
+        }
+
         return NextResponse.json(updatedRecipe);
     } catch (error: any) {
         logger.error('PATCH /api/recipe/[recipeId] - error', {
@@ -441,6 +456,21 @@ export async function DELETE(
         logger.info('DELETE /api/recipe/[recipeId] - success', {
             recipeId,
         });
+
+        // Invalidate cache
+        try {
+            await redisCache.del(`recipes:graph:${currentUser.id}`);
+            await redisCache.incr('recipes:global:version');
+        } catch (error: any) {
+            logger.error(
+                'DELETE /api/recipe/[recipeId] - cache invalidation error',
+                {
+                    error: error.message,
+                    recipeId,
+                }
+            );
+        }
+
         return NextResponse.json(deletedRecipe);
     } catch (error: any) {
         logger.error('DELETE /api/recipe/[recipeId] - error', {

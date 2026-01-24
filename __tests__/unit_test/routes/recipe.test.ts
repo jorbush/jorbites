@@ -8,7 +8,21 @@ import { Session } from 'next-auth';
 
 let mockedSession: Session | null = null;
 
-// This mocks our custom helper function to avoid passing authOptions around
+jest.mock('@/app/lib/redis', () => ({
+    redis: {
+        get: jest.fn(),
+        set: jest.fn(),
+        del: jest.fn(),
+        incr: jest.fn(),
+    },
+    redisCache: {
+        get: jest.fn(),
+        set: jest.fn(),
+        del: jest.fn(),
+        incr: jest.fn(),
+    },
+}));
+
 jest.mock('@/pages/api/auth/[...nextauth].ts', () => ({
     authOptions: {
         adapter: {},
@@ -17,7 +31,6 @@ jest.mock('@/pages/api/auth/[...nextauth].ts', () => ({
     },
 }));
 
-// This mocks calls to getServerSession
 jest.mock('next-auth/next', () => ({
     getServerSession: jest.fn(() => {
         return Promise.resolve(mockedSession);

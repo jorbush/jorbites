@@ -97,7 +97,7 @@ const Footer = () => {
                             alt="Jorbites Logo"
                             width={24}
                             height={24}
-                            className="transition-transform group-hover:scale-110"
+                            className="h-6 w-7 transition-transform group-hover:scale-110"
                         />
                         <span className="text-base text-neutral-600 dark:text-neutral-400">
                             Jorbites

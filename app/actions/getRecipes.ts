@@ -1,4 +1,5 @@
 import prisma from '@/app/lib/prismadb';
+import { redisCache } from '@/app/lib/redis';
 import { SafeRecipe } from '@/app/types';
 import {
     OrderByType,
@@ -42,6 +43,15 @@ export default async function getRecipes(
     params: IRecipesParams
 ): Promise<ServerResponse<RecipesResponse>> {
     try {
+        const version = (await redisCache.get('recipes:global:version')) || '0';
+        const cacheKey = `recipes:${version}:${JSON.stringify(params)}`;
+        const cachedData = await redisCache.get(cacheKey);
+
+        if (cachedData) {
+            logger.info('getRecipes - cache hit', { params });
+            return JSON.parse(cachedData);
+        }
+
         logger.info('getRecipes - start', { params });
         const {
             category,
@@ -56,7 +66,6 @@ export default async function getRecipes(
         let query: any = {};
 
         if (typeof category === 'string') {
-            // Filter recipes that have this category in their categories array
             query.categories = {
                 has: category,
             };
@@ -74,14 +83,12 @@ export default async function getRecipes(
             query = { ...query, ...dateRangeFilter };
         }
 
-        // Rate limiting with per-user limits (higher for authenticated users)
         if (process.env.ENV === 'production') {
             const currentUser = await getCurrentUser();
             const rateLimitKey = currentUser
                 ? currentUser.id
                 : ((await headers()).get('x-forwarded-for') ?? 'unknown-ip');
 
-            // Use different rate limits for authenticated vs unauthenticated users
             const ratelimit = currentUser
                 ? authenticatedRatelimit
                 : unauthenticatedRatelimit;
@@ -115,7 +122,8 @@ export default async function getRecipes(
         }));
 
         logger.info('getRecipes - success', { totalRecipes, page, limit });
-        return {
+
+        const response = {
             data: {
                 recipes: safeRecipes,
                 totalRecipes,
@@ -124,6 +132,10 @@ export default async function getRecipes(
             },
             error: null,
         };
+
+        await redisCache.set(cacheKey, JSON.stringify(response), 'EX', 86400); // 1 day
+
+        return response;
     } catch (error: any) {
         logger.error('getRecipes - error', { error: error.message, params });
         return {

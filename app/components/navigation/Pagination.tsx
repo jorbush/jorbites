@@ -55,7 +55,10 @@ const Pagination = ({
                     aria-hidden="true"
                 />
             </button>
-            <span className="px-4 py-2 dark:text-gray-600">
+            <span
+                className="px-4 py-2 dark:text-gray-600"
+                suppressHydrationWarning
+            >
                 {currentPage} {t('of')} {totalPages}
             </span>
             <button
