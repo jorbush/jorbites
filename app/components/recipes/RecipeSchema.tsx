@@ -13,7 +13,7 @@ interface RecipeSchemaProps {
     ingredients?: string[];
     steps?: string[];
     categories?: string[];
-    youtubeUrl?: string; // Optional YouTube URL
+    youtubeUrl?: string | null;
 }
 
 export default function RecipeSchema({
