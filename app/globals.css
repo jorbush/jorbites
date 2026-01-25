@@ -68,6 +68,8 @@ body,
   }
 
   .navbar-categories.open {
+    /* Using 1000px as a safe maximum - should accommodate any reasonable number of categories.
+       CSS transitions require a specific pixel value (not auto/max-content) to animate smoothly. */
     max-height: 1000px;
     opacity: 1;
   }
