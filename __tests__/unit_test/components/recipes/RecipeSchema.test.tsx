@@ -84,4 +84,58 @@ describe('RecipeSchema', () => {
         expect(json.image).toBe(expectedImageUrl);
         expect(json.image).not.toContain('w_500');
     });
+    it('includes video object when youtubeUrl is provided', () => {
+        const props = {
+            ...mockProps,
+            youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        };
+        const { container } = render(<RecipeSchema {...props} />);
+
+        const scriptTag = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const data = JSON.parse(scriptTag?.innerHTML || '{}');
+
+        expect(data.video).toBeDefined();
+        expect(data.video).toMatchObject({
+            '@type': 'VideoObject',
+            name: mockProps.title,
+            description: mockProps.description,
+            contentUrl: props.youtubeUrl,
+            embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        });
+        expect(data.video.thumbnailUrl).toContain(
+            'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'
+        );
+    });
+
+    it('does not include video object if youtubeUrl is invalid', () => {
+        const props = {
+            ...mockProps,
+            youtubeUrl: 'https://invalid-url.com',
+        };
+        const { container } = render(<RecipeSchema {...props} />);
+
+        const scriptTag = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const data = JSON.parse(scriptTag?.innerHTML || '{}');
+
+        expect(data.video).toBeUndefined();
+    });
+
+    it('does not include video object if youtubeUrl is null', () => {
+        const props = {
+            ...mockProps,
+            youtubeUrl: null,
+        };
+        const { container } = render(<RecipeSchema {...props} />);
+
+        const scriptTag = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const data = JSON.parse(scriptTag?.innerHTML || '{}');
+
+        expect(data.video).toBeUndefined();
+    });
 });

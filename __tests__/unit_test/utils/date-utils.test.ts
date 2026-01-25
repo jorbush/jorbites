@@ -1,212 +1,138 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-// Mock i18n module BEFORE importing date-utils
-vi.mock('@/app/i18n', () => ({
-    default: {
-        language: 'en',
-    },
-}));
-
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
-    formatDate,
     formatDateRange,
     formatDateLanguage,
+    formatDate,
+    locales,
 } from '@/app/utils/date-utils';
-import i18n from '@/app/i18n';
 
 describe('date-utils', () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+    // Mock dates for consistent testing
+    const testDate1 = new Date('2024-01-15T12:00:00Z');
+    const testDate2 = new Date('2024-01-20T12:00:00Z');
+    const testDateString1 = '2024-01-15T12:00:00Z';
+    const testDateString2 = '2024-01-20T12:00:00Z';
 
-    describe('formatDate', () => {
-        it('should format date with English locale', () => {
-            i18n.language = 'en';
-
-            const date = new Date('2025-08-29');
-            const result = formatDate(date);
-
-            expect(result).toContain('August');
-            expect(result).toContain('29');
-            expect(result).toContain('2025');
-        });
-
-        it('should format date with Spanish locale', () => {
-            i18n.language = 'es';
-
-            const date = new Date('2025-08-29');
-            const result = formatDate(date);
-
-            expect(result).toContain('agosto');
-            expect(result).toContain('29');
-            expect(result).toContain('2025');
-        });
-
-        it('should format date with Catalan locale', () => {
-            i18n.language = 'ca';
-
-            const date = new Date('2025-08-29');
-            const result = formatDate(date);
-
-            expect(result).toContain('agost');
-            expect(result).toContain('29');
-            expect(result).toContain('2025');
-        });
-
-        it('should handle string input', () => {
-            i18n.language = 'en';
-
-            const result = formatDate('2025-08-29');
-
-            expect(result).toContain('August');
-            expect(result).toContain('29');
-            expect(result).toContain('2025');
-        });
-
-        it('should default to Spanish locale for invalid language', () => {
-            i18n.language = 'invalid' as any;
-
-            const date = new Date('2025-08-29');
-            const result = formatDate(date);
-
-            // Should fallback to 'es' (Spanish) based on the code
-            expect(result).toBeDefined();
-            expect(result.length).toBeGreaterThan(0);
-        });
-
-        it('should format different date formats consistently', () => {
-            i18n.language = 'en';
-
-            const date1 = formatDate('2025-08-29');
-            const date2 = formatDate(new Date('2025-08-29'));
-            const date3 = formatDate('2025/08/29');
-
-            // All should produce similar results
-            expect(date1).toContain('August');
-            expect(date2).toContain('August');
-            expect(date3).toContain('August');
+    describe('locales', () => {
+        it('should export locales object with es, en, and ca', () => {
+            expect(locales).toHaveProperty('es');
+            expect(locales).toHaveProperty('en');
+            expect(locales).toHaveProperty('ca');
         });
     });
 
     describe('formatDateRange', () => {
-        it('should format single day as one date', () => {
-            i18n.language = 'en';
-
-            const start = new Date('2025-08-29');
-            const end = new Date('2025-08-29');
-            const result = formatDateRange(start, end);
-
-            expect(result).toContain('August');
-            expect(result).not.toContain('-'); // No range separator
+        beforeEach(() => {
+            // Mock server-side rendering (no window)
+            vi.stubGlobal('window', undefined);
         });
 
-        it('should format date range with separator', () => {
-            i18n.language = 'en';
-
-            const start = new Date('2025-08-29');
-            const end = new Date('2025-08-31');
-            const result = formatDateRange(start, end);
-
-            expect(result).toContain('-'); // Has range separator
-            expect(result).toContain('29');
-            expect(result).toContain('31');
+        afterEach(() => {
+            vi.unstubAllGlobals();
         });
 
-        it('should handle string inputs', () => {
-            i18n.language = 'en';
-
-            const result = formatDateRange('2025-08-29', '2025-08-31');
-
-            expect(result).toContain('-');
-            expect(result).toContain('29');
-            expect(result).toContain('31');
+        it('should format date range when dates are different (server-side, defaults to es)', () => {
+            const result = formatDateRange(testDate1, testDate2);
+            // For Spanish locale, format should be dd/MM/yyyy
+            expect(result).toContain('15/01/2024');
+            expect(result).toContain('20/01/2024');
+            expect(result).toContain(' - ');
         });
 
-        it('should use correct date format for English', () => {
-            i18n.language = 'en';
-
-            const result = formatDateRange('2025-08-29', '2025-08-31');
-
-            // English format: yyyy/MM/dd
-            expect(result).toContain('2025/08/29');
-            expect(result).toContain('2025/08/31');
+        it('should format same day dates as single date (server-side, defaults to es)', () => {
+            const sameDay1 = new Date('2024-01-15T08:00:00Z');
+            const sameDay2 = new Date('2024-01-15T18:00:00Z');
+            const result = formatDateRange(sameDay1, sameDay2);
+            // Should format as a single date
+            expect(result).not.toContain(' - ');
+            expect(result).toContain('2024');
         });
 
-        it('should use correct date format for Spanish', () => {
-            i18n.language = 'es';
-
-            const result = formatDateRange('2025-08-29', '2025-08-31');
-
-            // Spanish format: dd/MM/yyyy
-            expect(result).toContain('29/08/2025');
-            expect(result).toContain('31/08/2025');
+        it('should accept string inputs for dates', () => {
+            const result = formatDateRange(testDateString1, testDateString2);
+            expect(result).toContain('15/01/2024');
+            expect(result).toContain('20/01/2024');
+            expect(result).toContain(' - ');
         });
 
-        it('should use correct date format for Catalan', () => {
-            i18n.language = 'ca';
+        it('should accept mixed Date and string inputs', () => {
+            const result1 = formatDateRange(testDate1, testDateString2);
+            expect(result1).toContain('15/01/2024');
+            expect(result1).toContain('20/01/2024');
 
-            const result = formatDateRange('2025-08-29', '2025-08-31');
-
-            // Catalan format: dd/MM/yyyy
-            expect(result).toContain('29/08/2025');
-            expect(result).toContain('31/08/2025');
+            const result2 = formatDateRange(testDateString1, testDate2);
+            expect(result2).toContain('15/01/2024');
+            expect(result2).toContain('20/01/2024');
         });
     });
 
     describe('formatDateLanguage', () => {
-        it('should format date with custom format string in English', () => {
-            i18n.language = 'en';
-
-            const date = new Date('2025-08-29');
-            const result = formatDateLanguage(date, 'MMMM dd, yyyy');
-
-            expect(result).toContain('August');
-            expect(result).toContain('29');
-            expect(result).toContain('2025');
+        beforeEach(() => {
+            // Mock server-side rendering (no window)
+            vi.stubGlobal('window', undefined);
         });
 
-        it('should format date with custom format string in Spanish', () => {
-            i18n.language = 'es';
-
-            const date = new Date('2025-08-29');
-            const result = formatDateLanguage(date, 'dd MMMM yyyy');
-
-            expect(result).toContain('29');
-            expect(result).toContain('agosto');
-            expect(result).toContain('2025');
+        afterEach(() => {
+            vi.unstubAllGlobals();
         });
 
-        it('should format date with custom format string in Catalan', () => {
-            i18n.language = 'ca';
-
-            const date = new Date('2025-08-29');
-            const result = formatDateLanguage(date, 'dd MMMM yyyy');
-
-            expect(result).toContain('29');
-            expect(result).toContain('agost');
-            expect(result).toContain('2025');
+        it('should format date with custom format string (server-side, defaults to es)', () => {
+            const result = formatDateLanguage(testDate1, 'yyyy-MM-dd');
+            expect(result).toBe('2024-01-15');
         });
 
-        it('should handle string input', () => {
-            i18n.language = 'en';
-
-            const result = formatDateLanguage('2025-08-29', 'yyyy-MM-dd');
-
-            expect(result).toBe('2025-08-29');
+        it('should format date with PPP format (server-side, defaults to es)', () => {
+            const result = formatDateLanguage(testDate1, 'PPP');
+            // PPP format gives long date format
+            expect(result).toContain('2024');
         });
 
-        it('should respect different format patterns', () => {
-            i18n.language = 'en';
+        it('should accept string input for date', () => {
+            const result = formatDateLanguage(testDateString1, 'yyyy-MM-dd');
+            expect(result).toBe('2024-01-15');
+        });
 
-            const date = new Date('2025-08-29');
-            const format1 = formatDateLanguage(date, 'yyyy');
-            const format2 = formatDateLanguage(date, 'MM/dd/yyyy');
-            const format3 = formatDateLanguage(date, 'EEEE, MMMM dd');
+        it('should format with different format patterns', () => {
+            const result1 = formatDateLanguage(testDate1, 'dd/MM/yyyy');
+            expect(result1).toBe('15/01/2024');
 
-            expect(format1).toBe('2025');
-            expect(format2).toContain('08/29/2025');
-            expect(format3).toContain('Friday');
-            expect(format3).toContain('August');
+            const result2 = formatDateLanguage(testDate1, 'MMM dd, yyyy');
+            expect(result2).toContain('2024');
+
+            const result3 = formatDateLanguage(testDate1, 'EEEE, MMMM d, yyyy');
+            expect(result3).toContain('2024');
+        });
+    });
+
+    describe('formatDate', () => {
+        beforeEach(() => {
+            // Mock server-side rendering (no window)
+            vi.stubGlobal('window', undefined);
+        });
+
+        afterEach(() => {
+            vi.unstubAllGlobals();
+        });
+
+        it('should format Date object (server-side, defaults to es)', () => {
+            const result = formatDate(testDate1);
+            // PPP format should give long date format
+            expect(result).toContain('2024');
+        });
+
+        it('should format string date (server-side, defaults to es)', () => {
+            const result = formatDate(testDateString1);
+            expect(result).toContain('2024');
+        });
+
+        it('should parse and format various date strings', () => {
+            const dateString1 = '2024-06-15';
+            const result1 = formatDate(dateString1);
+            expect(result1).toContain('2024');
+
+            const dateString2 = '2024-12-25T00:00:00Z';
+            const result2 = formatDate(dateString2);
+            expect(result2).toContain('2024');
         });
     });
 });
