@@ -3,6 +3,9 @@
 import { useState, useRef, useEffect, ReactNode, KeyboardEvent } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
 
+// Animation duration in milliseconds - matches CSS animation duration
+const ANIMATION_DURATION = 200;
+
 interface DropdownOption<T> {
     value: T;
     label: string;
@@ -46,14 +49,24 @@ function Dropdown<T extends string>({
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const listboxRef = useRef<HTMLDivElement>(null);
+    const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const closeDropdown = () => {
         setIsClosing(true);
-        setTimeout(() => {
+        closeTimeoutRef.current = setTimeout(() => {
             setIsOpen(false);
             setIsClosing(false);
-        }, 200); // Match animation duration
+        }, ANIMATION_DURATION);
     };
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (closeTimeoutRef.current) {
+                clearTimeout(closeTimeoutRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -180,8 +193,8 @@ function Dropdown<T extends string>({
                     }
                     style={{
                         animation: isClosing
-                            ? 'dropdownFadeOut 0.2s ease-out forwards'
-                            : 'dropdownFadeIn 0.2s ease-out forwards',
+                            ? `dropdownFadeOut ${ANIMATION_DURATION}ms ease-out forwards`
+                            : `dropdownFadeIn ${ANIMATION_DURATION}ms ease-out forwards`,
                     }}
                 >
                     <div
