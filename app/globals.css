@@ -68,7 +68,14 @@ body,
   }
 
   .navbar-categories.open {
-    max-height: 500px;
+    max-height: 1000px;
     opacity: 1;
+  }
+
+  /* Respect user's motion preferences for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .navbar-categories {
+      transition: none;
+    }
   }
 }
