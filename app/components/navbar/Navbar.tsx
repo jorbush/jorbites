@@ -48,9 +48,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                             {!isMobile ||
                             !isFilterablePage ||
                             (isMobile && !isMobileSearchActive) ? (
-                                <div className="navbar-user-menu-enter">
-                                    <UserMenu currentUser={currentUser} />
-                                </div>
+                                <UserMenu currentUser={currentUser} />
                             ) : (
                                 /* Invisible spacer to maintain height when UserMenu is hidden */
                                 <div className="min-h-[48px] w-0" />
@@ -58,9 +56,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                         </div>
                     </Container>
                 </div>
-                {isFilterablePage && isFilterOpen && (
+                {isFilterablePage && (
                     <div
-                        className="navbar-categories-enter overflow-hidden"
+                        className={`navbar-categories ${isFilterOpen ? 'open' : ''}`}
                         id="categories-menu"
                         role="region"
                         aria-label="Categories filter"
