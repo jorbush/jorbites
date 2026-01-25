@@ -3,9 +3,6 @@
 import { useState, useRef, useEffect, ReactNode, KeyboardEvent } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
 
-// Animation duration in milliseconds - matches CSS animation duration
-const ANIMATION_DURATION = 200;
-
 interface DropdownOption<T> {
     value: T;
     label: string;
@@ -44,29 +41,10 @@ function Dropdown<T extends string>({
     'data-cy': dataCy,
 }: DropdownProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
-    const [isClosing, setIsClosing] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const listboxRef = useRef<HTMLDivElement>(null);
-    const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-    const closeDropdown = () => {
-        setIsClosing(true);
-        closeTimeoutRef.current = setTimeout(() => {
-            setIsOpen(false);
-            setIsClosing(false);
-        }, ANIMATION_DURATION);
-    };
-
-    // Cleanup timeout on unmount
-    useEffect(() => {
-        return () => {
-            if (closeTimeoutRef.current) {
-                clearTimeout(closeTimeoutRef.current);
-            }
-        };
-    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -74,7 +52,7 @@ function Dropdown<T extends string>({
                 dropdownRef.current &&
                 !dropdownRef.current.contains(event.target as Node)
             ) {
-                closeDropdown();
+                setIsOpen(false);
             }
         };
 
@@ -95,7 +73,7 @@ function Dropdown<T extends string>({
 
     const handleOptionClick = (optionValue: T) => {
         onChange(optionValue);
-        closeDropdown();
+        setIsOpen(false);
         buttonRef.current?.focus();
     };
 
@@ -123,7 +101,7 @@ function Dropdown<T extends string>({
             }
         } else if (event.key === 'Escape') {
             event.preventDefault();
-            closeDropdown();
+            setIsOpen(false);
             buttonRef.current?.focus();
         } else if (event.key === 'Home') {
             event.preventDefault();
@@ -192,9 +170,7 @@ function Dropdown<T extends string>({
                         'dark:bg-dark absolute top-full right-0 z-50 mt-2 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:text-neutral-100'
                     }
                     style={{
-                        animation: isClosing
-                            ? `dropdownFadeOut ${ANIMATION_DURATION}ms ease-out forwards`
-                            : `dropdownFadeIn ${ANIMATION_DURATION}ms ease-out forwards`,
+                        animation: 'dropdownFadeIn 0.2s ease-out forwards',
                     }}
                 >
                     <div
