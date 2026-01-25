@@ -41,10 +41,19 @@ function Dropdown<T extends string>({
     'data-cy': dataCy,
 }: DropdownProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const listboxRef = useRef<HTMLDivElement>(null);
+
+    const closeDropdown = () => {
+        setIsClosing(true);
+        setTimeout(() => {
+            setIsOpen(false);
+            setIsClosing(false);
+        }, 200); // Match animation duration
+    };
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -52,7 +61,7 @@ function Dropdown<T extends string>({
                 dropdownRef.current &&
                 !dropdownRef.current.contains(event.target as Node)
             ) {
-                setIsOpen(false);
+                closeDropdown();
             }
         };
 
@@ -73,7 +82,7 @@ function Dropdown<T extends string>({
 
     const handleOptionClick = (optionValue: T) => {
         onChange(optionValue);
-        setIsOpen(false);
+        closeDropdown();
         buttonRef.current?.focus();
     };
 
@@ -101,7 +110,7 @@ function Dropdown<T extends string>({
             }
         } else if (event.key === 'Escape') {
             event.preventDefault();
-            setIsOpen(false);
+            closeDropdown();
             buttonRef.current?.focus();
         } else if (event.key === 'Home') {
             event.preventDefault();
@@ -165,12 +174,14 @@ function Dropdown<T extends string>({
 
             {isOpen && (
                 <div
-                    className={`${
+                    className={
                         dropdownClassName ||
                         'dark:bg-dark absolute top-full right-0 z-50 mt-2 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:text-neutral-100'
-                    } animate-dropdown-open`}
+                    }
                     style={{
-                        animation: 'dropdownFadeIn 0.2s ease-out forwards',
+                        animation: isClosing
+                            ? 'dropdownFadeOut 0.2s ease-out forwards'
+                            : 'dropdownFadeIn 0.2s ease-out forwards',
                     }}
                 >
                     <div

@@ -158,7 +158,7 @@ describe('<OrderByDropdown />', () => {
             expect(screen.getByText('Most liked')).toBeDefined();
         });
 
-        it('closes dropdown when clicking outside', () => {
+        it('closes dropdown when clicking outside', async () => {
             render(<OrderByDropdown />);
 
             const dropdownButton = screen.getByRole('button');
@@ -171,7 +171,9 @@ describe('<OrderByDropdown />', () => {
             fireEvent.mouseDown(document.body);
 
             // Dropdown should be closed (options no longer visible)
-            expect(screen.queryByText('Oldest first')).toBeNull();
+            await waitFor(() => {
+                expect(screen.queryByText('Oldest first')).toBeNull();
+            });
         });
 
         it('highlights current selection in dropdown', () => {

@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import {
+    render,
+    screen,
+    fireEvent,
+    cleanup,
+    waitFor,
+} from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import Dropdown from '@/app/components/utils/Dropdown';
 
@@ -71,7 +77,7 @@ describe('<Dropdown />', () => {
         expect(mockOnChange).toHaveBeenCalledWith('option2');
     });
 
-    it('closes dropdown after selecting an option', () => {
+    it('closes dropdown after selecting an option', async () => {
         const mockOnChange = vi.fn();
         render(
             <Dropdown
@@ -88,11 +94,13 @@ describe('<Dropdown />', () => {
         const option2 = screen.getByText('Option 2');
         fireEvent.click(option2);
 
-        // After clicking an option, only the button should remain visible
-        expect(screen.queryByText('Option 3')).toBeNull();
+        // After clicking an option, the dropdown should close after animation
+        await waitFor(() => {
+            expect(screen.queryByText('Option 3')).toBeNull();
+        });
     });
 
-    it('closes dropdown when clicking outside', () => {
+    it('closes dropdown when clicking outside', async () => {
         const mockOnChange = vi.fn();
         render(
             <Dropdown
@@ -112,8 +120,10 @@ describe('<Dropdown />', () => {
         // Click outside
         fireEvent.mouseDown(document.body);
 
-        // Dropdown should be closed
-        expect(screen.queryByText('Option 2')).toBeNull();
+        // Dropdown should close after animation
+        await waitFor(() => {
+            expect(screen.queryByText('Option 2')).toBeNull();
+        });
     });
 
     it('shows chevron icon when showChevron is true', () => {
@@ -319,7 +329,7 @@ describe('<Dropdown />', () => {
         expect(screen.getByText('Option 1')).toBeDefined();
     });
 
-    it('supports keyboard navigation with Escape', () => {
+    it('supports keyboard navigation with Escape', async () => {
         const mockOnChange = vi.fn();
         render(
             <Dropdown
@@ -335,7 +345,9 @@ describe('<Dropdown />', () => {
 
         // Escape closes the dropdown
         fireEvent.keyDown(button, { key: 'Escape' });
-        expect(screen.queryByText('Option 2')).toBeNull();
+        await waitFor(() => {
+            expect(screen.queryByText('Option 2')).toBeNull();
+        });
     });
 
     it('supports keyboard navigation with Enter to select option', () => {
