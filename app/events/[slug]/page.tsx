@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import EventDetailClient from './event-detail-client';
 import { getEventBySlug } from '@/app/utils/event-utils';
 
@@ -51,11 +50,7 @@ export async function generateMetadata(props: {
 
 const EventPage = async (props: PageProps) => {
     const params = await props.params;
-    return (
-        <ClientOnly>
-            <EventDetailClient slug={params.slug} />
-        </ClientOnly>
-    );
+    return <EventDetailClient slug={params.slug} />;
 };
 
 export default EventPage;

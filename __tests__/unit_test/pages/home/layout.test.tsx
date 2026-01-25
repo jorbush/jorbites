@@ -14,13 +14,7 @@ vi.mock('@/app/components/navbar/Navbar', () => ({
 
 vi.mock('@/app/components/utils/Container', () => ({
     default: ({ children }: { children: React.ReactNode }) => (
-        <div data-testid="client-only">{children}</div>
-    ),
-}));
-
-vi.mock('@/app/components/utils/ClientOnly', () => ({
-    default: ({ children }: { children: React.ReactNode }) => (
-        <div data-testid="client-only">{children}</div>
+        <div data-testid="container">{children}</div>
     ),
 }));
 
@@ -72,12 +66,10 @@ describe('RootLayout', () => {
         const layout = await RootLayout({
             children: <div>Test Content</div>,
         });
-        const { findByTestId, findAllByTestId, findByText } = render(layout);
+        const { findByTestId, findByText } = render(layout);
 
         // Check if all components are rendered
         expect(await findByTestId('navbar')).toBeDefined();
-        const clientOnlyComponents = await findAllByTestId('client-only');
-        expect(clientOnlyComponents.length).toBeGreaterThan(0);
         expect(await findByTestId('register-modal')).toBeDefined();
         expect(await findByTestId('toaster-provider')).toBeDefined();
         expect(await findByTestId('login-modal')).toBeDefined();

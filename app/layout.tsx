@@ -1,8 +1,9 @@
 import '@/app/globals.css';
 import { Nunito } from 'next/font/google';
+import { Suspense } from 'react';
 import Navbar from '@/app/components/navbar/Navbar';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import ToasterProvider from '@/app/providers/ToasterProvider';
+import I18nProvider from '@/app/providers/I18nProvider';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import SmartFooter from '@/app/components/footer/SmartFooter';
 import { dynamicImport } from '@/app/utils/dynamicImport';
@@ -109,21 +110,22 @@ export default async function RootLayout({
             <body
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
             >
-                <ClientOnly>
-                    <ToasterProvider />
-                    <LoginModal />
-                    <SettingsModal currentUser={currentUser} />
-                    <RecipeModal currentUser={currentUser} />
-                    <WorkshopModal currentUser={currentUser} />
-                    <RegisterModal />
-                    <ForgotPasswordModal />
-                    <QuestModal />
+                <I18nProvider />
+                <ToasterProvider />
+                <LoginModal />
+                <SettingsModal currentUser={currentUser} />
+                <RecipeModal currentUser={currentUser} />
+                <WorkshopModal currentUser={currentUser} />
+                <RegisterModal />
+                <ForgotPasswordModal />
+                <QuestModal />
+                <Suspense fallback={<div className="h-20" />}>
                     <Navbar currentUser={currentUser} />
-                    <PullToRefresh
-                        threshold={150}
-                        indicator={true}
-                    />
-                </ClientOnly>
+                </Suspense>
+                <PullToRefresh
+                    threshold={150}
+                    indicator={true}
+                />
                 <main
                     id="main-content"
                     className="grow pt-28 pb-20"

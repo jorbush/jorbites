@@ -4,12 +4,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ResetPasswordPage from '@/app/reset-password/[token]/page';
 
 // Mock the components used in the page
-vi.mock('@/app/components/utils/ClientOnly', () => ({
-    default: ({ children }: { children: React.ReactNode }) => (
-        <div data-testid="client-only">{children}</div>
-    ),
-}));
-
 vi.mock('@/app/components/utils/EmptyState', () => ({
     default: () => <div data-testid="empty-state">Empty State</div>,
 }));
@@ -47,7 +41,6 @@ describe('ResetPasswordPage', () => {
         );
 
         await waitFor(() => {
-            expect(getByTestId('client-only')).toBeTruthy();
             expect(getByTestId('reset-password-client')).toBeTruthy();
             expect(
                 getByText(`Reset Password Client: ${mockToken}`)
@@ -63,7 +56,6 @@ describe('ResetPasswordPage', () => {
         );
 
         await waitFor(() => {
-            expect(getByTestId('client-only')).toBeTruthy();
             expect(getByTestId('empty-state')).toBeTruthy();
             expect(getByText('Empty State')).toBeTruthy();
         });
@@ -75,7 +67,6 @@ describe('ResetPasswordPage', () => {
         );
 
         await waitFor(() => {
-            expect(getByTestId('client-only')).toBeTruthy();
             expect(getByTestId('empty-state')).toBeTruthy();
         });
     });

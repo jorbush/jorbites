@@ -1,10 +1,10 @@
 import { Metadata } from 'next';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getWorkshopById from '@/app/actions/getWorkshopById';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import WorkshopClient from '@/app/workshops/[workshopId]/WorkshopClient';
 import WorkshopClientSkeleton from '@/app/components/workshops/WorkshopClientSkeleton';
+import { Suspense } from 'react';
 
 interface IParams {
     workshopId?: string;
@@ -54,22 +54,20 @@ const WorkshopPage = async (props: { params: Promise<IParams> }) => {
 
     if (!workshop) {
         return (
-            <ClientOnly>
-                <EmptyState
-                    title="Workshop not found"
-                    subtitle="The workshop you're looking for doesn't exist"
-                />
-            </ClientOnly>
+            <EmptyState
+                title="Workshop not found"
+                subtitle="The workshop you're looking for doesn't exist"
+            />
         );
     }
 
     return (
-        <ClientOnly fallback={<WorkshopClientSkeleton />}>
+        <Suspense fallback={<WorkshopClientSkeleton />}>
             <WorkshopClient
                 workshop={workshop}
                 currentUser={currentUser}
             />
-        </ClientOnly>
+        </Suspense>
     );
 };
 

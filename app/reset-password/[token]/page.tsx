@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import ResetPasswordClient from './ResetPasswordClient';
 import EmptyState from '@/app/components/utils/EmptyState';
 
@@ -16,18 +15,10 @@ export const dynamic = 'force-dynamic';
 const ResetPasswordPage = async (props: { params: Promise<IParams> }) => {
     const { token } = await props.params;
     if (!token) {
-        return (
-            <ClientOnly>
-                <EmptyState />
-            </ClientOnly>
-        );
+        return <EmptyState />;
     }
 
-    return (
-        <ClientOnly>
-            <ResetPasswordClient token={token} />
-        </ClientOnly>
-    );
+    return <ResetPasswordClient token={token} />;
 };
 
 export default ResetPasswordPage;

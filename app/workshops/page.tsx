@@ -1,9 +1,9 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getWorkshops from '@/app/actions/getWorkshops';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import { Metadata } from 'next';
 import WorkshopsClient from './WorkshopsClient';
 import WorkshopsListSkeleton from '@/app/components/workshops/WorkshopsListSkeleton';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
     title: 'Workshops | Jorbites',
@@ -27,13 +27,13 @@ const WorkshopsPage = async () => {
     );
 
     return (
-        <ClientOnly fallback={<WorkshopsListSkeleton />}>
+        <Suspense fallback={<WorkshopsListSkeleton />}>
             <WorkshopsClient
                 currentUser={currentUser}
                 upcomingWorkshops={upcomingWorkshops}
                 pastWorkshops={pastWorkshops}
             />
-        </ClientOnly>
+        </Suspense>
     );
 };
 

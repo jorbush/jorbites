@@ -2,9 +2,9 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import getQuestById from '@/app/actions/getQuestById';
 import QuestDetailClient from '@/app/quests/[questId]/QuestDetailClient';
 import QuestDetailSkeleton from '@/app/components/quests/QuestDetailSkeleton';
-import ClientOnly from '@/app/components/utils/ClientOnly';
 import Container from '@/app/components/utils/Container';
 import EmptyState from '@/app/components/utils/EmptyState';
+import { Suspense } from 'react';
 
 interface QuestDetailPageProps {
     params: Promise<{
@@ -19,26 +19,24 @@ const QuestDetailPage = async ({ params }: QuestDetailPageProps) => {
 
     if (!quest) {
         return (
-            <ClientOnly>
-                <Container>
-                    <div className="min-h-[60vh]">
-                        <EmptyState
-                            title="Quest not found"
-                            subtitle="The quest you're looking for doesn't exist"
-                        />
-                    </div>
-                </Container>
-            </ClientOnly>
+            <Container>
+                <div className="min-h-[60vh]">
+                    <EmptyState
+                        title="Quest not found"
+                        subtitle="The quest you're looking for doesn't exist"
+                    />
+                </div>
+            </Container>
         );
     }
 
     return (
-        <ClientOnly fallback={<QuestDetailSkeleton />}>
+        <Suspense fallback={<QuestDetailSkeleton />}>
             <QuestDetailClient
                 currentUser={currentUser}
                 quest={quest}
             />
-        </ClientOnly>
+        </Suspense>
     );
 };
 
