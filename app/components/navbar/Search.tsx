@@ -233,7 +233,6 @@ const Search: React.FC<SearchProps> = ({
             {isSearchMode ? (
                 // Mobile search mode - header transformation
                 <div
-                    key="mobile-search"
                     className="flex w-full items-center gap-3 search-slide-in-right"
                 >
                     <button
@@ -298,7 +297,6 @@ const Search: React.FC<SearchProps> = ({
             ) : (
                 // Mobile normal mode
                 <div
-                    key="mobile-normal"
                     className="flex w-full flex-row items-center gap-1 md:gap-3"
                 >
                     <Logo />

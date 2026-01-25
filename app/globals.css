@@ -60,6 +60,7 @@ body,
   }
 
   /* Search component animations */
+  /* Desktop: 0.3s fade+scale, Mobile: 0.1s slide-in (search mode), 0.3s slide-out (normal mode exit) */
   @keyframes searchFadeIn {
     from {
       opacity: 0;
