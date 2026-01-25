@@ -17,6 +17,15 @@ module.exports = {
       screens: {
         sm: "375px",
       },
+      keyframes: {
+        'pulse-scale': {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.2)' },
+        },
+      },
+      animation: {
+        'pulse-scale': 'pulse-scale 1s ease-in-out infinite',
+      },
     }
   },
   variants: {
