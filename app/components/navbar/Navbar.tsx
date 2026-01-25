@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import Container from '@/app/components/utils/Container';
 import Categories from '@/app/components/navbar/Categories';
 import Search from '@/app/components/navbar/Search';
@@ -46,47 +45,29 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                                 onFilterToggle={toggleFilter}
                                 isFilterOpen={isFilterOpen}
                             />
-                            <AnimatePresence mode="wait">
-                                {!isMobile ||
-                                !isFilterablePage ||
-                                (isMobile && !isMobileSearchActive) ? (
-                                    <motion.div
-                                        key="user-menu"
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 20 }}
-                                        transition={{
-                                            duration: 0.3,
-                                            ease: 'easeInOut',
-                                        }}
-                                    >
-                                        <UserMenu currentUser={currentUser} />
-                                    </motion.div>
-                                ) : (
-                                    /* Invisible spacer to maintain height when UserMenu is hidden */
-                                    <div className="min-h-[48px] w-0" />
-                                )}
-                            </AnimatePresence>
+                            {!isMobile ||
+                            !isFilterablePage ||
+                            (isMobile && !isMobileSearchActive) ? (
+                                <div className="navbar-user-menu-enter">
+                                    <UserMenu currentUser={currentUser} />
+                                </div>
+                            ) : (
+                                /* Invisible spacer to maintain height when UserMenu is hidden */
+                                <div className="min-h-[48px] w-0" />
+                            )}
                         </div>
                     </Container>
                 </div>
-                <AnimatePresence>
-                    {isFilterablePage && isFilterOpen && (
-                        <motion.div
-                            key="categories"
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3, ease: 'easeInOut' }}
-                            className="overflow-hidden"
-                            id="categories-menu"
-                            role="region"
-                            aria-label="Categories filter"
-                        >
-                            <Categories />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {isFilterablePage && isFilterOpen && (
+                    <div
+                        className="navbar-categories-enter overflow-hidden"
+                        id="categories-menu"
+                        role="region"
+                        aria-label="Categories filter"
+                    >
+                        <Categories />
+                    </div>
+                )}
             </nav>
         </header>
     );

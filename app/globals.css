@@ -58,4 +58,67 @@ body,
       transform: translateY(0) scale(1);
     }
   }
+
+  /* Navbar UserMenu slide in/out animation */
+  @keyframes slideInFromRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideOutToRight {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+  }
+
+  /* Categories expand/collapse animation */
+  @keyframes expandHeight {
+    from {
+      max-height: 0;
+      opacity: 0;
+    }
+    to {
+      max-height: 500px;
+      opacity: 1;
+    }
+  }
+
+  @keyframes collapseHeight {
+    from {
+      max-height: 500px;
+      opacity: 1;
+    }
+    to {
+      max-height: 0;
+      opacity: 0;
+    }
+  }
+
+  /* Animation utility classes */
+  .navbar-user-menu-enter {
+    animation: slideInFromRight 0.3s ease-in-out forwards;
+  }
+
+  .navbar-user-menu-exit {
+    animation: slideOutToRight 0.3s ease-in-out forwards;
+  }
+
+  .navbar-categories-enter {
+    animation: expandHeight 0.3s ease-in-out forwards;
+  }
+
+  .navbar-categories-exit {
+    animation: collapseHeight 0.3s ease-in-out forwards;
+  }
 }
