@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { getHighResImageUrl, getYoutubeVideoId } from '@/app/utils/seo-utils';
 
 interface RecipeSchemaProps {
     title: string;
@@ -12,6 +13,7 @@ interface RecipeSchemaProps {
     ingredients?: string[];
     steps?: string[];
     categories?: string[];
+    youtubeUrl?: string | null;
 }
 
 export default function RecipeSchema({
@@ -25,40 +27,30 @@ export default function RecipeSchema({
     ingredients,
     steps,
     categories,
+    youtubeUrl,
 }: RecipeSchemaProps) {
     const recipeCategories = categories || [];
 
-    const getHighResImageUrl = (url?: string) => {
-        if (!url) return '';
-        if (url.includes('cloudinary.com')) {
-            try {
-                const matches = url.match(
-                    /^(https?:\/\/res\.cloudinary\.com\/[^/]+)\/image\/upload(?:\/([^/]+))?\/(.+)$/
-                );
-                if (matches) {
-                    const [, baseUrl, segment, imagePath] = matches;
-                    // Force 4:3 aspect ratio (w_1200, h_900) and fill crop
-
-                    // Check if segment is a version (starts with 'v' followed by numbers)
-                    // If it's transformations (e.g. w_800,h_600), we discard it to avoid duplication
-                    const isVersion = segment && /^v\d+$/.test(segment);
-
-                    const fullPath = isVersion
-                        ? `${segment}/${imagePath}`
-                        : imagePath;
-                    return `${baseUrl}/image/upload/w_1200,h_900,c_fill,q_auto:good/${fullPath}`;
-                }
-            } catch (e) {
-                console.error(
-                    'Error transforming Cloudinary URL for schema:',
-                    e
-                );
-            }
-        }
-        return url;
-    };
-
     const highResImage = getHighResImageUrl(imageSrc);
+
+    let videoSchema: Record<string, unknown> | undefined;
+
+    if (youtubeUrl) {
+        const videoId = getYoutubeVideoId(youtubeUrl);
+        if (videoId) {
+            videoSchema = {
+                '@type': 'VideoObject',
+                name: title,
+                description: description || `Video recipe for ${title}`,
+                thumbnailUrl: [
+                    `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                    `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                ],
+                contentUrl: youtubeUrl,
+                embedUrl: `https://www.youtube.com/embed/${videoId}`,
+            };
+        }
+    }
 
     const schemaData: any = {
         '@context': 'https://schema.org',
@@ -90,6 +82,7 @@ export default function RecipeSchema({
             recipeCategories.length === 1
                 ? recipeCategories[0]
                 : recipeCategories,
+        video: videoSchema,
     };
 
     return (
