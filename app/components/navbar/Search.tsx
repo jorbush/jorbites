@@ -228,10 +228,12 @@ const Search: React.FC<SearchProps> = ({
     }
 
     // Mobile version with header transformation
+    // Note: CSS animations play on mount. Exit animations from framer-motion's AnimatePresence
+    // are not replicated to keep the implementation simple and avoid complex visibility/unmounting logic.
     return (
         <div className="flex w-full flex-row items-center gap-1">
             {isSearchMode ? (
-                // Mobile search mode - header transformation
+                // Mobile search mode - header transformation with slide-in animation
                 <div
                     className="flex w-full items-center gap-3 search-slide-in-right"
                 >
