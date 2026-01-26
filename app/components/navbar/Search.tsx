@@ -233,9 +233,9 @@ const Search: React.FC<SearchProps> = ({
     return (
         <div className="flex w-full flex-row items-center gap-1">
             {isSearchMode ? (
-                // Mobile search mode - header transformation with slide-in animation
+                // Mobile search mode - header transformation with fade-in animation
                 <div
-                    className="flex w-full items-center gap-3 search-slide-in-right"
+                    className="flex w-full items-center gap-3 search-mobile-fade-in"
                 >
                     <button
                         onClick={handleSearchToggle}
