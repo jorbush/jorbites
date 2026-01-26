@@ -17,6 +17,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     const [isSearchModeActive, setIsSearchModeActive] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [shouldRender, setShouldRender] = useState(false);
     const isMobile = useMediaQuery('(max-width: 880px)');
     const pathname = usePathname();
     useTheme();
@@ -31,8 +32,20 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     }, []);
 
     const toggleFilter = useCallback(() => {
-        setIsFilterOpen((value) => !value);
+        setIsFilterOpen((value) => {
+            const newValue = !value;
+            if (newValue) {
+                setShouldRender(true);
+            }
+            return newValue;
+        });
     }, []);
+
+    const handleAnimationEnd = useCallback(() => {
+        if (!isFilterOpen) {
+            setShouldRender(false);
+        }
+    }, [isFilterOpen]);
 
     return (
         <header className="dark:bg-dark fixed z-10 w-full bg-white shadow-xs">
@@ -56,12 +69,14 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                         </div>
                     </Container>
                 </div>
-                {isFilterablePage && isFilterOpen && (
+                {isFilterablePage && shouldRender && (
                     <div
-                        className="navbar-categories open"
+                        className={`navbar-categories ${isFilterOpen ? 'open' : 'closing'}`}
                         id="categories-menu"
                         role="region"
                         aria-label="Categories filter"
+                        aria-hidden={!isFilterOpen}
+                        onAnimationEnd={handleAnimationEnd}
                     >
                         <Categories />
                     </div>

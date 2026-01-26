@@ -71,6 +71,17 @@ body,
     }
   }
 
+  @keyframes navbarCategoriesCollapse {
+    from {
+      max-height: 120px;
+      opacity: 1;
+    }
+    to {
+      max-height: 0;
+      opacity: 0;
+    }
+  }
+
   .navbar-categories {
     max-height: 0;
     opacity: 0;
@@ -81,12 +92,21 @@ body,
     animation: navbarCategoriesExpand 0.3s ease-in-out forwards;
   }
 
+  .navbar-categories.closing {
+    animation: navbarCategoriesCollapse 0.3s ease-in-out forwards;
+  }
+
   /* Respect user's motion preferences for accessibility */
   @media (prefers-reduced-motion: reduce) {
     .navbar-categories.open {
       animation: none;
       max-height: 120px;
       opacity: 1;
+    }
+    .navbar-categories.closing {
+      animation: none;
+      max-height: 0;
+      opacity: 0;
     }
   }
 }
