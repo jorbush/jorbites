@@ -59,25 +59,32 @@ body,
     }
   }
 
-  /* Navbar Categories transition - uses transition instead of animation for smooth enter/exit */
+  /* Navbar Categories animation - uses CSS animation for smooth expand */
+  @keyframes navbarCategoriesExpand {
+    from {
+      max-height: 0;
+      opacity: 0;
+    }
+    to {
+      max-height: 120px;
+      opacity: 1;
+    }
+  }
+
   .navbar-categories {
-    max-height: 0;
-    opacity: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
   }
 
   .navbar-categories.open {
-    /* Using 1000px as a safe maximum - should accommodate any reasonable number of categories.
-       CSS transitions require a specific pixel value (not auto/max-content) to animate smoothly. */
-    max-height: 1000px;
-    opacity: 1;
+    animation: navbarCategoriesExpand 0.3s ease-in-out forwards;
   }
 
   /* Respect user's motion preferences for accessibility */
   @media (prefers-reduced-motion: reduce) {
-    .navbar-categories {
-      transition: none;
+    .navbar-categories.open {
+      animation: none;
+      max-height: 120px;
+      opacity: 1;
     }
   }
 }

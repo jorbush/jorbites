@@ -56,9 +56,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                         </div>
                     </Container>
                 </div>
-                {isFilterablePage && (
+                {isFilterablePage && isFilterOpen && (
                     <div
-                        className={`navbar-categories ${isFilterOpen ? 'open' : ''}`}
+                        className="navbar-categories open"
                         id="categories-menu"
                         role="region"
                         aria-label="Categories filter"
