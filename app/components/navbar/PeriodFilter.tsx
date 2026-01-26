@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { FiCalendar, FiX } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import Button from '../buttons/Button';
@@ -142,16 +141,14 @@ const PeriodFilter: React.FC = () => {
                 )}
             </button>
 
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-12 right-0 z-50 min-w-[280px] rounded-lg border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
-                        data-testid="period-filter-dropdown"
-                    >
+            {isOpen && (
+                <div
+                    className="absolute top-12 right-0 z-50 min-w-[280px] rounded-lg border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
+                    style={{
+                        animation: 'dropdownFadeIn 0.15s ease-out forwards',
+                    }}
+                    data-testid="period-filter-dropdown"
+                >
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <h3 className="font-medium text-neutral-900 dark:text-neutral-100">
@@ -239,9 +236,8 @@ const PeriodFilter: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                </div>
+            )}
         </div>
     );
 };
