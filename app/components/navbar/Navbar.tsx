@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import Container from '@/app/components/utils/Container';
 import Categories from '@/app/components/navbar/Categories';
 import Search from '@/app/components/navbar/Search';
@@ -18,6 +17,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     const [isSearchModeActive, setIsSearchModeActive] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [shouldRender, setShouldRender] = useState(false);
     const isMobile = useMediaQuery('(max-width: 880px)');
     const pathname = usePathname();
     useTheme();
@@ -32,8 +32,20 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     }, []);
 
     const toggleFilter = useCallback(() => {
-        setIsFilterOpen((value) => !value);
+        setIsFilterOpen((value) => {
+            const newValue = !value;
+            if (newValue) {
+                setShouldRender(true);
+            }
+            return newValue;
+        });
     }, []);
+
+    const handleAnimationEnd = useCallback(() => {
+        if (!isFilterOpen) {
+            setShouldRender(false);
+        }
+    }, [isFilterOpen]);
 
     return (
         <header className="dark:bg-dark fixed z-10 w-full bg-white shadow-xs">
@@ -46,47 +58,29 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                                 onFilterToggle={toggleFilter}
                                 isFilterOpen={isFilterOpen}
                             />
-                            <AnimatePresence mode="wait">
-                                {!isMobile ||
-                                !isFilterablePage ||
-                                (isMobile && !isMobileSearchActive) ? (
-                                    <motion.div
-                                        key="user-menu"
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 20 }}
-                                        transition={{
-                                            duration: 0.3,
-                                            ease: 'easeInOut',
-                                        }}
-                                    >
-                                        <UserMenu currentUser={currentUser} />
-                                    </motion.div>
-                                ) : (
-                                    /* Invisible spacer to maintain height when UserMenu is hidden */
-                                    <div className="min-h-[48px] w-0" />
-                                )}
-                            </AnimatePresence>
+                            {!isMobile ||
+                            !isFilterablePage ||
+                            (isMobile && !isMobileSearchActive) ? (
+                                <UserMenu currentUser={currentUser} />
+                            ) : (
+                                /* Invisible spacer to maintain height when UserMenu is hidden */
+                                <div className="min-h-[48px] w-0" />
+                            )}
                         </div>
                     </Container>
                 </div>
-                <AnimatePresence>
-                    {isFilterablePage && isFilterOpen && (
-                        <motion.div
-                            key="categories"
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3, ease: 'easeInOut' }}
-                            className="overflow-hidden"
-                            id="categories-menu"
-                            role="region"
-                            aria-label="Categories filter"
-                        >
-                            <Categories />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {isFilterablePage && shouldRender && (
+                    <div
+                        className={`navbar-categories ${isFilterOpen ? 'open' : 'closing'}`}
+                        id="categories-menu"
+                        role="region"
+                        aria-label="Categories filter"
+                        aria-hidden={!isFilterOpen}
+                        onAnimationEnd={handleAnimationEnd}
+                    >
+                        <Categories />
+                    </div>
+                )}
             </nav>
         </header>
     );
