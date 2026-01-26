@@ -299,7 +299,7 @@ const Search: React.FC<SearchProps> = ({
                 // Mobile normal mode
                 <div
                     key="mobile-normal"
-                    className="animate-mobile-normal-in flex w-full flex-row items-center gap-1 md:gap-3"
+                    className="flex w-full flex-row items-center gap-1 md:gap-3"
                 >
                     <Logo />
                     <button

@@ -133,17 +133,6 @@ body,
     }
   }
 
-  @keyframes mobileNormalIn {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-
   .animate-search-fade-in {
     animation: searchFadeIn 0.3s ease-in-out;
   }
@@ -152,15 +141,10 @@ body,
     animation: mobileSearchIn 0.1s ease-in-out;
   }
 
-  .animate-mobile-normal-in {
-    animation: mobileNormalIn 0.3s ease-in-out;
-  }
-
   /* Respect user's motion preferences for accessibility */
   @media (prefers-reduced-motion: reduce) {
     .animate-search-fade-in,
-    .animate-mobile-search-in,
-    .animate-mobile-normal-in {
+    .animate-mobile-search-in {
       animation: none;
     }
   }
