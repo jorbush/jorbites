@@ -78,17 +78,6 @@ vi.mock('@/app/hooks/useMediaQuery', () => ({
     default: vi.fn(() => false), // Default to desktop
 }));
 
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-    motion: {
-        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-        form: ({ children, ...props }: any) => (
-            <form {...props}>{children}</form>
-        ),
-    },
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
-
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
