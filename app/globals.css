@@ -60,7 +60,7 @@ body,
   }
 
   /* Search component animations */
-  /* Desktop: 0.3s fade+scale in/out, Mobile: 0.1s slide (search mode in/out), 0.3s slide-out-left (normal mode exit) */
+  /* Desktop: 0.3s fade+scale, Mobile: 0.25s slide with smooth easing */
   @keyframes searchFadeIn {
     from {
       opacity: 0;
@@ -125,14 +125,23 @@ body,
   }
 
   .search-slide-in-right {
-    animation: searchSlideInRight 0.1s ease-in-out forwards;
+    animation: searchSlideInRight 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
   }
 
   .search-slide-out-right {
-    animation: searchSlideOutRight 0.1s ease-in-out forwards;
+    animation: searchSlideOutRight 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
   }
 
   .search-slide-out-left {
-    animation: searchSlideOutLeft 0.3s ease-in-out forwards;
+    animation: searchSlideOutLeft 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
   }
 }
