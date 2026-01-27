@@ -66,7 +66,7 @@ jobs:
               response=$(curl -s -w "\n%{http_code}" -X POST "$JORBITES_NOTIFIER_URL" \
                 -H "Content-Type: application/json" \
                 -H "Authorization: Bearer $JORBITES_NOTIFIER_API_KEY" \
-                -d "{\"type\":\"NEW_BLOG\",\"blog_id\":\"$blog_id\"}")
+                -d "{\"type\":\"NEW_BLOG\", \"metadata\":{\"blog_id\":\"$blog_id\"}}")
 
               http_code=$(echo "$response" | tail -n1)
               body=$(echo "$response" | sed '$d')
