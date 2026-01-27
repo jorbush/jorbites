@@ -63,11 +63,10 @@ jobs:
               echo "Sending notification for blog: $blog_id"
 
               # Send POST request to the notifier
-              response=$(curl -s -w "\n%{http_code}" -X POST "$JORBITES_NOTIFIER_URL" \
+              response=$(curl -s -w "\n%{http_code}" -X POST "$JORBITES_NOTIFIER_URL/notifications" \
                 -H "Content-Type: application/json" \
-                -H "Authorization: Bearer $JORBITES_NOTIFIER_API_KEY" \
-                -d "{\"type\":\"NEW_BLOG\", \"metadata\":{\"blog_id\":\"$blog_id\"}}")
-
+                -H "X-API-Key: $JORBITES_NOTIFIER_API_KEY" \
+                -d "{\"type\":\"NEW_BLOG\",\"metadata\":{\"blog_id\":\"$blog_id\"}}")
               http_code=$(echo "$response" | tail -n1)
               body=$(echo "$response" | sed '$d')
 
