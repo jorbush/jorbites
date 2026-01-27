@@ -109,4 +109,43 @@ body,
       opacity: 0;
     }
   }
+
+  /* Search component animations */
+  @keyframes searchFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes mobileSearchIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-search-fade-in {
+    animation: searchFadeIn 0.3s ease-in-out;
+  }
+
+  .animate-mobile-search-in {
+    animation: mobileSearchIn 0.1s ease-in-out;
+  }
+
+  /* Respect user's motion preferences for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-search-fade-in,
+    .animate-mobile-search-in {
+      animation: none;
+    }
+  }
 }
