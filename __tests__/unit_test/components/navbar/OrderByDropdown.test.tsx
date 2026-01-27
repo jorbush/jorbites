@@ -18,14 +18,6 @@ vi.mock('react-icons/io5', () => ({
     IoReorderThree: () => <div data-testid="reorder-icon" />,
 }));
 
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-    motion: {
-        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    },
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
-
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
