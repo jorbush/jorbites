@@ -9,7 +9,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import i18n from '@/app/i18n';
 
-
 // Mock the icons
 vi.mock('react-icons/fi', () => ({
     FiChevronDown: () => <div data-testid="chevron-down-icon" />,
