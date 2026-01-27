@@ -45,9 +45,14 @@ jobs:
         if: steps.changed-files.outputs.has_changes == 'true'
         env:
           JORBITES_NOTIFIER_URL: ${{ secrets.JORBITES_NOTIFIER_URL }}
+          JORBITES_NOTIFIER_API_KEY: ${{ secrets.JORBITES_NOTIFIER_API_KEY }}
         run: |
           if [ -z "$JORBITES_NOTIFIER_URL" ]; then
             echo "JORBITES_NOTIFIER_URL secret is not set. Skipping notification step."
+            exit 0
+          fi
+          if [ -z "$JORBITES_NOTIFIER_API_KEY" ]; then
+            echo "JORBITES_NOTIFIER_API_KEY secret is not set. Skipping notification step."
             exit 0
           fi
           BLOG_IDS='${{ steps.changed-files.outputs.blog_ids }}'
@@ -60,6 +65,7 @@ jobs:
               # Send POST request to the notifier
               response=$(curl -s -w "\n%{http_code}" -X POST "$JORBITES_NOTIFIER_URL" \
                 -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $JORBITES_NOTIFIER_API_KEY" \
                 -d "{\"type\":\"NEW_BLOG\",\"blog_id\":\"$blog_id\"}")
 
               http_code=$(echo "$response" | tail -n1)
