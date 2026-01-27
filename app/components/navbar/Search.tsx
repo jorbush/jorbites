@@ -232,10 +232,7 @@ const Search: React.FC<SearchProps> = ({
         <div className="flex w-full flex-row items-center gap-1">
             {isSearchMode ? (
                 // Mobile search mode - header transformation
-                <div
-                    key="mobile-search"
-                    className="animate-mobile-search-in flex w-full items-center gap-3"
-                >
+                <div className="animate-mobile-search-in flex w-full items-center gap-3">
                     <button
                         onClick={handleSearchToggle}
                         className="flex min-h-[40px] min-w-[40px] flex-shrink-0 cursor-pointer items-center justify-center rounded-full p-2 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
@@ -297,10 +294,7 @@ const Search: React.FC<SearchProps> = ({
                 </div>
             ) : (
                 // Mobile normal mode
-                <div
-                    key="mobile-normal"
-                    className="flex w-full flex-row items-center gap-1 md:gap-3"
-                >
+                <div className="flex w-full flex-row items-center gap-1 md:gap-3">
                     <Logo />
                     <button
                         onClick={handleSearchToggle}
