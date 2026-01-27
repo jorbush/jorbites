@@ -21,7 +21,7 @@ jobs:
         id: changed-files
         run: |
           # Get the list of changed markdown files in the blogs directory
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD -- 'app/content/blogs/**/*.md' | grep -E 'app/content/blogs/[^/]+/[^/]+\.md$' || true)
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD -- 'app/content/blogs/**/*.md' || true)
 
           if [ -z "$CHANGED_FILES" ]; then
             echo "No blog files changed"
@@ -31,8 +31,9 @@ jobs:
             echo "$CHANGED_FILES"
             echo "has_changes=true" >> $GITHUB_OUTPUT
 
-            # Extract unique blog IDs (filename without extension and language path)
-            BLOG_IDS=$(echo "$CHANGED_FILES" | sed -E 's|app/content/blogs/[^/]+/(.+)\.md|\1|' | sort -u)
+            # Extract unique blog IDs (filename without .md extension)
+            # Handles both: blogs/en/gratitude.md -> gratitude and blogs/en/releases/0_9_8.md -> 0_9_8
+            BLOG_IDS=$(echo "$CHANGED_FILES" | xargs -n1 basename | sed 's/\.md$//' | sort -u)
             echo "Blog IDs: $BLOG_IDS"
 
             # Convert to JSON array for easier processing
@@ -78,4 +79,3 @@ jobs:
         run: |
           echo "Notifications sent for new blog posts"
           echo "Blog IDs: ${{ steps.changed-files.outputs.blog_ids }}"
-
