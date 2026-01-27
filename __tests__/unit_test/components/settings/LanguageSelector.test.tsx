@@ -9,13 +9,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import i18n from '@/app/i18n';
 
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-    motion: {
-        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    },
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
 
 // Mock the icons
 vi.mock('react-icons/fi', () => ({
