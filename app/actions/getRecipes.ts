@@ -43,7 +43,7 @@ export default async function getRecipes(
     params: IRecipesParams
 ): Promise<ServerResponse<RecipesResponse>> {
     try {
-        let cacheKey;
+        let cacheKey: string | undefined;
         try {
             const version =
                 (await redisCache.get('recipes:global:version')) || '0';
