@@ -3,7 +3,7 @@ import type { NextRequest, NextFetchEvent } from 'next/server';
 import { logger } from '@/app/lib/axiom/server';
 import { transformMiddlewareRequest } from '@axiomhq/nextjs';
 
-export async function middleware(request: NextRequest, event: NextFetchEvent) {
+export async function proxy(request: NextRequest, event: NextFetchEvent) {
   logger.info(...transformMiddlewareRequest(request));
   event.waitUntil(logger.flush());
 

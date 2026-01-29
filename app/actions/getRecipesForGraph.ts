@@ -10,11 +10,19 @@ export default async function getRecipesForGraph(params: IParams) {
     try {
         const { userId } = params;
         const cacheKey = `recipes:graph:${userId}`;
-        const cachedData = await redisCache.get(cacheKey);
 
-        if (cachedData) {
-            logger.info('getRecipesForGraph - cache hit', { userId });
-            return JSON.parse(cachedData);
+        try {
+            const cachedData = await redisCache.get(cacheKey);
+
+            if (cachedData) {
+                logger.info('getRecipesForGraph - cache hit', { userId });
+                return JSON.parse(cachedData);
+            }
+        } catch (error: any) {
+            logger.error('getRecipesForGraph - cache get error', {
+                error: error.message,
+                userId,
+            });
         }
 
         logger.info('getRecipesForGraph - start', { userId: params.userId });
@@ -43,12 +51,19 @@ export default async function getRecipesForGraph(params: IParams) {
             count: safeRecipes.length,
         });
 
-        await redisCache.set(
-            cacheKey,
-            JSON.stringify(safeRecipes),
-            'EX',
-            86400
-        ); // 1 day
+        try {
+            await redisCache.set(
+                cacheKey,
+                JSON.stringify(safeRecipes),
+                'EX',
+                86400
+            ); // 1 day
+        } catch (error: any) {
+            logger.error('getRecipesForGraph - cache set error', {
+                error: error.message,
+                userId,
+            });
+        }
 
         return safeRecipes;
     } catch (error: any) {

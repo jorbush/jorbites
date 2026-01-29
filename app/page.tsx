@@ -32,6 +32,9 @@ const Home = async ({ searchParams }: HomeProps) => {
     return (
         <>
             <Container>
+                <h1 className="sr-only">
+                    Jorbites: Descubre y comparte recetas deliciosas
+                </h1>
                 {firstImageUrl && <LcpPreloader imageUrl={firstImageUrl} />}
                 {response.error ? (
                     <div className="min-h-[60vh]">

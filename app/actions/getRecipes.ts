@@ -43,13 +43,22 @@ export default async function getRecipes(
     params: IRecipesParams
 ): Promise<ServerResponse<RecipesResponse>> {
     try {
-        const version = (await redisCache.get('recipes:global:version')) || '0';
-        const cacheKey = `recipes:${version}:${JSON.stringify(params)}`;
-        const cachedData = await redisCache.get(cacheKey);
+        let cacheKey: string | undefined;
+        try {
+            const version =
+                (await redisCache.get('recipes:global:version')) || '0';
+            cacheKey = `recipes:${version}:${JSON.stringify(params)}`;
+            const cachedData = await redisCache.get(cacheKey);
 
-        if (cachedData) {
-            logger.info('getRecipes - cache hit', { params });
-            return JSON.parse(cachedData);
+            if (cachedData) {
+                logger.info('getRecipes - cache hit', { params });
+                return JSON.parse(cachedData);
+            }
+        } catch (error: any) {
+            logger.error('getRecipes - cache error', {
+                error: error.message,
+                params,
+            });
         }
 
         logger.info('getRecipes - start', { params });
@@ -133,7 +142,21 @@ export default async function getRecipes(
             error: null,
         };
 
-        await redisCache.set(cacheKey, JSON.stringify(response), 'EX', 86400); // 1 day
+        try {
+            if (cacheKey) {
+                await redisCache.set(
+                    cacheKey,
+                    JSON.stringify(response),
+                    'EX',
+                    86400
+                ); // 1 day
+            }
+        } catch (error: any) {
+            logger.error('getRecipes - cache set error', {
+                error: error.message,
+                params,
+            });
+        }
 
         return response;
     } catch (error: any) {
