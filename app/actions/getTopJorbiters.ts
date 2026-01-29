@@ -5,11 +5,18 @@ import { logger } from '@/app/lib/axiom/server';
 export default async function getTopJorbiters() {
     try {
         const cacheKey = 'top_jorbiters';
-        const cachedData = await redisCache.get(cacheKey);
 
-        if (cachedData) {
-            logger.info('getTopJorbiters - cache hit');
-            return JSON.parse(cachedData);
+        try {
+            const cachedData = await redisCache.get(cacheKey);
+
+            if (cachedData) {
+                logger.info('getTopJorbiters - cache hit');
+                return JSON.parse(cachedData);
+            }
+        } catch (error: any) {
+            logger.error('getTopJorbiters - cache get error', {
+                error: error.message,
+            });
         }
 
         logger.info('getTopJorbiters - start');
@@ -52,12 +59,18 @@ export default async function getTopJorbiters() {
             count: usersWithLikes.length,
         });
 
-        await redisCache.set(
-            cacheKey,
-            JSON.stringify(usersWithLikes),
-            'EX',
-            86400
-        ); // 1 day
+        try {
+            await redisCache.set(
+                cacheKey,
+                JSON.stringify(usersWithLikes),
+                'EX',
+                86400
+            ); // 1 day
+        } catch (error: any) {
+            logger.error('getTopJorbiters - cache set error', {
+                error: error.message,
+            });
+        }
 
         return usersWithLikes;
     } catch (error: any) {
