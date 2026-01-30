@@ -161,4 +161,5 @@ model PushSubscription {
   updatedAt      DateTime @updatedAt
 
   @@unique([userId, endpoint])
+  @@index([userId])
 }
