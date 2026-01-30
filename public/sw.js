@@ -19,5 +19,7 @@ self.addEventListener('push', function (event) {
 self.addEventListener('notificationclick', function (event) {
   console.log('Notification click received.')
   event.notification.close()
-  event.waitUntil(clients.openWindow(event.notification.data.url || '/'))
+  const urlToOpen = event.notification.data.url || '/'
+  const absoluteUrl = new URL(urlToOpen, self.location.origin).href
+  event.waitUntil(clients.openWindow(absoluteUrl))
 })
