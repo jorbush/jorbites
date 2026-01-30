@@ -73,6 +73,7 @@ export async function unsubscribeUser(sub?: webpush.PushSubscription | null) {
 
 export async function sendPushToUser(
     userId: string,
+    title: string,
     message: string,
     url: string = '/'
 ) {
@@ -97,7 +98,7 @@ export async function sendPushToUser(
             };
 
             const payload = JSON.stringify({
-                title: 'Jorbites',
+                title: title,
                 body: message,
                 icon: '/web-app-manifest-192x192.png',
                 url: url,
