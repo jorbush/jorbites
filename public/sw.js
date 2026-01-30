@@ -29,7 +29,11 @@ self.addEventListener('notificationclick', function (event) {
       } catch (error) {
         console.error('Failed to open notification URL:', error)
         // Fallback to home page if URL is invalid
-        await clients.openWindow(self.location.origin)
+        try {
+          await clients.openWindow(self.location.origin)
+        } catch (fallbackError) {
+          console.error('Failed to open fallback URL:', fallbackError)
+        }
       }
     })()
   )
