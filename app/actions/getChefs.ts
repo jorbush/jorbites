@@ -33,11 +33,19 @@ export default async function getChefs(
 ): Promise<ServerResponse<ChefsResponse>> {
     try {
         const cacheKey = `chefs:${JSON.stringify(params)}`;
-        const cachedData = await redisCache.get(cacheKey);
 
-        if (cachedData) {
-            logger.info('getChefs - cache hit', { params });
-            return JSON.parse(cachedData);
+        try {
+            const cachedData = await redisCache.get(cacheKey);
+
+            if (cachedData) {
+                logger.info('getChefs - cache hit', { params });
+                return JSON.parse(cachedData);
+            }
+        } catch (error: any) {
+            logger.error('getChefs - cache get error', {
+                error: error.message,
+                params,
+            });
         }
 
         logger.info('getChefs - start', { params });
@@ -189,7 +197,19 @@ export default async function getChefs(
             },
         };
 
-        await redisCache.set(cacheKey, JSON.stringify(response), 'EX', 86400); // 1 day
+        try {
+            await redisCache.set(
+                cacheKey,
+                JSON.stringify(response),
+                'EX',
+                86400
+            ); // 1 day
+        } catch (error: any) {
+            logger.error('getChefs - cache set error', {
+                error: error.message,
+                params,
+            });
+        }
 
         return response;
     } catch (error: any) {

@@ -21,7 +21,7 @@ jobs:
         id: changed-files
         run: |
           # Get the list of changed markdown files in the blogs directory
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD -- 'app/content/blogs/**/*.md' | grep -E 'app/content/blogs/[^/]+/[^/]+\.md$' || true)
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD -- 'app/content/blogs/**/*.md' || true)
 
           if [ -z "$CHANGED_FILES" ]; then
             echo "No blog files changed"
@@ -31,8 +31,9 @@ jobs:
             echo "$CHANGED_FILES"
             echo "has_changes=true" >> $GITHUB_OUTPUT
 
-            # Extract unique blog IDs (filename without extension and language path)
-            BLOG_IDS=$(echo "$CHANGED_FILES" | sed -E 's|app/content/blogs/[^/]+/(.+)\.md|\1|' | sort -u)
+            # Extract unique blog IDs (filename without .md extension)
+            # Handles both: blogs/en/gratitude.md -> gratitude and blogs/en/releases/0_9_8.md -> 0_9_8
+            BLOG_IDS=$(echo "$CHANGED_FILES" | xargs -n1 basename | sed 's/\.md$//' | sort -u)
             echo "Blog IDs: $BLOG_IDS"
 
             # Convert to JSON array for easier processing
@@ -44,9 +45,14 @@ jobs:
         if: steps.changed-files.outputs.has_changes == 'true'
         env:
           JORBITES_NOTIFIER_URL: ${{ secrets.JORBITES_NOTIFIER_URL }}
+          JORBITES_NOTIFIER_API_KEY: ${{ secrets.JORBITES_NOTIFIER_API_KEY }}
         run: |
           if [ -z "$JORBITES_NOTIFIER_URL" ]; then
             echo "JORBITES_NOTIFIER_URL secret is not set. Skipping notification step."
+            exit 0
+          fi
+          if [ -z "$JORBITES_NOTIFIER_API_KEY" ]; then
+            echo "JORBITES_NOTIFIER_API_KEY secret is not set. Skipping notification step."
             exit 0
           fi
           BLOG_IDS='${{ steps.changed-files.outputs.blog_ids }}'
@@ -57,10 +63,10 @@ jobs:
               echo "Sending notification for blog: $blog_id"
 
               # Send POST request to the notifier
-              response=$(curl -s -w "\n%{http_code}" -X POST "$JORBITES_NOTIFIER_URL" \
+              response=$(curl -s -w "\n%{http_code}" -X POST "$JORBITES_NOTIFIER_URL/notifications" \
                 -H "Content-Type: application/json" \
-                -d "{\"type\":\"NEW_BLOG\",\"blog_id\":\"$blog_id\"}")
-
+                -H "X-API-Key: $JORBITES_NOTIFIER_API_KEY" \
+                -d "{\"type\":\"NEW_BLOG\",\"metadata\":{\"blog_id\":\"$blog_id\"}}")
               http_code=$(echo "$response" | tail -n1)
               body=$(echo "$response" | sed '$d')
 
@@ -78,4 +84,3 @@ jobs:
         run: |
           echo "Notifications sent for new blog posts"
           echo "Blog IDs: ${{ steps.changed-files.outputs.blog_ids }}"
-

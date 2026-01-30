@@ -2,14 +2,6 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import Dropdown from '@/app/components/utils/Dropdown';
 
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-    motion: {
-        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    },
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
-
 // Mock the icons
 vi.mock('react-icons/fi', () => ({
     FiChevronDown: () => <div data-testid="chevron-down-icon" />,

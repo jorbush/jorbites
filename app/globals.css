@@ -46,4 +46,106 @@ body,
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Dropdown animation */
+  @keyframes dropdownFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Navbar Categories animation - uses CSS animation for smooth expand */
+  @keyframes navbarCategoriesExpand {
+    from {
+      max-height: 0;
+      opacity: 0;
+    }
+    to {
+      max-height: 120px;
+      opacity: 1;
+    }
+  }
+
+  @keyframes navbarCategoriesCollapse {
+    from {
+      max-height: 120px;
+      opacity: 1;
+    }
+    to {
+      max-height: 0;
+      opacity: 0;
+    }
+  }
+
+  .navbar-categories {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+
+  .navbar-categories.open {
+    animation: navbarCategoriesExpand 0.3s ease-in-out forwards;
+  }
+
+  .navbar-categories.closing {
+    animation: navbarCategoriesCollapse 0.3s ease-in-out forwards;
+  }
+
+  /* Respect user's motion preferences for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .navbar-categories.open {
+      animation: none;
+      max-height: 120px;
+      opacity: 1;
+    }
+    .navbar-categories.closing {
+      animation: none;
+      max-height: 0;
+      opacity: 0;
+    }
+  }
+
+  /* Search component animations */
+  @keyframes searchFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes mobileSearchIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-search-fade-in {
+    animation: searchFadeIn 0.3s ease-in-out;
+  }
+
+  .animate-mobile-search-in {
+    animation: mobileSearchIn 0.1s ease-in-out;
+  }
+
+  /* Respect user's motion preferences for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-search-fade-in,
+    .animate-mobile-search-in {
+      animation: none;
+    }
+  }
 }

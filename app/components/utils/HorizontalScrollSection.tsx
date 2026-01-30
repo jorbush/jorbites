@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 interface HorizontalScrollSectionProps {
@@ -75,16 +74,13 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                 <div className="group relative">
                     {/* Left scroll button */}
                     {showLeftArrow && (
-                        <motion.button
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
+                        <button
                             onClick={() => scroll('left')}
-                            className="absolute top-1/2 left-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition group-hover:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
+                            className="absolute top-1/2 left-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition-[opacity,background-color] duration-200 ease-in-out group-hover:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
                             aria-label="Scroll left"
                         >
                             <FiChevronLeft className="h-6 w-6 text-neutral-700 dark:text-neutral-200" />
-                        </motion.button>
+                        </button>
                     )}
 
                     {/* Scrollable container */}
@@ -104,16 +100,13 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
 
                     {/* Right scroll button */}
                     {showRightArrow && (
-                        <motion.button
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
+                        <button
                             onClick={() => scroll('right')}
-                            className="absolute top-1/2 right-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition group-hover:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
+                            className="absolute top-1/2 right-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition-[opacity,background-color] duration-200 ease-in-out group-hover:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
                             aria-label="Scroll right"
                         >
                             <FiChevronRight className="h-6 w-6 text-neutral-700 dark:text-neutral-200" />
-                        </motion.button>
+                        </button>
                     )}
                 </div>
             )}

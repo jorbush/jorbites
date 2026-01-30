@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { FiCalendar, FiX } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import Button from '../buttons/Button';
@@ -142,106 +141,101 @@ const PeriodFilter: React.FC = () => {
                 )}
             </button>
 
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-12 right-0 z-50 min-w-[280px] rounded-lg border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
-                        data-testid="period-filter-dropdown"
-                    >
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <h3 className="font-medium text-neutral-900 dark:text-neutral-100">
-                                    {t('filter_by_date') || 'Filter by date'}
-                                </h3>
-                                {hasDateFilter && (
-                                    <button
-                                        onClick={handleClear}
-                                        className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
-                                        aria-label={
-                                            t('clear_date_filter') ||
-                                            'Clear date filter'
-                                        }
-                                        data-testid="clear-filter-button"
-                                    >
-                                        <FiX size={16} />
-                                    </button>
-                                )}
-                            </div>
-
+            {isOpen && (
+                <div
+                    className="absolute top-12 right-0 z-50 min-w-[280px] rounded-lg border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
+                    style={{
+                        animation: 'dropdownFadeIn 0.15s ease-out forwards',
+                    }}
+                    data-testid="period-filter-dropdown"
+                >
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-medium text-neutral-900 dark:text-neutral-100">
+                                {t('filter_by_date') || 'Filter by date'}
+                            </h3>
                             {hasDateFilter && (
-                                <div
-                                    className="text-sm text-neutral-600 dark:text-neutral-400"
-                                    data-testid="formatted-date-range"
+                                <button
+                                    onClick={handleClear}
+                                    className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                                    aria-label={
+                                        t('clear_date_filter') ||
+                                        'Clear date filter'
+                                    }
+                                    data-testid="clear-filter-button"
                                 >
-                                    {formatDateRange()}
-                                </div>
+                                    <FiX size={16} />
+                                </button>
                             )}
+                        </div>
 
-                            <div className="flex flex-col space-y-3">
-                                <div className="flex flex-col">
-                                    <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                        {t('from_date') || 'From date'}
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={tempStartDate}
-                                        max={tempEndDate || today}
-                                        onChange={(e) =>
-                                            setTempStartDate(e.target.value)
-                                        }
-                                        className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 flex-shrink rounded-md border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
-                                        data-testid="start-date-input"
-                                    />
-                                </div>
+                        {hasDateFilter && (
+                            <div
+                                className="text-sm text-neutral-600 dark:text-neutral-400"
+                                data-testid="formatted-date-range"
+                            >
+                                {formatDateRange()}
+                            </div>
+                        )}
 
-                                <div className="flex flex-col">
-                                    <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                        {t('to_date') || 'To date'}
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={tempEndDate}
-                                        min={tempStartDate}
-                                        max={today}
-                                        onChange={(e) =>
-                                            setTempEndDate(e.target.value)
-                                        }
-                                        className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 flex-shrink rounded-md border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
-                                        data-testid="end-date-input"
-                                    />
-                                </div>
+                        <div className="flex flex-col space-y-3">
+                            <div className="flex flex-col">
+                                <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                                    {t('from_date') || 'From date'}
+                                </label>
+                                <input
+                                    type="date"
+                                    value={tempStartDate}
+                                    max={tempEndDate || today}
+                                    onChange={(e) =>
+                                        setTempStartDate(e.target.value)
+                                    }
+                                    className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 flex-shrink rounded-md border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+                                    data-testid="start-date-input"
+                                />
                             </div>
 
-                            <div className="flex gap-2 pt-2">
-                                <div className="flex-1">
-                                    <Button
-                                        label={t('cancel') || 'Cancel'}
-                                        onClick={() => setIsOpen(false)}
-                                        outline
-                                        small
-                                        dataCy="cancel-button"
-                                    />
-                                </div>
-                                <div className="flex-1">
-                                    <Button
-                                        label={t('apply') || 'Apply'}
-                                        onClick={handleApply}
-                                        disabled={
-                                            !tempStartDate && !tempEndDate
-                                        }
-                                        small
-                                        dataCy="apply-button"
-                                    />
-                                </div>
+                            <div className="flex flex-col">
+                                <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                                    {t('to_date') || 'To date'}
+                                </label>
+                                <input
+                                    type="date"
+                                    value={tempEndDate}
+                                    min={tempStartDate}
+                                    max={today}
+                                    onChange={(e) =>
+                                        setTempEndDate(e.target.value)
+                                    }
+                                    className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 flex-shrink rounded-md border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+                                    data-testid="end-date-input"
+                                />
                             </div>
                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+
+                        <div className="flex gap-2 pt-2">
+                            <div className="flex-1">
+                                <Button
+                                    label={t('cancel') || 'Cancel'}
+                                    onClick={() => setIsOpen(false)}
+                                    outline
+                                    small
+                                    dataCy="cancel-button"
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <Button
+                                    label={t('apply') || 'Apply'}
+                                    onClick={handleApply}
+                                    disabled={!tempStartDate && !tempEndDate}
+                                    small
+                                    dataCy="apply-button"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

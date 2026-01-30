@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiRefreshCw } from 'react-icons/fi';
-import { motion } from 'framer-motion';
 
 interface PullToRefreshProps {
     threshold?: number;
@@ -114,29 +113,17 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
                     }}
                 >
                     <div className="text-green-450 border-green-450 flex items-center justify-center rounded-full border bg-white p-3 shadow-lg dark:bg-black">
-                        {refreshing ? (
-                            <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{
-                                    duration: 1,
-                                    repeat: Infinity,
-                                    ease: 'linear',
-                                }}
-                            >
-                                <FiRefreshCw
-                                    size={24}
-                                    className="text-green-450"
-                                />
-                            </motion.div>
-                        ) : (
-                            <FiRefreshCw
-                                size={24}
-                                className="text-green-450"
-                                style={{
-                                    transform: `rotate(${Math.min((displayPullDistance / threshold) * 360, 360)}deg)`,
-                                }}
-                            />
-                        )}
+                        <FiRefreshCw
+                            size={24}
+                            className={`text-green-450 ${refreshing ? 'animate-spin' : ''}`}
+                            style={
+                                refreshing
+                                    ? undefined
+                                    : {
+                                          transform: `rotate(${Math.min((displayPullDistance / threshold) * 360, 360)}deg)`,
+                                      }
+                            }
+                        />
                     </div>
                 </div>
             )}

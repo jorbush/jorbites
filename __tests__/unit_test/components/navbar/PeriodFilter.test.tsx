@@ -15,14 +15,6 @@ vi.mock('react-icons/fi', () => ({
     FiX: () => <div data-testid="x-icon" />,
 }));
 
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-    motion: {
-        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    },
-    AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
-
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
