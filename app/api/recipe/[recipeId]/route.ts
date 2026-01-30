@@ -3,6 +3,7 @@ import prisma from '@/app/lib/prismadb';
 import { redisCache } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
+import { sendPushToUser } from '@/app/actions/push-notifications';
 import getRecipeById from '@/app/actions/getRecipeById';
 import updateUserLevel from '@/app/actions/updateUserLevel';
 import { deleteMultipleFromCloudinary } from '@/app/utils/cloudinary';
@@ -99,6 +100,14 @@ export async function POST(
                         recipeId: recipeId,
                     },
                 });
+            }
+
+            if (currentUser.id !== currentRecipe.user.id) {
+                await sendPushToUser(
+                    currentRecipe.user.id,
+                    `${currentUser.name || 'Someone'} liked your recipe: ${currentRecipe.title}`,
+                    `/recipes/${recipeId}`
+                );
             }
         } else {
             if (numLikes > 0) {

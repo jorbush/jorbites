@@ -597,5 +597,10 @@
     "translating": "Translating...",
     "translation_failed": "Translation failed",
     "show_original": "Show original",
-    "see_more": "See more"
+    "see_more": "See more",
+    "enable_push_notifications": "Push notifications",
+    "push_notifications_subscribed_success": "Subscribed successfully!",
+    "push_notifications_subscribe_error": "Failed to subscribe.",
+    "push_notifications_unsubscribed_success": "Unsubscribed successfully!",
+    "push_notifications_unsubscribe_error": "Failed to unsubscribe."
 }
