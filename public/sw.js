@@ -19,7 +19,18 @@ self.addEventListener('push', function (event) {
 self.addEventListener('notificationclick', function (event) {
   console.log('Notification click received.')
   event.notification.close()
-  const urlToOpen = event.notification.data.url || '/'
-  const absoluteUrl = new URL(urlToOpen, self.location.origin).href
-  event.waitUntil(clients.openWindow(absoluteUrl))
+  
+  event.waitUntil(
+    (async () => {
+      try {
+        const urlToOpen = event.notification.data.url || '/'
+        const absoluteUrl = new URL(urlToOpen, self.location.origin).href
+        await clients.openWindow(absoluteUrl)
+      } catch (error) {
+        console.error('Failed to open notification URL:', error)
+        // Fallback to home page if URL is invalid
+        await clients.openWindow(self.location.origin)
+      }
+    })()
+  )
 })
