@@ -97,8 +97,8 @@ export async function sendPushToUser(
             };
 
             const payload = JSON.stringify({
-                title: 'Jorbites',
-                body: message,
+                title: message,
+                body: '',
                 icon: '/web-app-manifest-192x192.png',
                 url: url,
             });
