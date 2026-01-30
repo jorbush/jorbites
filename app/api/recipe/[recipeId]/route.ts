@@ -102,12 +102,13 @@ export async function POST(
                 });
             }
 
-            // Send Push Notification
-            await sendPushToUser(
-                currentRecipe.user.id,
-                `${currentUser.name || 'Someone'} liked your recipe: ${currentRecipe.title}`,
-                `/recipes/${recipeId}`
-            );
+            if (currentUser.id !== currentRecipe.user.id) {
+                await sendPushToUser(
+                    currentRecipe.user.id,
+                    `${currentUser.name || 'Someone'} liked your recipe: ${currentRecipe.title}`,
+                    `/recipes/${recipeId}`
+                );
+            }
         } else {
             if (numLikes > 0) {
                 numLikes--;

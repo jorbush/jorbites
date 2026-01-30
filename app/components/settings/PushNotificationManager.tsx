@@ -62,6 +62,15 @@ const PushNotificationManager: React.FC = () => {
     async function subscribeToPush() {
         setLoading(true);
         try {
+            if (Notification.permission === 'denied') {
+                toast.error(
+                    t('push_notifications_permission_denied') ||
+                        'Permission to receive notifications has been denied'
+                );
+                setLoading(false);
+                return;
+            }
+
             const registration = await navigator.serviceWorker.ready;
             const sub = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
