@@ -117,7 +117,7 @@ const PushNotificationManager: React.FC = () => {
                 </div>
                 <ToggleSwitch
                     checked={false}
-                    onChange={() => { }}
+                    onChange={() => {}}
                     label=""
                     dataCy="push-notifications-toggle"
                     disabled={true}
