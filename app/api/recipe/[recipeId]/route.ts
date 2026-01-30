@@ -105,6 +105,7 @@ export async function POST(
             if (currentUser.id !== currentRecipe.user.id) {
                 await sendPushToUser(
                     currentRecipe.user.id,
+                    'New like on your recipe! ❤️',
                     `${currentUser.name || 'Someone'} liked your recipe: ${currentRecipe.title}`,
                     `/recipes/${recipeId}`
                 );
