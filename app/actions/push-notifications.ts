@@ -77,6 +77,10 @@ export async function sendPushToUser(
     url: string = '/'
 ) {
     try {
+        if (!message || message.trim().length === 0) {
+            return { success: false, error: 'Message cannot be empty' };
+        }
+
         const subscriptions = await prisma.pushSubscription.findMany({
             where: {
                 userId: userId,
@@ -98,7 +102,6 @@ export async function sendPushToUser(
 
             const payload = JSON.stringify({
                 title: message,
-                body: '',
                 icon: '/web-app-manifest-192x192.png',
                 url: url,
             });
