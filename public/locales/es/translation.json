@@ -598,5 +598,10 @@
     "translating": "Traduciendo...",
     "translation_failed": "Error en la traducción",
     "show_original": "Mostrar original",
-    "see_more": "Ver más"
+    "see_more": "Ver más",
+    "enable_push_notifications": "Notificaciones push",
+    "push_notifications_subscribed_success": "¡Suscrito con éxito!",
+    "push_notifications_subscribe_error": "Error al suscribirse.",
+    "push_notifications_unsubscribed_success": "¡Suscripción cancelada con éxito!",
+    "push_notifications_unsubscribe_error": "Error al cancelar la suscripción."
 }

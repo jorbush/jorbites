@@ -6,6 +6,7 @@ import ThemeSelector from '@/app/components/settings/ThemeSelector';
 import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import { useTranslation } from 'react-i18next';
 import EmailNotificationsSelector from '@/app/components/settings/EmailNotificationsSelector';
+import PushNotificationManager from '@/app/components/settings/PushNotificationManager';
 import { SafeUser } from '@/app/types';
 import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
 import ChangeUserNameSelector from '@/app/components/settings/ChangeUserName';
@@ -61,6 +62,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
                 return currentUser ? (
                     <div className="flex flex-col gap-4">
                         <EmailNotificationsSelector currentUser={currentUser} />
+                        <PushNotificationManager />
                         <ChangeUserImageSelector
                             currentUser={currentUser}
                             saveImage={saveImage}
