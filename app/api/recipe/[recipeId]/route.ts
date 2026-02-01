@@ -3,7 +3,6 @@ import prisma from '@/app/lib/prismadb';
 import { redisCache } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendEmail from '@/app/actions/sendEmail';
-import { sendPushToUser } from '@/app/actions/push-notifications';
 import getRecipeById from '@/app/actions/getRecipeById';
 import updateUserLevel from '@/app/actions/updateUserLevel';
 import { deleteMultipleFromCloudinary } from '@/app/utils/cloudinary';
