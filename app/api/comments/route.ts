@@ -75,19 +75,14 @@ export async function POST(request: Request) {
             return badRequest('Recipe not found');
         }
 
-        if (
-            currentRecipe?.user.emailNotifications &&
-            currentRecipe?.user.email !== currentUser.email
-        ) {
-            await sendEmail({
-                type: EmailType.NEW_COMMENT,
-                userEmail: currentRecipe?.user.email,
-                params: {
-                    userName: currentUser.name,
-                    recipeId: recipeId,
-                },
-            });
-        }
+        await sendEmail({
+            type: EmailType.NEW_COMMENT,
+            userEmail: currentRecipe?.user.email,
+            params: {
+                userName: currentUser.name,
+                recipeId: recipeId,
+            },
+        });
 
         const recipeAndComment = await prisma.recipe.update({
             where: {

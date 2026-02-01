@@ -91,25 +91,14 @@ export async function POST(
 
         if (operation === 'increment') {
             numLikes++;
-            if (currentRecipe.user.emailNotifications) {
-                await sendEmail({
-                    type: EmailType.NEW_LIKE,
-                    userEmail: currentRecipe.user.email,
-                    params: {
-                        userName: currentUser.name,
-                        recipeId: recipeId,
-                    },
-                });
-            }
-
-            if (currentUser.id !== currentRecipe.user.id) {
-                await sendPushToUser(
-                    currentRecipe.user.id,
-                    'New like on your recipe! ❤️',
-                    `${currentUser.name || 'Someone'} liked your recipe: ${currentRecipe.title}`,
-                    `/recipes/${recipeId}`
-                );
-            }
+            await sendEmail({
+                type: EmailType.NEW_LIKE,
+                userEmail: currentRecipe.user.email,
+                params: {
+                    userName: currentUser.name,
+                    recipeId: recipeId,
+                },
+            });
         } else {
             if (numLikes > 0) {
                 numLikes--;
