@@ -3,7 +3,7 @@ title: 🔥 La Calçoxofada 🧅
 date: 2026-02-01
 endDate: 2026-02-28T23:59:59
 image: /images/events/calcoxofada.webp
-description: Únete a la fusión definitiva de invierno: Calçots y Alcachofas en su máximo esplendor a la brasa.
+description: Únete a la fusión definitiva de invierno, Calçots y Alcachofas en su máximo esplendor a la brasa.
 ---
 
 # 🔥 La Calçoxofada: Fiesta de la Brasa 🧅
