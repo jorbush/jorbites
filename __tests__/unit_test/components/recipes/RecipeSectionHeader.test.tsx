@@ -24,8 +24,6 @@ describe('RecipeSectionHeader', () => {
     };
     Object.assign(navigator, { clipboard: mockClipboard });
 
-    // Setup window location mock
-    const originalLocation = window.location;
     delete (window as any).location;
     (window as any).location = {
         origin: 'http://localhost:3000',
