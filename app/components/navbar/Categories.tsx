@@ -12,6 +12,7 @@ import {
     GiMeat,
     GiBowlOfRice,
     GiTrophyCup,
+    GiSandwich,
 } from 'react-icons/gi';
 import { FaFish } from 'react-icons/fa';
 import { TbSoup, TbSalad } from 'react-icons/tb';
@@ -101,6 +102,11 @@ export const categories = [
         label: 'Award-Winning',
         icon: GiTrophyCup,
         description: 'Award-winning recipes',
+    },
+    {
+        label: 'Sandwiches',
+        icon: GiSandwich,
+        description: 'Bagels, sandwiches & wraps',
     },
 ];
 
