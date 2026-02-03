@@ -29,10 +29,12 @@ export async function PUT(_request: Request) {
             },
         });
 
-        await sendNotification({
-            type: NotificationType.NOTIFICATIONS_ACTIVATED,
-            userEmail: user.email,
-        });
+        if (user.emailNotifications) {
+            await sendNotification({
+                type: NotificationType.NOTIFICATIONS_ACTIVATED,
+                userEmail: user.email,
+            });
+        }
 
         logger.info('PUT /api/emailNotifications/[userId] - success', {
             userId: user.id,
