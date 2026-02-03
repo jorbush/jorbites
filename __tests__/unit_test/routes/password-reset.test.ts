@@ -4,6 +4,8 @@ import { POST as PasswordResetPOST } from '@/app/api/password-reset/reset/route'
 import { GET as PasswordResetValidateGET } from '@/app/api/password-reset/validate/[token]/route';
 import { NextRequest } from 'next/server';
 import bcrypt from 'bcrypt';
+import prisma from '@/app/lib/prismadb';
+import sendNotification from '@/app/actions/sendNotification';
 
 // Mock dependencies
 jest.mock('bcrypt', () => ({
@@ -24,10 +26,7 @@ jest.mock('@/app/lib/prismadb', () => ({
     },
 }));
 
-jest.mock('@/app/actions/sendEmail', () => jest.fn());
-
-import prisma from '@/app/lib/prismadb';
-import sendEmail from '@/app/actions/sendEmail';
+jest.mock('@/app/actions/sendNotification', () => jest.fn());
 
 describe('Password Reset API Error Handling', () => {
     beforeEach(() => {
@@ -74,7 +73,7 @@ describe('Password Reset API Error Handling', () => {
                 mockUser
             );
             (prisma.user.update as jest.Mock).mockResolvedValueOnce(mockUser);
-            (sendEmail as jest.Mock).mockResolvedValueOnce(true);
+            (sendNotification as jest.Mock).mockResolvedValueOnce(true);
 
             const mockRequest = {
                 json: jest.fn().mockResolvedValue({
@@ -94,7 +93,7 @@ describe('Password Reset API Error Handling', () => {
                     resetTokenExpiry: expect.any(Date),
                 },
             });
-            expect(sendEmail).toHaveBeenCalled();
+            expect(sendNotification).toHaveBeenCalled();
         });
 
         it('should return 500 when database operation fails', async () => {

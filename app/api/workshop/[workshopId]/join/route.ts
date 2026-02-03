@@ -109,8 +109,8 @@ export async function POST(
 
             // Notify host if notifications enabled
             // if (workshop.host.emailNotifications) {
-            //     await sendEmail({
-            //         type: EmailType.NEW_LIKE, // TODO: Create WORKSHOP_JOIN type
+            //     await sendNotification({
+            //         type: NotificationType.NEW_LIKE, // TODO: Create WORKSHOP_JOIN type
             //         userEmail: workshop.host.email,
             //         params: {
             //             userName: currentUser.name,

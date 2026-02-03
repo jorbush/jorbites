@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import { redisCache } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import sendEmail from '@/app/actions/sendEmail';
+import sendNotification from '@/app/actions/sendNotification';
 import updateUserLevel from '@/app/actions/updateUserLevel';
-import { EmailType } from '@/app/types/email';
+import { NotificationType } from '@/app/types/notification';
 import {
     RECIPE_TITLE_MAX_LENGTH,
     RECIPE_DESCRIPTION_MAX_LENGTH,
@@ -211,8 +211,8 @@ export async function POST(request: Request) {
             },
         });
 
-        await sendEmail({
-            type: EmailType.NEW_RECIPE,
+        await sendNotification({
+            type: NotificationType.NEW_RECIPE,
             userEmail: currentUser.email,
             params: {
                 recipeId: recipe.id,

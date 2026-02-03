@@ -1,8 +1,8 @@
-import { EmailType } from '@/app/types/email';
+import { NotificationType } from '@/app/types/notification';
 import { logger } from '@/app/lib/axiom/server';
 
-interface SendEmailParams {
-    type: EmailType;
+interface SendNotificationParams {
+    type: NotificationType;
     userEmail: string | null | undefined;
     params?: {
         userName?: string | null | undefined;
@@ -13,17 +13,18 @@ interface SendEmailParams {
     };
 }
 
-/**
- * Sends an email notification using the Jorbites Notifier service
- */
-const sendEmail = async ({ type, userEmail, params = {} }: SendEmailParams) => {
+const sendNotification = async ({
+    type,
+    userEmail,
+    params = {},
+}: SendNotificationParams) => {
     if (!userEmail) {
-        logger.info('sendEmail - no userEmail provided', { type });
+        logger.info('sendNotification - no userEmail provided', { type });
         return;
     }
 
     try {
-        logger.info('sendEmail - start', { type, userEmail, params });
+        logger.info('sendNotification - start', { type, userEmail, params });
         const metadata: Record<string, string> = {};
 
         if (params.userName) metadata.authorName = params.userName;
@@ -33,7 +34,7 @@ const sendEmail = async ({ type, userEmail, params = {} }: SendEmailParams) => {
         if (params.mentionedUsers)
             metadata.mentionedUsers = params.mentionedUsers.join(',');
 
-        if (type === EmailType.NEW_LIKE && params.userName) {
+        if (type === NotificationType.NEW_LIKE && params.userName) {
             metadata.likedBy = params.userName;
         }
 
@@ -57,7 +58,7 @@ const sendEmail = async ({ type, userEmail, params = {} }: SendEmailParams) => {
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            logger.error('sendEmail - notification service error', {
+            logger.error('sendNotification - notification service error', {
                 status: response.status,
                 errorData,
                 type,
@@ -69,10 +70,10 @@ const sendEmail = async ({ type, userEmail, params = {} }: SendEmailParams) => {
         }
 
         const result = await response.json();
-        logger.info('sendEmail - success', { type, userEmail });
+        logger.info('sendNotification - success', { type, userEmail });
         return result;
     } catch (error: any) {
-        logger.error('sendEmail - error', {
+        logger.error('sendNotification - error', {
             error: error.message,
             type,
             userEmail,
@@ -80,4 +81,4 @@ const sendEmail = async ({ type, userEmail, params = {} }: SendEmailParams) => {
     }
 };
 
-export default sendEmail;
+export default sendNotification;

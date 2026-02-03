@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
-import sendEmail from '@/app/actions/sendEmail';
-import { EmailType } from '@/app/types/email';
+import sendNotification from '@/app/actions/sendNotification';
+import { NotificationType } from '@/app/types/notification';
 import { unauthorized, internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 
@@ -29,8 +29,8 @@ export async function PUT(_request: Request) {
             },
         });
 
-        await sendEmail({
-            type: EmailType.NOTIFICATIONS_ACTIVATED,
+        await sendNotification({
+            type: NotificationType.NOTIFICATIONS_ACTIVATED,
             userEmail: user.email,
         });
 
