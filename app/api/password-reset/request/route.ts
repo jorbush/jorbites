@@ -3,8 +3,8 @@ import crypto from 'crypto';
 import { headers } from 'next/headers';
 import prisma from '@/app/lib/prismadb';
 import { JORBITES_URL } from '@/app/utils/constants';
-import sendEmail from '@/app/actions/sendEmail';
-import { EmailType } from '@/app/types/email';
+import sendNotification from '@/app/actions/sendNotification';
+import { NotificationType } from '@/app/types/notification';
 import {
     badRequest,
     internalServerError,
@@ -77,8 +77,8 @@ export async function POST(request: Request) {
 
         const resetUrl = `${JORBITES_URL}/reset-password/${resetToken}`;
 
-        await sendEmail({
-            type: EmailType.FORGOT_PASSWORD,
+        await sendNotification({
+            type: NotificationType.FORGOT_PASSWORD,
             userEmail: user.email,
             params: {
                 resetUrl: resetUrl,

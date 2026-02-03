@@ -144,8 +144,8 @@ export async function POST(request: Request) {
         //     });
 
         //     for (const user of whitelistedUsers) {
-        //         await sendEmail({
-        //             type: EmailType.NEW_RECIPE, // TODO: Create WORKSHOP_INVITATION type
+        //         await sendNotification({
+        //             type: NotificationType.NEW_RECIPE, // TODO: Create WORKSHOP_INVITATION type
         //             userEmail: user.email,
         //             params: {
         //                 recipeId: workshop.id, // Use workshopId when email type is ready

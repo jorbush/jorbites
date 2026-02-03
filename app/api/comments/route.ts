@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import sendEmail from '@/app/actions/sendEmail';
-import { EmailType } from '@/app/types/email';
+import sendNotification from '@/app/actions/sendNotification';
+import { NotificationType } from '@/app/types/notification';
 import { COMMENT_MAX_LENGTH } from '@/app/utils/constants';
 import { extractMentionedUserIds } from '@/app/utils/mentionUtils';
 import {
@@ -75,8 +75,8 @@ export async function POST(request: Request) {
             return badRequest('Recipe not found');
         }
 
-        await sendEmail({
-            type: EmailType.NEW_COMMENT,
+        await sendNotification({
+            type: NotificationType.NEW_COMMENT,
             userEmail: currentRecipe?.user.email,
             params: {
                 userName: currentUser.name,
@@ -103,8 +103,8 @@ export async function POST(request: Request) {
 
         const mentionedUserIds = extractMentionedUserIds(comment);
         if (mentionedUserIds.length > 0) {
-            await sendEmail({
-                type: EmailType.MENTION_IN_COMMENT,
+            await sendNotification({
+                type: NotificationType.MENTION_IN_COMMENT,
                 userEmail: currentUser.email,
                 params: {
                     userName: currentUser.name,

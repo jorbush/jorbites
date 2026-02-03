@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import { redisCache } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import sendEmail from '@/app/actions/sendEmail';
+import sendNotification from '@/app/actions/sendNotification';
 import getRecipeById from '@/app/actions/getRecipeById';
 import updateUserLevel from '@/app/actions/updateUserLevel';
 import { deleteMultipleFromCloudinary } from '@/app/utils/cloudinary';
-import { EmailType } from '@/app/types/email';
+import { NotificationType } from '@/app/types/notification';
 import {
     unauthorized,
     invalidInput,
@@ -90,8 +90,8 @@ export async function POST(
 
         if (operation === 'increment') {
             numLikes++;
-            await sendEmail({
-                type: EmailType.NEW_LIKE,
+            await sendNotification({
+                type: NotificationType.NEW_LIKE,
                 userEmail: currentRecipe.user.email,
                 params: {
                     userName: currentUser.name,
