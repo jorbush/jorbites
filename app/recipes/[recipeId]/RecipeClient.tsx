@@ -114,6 +114,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 categories={recipeCategories}
                 extraImages={recipe.extraImages}
                 youtubeUrl={recipe.youtubeUrl}
+                recipeId={recipe.id}
             />
             <div className="mx-auto max-w-[800px]">
                 <div className="flex flex-col gap-6">

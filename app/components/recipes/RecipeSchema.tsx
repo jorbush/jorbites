@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { getHighResImageUrl, getYoutubeVideoId } from '@/app/utils/seo-utils';
+import { JORBITES_URL } from '@/app/utils/constants';
 
 interface RecipeSchemaProps {
     title: string;
@@ -14,6 +15,7 @@ interface RecipeSchemaProps {
     steps?: string[];
     categories?: string[];
     youtubeUrl?: string | null;
+    recipeId?: string;
 }
 
 export default function RecipeSchema({
@@ -28,6 +30,7 @@ export default function RecipeSchema({
     steps,
     categories,
     youtubeUrl,
+    recipeId,
 }: RecipeSchemaProps) {
     const recipeCategories = categories || [];
 
@@ -69,13 +72,14 @@ export default function RecipeSchema({
         recipeIngredient: ingredients || [],
         recipeInstructions:
             steps?.map((step, index) => {
-                // Use extraImages for the step if available (step 1 -> index 0), otherwise use main image
                 const stepImageSrc = extraImages[index] || imageSrc;
                 return {
                     '@type': 'HowToStep',
+                    name: step.split('.')[0] || `Step ${index + 1}`,
                     position: index + 1,
                     text: step,
                     image: getHighResImageUrl(stepImageSrc),
+                    url: `${JORBITES_URL}/recipes/${recipeId}`,
                 };
             }) || [],
         recipeCategory:
@@ -83,6 +87,7 @@ export default function RecipeSchema({
                 ? recipeCategories[0]
                 : recipeCategories,
         video: videoSchema,
+        keywords: recipeCategories.join(', '),
     };
 
     return (
