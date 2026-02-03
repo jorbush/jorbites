@@ -150,4 +150,11 @@ describe('RecipeInfo', () => {
         render(<RecipeInfo {...mockProps} />);
         expect(screen.getByTestId('recipe-category-and-method')).toBeDefined();
     });
+
+    it('has correct id attributes for hash navigation', () => {
+        const { container } = render(<RecipeInfo {...mockProps} />);
+        expect(container.querySelector('#description')).not.toBeNull();
+        expect(container.querySelector('#ingredients')).not.toBeNull();
+        expect(container.querySelector('#steps')).not.toBeNull();
+    });
 });

@@ -156,4 +156,15 @@ describe('RecipeClient', () => {
             });
         });
     });
+
+    it('has correct id for comments section', () => {
+        const { container } = render(
+            <RecipeClient
+                recipe={mockRecipe}
+                currentUser={mockCurrentUser}
+                comments={mockComments}
+            />
+        );
+        expect(container.querySelector('#comments')).not.toBeNull();
+    });
 });

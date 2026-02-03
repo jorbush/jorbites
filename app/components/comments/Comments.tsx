@@ -6,6 +6,7 @@ import CommentBox from '@/app/components/comments/CommentBox';
 import Comment from '@/app/components/comments/Comment';
 import { useTranslation } from 'react-i18next';
 import ButtonSelector from '@/app/components/comments/ButtonSelector';
+import RecipeSectionHeader from '@/app/components/recipes/RecipeSectionHeader';
 
 /* eslint-disable unused-imports/no-unused-vars */
 interface CommentsProps {
@@ -67,12 +68,11 @@ const Comments: React.FC<CommentsProps> = ({
             <hr />
             <div className="mt-8 mb-4 flex flex-row items-center justify-between">
                 <div className="flex flex-row items-center">
-                    <div className="text-xl font-semibold dark:text-neutral-100">
-                        {mounted ? t('comments') : 'comments'}
-                    </div>
-                    <div className="text-md ml-2 text-neutral-500">
-                        {comments.length}
-                    </div>
+                    <RecipeSectionHeader
+                        id="comments"
+                        title={mounted ? t('comments') : 'comments'}
+                        count={comments.length}
+                    />
                 </div>
                 <ButtonSelector
                     sortOrder={sortOrder}

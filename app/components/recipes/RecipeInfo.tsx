@@ -16,6 +16,7 @@ import YouTubePreview from '@/app/components/utils/YouTubePreview';
 import { TranslateableRecipeContent } from '@/app/components/translation/TranslateableRecipeContent';
 import { formatText } from '@/app/utils/textFormatting';
 import axios from 'axios';
+import RecipeSectionHeader from '@/app/components/recipes/RecipeSectionHeader';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -269,7 +270,8 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 stepsText={stepsText}
                 renderDescription={(content) => (
                     <div
-                        className="text-justify text-lg font-light text-neutral-500 dark:text-neutral-100"
+                        id="description"
+                        className="scroll-mt-24 text-justify text-lg font-light text-neutral-500 dark:text-neutral-100"
                         data-cy="recipe-description-display"
                     >
                         {typeof content === 'string'
@@ -286,9 +288,14 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                 className="dark:text-neutral-100"
                                 data-cy="ingredients-section"
                             >
-                                <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                                    {mounted ? t('ingredients') : 'ingredients'}
-                                </div>
+                                <RecipeSectionHeader
+                                    id="ingredients"
+                                    title={
+                                        mounted
+                                            ? t('ingredients')
+                                            : 'ingredients'
+                                    }
+                                />
                                 <ul className="list-disc pt-4 pl-9">
                                     {items.map((item, index) => (
                                         <li
@@ -312,9 +319,10 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                 className="dark:text-neutral-100"
                                 data-cy="steps-section"
                             >
-                                <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                                    {mounted ? t('steps') : 'steps'}
-                                </div>
+                                <RecipeSectionHeader
+                                    id="steps"
+                                    title={mounted ? t('steps') : 'steps'}
+                                />
                                 <ol className="list-decimal pt-4 pl-9">
                                     {items.map((item, index) => (
                                         <li
