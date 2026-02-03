@@ -49,7 +49,7 @@ const RecipeSectionHeader: React.FC<RecipeSectionHeaderProps> = ({
                 {title}
                 <button
                     onClick={handleCopyLink}
-                    className="rounded-full p-1 text-neutral-500 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-neutral-100 hover:text-neutral-800 focus:opacity-100 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+                    className="cursor-pointer rounded-full p-1 text-neutral-500 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-neutral-100 hover:text-neutral-800 focus:opacity-100 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
                     aria-label={t('copy_link') || 'Copy link'}
                     title={t('copy_link') || 'Copy link'}
                 >
@@ -57,7 +57,9 @@ const RecipeSectionHeader: React.FC<RecipeSectionHeaderProps> = ({
                 </button>
             </div>
             {count !== undefined && (
-                <div className="text-md text-neutral-500">{count}</div>
+                <div className="text-md text-neutral-500 dark:text-neutral-400">
+                    {count}
+                </div>
             )}
         </div>
     );

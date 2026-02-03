@@ -67,13 +67,11 @@ const Comments: React.FC<CommentsProps> = ({
         <div className="flex flex-col pr-2 pl-2">
             <hr />
             <div className="mt-8 mb-4 flex flex-row items-center justify-between">
-                <div className="flex flex-row items-center">
-                    <RecipeSectionHeader
-                        id="comments"
-                        title={mounted ? t('comments') : 'comments'}
-                        count={comments.length}
-                    />
-                </div>
+                <RecipeSectionHeader
+                    id="comments"
+                    title={mounted ? t('comments') : 'comments'}
+                    count={comments.length}
+                />
                 <ButtonSelector
                     sortOrder={sortOrder}
                     onSortChange={handleSortChange}
