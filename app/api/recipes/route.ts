@@ -216,6 +216,7 @@ export async function POST(request: Request) {
             userEmail: currentUser.email,
             params: {
                 recipeId: recipe.id,
+                recipeName: title,
             },
         });
 
@@ -228,7 +229,6 @@ export async function POST(request: Request) {
             userId: currentUser.id,
         });
 
-        // Invalidate cache
         try {
             await redisCache.del(`recipes:graph:${currentUser.id}`);
             await redisCache.incr('recipes:global:version');
