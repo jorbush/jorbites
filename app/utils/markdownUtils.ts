@@ -6,6 +6,7 @@ export interface EventFrontmatter {
     date: string;
     endDate: string;
     image: string; // Mandatory image URL for the event
+    badge?: string; // Optional badge image URL
     permanent?: boolean; // Flag for permanent events
     recurrent?: boolean; // Flag for recurrent events (e.g., 29 of gnocchis)
     dayOfMonth?: number; // Day of month for recurrent events (1-31)
@@ -57,6 +58,7 @@ export function parseMarkdown(markdown: string): {
                 date: new Date().toISOString(),
                 endDate: new Date().toISOString(),
                 image: '/images/events/default.jpg',
+                badge: '/images/events/default.jpg',
             },
             content: 'Error loading event content.',
         };

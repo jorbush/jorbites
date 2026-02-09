@@ -14,6 +14,7 @@ import useTheme from '@/app/hooks/useTheme';
 import WeeklyChallenge from '@/app/components/events/WeeklyChallenge';
 import { FcCalendar } from 'react-icons/fc';
 import SectionHeader from '@/app/components/utils/SectionHeader';
+import EventCalendar from '@/app/components/events/EventCalendar';
 
 const EventsClient = () => {
     const { t, i18n } = useTranslation();
@@ -74,6 +75,11 @@ const EventsClient = () => {
                 />
 
                 <WeeklyChallenge />
+
+                <EventCalendar
+                    currentEvents={events.current}
+                    upcomingEvents={events.upcoming}
+                />
 
                 {loading ? (
                     <>
