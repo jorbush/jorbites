@@ -122,7 +122,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                     </div>
                 ))}
 
-                {calendarDays.map((day, idx) => {
+                {calendarDays.map((day) => {
                     const dayEvents = getEventsForDay(day);
                     const isCurrentMonth = isSameDay(
                         startOfMonth(day),
@@ -133,16 +133,18 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                     return (
                         <div
                             key={format(day, 'yyyy-MM-dd')}
-                            className={`relative min-h-[60px] rounded-lg border p-1 transition-all md:min-h-[100px] md:p-2 ${isCurrentMonth
+                            className={`relative min-h-[60px] rounded-lg border p-1 transition-all md:min-h-[100px] md:p-2 ${
+                                isCurrentMonth
                                     ? 'border-neutral-100 bg-white dark:border-neutral-700 dark:bg-neutral-800'
                                     : 'border-transparent bg-neutral-50 text-neutral-300 dark:bg-neutral-900 dark:text-neutral-600'
-                                } ${isToday ? 'ring-green-450 ring-2' : ''}`}
+                            } ${isToday ? 'ring-green-450 ring-2' : ''}`}
                         >
                             <span
-                                className={`text-xs font-medium md:text-sm ${isToday
+                                className={`text-xs font-medium md:text-sm ${
+                                    isToday
                                         ? 'text-green-600 dark:text-green-400'
                                         : ''
-                                    }`}
+                                }`}
                             >
                                 {format(day, 'd')}
                             </span>
