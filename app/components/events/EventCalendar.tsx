@@ -132,7 +132,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
 
                     return (
                         <div
-                            key={idx}
+                            key={format(day, 'yyyy-MM-dd')}
                             className={`relative min-h-[60px] rounded-lg border p-1 transition-all md:min-h-[100px] md:p-2 ${isCurrentMonth
                                     ? 'border-neutral-100 bg-white dark:border-neutral-700 dark:bg-neutral-800'
                                     : 'border-transparent bg-neutral-50 text-neutral-300 dark:bg-neutral-900 dark:text-neutral-600'
