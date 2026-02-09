@@ -1,7 +1,7 @@
 ---
 title: ⏱️🔥 10 MINUTOS 🔥⏱️
-date: 2025-08-15
-endDate: 2025-08-31
+date: 2026-03-31
+endDate: 2026-04-14T21:59:59
 image: /images/events/10_min_event.webp
 description: Evento de recetas en 10 minutos
 ---
@@ -9,7 +9,7 @@ description: Evento de recetas en 10 minutos
 ### ⏱️🔥 ¡Llega el evento 10 MINUTOS a Jorbites! 🔥⏱️
 
 ¿Tienes prisa pero no quieres renunciar al sabor? ¿Te consideras el Flash de la cocina? 💨🍳
-Pues del 15 de mayo al 1 de junio, te retamos a publicar recetas que se preparen en 10 minutos o menos. Sí, sí… lo justo para que te dé tiempo antes de que se te queme la tostada.
+Pues durante este evento, te retamos a publicar recetas que se preparen en 10 minutos o menos. Sí, sí… lo justo para que te dé tiempo antes de que se te queme la tostada.
 
 🥇 Si lo consigues, ganarás la medalla exclusiva del evento.
 

@@ -1,7 +1,7 @@
 ---
 title: ⏱️🔥 10 MINUTS 🔥⏱️
-date: 2025-08-15
-endDate: 2025-08-31
+date: 2026-03-31
+endDate: 2026-04-14T21:59:59
 image: /images/events/10_min_event.webp
 description: Event de receptes en 10 minuts
 ---
@@ -9,7 +9,7 @@ description: Event de receptes en 10 minuts
 ### ⏱️🔥 Arriba l'esdeveniment 10 MINUTS a Jorbites! 🔥⏱️
 
 Tens pressa però vols menjar com un rei? 👑🍽️ Et consideres el Ferran Adrià dels fogons ràpids?
-Del 15 de maig a l’1 de juny, publica receptes que es puguin fer en 10 minuts o menys i demostra que la rapidesa també té bon gust.
+Durant aquest esdeveniment, publica receptes que es puguin fer en 10 minuts o menys i demostra que la rapidesa també té bon gust.
 
 🏅 Si ho aconsegueixes, t'emportaràs la medalla exclusiva de l'esdeveniment.
 
