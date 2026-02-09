@@ -27,7 +27,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
     currentEvents,
     upcomingEvents,
 }) => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [currentMonth, setCurrentMonth] = React.useState(new Date());
 
     const allEvents = [...currentEvents, ...upcomingEvents];
@@ -74,14 +74,18 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
             // Ensure dates are valid
             if (isNaN(start.getTime()) || isNaN(end.getTime())) return false;
 
-            return isWithinInterval(day, { start, end }) || isSameDay(day, start) || isSameDay(day, end);
+            return (
+                isWithinInterval(day, { start, end }) ||
+                isSameDay(day, start) ||
+                isSameDay(day, end)
+            );
         });
     };
 
     return (
-        <div className="mb-10 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-700 dark:bg-neutral-800 md:p-6">
+        <div className="mb-10 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm md:p-6 dark:border-neutral-700 dark:bg-neutral-800">
             <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-xl font-bold dark:text-neutral-100 md:text-2xl">
+                <h2 className="text-xl font-bold md:text-2xl dark:text-neutral-100">
                     {monthName} {year}
                 </h2>
                 <div className="flex gap-2">
@@ -90,14 +94,20 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                         className="rounded-full p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700"
                         aria-label="Previous Month"
                     >
-                        <MdChevronLeft size={24} className="dark:text-neutral-400" />
+                        <MdChevronLeft
+                            size={24}
+                            className="dark:text-neutral-400"
+                        />
                     </button>
                     <button
                         onClick={nextMonth}
                         className="rounded-full p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700"
                         aria-label="Next Month"
                     >
-                        <MdChevronRight size={24} className="dark:text-neutral-400" />
+                        <MdChevronRight
+                            size={24}
+                            className="dark:text-neutral-400"
+                        />
                     </button>
                 </div>
             </div>
@@ -106,7 +116,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                 {daysOfWeek.map((day) => (
                     <div
                         key={day}
-                        className="pb-2 text-center text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400 md:text-sm"
+                        className="pb-2 text-center text-xs font-semibold text-neutral-500 uppercase md:text-sm dark:text-neutral-400"
                     >
                         {day}
                     </div>
@@ -114,24 +124,25 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
 
                 {calendarDays.map((day, idx) => {
                     const dayEvents = getEventsForDay(day);
-                    const isCurrentMonth = isSameDay(startOfMonth(day), monthStart);
+                    const isCurrentMonth = isSameDay(
+                        startOfMonth(day),
+                        monthStart
+                    );
                     const isToday = isSameDay(day, new Date());
 
                     return (
                         <div
                             key={idx}
-                            className={`relative min-h-[60px] rounded-lg border p-1 transition-all md:min-h-[100px] md:p-2 ${
-                                isCurrentMonth
+                            className={`relative min-h-[60px] rounded-lg border p-1 transition-all md:min-h-[100px] md:p-2 ${isCurrentMonth
                                     ? 'border-neutral-100 bg-white dark:border-neutral-700 dark:bg-neutral-800'
                                     : 'border-transparent bg-neutral-50 text-neutral-300 dark:bg-neutral-900 dark:text-neutral-600'
-                            } ${isToday ? 'ring-2 ring-green-450' : ''}`}
+                                } ${isToday ? 'ring-green-450 ring-2' : ''}`}
                         >
                             <span
-                                className={`text-xs font-medium md:text-sm ${
-                                    isToday
+                                className={`text-xs font-medium md:text-sm ${isToday
                                         ? 'text-green-600 dark:text-green-400'
                                         : ''
-                                }`}
+                                    }`}
                             >
                                 {format(day, 'd')}
                             </span>
@@ -140,7 +151,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                                 {dayEvents.map((event, eventIdx) => (
                                     <div
                                         key={eventIdx}
-                                        className="group relative h-6 w-6 overflow-hidden rounded-full border border-green-450 md:h-8 md:w-8"
+                                        className="group border-green-450 relative h-6 w-6 overflow-hidden rounded-full border md:h-8 md:w-8"
                                         title={event.frontmatter.title}
                                     >
                                         <Image
