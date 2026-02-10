@@ -1,7 +1,7 @@
 ---
 title: 🏴 Recetas Catalanas 🥘
-date: 2025-11-04
-endDate: 2025-11-24T21:59:59
+date: 2026-03-03
+endDate: 2026-03-17T21:59:59
 image: /images/events/catalan_recipes.webp
 description: Celebra la cocina catalana y ayuda a preservar la lengua catalana
 ---
@@ -10,7 +10,7 @@ description: Celebra la cocina catalana y ayuda a preservar la lengua catalana
 
 ¡Ayuda a preservar la lengua catalana a través de la comida en Jorbites!
 
-Del 4 al 24 de noviembre de 2025, comparte tus recetas catalanas favoritas escritas en catalán. El catalán es una lengua en peligro de extinción, y este evento tiene como objetivo animar a la gente a publicar recetas en catalán, ayudando a mantener viva esta hermosa lengua.
+Durante este evento, comparte tus recetas catalanas favoritas escritas en catalán. El catalán es una lengua en peligro de extinción, y este evento tiene como objetivo animar a la gente a publicar recetas en catalán, ayudando a mantener viva esta hermosa lengua.
 
 ### 🏆 Consigue tu insignia exclusiva
 

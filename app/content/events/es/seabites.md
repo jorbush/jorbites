@@ -1,14 +1,14 @@
 ---
 title: 🐟 SeaBites 🦐
-date: 2025-08-01
-endDate: 2025-08-31T21:59:59
+date: 2026-04-14
+endDate: 2026-04-28T21:59:59
 image: /images/events/seabites.webp
 description: ¡Sumérgete en un mundo de sabores marinos de todo el globo!
 ---
 
 # 🐟 SeaBites 🦐
 
-¡Este agosto, Jorbites se sumerge en las profundidades con nuestro primer **SeaBites**! Ya seas un maestro de la paella, un experto en sushi o un campeón del gumbo, es momento de compartir tus secretos marineros con nuestra comunidad. ¡Zambullámonos en un océano de tradiciones culinarias y exploremos los tesoros más deliciosos del mar!
+¡Durante este evento, Jorbites se sumerge en las profundidades con nuestro primer **SeaBites**! Ya seas un maestro de la paella, un experto en sushi o un campeón del gumbo, es momento de compartir tus secretos marineros con nuestra comunidad. ¡Zambullámonos en un océano de tradiciones culinarias y exploremos los tesoros más deliciosos del mar!
 
 ## 🌊 El Reto
 
@@ -18,7 +18,7 @@ description: ¡Sumérgete en un mundo de sabores marinos de todo el globo!
 
 - Tu receta debe tener **mariscos** como ingrediente principal
 - Todo estilo es bienvenido: sopas, guisos, a la parrilla, crudo, al vapor—¡lo que se te ocurra!
-- Publica tu receta en Jorbites entre el **1 y el 31 de agosto de 2025**
+- Publica tu receta en Jorbites durante el evento
 - Comparte la historia cultural o conexión personal detrás de tu creación marina
 
 ## 🦪 Diversión Comunitaria
@@ -30,4 +30,4 @@ description: ¡Sumérgete en un mundo de sabores marinos de todo el globo!
 
 - Cada participante que publique su receta de mariscos siguiendo las reglas del festival recibirá la insignia exclusiva del evento SeaBites.
 
-**¿Listo para hacer olas? Agarra tus redes, ollas y sartenes—¡convirtamos este verano en un océano de sabores!**
+**¿Listo para hacer olas? Agarra tus redes, ollas y sartenes—¡convirtamos este evento en un océano de sabores!**

@@ -1,7 +1,7 @@
 ---
 title: 🇵🇹 Recetas de Portugal 🇵🇹
-date: 2025-04-30
-endDate: 2025-05-11
+date: 2026-03-17
+endDate: 2026-03-31T21:59:59
 image: /images/events/portuguese_event.webp
 description: Evento de Recetas de Portugal
 ---
@@ -9,12 +9,12 @@ description: Evento de Recetas de Portugal
 
 ### 🇵🇹✨ ¡Nuevo evento en Jorbites: Recetas de Portugal! ✨🇵🇹
 
-Del 30 de abril al 11 de mayo, ¡nos transportamos a tierras portuguesas con todo el sabor y la pasión que merece!
+Durante este evento, ¡nos transportamos a tierras portuguesas con todo el sabor y la pasión que merece!
 Y esta vez no viajamos solos… ¡Paltín se va de viaje de negocios a Portugal! 🥑✈️
 
 Para apoyarlo en su misión internacional, queremos llenar Jorbites de recetas portuguesas: bacalao, pastéis de nata, francesinhas… ¡todo vale mientras huela a Portugal! 🥘🍮
 
-Publica tu receta inspirada en Portugal durante el evento y consigue la medalla especial Recetas de Portugal 🏅, exclusiva de esta semana.
+Publica tu receta inspirada en Portugal durante el evento y consigue la medalla especial Recetas de Portugal 🏅, exclusiva de este evento.
 
 ¡Hagamos que Paltín se sienta como en casa, allá donde vaya!
 Mãos à obra, jorbiteros! (¡Manos a la obra!)

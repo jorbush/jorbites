@@ -1,7 +1,7 @@
 ---
 title: 🏴 Catalan Recipes 🥘
-date: 2025-11-04
-endDate: 2025-11-24T21:59:59
+date: 2026-03-03
+endDate: 2026-03-17T21:59:59
 image: /images/events/catalan_recipes.webp
 description: Celebrate Catalan cuisine and help preserve the Catalan language
 ---
@@ -10,7 +10,7 @@ description: Celebrate Catalan cuisine and help preserve the Catalan language
 
 Help preserve the Catalan language through food on Jorbites!
 
-From November 4 to 24, 2025, share your favorite Catalan recipes written in Catalan. Catalan is a language in danger of extinction, and this event aims to encourage people to publish recipes in Catalan, helping to keep this beautiful language alive.
+During this event, share your favorite Catalan recipes written in Catalan. Catalan is a language in danger of extinction, and this event aims to encourage people to publish recipes in Catalan, helping to keep this beautiful language alive.
 
 ### 🏆 Earn your exclusive badge
 

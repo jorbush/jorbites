@@ -1,14 +1,14 @@
 ---
 title: 🐟 SeaBites 🦐
-date: 2025-08-01
-endDate: 2025-08-31T21:59:59
+date: 2026-04-14
+endDate: 2026-04-28T21:59:59
 image: /images/events/seabites.webp
 description: Submergeix-te en un món de sabors marins d'arreu del món!
 ---
 
 # 🐟 SeaBites 🦐
 
-Aquest agost, Jorbites es capbussa a les profunditats amb el nostre primer **SeaBites**! Tant si ets un mestre de la paella, un expert en sushi o un campió del gumbo, és moment de compartir els teus secrets mariners amb la nostra comunitat. Capbussem-nos en un oceà de tradicions culinàries i explorem els tresors més deliciosos del mar!
+Durant aquest esdeveniment, Jorbites es capbussa a les profunditats amb el nostre primer **SeaBites**! Tant si ets un mestre de la paella, un expert en sushi o un campió del gumbo, és moment de compartir els teus secrets mariners amb la nostra comunitat. Capbussem-nos en un oceà de tradicions culinàries i explorem els tresors més deliciosos del mar!
 
 ## 🌊 El Repte
 
@@ -18,7 +18,7 @@ Crea i comparteix la teva recepta preferida de marisc de qualsevol racó del mó
 
 - La teva recepta ha de tenir el **marisc** com a ingredient principal
 - Tots els estils són benvinguts: sopes, guisats, a la graella, cru, al vapor—el que vulguis!
-- Publica la teva recepta a Jorbites entre l'**1 i el 31 d'agost de 2025**
+- Publica la teva recepta a Jorbites durant l'esdeveniment
 - Comparteix la història cultural o connexió personal darrere la teva creació marina
 
 ## 🦪 Diversió Comunitària
@@ -30,4 +30,4 @@ Crea i comparteix la teva recepta preferida de marisc de qualsevol racó del mó
 
 - Cada participant que publiqui la seva recepta de marisc seguint les regles del festival rebrà la insígnia exclusiva de l'esdeveniment SeaBites.
 
-**Preparat per fer onades? Agafa les teves xarxes, olles i paelles—convertim aquest estiu en un oceà de sabors!**
+**Preparat per fer onades? Agafa les teves xarxes, olles i paelles—convertim aquest esdeveniment en un oceà de sabors!**

@@ -1,7 +1,7 @@
 ---
 title: ⏱️🔥 10 MINUTES 🔥⏱️
-date: 2025-08-15
-endDate: 2025-08-31
+date: 2026-03-31
+endDate: 2026-04-14T21:59:59
 image: /images/events/10_min_event.webp
 description: Event of 10 minutes recipes
 ---
@@ -9,7 +9,7 @@ description: Event of 10 minutes recipes
 ### ⏱️🔥 The 10 MINUTES event has arrived on Jorbites! 🔥⏱️
 
 Got no time but still want to impress with flavor? Think you’re the Speedy Gonzales of the kitchen? 💨🍽️
-From May 15 to June 1, share recipes that can be made in 10 minutes or less. Yes, that's right — just enough time before your toast gets burnt.
+During this event, share recipes that can be made in 10 minutes or less. Yes, that's right — just enough time before your toast gets burnt.
 
 🏅 Complete the challenge and earn this exclusive event badge.
 
