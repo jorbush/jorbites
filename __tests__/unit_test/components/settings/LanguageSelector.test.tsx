@@ -9,7 +9,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import i18n from '@/app/i18n';
 
-// Mock dependencies
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => key,
@@ -23,7 +22,6 @@ vi.mock('@/app/i18n', () => ({
     },
 }));
 
-// Mock Dropdown component
 vi.mock('@/app/components/utils/Dropdown', () => {
     return {
         default: ({ onChange, value, options }: any) => (
@@ -56,7 +54,6 @@ describe('<LanguageSelector />', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        // Reset i18n language
         (i18n.language as string) = 'en';
     });
 

@@ -1,36 +1,41 @@
+import { expect } from '@jest/globals';
 import { PATCH } from '@/app/api/user/language/route';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { NextRequest } from 'next/server';
 
-vi.mock('@/app/lib/prismadb', () => ({
+// Mock dependencies
+jest.mock('@/app/lib/prismadb', () => ({
+    __esModule: true,
     default: {
         user: {
-            update: vi.fn(),
+            update: jest.fn(),
         },
     },
 }));
 
-vi.mock('@/app/actions/getCurrentUser', () => ({
-    default: vi.fn(),
+jest.mock('@/app/actions/getCurrentUser', () => ({
+    __esModule: true,
+    default: jest.fn(),
 }));
 
-vi.mock('@/app/lib/axiom/server', () => ({
+jest.mock('@/app/lib/axiom/server', () => ({
+    __esModule: true,
     logger: {
-        info: vi.fn(),
-        error: vi.fn(),
+        info: jest.fn(),
+        error: jest.fn(),
     },
 }));
 
 describe('PATCH /api/user/language', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     it('returns 401 if user is not authenticated', async () => {
-        (getCurrentUser as any).mockResolvedValue(null);
+        (getCurrentUser as jest.Mock).mockResolvedValue(null);
 
-        const req = new Request('http://localhost/api/user/language', {
+        const req = new NextRequest('http://localhost/api/user/language', {
             method: 'PATCH',
         });
 
@@ -42,9 +47,9 @@ describe('PATCH /api/user/language', () => {
     });
 
     it('returns 400 if language is missing', async () => {
-        (getCurrentUser as any).mockResolvedValue({ id: '123' });
+        (getCurrentUser as jest.Mock).mockResolvedValue({ id: '123' });
 
-        const req = new Request('http://localhost/api/user/language', {
+        const req = new NextRequest('http://localhost/api/user/language', {
             method: 'PATCH',
             body: JSON.stringify({}),
         });
@@ -57,9 +62,9 @@ describe('PATCH /api/user/language', () => {
     });
 
     it('returns 400 if language is invalid', async () => {
-        (getCurrentUser as any).mockResolvedValue({ id: '123' });
+        (getCurrentUser as jest.Mock).mockResolvedValue({ id: '123' });
 
-        const req = new Request('http://localhost/api/user/language', {
+        const req = new NextRequest('http://localhost/api/user/language', {
             method: 'PATCH',
             body: JSON.stringify({ language: 'fr' }),
         });
@@ -72,10 +77,10 @@ describe('PATCH /api/user/language', () => {
     });
 
     it('returns 200 and updates user if language is valid', async () => {
-        (getCurrentUser as any).mockResolvedValue({ id: '123' });
-        (prisma.user.update as any).mockResolvedValue({ language: 'ca' });
+        (getCurrentUser as jest.Mock).mockResolvedValue({ id: '123' });
+        (prisma.user.update as jest.Mock).mockResolvedValue({ language: 'ca' });
 
-        const req = new Request('http://localhost/api/user/language', {
+        const req = new NextRequest('http://localhost/api/user/language', {
             method: 'PATCH',
             body: JSON.stringify({ language: 'ca' }),
         });
@@ -95,10 +100,12 @@ describe('PATCH /api/user/language', () => {
     });
 
     it('returns 500 if database update fails', async () => {
-        (getCurrentUser as any).mockResolvedValue({ id: '123' });
-        (prisma.user.update as any).mockRejectedValue(new Error('DB Error'));
+        (getCurrentUser as jest.Mock).mockResolvedValue({ id: '123' });
+        (prisma.user.update as jest.Mock).mockRejectedValue(
+            new Error('DB Error')
+        );
 
-        const req = new Request('http://localhost/api/user/language', {
+        const req = new NextRequest('http://localhost/api/user/language', {
             method: 'PATCH',
             body: JSON.stringify({ language: 'en' }),
         });
