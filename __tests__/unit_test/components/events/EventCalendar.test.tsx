@@ -113,18 +113,6 @@ describe('EventCalendar', () => {
             />
         );
 
-        const eventTrigger =
-            screen.getByAltText('Test Event 1').parentElement?.parentElement
-                ?.parentElement;
-        // Structure: Tooltip(div) > Link(a) > div > Image(img)
-        // Image parent is div (title wrapper), its parent is Link, its parent is Tooltip div.
-
-        // Alternatively, searching for the tooltip text after hover
-        // But first we need to trigger hover on the Tooltip component
-        // The Tooltip component puts the listener on the outermost div.
-        // Let's find that div.
-
-        // We can find the link and get its parent
         const link = screen
             .getAllByRole('link')
             .find(
