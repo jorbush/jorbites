@@ -1,8 +1,9 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import i18n from '../../i18n';
+import i18n from '@/app/i18n';
 import Dropdown from '@/app/components/utils/Dropdown';
+import { SafeUser } from '@/app/types';
 
 interface Language {
     code: string;
@@ -15,11 +16,26 @@ const LANGUAGES: Language[] = [
     { code: 'ca', name: 'Català' },
 ];
 
-const LanguageSelector: React.FC = () => {
+interface LanguageSelectorProps {
+    currentUser?: SafeUser | null;
+}
+
+const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentUser }) => {
     const { t } = useTranslation();
 
     const handleChangeLanguage = (selectedLanguage: string) => {
         i18n.changeLanguage(selectedLanguage);
+        if (currentUser) {
+            fetch('/api/user/language', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    language: selectedLanguage,
+                }),
+            });
+        }
     };
 
     const options = LANGUAGES.map((lang) => ({
