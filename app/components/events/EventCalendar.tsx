@@ -85,7 +85,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
     };
 
     return (
-        <div className="mb-10 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm md:p-6 dark:border-neutral-700 dark:bg-neutral-800">
+        <div className="mb-10 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm md:p-6 dark:border-neutral-700 dark:bg-neutral-900">
             <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-xl font-bold md:text-2xl dark:text-neutral-100">
                     {monthName} {year}
@@ -137,8 +137,8 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                             key={format(day, 'yyyy-MM-dd')}
                             className={`relative min-h-[60px] rounded-lg border p-1 transition-all md:min-h-[100px] md:p-2 ${
                                 isCurrentMonth
-                                    ? 'border-neutral-100 bg-white dark:border-neutral-700 dark:bg-neutral-800'
-                                    : 'border-transparent bg-neutral-50 text-neutral-300 dark:bg-neutral-900 dark:text-neutral-600'
+                                    ? 'border-neutral-100 bg-white dark:border-neutral-700 dark:bg-neutral-900'
+                                    : 'border-transparent bg-neutral-50 text-neutral-300 dark:bg-neutral-950 dark:text-neutral-600'
                             } ${isToday ? 'ring-green-450 ring-2' : ''}`}
                         >
                             <span
