@@ -55,7 +55,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
                         data-cy="preferences-content"
                     >
                         <ThemeSelector />
-                        <LanguageSelector />
+                        <LanguageSelector currentUser={currentUser} />
                     </div>
                 );
             case 'account':

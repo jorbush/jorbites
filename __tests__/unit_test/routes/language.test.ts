@@ -1,0 +1,119 @@
+import { expect } from '@jest/globals';
+import { PATCH } from '@/app/api/user/language/route';
+import prisma from '@/app/lib/prismadb';
+import getCurrentUser from '@/app/actions/getCurrentUser';
+import { NextRequest } from 'next/server';
+
+// Mock dependencies
+jest.mock('@/app/lib/prismadb', () => ({
+    __esModule: true,
+    default: {
+        user: {
+            update: jest.fn(),
+        },
+    },
+}));
+
+jest.mock('@/app/actions/getCurrentUser', () => ({
+    __esModule: true,
+    default: jest.fn(),
+}));
+
+jest.mock('@/app/lib/axiom/server', () => ({
+    __esModule: true,
+    logger: {
+        info: jest.fn(),
+        error: jest.fn(),
+    },
+}));
+
+describe('PATCH /api/user/language', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('returns 401 if user is not authenticated', async () => {
+        (getCurrentUser as jest.Mock).mockResolvedValue(null);
+
+        const req = new NextRequest('http://localhost/api/user/language', {
+            method: 'PATCH',
+        });
+
+        const response = await PATCH(req);
+
+        expect(response.status).toBe(401);
+        const data = await response.json();
+        expect(data.error).toBe('Authentication required');
+    });
+
+    it('returns 400 if language is missing', async () => {
+        (getCurrentUser as jest.Mock).mockResolvedValue({ id: '123' });
+
+        const req = new NextRequest('http://localhost/api/user/language', {
+            method: 'PATCH',
+            body: JSON.stringify({}),
+        });
+
+        const response = await PATCH(req);
+
+        expect(response.status).toBe(400);
+        const data = await response.json();
+        expect(data.error).toBe('Invalid language');
+    });
+
+    it('returns 400 if language is invalid', async () => {
+        (getCurrentUser as jest.Mock).mockResolvedValue({ id: '123' });
+
+        const req = new NextRequest('http://localhost/api/user/language', {
+            method: 'PATCH',
+            body: JSON.stringify({ language: 'fr' }),
+        });
+
+        const response = await PATCH(req);
+
+        expect(response.status).toBe(400);
+        const data = await response.json();
+        expect(data.error).toBe('Invalid language');
+    });
+
+    it('returns 200 and updates user if language is valid', async () => {
+        (getCurrentUser as jest.Mock).mockResolvedValue({ id: '123' });
+        (prisma.user.update as jest.Mock).mockResolvedValue({ language: 'ca' });
+
+        const req = new NextRequest('http://localhost/api/user/language', {
+            method: 'PATCH',
+            body: JSON.stringify({ language: 'ca' }),
+        });
+
+        const response = await PATCH(req);
+
+        expect(response.status).toBe(200);
+        const data = await response.json();
+        expect(data.language).toBe('ca');
+        expect(prisma.user.update).toHaveBeenCalledWith(
+            expect.objectContaining({
+                where: { id: '123' },
+                data: { language: 'ca' },
+                select: { language: true },
+            })
+        );
+    });
+
+    it('returns 500 if database update fails', async () => {
+        (getCurrentUser as jest.Mock).mockResolvedValue({ id: '123' });
+        (prisma.user.update as jest.Mock).mockRejectedValue(
+            new Error('DB Error')
+        );
+
+        const req = new NextRequest('http://localhost/api/user/language', {
+            method: 'PATCH',
+            body: JSON.stringify({ language: 'en' }),
+        });
+
+        const response = await PATCH(req);
+
+        expect(response.status).toBe(500);
+        const data = await response.json();
+        expect(data.error).toBe('Internal server error');
+    });
+});
