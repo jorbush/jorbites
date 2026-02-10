@@ -63,6 +63,7 @@ describe('<LanguageSelector />', () => {
     afterEach(() => {
         cleanup();
         vi.restoreAllMocks();
+        vi.unstubAllGlobals();
     });
 
     it('renders correctly', () => {
@@ -72,10 +73,11 @@ describe('<LanguageSelector />', () => {
     });
 
     it('calls API when language is changed locally and currentUser exists', async () => {
-        global.fetch = vi.fn().mockResolvedValue({
+        const fetchMock = vi.fn().mockResolvedValue({
             ok: true,
             json: async () => ({}),
         });
+        vi.stubGlobal('fetch', fetchMock);
 
         render(<LanguageSelector currentUser={mockUser} />);
 
@@ -84,7 +86,7 @@ describe('<LanguageSelector />', () => {
 
         await waitFor(() => {
             expect(i18n.changeLanguage).toHaveBeenCalledWith('ca');
-            expect(global.fetch).toHaveBeenCalledWith('/api/user/language', {
+            expect(fetchMock).toHaveBeenCalledWith('/api/user/language', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -97,7 +99,8 @@ describe('<LanguageSelector />', () => {
     });
 
     it('does not call API if currentUser does not exist', async () => {
-        global.fetch = vi.fn();
+        const fetchMock = vi.fn();
+        vi.stubGlobal('fetch', fetchMock);
 
         render(<LanguageSelector />);
 
@@ -106,7 +109,7 @@ describe('<LanguageSelector />', () => {
 
         await waitFor(() => {
             expect(i18n.changeLanguage).toHaveBeenCalledWith('ca');
-            expect(global.fetch).not.toHaveBeenCalled();
+            expect(fetchMock).not.toHaveBeenCalled();
         });
     });
 });
