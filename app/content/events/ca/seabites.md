@@ -30,4 +30,4 @@ Crea i comparteix la teva recepta preferida de marisc de qualsevol racó del mó
 
 - Cada participant que publiqui la seva recepta de marisc seguint les regles del festival rebrà la insígnia exclusiva de l'esdeveniment SeaBites.
 
-**Preparat per fer onades? Agafa les teves xarxes, olles i paelles—convertim aquest temps en un oceà de sabors!**
+**Preparat per fer onades? Agafa les teves xarxes, olles i paelles—convertim aquest esdeveniment en un oceà de sabors!**
