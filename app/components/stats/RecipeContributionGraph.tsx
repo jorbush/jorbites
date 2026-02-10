@@ -253,7 +253,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                 tooltipPosition &&
                                 hoveredDay.count > 0 && (
                                     <div
-                                        className="pointer-events-none fixed z-50 rounded-md bg-gray-900 px-3 py-2 text-xs text-white shadow-lg dark:bg-gray-800"
+                                        className="pointer-events-none fixed z-50 rounded-md bg-gray-900 px-3 py-2 text-xs text-white shadow-lg dark:bg-neutral-950"
                                         style={{
                                             left: `${tooltipPosition.x}px`,
                                             top: `${tooltipPosition.y}px`,
