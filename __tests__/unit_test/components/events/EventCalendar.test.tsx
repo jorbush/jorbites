@@ -232,7 +232,9 @@ describe('EventCalendar', () => {
         expect(dayHeaders.length).toBe(7);
 
         expectedDays.forEach((day, index) => {
-            expect(dayHeaders[index].textContent?.toLowerCase()).toBe(day.toLowerCase());
+            expect(dayHeaders[index].textContent?.toLowerCase()).toBe(
+                day.toLowerCase()
+            );
         });
     });
 });
