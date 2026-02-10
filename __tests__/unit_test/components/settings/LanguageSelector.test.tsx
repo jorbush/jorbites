@@ -8,12 +8,15 @@ import {
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import i18n from '@/app/i18n';
+import { toast } from 'react-hot-toast';
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => key,
     }),
 }));
+
+vi.mock('react-hot-toast');
 
 vi.mock('@/app/i18n', () => ({
     default: {
@@ -92,6 +95,21 @@ describe('<LanguageSelector />', () => {
                     language: 'ca',
                 }),
             });
+            expect(toast.success).toHaveBeenCalledWith('success');
+        });
+    });
+
+    it('shows error toast if API call fails', async () => {
+        const fetchMock = vi.fn().mockRejectedValue(new Error('Network error'));
+        vi.stubGlobal('fetch', fetchMock);
+
+        render(<LanguageSelector currentUser={mockUser} />);
+
+        const dropdown = screen.getByTestId('language-dropdown');
+        fireEvent.change(dropdown, { target: { value: 'ca' } });
+
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith('something_went_wrong');
         });
     });
 

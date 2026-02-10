@@ -31,7 +31,7 @@ export type SafeUser = Omit<
     mostUsedCategory?: string | null | undefined;
     mostUsedMethod?: string | null | undefined;
     badges?: string[];
-    language?: string;
+    language?: string | null;
 };
 
 export type SafeWorkshop = Omit<

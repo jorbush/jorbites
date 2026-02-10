@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from '@/app/i18n';
 import Dropdown from '@/app/components/utils/Dropdown';
 import { SafeUser } from '@/app/types';
+import { toast } from 'react-hot-toast';
 
 interface Language {
     code: string;
@@ -23,18 +24,29 @@ interface LanguageSelectorProps {
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentUser }) => {
     const { t } = useTranslation();
 
-    const handleChangeLanguage = (selectedLanguage: string) => {
+    const handleChangeLanguage = async (selectedLanguage: string) => {
         i18n.changeLanguage(selectedLanguage);
         if (currentUser) {
-            fetch('/api/user/language', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    language: selectedLanguage,
-                }),
-            });
+            try {
+                const res = await fetch('/api/user/language', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        language: selectedLanguage,
+                    }),
+                });
+
+                if (res.ok) {
+                    toast.success(t('success'));
+                } else {
+                    toast.error(t('something_went_wrong'));
+                }
+            } catch (error) {
+                toast.error(t('something_went_wrong'));
+                console.error('Failed to update language preference:', error);
+            }
         }
     };
 
