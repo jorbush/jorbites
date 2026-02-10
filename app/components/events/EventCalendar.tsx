@@ -14,7 +14,9 @@ import {
     eachDayOfInterval,
 } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
 import Image from 'next/image';
+import Tooltip from '@/app/components/utils/Tooltip';
 import { Event } from '@/app/utils/markdownUtils';
 import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
 
@@ -91,7 +93,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                 <div className="flex gap-2">
                     <button
                         onClick={prevMonth}
-                        className="rounded-full p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                        className="cursor-pointer rounded-full p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700"
                         aria-label="Previous Month"
                     >
                         <MdChevronLeft
@@ -101,7 +103,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                     </button>
                     <button
                         onClick={nextMonth}
-                        className="rounded-full p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                        className="cursor-pointer rounded-full p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700"
                         aria-label="Next Month"
                     >
                         <MdChevronRight
@@ -143,7 +145,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                                 className={`text-xs font-medium md:text-sm ${
                                     isToday
                                         ? 'text-green-600 dark:text-green-400'
-                                        : ''
+                                        : 'text-neutral-700 dark:text-neutral-300'
                                 }`}
                             >
                                 {format(day, 'd')}
@@ -151,22 +153,35 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
 
                             <div className="mt-1 flex flex-wrap gap-1">
                                 {dayEvents.map((event, eventIdx) => (
-                                    <div
+                                    <Tooltip
                                         key={eventIdx}
-                                        className="group border-green-450 relative h-6 w-6 overflow-hidden rounded-full border md:h-8 md:w-8"
-                                        title={event.frontmatter.title}
+                                        text={event.frontmatter.title}
                                     >
-                                        <Image
-                                            src={
-                                                event.frontmatter.badge ||
-                                                event.frontmatter.image
-                                            }
-                                            alt={event.frontmatter.title}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                        <div className="absolute inset-0 bg-black opacity-0 transition-opacity group-hover:opacity-20" />
-                                    </div>
+                                        <Link
+                                            href={`/events/${event.slug}`}
+                                            className="cursor-pointer"
+                                            prefetch={false}
+                                        >
+                                            <div
+                                                className="group border-green-450 relative h-6 w-6 overflow-hidden rounded-full border md:h-8 md:w-8"
+                                                title={event.frontmatter.title}
+                                            >
+                                                <Image
+                                                    src={
+                                                        event.frontmatter
+                                                            .badge ||
+                                                        event.frontmatter.image
+                                                    }
+                                                    alt={
+                                                        event.frontmatter.title
+                                                    }
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                                <div className="absolute inset-0 bg-black opacity-0 transition-opacity group-hover:opacity-20" />
+                                            </div>
+                                        </Link>
+                                    </Tooltip>
                                 ))}
                             </div>
                         </div>
