@@ -9,7 +9,7 @@ description: Portuguese Recipes Event
 
 ### 🇵🇹✨ New event in Jorbites: Recipes from Portugal! ✨🇵🇹
 
-During this event, we transport us to Portuguese lands with all the flavor and passion it deserves!
+During this event, we travel to Portuguese lands, with all the flavor and passion they deserve!
 And this time we are not traveling alone... Paltin is going on a business trip to Portugal! 🥑✈️
 
 To support him in his international mission, we want to fill Jorbites with Portuguese recipes: cod, pastéis de nata, francesinhas... anything goes as long as it smells of Portugal! 🥘🍮
