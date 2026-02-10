@@ -30,4 +30,4 @@ description: ¡Sumérgete en un mundo de sabores marinos de todo el globo!
 
 - Cada participante que publique su receta de mariscos siguiendo las reglas del festival recibirá la insignia exclusiva del evento SeaBites.
 
-**¿Listo para hacer olas? Agarra tus redes, ollas y sartenes—¡convirtamos este tiempo en un océano de sabores!**
+**¿Listo para hacer olas? Agarra tus redes, ollas y sartenes—¡convirtamos este evento en un océano de sabores!**
