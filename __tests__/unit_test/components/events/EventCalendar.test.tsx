@@ -207,4 +207,34 @@ describe('EventCalendar', () => {
 
         expect(foundNonToday).toBe(true);
     });
+
+    it('displays the days of the week starting from Monday', () => {
+        render(
+            <EventCalendar
+                currentEvents={[]}
+                upcomingEvents={[]}
+            />
+        );
+
+        const expectedDays = [
+            'day_mon',
+            'day_tue',
+            'day_wed',
+            'day_thu',
+            'day_fri',
+            'day_sat',
+            'day_sun',
+        ];
+
+        // The days of the week are rendered as uppercase in the component,
+        // but the mock translation returns the key as is.
+        const dayHeaders = screen.getAllByText(/day_/);
+        expect(dayHeaders.length).toBe(7);
+
+        expectedDays.forEach((day, index) => {
+            expect(dayHeaders[index].textContent?.toLowerCase()).toBe(
+                day.toLowerCase()
+            );
+        });
+    });
 });

@@ -39,8 +39,8 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
 
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
-    const startDate = startOfWeek(monthStart);
-    const endDate = endOfWeek(monthEnd);
+    const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
+    const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
     const calendarDays = eachDayOfInterval({
         start: startDate,
@@ -48,13 +48,13 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
     });
 
     const daysOfWeek = [
-        t('day_sun'),
         t('day_mon'),
         t('day_tue'),
         t('day_wed'),
         t('day_thu'),
         t('day_fri'),
         t('day_sat'),
+        t('day_sun'),
     ];
 
     const monthName = t(`month_${format(currentMonth, 'MMM').toLowerCase()}`);
