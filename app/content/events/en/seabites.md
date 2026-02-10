@@ -30,4 +30,4 @@ Create and share your favorite seafood recipe from any corner of the world! From
 
 - Every participant who publishes their seafood recipe following the festival rules will receive the exclusive SeaBites event badge.
 
-**Ready to make waves? Grab your nets, pots, and pans—let's turn this time into an ocean of flavors!**
+**Ready to make waves? Grab your nets, pots, and pans—let's turn this event into an ocean of flavors!**
