@@ -46,19 +46,19 @@ const Tooltip: React.FC<TooltipProps> = ({
             {children}
             {isVisible && (
                 <div
-                    className={`pointer-events-none absolute z-1 rounded-sm bg-white px-2 py-1 text-xs whitespace-nowrap text-gray-800 opacity-100 shadow-md dark:bg-gray-700 dark:text-white ${positionClasses[position]}`}
+                    className={`pointer-events-none absolute z-1 rounded-sm bg-white px-2 py-1 text-xs whitespace-nowrap text-gray-800 opacity-100 shadow-md dark:bg-neutral-950 dark:text-white ${positionClasses[position]}`}
                     data-testid="tooltip"
                 >
                     {text}
                     <div
                         className={`absolute h-0 w-0 border-4 border-transparent ${
                             position === 'top'
-                                ? `bottom-[-8px] left-1/2 -translate-x-1/2 border-t-white dark:border-t-gray-700`
+                                ? `bottom-[-8px] left-1/2 -translate-x-1/2 border-t-white dark:border-t-neutral-950`
                                 : position === 'right'
-                                  ? `top-1/2 left-[-8px] -translate-y-1/2 border-r-white dark:border-r-gray-700`
+                                  ? `top-1/2 left-[-8px] -translate-y-1/2 border-r-white dark:border-r-neutral-950`
                                   : position === 'bottom'
-                                    ? `top-[-8px] left-1/2 -translate-x-1/2 border-b-white dark:border-b-gray-700`
-                                    : `top-1/2 right-[-8px] -translate-y-1/2 border-l-white dark:border-l-gray-700`
+                                    ? `top-[-8px] left-1/2 -translate-x-1/2 border-b-white dark:border-b-neutral-950`
+                                    : `top-1/2 right-[-8px] -translate-y-1/2 border-l-white dark:border-l-neutral-950`
                         }`}
                     />
                 </div>
