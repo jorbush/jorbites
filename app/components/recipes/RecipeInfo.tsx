@@ -182,17 +182,12 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                             </div>
                         </div>
                     </div>
-                    <div className="mr-4 mb-5 ml-auto flex flex-row items-end gap-2 text-xl">
+                    <div className="mr-4 mb-5 ml-auto">
                         <HeartButton
                             recipeId={id}
                             currentUser={currentUser}
+                            likes={likes}
                         />
-                        <div
-                            className="dark:text-neutral-100"
-                            data-cy="recipe-num-likes"
-                        >
-                            {likes}
-                        </div>
                     </div>
                 </div>
                 <div className="flex flex-row items-center gap-4 font-light text-neutral-500">
