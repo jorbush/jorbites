@@ -233,13 +233,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                                         onMouseLeave={
                                                             handleDayLeave
                                                         }
-                                                        title={
-                                                            day.count > 0
-                                                                ? `${formatDate(day.date)}: ${day.count} ${day.count === 1 ? t('recipe') : t('recipes')}`
-                                                                : formatDate(
-                                                                      day.date
-                                                                  )
-                                                        }
+                                                        data-testid={`contribution-day-${day.count}`}
                                                     />
                                                 ))}
                                             </div>
