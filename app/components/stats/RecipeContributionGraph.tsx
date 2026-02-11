@@ -1,8 +1,9 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import Container from '@/app/components/utils/Container';
+import Tooltip from '@/app/components/utils/Tooltip';
 import { formatDateLanguage } from '@/app/utils/date-utils';
 
 interface RecipeContributionGraphProps {
@@ -19,11 +20,6 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
     recipes,
 }) => {
     const { t } = useTranslation();
-    const [hoveredDay, setHoveredDay] = useState<DayData | null>(null);
-    const [tooltipPosition, setTooltipPosition] = useState<{
-        x: number;
-        y: number;
-    } | null>(null);
 
     // Generate the last year of days, aligned to weeks starting from Sunday
     const { weeks } = useMemo(() => {
@@ -129,23 +125,6 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
         }
     };
 
-    const handleDayHover = (
-        day: DayData,
-        event: React.MouseEvent<HTMLDivElement>
-    ) => {
-        setHoveredDay(day);
-        const rect = event.currentTarget.getBoundingClientRect();
-        setTooltipPosition({
-            x: rect.left + rect.width / 2,
-            y: rect.top - 10,
-        });
-    };
-
-    const handleDayLeave = () => {
-        setHoveredDay(null);
-        setTooltipPosition(null);
-    };
-
     const formatDate = (date: Date) => {
         return formatDateLanguage(date, 'MMM d, yyyy');
     };
@@ -218,58 +197,50 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                                 key={weekIndex}
                                                 className="flex flex-col gap-0.5 sm:gap-1"
                                             >
-                                                {week.map((day, dayIndex) => (
-                                                    <div
-                                                        key={`${weekIndex}-${dayIndex}`}
-                                                        className={`h-2.5 w-2.5 rounded-sm transition-colors sm:h-3 sm:w-3 ${getDayColor(
-                                                            day.level
-                                                        )} ${day.count > 0 ? 'hover:ring-green-450/50 cursor-pointer hover:ring-2' : ''}`}
-                                                        onMouseEnter={(e) =>
-                                                            handleDayHover(
-                                                                day,
-                                                                e
-                                                            )
-                                                        }
-                                                        onMouseLeave={
-                                                            handleDayLeave
-                                                        }
-                                                        title={
-                                                            day.count > 0
-                                                                ? `${formatDate(day.date)}: ${day.count} ${day.count === 1 ? t('recipe') : t('recipes')}`
-                                                                : formatDate(
-                                                                      day.date
-                                                                  )
-                                                        }
-                                                    />
-                                                ))}
+                                                {week.map((day, dayIndex) => {
+                                                    const tooltipText =
+                                                        day.count > 0
+                                                            ? `${day.count} ${
+                                                                  day.count ===
+                                                                  1
+                                                                      ? t(
+                                                                            'recipe'
+                                                                        )
+                                                                      : t(
+                                                                            'recipes'
+                                                                        )
+                                                              } ${t(
+                                                                  'on'
+                                                              )} ${formatDate(
+                                                                  day.date
+                                                              )}`
+                                                            : formatDate(
+                                                                  day.date
+                                                              );
+
+                                                    return (
+                                                        <Tooltip
+                                                            key={`${weekIndex}-${dayIndex}`}
+                                                            text={tooltipText}
+                                                        >
+                                                            <div
+                                                                className={`h-2.5 w-2.5 rounded-sm transition-colors sm:h-3 sm:w-3 ${getDayColor(
+                                                                    day.level
+                                                                )} ${
+                                                                    day.count >
+                                                                    0
+                                                                        ? 'hover:ring-green-450/50 cursor-pointer hover:ring-2'
+                                                                        : ''
+                                                                }`}
+                                                            />
+                                                        </Tooltip>
+                                                    );
+                                                })}
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Tooltip */}
-                            {hoveredDay &&
-                                tooltipPosition &&
-                                hoveredDay.count > 0 && (
-                                    <div
-                                        className="pointer-events-none fixed z-50 rounded-md bg-gray-900 px-3 py-2 text-xs text-white shadow-lg dark:bg-neutral-950"
-                                        style={{
-                                            left: `${tooltipPosition.x}px`,
-                                            top: `${tooltipPosition.y}px`,
-                                            transform: 'translate(-50%, -100%)',
-                                        }}
-                                    >
-                                        <div className="font-semibold">
-                                            {hoveredDay.count}{' '}
-                                            {hoveredDay.count === 1
-                                                ? t('recipe')
-                                                : t('recipes')}{' '}
-                                            {t('on')}{' '}
-                                            {formatDate(hoveredDay.date)}
-                                        </div>
-                                    </div>
-                                )}
 
                             {/* Legend */}
                             <div className="mt-4 flex flex-wrap items-center justify-center gap-2 px-2 text-[10px] text-gray-500 sm:gap-4 sm:text-xs dark:text-gray-400">

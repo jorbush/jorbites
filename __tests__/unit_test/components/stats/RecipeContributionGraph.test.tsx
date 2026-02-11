@@ -64,6 +64,16 @@ vi.mock('@/app/utils/date-utils', () => ({
     },
 }));
 
+// Mock Tooltip component to simplify testing
+vi.mock('@/app/components/utils/Tooltip', () => ({
+    __esModule: true,
+    default: ({ children, text }: { children: React.ReactNode; text: string }) => (
+        <div title={text} data-testid="tooltip-wrapper">
+            {children}
+        </div>
+    ),
+}));
+
 describe('<RecipeContributionGraph />', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -148,15 +158,15 @@ describe('<RecipeContributionGraph />', () => {
 
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
-        // Find a day cell that should have a recipe
-        const dayCells = screen.getAllByTitle(/recipe/i);
-        if (dayCells.length > 0) {
-            const dayCell = dayCells[0];
-            fireEvent.mouseEnter(dayCell);
+        // Find a day cell wrapper (which is our mocked Tooltip)
+        const tooltipWrappers = screen.getAllByTitle(/recipe/i);
+        if (tooltipWrappers.length > 0) {
+            const wrapper = tooltipWrappers[0];
+            fireEvent.mouseEnter(wrapper);
 
-            // Check if tooltip appears (it should show recipe count and date)
-            // The tooltip might not be immediately visible, so we check for the structure
-            expect(dayCell).toBeDefined();
+            // Check if tooltip wrapper is present and has the correct title
+            expect(wrapper).toBeDefined();
+            expect(wrapper.getAttribute('title')).toMatch(/recipe/i);
         }
     });
 
@@ -245,15 +255,14 @@ describe('<RecipeContributionGraph />', () => {
 
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
-        const dayCells = screen.getAllByTitle(/recipe/i);
-        if (dayCells.length > 0) {
-            const dayCell = dayCells[0];
-            fireEvent.mouseEnter(dayCell);
-            fireEvent.mouseLeave(dayCell);
+        const tooltipWrappers = screen.getAllByTitle(/recipe/i);
+        if (tooltipWrappers.length > 0) {
+            const wrapper = tooltipWrappers[0];
+            fireEvent.mouseEnter(wrapper);
+            fireEvent.mouseLeave(wrapper);
 
-            // Tooltip should be hidden (we can't easily test this without more complex queries)
-            // But the component should handle the event without errors
-            expect(dayCell).toBeDefined();
+            // The component should handle the event without errors
+            expect(wrapper).toBeDefined();
         }
     });
 });
