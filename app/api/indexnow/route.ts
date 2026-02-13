@@ -6,9 +6,19 @@ import {
     INDEXNOW_KEY_LOCATION,
     INDEXNOW_API_URL,
 } from '@/app/utils/constants';
-import { internalServerError, validationError } from '@/app/utils/apiErrors';
 
-export async function POST() {
+import {
+    internalServerError,
+    validationError,
+    unauthorized,
+} from '@/app/utils/apiErrors';
+
+export async function POST(request: Request) {
+    const authHeader = request.headers.get('authorization');
+    if (authHeader !== `Bearer ${process.env.INDEXNOW_SECRET}`) {
+        return unauthorized('Invalid or missing IndexNow secret');
+    }
+
     try {
         const sitemapData = await getSitemapData();
         const urls = sitemapData.map((entry) => entry.url);

@@ -88,12 +88,10 @@ export async function POST(request: Request) {
             );
         }
 
-        // Validate each category is a non-empty string
         if (categories.some((cat) => typeof cat !== 'string' || !cat.trim())) {
             return badRequest('All categories must be non-empty strings');
         }
 
-        // Check for award-winning category
         if (categories.some((cat) => cat.toLowerCase() === 'award-winning')) {
             return forbidden(
                 'The Award-winning category cannot be set via API'
@@ -188,7 +186,6 @@ export async function POST(request: Request) {
         const limitedCoCooksIds = finalCoCooksIds.slice(0, 4); // Max 4 co-cooks
         const limitedLinkedRecipeIds = finalLinkedRecipeIds.slice(0, 2); // Max 2 linked recipes
 
-        // Handle questId - ensure empty strings become null
         const finalQuestId = questId && questId.trim() !== '' ? questId : null;
 
         const recipe = await prisma.recipe.create({
