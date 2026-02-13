@@ -1,5 +1,11 @@
 export const JORBITES_URL = 'https://jorbites.com';
 export const CONTACT_EMAIL = 'jbonetv5@gmail.com';
+
+export const INDEXNOW_API_KEY = 'f6ee79a7601145559ed566ccb188b132';
+export const INDEXNOW_HOST = 'jorbites.com';
+export const INDEXNOW_KEY_LOCATION = `https://${INDEXNOW_HOST}/${INDEXNOW_API_KEY}.txt`;
+export const INDEXNOW_API_URL = 'https://api.indexnow.org/indexnow';
+
 export const RECIPE_TITLE_MAX_LENGTH = 35;
 export const RECIPE_DESCRIPTION_MAX_LENGTH = 500;
 export const RECIPE_INGREDIENT_MAX_LENGTH = 135;

@@ -1,0 +1,17 @@
+name: IndexNow Daily Submission
+
+on:
+  schedule:
+    # Run at 00:00 UTC daily
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  submit-to-indexnow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger IndexNow API
+        run: |
+          curl -X POST https://jorbites.com/api/indexnow \
+          -H "Authorization: Bearer ${{ secrets.INDEXNOW_SECRET }}" \
+          --fail
