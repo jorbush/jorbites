@@ -3,7 +3,7 @@ import prisma from '@/app/lib/prismadb';
 import fs from 'fs';
 import path from 'path';
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export async function getSitemapData(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://jorbites.com';
 
     const recipes = await prisma.recipe.findMany({
@@ -41,6 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             id: true,
             updatedAt: true,
             createdAt: true,
+            name: true,
         },
         orderBy: {
             updatedAt: 'desc',
@@ -64,4 +65,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...eventEntries,
         ...userEntries,
     ];
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+    return getSitemapData();
 }
