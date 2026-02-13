@@ -41,7 +41,6 @@ export async function getSitemapData(): Promise<MetadataRoute.Sitemap> {
             id: true,
             updatedAt: true,
             createdAt: true,
-            name: true,
         },
         orderBy: {
             updatedAt: 'desc',
