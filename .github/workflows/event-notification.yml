@@ -1,0 +1,71 @@
+name: Event Notification Cron Job
+
+on:
+  schedule:
+    # Run at 08:00 UTC daily
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-and-notify-events:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for new events
+        id: check-events
+        env:
+          JORBITES_URL: https://jorbites.com
+        run: |
+          TODAY=$(date -u +'%Y-%m-%d')
+          echo "Checking for events starting on: $TODAY"
+
+          # Fetch all events (using 'es' as source of truth)
+          response=$(curl -s -f "$JORBITES_URL/api/events?lang=es") || { echo "Failed to fetch events"; exit 1; }
+
+          # Filter events where frontmatter.date starts with TODAY
+          # We construct a simplified JSON array of matches
+          MATCHED_EVENTS=$(echo "$response" | jq --arg date "$TODAY" -c '[.[] | select(.frontmatter.date | sub("T.*"; "") == $date) | {eventId: .slug, title: .frontmatter.title}]')
+
+          COUNT=$(echo "$MATCHED_EVENTS" | jq length)
+          echo "Found $COUNT events starting today."
+
+          echo "events=$MATCHED_EVENTS" >> $GITHUB_OUTPUT
+
+      - name: Send notifications
+        if: steps.check-events.outputs.events != '[]'
+        env:
+          JORBITES_NOTIFIER_URL: ${{ secrets.JORBITES_NOTIFIER_URL }}
+          JORBITES_NOTIFIER_API_KEY: ${{ secrets.JORBITES_NOTIFIER_API_KEY }}
+          EVENTS_JSON: ${{ steps.check-events.outputs.events }}
+        run: |
+          if [ -z "$JORBITES_NOTIFIER_URL" ] || [ -z "$JORBITES_NOTIFIER_API_KEY" ]; then
+            echo "Notifier secrets are missing. Skipping notifications."
+            exit 0
+          fi
+
+          echo "$EVENTS_JSON" | jq -c '.[]' | while read -r event; do
+            eventId=$(echo "$event" | jq -r '.eventId')
+            title=$(echo "$event" | jq -r '.title')
+
+            echo "Sending notification for: $title"
+
+            # Construct payload
+            payload=$(jq -n \
+              --arg eventId "$eventId" \
+              --arg title "$title" \
+              '{type: "NEW_EVENT", metadata: {eventId: $eventId, title: $title}}')
+
+            # Send notification
+            response=$(curl -s -w "\n%{http_code}" -X POST "$JORBITES_NOTIFIER_URL/notifications" \
+              -H "Content-Type: application/json" \
+              -H "X-API-Key: $JORBITES_NOTIFIER_API_KEY" \
+              -d "$payload")
+
+            http_code=$(echo "$response" | tail -n1)
+
+            if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+               echo "✓ Notification sent for $title"
+            else
+               echo "✗ Failed to send notification for $title"
+               echo "Response: $(echo "$response" | sed '$d')"
+            fi
+          done
