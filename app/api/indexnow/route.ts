@@ -7,11 +7,7 @@ import {
     INDEXNOW_API_URL,
 } from '@/app/utils/constants';
 
-import {
-    internalServerError,
-    validationError,
-    unauthorized,
-} from '@/app/utils/apiErrors';
+import { internalServerError, unauthorized } from '@/app/utils/apiErrors';
 
 export async function POST(request: Request) {
     const authHeader = request.headers.get('authorization');
@@ -37,8 +33,12 @@ export async function POST(request: Request) {
         });
 
         if (!response.ok) {
-            return validationError(
-                `IndexNow submission failed: ${response.statusText}`,
+            return NextResponse.json(
+                {
+                    error: `IndexNow submission failed: ${response.statusText}`,
+                    code: 'INDEXNOW_ERROR',
+                    timestamp: new Date().toISOString(),
+                },
                 { status: response.status }
             );
         }
