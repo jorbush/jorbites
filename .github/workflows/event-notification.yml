@@ -23,7 +23,7 @@ jobs:
 
           # Filter events where frontmatter.date starts with TODAY
           # We construct a simplified JSON array of matches
-          MATCHED_EVENTS=$(echo "$response" | jq --arg date "$TODAY" -c '[.[] | select(.frontmatter.date | sub("T.*"; "") == $date) | {eventId: .slug, title: .frontmatter.title}]')
+          MATCHED_EVENTS=$(echo "$response" | jq --arg date "$TODAY" -c '[.[] | select(.frontmatter.date != null) | select(.frontmatter.date | sub("T.*"; "") == $date) | {eventId: .slug, title: .frontmatter.title}]')
 
           COUNT=$(echo "$MATCHED_EVENTS" | jq length)
           echo "Found $COUNT events starting today."
