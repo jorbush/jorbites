@@ -16,19 +16,26 @@ jobs:
           JORBITES_URL: https://jorbites.com
         run: |
           TODAY=$(date -u +'%Y-%m-%d')
+          IN_3_DAYS=$(date -u -d "$TODAY + 3 days" +'%Y-%m-%d')
           echo "Checking for events starting on: $TODAY"
+          echo "Checking for events ending on: $IN_3_DAYS"
 
           # Fetch all events (using 'es' as source of truth)
           response=$(curl -s -f "$JORBITES_URL/api/events?lang=es") || { echo "Failed to fetch events"; exit 1; }
 
           # Filter events where frontmatter.date starts with TODAY
-          # We construct a simplified JSON array of matches
-          MATCHED_EVENTS=$(echo "$response" | jq --arg date "$TODAY" -c '[.[] | select(.frontmatter.date != null) | select(.frontmatter.date | sub("T.*"; "") == $date) | {eventId: .slug, title: .frontmatter.title}]')
+          STARTED_EVENTS=$(echo "$response" | jq --arg date "$TODAY" -c '[.[] | select(.frontmatter.date != null) | select(.frontmatter.date | sub("T.*"; "") == $date) | {type: "NEW_EVENT", eventId: .slug, title: .frontmatter.title}]')
 
-          COUNT=$(echo "$MATCHED_EVENTS" | jq length)
-          echo "Found $COUNT events starting today."
+          # Filter events where frontmatter.endDate is IN_3_DAYS
+          ENDING_EVENTS=$(echo "$response" | jq --arg date "$IN_3_DAYS" -c '[.[] | select(.frontmatter.endDate != null) | select(.frontmatter.endDate | sub("T.*"; "") == $date) | {type: "EVENT_ENDING_SOON", eventId: .slug, title: .frontmatter.title}]')
 
-          echo "events=$MATCHED_EVENTS" >> $GITHUB_OUTPUT
+          # Combine events
+          ALL_EVENTS=$(echo "$STARTED_EVENTS" "$ENDING_EVENTS" | jq -s 'add')
+
+          COUNT=$(echo "$ALL_EVENTS" | jq length)
+          echo "Found $COUNT events to notify."
+
+          echo "events=$ALL_EVENTS" >> $GITHUB_OUTPUT
 
       - name: Send notifications
         if: steps.check-events.outputs.events != '[]'
@@ -43,16 +50,18 @@ jobs:
           fi
 
           echo "$EVENTS_JSON" | jq -c '.[]' | while read -r event; do
+            type=$(echo "$event" | jq -r '.type')
             eventId=$(echo "$event" | jq -r '.eventId')
             title=$(echo "$event" | jq -r '.title')
 
-            echo "Sending notification for: $title"
+            echo "Sending $type notification for: $title"
 
             # Construct payload
             payload=$(jq -n \
+              --arg type "$type" \
               --arg eventId "$eventId" \
               --arg title "$title" \
-              '{type: "NEW_EVENT", metadata: {eventId: $eventId, title: $title}}')
+              '{type: $type, metadata: {eventId: $eventId, title: $title}}')
 
             # Send notification
             response=$(curl -s -w "\n%{http_code}" -X POST "$JORBITES_NOTIFIER_URL/notifications" \
