@@ -30,7 +30,7 @@ jobs:
           ENDING_EVENTS=$(echo "$response" | jq --arg date "$IN_3_DAYS" -c '[.[] | select(.frontmatter.endDate != null) | select(.frontmatter.endDate | sub("T.*"; "") == $date) | {type: "EVENT_ENDING_SOON", eventId: .slug, title: .frontmatter.title}]')
 
           # Combine events
-          ALL_EVENTS=$(echo "$STARTED_EVENTS" "$ENDING_EVENTS" | jq -s 'add')
+          ALL_EVENTS=$(jq -n --argjson started "$STARTED_EVENTS" --argjson ending "$ENDING_EVENTS" '$started + $ending')
 
           COUNT=$(echo "$ALL_EVENTS" | jq length)
           echo "Found $COUNT events to notify."
