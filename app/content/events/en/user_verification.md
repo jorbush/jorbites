@@ -1,6 +1,6 @@
 ---
 title: User Verification
-image: /images/events/placeholder.webp
+image: /images/events/user_verification.webp
 permanent: true
 description: Get your verification tick by contributing to the community.
 ---

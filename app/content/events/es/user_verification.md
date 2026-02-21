@@ -1,6 +1,6 @@
 ---
 title: Verificación de Usuario
-image: /images/events/placeholder.webp
+image: /images/events/user_verification.webp
 permanent: true
 description: Consigue tu tick de verificación contribuyendo a la comunidad.
 ---
