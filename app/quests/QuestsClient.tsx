@@ -98,13 +98,13 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'open':
-                return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+                return 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200';
             case 'in_progress':
-                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200';
             case 'completed':
-                return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+                return 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200';
             default:
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+                return 'bg-gray-100 text-gray-800 dark:bg-neutral-800 dark:text-neutral-200';
         }
     };
 
@@ -158,7 +158,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                 className={`flex-shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition ${
                                     filter === status
                                         ? 'bg-rose-500 text-white'
-                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
                                 }`}
                             >
                                 {t(status) || status.replace('_', ' ')}
@@ -180,7 +180,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
 
             {/* Quests Grid */}
             {quests.length === 0 ? (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center dark:border-gray-700">
+                <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center dark:border-neutral-800">
                     <FiCircle className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                     <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
                         {t('no_quests') || 'No quests found'}
@@ -195,7 +195,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                     {quests.map((quest) => (
                         <div
                             key={quest.id}
-                            className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
+                            className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900"
                         >
                             <div className="p-6">
                                 {/* Quest Header */}
@@ -234,7 +234,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                 </div>
 
                                 {/* Quest Footer */}
-                                <div className="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
+                                <div className="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-neutral-800">
                                     <div className="flex items-center gap-3">
                                         <Avatar
                                             src={quest.user.image}
@@ -265,7 +265,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
 
                                 {/* Recipe Replies Preview */}
                                 {quest.recipes.length > 0 && (
-                                    <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
+                                    <div className="mt-4 border-t border-gray-200 pt-4 dark:border-neutral-800">
                                         <p className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
                                             {t('recipe_replies') ||
                                                 'Recipe Replies'}
@@ -298,7 +298,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                     </div>
                                                 ))}
                                             {quest.recipes.length > 4 && (
-                                                <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700">
+                                                <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800">
                                                     <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
                                                         +
                                                         {quest.recipes.length -

@@ -99,13 +99,13 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'open':
-                return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+                return 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200';
             case 'in_progress':
-                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200';
             case 'completed':
-                return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+                return 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200';
             default:
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+                return 'bg-gray-100 text-gray-800 dark:bg-neutral-800 dark:text-neutral-200';
         }
     };
 
@@ -164,7 +164,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                 </button>
 
                 {/* Quest Header */}
-                <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
                     <div className="mb-4 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             {getStatusIcon(quest.status)}
@@ -181,7 +181,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                             <button
                                 onClick={() => share({ title: quest.title })}
                                 aria-label={t('share_quest') || 'Share Quest'}
-                                className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                                className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
                                 data-cy="share-quest"
                             >
                                 <FiShare2 />
@@ -193,7 +193,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                                         aria-label={
                                             t('edit_quest') || 'Edit Quest'
                                         }
-                                        className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                                        className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
                                         data-cy="edit-quest"
                                     >
                                         <FiEdit />
@@ -227,7 +227,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                         {quest.description}
                     </p>
 
-                    <div className="flex flex-col justify-between gap-5 border-t border-gray-200 pt-4 md:flex-row md:items-center dark:border-gray-700">
+                    <div className="flex flex-col justify-between gap-5 border-t border-gray-200 pt-4 md:flex-row md:items-center dark:border-neutral-800">
                         <div className="flex items-center gap-3">
                             <Avatar
                                 src={quest.user.image}
@@ -269,7 +269,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                         {quest.recipes.length})
                     </h2>
                     {quest.recipes.length === 0 ? (
-                        <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center dark:border-gray-700">
+                        <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center dark:border-neutral-800">
                             <p className="text-gray-600 dark:text-gray-400">
                                 {t('no_recipes_yet') ||
                                     'No recipes have been submitted yet'}
