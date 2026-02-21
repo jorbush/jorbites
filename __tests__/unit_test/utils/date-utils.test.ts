@@ -17,8 +17,8 @@ describe('date-utils', () => {
     afterEach(() => {
         vi.unstubAllGlobals();
         try {
-          const i18n = require('i18next');
-          i18n.language = 'es';
+            const i18n = require('i18next');
+            i18n.language = 'es';
         } catch {}
     });
 
