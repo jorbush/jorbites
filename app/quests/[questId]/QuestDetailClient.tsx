@@ -12,7 +12,7 @@ import {
     FiChevronLeft,
     FiShare2,
 } from 'react-icons/fi';
-import { formatDistance } from 'date-fns';
+import { formatDistanceToNowLocale } from '@/app/utils/date-utils';
 import Avatar from '@/app/components/utils/Avatar';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
@@ -238,10 +238,8 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                                     {quest.user.name}
                                 </p>
                                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    {formatDistance(
-                                        new Date(quest.createdAt),
-                                        new Date(),
-                                        { addSuffix: true }
+                                    {formatDistanceToNowLocale(
+                                        new Date(quest.createdAt)
                                     )}
                                 </p>
                             </div>

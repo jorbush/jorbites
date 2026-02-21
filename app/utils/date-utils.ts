@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { es, enUS, ca } from 'date-fns/locale';
 
 type LocaleType = 'es' | 'en' | 'ca';
@@ -18,7 +18,9 @@ const getCurrentLocale = (): LocaleType => {
     if (typeof window !== 'undefined') {
         try {
             // Dynamic import to prevent SSR issues
-            const i18n = require('@/app/i18n').default;
+            // Use i18next directly as it's safe for SSR and avoids path resolution issues in tests.
+            // Since app/i18n.ts initializes the global i18next instance, this will return the same configured instance.
+            const i18n = require('i18next');
             return (i18n.language as LocaleType) || 'es';
         } catch {
             return 'es';
@@ -68,4 +70,14 @@ export const formatDate = (date: Date | string): string => {
     const currentLocale = getCurrentLocale();
     const locale = locales[currentLocale];
     return format(parsedDate, 'PPP', { locale });
+};
+
+/**
+ * Formats the distance to now with the current locale
+ */
+export const formatDistanceToNowLocale = (date: Date | string): string => {
+    const parsedDate = date instanceof Date ? date : new Date(date);
+    const currentLocale = getCurrentLocale();
+    const locale = locales[currentLocale];
+    return formatDistanceToNow(parsedDate, { addSuffix: true, locale });
 };

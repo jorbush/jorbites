@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import useQuestModal from '@/app/hooks/useQuestModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import { FiPlus, FiCheckCircle, FiClock, FiCircle } from 'react-icons/fi';
-import { formatDistance } from 'date-fns';
+import { formatDistanceToNowLocale } from '@/app/utils/date-utils';
 import Avatar from '@/app/components/utils/Avatar';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import Pagination from '@/app/components/navigation/Pagination';
@@ -245,10 +245,8 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                 {quest.user.name}
                                             </p>
                                             <p className="text-gray-500 dark:text-gray-400">
-                                                {formatDistance(
-                                                    new Date(quest.createdAt),
-                                                    new Date(),
-                                                    { addSuffix: true }
+                                                {formatDistanceToNowLocale(
+                                                    new Date(quest.createdAt)
                                                 )}
                                             </p>
                                         </div>

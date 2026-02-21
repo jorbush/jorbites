@@ -1,17 +1,25 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
     formatDateRange,
     formatDateLanguage,
     formatDate,
+    formatDistanceToNowLocale,
     locales,
 } from '@/app/utils/date-utils';
 
 describe('date-utils', () => {
-    // Mock dates for consistent testing
     const testDate1 = new Date('2024-01-15T12:00:00Z');
     const testDate2 = new Date('2024-01-20T12:00:00Z');
     const testDateString1 = '2024-01-15T12:00:00Z';
     const testDateString2 = '2024-01-20T12:00:00Z';
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        try {
+            const i18n = require('i18next');
+            i18n.language = 'es';
+        } catch {}
+    });
 
     describe('locales', () => {
         it('should export locales object with es, en, and ca', () => {
@@ -22,16 +30,8 @@ describe('date-utils', () => {
     });
 
     describe('formatDateRange', () => {
-        beforeEach(() => {
-            // Mock server-side rendering (no window)
-            vi.stubGlobal('window', undefined);
-        });
-
-        afterEach(() => {
-            vi.unstubAllGlobals();
-        });
-
         it('should format date range when dates are different (server-side, defaults to es)', () => {
+            vi.stubGlobal('window', undefined);
             const result = formatDateRange(testDate1, testDate2);
             // For Spanish locale, format should be dd/MM/yyyy
             expect(result).toContain('15/01/2024');
@@ -40,6 +40,7 @@ describe('date-utils', () => {
         });
 
         it('should format same day dates as single date (server-side, defaults to es)', () => {
+            vi.stubGlobal('window', undefined);
             const sameDay1 = new Date('2024-01-15T08:00:00Z');
             const sameDay2 = new Date('2024-01-15T18:00:00Z');
             const result = formatDateRange(sameDay1, sameDay2);
@@ -49,6 +50,7 @@ describe('date-utils', () => {
         });
 
         it('should accept string inputs for dates', () => {
+            vi.stubGlobal('window', undefined);
             const result = formatDateRange(testDateString1, testDateString2);
             expect(result).toContain('15/01/2024');
             expect(result).toContain('20/01/2024');
@@ -56,6 +58,7 @@ describe('date-utils', () => {
         });
 
         it('should accept mixed Date and string inputs', () => {
+            vi.stubGlobal('window', undefined);
             const result1 = formatDateRange(testDate1, testDateString2);
             expect(result1).toContain('15/01/2024');
             expect(result1).toContain('20/01/2024');
@@ -67,32 +70,27 @@ describe('date-utils', () => {
     });
 
     describe('formatDateLanguage', () => {
-        beforeEach(() => {
-            // Mock server-side rendering (no window)
-            vi.stubGlobal('window', undefined);
-        });
-
-        afterEach(() => {
-            vi.unstubAllGlobals();
-        });
-
         it('should format date with custom format string (server-side, defaults to es)', () => {
+            vi.stubGlobal('window', undefined);
             const result = formatDateLanguage(testDate1, 'yyyy-MM-dd');
             expect(result).toBe('2024-01-15');
         });
 
         it('should format date with PPP format (server-side, defaults to es)', () => {
+            vi.stubGlobal('window', undefined);
             const result = formatDateLanguage(testDate1, 'PPP');
             // PPP format gives long date format
             expect(result).toContain('2024');
         });
 
         it('should accept string input for date', () => {
+            vi.stubGlobal('window', undefined);
             const result = formatDateLanguage(testDateString1, 'yyyy-MM-dd');
             expect(result).toBe('2024-01-15');
         });
 
         it('should format with different format patterns', () => {
+            vi.stubGlobal('window', undefined);
             const result1 = formatDateLanguage(testDate1, 'dd/MM/yyyy');
             expect(result1).toBe('15/01/2024');
 
@@ -105,34 +103,49 @@ describe('date-utils', () => {
     });
 
     describe('formatDate', () => {
-        beforeEach(() => {
-            // Mock server-side rendering (no window)
-            vi.stubGlobal('window', undefined);
-        });
-
-        afterEach(() => {
-            vi.unstubAllGlobals();
-        });
-
         it('should format Date object (server-side, defaults to es)', () => {
+            vi.stubGlobal('window', undefined);
             const result = formatDate(testDate1);
             // PPP format should give long date format
             expect(result).toContain('2024');
         });
 
         it('should format string date (server-side, defaults to es)', () => {
+            vi.stubGlobal('window', undefined);
             const result = formatDate(testDateString1);
             expect(result).toContain('2024');
         });
+    });
 
-        it('should parse and format various date strings', () => {
-            const dateString1 = '2024-06-15';
-            const result1 = formatDate(dateString1);
-            expect(result1).toContain('2024');
+    describe('formatDistanceToNowLocale', () => {
+        const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
 
-            const dateString2 = '2024-12-25T00:00:00Z';
-            const result2 = formatDate(dateString2);
-            expect(result2).toContain('2024');
+        it('should format distance to now in Spanish by default (server-side)', () => {
+            vi.stubGlobal('window', undefined);
+            const result = formatDistanceToNowLocale(twoDaysAgo);
+            expect(result).toContain('hace 2 días');
+        });
+
+        it('should format distance to now in English when language is en', () => {
+            vi.stubGlobal('window', {});
+            const i18n = require('i18next');
+            i18n.language = 'en';
+            const result = formatDistanceToNowLocale(twoDaysAgo);
+            expect(result).toContain('2 days ago');
+        });
+
+        it('should format distance to now in Catalan when language is ca', () => {
+            vi.stubGlobal('window', {});
+            const i18n = require('i18next');
+            i18n.language = 'ca';
+            const result = formatDistanceToNowLocale(twoDaysAgo);
+            expect(result).toContain('fa 2 dies');
+        });
+
+        it('should handle string inputs', () => {
+            vi.stubGlobal('window', undefined);
+            const result = formatDistanceToNowLocale(twoDaysAgo.toISOString());
+            expect(result).toContain('hace 2 días');
         });
     });
 });

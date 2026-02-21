@@ -17,6 +17,10 @@ vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => key,
     }),
+    initReactI18next: {
+        type: '3rdParty',
+        init: vi.fn(),
+    },
 }));
 
 vi.mock('@/app/hooks/useQuestModal', () => ({
@@ -32,7 +36,8 @@ vi.mock('@/app/hooks/useLoginModal', () => ({
 }));
 
 vi.mock('date-fns', () => ({
-    formatDistance: () => '2 hours ago',
+    formatDistanceToNow: () => '2 hours ago',
+    format: () => 'formatted date',
 }));
 
 describe('<QuestsClient />', () => {
