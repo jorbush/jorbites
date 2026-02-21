@@ -6,7 +6,6 @@ import {
     formatDistanceToNowLocale,
     locales,
 } from '@/app/utils/date-utils';
-import i18n from 'i18next';
 
 describe('date-utils', () => {
     const testDate1 = new Date('2024-01-15T12:00:00Z');
@@ -19,7 +18,7 @@ describe('date-utils', () => {
         try {
             const i18n = require('i18next');
             i18n.language = 'es';
-        } catch {}
+        } catch { }
     });
 
     describe('locales', () => {
