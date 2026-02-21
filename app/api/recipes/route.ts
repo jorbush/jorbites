@@ -217,6 +217,25 @@ export async function POST(request: Request) {
             },
         });
 
+        if (finalQuestId) {
+            const quest = await prisma.quest.findUnique({
+                where: { id: finalQuestId },
+                include: { user: true },
+            });
+
+            if (quest?.user?.email) {
+                await sendNotification({
+                    type: NotificationType.QUEST_FULFILLED,
+                    userEmail: quest.user.email,
+                    params: {
+                        questId: finalQuestId,
+                        submissionId: recipe.id,
+                        fulfilledByName: currentUser.name || 'Un usuario',
+                    },
+                });
+            }
+        }
+
         await updateUserLevel({
             userId: currentUser.id,
         });

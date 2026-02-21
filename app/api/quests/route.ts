@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import sendNotification from '@/app/actions/sendNotification';
+import { NotificationType } from '@/app/types/notification';
 import {
     unauthorized,
     validationError,
@@ -50,6 +52,14 @@ export async function POST(request: Request) {
                 description,
                 userId: currentUser.id,
                 status: 'open',
+            },
+        });
+
+        await sendNotification({
+            type: NotificationType.NEW_QUEST,
+            userEmail: currentUser.email,
+            params: {
+                questId: quest.id,
             },
         });
 

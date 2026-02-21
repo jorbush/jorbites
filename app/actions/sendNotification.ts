@@ -10,6 +10,9 @@ interface SendNotificationParams {
         recipeName?: string;
         resetUrl?: string;
         mentionedUsers?: string[];
+        questId?: string;
+        submissionId?: string;
+        fulfilledByName?: string;
     };
 }
 
@@ -33,6 +36,11 @@ const sendNotification = async ({
         if (params.resetUrl) metadata.resetUrl = params.resetUrl;
         if (params.mentionedUsers)
             metadata.mentionedUsers = params.mentionedUsers.join(',');
+
+        if (params.questId) metadata.questId = params.questId;
+        if (params.submissionId) metadata.submissionId = params.submissionId;
+        if (params.fulfilledByName)
+            metadata.fulfilledByName = params.fulfilledByName;
 
         if (type === NotificationType.NEW_LIKE && params.userName) {
             metadata.likedBy = params.userName;
