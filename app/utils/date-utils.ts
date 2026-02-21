@@ -18,7 +18,9 @@ const getCurrentLocale = (): LocaleType => {
     if (typeof window !== 'undefined') {
         try {
             // Dynamic import to prevent SSR issues
-            const i18n = require('@/app/i18n').default;
+            // Use i18next directly as it's safe for SSR and avoids path resolution issues in tests.
+            // Since app/i18n.ts initializes the global i18next instance, this will return the same configured instance.
+            const i18n = require('i18next');
             return (i18n.language as LocaleType) || 'es';
         } catch {
             return 'es';
