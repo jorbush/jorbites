@@ -150,7 +150,7 @@ const QuestModal = () => {
                     })}
                     disabled={isLoading}
                     rows={5}
-                    className="w-full rounded-lg border border-gray-300 p-3 text-gray-900 transition focus:border-rose-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                    className="w-full rounded-lg border border-gray-300 p-3 text-gray-900 transition focus:border-rose-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-100"
                     placeholder={
                         t('quest_description_placeholder') ||
                         'Describe the recipe you would like someone to create...'
@@ -176,7 +176,7 @@ const QuestModal = () => {
                         id="status"
                         {...register('status')}
                         disabled={isLoading}
-                        className="w-full rounded-lg border border-gray-300 p-3 text-gray-900 transition focus:border-rose-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                        className="w-full rounded-lg border border-gray-300 p-3 text-gray-900 transition focus:border-rose-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-100"
                         data-cy="quest-status"
                     >
                         <option value="open">{t('open') || 'Open'}</option>
