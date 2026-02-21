@@ -32,7 +32,8 @@ vi.mock('@/app/hooks/useLoginModal', () => ({
 }));
 
 vi.mock('date-fns', () => ({
-    formatDistance: () => '2 hours ago',
+    formatDistanceToNow: () => '2 hours ago',
+    format: () => 'formatted date',
 }));
 
 describe('<QuestsClient />', () => {

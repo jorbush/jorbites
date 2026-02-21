@@ -49,7 +49,8 @@ vi.mock('@/app/hooks/useRecipeModal', () => ({
 }));
 
 vi.mock('date-fns', () => ({
-    formatDistance: () => '2 hours ago',
+    formatDistanceToNow: () => '2 hours ago',
+    format: () => 'formatted date',
 }));
 
 vi.mock('axios');

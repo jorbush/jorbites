@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { es, enUS, ca } from 'date-fns/locale';
 
 type LocaleType = 'es' | 'en' | 'ca';
@@ -68,4 +68,14 @@ export const formatDate = (date: Date | string): string => {
     const currentLocale = getCurrentLocale();
     const locale = locales[currentLocale];
     return format(parsedDate, 'PPP', { locale });
+};
+
+/**
+ * Formats the distance to now with the current locale
+ */
+export const formatDistanceToNowLocale = (date: Date | string): string => {
+    const parsedDate = date instanceof Date ? date : new Date(date);
+    const currentLocale = getCurrentLocale();
+    const locale = locales[currentLocale];
+    return formatDistanceToNow(parsedDate, { addSuffix: true, locale });
 };
