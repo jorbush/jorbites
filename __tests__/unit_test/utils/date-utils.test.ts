@@ -7,7 +7,6 @@ import {
 } from '@/app/utils/date-utils';
 
 describe('date-utils', () => {
-    // Mock dates for consistent testing
     const testDate1 = new Date('2024-01-15T12:00:00Z');
     const testDate2 = new Date('2024-01-20T12:00:00Z');
     const testDateString1 = '2024-01-15T12:00:00Z';
