@@ -18,7 +18,7 @@ describe('date-utils', () => {
         try {
             const i18n = require('i18next');
             i18n.language = 'es';
-        } catch { }
+        } catch {}
     });
 
     describe('locales', () => {
