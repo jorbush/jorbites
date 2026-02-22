@@ -1,0 +1,32 @@
+---
+title: 🇩🇪 Recetas Alemanas 🍽️
+date: 2025-04-01
+endDate: 2025-04-30T21:59:59
+image: /images/events/placeholder.webp
+description: Descubre los sabores contundentes y diversos de la cocina alemana
+---
+
+# 🇩🇪 Recetas Alemanas 🍽️
+
+¡Explora las ricas tradiciones culinarias de Alemania en Jorbites!
+
+Comparte recetas inspiradas en la cocina alemana, desde clásicos reconfortantes hasta especialidades regionales. Ya sea un plato principal sabroso, una guarnición tradicional o un postre famoso, queremos ver tu versión de los sabores alemanes.
+
+### 🏆 Consigue tu medalla exclusiva
+
+Todos los Jorbiters que publiquen una receta inspirada en Alemania durante la ventana del evento recibirán la medalla de Recetas Alemanas.
+
+### 🍽️ Ideas para inspirarte
+
+- **Sauerbraten**: Estofado tradicional de carne.
+- **Pretzels (Brezeln)**: El icónico pan en forma de lazo.
+- **Schnitzel**: Carne fina, empanada y frita (o alternativas vegetales).
+- **Käsespätzle**: Pasta al huevo con queso, estilo alemán.
+- **Kartoffelsalat**: La clásica ensalada de patata alemana.
+- **Bratwurst**: Salchichas alemanas a la parrilla.
+- **Schwarzwälder Kirschtorte**: Tarta de la Selva Negra.
+- **Apfelstrudel**: El tradicional strudel de manzana.
+
+### 🌿 Qué la hace especial
+
+La cocina alemana es conocida por su contundencia, su diversidad regional y su enfoque en ingredientes de alta calidad. Desde las tradiciones alpinas del sur hasta los sabores marítimos del norte, ofrece una amplia gama de platos reconfortantes y deliciosos perfectos para cualquier época. 🇩🇪
