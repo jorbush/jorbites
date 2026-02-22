@@ -2,7 +2,7 @@
 title: 🇩🇪 Receptes Alemanyes 🍽️
 date: 2026-04-01
 endDate: 2026-04-30T21:59:59
-image: /images/events/placeholder.webp
+image: /images/events/german_recipes.webp
 description: Descobreix els sabors contundents i diversos de la cuina alemanya
 ---
 
