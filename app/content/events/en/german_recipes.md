@@ -1,7 +1,7 @@
 ---
 title: 🇩🇪 German Recipes 🍽️
-date: 2025-04-01
-endDate: 2025-04-30T21:59:59
+date: 2026-04-01
+endDate: 2026-04-30T21:59:59
 image: /images/events/placeholder.webp
 description: Discover the hearty and diverse flavors of German cuisine
 ---
