@@ -2,7 +2,7 @@
 title: 🇬🇷 Recetas Griegas 🍽️
 date: 2026-07-01
 endDate: 2026-07-31T21:59:59
-image: /images/events/greece_recipes.webp
+image: /images/events/greek_recipes.webp
 description: Descubre los sabores frescos y mediterráneos de la cocina griega
 ---
 
