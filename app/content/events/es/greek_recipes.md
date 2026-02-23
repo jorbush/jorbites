@@ -22,7 +22,7 @@ Todos los Jorbiters que publiquen una receta inspirada en Grecia durante la vent
 - **Souvlaki**: Brochetas de carne sazonada a la parrilla.
 - **Tzatziki**: Salsa cremosa de yogur, pepino y ajo.
 - **Ensalada Griega (Horiatiki)**: Tomates frescos, pepinos, aceitunas y queso feta.
-- **Spanakopita**: Hojaldre de pasta filo relleno de espinacas y queso feta.
+- **Spanakopita**: Pasta filo rellena de espinacas y queso feta.
 - **Dolmades**: Hojas de parra rellenas de arroz y hierbas.
 - **Baklava**: Postre dulce y rico hecho de capas de pasta filo y frutos secos.
 - **Gyros**: Carne sazonada cortada en finas lonchas servida en pan de pita.
