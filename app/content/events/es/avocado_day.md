@@ -1,20 +1,20 @@
 ---
-title: 🥑 Día Internacional del Aguacate 2025 🥑
-date: 2025-07-31
-endDate: 2025-07-31T21:59:59
+title: 🥑 Día Internacional del Aguacate 🥑
+date: 2026-07-31
+endDate: 2026-07-31T21:59:59
 image: /images/events/avocado_day.webp
-description: Evento del Día Internacional del Aguacate 2025
+description: Evento del Día Internacional del Aguacate
 ---
 
-# 🥑 Día Internacional del Aguacate 2025 🥑
+# 🥑 Día Internacional del Aguacate 🥑
 
 ¡Celebramos el Día Internacional del Aguacate en Jorbites!
 
-Este 31 de julio de 2025, honramos a uno de los ingredientes más versátiles y nutritivos de la cocina. El aguacate no solo es delicioso, sino que también es una fuente increíble de grasas saludables, vitaminas y minerales.
+Honramos a uno de los ingredientes más versátiles y nutritivos de la cocina. El aguacate no solo es delicioso, sino que también es una fuente increíble de grasas saludables, vitaminas y minerales.
 
 ### 🏆 ¡Gana tu medalla exclusiva!
 
-Todos los Jorbiters que publiquen una receta que incluya aguacate como ingrediente principal el 31 de julio de 2025 serán recompensados con la medalla exclusiva del Día del Aguacate.
+Todos los Jorbiters que publiquen una receta que incluya aguacate como ingrediente principal serán recompensados con la medalla exclusiva del Día del Aguacate.
 
 ### 🥑 Ideas para inspirarte:
 

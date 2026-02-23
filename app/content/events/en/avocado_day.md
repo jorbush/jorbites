@@ -1,20 +1,20 @@
 ---
-title: 🥑 International Avocado Day 2025 🥑
-date: 2025-07-31
-endDate: 2025-07-31T21:59:59
+title: 🥑 International Avocado Day 🥑
+date: 2026-07-31
+endDate: 2026-07-31T21:59:59
 image: /images/events/avocado_day.webp
-description: International Avocado Day 2025 event
+description: International Avocado Day event
 ---
 
-# 🥑 International Avocado Day 2025 🥑
+# 🥑 International Avocado Day 🥑
 
 We're celebrating International Avocado Day on Jorbites!
 
-This July 31st, 2025, we honor one of the most versatile and nutritious ingredients in cooking. Avocado is not only delicious, but it's also an incredible source of healthy fats, vitamins, and minerals.
+We honor one of the most versatile and nutritious ingredients in cooking. Avocado is not only delicious, but it's also an incredible source of healthy fats, vitamins, and minerals.
 
 ### 🏆 Win your exclusive badge!
 
-All Jorbiters who publish a recipe featuring avocado as a main ingredient on July 31st, 2025 will be rewarded with the exclusive Avocado Day badge.
+All Jorbiters who publish a recipe featuring avocado as a main ingredient will be rewarded with the exclusive Avocado Day badge.
 
 ### 🥑 Ideas to inspire you:
 
