@@ -22,7 +22,7 @@ Tots els Jorbiters que publiquin una recepta inspirada en Grècia durant la fine
 - **Souvlaki**: Broquetes de carn saonada a la graella.
 - **Tzatziki**: Salsa cremosa de iogurt, cogombre i all.
 - **Amanida Grega (Horiatiki)**: Tomàquets frescos, cogombres, olives i formatge feta.
-- **Spanakopita**: Pasta de full de pasta fil·lo farcida d'espinacs i formatge feta.
+- **Spanakopita**: Pasta fil·lo farcida d'espinacs i formatge feta.
 - **Dolmades**: Fulles de parra farcides d'arròs i herbes.
 - **Baklava**: Postres dolces i riques fetes de capes de pasta fil·lo i fruits secs.
 - **Gyros**: Carn saonada tallada en fines llesques servida en pa de pita.
