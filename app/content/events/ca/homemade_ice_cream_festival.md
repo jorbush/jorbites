@@ -1,14 +1,14 @@
 ---
 title: 🍦 Festival de Gelats Casolans 🍦
-date: 2025-07-11
-endDate: 2025-07-27T21:59:59
+date: 2026-06-01
+endDate: 2026-06-30T21:59:59
 image: /images/events/homemade_ice_cream_festival.webp
 description: Celebra l'estiu amb les creacions de gelat casolà més fresques i originals!
 ---
 
 # 🍦 Festival de Gelats Casolans 🍦
 
-Aquest juliol, Jorbites puja la temperatura (o la baixa!) amb el primer **Festival de Gelats Casolans**! Siguis un geni del gelat, un mag del sorbet o un científic del soft-serve, és el teu moment per sorprendre'ns amb les teves millors creacions.
+Jorbites puja la temperatura (o la baixa!) amb el retorn del **Festival de Gelats Casolans**! Siguis un geni del gelat, un mag del sorbet o un científic del soft-serve, és el teu moment per sorprendre'ns amb les teves millors creacions.
 
 ## 🧊 El Repte
 
@@ -18,7 +18,7 @@ Crea el teu gelat casolà més original, deliciós o fins i tot esbojarrat. No t
 
 - El gelat ha de ser **casolà** (res de bases comprades!)
 - Qualsevol gust, qualsevol estil—deixa volar la imaginació
-- Publica la teva recepta a Jorbites entre l'**11 i el 27 de juliol de 2025**
+- Publica la teva recepta a Jorbites **durant el festival**
 - Explica'ns la història o inspiració del teu sabor al post
 
 ## 🍧 Diversió en Comunitat
