@@ -29,4 +29,4 @@ Tots els Jorbiters que publiquin una recepta inspirada en Mallorca durant la fin
 
 ### 🌿 Què la fa especial
 
-La cuina mallorquina és una joia de la Mediterrània, caracteritzada per l'ús d'ingredients locals com l'oli d'oliva, les verdures fresques i els productes tradicionals del porc. Des de la costa fins a la Serra de Tramuntana, l'illa ofereixa una barreja única de sabors que reflecteixen la seva rica història i cultura. 🏝️
+La cuina mallorquina és una joia de la Mediterrània, caracteritzada per l'ús d'ingredients locals com l'oli d'oliva, les verdures fresques i els productes tradicionals del porc. Des de la costa fins a la Serra de Tramuntana, l'illa ofereix una barreja única de sabors que reflecteixen la seva rica història i cultura. 🏝️
