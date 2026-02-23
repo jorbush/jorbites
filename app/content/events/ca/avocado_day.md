@@ -1,20 +1,20 @@
 ---
-title: 🥑 Dia Internacional de l'Alvocat 2025 🥑
-date: 2025-07-31
-endDate: 2025-07-31T21:59:59
+title: 🥑 Dia Internacional de l'Alvocat 🥑
+date: 2026-07-31
+endDate: 2026-07-31T21:59:59
 image: /images/events/avocado_day.webp
-description: Esdeveniment del Dia Internacional de l'Alvocat 2025
+description: Esdeveniment del Dia Internacional de l'Alvocat
 ---
 
-# 🥑 Dia Internacional de l'Alvocat 2025 🥑
+# 🥑 Dia Internacional de l'Alvocat 🥑
 
 Celebrem el Dia Internacional de l'Alvocat a Jorbites!
 
-Aquest 31 de juliol de 2025, honrem un dels ingredients més versàtils i nutritius de la cuina. L'alvocat no només és deliciós, sinó que també és una font increïble de greixos saludables, vitamines i minerals.
+Honrem un dels ingredients més versàtils i nutritius de la cuina. L'alvocat no només és deliciós, sinó que també és una font increïble de greixos saludables, vitamines i minerals.
 
 ### 🏆 Guanya la teva medalla exclusiva!
 
-Tots els Jorbiters que publiquin una recepta que inclogui alvocat com a ingredient principal el 31 de juliol de 2025 seran recompensats amb la medalla exclusiva del Dia de l'Alvocat.
+Tots els Jorbiters que publiquin una recepta que inclogui alvocat com a ingredient principal seran recompensats amb la medalla exclusiva del Dia de l'Alvocat.
 
 ### 🥑 Idees per inspirar-te:
 
