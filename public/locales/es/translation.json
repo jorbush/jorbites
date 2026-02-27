@@ -404,6 +404,8 @@
     "microservices_notifier": "(Go): Servicio de notificaciones con cola FIFO",
     "microservices_badge": "(Rust): Sistema de cálculo de insignias y niveles",
     "microservices_pantry": "(Python): Sistema automatizado de respaldo de base de datos",
+    "videogames": "Videojuegos",
+    "videogames_paltin_dash": "(React): Un videojuego 3D de corredor sin fin.",
     "documentation": "Documentación",
     "doc_development_setup": "Configuración de Desarrollo",
     "doc_development_setup_desc": "Guía de desarrollo local",
