@@ -169,6 +169,24 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                     </li>
                                 </ul>
                             </div>
+                            <div>
+                                <h3 className="mb-2 font-semibold text-neutral-800 dark:text-neutral-200">
+                                    {t('videogames')}
+                                </h3>
+                                <ul className="list-inside list-disc space-y-1 text-sm text-neutral-600 dark:text-neutral-400">
+                                    <li>
+                                        <a
+                                            href="https://paltin-dash.vercel.app/"
+                                            className="text-green-450 dark:text-green-450 hover:underline"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Paltín Dash
+                                        </a>{' '}
+                                        {t('paltin_dash_description')}
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </section>
 

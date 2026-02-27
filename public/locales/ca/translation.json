@@ -403,6 +403,8 @@
     "microservices_notifier": "(Go): Servei de notificacions amb cua FIFO",
     "microservices_badge": "(Rust): Sistema de càlcul d'insígnies i nivells",
     "microservices_pantry": "(Python): Sistema automatitzat de còpia de seguretat de base de dades",
+    "videogames": "Videojocs",
+    "paltin_dash_description": "és un joc web 3D de carrera infinita. Juga com Paltín l'alvocat o desbloqueja amics mentre corres per diversos entorns llatinoamericans culturalment rics!",
     "documentation": "Documentació",
     "doc_development_setup": "Configuració de Desenvolupament",
     "doc_development_setup_desc": "Guia de desenvolupament local",
