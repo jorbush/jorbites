@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { Blog } from '@/app/utils/markdownUtils';
 import { formatDate } from '@/app/utils/date-utils';
 import { FiArrowRight } from 'react-icons/fi';
@@ -11,6 +12,8 @@ interface BlogCardProps {
 
 const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
     const router = useRouter();
+    // Subscribe to language changes so formatDate re-renders with the correct locale
+    useTranslation();
 
     const handleClick = () => {
         router.push(`/blog/${blog.id}`);
