@@ -52,6 +52,9 @@ Jorbites follows a modern microservices architecture for scalability and perform
 - **[Badge Forge](https://github.com/jorbush/badge_forge)** (Rust): High-performance badge and level calculation system
 - **[Pantry Keeper](https://github.com/jorbush/pantry_keeper)** (Python): Automated database backup system
 
+### Videogames
+- **[Paltín Dash](https://github.com/jorbush/paltin-dash)** (React): A 3D endless runner videogame
+
 > **Why Microservices?** This architecture overcomes Vercel's 10-second API function limitation, enabling better scalability and performance for compute-intensive operations.
 
 ## 📚 Documentation
