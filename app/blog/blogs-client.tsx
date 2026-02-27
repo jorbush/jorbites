@@ -11,6 +11,7 @@ import ActionCard from '@/app/components/shared/ActionCard';
 import Pagination from '@/app/components/navigation/Pagination';
 import { CONTACT_EMAIL } from '@/app/utils/constants';
 import { SafeUser } from '@/app/types';
+import { formatDate } from '@/app/utils/date-utils';
 
 interface BlogsClientProps {
     currentUser?: SafeUser | null;
@@ -208,9 +209,9 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                                     {t('release', 'Release')}
                                                 </span>
                                                 <span className="text-xs text-neutral-500">
-                                                    {new Date(
+                                                    {formatDate(
                                                         blog.frontmatter.date
-                                                    ).toLocaleDateString()}
+                                                    )}
                                                 </span>
                                             </div>
                                             <h4 className="group-hover:text-primary-600 dark:group-hover:text-primary-400 line-clamp-2 font-semibold text-neutral-800 dark:text-neutral-200">

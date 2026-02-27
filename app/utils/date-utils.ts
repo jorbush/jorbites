@@ -1,5 +1,6 @@
 import { format, formatDistanceToNow } from 'date-fns';
 import { es, enUS, ca } from 'date-fns/locale';
+import i18n from 'i18next';
 
 type LocaleType = 'es' | 'en' | 'ca';
 
@@ -10,23 +11,20 @@ export const locales = {
 };
 
 /**
- * Safely gets the current locale from i18n, only on client-side
- * Falls back to 'es' for server-side rendering
+ * Safely gets the current locale from i18n.
+ * This works on both client and server as long as i18next is initialized.
  */
 const getCurrentLocale = (): LocaleType => {
-    // Only access i18n on client-side to avoid SSR timeout issues
-    if (typeof window !== 'undefined') {
-        try {
-            // Dynamic import to prevent SSR issues
-            // Use i18next directly as it's safe for SSR and avoids path resolution issues in tests.
-            // Since app/i18n.ts initializes the global i18next instance, this will return the same configured instance.
-            const i18n = require('i18next');
-            return (i18n.language as LocaleType) || 'es';
-        } catch {
-            return 'es';
-        }
-    }
-    // Default to 'es' for server-side rendering
+    const lang = i18n.language || 'es';
+
+    // Extract base language (e.g., 'en' from 'en-US')
+    const baseLang = lang.split('-')[0].toLowerCase();
+
+    // Check if it's a supported locale
+    if (baseLang === 'en') return 'en';
+    if (baseLang === 'ca') return 'ca';
+
+    // Default to 'es'
     return 'es';
 };
 
