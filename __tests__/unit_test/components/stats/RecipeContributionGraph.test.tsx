@@ -149,7 +149,7 @@ describe('<RecipeContributionGraph />', () => {
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
         // Find a day cell that should have a recipe
-        const dayCells = screen.getAllByTitle(/recipe/i);
+        const dayCells = screen.getAllByTestId(/contribution-day-[1-9]/);
         if (dayCells.length > 0) {
             const dayCell = dayCells[0];
             fireEvent.mouseEnter(dayCell);
@@ -245,7 +245,7 @@ describe('<RecipeContributionGraph />', () => {
 
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
-        const dayCells = screen.getAllByTitle(/recipe/i);
+        const dayCells = screen.getAllByTestId(/contribution-day-[1-9]/);
         if (dayCells.length > 0) {
             const dayCell = dayCells[0];
             fireEvent.mouseEnter(dayCell);
