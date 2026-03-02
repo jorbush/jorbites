@@ -403,6 +403,8 @@
     "microservices_notifier": "(Go): Notification service with FIFO queue",
     "microservices_badge": "(Rust): Badge and level calculation system",
     "microservices_pantry": "(Python): Automated database backup system",
+    "videogames": "Videogames",
+    "videogames_paltin_dash": "(React): A 3D endless runner videogame.",
     "documentation": "Documentation",
     "doc_development_setup": "Development Setup",
     "doc_development_setup_desc": "Local development guide",

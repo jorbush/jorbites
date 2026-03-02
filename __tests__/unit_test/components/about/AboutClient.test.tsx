@@ -124,6 +124,8 @@ const mockTranslations: Record<string, string> = {
     microservices_notifier: '(Go): Notification service with FIFO queue',
     microservices_badge: '(Rust): Badge and level calculation system',
     microservices_pantry: '(Python): Automated database backup system',
+    videogames: 'Videogames',
+    videogames_paltin_dash: '(React): A 3D endless runner videogame.',
     documentation: 'Documentation',
     doc_development_setup: 'Development Setup',
     doc_development_setup_desc: 'Local development guide',
@@ -341,6 +343,22 @@ describe('AboutClient', () => {
         });
 
         expect(microserviceLinks.length).toBe(3);
+    });
+
+    it('renders videogames section with Paltín Dash link', () => {
+        const { container } = render(<AboutClient />);
+
+        expect(container.textContent).toContain('Videogames');
+        expect(container.textContent).toContain('Paltín Dash');
+
+        const paltinDashLink = Array.from(container.querySelectorAll('a')).find(
+            (link) =>
+                link.getAttribute('href') === 'https://paltin-dash.vercel.app/'
+        );
+
+        expect(paltinDashLink).toBeDefined();
+        expect(paltinDashLink?.getAttribute('target')).toBe('_blank');
+        expect(paltinDashLink?.getAttribute('rel')).toBe('noopener noreferrer');
     });
 
     it('renders documentation section with links', () => {
