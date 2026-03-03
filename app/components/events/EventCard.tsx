@@ -2,6 +2,7 @@
 
 import { Event } from '@/app/utils/markdownUtils';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { FiCalendar } from 'react-icons/fi';
 import Image from 'next/image';
 import { formatDateRange } from '@/app/utils/date-utils';
@@ -27,6 +28,7 @@ export const EventCardSkeleton = () => {
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
     const router = useRouter();
+    const { i18n } = useTranslation();
 
     // Don't process dates for permanent events
     const isPermanent = event.frontmatter.permanent === true;
@@ -35,7 +37,8 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     if (!isPermanent) {
         dateDisplay = formatDateRange(
             event.frontmatter.date,
-            event.frontmatter.endDate
+            event.frontmatter.endDate,
+            i18n.language
         );
     }
 

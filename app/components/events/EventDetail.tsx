@@ -2,6 +2,7 @@
 
 import { Event } from '@/app/utils/markdownUtils';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { FiChevronLeft, FiShare2, FiCalendar } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 import Heading from '@/app/components/navigation/Heading';
@@ -18,6 +19,7 @@ interface EventDetailProps {
 const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
     const router = useRouter();
     const { share } = useShare();
+    const { i18n } = useTranslation();
 
     // Don't process dates for permanent events
     const isPermanent = event.frontmatter.permanent === true;
@@ -26,7 +28,8 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
     if (!isPermanent) {
         dateDisplay = formatDateRange(
             event.frontmatter.date,
-            event.frontmatter.endDate
+            event.frontmatter.endDate,
+            i18n.language
         );
     }
 

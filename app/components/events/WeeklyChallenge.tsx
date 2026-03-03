@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { formatDateLanguage } from '@/app/utils/date-utils';
 
 const WeeklyChallenge = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [challenge, setChallenge] = useState<WeeklyChallengeType | null>(
         null
     );
@@ -75,7 +75,11 @@ const WeeklyChallenge = () => {
                 </p>
                 <div className="text-sm text-neutral-500 dark:text-neutral-400">
                     {t('challenge_ends')}:{' '}
-                    {formatDateLanguage(new Date(challenge.endDate), 'PPP')}
+                    {formatDateLanguage(
+                        new Date(challenge.endDate),
+                        'PPP',
+                        i18n.language
+                    )}
                 </div>
             </div>
         </Link>
