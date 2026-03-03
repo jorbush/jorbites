@@ -115,6 +115,24 @@ describe('date-utils', () => {
             const result = formatDate(testDateString1);
             expect(result).toContain('2024');
         });
+
+        it("should apply Catalan elisions correctly (d'abril, d'agost, d'octubre)", () => {
+            // Test April
+            const aprilDate = new Date('2024-04-15T12:00:00Z');
+            expect(formatDate(aprilDate, 'ca')).toBe("15 d'abril 2024");
+
+            // Test August
+            const augustDate = new Date('2024-08-15T12:00:00Z');
+            expect(formatDate(augustDate, 'ca')).toBe("15 d'agost 2024");
+
+            // Test October
+            const octoberDate = new Date('2024-10-15T12:00:00Z');
+            expect(formatDate(octoberDate, 'ca')).toBe("15 d'octubre 2024");
+
+            // Test non-elided months (e.g. November)
+            const novemberDate = new Date('2024-11-15T12:00:00Z');
+            expect(formatDate(novemberDate, 'ca')).toBe('15 de novembre 2024');
+        });
     });
 
     describe('formatDistanceToNowLocale', () => {

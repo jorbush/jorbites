@@ -26,11 +26,11 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
     author,
     relatedBlogs = [],
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const router = useRouter();
     const { share } = useShare();
 
-    const dateDisplay = formatDate(blog.frontmatter.date);
+    const dateDisplay = formatDate(blog.frontmatter.date, i18n.language);
 
     const markdownComponents: Components = {
         h1: (props) => (

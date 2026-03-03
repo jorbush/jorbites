@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Blog } from '@/app/utils/markdownUtils';
+import { formatDate } from '@/app/utils/date-utils';
 import useTheme from '@/app/hooks/useTheme';
 import BlogCard, { BlogCardSkeleton } from '@/app/components/blog/BlogCard';
 import ActionCard from '@/app/components/shared/ActionCard';
@@ -208,9 +209,10 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                                     {t('release', 'Release')}
                                                 </span>
                                                 <span className="text-xs text-neutral-500">
-                                                    {new Date(
-                                                        blog.frontmatter.date
-                                                    ).toLocaleDateString()}
+                                                    {formatDate(
+                                                        blog.frontmatter.date,
+                                                        i18n.language
+                                                    )}
                                                 </span>
                                             </div>
                                             <h4 className="group-hover:text-primary-600 dark:group-hover:text-primary-400 line-clamp-2 font-semibold text-neutral-800 dark:text-neutral-200">

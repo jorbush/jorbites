@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { Blog } from '@/app/utils/markdownUtils';
 import { formatDate } from '@/app/utils/date-utils';
 import { FiArrowRight } from 'react-icons/fi';
@@ -11,6 +12,7 @@ interface BlogCardProps {
 
 const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
     const router = useRouter();
+    const { i18n } = useTranslation();
 
     const handleClick = () => {
         router.push(`/blog/${blog.id}`);
@@ -32,7 +34,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
         >
             <div className="flex h-full flex-col">
                 <div className="mb-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">
-                    {formatDate(blog.frontmatter.date)}
+                    {formatDate(blog.frontmatter.date, i18n.language)}
                 </div>
                 <h3 className="group-hover:text-green-450 mb-2 text-lg leading-tight font-bold text-neutral-800 transition-colors dark:text-neutral-100">
                     {blog.frontmatter.title}
