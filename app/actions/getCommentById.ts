@@ -1,5 +1,6 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
+import { publicUserSelect } from '@/app/lib/prisma-selects';
 
 interface IParams {
     commentId?: string;
@@ -15,7 +16,9 @@ export default async function getCommentById(params: IParams) {
                 id: commentId,
             },
             include: {
-                user: true,
+                user: {
+                    select: publicUserSelect,
+                },
             },
         });
 
@@ -32,7 +35,7 @@ export default async function getCommentById(params: IParams) {
                 ...comment.user,
                 createdAt: comment.user.createdAt.toISOString(),
                 updatedAt: comment.user.updatedAt.toISOString(),
-                emailVerified: comment.user.emailVerified?.toString() || null,
+                emailVerified: null,
             },
         };
     } catch (error: any) {

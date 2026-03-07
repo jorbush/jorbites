@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ProfilePage from '@/app/profile/[userId]/page';
@@ -100,18 +101,15 @@ describe('ProfilePage', () => {
             createdAt: '',
             updatedAt: '',
             emailVerified: null,
+            language: null,
+            favoriteIds: [],
             id: mockCurrentUser.id,
             name: mockCurrentUser.name,
-            email: null,
             image: null,
-            hashedPassword: null,
-            favoriteIds: [],
             emailNotifications: false,
             level: 0,
             verified: false,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
         });
 
         const params = Promise.resolve({ userId: 'user1' });
@@ -142,35 +140,29 @@ describe('ProfilePage', () => {
             createdAt: '',
             updatedAt: '',
             emailVerified: null,
+            language: null,
+            favoriteIds: [],
             id: mockUser.id,
             name: mockUser.name,
-            email: null,
             image: null,
-            hashedPassword: null,
-            favoriteIds: [],
             emailNotifications: false,
             level: 0,
             verified: false,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
         });
         vi.mocked(getCurrentUser).mockResolvedValue({
             createdAt: '',
             updatedAt: '',
             emailVerified: null,
+            language: null,
+            favoriteIds: [],
             id: mockCurrentUser.id,
             name: mockCurrentUser.name,
-            email: null,
             image: null,
-            hashedPassword: null,
-            favoriteIds: [],
             emailNotifications: false,
             level: 0,
             verified: false,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
         });
 
         const profilePage = await ProfilePage({
@@ -198,35 +190,29 @@ describe('ProfilePage', () => {
             createdAt: '',
             updatedAt: '',
             emailVerified: null,
+            language: null,
+            favoriteIds: [],
             id: mockUser.id,
             name: mockUser.name,
-            email: null,
             image: null,
-            hashedPassword: null,
-            favoriteIds: [],
             emailNotifications: false,
             level: 0,
             verified: false,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
         });
         vi.mocked(getCurrentUser).mockResolvedValue({
             createdAt: '',
             updatedAt: '',
             emailVerified: null,
+            language: null,
+            favoriteIds: [],
             id: mockCurrentUser.id,
             name: mockCurrentUser.name,
-            email: null,
             image: null,
-            hashedPassword: null,
-            favoriteIds: [],
             emailNotifications: false,
             level: 0,
             verified: false,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
         });
 
         const profilePage = await ProfilePage({

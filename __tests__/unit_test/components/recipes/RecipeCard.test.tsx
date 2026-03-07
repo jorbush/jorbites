@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -47,22 +48,20 @@ describe('<RecipeCard />', () => {
         linkedRecipeIds: [],
     };
 
-    const mockUser: SafeUser = {
+    const mockUser = {
         id: '1',
         name: 'Test User',
         email: 'test@example.com',
         emailVerified: null,
+        language: null,
+        favoriteIds: [],
         image: null,
-        hashedPassword: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        favoriteIds: [],
         emailNotifications: false,
         level: 0,
         verified: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
     };
 
     const mockRouter = {
@@ -74,7 +73,7 @@ describe('<RecipeCard />', () => {
         render(
             <RecipeCard
                 data={mockRecipe}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
         (useRouter as any).mockReturnValue(mockRouter);
@@ -108,22 +107,20 @@ describe('<RecipeCard />', () => {
     });
 
     describe('user parameter logic', () => {
-        const mockRecipeUser: SafeUser = {
+        const mockRecipeUser = {
             id: '2',
             name: 'Recipe Author',
             email: 'author@example.com',
             emailVerified: null,
+            language: null,
+            favoriteIds: [],
             image: '/author-image.jpg',
-            hashedPassword: null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            favoriteIds: [],
             emailNotifications: false,
             level: 5,
             verified: true,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
         };
 
         beforeEach(() => {
@@ -134,7 +131,7 @@ describe('<RecipeCard />', () => {
             render(
                 <RecipeCard
                     data={mockRecipe}
-                    currentUser={mockUser}
+                    currentUser={mockUser as any}
                     user={mockRecipeUser}
                 />
             );
@@ -151,7 +148,7 @@ describe('<RecipeCard />', () => {
             render(
                 <RecipeCard
                     data={mockRecipe}
-                    currentUser={mockUser}
+                    currentUser={mockUser as any}
                 />
             );
 
@@ -167,7 +164,7 @@ describe('<RecipeCard />', () => {
             render(
                 <RecipeCard
                     data={mockRecipe}
-                    currentUser={mockUser}
+                    currentUser={mockUser as any}
                     user={null}
                 />
             );

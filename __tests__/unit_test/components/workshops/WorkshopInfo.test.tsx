@@ -43,22 +43,20 @@ vi.mock('@/app/components/VerificationBadge', () => ({
 }));
 
 describe('<WorkshopInfo />', () => {
-    const mockHost: SafeUser = {
+    const mockHost = {
         id: 'host1',
         name: 'Test Host',
         email: 'host@example.com',
         emailVerified: null,
+        language: null,
+        favoriteIds: [],
         image: '/host-image.jpg',
-        hashedPassword: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        favoriteIds: [],
         emailNotifications: false,
         level: 5,
         verified: true,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
     };
 
     const mockParticipants: SafeWorkshopParticipant[] = [
@@ -353,7 +351,7 @@ describe('<WorkshopInfo />', () => {
     });
 
     it('does not show whitelist section when user is not host', async () => {
-        const otherUser: SafeUser = { ...mockHost, id: 'other-user' };
+        const otherUser = { ...mockHost, id: 'other-user' };
 
         (axios.get as any).mockResolvedValueOnce({
             data: [{ id: 'user1', name: 'User 1', image: null }],

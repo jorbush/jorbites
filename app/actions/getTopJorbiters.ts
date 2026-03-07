@@ -1,6 +1,7 @@
 import prisma from '@/app/lib/prismadb';
 import { redisCache } from '@/app/lib/redis';
 import { logger } from '@/app/lib/axiom/server';
+import { publicUserSelect } from '@/app/lib/prisma-selects';
 
 export default async function getTopJorbiters() {
     try {
@@ -25,6 +26,7 @@ export default async function getTopJorbiters() {
                 level: 'desc',
             },
             take: 10,
+            select: publicUserSelect,
         });
 
         if (!users) {
@@ -48,7 +50,7 @@ export default async function getTopJorbiters() {
                     ...user,
                     createdAt: user.createdAt.toISOString(),
                     updatedAt: user.updatedAt.toISOString(),
-                    emailVerified: user.emailVerified?.toISOString() || null,
+                    emailVerified: null,
                     recipeCount: userRecipes.length,
                     likesReceived: totalLikes,
                 };

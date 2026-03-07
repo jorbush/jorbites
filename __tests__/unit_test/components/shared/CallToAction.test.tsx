@@ -57,7 +57,7 @@ describe('<CallToAction />', () => {
     it('renders call to action for ranked user who is not first', () => {
         render(
             <CallToAction
-                currentUser={mockCurrentUser}
+                currentUser={mockCurrentUser as any}
                 topJorbiters={mockTopJorbiters}
             />
         );

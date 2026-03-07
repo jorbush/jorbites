@@ -3,6 +3,7 @@ import { redisCache } from '@/app/lib/redis';
 import { SafeUser } from '@/app/types';
 import { logger } from '@/app/lib/axiom/server';
 import { ChefOrderByType } from '@/app/utils/filter';
+import { publicUserSelect } from '@/app/lib/prisma-selects';
 
 export { ChefOrderByType };
 
@@ -77,6 +78,7 @@ export default async function getChefs(
                 : getBasicOrderByClause(orderBy),
             skip: needsRecipeDataForSorting ? undefined : (page - 1) * limit,
             take: needsRecipeDataForSorting ? undefined : limit,
+            select: publicUserSelect,
         });
 
         const totalChefs = await prisma.user.count({
@@ -164,7 +166,7 @@ export default async function getChefs(
                 ...user,
                 createdAt: user.createdAt.toISOString(),
                 updatedAt: user.updatedAt.toISOString(),
-                emailVerified: user.emailVerified?.toISOString() || null,
+                emailVerified: null,
                 recipeCount: userRecipes.length,
                 likesReceived: totalLikes,
                 recipesThisYear,

@@ -1,12 +1,13 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import { publicUserSelect } from '@/app/lib/prisma-selects';
 
 export interface IWorkshopsParams {
     search?: string;
     limit?: number;
     isPrivate?: boolean;
-    hostId?: string; // Filter by host
+    hostId?: string;
 }
 
 export interface ServerResponse<T> {
@@ -98,7 +99,9 @@ export default async function getWorkshops(
             orderBy: { date: 'asc' },
             take: limit,
             include: {
-                host: true,
+                host: {
+                    select: publicUserSelect,
+                },
                 participants: true,
             },
         });
@@ -112,7 +115,7 @@ export default async function getWorkshops(
                 ...workshop.host,
                 createdAt: workshop.host.createdAt.toISOString(),
                 updatedAt: workshop.host.updatedAt.toISOString(),
-                emailVerified: workshop.host.emailVerified?.toString() || null,
+                emailVerified: null,
             },
             participants: workshop.participants.map((p) => ({
                 ...p,

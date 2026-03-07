@@ -123,22 +123,21 @@ describe('<Navbar />', () => {
     });
 
     it('passes currentUser to UserMenu', () => {
-        const mockUser: SafeUser = {
+        const mockUser = {
             id: '1',
             name: 'Test User',
-            email: null,
             emailVerified: null,
+            language: null,
+            favoriteIds: [],
             image: null,
-            hashedPassword: null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            favoriteIds: [],
             emailNotifications: false,
             level: 0,
             verified: false,
             badges: [],
         };
-        render(<Navbar currentUser={mockUser} />);
+        render(<Navbar currentUser={mockUser as any} />);
         expect(screen.getByText('UserMenu: Logged In')).toBeDefined();
     });
 

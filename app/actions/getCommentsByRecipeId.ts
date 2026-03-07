@@ -1,5 +1,6 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
+import { publicUserSelect } from '@/app/lib/prisma-selects';
 
 interface IParams {
     recipeId?: string;
@@ -21,7 +22,9 @@ export default async function getCommentsByRecipeId(params: IParams) {
         const comments = await prisma.comment.findMany({
             where: query,
             include: {
-                user: true,
+                user: {
+                    select: publicUserSelect,
+                },
             },
             orderBy: {
                 createdAt: 'desc',
@@ -35,8 +38,7 @@ export default async function getCommentsByRecipeId(params: IParams) {
                 ...comment.user,
                 createdAt: comment.user.createdAt.toISOString(),
                 updatedAt: comment.user.updatedAt.toISOString(),
-                emailVerified:
-                    comment.user.emailVerified?.toISOString() || null,
+                emailVerified: null,
             },
         }));
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
@@ -55,7 +56,7 @@ vi.mock('@/app/components/recipes/RecipeCategoryAndMethod', () => ({
 }));
 
 describe('RecipeInfo', () => {
-    const mockUser: SafeUser = {
+    const mockUser = {
         id: '1',
         name: 'John Doe',
         email: 'john@example.com',
@@ -65,7 +66,6 @@ describe('RecipeInfo', () => {
         level: 5,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        hashedPassword: null,
         favoriteIds: [],
         emailNotifications: false,
     };

@@ -1,5 +1,6 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
+import { publicUserSelect } from '@/app/lib/prisma-selects';
 
 interface IParams {
     workshopId?: string;
@@ -17,7 +18,9 @@ export default async function getWorkshopById(params: IParams) {
                 id: workshopId,
             },
             include: {
-                host: true,
+                host: {
+                    select: publicUserSelect,
+                },
                 participants: {
                     include: {
                         workshop: false,
@@ -41,7 +44,7 @@ export default async function getWorkshopById(params: IParams) {
                 ...workshop.host,
                 createdAt: workshop.host.createdAt.toISOString(),
                 updatedAt: workshop.host.updatedAt.toISOString(),
-                emailVerified: workshop.host.emailVerified?.toString() || null,
+                emailVerified: null,
             },
             participants: workshop.participants.map((p) => ({
                 ...p,

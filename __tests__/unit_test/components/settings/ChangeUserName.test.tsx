@@ -39,22 +39,20 @@ vi.mock('next/navigation', () => ({
 describe('ChangeUserNameSelector', () => {
     const mockSetSaveUserName = vi.fn();
 
-    const mockUser: SafeUser = {
+    const mockUser = {
         id: '1',
         name: 'TestUser',
         email: 'test@example.com',
         image: null,
         emailVerified: null,
-        hashedPassword: null,
+        language: null,
+        favoriteIds: [],
         createdAt: '2023-01-01T00:00:00.000Z',
         updatedAt: '2023-01-01T00:00:00.000Z',
-        favoriteIds: [],
         emailNotifications: false,
         level: 0,
         verified: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
     };
 
     const defaultProps = {

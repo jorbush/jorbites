@@ -1,5 +1,6 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
+import { publicUserSelect } from '@/app/lib/prisma-selects';
 
 interface IParams {
     userId?: string;
@@ -18,6 +19,7 @@ export default async function getUserById(params: IParams) {
             where: {
                 id: userId,
             },
+            select: publicUserSelect,
         });
 
         if (!user) {
@@ -93,7 +95,7 @@ export default async function getUserById(params: IParams) {
                 ...user,
                 createdAt: user.createdAt.toISOString(),
                 updatedAt: user.updatedAt.toISOString(),
-                emailVerified: user.emailVerified?.toISOString() || null,
+                emailVerified: null,
                 recipeCount: userRecipes.length,
                 likesReceived: totalLikes,
                 recipesThisYear,
@@ -112,7 +114,7 @@ export default async function getUserById(params: IParams) {
             ...user,
             createdAt: user.createdAt.toISOString(),
             updatedAt: user.updatedAt.toISOString(),
-            emailVerified: user.emailVerified?.toISOString() || null,
+            emailVerified: null,
         };
     } catch (error: any) {
         logger.error('getUserById - error', {

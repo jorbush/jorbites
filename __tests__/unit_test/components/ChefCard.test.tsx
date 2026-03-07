@@ -59,22 +59,20 @@ vi.mock('@/app/components/VerificationBadge', () => ({
 }));
 
 describe('<ChefCard />', () => {
-    const mockChef: SafeUser = {
+    const mockChef = {
         id: '1',
         name: 'John Doe',
         email: 'john@example.com',
         image: 'https://example.com/avatar.jpg',
         level: 5,
         verified: true,
-        hashedPassword: null,
         favoriteIds: [],
         emailNotifications: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
         createdAt: '2024-01-01T00:00:00.000Z',
         updatedAt: '2024-01-01T00:00:00.000Z',
         emailVerified: null,
+        language: null,
         recipeCount: 15,
         likesReceived: 250,
         recipesThisMonth: 3,

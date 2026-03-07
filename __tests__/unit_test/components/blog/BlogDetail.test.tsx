@@ -127,16 +127,14 @@ describe('BlogDetail', () => {
         name: 'Test Author',
         image: '/avatar.jpg',
         email: 'test@example.com',
-        hashedPassword: null,
         level: 50,
         verified: true,
         favoriteIds: [],
         emailNotifications: true,
         createdAt: '2023-01-01T00:00:00.000Z',
         updatedAt: '2023-01-01T00:00:00.000Z',
-        resetToken: null,
-        resetTokenExpiry: null,
         emailVerified: null,
+        language: null,
         badges: [],
     };
 

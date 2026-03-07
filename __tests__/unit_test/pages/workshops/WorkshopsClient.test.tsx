@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -28,22 +29,20 @@ vi.mock('@/app/components/workshops/WorkshopList', () => ({
 }));
 
 describe('<WorkshopsClient />', () => {
-    const mockUser: SafeUser = {
+    const mockUser = {
         id: '1',
         name: 'Test User',
         email: 'test@example.com',
         emailVerified: null,
+        language: null,
+        favoriteIds: [],
         image: null,
-        hashedPassword: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        favoriteIds: [],
         emailNotifications: true,
         level: 1,
         verified: true,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
     };
 
     const mockWorkshops = {
@@ -92,7 +91,7 @@ describe('<WorkshopsClient />', () => {
     });
 
     it('renders workshops sections and workshops', async () => {
-        render(<WorkshopsClient currentUser={mockUser} />);
+        render(<WorkshopsClient currentUser={mockUser as any} />);
 
         await waitFor(() => {
             expect(screen.getByText('upcoming_workshops')).toBeDefined();

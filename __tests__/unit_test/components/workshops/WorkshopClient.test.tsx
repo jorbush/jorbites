@@ -42,22 +42,20 @@ vi.mock('@/app/components/workshops/DeleteWorkshopButton', () => ({
 }));
 
 describe('<WorkshopClient />', () => {
-    const mockUser: SafeUser = {
+    const mockUser = {
         id: '1',
         name: 'Test User',
         email: 'test@example.com',
         emailVerified: null,
+        language: null,
+        favoriteIds: [],
         image: null,
-        hashedPassword: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        favoriteIds: [],
         emailNotifications: true,
         level: 1,
         verified: true,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
     };
 
     const mockWorkshop: SafeWorkshop & { host: SafeUser } = {
@@ -83,17 +81,15 @@ describe('<WorkshopClient />', () => {
             name: 'Host User',
             email: 'host@example.com',
             emailVerified: null,
+            language: null,
+            favoriteIds: [],
             image: null,
-            hashedPassword: null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            favoriteIds: [],
             emailNotifications: false,
             level: 2,
             verified: true,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
         },
         participants: [],
     };
@@ -104,7 +100,7 @@ describe('<WorkshopClient />', () => {
         render(
             <WorkshopClient
                 workshop={mockWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -118,7 +114,7 @@ describe('<WorkshopClient />', () => {
         render(
             <WorkshopClient
                 workshop={mockWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -132,7 +128,7 @@ describe('<WorkshopClient />', () => {
         render(
             <WorkshopClient
                 workshop={freeWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -148,7 +144,7 @@ describe('<WorkshopClient />', () => {
         render(
             <WorkshopClient
                 workshop={privateWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -165,7 +161,7 @@ describe('<WorkshopClient />', () => {
         render(
             <WorkshopClient
                 workshop={privateWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -189,7 +185,7 @@ describe('<WorkshopClient />', () => {
         render(
             <WorkshopClient
                 workshop={mockWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 

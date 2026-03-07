@@ -30,22 +30,20 @@ vi.mock('react-i18next', () => ({
 }));
 
 describe('<JoinWorkshopButton />', () => {
-    const mockUser: SafeUser = {
+    const mockUser = {
         id: 'user1',
         name: 'Test User',
         email: 'test@example.com',
         emailVerified: null,
+        language: null,
+        favoriteIds: [],
         image: null,
-        hashedPassword: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        favoriteIds: [],
         emailNotifications: false,
         level: 0,
         verified: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
     };
 
     const mockRouter = {
@@ -70,7 +68,7 @@ describe('<JoinWorkshopButton />', () => {
         render(
             <JoinWorkshopButton
                 workshopId="workshop1"
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 isParticipant={false}
                 isPast={false}
                 isHost={false}
@@ -84,7 +82,7 @@ describe('<JoinWorkshopButton />', () => {
         render(
             <JoinWorkshopButton
                 workshopId="workshop1"
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 isParticipant={true}
                 isPast={false}
                 isHost={false}
@@ -98,7 +96,7 @@ describe('<JoinWorkshopButton />', () => {
         render(
             <JoinWorkshopButton
                 workshopId="workshop1"
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 isParticipant={false}
                 isPast={false}
                 isHost={true}
@@ -112,7 +110,7 @@ describe('<JoinWorkshopButton />', () => {
         render(
             <JoinWorkshopButton
                 workshopId="workshop1"
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 isParticipant={false}
                 isPast={true}
                 isHost={false}
@@ -145,7 +143,7 @@ describe('<JoinWorkshopButton />', () => {
         render(
             <JoinWorkshopButton
                 workshopId="workshop1"
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 isParticipant={false}
                 isPast={false}
                 isHost={false}
@@ -171,7 +169,7 @@ describe('<JoinWorkshopButton />', () => {
         render(
             <JoinWorkshopButton
                 workshopId="workshop1"
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 isParticipant={true}
                 isPast={false}
                 isHost={false}
@@ -199,7 +197,7 @@ describe('<JoinWorkshopButton />', () => {
         render(
             <JoinWorkshopButton
                 workshopId="workshop1"
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 isParticipant={false}
                 isPast={false}
                 isHost={false}

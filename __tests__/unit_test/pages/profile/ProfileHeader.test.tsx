@@ -11,22 +11,19 @@ vi.mock('@/app/hooks/useMediaQuery', () => ({
     default: () => false,
 }));
 
-const mockUser: SafeUser = {
+const mockUser = {
     id: 'user1',
     name: 'Test User',
-    email: null,
     emailVerified: null,
+    language: null,
+    favoriteIds: [],
     image: '/test-image.jpg',
-    hashedPassword: null,
     createdAt: '2023-01-01T00:00:00.000Z',
     updatedAt: new Date().toISOString(),
-    favoriteIds: [],
     emailNotifications: false,
     level: 5,
     verified: true,
     badges: [],
-    resetToken: null,
-    resetTokenExpiry: null,
 };
 
 // Mock the router and translation
@@ -93,7 +90,7 @@ describe('ProfileHeader', () => {
         (useRouter as any).mockReturnValue(router);
 
         const { getByText, getByAltText, getByTestId } = render(
-            <ProfileHeader user={mockUser} />
+            <ProfileHeader user={mockUser as any} />
         );
 
         // Assert user details
@@ -108,7 +105,7 @@ describe('ProfileHeader', () => {
         const router = { push: vi.fn() };
         (useRouter as any).mockReturnValue(router);
 
-        const { getByText } = render(<ProfileHeader user={mockUser} />);
+        const { getByText } = render(<ProfileHeader user={mockUser as any} />);
 
         // Simulate click on user name
         fireEvent.click(getByText('Test User'));
@@ -138,7 +135,7 @@ describe('ProfileHeader', () => {
     });
 
     it('does not render member since when createdAt is not provided', () => {
-        const userWithoutCreatedAt: SafeUser = {
+        const userWithoutCreatedAt = {
             ...mockUser,
             createdAt: '',
         };
@@ -158,7 +155,9 @@ describe('ProfileHeader', () => {
         const router = { push: vi.fn() };
         (useRouter as any).mockReturnValue(router);
 
-        const { getByTestId } = render(<ProfileHeader user={mockUser} />);
+        const { getByTestId } = render(
+            <ProfileHeader user={mockUser as any} />
+        );
 
         // Assert share button is rendered
         expect(getByTestId('share-icon')).toBeDefined();
@@ -177,7 +176,9 @@ describe('ProfileHeader', () => {
             share: undefined,
         });
 
-        const { getByLabelText } = render(<ProfileHeader user={mockUser} />);
+        const { getByLabelText } = render(
+            <ProfileHeader user={mockUser as any} />
+        );
 
         // Click share button
         fireEvent.click(getByLabelText('Share'));
@@ -199,7 +200,9 @@ describe('ProfileHeader', () => {
             share: undefined, // Ensure navigator.share is not available
         });
 
-        const { getByLabelText } = render(<ProfileHeader user={mockUser} />);
+        const { getByLabelText } = render(
+            <ProfileHeader user={mockUser as any} />
+        );
 
         // Click share button
         fireEvent.click(getByLabelText('Share'));
@@ -221,7 +224,9 @@ describe('ProfileHeader', () => {
             share: undefined,
         });
 
-        const { getByLabelText } = render(<ProfileHeader user={mockUser} />);
+        const { getByLabelText } = render(
+            <ProfileHeader user={mockUser as any} />
+        );
 
         // Click share button
         fireEvent.click(getByLabelText('Share'));
@@ -239,7 +244,9 @@ describe('ProfileHeader', () => {
             share: mockShare,
         });
 
-        const { getByLabelText } = render(<ProfileHeader user={mockUser} />);
+        const { getByLabelText } = render(
+            <ProfileHeader user={mockUser as any} />
+        );
 
         // Click share button
         fireEvent.click(getByLabelText('Share'));
@@ -252,7 +259,9 @@ describe('ProfileHeader', () => {
         const router = { push: vi.fn() };
         (useRouter as any).mockReturnValue(router);
 
-        const { getByLabelText } = render(<ProfileHeader user={mockUser} />);
+        const { getByLabelText } = render(
+            <ProfileHeader user={mockUser as any} />
+        );
 
         const shareButton = getByLabelText('Share');
         expect(shareButton).toHaveProperty(

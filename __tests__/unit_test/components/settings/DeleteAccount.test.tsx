@@ -91,14 +91,12 @@ const mockCurrentUser = {
     image: null,
     emailNotifications: true,
     favoriteIds: [],
-    hashedPassword: null,
     level: 1,
-    resetToken: null,
-    resetTokenExpiry: null,
     verified: false,
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
     emailVerified: null,
+    language: null,
 } as unknown as SafeUser;
 
 describe('DeleteAccount', () => {
@@ -111,7 +109,7 @@ describe('DeleteAccount', () => {
     });
 
     it('renders the delete account section correctly', () => {
-        render(<DeleteAccount currentUser={mockCurrentUser} />);
+        render(<DeleteAccount currentUser={mockCurrentUser as any} />);
 
         expect(screen.getByTestId('delete-account-selector')).toBeDefined();
         expect(screen.getByText('Delete Account')).toBeDefined();
@@ -120,7 +118,7 @@ describe('DeleteAccount', () => {
     });
 
     it('shows delete button with correct styling', () => {
-        render(<DeleteAccount currentUser={mockCurrentUser} />);
+        render(<DeleteAccount currentUser={mockCurrentUser as any} />);
 
         const deleteButton = screen.getByTestId('delete-account-button');
         expect(deleteButton).toBeDefined();
@@ -130,7 +128,7 @@ describe('DeleteAccount', () => {
     });
 
     it('opens write to delete modal when delete button is clicked', () => {
-        render(<DeleteAccount currentUser={mockCurrentUser} />);
+        render(<DeleteAccount currentUser={mockCurrentUser as any} />);
 
         const writeToDeleteModal = screen.getByTestId('write-to-delete-modal');
         expect(writeToDeleteModal.style.display).toBe('none');
@@ -142,7 +140,7 @@ describe('DeleteAccount', () => {
     });
 
     it('closes write to delete modal when cancel is clicked', () => {
-        render(<DeleteAccount currentUser={mockCurrentUser} />);
+        render(<DeleteAccount currentUser={mockCurrentUser as any} />);
 
         // Open modal
         const deleteButton = screen.getByTestId('delete-account-button');
@@ -162,7 +160,7 @@ describe('DeleteAccount', () => {
         mockAxios.delete.mockResolvedValue({ data: { success: true } });
         mockSignOut.mockResolvedValue({});
 
-        render(<DeleteAccount currentUser={mockCurrentUser} />);
+        render(<DeleteAccount currentUser={mockCurrentUser as any} />);
 
         // Open modal and confirm
         const deleteButton = screen.getByTestId('delete-account-button');
@@ -184,7 +182,7 @@ describe('DeleteAccount', () => {
             () => new Promise((resolve) => setTimeout(resolve, 100))
         );
 
-        render(<DeleteAccount currentUser={mockCurrentUser} />);
+        render(<DeleteAccount currentUser={mockCurrentUser as any} />);
 
         // Open modal and confirm
         const deleteButton = screen.getByTestId('delete-account-button');
@@ -208,7 +206,7 @@ describe('DeleteAccount', () => {
 
         const { toast } = await import('react-hot-toast');
 
-        render(<DeleteAccount currentUser={mockCurrentUser} />);
+        render(<DeleteAccount currentUser={mockCurrentUser as any} />);
 
         // Open modal and confirm
         const deleteButton = screen.getByTestId('delete-account-button');
@@ -229,7 +227,7 @@ describe('DeleteAccount', () => {
 
         const { toast } = await import('react-hot-toast');
 
-        render(<DeleteAccount currentUser={mockCurrentUser} />);
+        render(<DeleteAccount currentUser={mockCurrentUser as any} />);
 
         // Open modal and confirm
         const deleteButton = screen.getByTestId('delete-account-button');
@@ -257,7 +255,7 @@ describe('DeleteAccount', () => {
             () => new Promise((resolve) => setTimeout(resolve, 100))
         );
 
-        render(<DeleteAccount currentUser={mockCurrentUser} />);
+        render(<DeleteAccount currentUser={mockCurrentUser as any} />);
 
         // Open modal and confirm
         const deleteButton = screen.getByTestId('delete-account-button');
@@ -284,7 +282,7 @@ describe('DeleteAccount', () => {
 
         const { toast } = await import('react-hot-toast');
 
-        render(<DeleteAccount currentUser={mockCurrentUser} />);
+        render(<DeleteAccount currentUser={mockCurrentUser as any} />);
 
         // Open modal and confirm
         const deleteButton = screen.getByTestId('delete-account-button');

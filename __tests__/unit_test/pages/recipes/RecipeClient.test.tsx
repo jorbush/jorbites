@@ -60,7 +60,7 @@ describe('RecipeClient', () => {
         } as SafeUser,
     };
 
-    const mockCurrentUser: SafeUser = {
+    const mockCurrentUser = {
         id: 'user1',
         name: 'Test User',
     } as SafeUser;
@@ -92,7 +92,7 @@ describe('RecipeClient', () => {
         const { getByText } = render(
             <RecipeClient
                 recipe={mockRecipe}
-                currentUser={mockCurrentUser}
+                currentUser={mockCurrentUser as any}
                 comments={mockComments}
             />
         );
@@ -108,7 +108,7 @@ describe('RecipeClient', () => {
         const { getByText } = render(
             <RecipeClient
                 recipe={mockRecipe}
-                currentUser={mockCurrentUser}
+                currentUser={mockCurrentUser as any}
                 comments={mockComments}
             />
         );
@@ -139,7 +139,7 @@ describe('RecipeClient', () => {
         const { getByPlaceholderText, getByTestId } = render(
             <RecipeClient
                 recipe={mockRecipe}
-                currentUser={mockCurrentUser}
+                currentUser={mockCurrentUser as any}
                 comments={mockComments}
             />
         );
