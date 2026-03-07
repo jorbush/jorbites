@@ -52,22 +52,19 @@ vi.mock('@/app/components/comments/Comment', () => ({
 }));
 
 describe('Comments', () => {
-    const mockUser: SafeUser = {
+    const mockUser = {
         id: '1',
         image: 'https://example.com/avatar.jpg',
         name: 'Test User',
-        email: null,
         emailVerified: null,
-        hashedPassword: null,
+        language: null,
+        favoriteIds: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        favoriteIds: [],
         emailNotifications: false,
         level: 1,
         verified: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
     };
 
     const mockComments: SafeComment[] = [
@@ -90,7 +87,7 @@ describe('Comments', () => {
     it('renders correctly', () => {
         render(
             <Comments
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 onCreateComment={mockOnCreateComment}
                 comments={mockComments}
             />
@@ -106,7 +103,7 @@ describe('Comments', () => {
     it('displays comments', () => {
         render(
             <Comments
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 onCreateComment={mockOnCreateComment}
                 comments={mockComments}
             />
@@ -119,7 +116,7 @@ describe('Comments', () => {
     it('handles creating a comment', async () => {
         render(
             <Comments
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 onCreateComment={mockOnCreateComment}
                 comments={mockComments}
             />

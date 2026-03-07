@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { expect } from '@jest/globals';
 import getRecipes from '@/app/actions/getRecipes';
 import { Session } from 'next-auth';
@@ -92,9 +93,7 @@ describe('Recipes API Routes and Server Actions', () => {
         emailVerified: string | null;
         id: string;
         name: string | null;
-        email: string | null;
         image: string | null;
-        hashedPassword: string | null;
         favoriteIds: string[];
         emailNotifications: boolean;
         level: number;

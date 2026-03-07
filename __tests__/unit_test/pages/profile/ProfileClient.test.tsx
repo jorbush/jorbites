@@ -58,22 +58,19 @@ const mockRecipes: SafeRecipe[] = [
         questId: null,
     },
 ];
-const mockCurrentUser: SafeUser = {
+const mockCurrentUser = {
     id: 'user1',
     name: 'Test User',
-    email: null,
     emailVerified: null,
+    language: null,
+    favoriteIds: [],
     image: '/test-image.jpg',
-    hashedPassword: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    favoriteIds: [],
     emailNotifications: false,
     level: 0,
     verified: false,
     badges: [],
-    resetToken: null,
-    resetTokenExpiry: null,
 };
 
 describe('ProfileClient', () => {
@@ -84,7 +81,7 @@ describe('ProfileClient', () => {
         const { getByText } = render(
             <ProfileClient
                 recipes={mockRecipes}
-                currentUser={mockCurrentUser}
+                currentUser={mockCurrentUser as any}
                 totalPages={1}
                 currentPage={1}
                 searchParams={{}}
@@ -116,7 +113,7 @@ describe('ProfileClient', () => {
         const { container } = render(
             <ProfileClient
                 recipes={[]}
-                currentUser={mockCurrentUser}
+                currentUser={mockCurrentUser as any}
                 totalPages={0}
                 currentPage={1}
                 searchParams={{}}

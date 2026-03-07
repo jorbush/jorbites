@@ -71,7 +71,7 @@ describe('<TopJorbitersClient />', () => {
     it('renders jorbiter cards for each top jorbiter', () => {
         render(
             <TopJorbitersClient
-                currentUser={mockCurrentUser}
+                currentUser={mockCurrentUser as any}
                 topJorbiters={mockTopJorbiters}
             />
         );
@@ -94,7 +94,7 @@ describe('<TopJorbitersClient />', () => {
     it('renders call to action component with correct props', () => {
         render(
             <TopJorbitersClient
-                currentUser={mockCurrentUser}
+                currentUser={mockCurrentUser as any}
                 topJorbiters={mockTopJorbiters}
             />
         );
@@ -106,7 +106,7 @@ describe('<TopJorbitersClient />', () => {
     });
 
     it('handles missing top jorbiters', () => {
-        render(<TopJorbitersClient currentUser={mockCurrentUser} />);
+        render(<TopJorbitersClient currentUser={mockCurrentUser as any} />);
 
         // Should not throw error when topJorbiters is undefined
         expect(screen.queryByTestId('jorbiter-card-0')).toBeNull();

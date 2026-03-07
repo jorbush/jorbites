@@ -20,16 +20,15 @@ vi.mock('react-icons/ai', () => ({
 
 describe('<HeartButton />', () => {
     const mockRecipeId = '123';
-    const mockCurrentUser: SafeUser = {
+    const mockCurrentUser = {
         id: '456',
         name: 'Test User',
-        email: null,
         emailVerified: null,
+        language: null,
+        favoriteIds: [],
         image: null,
-        hashedPassword: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        favoriteIds: [],
         emailNotifications: false,
         level: 0,
         verified: false,
@@ -43,7 +42,7 @@ describe('<HeartButton />', () => {
         render(
             <HeartButton
                 recipeId={mockRecipeId}
-                currentUser={mockCurrentUser}
+                currentUser={mockCurrentUser as any}
             />
         );
         expect(screen.getByTestId('filled-heart')).toBeDefined();

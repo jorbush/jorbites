@@ -98,8 +98,6 @@ describe('<QuestsClient />', () => {
         badgeIds: [],
         isActive: true,
         lastActiveAt: '2022-01-01',
-        resetToken: null,
-        resetTokenExpiry: null,
     } as any;
 
     beforeEach(() => {
@@ -113,7 +111,7 @@ describe('<QuestsClient />', () => {
     it('renders the quests page title', () => {
         render(
             <QuestsClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quests={mockQuests}
                 totalPages={1}
                 currentPage={1}
@@ -125,7 +123,7 @@ describe('<QuestsClient />', () => {
     it('renders the request recipe button when user is logged in', () => {
         render(
             <QuestsClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quests={mockQuests}
                 totalPages={1}
                 currentPage={1}
@@ -153,7 +151,7 @@ describe('<QuestsClient />', () => {
     it('renders all quests', () => {
         render(
             <QuestsClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quests={mockQuests}
                 totalPages={1}
                 currentPage={1}
@@ -166,7 +164,7 @@ describe('<QuestsClient />', () => {
     it('renders quest status badges', () => {
         render(
             <QuestsClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quests={mockQuests}
                 totalPages={1}
                 currentPage={1}
@@ -182,7 +180,7 @@ describe('<QuestsClient />', () => {
     it('displays recipe reply counts', () => {
         render(
             <QuestsClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quests={mockQuests}
                 totalPages={1}
                 currentPage={1}
@@ -199,7 +197,7 @@ describe('<QuestsClient />', () => {
     it('renders filter buttons', () => {
         render(
             <QuestsClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quests={mockQuests}
                 totalPages={1}
                 currentPage={1}
@@ -213,7 +211,7 @@ describe('<QuestsClient />', () => {
     it('renders mobile floating action button', () => {
         render(
             <QuestsClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quests={mockQuests}
                 totalPages={1}
                 currentPage={1}
@@ -232,7 +230,7 @@ describe('<QuestsClient />', () => {
     it('renders empty state when no quests are provided', () => {
         render(
             <QuestsClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quests={[]}
                 totalPages={1}
                 currentPage={1}

@@ -79,7 +79,7 @@ describe('<LanguageSelector />', () => {
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        render(<LanguageSelector currentUser={mockUser} />);
+        render(<LanguageSelector currentUser={mockUser as any} />);
 
         const dropdown = screen.getByTestId('language-dropdown');
         fireEvent.change(dropdown, { target: { value: 'ca' } });
@@ -103,7 +103,7 @@ describe('<LanguageSelector />', () => {
         const fetchMock = vi.fn().mockRejectedValue(new Error('Network error'));
         vi.stubGlobal('fetch', fetchMock);
 
-        render(<LanguageSelector currentUser={mockUser} />);
+        render(<LanguageSelector currentUser={mockUser as any} />);
 
         const dropdown = screen.getByTestId('language-dropdown');
         fireEvent.change(dropdown, { target: { value: 'ca' } });

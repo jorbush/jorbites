@@ -17,11 +17,22 @@ export type SafeComment = Omit<Comment, 'createdAt'> & {
 
 export type SafeUser = Omit<
     User,
-    'createdAt' | 'updatedAt' | 'emailVerified'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'emailVerified'
+    | 'hashedPassword'
+    | 'resetToken'
+    | 'resetTokenExpiry'
+    | 'email'
+    | 'emailNotifications'
+    | 'favoriteIds'
 > & {
     createdAt: string;
     updatedAt: string;
-    emailVerified: string | null;
+    email?: string | null;
+    emailVerified?: string | null;
+    favoriteIds?: string[];
+    emailNotifications?: boolean;
     recipeCount?: number | null | undefined;
     likesReceived?: number | null | undefined;
     recipesThisYear?: number | null | undefined;

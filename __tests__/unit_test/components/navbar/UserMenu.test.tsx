@@ -43,7 +43,7 @@ vi.mock('@/app/components/utils/Avatar', () => ({
 }));
 
 describe('<UserMenu />', () => {
-    const mockCurrentUser: SafeUser = {
+    const mockCurrentUser = {
         id: '1',
         name: 'John Doe',
         email: 'john@example.com',
@@ -67,13 +67,13 @@ describe('<UserMenu />', () => {
     });
 
     it('renders the post recipe button and avatar when user is logged in', () => {
-        render(<UserMenu currentUser={mockCurrentUser} />);
+        render(<UserMenu currentUser={mockCurrentUser as any} />);
         expect(screen.getByText('post_recipe')).toBeDefined();
         expect(screen.getByTestId('mock-avatar')).toBeDefined();
     });
 
     it('opens the menu when avatar is clicked', () => {
-        render(<UserMenu currentUser={mockCurrentUser} />);
+        render(<UserMenu currentUser={mockCurrentUser as any} />);
         fireEvent.click(screen.getByTestId('mock-avatar').parentElement!);
         expect(screen.getByText('my_profile')).toBeDefined();
         expect(screen.getByText('my_favorites')).toBeDefined();
@@ -88,7 +88,7 @@ describe('<UserMenu />', () => {
     });
 
     it('opens recipe modal when post recipe is clicked and user is logged in', () => {
-        render(<UserMenu currentUser={mockCurrentUser} />);
+        render(<UserMenu currentUser={mockCurrentUser as any} />);
         fireEvent.click(screen.getByText('post_recipe'));
         expect(mockRecipeModalOnOpen).toHaveBeenCalled();
     });
@@ -101,7 +101,7 @@ describe('<UserMenu />', () => {
     });
 
     it('calls signOut when logout is clicked', () => {
-        render(<UserMenu currentUser={mockCurrentUser} />);
+        render(<UserMenu currentUser={mockCurrentUser as any} />);
         fireEvent.click(screen.getByTestId('mock-avatar').parentElement!);
         fireEvent.click(screen.getByText('logout'));
         expect(mockSignOut).toHaveBeenCalled();

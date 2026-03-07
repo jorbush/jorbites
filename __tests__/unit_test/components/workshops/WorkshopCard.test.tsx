@@ -68,17 +68,15 @@ describe('<WorkshopCard />', () => {
             name: 'Test Host',
             email: 'host@example.com',
             emailVerified: null,
+            language: null,
+            favoriteIds: [],
             image: '/host-image.jpg',
-            hashedPassword: null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            favoriteIds: [],
             emailNotifications: false,
             level: 5,
             verified: true,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
         },
         participants: [
             {
@@ -90,22 +88,20 @@ describe('<WorkshopCard />', () => {
         ],
     };
 
-    const mockUser: SafeUser = {
+    const mockUser = {
         id: 'user1',
         name: 'Test User',
         email: 'test@example.com',
         emailVerified: null,
+        language: null,
+        favoriteIds: [],
         image: null,
-        hashedPassword: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        favoriteIds: [],
         emailNotifications: false,
         level: 0,
         verified: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
     };
 
     const mockRouter = {
@@ -126,7 +122,7 @@ describe('<WorkshopCard />', () => {
         render(
             <WorkshopCard
                 data={mockWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -140,7 +136,7 @@ describe('<WorkshopCard />', () => {
         render(
             <WorkshopCard
                 data={{ ...mockWorkshop, currency: 'USD' }}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -153,7 +149,7 @@ describe('<WorkshopCard />', () => {
         render(
             <WorkshopCard
                 data={freeWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -165,7 +161,7 @@ describe('<WorkshopCard />', () => {
         render(
             <WorkshopCard
                 data={privateWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -178,7 +174,7 @@ describe('<WorkshopCard />', () => {
         render(
             <WorkshopCard
                 data={pastWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -189,7 +185,7 @@ describe('<WorkshopCard />', () => {
         render(
             <WorkshopCard
                 data={mockWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -203,7 +199,7 @@ describe('<WorkshopCard />', () => {
         render(
             <WorkshopCard
                 data={mockWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -217,7 +213,7 @@ describe('<WorkshopCard />', () => {
         render(
             <WorkshopCard
                 data={workshopNoImage}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -229,7 +225,7 @@ describe('<WorkshopCard />', () => {
         render(
             <WorkshopCard
                 data={mockWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
             />
         );
 
@@ -243,7 +239,7 @@ describe('<WorkshopCard />', () => {
         render(
             <WorkshopCard
                 data={mockWorkshop}
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 isFirstCard={true}
             />
         );

@@ -81,10 +81,10 @@ describe('FavoritesPage', () => {
         const mockCurrentUser = {
             id: 'user1',
             name: 'Test User',
-            email: null,
             emailVerified: null,
+            language: null,
+            favoriteIds: [],
             image: null,
-            hashedPassword: null,
             createdAt: new Date().toISOString(),
         };
 
@@ -94,7 +94,7 @@ describe('FavoritesPage', () => {
             totalPages: 1,
             currentPage: 1,
         });
-        (getCurrentUser as any).mockResolvedValue(mockCurrentUser);
+        (getCurrentUser as any).mockResolvedValue(mockCurrentUser as any);
 
         const page = await FavoritesPage({
             searchParams: Promise.resolve({}),

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { cleanup, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import EventsList from '@/app/components/events/EventsList';

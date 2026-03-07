@@ -57,22 +57,19 @@ const mockRecipes: SafeRecipe[] = [
         questId: null,
     },
 ];
-const mockCurrentUser: SafeUser = {
+const mockCurrentUser = {
     id: 'user1',
     name: 'Test User',
-    email: null,
     emailVerified: null,
+    language: null,
+    favoriteIds: [],
     image: '/test-image.jpg',
-    hashedPassword: null,
     createdAt: '',
     updatedAt: '', // Add the updatedAt property
-    favoriteIds: [],
     emailNotifications: false,
     level: 0,
     verified: false,
     badges: [],
-    resetToken: null,
-    resetTokenExpiry: null,
 };
 
 describe('FavoritesClient', () => {
@@ -83,7 +80,7 @@ describe('FavoritesClient', () => {
         const { getByText } = render(
             <FavoritesClient
                 recipes={mockRecipes}
-                currentUser={mockCurrentUser}
+                currentUser={mockCurrentUser as any}
                 totalPages={1}
                 currentPage={1}
                 searchParams={{}}
@@ -115,7 +112,7 @@ describe('FavoritesClient', () => {
         const { container } = render(
             <FavoritesClient
                 recipes={[]}
-                currentUser={mockCurrentUser}
+                currentUser={mockCurrentUser as any}
                 totalPages={0}
                 currentPage={1}
                 searchParams={{}}
@@ -130,7 +127,7 @@ describe('FavoritesClient', () => {
         const { container, getByText } = render(
             <FavoritesClient
                 recipes={mockRecipes}
-                currentUser={mockCurrentUser}
+                currentUser={mockCurrentUser as any}
                 totalPages={3}
                 currentPage={2}
                 searchParams={{ page: 2 }}

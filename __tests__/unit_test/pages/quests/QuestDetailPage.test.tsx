@@ -111,8 +111,6 @@ describe('<QuestDetailClient />', () => {
         badgeIds: [],
         isActive: true,
         lastActiveAt: '2022-01-01',
-        resetToken: null,
-        resetTokenExpiry: null,
     } as any;
 
     beforeEach(() => {
@@ -126,7 +124,7 @@ describe('<QuestDetailClient />', () => {
     it('renders the quest detail page', () => {
         render(
             <QuestDetailClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quest={mockQuest}
             />
         );
@@ -139,7 +137,7 @@ describe('<QuestDetailClient />', () => {
     it('renders the back button', () => {
         render(
             <QuestDetailClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quest={mockQuest}
             />
         );
@@ -150,7 +148,7 @@ describe('<QuestDetailClient />', () => {
     it('calls router.back() when back button is clicked', () => {
         render(
             <QuestDetailClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quest={mockQuest}
             />
         );
@@ -162,7 +160,7 @@ describe('<QuestDetailClient />', () => {
     it('renders share button for all users', () => {
         render(
             <QuestDetailClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quest={mockQuest}
             />
         );
@@ -193,7 +191,7 @@ describe('<QuestDetailClient />', () => {
 
         render(
             <QuestDetailClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quest={mockQuest}
             />
         );
@@ -205,7 +203,7 @@ describe('<QuestDetailClient />', () => {
     it('renders edit and delete buttons for quest owner', () => {
         render(
             <QuestDetailClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quest={mockQuest}
             />
         );
@@ -230,7 +228,7 @@ describe('<QuestDetailClient />', () => {
     it('opens delete confirmation modal when delete button is clicked', () => {
         render(
             <QuestDetailClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quest={mockQuest}
             />
         );
@@ -244,7 +242,7 @@ describe('<QuestDetailClient />', () => {
     it('renders fulfill quest button when user is logged in and quest is not completed', () => {
         render(
             <QuestDetailClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quest={mockQuest}
             />
         );
@@ -255,7 +253,7 @@ describe('<QuestDetailClient />', () => {
         const completedQuest = { ...mockQuest, status: 'completed' };
         render(
             <QuestDetailClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quest={completedQuest}
             />
         );
@@ -266,7 +264,7 @@ describe('<QuestDetailClient />', () => {
     it('renders recipe replies section', () => {
         render(
             <QuestDetailClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quest={mockQuest}
             />
         );
@@ -276,7 +274,7 @@ describe('<QuestDetailClient />', () => {
     it('displays correct number of recipe replies', () => {
         render(
             <QuestDetailClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quest={mockQuest}
             />
         );
@@ -288,7 +286,7 @@ describe('<QuestDetailClient />', () => {
         const questWithoutRecipes = { ...mockQuest, recipes: [] };
         render(
             <QuestDetailClient
-                currentUser={mockUser}
+                currentUser={mockUser as any}
                 quest={questWithoutRecipes}
             />
         );

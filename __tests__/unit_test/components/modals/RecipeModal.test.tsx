@@ -61,8 +61,6 @@ describe('<RecipeModal />', () => {
         badgeIds: [],
         isActive: true,
         lastActiveAt: '2022-01-01',
-        resetToken: null,
-        resetTokenExpiry: null,
     } as any;
 
     beforeEach(() => {
@@ -595,7 +593,7 @@ describe('<RecipeModal />', () => {
             });
 
             await act(async () => {
-                render(<RecipeModal currentUser={mockUser} />);
+                render(<RecipeModal currentUser={mockUser as any} />);
             });
 
             expect(screen.getByText('edit_recipe')).toBeDefined();
@@ -626,7 +624,7 @@ describe('<RecipeModal />', () => {
             });
 
             await act(async () => {
-                render(<RecipeModal currentUser={mockUser} />);
+                render(<RecipeModal currentUser={mockUser as any} />);
             });
 
             // The component should load edit data automatically
@@ -658,7 +656,7 @@ describe('<RecipeModal />', () => {
             });
 
             await act(async () => {
-                render(<RecipeModal currentUser={mockUser} />);
+                render(<RecipeModal currentUser={mockUser as any} />);
             });
 
             // Draft save button should not be present in edit mode
@@ -739,7 +737,7 @@ describe('<RecipeModal />', () => {
             });
 
             await act(async () => {
-                render(<RecipeModal currentUser={mockUser} />);
+                render(<RecipeModal currentUser={mockUser as any} />);
             });
 
             // Component should show edit mode title after loading edit data

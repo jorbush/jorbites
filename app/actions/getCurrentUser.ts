@@ -2,8 +2,10 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
+import { currentUserSelect } from '@/app/lib/prisma-selects';
+import { SafeUser } from '@/app/types';
 
-export default async function getCurrentUser() {
+export default async function getCurrentUser(): Promise<SafeUser | null> {
     try {
         logger.info('getCurrentUser - start');
         const session = await getServerSession(authOptions);
@@ -17,6 +19,7 @@ export default async function getCurrentUser() {
             where: {
                 email: session.user.email as string,
             },
+            select: currentUserSelect,
         });
 
         if (!currentUser) {

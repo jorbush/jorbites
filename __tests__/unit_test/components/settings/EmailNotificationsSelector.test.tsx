@@ -32,13 +32,12 @@ describe('<EmailNotificationsSelector />', () => {
         id: '1',
         emailNotifications: true,
         name: null,
-        email: null,
         emailVerified: null,
+        language: null,
+        favoriteIds: [],
         image: null,
-        hashedPassword: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        favoriteIds: [],
         level: 0,
         verified: false,
     };
@@ -53,7 +52,7 @@ describe('<EmailNotificationsSelector />', () => {
     });
 
     it('renders correctly with user preferences', () => {
-        render(<EmailNotificationsSelector currentUser={mockUser} />);
+        render(<EmailNotificationsSelector currentUser={mockUser as any} />);
 
         expect(screen.getByText('enable_email_notifications')).toBeDefined();
         expect(screen.getByRole('switch')).toBeDefined();
@@ -62,7 +61,7 @@ describe('<EmailNotificationsSelector />', () => {
     it('toggles email notifications when switch is clicked', async () => {
         (axios.put as any).mockResolvedValue({});
 
-        render(<EmailNotificationsSelector currentUser={mockUser} />);
+        render(<EmailNotificationsSelector currentUser={mockUser as any} />);
 
         const switchControl = screen.getByRole('switch');
         fireEvent.click(switchControl);
@@ -78,7 +77,7 @@ describe('<EmailNotificationsSelector />', () => {
     it('shows error toast when API call fails', async () => {
         (axios.put as any).mockRejectedValue(new Error('API Error'));
 
-        render(<EmailNotificationsSelector currentUser={mockUser} />);
+        render(<EmailNotificationsSelector currentUser={mockUser as any} />);
 
         const switchControl = screen.getByRole('switch');
         fireEvent.click(switchControl);
@@ -94,7 +93,9 @@ describe('<EmailNotificationsSelector />', () => {
         (axios.put as any).mockResolvedValue({});
 
         await act(async () => {
-            render(<EmailNotificationsSelector currentUser={mockUser} />);
+            render(
+                <EmailNotificationsSelector currentUser={mockUser as any} />
+            );
         });
 
         const switchControl = screen.getByRole('switch');

@@ -26,17 +26,15 @@ describe('PATCH /api/userName/[userId]', () => {
         name: 'TestUser',
         email: 'test@example.com',
         emailVerified: null,
+        language: null,
+        favoriteIds: [],
         image: null,
-        hashedPassword: null,
         createdAt: '2024-01-01T00:00:00.000Z',
         updatedAt: '2024-01-01T00:00:00.000Z',
-        favoriteIds: [],
         emailNotifications: false,
         level: 0,
         verified: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
     };
 
     const createRequest = (userName: string) => {
@@ -51,9 +49,9 @@ describe('PATCH /api/userName/[userId]', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        mockGetCurrentUser.mockResolvedValue(mockUser);
+        mockGetCurrentUser.mockResolvedValue(mockUser as any);
         mockPrisma.user.findFirst.mockResolvedValue(null);
-        mockPrisma.user.update.mockResolvedValue(mockUser);
+        mockPrisma.user.update.mockResolvedValue(mockUser as any);
     });
 
     afterEach(() => {
