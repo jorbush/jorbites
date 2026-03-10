@@ -61,6 +61,10 @@ export async function PUT(request: Request) {
             data: {
                 image: userImage,
             },
+            select: {
+                id: true,
+                image: true,
+            },
         });
 
         logger.info('PUT /api/userImage/[userId] - success', {

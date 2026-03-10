@@ -10,18 +10,36 @@ export type SafeRecipe = Omit<Recipe, 'createdAt'> & {
     createdAt: string;
 };
 
+export type CommentAuthor = Pick<
+    SafeUser,
+    'id' | 'name' | 'image' | 'verified' | 'level' | 'badges'
+>;
+
 export type SafeComment = Omit<Comment, 'createdAt'> & {
     createdAt: string;
-    user: SafeUser;
+    user: CommentAuthor;
 };
 
 export type SafeUser = Omit<
     User,
-    'createdAt' | 'updatedAt' | 'emailVerified'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'emailVerified'
+    | 'hashedPassword'
+    | 'resetToken'
+    | 'resetTokenExpiry'
+    | 'email'
+    | 'favoriteIds'
+    | 'emailNotifications'
+    | 'language'
 > & {
     createdAt: string;
     updatedAt: string;
-    emailVerified: string | null;
+    emailVerified?: string | null;
+    email?: string | null;
+    favoriteIds?: string[];
+    emailNotifications?: boolean;
+    language?: string | null;
     recipeCount?: number | null | undefined;
     likesReceived?: number | null | undefined;
     recipesThisYear?: number | null | undefined;
@@ -31,7 +49,6 @@ export type SafeUser = Omit<
     mostUsedCategory?: string | null | undefined;
     mostUsedMethod?: string | null | undefined;
     badges?: string[];
-    language?: string | null;
 };
 
 export type SafeWorkshop = Omit<

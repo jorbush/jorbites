@@ -49,6 +49,10 @@ export async function POST(
             data: {
                 favoriteIds,
             },
+            select: {
+                id: true,
+                favoriteIds: true,
+            },
         });
         await trackRecipeLike(recipeId, currentUser.id);
         logger.info('POST /api/favorites/[recipeId] - success', {
@@ -101,6 +105,10 @@ export async function DELETE(
             },
             data: {
                 favoriteIds,
+            },
+            select: {
+                id: true,
+                favoriteIds: true,
             },
         });
 

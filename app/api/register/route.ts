@@ -76,6 +76,11 @@ export async function POST(request: Request) {
                 name,
                 hashedPassword,
             },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+            },
         });
 
         logger.info('POST /api/register - success', {

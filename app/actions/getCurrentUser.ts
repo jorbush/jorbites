@@ -17,6 +17,21 @@ export default async function getCurrentUser() {
             where: {
                 email: session.user.email as string,
             },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                emailVerified: true,
+                image: true,
+                createdAt: true,
+                updatedAt: true,
+                favoriteIds: true,
+                emailNotifications: true,
+                level: true,
+                verified: true,
+                language: true,
+                badges: true,
+            },
         });
 
         if (!currentUser) {

@@ -21,7 +21,16 @@ export default async function getCommentsByRecipeId(params: IParams) {
         const comments = await prisma.comment.findMany({
             where: query,
             include: {
-                user: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        verified: true,
+                        level: true,
+                        badges: true,
+                    },
+                },
             },
             orderBy: {
                 createdAt: 'desc',
@@ -31,13 +40,6 @@ export default async function getCommentsByRecipeId(params: IParams) {
         const safeComments = comments.map((comment) => ({
             ...comment,
             createdAt: comment.createdAt.toISOString(),
-            user: {
-                ...comment.user,
-                createdAt: comment.user.createdAt.toISOString(),
-                updatedAt: comment.user.updatedAt.toISOString(),
-                emailVerified:
-                    comment.user.emailVerified?.toISOString() || null,
-            },
         }));
 
         logger.info('getCommentsByRecipeId - success', {
