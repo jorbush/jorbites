@@ -27,6 +27,11 @@ export async function PUT(_request: Request) {
             data: {
                 emailNotifications: !currentUser.emailNotifications,
             },
+            select: {
+                id: true,
+                email: true,
+                emailNotifications: true,
+            },
         });
 
         if (user.emailNotifications) {
@@ -40,7 +45,10 @@ export async function PUT(_request: Request) {
             userId: user.id,
             emailNotifications: user.emailNotifications,
         });
-        return NextResponse.json(user);
+        return NextResponse.json({
+            id: user.id,
+            emailNotifications: user.emailNotifications,
+        });
     } catch (error: any) {
         logger.error('PUT /api/emailNotifications/[userId] - error', {
             error: error.message,

@@ -15,7 +15,16 @@ export default async function getRecipeById(params: IParams) {
                 id: recipeId,
             },
             include: {
-                user: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        level: true,
+                        verified: true,
+                        badges: true,
+                    },
+                },
             },
         });
 
@@ -28,12 +37,6 @@ export default async function getRecipeById(params: IParams) {
         return {
             ...recipe,
             createdAt: recipe.createdAt.toISOString(),
-            user: {
-                ...recipe.user,
-                createdAt: recipe.user.createdAt.toISOString(),
-                updatedAt: recipe.user.updatedAt.toISOString(),
-                emailVerified: recipe.user.emailVerified?.toString() || null,
-            },
         };
     } catch (error: any) {
         logger.error('getRecipeById - error', {

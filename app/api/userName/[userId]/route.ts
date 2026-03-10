@@ -73,6 +73,10 @@ export async function PATCH(request: Request) {
             data: {
                 name: trimmedUserName,
             },
+            select: {
+                id: true,
+                name: true,
+            },
         });
 
         logger.info('PATCH /api/userName/[userId] - success', {

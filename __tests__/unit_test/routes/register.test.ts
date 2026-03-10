@@ -177,6 +177,11 @@ describe('Register API Error Handling', () => {
                     name: 'Test User',
                     hashedPassword: 'hashedPassword',
                 },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                },
             });
         });
 
@@ -188,7 +193,6 @@ describe('Register API Error Handling', () => {
                 id: '1',
                 email: 'test@example.com',
                 name: 'Test User',
-                hashedPassword: 'hashedPassword',
             };
             (prisma.user.create as jest.Mock).mockResolvedValueOnce(mockUser);
 
@@ -211,6 +215,11 @@ describe('Register API Error Handling', () => {
                     email: 'test@example.com',
                     name: 'Test User',
                     hashedPassword: 'hashedPassword',
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
                 },
             });
         });

@@ -15,7 +15,16 @@ export default async function getCommentById(params: IParams) {
                 id: commentId,
             },
             include: {
-                user: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        verified: true,
+                        level: true,
+                        badges: true,
+                    },
+                },
             },
         });
 
@@ -28,12 +37,6 @@ export default async function getCommentById(params: IParams) {
         return {
             ...comment,
             createdAt: comment.createdAt.toISOString(),
-            user: {
-                ...comment.user,
-                createdAt: comment.user.createdAt.toISOString(),
-                updatedAt: comment.user.updatedAt.toISOString(),
-                emailVerified: comment.user.emailVerified?.toString() || null,
-            },
         };
     } catch (error: any) {
         logger.error('getCommentById - error', {

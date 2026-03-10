@@ -18,6 +18,18 @@ export default async function getUserById(params: IParams) {
             where: {
                 id: userId,
             },
+            select: {
+                id: true,
+                name: true,
+                image: true,
+                emailVerified: true,
+                createdAt: true,
+                updatedAt: true,
+                level: true,
+                verified: true,
+                language: true,
+                badges: true,
+            },
         });
 
         if (!user) {

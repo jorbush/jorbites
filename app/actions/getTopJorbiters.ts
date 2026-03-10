@@ -25,6 +25,16 @@ export default async function getTopJorbiters() {
                 level: 'desc',
             },
             take: 10,
+            select: {
+                id: true,
+                name: true,
+                image: true,
+                level: true,
+                verified: true,
+                createdAt: true,
+                updatedAt: true,
+                badges: true,
+            },
         });
 
         if (!users) {
@@ -48,7 +58,6 @@ export default async function getTopJorbiters() {
                     ...user,
                     createdAt: user.createdAt.toISOString(),
                     updatedAt: user.updatedAt.toISOString(),
-                    emailVerified: user.emailVerified?.toISOString() || null,
                     recipeCount: userRecipes.length,
                     likesReceived: totalLikes,
                 };

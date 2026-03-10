@@ -134,6 +134,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'User_Name' },
+            select: { id: true, name: true },
         });
     });
 
@@ -156,6 +157,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'User123' },
+            select: { id: true, name: true },
         });
     });
 
@@ -167,6 +169,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'Username' },
+            select: { id: true, name: true },
         });
     });
 
@@ -178,6 +181,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: '123456' },
+            select: { id: true, name: true },
         });
     });
 
@@ -189,6 +193,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'user__name__123' },
+            select: { id: true, name: true },
         });
     });
 
@@ -200,6 +205,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: '_username' },
+            select: { id: true, name: true },
         });
     });
 
@@ -211,6 +217,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'username_' },
+            select: { id: true, name: true },
         });
     });
 
@@ -222,6 +229,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: '___' },
+            select: { id: true, name: true },
         });
     });
 
@@ -233,6 +241,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'test_user_123' },
+            select: { id: true, name: true },
         });
     });
 
@@ -271,6 +280,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'Valid123' },
+            select: { id: true, name: true },
         });
     });
 

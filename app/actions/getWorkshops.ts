@@ -98,7 +98,16 @@ export default async function getWorkshops(
             orderBy: { date: 'asc' },
             take: limit,
             include: {
-                host: true,
+                host: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        level: true,
+                        verified: true,
+                        badges: true,
+                    },
+                },
                 participants: true,
             },
         });
@@ -108,12 +117,6 @@ export default async function getWorkshops(
             date: workshop.date.toISOString(),
             createdAt: workshop.createdAt.toISOString(),
             updatedAt: workshop.updatedAt.toISOString(),
-            host: {
-                ...workshop.host,
-                createdAt: workshop.host.createdAt.toISOString(),
-                updatedAt: workshop.host.updatedAt.toISOString(),
-                emailVerified: workshop.host.emailVerified?.toString() || null,
-            },
             participants: workshop.participants.map((p) => ({
                 ...p,
                 joinedAt: p.joinedAt.toISOString(),

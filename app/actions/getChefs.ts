@@ -77,6 +77,16 @@ export default async function getChefs(
                 : getBasicOrderByClause(orderBy),
             skip: needsRecipeDataForSorting ? undefined : (page - 1) * limit,
             take: needsRecipeDataForSorting ? undefined : limit,
+            select: {
+                id: true,
+                name: true,
+                image: true,
+                level: true,
+                verified: true,
+                createdAt: true,
+                updatedAt: true,
+                badges: true,
+            },
         });
 
         const totalChefs = await prisma.user.count({
@@ -164,7 +174,6 @@ export default async function getChefs(
                 ...user,
                 createdAt: user.createdAt.toISOString(),
                 updatedAt: user.updatedAt.toISOString(),
-                emailVerified: user.emailVerified?.toISOString() || null,
                 recipeCount: userRecipes.length,
                 likesReceived: totalLikes,
                 recipesThisYear,

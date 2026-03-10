@@ -197,7 +197,10 @@ describe('Recipes API Routes and Server Actions', () => {
         );
         const resultFav = await responseFav.json();
         const currentUser = await getCurrentUser();
-        expect(resultFav).toMatchObject(currentUser || {});
+        expect(resultFav).toMatchObject({
+            id: currentUser?.id,
+            favoriteIds: expect.arrayContaining([publishedRecipe?.id]),
+        });
     });
 
     it('should have added the recipe id to the current user favoriteIds', async () => {
@@ -224,7 +227,8 @@ describe('Recipes API Routes and Server Actions', () => {
         );
         const resultFav = await responseFav.json();
         const currentUser = await getCurrentUser();
-        expect(resultFav).toMatchObject(currentUser || {});
+        expect(resultFav).toMatchObject({ id: currentUser?.id });
+        expect(resultFav.favoriteIds).not.toContain(publishedRecipe?.id);
     });
 
     it('should have removed the recipe id to the current user favoriteIds', async () => {
