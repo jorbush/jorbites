@@ -33,8 +33,8 @@ export type SafeUser = Omit<
     | 'emailNotifications'
     | 'language'
 > & {
-    createdAt: string;
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
     emailVerified?: string | null;
     email?: string | null;
     favoriteIds?: string[];
