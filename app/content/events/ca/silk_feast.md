@@ -12,7 +12,7 @@ La Ruta de la Seda pren vida a Jorbites! Explora els rics sabors d'Uzbekistan, G
 
 ## 🧁 Temàtica
 
-Cuina de les rutes comercials que combina el millor de tres móns: arròs d'Àsia, pasta d'Europa i fruits secs d'Orient. Són sabors exòtics que poca gent coneix, però amb perfils de sabor meravellosament accessibles.
+Cuina de les rutes comercials que combina el millor de tres mons: arròs d'Àsia, pasta d'Europa i fruits secs d'Orient. Són sabors exòtics que poca gent coneix, però amb perfils de sabor meravellosament accessibles.
 
 Pensa en pilafs especiats amb canyella, carns rostides amb magrana, salses a base de iogurt, pastes de nous, herbes aromàtiques i plats que expliquen històries d'antigues rutes comercials.
 
