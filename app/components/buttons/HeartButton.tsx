@@ -6,12 +6,20 @@ import useFavorite from '@/app/hooks/useFavorite';
 interface HeartButtonProps {
     recipeId: string;
     currentUser?: SafeUser | null;
+    likes?: number;
+    showLikes?: boolean;
 }
 
-const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
-    const { hasFavorited, toggleFavorite } = useFavorite({
+const HeartButton: React.FC<HeartButtonProps> = ({
+    recipeId,
+    currentUser,
+    likes,
+    showLikes = true,
+}) => {
+    const { hasFavorited, optimisticLikes, toggleFavorite } = useFavorite({
         recipeId,
         currentUser,
+        likes,
     });
 
     const [isDisabled, setIsDisabled] = useState(false);
@@ -35,7 +43,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
         }
     }, [isDisabled]);
 
-    return (
+    const heartIcon = (
         <div
             onClick={handleButtonClick}
             className="relative cursor-pointer transition hover:opacity-80"
@@ -55,6 +63,23 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
                     pointerEvents: isDisabled ? 'none' : 'auto',
                 }}
             />
+        </div>
+    );
+
+    if (likes === undefined || !showLikes) {
+        return heartIcon;
+    }
+
+    return (
+        <div className="flex flex-row items-end gap-2 text-xl">
+            {heartIcon}
+            <div
+                className="dark:text-neutral-100"
+                data-cy="recipe-num-likes"
+                data-testid="recipe-num-likes"
+            >
+                {optimisticLikes}
+            </div>
         </div>
     );
 };

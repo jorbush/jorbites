@@ -57,6 +57,8 @@ const RecipeCard = memo(function RecipeCard({
                         <HeartButton
                             recipeId={data.id}
                             currentUser={currentUser}
+                            likes={data.numLikes}
+                            showLikes={false}
                         />
                     </div>
                     <ClientOnly>
