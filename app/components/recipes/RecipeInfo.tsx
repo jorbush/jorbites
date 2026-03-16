@@ -186,13 +186,9 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         <HeartButton
                             recipeId={id}
                             currentUser={currentUser}
+                            likes={likes}
+                            showLikes
                         />
-                        <div
-                            className="dark:text-neutral-100"
-                            data-cy="recipe-num-likes"
-                        >
-                            {likes}
-                        </div>
                     </div>
                 </div>
                 <div className="flex flex-row items-center gap-4 font-light text-neutral-500">

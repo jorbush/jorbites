@@ -6,20 +6,30 @@ import useFavorite from '@/app/hooks/useFavorite';
 interface HeartButtonProps {
     recipeId: string;
     currentUser?: SafeUser | null;
+    likes?: number;
+    showLikes?: boolean;
 }
 
-const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
-    const { hasFavorited, toggleFavorite } = useFavorite({
-        recipeId,
-        currentUser,
-    });
+const HeartButton: React.FC<HeartButtonProps> = ({
+    recipeId,
+    currentUser,
+    likes = 0,
+    showLikes = false,
+}) => {
+    const { hasFavorited, toggleFavorite, likesCount, isLoading } = useFavorite(
+        {
+            recipeId,
+            currentUser,
+            likes,
+        }
+    );
 
     const [isDisabled, setIsDisabled] = useState(false);
 
     const handleButtonClick = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>
     ) => {
-        if (!isDisabled) {
+        if (!isDisabled && !isLoading) {
             toggleFavorite(e);
             setIsDisabled(true);
         }
@@ -36,25 +46,36 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
     }, [isDisabled]);
 
     return (
-        <div
-            onClick={handleButtonClick}
-            className="relative cursor-pointer transition hover:opacity-80"
-            data-cy="heart-button"
-        >
-            <AiOutlineHeart
-                size={28}
-                className="absolute -top-[2px] -right-[2px] fill-white"
-            />
-            <AiFillHeart
-                data-testid="heart-button"
-                size={24}
-                className={
-                    hasFavorited ? 'fill-green-450' : 'fill-neutral-500/70'
-                }
-                style={{
-                    pointerEvents: isDisabled ? 'none' : 'auto',
-                }}
-            />
+        <div className="flex flex-row items-center gap-2">
+            <div
+                onClick={handleButtonClick}
+                className="relative cursor-pointer transition hover:opacity-80"
+                data-cy="heart-button"
+            >
+                <AiOutlineHeart
+                    data-testid="outline-heart"
+                    size={28}
+                    className="absolute -top-[2px] -right-[2px] fill-white"
+                />
+                <AiFillHeart
+                    data-testid="filled-heart"
+                    size={24}
+                    className={
+                        hasFavorited ? 'fill-green-450' : 'fill-neutral-500/70'
+                    }
+                    style={{
+                        pointerEvents: isDisabled || isLoading ? 'none' : 'auto',
+                    }}
+                />
+            </div>
+            {showLikes && (
+                <div
+                    className="dark:text-neutral-100"
+                    data-cy="recipe-num-likes"
+                >
+                    {likesCount}
+                </div>
+            )}
         </div>
     );
 };

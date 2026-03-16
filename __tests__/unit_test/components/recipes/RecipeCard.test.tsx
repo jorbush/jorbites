@@ -11,7 +11,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 // Mock the HeartButton component
-vi.mock('@/app/components/HeartButton', () => ({
+vi.mock('@/app/components/buttons/HeartButton', () => ({
     default: () => <button data-testid="heart-button">Heart</button>,
 }));
 

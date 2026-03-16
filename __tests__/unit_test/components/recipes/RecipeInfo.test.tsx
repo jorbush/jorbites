@@ -42,8 +42,13 @@ vi.mock('../Avatar', () => ({
     ),
 }));
 
-vi.mock('../HeartButton', () => ({
-    default: () => <button data-testid="heart-button">Heart</button>,
+vi.mock('@/app/components/buttons/HeartButton', () => ({
+    default: ({ likes, showLikes }: any) => (
+        <div data-testid="heart-button-container">
+            <button data-testid="heart-button">Heart</button>
+            {showLikes && <span>{likes}</span>}
+        </div>
+    ),
 }));
 
 vi.mock('@/app/components/recipes/RecipeCategoryAndMethod', () => ({

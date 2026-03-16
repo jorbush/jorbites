@@ -1,14 +1,16 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import HeartButton from '@/app/components/buttons/HeartButton';
 import { SafeUser } from '@/app/types';
 
 // Mock the useFavorite hook
 vi.mock('@/app/hooks/useFavorite', () => ({
-    default: vi.fn(() => ({
+    default: vi.fn((params) => ({
         hasFavorited: false,
         toggleFavorite: vi.fn(),
+        likesCount: params.likes || 0,
+        isLoading: false,
     })),
 }));
 
@@ -39,6 +41,10 @@ describe('<HeartButton />', () => {
         vi.clearAllMocks();
     });
 
+    afterEach(() => {
+        cleanup();
+    });
+
     it('renders both heart icons', () => {
         render(
             <HeartButton
@@ -48,5 +54,29 @@ describe('<HeartButton />', () => {
         );
         expect(screen.getByTestId('filled-heart')).toBeDefined();
         expect(screen.getByTestId('outline-heart')).toBeDefined();
+    });
+
+    it('renders likes count when showLikes is true', () => {
+        render(
+            <HeartButton
+                recipeId={mockRecipeId}
+                currentUser={mockCurrentUser}
+                likes={10}
+                showLikes={true}
+            />
+        );
+        expect(screen.getByText('10')).toBeDefined();
+    });
+
+    it('does not render likes count when showLikes is false', () => {
+        render(
+            <HeartButton
+                recipeId={mockRecipeId}
+                currentUser={mockCurrentUser}
+                likes={10}
+                showLikes={false}
+            />
+        );
+        expect(screen.queryByText('10')).toBeNull();
     });
 });
