@@ -162,10 +162,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                                             className="cursor-pointer"
                                             prefetch={false}
                                         >
-                                            <div
-                                                className="group border-green-450 relative h-6 w-6 overflow-hidden rounded-full border md:h-8 md:w-8"
-                                                title={event.frontmatter.title}
-                                            >
+                                            <div className="group border-green-450 relative h-6 w-6 overflow-hidden rounded-full border md:h-8 md:w-8">
                                                 <Image
                                                     src={
                                                         event.frontmatter

@@ -149,14 +149,13 @@ describe('<RecipeContributionGraph />', () => {
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
         // Find a day cell that should have a recipe
-        const dayCells = screen.getAllByTitle(/recipe/i);
+        const dayCells = screen.getAllByTestId('contribution-day-1');
         if (dayCells.length > 0) {
             const dayCell = dayCells[0];
             fireEvent.mouseEnter(dayCell);
 
             // Check if tooltip appears (it should show recipe count and date)
-            // The tooltip might not be immediately visible, so we check for the structure
-            expect(dayCell).toBeDefined();
+            expect(screen.getByText(/1 recipe on/)).toBeDefined();
         }
     });
 
@@ -245,15 +244,14 @@ describe('<RecipeContributionGraph />', () => {
 
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
-        const dayCells = screen.getAllByTitle(/recipe/i);
+        const dayCells = screen.getAllByTestId('contribution-day-1');
         if (dayCells.length > 0) {
             const dayCell = dayCells[0];
             fireEvent.mouseEnter(dayCell);
-            fireEvent.mouseLeave(dayCell);
+            expect(screen.queryByText(/1 recipe on/)).not.toBeNull();
 
-            // Tooltip should be hidden (we can't easily test this without more complex queries)
-            // But the component should handle the event without errors
-            expect(dayCell).toBeDefined();
+            fireEvent.mouseLeave(dayCell);
+            expect(screen.queryByText(/1 recipe on/)).toBeNull();
         }
     });
 });

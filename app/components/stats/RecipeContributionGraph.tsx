@@ -221,6 +221,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                                 {week.map((day, dayIndex) => (
                                                     <div
                                                         key={`${weekIndex}-${dayIndex}`}
+                                                        data-testid={`contribution-day-${day.count}`}
                                                         className={`h-2.5 w-2.5 rounded-sm transition-colors sm:h-3 sm:w-3 ${getDayColor(
                                                             day.level
                                                         )} ${day.count > 0 ? 'hover:ring-green-450/50 cursor-pointer hover:ring-2' : ''}`}
@@ -232,13 +233,6 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                                         }
                                                         onMouseLeave={
                                                             handleDayLeave
-                                                        }
-                                                        title={
-                                                            day.count > 0
-                                                                ? `${formatDate(day.date)}: ${day.count} ${day.count === 1 ? t('recipe') : t('recipes')}`
-                                                                : formatDate(
-                                                                      day.date
-                                                                  )
                                                         }
                                                     />
                                                 ))}
