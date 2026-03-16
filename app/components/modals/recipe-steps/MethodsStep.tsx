@@ -2,7 +2,7 @@
 
 import { useTranslation } from 'react-i18next';
 import { GiCookingPot, GiPressureCooker } from 'react-icons/gi';
-import { PiCookingPotFill } from 'react-icons/pi';
+import { PiCookingPotFill, PiBowlFood } from 'react-icons/pi';
 import { MdMicrowave } from 'react-icons/md';
 import { TbCooker } from 'react-icons/tb';
 import { CgSmartHomeCooker } from 'react-icons/cg';
@@ -38,6 +38,10 @@ export const preparationMethods = [
     {
         label: 'Quick Pot',
         icon: PiCookingPotFill,
+    },
+    {
+        label: 'No-cook',
+        icon: PiBowlFood,
     },
 ];
 

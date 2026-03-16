@@ -439,6 +439,7 @@
     "apply": "Aplicar",
     "pot": "Olla",
     "quick pot": "Olla ràpida",
+    "no-cook": "Sense cocció",
     "youtube_video": "Vídeo de YouTube",
     "youtube_url_optional": "URL del teu vídeo de YouTube (opcional)",
     "invalid_youtube_url": "Sisplau, introdueix una URL vàlida de YouTube (per exemple: https://www.youtube.com/watch?v=..., https://youtu.be/... o https://youtube.com/shorts/...)",

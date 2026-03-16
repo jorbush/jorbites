@@ -51,6 +51,11 @@ vi.mock('react-icons/cg', () => ({
     CgSmartHomeCooker: () => <span>CgSmartHomeCooker</span>,
 }));
 
+vi.mock('react-icons/pi', () => ({
+    PiCookingPotFill: () => <span>PiCookingPotFill</span>,
+    PiBowlFood: () => <span>PiBowlFood</span>,
+}));
+
 describe('<MethodsStep />', () => {
     const mockProps = {
         selectedMethod: '',
@@ -81,6 +86,9 @@ describe('<MethodsStep />', () => {
         expect(screen.getByTestId('method-box-Air fryer')).toBeDefined();
         expect(screen.getByTestId('method-box-Deep fryer')).toBeDefined();
         expect(screen.getByTestId('method-box-Oven')).toBeDefined();
+        expect(screen.getByTestId('method-box-Pot')).toBeDefined();
+        expect(screen.getByTestId('method-box-Quick Pot')).toBeDefined();
+        expect(screen.getByTestId('method-box-No-cook')).toBeDefined();
     });
 
     it('shows selected method correctly', () => {
@@ -132,14 +140,14 @@ describe('<MethodsStep />', () => {
         expect(screen.getByText('methods_subtitle')).toBeDefined();
     });
 
-    it('renders all five preparation methods', () => {
+    it('renders all preparation methods including new ones', () => {
         render(<MethodsStep {...mockProps} />);
 
         // Count all method elements
         const methodElements = screen.getAllByText(
-            /Frying pan|Microwave|Air fryer|Deep fryer|Oven/
+            /Frying pan|Microwave|Air fryer|Deep fryer|Oven|Pot|Quick Pot|No-cook/
         );
-        expect(methodElements).toHaveLength(5);
+        expect(methodElements).toHaveLength(8);
     });
 
     it('can select different methods sequentially', () => {
