@@ -217,8 +217,8 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                     </h3>
                     <div className="flex flex-wrap gap-2">
                         {/* Loading skeleton */}
-                        <div className="h-8 w-32 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
-                        <div className="h-8 w-28 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+                        <div className="h-8 w-32 animate-pulse rounded-full bg-gray-200 dark:bg-neutral-800" />
+                        <div className="h-8 w-28 animate-pulse rounded-full bg-gray-200 dark:bg-neutral-800" />
                     </div>
                 </div>
             ) : (
@@ -231,7 +231,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                             {coCooks.map((cook) => (
                                 <div
                                     key={cook.id}
-                                    className="flex cursor-pointer items-center gap-2 rounded-full bg-gray-100 px-2 py-1 dark:bg-gray-800"
+                                    className="flex cursor-pointer items-center gap-2 rounded-full bg-gray-100 px-2 py-1 dark:bg-neutral-900"
                                     onClick={() =>
                                         router.push(`/profile/${cook.id}`)
                                     }
@@ -362,8 +362,8 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         </div>
                         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {/* Loading skeletons */}
-                            <div className="h-64 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
-                            <div className="hidden h-64 animate-pulse rounded-lg bg-gray-200 sm:block dark:bg-gray-700" />
+                            <div className="h-64 animate-pulse rounded-lg bg-gray-200 dark:bg-neutral-800" />
+                            <div className="hidden h-64 animate-pulse rounded-lg bg-gray-200 sm:block dark:bg-neutral-800" />
                         </div>
                     </div>
                 </>

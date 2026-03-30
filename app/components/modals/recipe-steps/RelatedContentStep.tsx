@@ -225,7 +225,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                             {selectedCoCooks.map((user) => (
                                 <div
                                     key={user.id}
-                                    className="flex items-center gap-2 rounded-full bg-gray-100 py-1 pr-2 pl-1 dark:bg-zinc-800"
+                                    className="flex items-center gap-2 rounded-full bg-gray-100 py-1 pr-2 pl-1 dark:bg-neutral-900"
                                 >
                                     <Avatar
                                         src={user.image}
@@ -252,7 +252,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                         <h3 className="mb-2 text-sm font-medium text-gray-500 dark:text-zinc-400">
                             {t('selected_quest') || 'Selected Quest'}
                         </h3>
-                        <div className="rounded-lg border border-neutral-300 bg-white p-3 dark:border-neutral-600 dark:bg-zinc-800">
+                        <div className="rounded-lg border border-neutral-300 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900">
                             <div className="flex items-start justify-between">
                                 <div className="flex-1">
                                     <p className="font-medium text-zinc-900 dark:text-zinc-100">
@@ -293,7 +293,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                 {selectedLinkedRecipes.map((recipe) => (
                                     <div
                                         key={recipe.id}
-                                        className="flex items-center justify-between rounded-lg border border-neutral-300 bg-white p-2 dark:border-neutral-600 dark:bg-zinc-800"
+                                        className="flex items-center justify-between rounded-lg border border-neutral-300 bg-white p-2 dark:border-neutral-800 dark:bg-neutral-900"
                                     >
                                         <div className="flex items-center gap-2">
                                             <div className="relative h-10 w-10 overflow-hidden rounded-md">
