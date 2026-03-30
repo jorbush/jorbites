@@ -14,7 +14,17 @@
         "eggplant",
         "lentils",
         "tempeh",
-        "seitan"
+        "seitan",
+        "kale",
+        "spinach",
+        "cauliflower",
+        "zucchini",
+        "bell_peppers",
+        "broccoli",
+        "butternut_squash",
+        "beets",
+        "brussels_sprouts",
+        "artichoke"
       ]
     },
     {
@@ -77,7 +87,16 @@
         "cantabrian",
         "aragonese",
         "navarrese",
-        "castilian"
+        "castilian",
+        "greek",
+        "korean",
+        "chinese",
+        "french",
+        "caribbean",
+        "brazilian",
+        "peruvian",
+        "turkish",
+        "lebanese"
       ]
     },
     {
@@ -145,7 +164,17 @@
         "curry",
         "tacos",
         "sandwich",
-        "bowl"
+        "bowl",
+        "lasagna",
+        "risotto",
+        "paella",
+        "sushi",
+        "ramen",
+        "pad_thai",
+        "enchiladas",
+        "falafel",
+        "dumplings",
+        "casserole"
       ]
     },
     {
@@ -198,7 +227,13 @@
         "baking",
         "poaching",
         "pickling",
-        "fermenting"
+        "fermenting",
+        "deep_frying",
+        "smoking",
+        "blanching",
+        "confit",
+        "caramelizing",
+        "dehydrating"
       ]
     }
   ],
@@ -217,7 +252,9 @@
         "sugar_free",
         "raw",
         "keto",
-        "paleo"
+        "paleo",
+        "oil_free",
+        "whole_food"
       ]
     }
   ]
