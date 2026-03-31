@@ -37,6 +37,7 @@ vi.mock('@/app/components/inputs/CategoryInput', () => ({
 vi.mock('react-icons/gi', () => ({
     GiCookingPot: () => <span>GiCookingPot</span>,
     GiPressureCooker: () => <span>GiPressureCooker</span>,
+    GiBarbecue: () => <span>GiBarbecue</span>,
 }));
 
 vi.mock('react-icons/md', () => ({
@@ -89,6 +90,7 @@ describe('<MethodsStep />', () => {
         expect(screen.getByTestId('method-box-Pot')).toBeDefined();
         expect(screen.getByTestId('method-box-Quick Pot')).toBeDefined();
         expect(screen.getByTestId('method-box-No-cook')).toBeDefined();
+        expect(screen.getByTestId('method-box-Grilled')).toBeDefined();
     });
 
     it('shows selected method correctly', () => {
@@ -145,9 +147,9 @@ describe('<MethodsStep />', () => {
 
         // Count all method elements
         const methodElements = screen.getAllByText(
-            /Frying pan|Microwave|Air fryer|Deep fryer|Oven|Pot|Quick Pot|No-cook/
+            /Frying pan|Microwave|Air fryer|Deep fryer|Oven|Pot|Quick Pot|No-cook|Grilled/
         );
-        expect(methodElements).toHaveLength(8);
+        expect(methodElements).toHaveLength(9);
     });
 
     it('can select different methods sequentially', () => {

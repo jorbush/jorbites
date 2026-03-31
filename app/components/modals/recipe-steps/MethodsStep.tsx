@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { GiCookingPot, GiPressureCooker } from 'react-icons/gi';
+import { GiBarbecue, GiCookingPot, GiPressureCooker } from 'react-icons/gi';
 import { PiCookingPotFill, PiBowlFood } from 'react-icons/pi';
 import { MdMicrowave } from 'react-icons/md';
 import { TbCooker } from 'react-icons/tb';
@@ -42,6 +42,10 @@ export const preparationMethods = [
     {
         label: 'No-cook',
         icon: PiBowlFood,
+    },
+    {
+        label: 'Grilled',
+        icon: GiBarbecue,
     },
 ];
 

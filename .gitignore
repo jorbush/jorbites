@@ -47,3 +47,5 @@ cypress.env.json
 dev.log
 
 certificates
+
+dump.rdb
