@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, act, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RecipeContributionGraph from '@/app/components/stats/RecipeContributionGraph';
 import { SafeRecipe } from '@/app/types';
@@ -67,9 +67,12 @@ vi.mock('@/app/utils/date-utils', () => ({
 describe('<RecipeContributionGraph />', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        vi.useFakeTimers();
     });
 
     afterEach(() => {
+        vi.clearAllTimers();
+        vi.useRealTimers();
         cleanup();
     });
 
@@ -148,16 +151,21 @@ describe('<RecipeContributionGraph />', () => {
 
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
-        // Find a day cell that should have a recipe
-        const dayCells = screen.getAllByTitle(/recipe/i);
-        if (dayCells.length > 0) {
-            const dayCell = dayCells[0];
-            fireEvent.mouseEnter(dayCell);
+        // Find day cells with recipes via cursor-pointer class
+        const activeDayCells = document.querySelectorAll('.cursor-pointer');
+        expect(activeDayCells.length).toBeGreaterThan(0);
 
-            // Check if tooltip appears (it should show recipe count and date)
-            // The tooltip might not be immediately visible, so we check for the structure
-            expect(dayCell).toBeDefined();
-        }
+        const activeCell = activeDayCells[0];
+        // The Tooltip wrapper is the parent element
+        const tooltipWrapper = activeCell.parentElement!;
+        fireEvent.mouseEnter(tooltipWrapper);
+
+        // Tooltip has a 300ms delay
+        act(() => {
+            vi.advanceTimersByTime(300);
+        });
+
+        expect(screen.getByTestId('tooltip')).toBeDefined();
     });
 
     it('colors days correctly based on recipe count', () => {
@@ -245,15 +253,21 @@ describe('<RecipeContributionGraph />', () => {
 
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
-        const dayCells = screen.getAllByTitle(/recipe/i);
-        if (dayCells.length > 0) {
-            const dayCell = dayCells[0];
-            fireEvent.mouseEnter(dayCell);
-            fireEvent.mouseLeave(dayCell);
+        const activeDayCells = document.querySelectorAll('.cursor-pointer');
+        expect(activeDayCells.length).toBeGreaterThan(0);
 
-            // Tooltip should be hidden (we can't easily test this without more complex queries)
-            // But the component should handle the event without errors
-            expect(dayCell).toBeDefined();
-        }
+        const activeCell = activeDayCells[0];
+        const tooltipWrapper = activeCell.parentElement!;
+
+        // Show tooltip
+        fireEvent.mouseEnter(tooltipWrapper);
+        act(() => {
+            vi.advanceTimersByTime(300);
+        });
+        expect(screen.getByTestId('tooltip')).toBeDefined();
+
+        // Hide tooltip
+        fireEvent.mouseLeave(tooltipWrapper);
+        expect(screen.queryByTestId('tooltip')).toBeNull();
     });
 });
