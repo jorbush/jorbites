@@ -164,7 +164,6 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                                         >
                                             <div
                                                 className="group border-green-450 relative h-6 w-6 overflow-hidden rounded-full border md:h-8 md:w-8"
-                                                title={event.frontmatter.title}
                                             >
                                                 <Image
                                                     src={
