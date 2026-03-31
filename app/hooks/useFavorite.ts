@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useOptimistic, useTransition } from 'react';
 import { toast } from 'react-hot-toast';
 import { SafeUser } from '@/app/types';
 import useLoginModal from '@/app/hooks/useLoginModal';
@@ -13,21 +13,21 @@ interface IUseFavorite {
 
 const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
     const loginModal = useLoginModal();
     const { t } = useTranslation();
 
-    const hasFavorited = useMemo(() => {
-        const list = currentUser?.favoriteIds || [];
+    const hasFavorited = (currentUser?.favoriteIds || []).includes(recipeId);
 
-        return list.includes(recipeId);
-    }, [currentUser, recipeId]);
+    const [optimisticFavorited, setOptimisticFavorited] =
+        useOptimistic(hasFavorited);
+
+    const [isPending, startTransition] = useTransition();
 
     const toggleFavorite = useCallback(
-        async (e: React.MouseEvent<HTMLDivElement>) => {
+        (e: React.MouseEvent<HTMLDivElement>) => {
             e.stopPropagation();
 
-            if (isLoading) {
+            if (isPending) {
                 return;
             }
 
@@ -35,41 +35,45 @@ const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
                 return loginModal.onOpen();
             }
 
-            setIsLoading(true);
+            const currentFavorited = optimisticFavorited;
 
-            try {
-                let request;
-                let requestLike;
+            startTransition(async () => {
+                setOptimisticFavorited(!currentFavorited);
 
-                if (hasFavorited) {
-                    request = () => axios.delete(`/api/favorites/${recipeId}`);
-                    requestLike = () =>
-                        axios.post(`/api/recipe/${recipeId}`, {
+                try {
+                    if (currentFavorited) {
+                        await axios.post(`/api/recipe/${recipeId}`, {
                             operation: 'decrement',
                         });
-                } else {
-                    request = () => axios.post(`/api/favorites/${recipeId}`);
-                    requestLike = () =>
-                        axios.post(`/api/recipe/${recipeId}`, {
+                        await axios.delete(`/api/favorites/${recipeId}`);
+                    } else {
+                        await axios.post(`/api/recipe/${recipeId}`, {
                             operation: 'increment',
                         });
+                        await axios.post(`/api/favorites/${recipeId}`);
+                    }
+                    router.refresh();
+                    toast.success(t('success'));
+                } catch (error) {
+                    router.refresh();
+                    toast.error((error as Error).message);
                 }
-
-                await requestLike();
-                await request();
-                router.refresh();
-                toast.success(t('success'));
-            } catch (error) {
-                toast.error((error as Error).message);
-            } finally {
-                setIsLoading(false);
-            }
+            });
         },
-        [currentUser, hasFavorited, recipeId, loginModal, router, isLoading, t]
+        [
+            currentUser,
+            optimisticFavorited,
+            recipeId,
+            loginModal,
+            router,
+            t,
+            setOptimisticFavorited,
+            isPending,
+        ]
     );
 
     return {
-        hasFavorited,
+        hasFavorited: optimisticFavorited,
         toggleFavorite,
     };
 };
