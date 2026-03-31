@@ -11,7 +11,6 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import { USERNAME_MAX_LENGTH } from '@/app/utils/constants';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { FaRegSave } from 'react-icons/fa';
 import { FiEdit3 } from 'react-icons/fi';
@@ -38,9 +37,17 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
         if (isLoading) return;
 
         setIsLoading(true);
-        axios
-            .patch(`/api/userName/${currentUser?.id}`, {
-                userName: newUserName,
+        fetch(`/api/userName/${currentUser?.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userName: newUserName }),
+        })
+            .then(async (res) => {
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    return Promise.reject(err);
+                }
+                return res.json().catch(() => null);
             })
             .then(() => {
                 toast.success(
@@ -50,7 +57,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
             })
             .catch((error) => {
                 const errorMessage =
-                    error.response?.data?.error || t('something_went_wrong');
+                    error?.error || t('something_went_wrong');
                 toast.error(errorMessage);
                 // Reset to original name on error
                 setNewUserName(currentUser?.name || '');

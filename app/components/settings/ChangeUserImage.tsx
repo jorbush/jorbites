@@ -10,7 +10,6 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { CldUploadWidget } from 'next-cloudinary';
 import { FaRegSave } from 'react-icons/fa';
@@ -33,9 +32,16 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
     const [canSave, setCanSave] = useState(false);
 
     const updateUserProfile = useCallback(() => {
-        axios
-            .put(`/api/userImage/${currentUser?.id}`, {
-                userImage: newImage,
+        fetch(`/api/userImage/${currentUser?.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userImage: newImage }),
+        })
+            .then(async (res) => {
+                if (!res.ok) {
+                    return Promise.reject(null);
+                }
+                return res.json().catch(() => null);
             })
             .then(() => {
                 toast.success(t('image_updated'));

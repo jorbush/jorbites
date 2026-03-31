@@ -4,7 +4,6 @@ import { SafeUser } from '@/app/types';
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import useLoginModal from '@/app/hooks/useLoginModal';
 
@@ -51,9 +50,15 @@ const JoinWorkshopButton: React.FC<JoinWorkshopButtonProps> = ({
 
             try {
                 const action = isParticipant ? 'leave' : 'join';
-                await axios.post(`/api/workshop/${workshopId}/join`, {
-                    action,
+                const res = await fetch(`/api/workshop/${workshopId}/join`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action }),
                 });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw err;
+                }
 
                 toast.success(
                     isParticipant ? t('workshop_left') : t('workshop_joined')
@@ -61,7 +66,7 @@ const JoinWorkshopButton: React.FC<JoinWorkshopButtonProps> = ({
                 router.refresh();
             } catch (error: any) {
                 toast.error(
-                    error?.response?.data?.error || t('something_went_wrong')
+                    error?.error || t('something_went_wrong')
                 );
             } finally {
                 setLoading(false);

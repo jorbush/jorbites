@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
 
@@ -38,8 +37,15 @@ const EmailNotificationsSelector: React.FC<EmailNotificationProps> = ({
 
     const toggleEmailNotifications = () => {
         setIsLoading(true);
-        axios
-            .put(`/api/emailNotifications/${currentUser?.id}`)
+        fetch(`/api/emailNotifications/${currentUser?.id}`, {
+            method: 'PUT',
+        })
+            .then(async (res) => {
+                if (!res.ok) {
+                    return Promise.reject(null);
+                }
+                return res.json().catch(() => null);
+            })
             .then(() => {
                 toast.success(t('email_notifications_updated'));
             })

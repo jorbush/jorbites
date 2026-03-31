@@ -4,7 +4,6 @@ import useRecipeModal, { EditRecipeData } from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -195,7 +194,11 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         };
 
         try {
-            await axios.post(`${window.location.origin}/api/draft`, data);
+            await fetch(`${window.location.origin}/api/draft`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
             toast.success(t('draft_saved') ?? 'Draft saved!');
         } catch (error) {
             console.error(error);
@@ -207,9 +210,10 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         setIsLoading(true);
         setIsLoadingDraft(true);
         try {
-            const { data } = await axios.get(
+            const draftRes = await fetch(
                 `${window.location.origin}/api/draft`
             );
+            const data = draftRes.ok ? await draftRes.json() : null;
             if (!data) {
                 return;
             }
@@ -232,10 +236,10 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
             if (formData.coCooksIds?.length > 0) {
                 try {
-                    const cooksResponse = await axios.get(
+                    const cooksRes = await fetch(
                         `/api/users/multiple?ids=${formData.coCooksIds.join(',')}`
                     );
-                    setSelectedCoCooks(cooksResponse.data);
+                    setSelectedCoCooks(await cooksRes.json());
                 } catch (error) {
                     console.error('Failed to load co-cooks', error);
                 }
@@ -243,10 +247,10 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
             if (formData.linkedRecipeIds?.length > 0) {
                 try {
-                    const recipesResponse = await axios.get(
+                    const recipesRes = await fetch(
                         `/api/recipes/multiple?ids=${formData.linkedRecipeIds.join(',')}`
                     );
-                    setSelectedLinkedRecipes(recipesResponse.data);
+                    setSelectedLinkedRecipes(await recipesRes.json());
                 } catch (error) {
                     console.error('Failed to load linked recipes', error);
                 }
@@ -254,10 +258,10 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
             if (formData.questId) {
                 try {
-                    const questResponse = await axios.get(
+                    const questRes = await fetch(
                         `/api/quest/${formData.questId}`
                     );
-                    setSelectedQuest(questResponse.data);
+                    setSelectedQuest(await questRes.json());
                 } catch (error) {
                     console.error('Failed to load quest', error);
                 }
@@ -273,7 +277,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const deleteDraft = async () => {
         try {
-            await axios.delete(`${window.location.origin}/api/draft`);
+            await fetch(`${window.location.origin}/api/draft`, {
+                method: 'DELETE',
+            });
         } catch (error) {
             console.error(error);
             toast.error(t('error_deleting_draft') ?? 'Failed to delete draft.');
@@ -327,10 +333,10 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 }
                 if (editData.questId) {
                     try {
-                        const questResponse = await axios.get(
+                        const questRes = await fetch(
                             `/api/quest/${editData.questId}`
                         );
-                        setSelectedQuest(questResponse.data);
+                        setSelectedQuest(await questRes.json());
                     } catch (error) {
                         console.error('Failed to load quest', error);
                     }
@@ -488,12 +494,28 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             if (recipeModal.isEditMode && recipeModal.editRecipeData) {
                 // Edit existing recipe
                 const url = `${window.location.origin}/api/recipe/${recipeModal.editRecipeData.id}`;
-                await axios.patch(url, data);
+                const res = await fetch(url, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw err;
+                }
                 toast.success(t('recipe_updated'));
             } else {
                 // Create new recipe
                 const url = `${window.location.origin}/api/recipes`;
-                await axios.post(url, data);
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw err;
+                }
                 await deleteDraft();
                 toast.success(t('recipe_posted'));
             }

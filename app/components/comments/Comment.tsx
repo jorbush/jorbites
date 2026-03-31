@@ -5,7 +5,6 @@ import { format } from 'date-fns';
 import Avatar from '@/app/components/utils/Avatar';
 import { MdDelete } from 'react-icons/md';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -49,16 +48,20 @@ const Comment: React.FC<CommentProps> = ({
     }, []);
 
     const deleteComment = () => {
-        axios
-            .delete(`/api/comments/${commentId}`)
+        fetch(`/api/comments/${commentId}`, { method: 'DELETE' })
+            .then(async (res) => {
+                if (!res.ok) {
+                    return Promise.reject(null);
+                }
+                return res.json().catch(() => null);
+            })
             .then(() => {
                 toast.success(t('comment_deleted'));
                 router.refresh();
             })
             .catch(() => {
                 toast.error(t('something_went_wrong'));
-            })
-            .finally(() => {});
+            });
     };
 
     return (

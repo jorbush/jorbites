@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Dispatch, SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
 
 interface DeleteWorkshopModalProps {
     id: string;
@@ -22,8 +21,13 @@ const DeleteWorkshopModal: React.FC<DeleteWorkshopModalProps> = ({
     const router = useRouter();
 
     const handleDeleteWorkshop = () => {
-        axios
-            .delete(`/api/workshop/${id}`)
+        fetch(`/api/workshop/${id}`, { method: 'DELETE' })
+            .then(async (res) => {
+                if (!res.ok) {
+                    return Promise.reject(null);
+                }
+                return res.json().catch(() => null);
+            })
             .then(() => {
                 toast.success(t('workshop_deleted'));
                 setIsOpen(false);

@@ -11,7 +11,6 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { SafeUser } from '@/app/types';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { FaRegSave } from 'react-icons/fa';
 import { FiEdit3, FiEye, FiEyeOff } from 'react-icons/fi';
@@ -58,10 +57,20 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
             if (isLoading) return;
 
             setIsLoading(true);
-            axios
-                .patch(`/api/password/${currentUser?.id}`, {
+            fetch(`/api/password/${currentUser?.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     currentPassword: data.currentPassword,
                     newPassword: data.newPassword,
+                }),
+            })
+                .then(async (res) => {
+                    if (!res.ok) {
+                        const err = await res.json().catch(() => ({}));
+                        return Promise.reject(err);
+                    }
+                    return res.json().catch(() => null);
                 })
                 .then(() => {
                     toast.success(
@@ -72,8 +81,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                 })
                 .catch((error) => {
                     const errorMessage =
-                        error.response?.data?.error ||
-                        t('something_went_wrong');
+                        error?.error || t('something_went_wrong');
                     toast.error(errorMessage);
                 })
                 .finally(() => {

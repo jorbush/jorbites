@@ -1,6 +1,5 @@
 'use client';
 
-import axios from 'axios';
 import { AiFillGithub } from 'react-icons/ai';
 import { FcGoogle } from 'react-icons/fc';
 import { useCallback, useState } from 'react';
@@ -43,8 +42,18 @@ const RegisterModal = () => {
             return;
         }
         setIsLoading(true);
-        axios
-            .post('/api/register', data)
+        fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        })
+            .then(async (res) => {
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    return Promise.reject(err);
+                }
+                return res.json().catch(() => null);
+            })
             .then(() => {
                 toast.success(t('registered'));
                 registerModal.onClose();
@@ -64,7 +73,7 @@ const RegisterModal = () => {
                 });
             })
             .catch((error) => {
-                if (error.response?.data?.error === 'Email already exists') {
+                if (error?.error === 'Email already exists') {
                     toast.error(
                         t('email_already_exists') || 'Email already exists'
                     );

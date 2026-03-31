@@ -3,10 +3,8 @@ import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import WorkshopInfo from '@/app/components/workshops/WorkshopInfo';
 import { SafeUser, SafeWorkshopParticipant } from '@/app/types';
-import axios from 'axios';
 
 // Mock dependencies
-vi.mock('axios');
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => key,
@@ -72,6 +70,7 @@ describe('<WorkshopInfo />', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        global.fetch = vi.fn();
     });
 
     afterEach(() => {

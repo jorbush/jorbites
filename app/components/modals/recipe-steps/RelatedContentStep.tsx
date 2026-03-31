@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import Heading from '@/app/components/navigation/Heading';
 import SearchInput from '@/app/components/inputs/SearchInput';
@@ -96,19 +95,21 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
 
                 try {
                     if (type === 'quests') {
-                        const response = await axios.get(
+                        const res = await fetch(
                             `/api/quests?status=open&q=${encodeURIComponent(query)}`
                         );
+                        const data = await res.json();
                         setResults({
                             users: [],
                             recipes: [],
-                            quests: response.data.quests,
+                            quests: data.quests,
                         });
                     } else {
-                        const response = await axios.get(
+                        const res = await fetch(
                             `/api/search?q=${encodeURIComponent(query)}&type=${type}`
                         );
-                        setResults({ ...response.data, quests: [] });
+                        const data = await res.json();
+                        setResults({ ...data, quests: [] });
                     }
                 } catch (error) {
                     console.error('Search failed:', error);

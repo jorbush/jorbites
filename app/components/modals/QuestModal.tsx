@@ -4,7 +4,6 @@ import useQuestModal from '@/app/hooks/useQuestModal';
 import Modal from '@/app/components/modals/Modal';
 import { useState, useEffect } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -66,12 +65,28 @@ const QuestModal = () => {
             if (questModal.isEditMode && questModal.editQuestData) {
                 // Edit existing quest
                 const url = `/api/quest/${questModal.editQuestData.id}`;
-                await axios.patch(url, data);
+                const res = await fetch(url, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw err;
+                }
                 toast.success(t('quest_updated') || 'Quest updated!');
             } else {
                 // Create new quest
                 const url = `/api/quests`;
-                await axios.post(url, data);
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw err;
+                }
                 toast.success(t('quest_created') || 'Quest created!');
             }
 
@@ -85,7 +100,7 @@ const QuestModal = () => {
         } catch (error: any) {
             console.error('Failed to save quest', error);
             const errorMessage =
-                error.response?.data?.error ||
+                error?.error ||
                 t('something_went_wrong') ||
                 'Something went wrong';
             toast.error(errorMessage);

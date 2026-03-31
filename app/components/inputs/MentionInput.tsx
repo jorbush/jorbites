@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import axios from 'axios';
 import debounce from 'lodash/debounce';
 import Avatar from '@/app/components/utils/Avatar';
 import VerificationBadge from '@/app/components/VerificationBadge';
@@ -48,10 +47,11 @@ const MentionInput: React.FC<MentionInputProps> = ({
             }
 
             try {
-                const response = await axios.get(
+                const res = await fetch(
                     `/api/search?q=${encodeURIComponent(query)}&type=users`
                 );
-                setUsers(response.data.users || []);
+                const data = await res.json();
+                setUsers(data.users || []);
             } catch (error) {
                 console.error('Search failed:', error);
                 setUsers([]);

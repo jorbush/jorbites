@@ -10,7 +10,6 @@ import BlogDetail, {
 import { useRouter } from 'next/navigation';
 import useTheme from '@/app/hooks/useTheme';
 import { SafeUser } from '@/app/types';
-import axios from 'axios';
 
 interface BlogDetailClientProps {
     id: string;
@@ -53,9 +52,10 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
                 // Fetch author data if user_id is available
                 if (blogData.frontmatter.user_id) {
                     try {
-                        const { data } = await axios.get(
+                        const authorRes = await fetch(
                             `/api/user/${blogData.frontmatter.user_id}`
                         );
+                        const data = await authorRes.json();
                         setAuthor(data);
                     } catch (error) {
                         console.error('Failed to load author', error);

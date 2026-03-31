@@ -18,7 +18,6 @@ import RecipeCard from '@/app/components/recipes/RecipeCard';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
 import useQuestModal from '@/app/hooks/useQuestModal';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useState } from 'react';
 import Button from '@/app/components/buttons/Button';
@@ -126,14 +125,20 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
         setIsDeleting(true);
         setShowDeleteModal(false);
         try {
-            await axios.delete(`/api/quest/${quest.id}`);
+            const res = await fetch(`/api/quest/${quest.id}`, {
+                method: 'DELETE',
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw err;
+            }
             toast.success(t('quest_deleted') || 'Quest deleted successfully');
             router.push('/quests');
             router.refresh();
         } catch (error: any) {
             console.error('Failed to delete quest', error);
             toast.error(
-                error.response?.data?.error ||
+                error?.error ||
                     t('something_went_wrong') ||
                     'Something went wrong'
             );

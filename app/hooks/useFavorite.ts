@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -42,16 +41,26 @@ const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
                 let requestLike;
 
                 if (hasFavorited) {
-                    request = () => axios.delete(`/api/favorites/${recipeId}`);
+                    request = () =>
+                        fetch(`/api/favorites/${recipeId}`, {
+                            method: 'DELETE',
+                        });
                     requestLike = () =>
-                        axios.post(`/api/recipe/${recipeId}`, {
-                            operation: 'decrement',
+                        fetch(`/api/recipe/${recipeId}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ operation: 'decrement' }),
                         });
                 } else {
-                    request = () => axios.post(`/api/favorites/${recipeId}`);
+                    request = () =>
+                        fetch(`/api/favorites/${recipeId}`, {
+                            method: 'POST',
+                        });
                     requestLike = () =>
-                        axios.post(`/api/recipe/${recipeId}`, {
-                            operation: 'increment',
+                        fetch(`/api/recipe/${recipeId}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ operation: 'increment' }),
                         });
                 }
 

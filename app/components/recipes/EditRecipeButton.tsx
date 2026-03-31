@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import useRecipeModal, { EditRecipeData } from '@/app/hooks/useRecipeModal';
 import { SafeRecipe, SafeUser } from '@/app/types';
 import { useCallback } from 'react';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 interface EditRecipeButtonProps {
@@ -46,10 +45,10 @@ const EditRecipeButton: React.FC<EditRecipeButtonProps> = ({ recipe }) => {
 
             if (recipe.coCooksIds && recipe.coCooksIds.length > 0) {
                 try {
-                    const cooksResponse = await axios.get(
+                    const cooksRes = await fetch(
                         `/api/users/multiple?ids=${recipe.coCooksIds.join(',')}`
                     );
-                    editData.coCooks = cooksResponse.data;
+                    editData.coCooks = await cooksRes.json();
                 } catch (error) {
                     console.error('Failed to load co-cooks', error);
                 }
@@ -57,10 +56,10 @@ const EditRecipeButton: React.FC<EditRecipeButtonProps> = ({ recipe }) => {
 
             if (recipe.linkedRecipeIds && recipe.linkedRecipeIds.length > 0) {
                 try {
-                    const recipesResponse = await axios.get(
+                    const recipesRes = await fetch(
                         `/api/recipes/multiple?ids=${recipe.linkedRecipeIds.join(',')}`
                     );
-                    editData.linkedRecipes = recipesResponse.data;
+                    editData.linkedRecipes = await recipesRes.json();
                 } catch (error) {
                     console.error('Failed to load linked recipes', error);
                 }

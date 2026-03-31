@@ -15,7 +15,6 @@ import {
 } from 'react-icons/md';
 import { FaMoneyBillWave } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 
 interface WorkshopInfoProps {
     host: SafeUser;
@@ -61,9 +60,10 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
         const fetchWhitelistedUsers = async () => {
             if (whitelistedUserIds.length > 0) {
                 try {
-                    const { data } = await axios.get(
+                    const res = await fetch(
                         `/api/users/multiple?ids=${whitelistedUserIds.join(',')}`
                     );
+                    const data = await res.json();
                     setWhitelistedUsers(data);
                 } catch (error) {
                     console.error('Failed to load whitelisted users', error);

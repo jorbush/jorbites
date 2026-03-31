@@ -4,8 +4,6 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
-import Container from '@/app/components/utils/Container';
 import Heading from '@/app/components/navigation/Heading';
 import Input from '@/app/components/inputs/Input';
 import Button from '@/app/components/buttons/Button';
@@ -45,10 +43,11 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
 
         const validateToken = async () => {
             try {
-                const response = await axios.get(
+                const res = await fetch(
                     `/api/password-reset/validate/${token}`
                 );
-                if (!response.data.valid) {
+                const data = await res.json();
+                if (!data.valid) {
                     handleInvalidToken();
                 }
             } catch (error) {
@@ -70,10 +69,17 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
 
         setIsLoading(true);
 
-        axios
-            .post('/api/password-reset/reset', {
-                token,
-                password: data.password,
+        fetch('/api/password-reset/reset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, password: data.password }),
+        })
+            .then(async (res) => {
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    return Promise.reject(err);
+                }
+                return res.json().catch(() => null);
             })
             .then(() => {
                 toast.success(
@@ -84,7 +90,7 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
             })
             .catch((error) => {
                 toast.error(
-                    error.response?.data?.error ||
+                    error?.error ||
                         t('something_went_wrong') ||
                         'Something went wrong'
                 );

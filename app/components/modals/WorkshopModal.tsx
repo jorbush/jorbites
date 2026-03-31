@@ -4,7 +4,6 @@ import useWorkshopModal from '@/app/hooks/useWorkshopModal';
 import Modal from '@/app/components/modals/Modal';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -105,10 +104,11 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 // Load whitelisted users if private workshop
                 if (data.isPrivate && data.whitelistedUserIds.length > 0) {
                     try {
-                        const response = await axios.get(
+                        const res = await fetch(
                             `/api/users/multiple?ids=${data.whitelistedUserIds.join(',')}`
                         );
-                        setSelectedUsers(response.data);
+                        const users = await res.json();
+                        setSelectedUsers(users);
                     } catch (error) {
                         console.error(
                             'Failed to load whitelisted users',
@@ -172,18 +172,32 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             };
 
             if (workshopModal.isEditMode && workshopModal.editWorkshopData) {
-                await axios.patch(
+                const res = await fetch(
                     `/api/workshop/${workshopModal.editWorkshopData.id}`,
-                    workshopData
+                    {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(workshopData),
+                    }
                 );
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw err;
+                }
                 toast.success(t('workshop_updated'));
             } else {
-                const response = await axios.post(
-                    '/api/workshops',
-                    workshopData
-                );
+                const res = await fetch('/api/workshops', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(workshopData),
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw err;
+                }
+                const responseData = await res.json();
                 toast.success(t('workshop_created'));
-                router.push(`/workshops/${response.data.id}`);
+                router.push(`/workshops/${responseData.id}`);
             }
 
             router.refresh();
@@ -192,7 +206,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             workshopModal.onClose();
         } catch (error: any) {
             toast.error(
-                error?.response?.data?.error || t('something_went_wrong')
+                error?.error || t('something_went_wrong')
             );
         } finally {
             setIsLoading(false);

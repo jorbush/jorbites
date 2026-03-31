@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Dispatch, SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
 
 interface DeleteRecipeModalProps {
     id: string;
@@ -22,8 +21,13 @@ const DeleteRecipeModal: React.FC<DeleteRecipeModalProps> = ({
     const router = useRouter();
 
     const handleDeleteRecipe = () => {
-        axios
-            .delete(`/api/recipe/${id}`)
+        fetch(`/api/recipe/${id}`, { method: 'DELETE' })
+            .then(async (res) => {
+                if (!res.ok) {
+                    return Promise.reject(null);
+                }
+                return res.json().catch(() => null);
+            })
             .then(() => {
                 toast.success(t('recipe_deleted'));
                 setIsOpen(false);

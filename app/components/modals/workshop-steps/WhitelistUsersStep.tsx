@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import SearchInput from '@/app/components/inputs/SearchInput';
 import Avatar from '@/app/components/utils/Avatar';
@@ -43,10 +42,11 @@ const WhitelistUsersStep: React.FC<WhitelistUsersStepProps> = ({
                 }
 
                 try {
-                    const response = await axios.get(
+                    const res = await fetch(
                         `/api/search?q=${encodeURIComponent(query)}&type=users`
                     );
-                    setResults(response.data);
+                    const data = await res.json();
+                    setResults(data);
                 } catch (error) {
                     console.error('Search failed:', error);
                     toast.error(tFunction('search_failed') || 'Search failed');

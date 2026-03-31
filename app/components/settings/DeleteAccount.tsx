@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { signOut } from 'next-auth/react';
 import { FiTrash2 } from 'react-icons/fi';
@@ -25,7 +24,13 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
 
         setIsLoading(true);
         try {
-            await axios.delete(`/api/user/${currentUser.id}`);
+            const res = await fetch(`/api/user/${currentUser.id}`, {
+                method: 'DELETE',
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw err;
+            }
             toast.success(
                 t('account_deleted_successfully') ||
                     'Account deleted successfully'
@@ -37,7 +42,7 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
             router.refresh();
         } catch (error: any) {
             const errorMessage =
-                error.response?.data?.error || t('something_went_wrong');
+                error?.error || t('something_went_wrong');
             toast.error(errorMessage);
         } finally {
             setIsLoading(false);

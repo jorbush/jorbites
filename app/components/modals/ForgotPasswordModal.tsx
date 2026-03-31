@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import axios from 'axios';
 import useForgotPasswordModal from '@/app/hooks/useForgotPasswordModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import Modal from '@/app/components/modals/Modal';
@@ -37,8 +36,17 @@ const ForgotPasswordModal = () => {
 
         setIsLoading(true);
 
-        axios
-            .post('/api/password-reset/request', { email: data.email })
+        fetch('/api/password-reset/request', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: data.email }),
+        })
+            .then(async (res) => {
+                if (!res.ok) {
+                    return Promise.reject(null);
+                }
+                return res.json().catch(() => null);
+            })
             .then(() => {
                 setEmailSent(true);
                 toast.success(t('reset_link_sent'));

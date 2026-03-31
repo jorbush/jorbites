@@ -9,13 +9,11 @@ import {
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import JoinWorkshopButton from '@/app/components/workshops/JoinWorkshopButton';
 import { SafeUser } from '@/app/types';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useLoginModal from '@/app/hooks/useLoginModal';
 
 // Mock dependencies
-vi.mock('axios');
 vi.mock('react-hot-toast');
 vi.mock('next/navigation', () => ({
     useRouter: vi.fn(),
@@ -60,6 +58,7 @@ describe('<JoinWorkshopButton />', () => {
         (useLoginModal as any).mockReturnValue({
             onOpen: mockLoginModalOnOpen,
         });
+        global.fetch = vi.fn();
     });
 
     afterEach(() => {
@@ -140,7 +139,10 @@ describe('<JoinWorkshopButton />', () => {
     });
 
     it('joins workshop successfully', async () => {
-        (axios.post as any).mockResolvedValueOnce({ data: {} });
+        (global.fetch as any).mockResolvedValueOnce({
+            ok: true,
+            json: () => Promise.resolve({}),
+        });
 
         render(
             <JoinWorkshopButton
@@ -156,9 +158,12 @@ describe('<JoinWorkshopButton />', () => {
         fireEvent.click(button);
 
         await waitFor(() => {
-            expect(axios.post).toHaveBeenCalledWith(
+            expect(global.fetch).toHaveBeenCalledWith(
                 '/api/workshop/workshop1/join',
-                { action: 'join' }
+                expect.objectContaining({
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'join' }),
+                })
             );
             expect(toast.success).toHaveBeenCalledWith('workshop_joined');
             expect(mockRouter.refresh).toHaveBeenCalled();
@@ -166,7 +171,10 @@ describe('<JoinWorkshopButton />', () => {
     });
 
     it('leaves workshop successfully', async () => {
-        (axios.post as any).mockResolvedValueOnce({ data: {} });
+        (global.fetch as any).mockResolvedValueOnce({
+            ok: true,
+            json: () => Promise.resolve({}),
+        });
 
         render(
             <JoinWorkshopButton
@@ -182,9 +190,12 @@ describe('<JoinWorkshopButton />', () => {
         fireEvent.click(button);
 
         await waitFor(() => {
-            expect(axios.post).toHaveBeenCalledWith(
+            expect(global.fetch).toHaveBeenCalledWith(
                 '/api/workshop/workshop1/join',
-                { action: 'leave' }
+                expect.objectContaining({
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'leave' }),
+                })
             );
             expect(toast.success).toHaveBeenCalledWith('workshop_left');
         });
@@ -192,8 +203,9 @@ describe('<JoinWorkshopButton />', () => {
 
     it('shows error message on join failure', async () => {
         const errorMessage = 'Workshop is full';
-        (axios.post as any).mockRejectedValueOnce({
-            response: { data: { error: errorMessage } },
+        (global.fetch as any).mockResolvedValueOnce({
+            ok: false,
+            json: () => Promise.resolve({ error: errorMessage }),
         });
 
         render(

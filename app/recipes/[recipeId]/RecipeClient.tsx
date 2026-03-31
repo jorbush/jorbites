@@ -1,6 +1,5 @@
 'use client';
 
-import axios from 'axios';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -69,10 +68,19 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
 
             setIsLoading(true);
 
-            axios
-                .post('/api/comments', {
+            fetch('/api/comments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     comment: comment,
                     recipeId: recipe?.id,
+                }),
+            })
+                .then(async (res) => {
+                    if (!res.ok) {
+                        return Promise.reject(null);
+                    }
+                    return res.json().catch(() => null);
                 })
                 .then(() => {
                     toast.success(t('comment_created'));

@@ -15,7 +15,6 @@ import RecipeCard from '@/app/components/recipes/RecipeCard';
 import YouTubePreview from '@/app/components/utils/YouTubePreview';
 import { TranslateableRecipeContent } from '@/app/components/translation/TranslateableRecipeContent';
 import { formatText } from '@/app/utils/textFormatting';
-import axios from 'axios';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -110,9 +109,10 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
         const fetchRelatedData = async () => {
             if (coCooksIds.length > 0) {
                 try {
-                    const { data } = await axios.get(
+                    const res = await fetch(
                         `/api/users/multiple?ids=${coCooksIds.join(',')}`
                     );
+                    const data = await res.json();
                     setCoCooks(data);
                 } catch (error) {
                     console.error('Failed to load co-cooks', error);
@@ -123,9 +123,10 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
 
             if (linkedRecipeIds.length > 0) {
                 try {
-                    const { data } = await axios.get(
+                    const res = await fetch(
                         `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
                     );
+                    const data = await res.json();
                     setLinkedRecipes(data);
                 } catch (error) {
                     console.error('Failed to load linked recipes', error);
