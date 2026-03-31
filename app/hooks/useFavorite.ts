@@ -1,6 +1,11 @@
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { useCallback, useOptimistic, useTransition } from 'react';
+import {
+    useCallback,
+    useOptimistic,
+    useRef,
+    startTransition,
+} from 'react';
 import { toast } from 'react-hot-toast';
 import { SafeUser } from '@/app/types';
 import useLoginModal from '@/app/hooks/useLoginModal';
@@ -21,13 +26,13 @@ const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
     const [optimisticFavorited, setOptimisticFavorited] =
         useOptimistic(hasFavorited);
 
-    const [isPending, startTransition] = useTransition();
+    const isRequestInFlight = useRef(false);
 
     const toggleFavorite = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
             e.stopPropagation();
 
-            if (isPending) {
+            if (isRequestInFlight.current) {
                 return;
             }
 
@@ -36,6 +41,8 @@ const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
             }
 
             const currentFavorited = optimisticFavorited;
+
+            isRequestInFlight.current = true;
 
             startTransition(async () => {
                 setOptimisticFavorited(!currentFavorited);
@@ -55,8 +62,10 @@ const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
                     router.refresh();
                     toast.success(t('success'));
                 } catch (error) {
-                    router.refresh();
+                    setOptimisticFavorited(currentFavorited);
                     toast.error((error as Error).message);
+                } finally {
+                    isRequestInFlight.current = false;
                 }
             });
         },
@@ -68,7 +77,6 @@ const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
             router,
             t,
             setOptimisticFavorited,
-            isPending,
         ]
     );
 
