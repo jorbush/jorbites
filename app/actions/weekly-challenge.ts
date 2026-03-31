@@ -88,10 +88,12 @@ async function generateNewChallenge(): Promise<WeeklyChallenge> {
     const randomType =
         challengeTypes[Math.floor(Math.random() * challengeTypes.length)];
 
-    // Get the corresponding challenge template
-    const template = challenges[
+    // Get a random challenge template for the selected type
+    const templateList = challenges[
         `${randomType}Challenges`
-    ][0] as ChallengeTemplate;
+    ] as ChallengeTemplate[];
+    const template =
+        templateList[Math.floor(Math.random() * templateList.length)];
 
     // Select a random value based on the type
     let value: string;
