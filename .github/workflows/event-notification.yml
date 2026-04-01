@@ -16,18 +16,20 @@ jobs:
           JORBITES_URL: https://jorbites.com
         run: |
           TODAY=$(date -u +'%Y-%m-%d')
+          TODAY_DAY=$(date -u -d "$TODAY" +%-d)
           IN_3_DAYS=$(date -u -d "$TODAY + 3 days" +'%Y-%m-%d')
-          echo "Checking for events starting on: $TODAY"
-          echo "Checking for events ending on: $IN_3_DAYS"
+          IN_3_DAYS_DAY=$(date -u -d "$IN_3_DAYS" +%-d)
+          echo "Checking for events starting on: $TODAY (Day: $TODAY_DAY)"
+          echo "Checking for events ending on: $IN_3_DAYS (Day: $IN_3_DAYS_DAY)"
 
           # Fetch all events (using 'es' as source of truth)
           response=$(curl -s -f "$JORBITES_URL/api/events?lang=es") || { echo "Failed to fetch events"; exit 1; }
 
-          # Filter events where frontmatter.date starts with TODAY
-          STARTED_EVENTS=$(echo "$response" | jq --arg date "$TODAY" -c '[.[] | select(.frontmatter.date != null) | select(.frontmatter.date | sub("T.*"; "") == $date) | {type: "NEW_EVENT", eventId: .slug, title: .frontmatter.title}]')
+          # Filter events where frontmatter.date starts with TODAY or it is a recurrent event for today
+          STARTED_EVENTS=$(echo "$response" | jq --arg date "$TODAY" --arg day "$TODAY_DAY" -c '[.[] | select((.frontmatter.date != null and (.frontmatter.date | sub("T.*"; "") == $date)) or (.frontmatter.recurrent == true and .frontmatter.dayOfMonth == ($day | tonumber))) | {type: "NEW_EVENT", eventId: .slug, title: .frontmatter.title}]')
 
-          # Filter events where frontmatter.endDate is IN_3_DAYS
-          ENDING_EVENTS=$(echo "$response" | jq --arg date "$IN_3_DAYS" -c '[.[] | select(.frontmatter.endDate != null) | select(.frontmatter.endDate | sub("T.*"; "") == $date) | {type: "EVENT_ENDING_SOON", eventId: .slug, title: .frontmatter.title}]')
+          # Filter events where frontmatter.endDate is IN_3_DAYS or it is a recurrent event ending in 3 days
+          ENDING_EVENTS=$(echo "$response" | jq --arg date "$IN_3_DAYS" --arg day "$IN_3_DAYS_DAY" -c '[.[] | select((.frontmatter.endDate != null and (.frontmatter.endDate | sub("T.*"; "") == $date)) or (.frontmatter.recurrent == true and .frontmatter.dayOfMonth == ($day | tonumber))) | {type: "EVENT_ENDING_SOON", eventId: .slug, title: .frontmatter.title}]')
 
           # Combine events
           ALL_EVENTS=$(jq -n -c --argjson started "$STARTED_EVENTS" --argjson ending "$ENDING_EVENTS" '$started + $ending')
