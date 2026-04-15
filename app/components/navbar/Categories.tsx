@@ -13,6 +13,7 @@ import {
     GiBowlOfRice,
     GiTrophyCup,
     GiSandwich,
+    GiKetchup,
 } from 'react-icons/gi';
 import { FaFish } from 'react-icons/fa';
 import { TbSoup, TbSalad } from 'react-icons/tb';
@@ -82,6 +83,11 @@ export const categories = [
         label: 'Snacks',
         icon: PiBowlFoodFill,
         description: 'Quick snacks',
+    },
+    {
+        label: 'Sauces',
+        icon: GiKetchup,
+        description: 'Sauce recipes',
     },
     {
         label: 'Unsalted',
