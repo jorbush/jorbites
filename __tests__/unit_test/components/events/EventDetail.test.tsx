@@ -29,6 +29,7 @@ vi.mock('react-i18next', () => ({
         t: (key: string) => key,
         i18n: {
             language: 'en',
+            t: (key: string) => key,
         },
     }),
     initReactI18next: {},
@@ -46,6 +47,9 @@ vi.mock('i18next-browser-languagedetector', () => ({
 vi.mock('@/app/utils/date-utils', () => ({
     formatDateRange: (start: string, end: string) => {
         return `May 1, 2024${start !== end ? ' - May 2, 2024' : ''}`;
+    },
+    formatRecurrentDate: (day: number) => {
+        return `recurrent_date`;
     },
 }));
 
@@ -90,6 +94,15 @@ describe('EventDetail', () => {
         },
         content: 'Event content with markdown',
         language: 'en',
+    };
+
+    const recurrentEvent: Event = {
+        ...mockEvent,
+        frontmatter: {
+            ...mockEvent.frontmatter,
+            recurrent: true,
+            dayOfMonth: 29,
+        },
     };
 
     afterEach(() => {
@@ -145,5 +158,12 @@ describe('EventDetail', () => {
             'className',
             expect.stringContaining('cursor-pointer')
         );
+    });
+
+    it('formats recurrent event date correctly', () => {
+        render(<EventDetail event={recurrentEvent} />);
+
+        // The mock translation returns the key itself
+        expect(screen.getByText('recurrent_date')).toBeDefined();
     });
 });

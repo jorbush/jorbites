@@ -9,7 +9,7 @@ import Heading from '@/app/components/navigation/Heading';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Components } from 'react-markdown';
-import { formatDateRange } from '@/app/utils/date-utils';
+import { formatDateRange, formatRecurrentDate } from '@/app/utils/date-utils';
 import useShare from '@/app/hooks/useShare';
 
 interface EventDetailProps {
@@ -23,14 +23,22 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
 
     // Don't process dates for permanent events
     const isPermanent = event.frontmatter.permanent === true;
+    const isRecurrent = event.frontmatter.recurrent === true;
 
     let dateDisplay;
     if (!isPermanent) {
-        dateDisplay = formatDateRange(
-            event.frontmatter.date,
-            event.frontmatter.endDate,
-            i18n.language
-        );
+        if (isRecurrent && event.frontmatter.dayOfMonth) {
+            dateDisplay = formatRecurrentDate(
+                event.frontmatter.dayOfMonth,
+                i18n.t
+            );
+        } else {
+            dateDisplay = formatDateRange(
+                event.frontmatter.date,
+                event.frontmatter.endDate,
+                i18n.language
+            );
+        }
     }
 
     const markdownComponents: Components = {

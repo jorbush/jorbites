@@ -52,6 +52,16 @@ const getCurrentLocale = (lang?: string | null): LocaleType => {
 };
 
 /**
+ * Formats a recurrent event date
+ */
+export const formatRecurrentDate = (
+    dayOfMonth: number,
+    t: (key: string, options?: any) => string
+): string => {
+    return t('recurrent_date', { day: dayOfMonth });
+};
+
+/**
  * Formats a date range based on the current locale
  */
 export const formatDateRange = (

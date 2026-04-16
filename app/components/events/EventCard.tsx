@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { FiCalendar } from 'react-icons/fi';
 import Image from 'next/image';
-import { formatDateRange } from '@/app/utils/date-utils';
+import { formatDateRange, formatRecurrentDate } from '@/app/utils/date-utils';
 
 interface EventCardProps {
     event: Event;
@@ -32,14 +32,22 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
     // Don't process dates for permanent events
     const isPermanent = event.frontmatter.permanent === true;
+    const isRecurrent = event.frontmatter.recurrent === true;
 
     let dateDisplay;
     if (!isPermanent) {
-        dateDisplay = formatDateRange(
-            event.frontmatter.date,
-            event.frontmatter.endDate,
-            i18n.language
-        );
+        if (isRecurrent && event.frontmatter.dayOfMonth) {
+            dateDisplay = formatRecurrentDate(
+                event.frontmatter.dayOfMonth,
+                i18n.t
+            );
+        } else {
+            dateDisplay = formatDateRange(
+                event.frontmatter.date,
+                event.frontmatter.endDate,
+                i18n.language
+            );
+        }
     }
 
     const handleClick = () => {
