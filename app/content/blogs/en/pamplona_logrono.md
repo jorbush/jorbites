@@ -10,7 +10,7 @@ Many people have asked me for my tapas/pinchos tier list from my Holy Week trip 
 1# Goat Cheese Toast.
  You can find it in lots of bars for around 3 euros. It makes no sense, the value for money is absurd. Available in both Pamplona and Logrono.
 
-![pamplona_logrono](/images/blogs/pamplona_logrono.webp)
+![Tapas and pinchos from Pamplona and Logrono](/images/blogs/pamplona_logrono.webp)
 
 2# Pig ear and snout are dishes I have never liked, but in Calle Laurel that changed in different formats.
 
