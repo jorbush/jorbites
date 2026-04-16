@@ -10,7 +10,7 @@ Molts m'han demanat la meva tier list de tapes/pintxos del meu viatge de Setmana
 1. Torrada amb Formatge de Cabra.
  La trobes en moltíssims bars al voltant de 3 euros. No té cap sentit, qualitat preu absurd. Disponible tant a Pamplona com a Logronyo.
 
-![pamplona_logrono](/images/blogs/pamplona_logrono.webp)
+![Pintxos a Pamplona i Logronyo](/images/blogs/pamplona_logrono.webp)
 
 2. L'orella i els morros són uns plats que mai m'han agradat, però al carrer Laurel això va canviar en diferents formats.
 
