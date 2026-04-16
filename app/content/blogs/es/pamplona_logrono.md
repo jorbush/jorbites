@@ -12,7 +12,7 @@ Muchos me han solicitado mi tier list de tapas/pinchos de mi viaje de Semana San
 
 ![Imagen del viaje gastronómico por Pamplona y Logroño](/images/blogs/pamplona_logrono.webp)
 
-2. La oreja y los morros son un platos que nunca me han gustado pero en la calle Laurel eso cambió en distintos formatos.
+2. La oreja y los morros son unos platos que nunca me han gustado pero en la calle Laurel eso cambió en distintos formatos.
 
 3. Foie. Muy rico pero una cerdada. Para compartir con alguien.
 
