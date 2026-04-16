@@ -10,7 +10,7 @@ Muchos me han solicitado mi tier list de tapas/pinchos de mi viaje de Semana San
 1. Tosta con Queso de Cabra.
  Lo encuentras en muchísimos bares alrededor de 3 euros. No tiene ningún sentido, calidad precio absurdo. Disponible tanto en Pamplona como en Logroño.
 
-![pamplona_logrono](/images/blogs/pamplona_logrono.webp)
+![Imagen del viaje gastronómico por Pamplona y Logroño](/images/blogs/pamplona_logrono.webp)
 
 2. La oreja y los morros son un platos que nunca me han gustado pero en la calle Laurel eso cambió en distintos formatos.
 
