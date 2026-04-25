@@ -56,7 +56,7 @@ const getCurrentLocale = (lang?: string | null): LocaleType => {
  */
 export const formatRecurrentDate = (
     dayOfMonth: number,
-    t: (key: string, options?: any) => string
+    t: (key: string, options?: Record<string, unknown>) => string
 ): string => {
     return t('recurrent_date', { day: dayOfMonth });
 };

@@ -44,13 +44,16 @@ vi.mock('i18next-browser-languagedetector', () => ({
 }));
 
 // Mock date-utils to avoid i18n dependency
+const mockFormatDateRange = vi.fn((start: string, end: string) => {
+    return `May 1, 2024${start !== end ? ' - May 2, 2024' : ''}`;
+});
+const mockFormatRecurrentDate = vi.fn((day: number) => {
+    return `recurrent_date`;
+});
+
 vi.mock('@/app/utils/date-utils', () => ({
-    formatDateRange: (start: string, end: string) => {
-        return `May 1, 2024${start !== end ? ' - May 2, 2024' : ''}`;
-    },
-    formatRecurrentDate: (day: number) => {
-        return `recurrent_date`;
-    },
+    formatDateRange: (...args: any[]) => mockFormatDateRange(...args),
+    formatRecurrentDate: (...args: any[]) => mockFormatRecurrentDate(...args),
 }));
 
 vi.mock('react-markdown', () => ({
@@ -107,6 +110,7 @@ describe('EventDetail', () => {
 
     afterEach(() => {
         cleanup();
+        vi.clearAllMocks();
     });
 
     it('renders the event details correctly', () => {
@@ -165,5 +169,7 @@ describe('EventDetail', () => {
 
         // The mock translation returns the key itself
         expect(screen.getByText('recurrent_date')).toBeDefined();
+        expect(mockFormatRecurrentDate).toHaveBeenCalledWith(29, expect.any(Function));
+        expect(mockFormatDateRange).not.toHaveBeenCalled();
     });
 });
