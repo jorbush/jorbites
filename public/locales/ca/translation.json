@@ -194,6 +194,7 @@
     "event_not_found_message": "L'esdeveniment que estàs cercant no s'ha trobat.",
     "back_to_events": "Tornar a Esdeveniments",
     "date": "Data",
+    "recurrent_date": "{{day}} de cada mes",
     "location": "Ubicació",
     "weekly_challenge": "Repte de la Setmana",
     "challenge_ends": "El repte acaba",

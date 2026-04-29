@@ -30,6 +30,7 @@ vi.mock('react-i18next', () => ({
         i18n: {
             language: 'en',
             changeLanguage: vi.fn(),
+            t: (key: string) => key,
         },
     }),
     initReactI18next: {},
@@ -44,10 +45,16 @@ vi.mock('i18next-browser-languagedetector', () => ({
 }));
 
 // Mock date-utils to avoid i18n dependency
+const mockFormatDateRange = vi.fn((start: string, end: string) => {
+    return `May 1, 2024${start !== end ? ' - May 2, 2024' : ''}`;
+});
+const mockFormatRecurrentDate = vi.fn((day: number) => {
+    return `recurrent_date`;
+});
+
 vi.mock('@/app/utils/date-utils', () => ({
-    formatDateRange: (start: string, end: string) => {
-        return `May 1, 2024${start !== end ? ' - May 2, 2024' : ''}`;
-    },
+    formatDateRange: (...args: any[]) => mockFormatDateRange(...args),
+    formatRecurrentDate: (...args: any[]) => mockFormatRecurrentDate(...args),
 }));
 
 vi.mock('next/image', () => ({
@@ -83,8 +90,18 @@ describe('EventCard', () => {
         },
     };
 
+    const recurrentEvent: Event = {
+        ...mockEvent,
+        frontmatter: {
+            ...mockEvent.frontmatter,
+            recurrent: true,
+            dayOfMonth: 29,
+        },
+    };
+
     afterEach(() => {
         cleanup();
+        vi.clearAllMocks();
     });
 
     it('renders the event card correctly', () => {
@@ -113,5 +130,14 @@ describe('EventCard', () => {
         const dateElement =
             screen.getByText(/May/i) || screen.getByText(/2024/i);
         expect(dateElement).toBeDefined();
+    });
+
+    it('formats recurrent event date correctly', () => {
+        render(<EventCard event={recurrentEvent} />);
+
+        // The mock translation returns the key itself, so we expect 'recurrent_date'
+        expect(screen.getByText('recurrent_date')).toBeDefined();
+        expect(mockFormatRecurrentDate).toHaveBeenCalledWith(29, expect.any(Function));
+        expect(mockFormatDateRange).not.toHaveBeenCalled();
     });
 });

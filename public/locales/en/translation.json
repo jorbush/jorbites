@@ -194,6 +194,7 @@
     "event_not_found_message": "The event you're looking for could not be found.",
     "back_to_events": "Back to Events",
     "date": "Date",
+    "recurrent_date": "{{day}} of each month",
     "location": "Location",
     "weekly_challenge": "Challenge of the Week",
     "challenge_ends": "Challenge ends",

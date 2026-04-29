@@ -195,6 +195,7 @@
     "event_not_found_message": "No se ha encontrado el evento que buscas.",
     "back_to_events": "Volver a Eventos",
     "date": "Fecha",
+    "recurrent_date": "{{day}} de cada mes",
     "location": "Ubicación",
     "weekly_challenge": "Reto de la Semana",
     "challenge_ends": "El reto termina",
