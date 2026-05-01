@@ -16,7 +16,7 @@ Mexican cuisine is one of the most beloved and diverse in the world. From the sm
 
 All Jorbiters who publish a Mexican-inspired recipe during the event window will receive the Mexican Fiesta badge.
 
-**Requirement**: To qualify for the badge, you must select the **Mexican** category when posting your recipe.
+**Requirement**: To qualify for the badge, publish a Mexican-inspired recipe during the event window and select the most appropriate existing category when posting your recipe.
 
 ### 🌮 Ideas to inspire you
 
