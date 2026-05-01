@@ -14,7 +14,7 @@ La cuina mexicana és una de les més estimades i diverses del món. Des del toc
 
 ### 🏆 Aconsegueix la teva medalla exclusiva
 
- Tots els Jorbiters que publiquin una recepta inspirada en Mèxic durant la finestra de l'esdeveniment rebran la medalla de Festa Mexicana.
+Tots els Jorbiters que publiquin una recepta inspirada en Mèxic durant la finestra de l'esdeveniment rebran la medalla de Festa Mexicana.
 
 **Requisit**: Per qualificar per a la medalla, la teva recepta ha d'estar inspirada en la cuina mexicana i s'ha de publicar durant la finestra de l'esdeveniment.
 
