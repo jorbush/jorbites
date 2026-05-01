@@ -22,7 +22,7 @@ Tots els Jorbiters que publiquin una recepta inspirada en Mèxic durant la fines
 
 - **Tacos Autèntics**: Carnitas, al pastor o asada de bolets.
 - **Salses Casolanes**: Des d'una verda suau fins a una d'havaner picant.
-- **Variacions de Guacamole**: Tradicional o amb un toque únic.
+- **Variacions de Guacamole**: Tradicional o amb un toc únic.
 - **Enchiladas i Tamales**: Menjar reconfortant clàssic.
 - **Elotes (Blat de moro de carrer)**: L'acompanyament perfecte.
 - **Xurros amb Xocolata**: Un final dolç per al teu festí.
