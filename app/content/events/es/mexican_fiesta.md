@@ -16,7 +16,7 @@ La cocina mexicana es una de las más queridas y diversas del mundo. Desde el to
 
 Todos los Jorbiters que publiquen una receta inspirada en México durante la ventana del evento recibirán la medalla de Fiesta Mexicana.
 
-**Requisito**: Para calificar para la medalla, debes seleccionar la categoría **Mexicana** al publicar tu receta.
+**Requisito**: Para calificar para la medalla, tu receta debe estar inspirada en la cocina mexicana y publicarse durante la ventana del evento.
 
 ### 🌮 Ideas para inspirarte
 
