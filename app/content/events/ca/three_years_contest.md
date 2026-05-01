@@ -32,7 +32,7 @@ Dissabte, 30 de maig de 2026 – Hora de celebració
 - ✅ **Publicació en Viu**: La recepta s'ha de publicar durant la finestra del concurs.
 - ❌ **Horaris**: Publicar abans o després de la finestra de l'esdeveniment restarà 2 punts.
 - 👫 **En Parella**: Pots participar en parella utilitzant la funció de coautoria.
-- 🎭 **Punts Extra**: Uneix-te a la festa amb estil! Venir vestit amb calçat festiu (barrets de festa, lluentons o copa a la mà) pot donar-te +1 o +2 punts extra.
+- 🎭 **Punts Extra**: Uneix-te a la festa amb estil! Venir vestit amb vestuari festiu (barrets de festa, lluentons o copa a la mà) pot donar-te +1 o +2 punts extra.
 
 Gràcies per ser el cor de Jorbites. Tres anys cuinant, aprenent i rient junts. Fem que aquest sigui l'aniversari més deliciós de tots!
 
