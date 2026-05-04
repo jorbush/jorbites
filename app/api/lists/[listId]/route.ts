@@ -66,12 +66,40 @@ export async function PATCH(
                         ? isPrivate
                         : existingList.isPrivate,
             },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        verified: true,
+                        level: true,
+                        badges: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        emailVerified: true,
+                    },
+                },
+            },
         });
 
         logger.info('PATCH /api/lists/[listId] - success', {
             listId: updatedList.id,
         });
-        return NextResponse.json(updatedList);
+
+        const safeList = {
+            ...updatedList,
+            createdAt: updatedList.createdAt.toISOString(),
+            updatedAt: updatedList.updatedAt.toISOString(),
+            user: {
+                ...updatedList.user,
+                createdAt: updatedList.user.createdAt.toISOString(),
+                updatedAt: updatedList.user.updatedAt.toISOString(),
+                emailVerified: updatedList.user.emailVerified?.toISOString() || null,
+            },
+        };
+
+        return NextResponse.json(safeList);
     } catch (error: any) {
         logger.error('PATCH /api/lists/[listId] - error', {
             error: error.message,

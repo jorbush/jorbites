@@ -9,6 +9,8 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { AiOutlineDelete } from 'react-icons/ai';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
+import Avatar from '@/app/components/utils/Avatar';
+import { formatDate } from '@/app/utils/date-utils';
 
 interface ListsClientProps {
     initialLists: SafeList[];
@@ -65,11 +67,30 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                                     ? t('to_cook_later')
                                     : list.name}
                             </div>
-                            <div className="text-sm text-neutral-500">
-                                {list.recipeIds.length} {t('recipes')}
+                            <div className="flex flex-row items-center gap-2">
+                                <div className="text-sm text-neutral-500">
+                                    {list.recipeIds.length} {t('recipes')}
+                                </div>
+                                <div className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+                                <div className="text-sm text-neutral-500">
+                                    {formatDate(list.createdAt)}
+                                </div>
                             </div>
-                            <div className="text-xs text-neutral-400">
-                                {list.isPrivate ? t('private') : t('public')}
+                            <div className="flex flex-row items-center justify-between">
+                                <div className="text-xs text-neutral-400">
+                                    {list.isPrivate ? t('private') : t('public')}
+                                </div>
+                                {list.user && (
+                                    <div className="flex flex-row items-center gap-2">
+                                        <Avatar
+                                            src={list.user.image}
+                                            size={16}
+                                        />
+                                        <div className="text-xs font-medium text-neutral-500">
+                                            {list.user.name}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             {!list.isDefault && (
                                 <div

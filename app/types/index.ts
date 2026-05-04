@@ -71,4 +71,5 @@ export type SafeWorkshopParticipant = Omit<WorkshopParticipant, 'joinedAt'> & {
 export type SafeList = Omit<List, 'createdAt' | 'updatedAt'> & {
     createdAt: string;
     updatedAt: string;
+    user?: SafeUser;
 };

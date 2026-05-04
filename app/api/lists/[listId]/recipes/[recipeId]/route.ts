@@ -65,13 +65,41 @@ export async function POST(
                     connect: { id: recipeId },
                 },
             },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        verified: true,
+                        level: true,
+                        badges: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        emailVerified: true,
+                    },
+                },
+            },
         });
 
         logger.info('POST /api/lists/[listId]/recipes/[recipeId] - success', {
             listId,
             recipeId,
         });
-        return NextResponse.json(updatedList);
+
+        const safeList = {
+            ...updatedList,
+            createdAt: updatedList.createdAt.toISOString(),
+            updatedAt: updatedList.updatedAt.toISOString(),
+            user: {
+                ...updatedList.user,
+                createdAt: updatedList.user.createdAt.toISOString(),
+                updatedAt: updatedList.user.updatedAt.toISOString(),
+                emailVerified: updatedList.user.emailVerified?.toISOString() || null,
+            },
+        };
+
+        return NextResponse.json(safeList);
     } catch (error: any) {
         logger.error('POST /api/lists/[listId]/recipes/[recipeId] - error', {
             error: error.message,
@@ -123,13 +151,41 @@ export async function DELETE(
                     disconnect: { id: recipeId },
                 },
             },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        verified: true,
+                        level: true,
+                        badges: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        emailVerified: true,
+                    },
+                },
+            },
         });
 
         logger.info('DELETE /api/lists/[listId]/recipes/[recipeId] - success', {
             listId,
             recipeId,
         });
-        return NextResponse.json(updatedList);
+
+        const safeList = {
+            ...updatedList,
+            createdAt: updatedList.createdAt.toISOString(),
+            updatedAt: updatedList.updatedAt.toISOString(),
+            user: {
+                ...updatedList.user,
+                createdAt: updatedList.user.createdAt.toISOString(),
+                updatedAt: updatedList.user.updatedAt.toISOString(),
+                emailVerified: updatedList.user.emailVerified?.toISOString() || null,
+            },
+        };
+
+        return NextResponse.json(safeList);
     } catch (error: any) {
         logger.error('DELETE /api/lists/[listId]/recipes/[recipeId] - error', {
             error: error.message,

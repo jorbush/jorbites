@@ -9,6 +9,8 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import Avatar from '@/app/components/utils/Avatar';
+import { formatDate } from '@/app/utils/date-utils';
 
 interface ListClientProps {
     list: SafeList;
@@ -51,14 +53,31 @@ const ListClient: React.FC<ListClientProps> = ({
     return (
         <Container>
             <div className="flex flex-col gap-6 pt-8 pb-12 dark:text-white">
-                <div className="flex flex-row items-center justify-between">
-                    <div>
+                <div className="flex flex-row items-start justify-between">
+                    <div className="flex flex-col gap-2">
                         <div className="text-3xl font-bold">
                             {list.isDefault ? t('to_cook_later') : list.name}
                         </div>
-                        <div className="text-sm text-neutral-500">
-                            {recipes.length} {t('recipes')}
+                        <div className="flex flex-row items-center gap-2">
+                            <div className="text-sm text-neutral-500">
+                                {recipes.length} {t('recipes')}
+                            </div>
+                            <div className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+                            <div className="text-sm text-neutral-500">
+                                {formatDate(list.createdAt)}
+                            </div>
                         </div>
+                        {list.user && (
+                            <div className="mt-2 flex flex-row items-center gap-2">
+                                <Avatar
+                                    src={list.user.image}
+                                    size={24}
+                                />
+                                <div className="text-sm font-medium">
+                                    {list.user.name}
+                                </div>
+                            </div>
+                        )}
                     </div>
                     {isOwner && (
                         <div className="flex flex-row items-center gap-2">
