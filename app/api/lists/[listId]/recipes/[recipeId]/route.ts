@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/dist/server/web/spec-extension/response';
+import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
