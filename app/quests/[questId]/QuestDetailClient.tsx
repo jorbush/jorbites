@@ -52,6 +52,7 @@ interface Quest {
         userId: string;
         coCooksIds: string[];
         linkedRecipeIds: string[];
+        listIds: string[];
         youtubeUrl: string | null;
         questId: string | null;
         createdAt: string;
