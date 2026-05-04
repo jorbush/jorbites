@@ -54,9 +54,7 @@ const ListClient: React.FC<ListClientProps> = ({
                 <div className="flex flex-row items-center justify-between">
                     <div>
                         <div className="text-3xl font-bold">
-                            {list.name === 'to cook later'
-                                ? t('to_cook_later')
-                                : list.name}
+                            {list.isDefault ? t('to_cook_later') : list.name}
                         </div>
                         <div className="text-sm text-neutral-500">
                             {recipes.length} {t('recipes')}

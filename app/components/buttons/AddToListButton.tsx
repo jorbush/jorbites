@@ -18,7 +18,7 @@ const AddToListButton: React.FC<AddToListButtonProps> = ({
     const { t } = useTranslation();
 
     const handleButtonClick = (
-        e: React.MouseEvent<HTMLDivElement, MouseEvent>
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.stopPropagation();
         if (!currentUser) {
@@ -28,7 +28,7 @@ const AddToListButton: React.FC<AddToListButtonProps> = ({
     };
 
     return (
-        <div
+        <button
             onClick={handleButtonClick}
             className="relative cursor-pointer transition hover:opacity-80"
             data-cy="add-to-list-button"
@@ -38,7 +38,7 @@ const AddToListButton: React.FC<AddToListButtonProps> = ({
                 size={28}
                 className="fill-neutral-500/70 hover:fill-black dark:hover:fill-white"
             />
-        </div>
+        </button>
     );
 };
 

@@ -38,6 +38,17 @@ export async function PATCH(
         const body = await request.json();
         const { name, isPrivate } = body;
 
+        if (
+            name !== undefined &&
+            (typeof name !== 'string' || name.trim().length === 0)
+        ) {
+            return badRequest('Invalid name');
+        }
+
+        if (isPrivate !== undefined && typeof isPrivate !== 'boolean') {
+            return badRequest('Invalid isPrivate flag');
+        }
+
         const existingList = await prisma.list.findUnique({
             where: { id: listId },
         });
@@ -49,7 +60,7 @@ export async function PATCH(
         const updatedList = await prisma.list.update({
             where: { id: listId },
             data: {
-                name: name !== undefined ? name : existingList.name,
+                name: name !== undefined ? name.trim() : existingList.name,
                 isPrivate:
                     isPrivate !== undefined
                         ? isPrivate

@@ -28,16 +28,25 @@ export async function GET() {
         });
 
         // Lazy create default list if the user has no lists
+        // Note: Restored per user request to ensure the AddToListModal always has the default list ready
         if (lists.length === 0) {
-            const defaultList = await prisma.list.create({
-                data: {
-                    name: 'to cook later',
-                    isDefault: true,
-                    isPrivate: true,
-                    userId: currentUser.id,
-                },
-            });
-            lists = [defaultList];
+            try {
+                const defaultList = await prisma.list.create({
+                    data: {
+                        name: 'to cook later',
+                        isDefault: true,
+                        isPrivate: true,
+                        userId: currentUser.id,
+                    },
+                });
+                lists = [defaultList];
+            } catch (error) {
+                // If a parallel request already created it, re-fetch
+                lists = await prisma.list.findMany({
+                    where: { userId: currentUser.id },
+                    orderBy: { createdAt: 'asc' },
+                });
+            }
         }
 
         logger.info('GET /api/lists - success', {
@@ -62,18 +71,19 @@ export async function POST(request: Request) {
         logger.info('POST /api/lists - start', { userId: currentUser.id });
 
         const body = await request.json();
-        const { name, isPrivate } = body;
+        const { name, isPrivate, recipeId } = body;
 
-        if (!name) {
-            return badRequest('Missing name');
+        if (typeof name !== 'string' || name.trim().length === 0) {
+            return badRequest('Missing or invalid name');
         }
 
         const list = await prisma.list.create({
             data: {
-                name,
+                name: name.trim(),
                 isPrivate: isPrivate !== undefined ? isPrivate : true,
                 isDefault: false,
                 userId: currentUser.id,
+                ...(recipeId && { recipeIds: [recipeId] }),
             },
         });
 

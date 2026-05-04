@@ -24,7 +24,21 @@ export default async function getListById(
 
         const list = await prisma.list.findUnique({
             where: { id: listId },
-            include: { user: true },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        verified: true,
+                        level: true,
+                        badges: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        emailVerified: true,
+                    },
+                },
+            },
         });
 
         if (!list) {
@@ -57,7 +71,19 @@ export default async function getListById(
                 },
             },
             include: {
-                user: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        verified: true,
+                        level: true,
+                        badges: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        emailVerified: true,
+                    },
+                },
             },
         });
 

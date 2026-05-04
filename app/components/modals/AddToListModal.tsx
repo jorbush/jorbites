@@ -78,16 +78,20 @@ const AddToListModal = () => {
         [addToListModal.recipeId, fetchLists, router, t]
     );
 
+    const handleClose = useCallback(() => {
+        setIsCreating(false);
+        reset();
+        addToListModal.onClose();
+    }, [addToListModal, reset]);
+
     const onSubmitNewList: SubmitHandler<FieldValues> = useCallback(
         async (data) => {
             setIsLoading(true);
             try {
-                const response = await axios.post('/api/lists', data);
-                if (addToListModal.recipeId) {
-                    await axios.post(
-                        `/api/lists/${response.data.id}/recipes/${addToListModal.recipeId}`
-                    );
-                }
+                await axios.post('/api/lists', {
+                    ...data,
+                    recipeId: addToListModal.recipeId,
+                });
                 setIsCreating(false);
                 reset();
                 fetchLists();
@@ -120,7 +124,15 @@ const AddToListModal = () => {
                         return (
                             <div
                                 key={list.id}
+                                role="button"
+                                tabIndex={0}
                                 onClick={() => handleToggleRecipeInList(list)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        handleToggleRecipeInList(list);
+                                    }
+                                }}
                                 className={`group flex cursor-pointer flex-row items-center justify-between rounded-lg border-2 p-4 transition hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
                                     isSelected
                                         ? 'border-black dark:border-white'
@@ -128,7 +140,7 @@ const AddToListModal = () => {
                                 }`}
                             >
                                 <div className="font-semibold">
-                                    {list.name === 'to cook later'
+                                    {list.isDefault
                                         ? t('to_cook_later')
                                         : list.name}
                                 </div>
@@ -204,8 +216,8 @@ const AddToListModal = () => {
             isOpen={addToListModal.isOpen}
             title=""
             actionLabel={t('done')}
-            onClose={addToListModal.onClose}
-            onSubmit={addToListModal.onClose}
+            onClose={handleClose}
+            onSubmit={isCreating ? handleSubmit(onSubmitNewList) : handleClose}
             body={bodyContent}
         />
     );

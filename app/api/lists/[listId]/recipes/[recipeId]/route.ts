@@ -58,15 +58,13 @@ export async function POST(
             return notFound('Recipe not found');
         }
 
-        let recipeIds = [...(list.recipeIds || [])];
-
-        if (!recipeIds.includes(recipeId)) {
-            recipeIds.push(recipeId);
-        }
-
         const updatedList = await prisma.list.update({
             where: { id: listId },
-            data: { recipeIds },
+            data: {
+                recipes: {
+                    connect: { id: recipeId },
+                },
+            },
         });
 
         logger.info('POST /api/lists/[listId]/recipes/[recipeId] - success', {
@@ -118,13 +116,13 @@ export async function DELETE(
             return notFound('Not found or unauthorized');
         }
 
-        let recipeIds = [...(list.recipeIds || [])];
-
-        recipeIds = recipeIds.filter((id) => id !== recipeId);
-
         const updatedList = await prisma.list.update({
             where: { id: listId },
-            data: { recipeIds },
+            data: {
+                recipes: {
+                    disconnect: { id: recipeId },
+                },
+            },
         });
 
         logger.info('DELETE /api/lists/[listId]/recipes/[recipeId] - success', {

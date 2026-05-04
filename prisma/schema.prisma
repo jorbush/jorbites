@@ -72,12 +72,14 @@ model Recipe {
   userId String @db.ObjectId
   coCooksIds String[] @db.ObjectId @default([])
   linkedRecipeIds String[] @db.ObjectId @default([])
+  listIds String[] @db.ObjectId @default([])
   youtubeUrl String?
   questId String? @db.ObjectId
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]
   quest Quest? @relation(fields: [questId], references: [id], onDelete: SetNull)
+  lists List[] @relation(fields: [listIds], references: [id])
 }
 
 model Comment {
@@ -177,4 +179,5 @@ model List {
   recipeIds   String[] @db.ObjectId @default([])
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipes     Recipe[] @relation(fields: [recipeIds], references: [id])
 }
