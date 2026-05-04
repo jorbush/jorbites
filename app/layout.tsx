@@ -32,6 +32,9 @@ const ForgotPasswordModal = dynamicImport(
 const QuestModal = dynamicImport(
     () => import('@/app/components/modals/QuestModal')
 );
+const AddToListModal = dynamicImport(
+    () => import('@/app/components/modals/AddToListModal')
+);
 
 const SpeedInsights = dynamicImport<{}>(() =>
     import('@vercel/speed-insights/next').then((mod) => ({
@@ -118,6 +121,7 @@ export default async function RootLayout({
                     <RegisterModal />
                     <ForgotPasswordModal />
                     <QuestModal />
+                    <AddToListModal />
                     <Navbar currentUser={currentUser} />
                     <PullToRefresh
                         threshold={150}

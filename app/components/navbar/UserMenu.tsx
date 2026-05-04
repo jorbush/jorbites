@@ -21,6 +21,7 @@ import {
     FcImport,
     FcPortraitMode,
     FcTodoList,
+    FcBookmark,
 } from 'react-icons/fc';
 
 interface UserMenuProps {
@@ -145,6 +146,15 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('quests') || 'Quests'}
                                     icon={FcTodoList}
+                                />
+                                <MenuItem
+                                    onClick={() => {
+                                        router.push('/lists');
+                                        toggleOpen();
+                                    }}
+                                    label={t('my_lists') || 'My Lists'}
+                                    icon={FcBookmark}
+                                    isNew
                                 />
                                 {/* <MenuItem
                                     onClick={() => {

@@ -5,6 +5,7 @@ import { SafeUser } from '@/app/types';
 import Avatar from '@/app/components/utils/Avatar';
 import RecipeCategoryAndMethod from '@/app/components/recipes/RecipeCategoryAndMethod';
 import HeartButton from '@/app/components/buttons/HeartButton';
+import AddToListButton from '@/app/components/buttons/AddToListButton';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
@@ -183,6 +184,10 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         </div>
                     </div>
                     <div className="mr-4 mb-5 ml-auto flex flex-row items-end gap-2 text-xl">
+                        <AddToListButton
+                            recipeId={id}
+                            currentUser={currentUser}
+                        />
                         <HeartButton
                             recipeId={id}
                             currentUser={currentUser}

@@ -34,6 +34,7 @@ model User {
   workshops           Workshop[]
   quests              Quest[]
   pushSubscriptions   PushSubscription[]
+  lists               List[]
 }
 
 model Account {
@@ -163,4 +164,17 @@ model PushSubscription {
 
   @@unique([userId, endpoint])
   @@index([userId])
+}
+
+model List {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  isPrivate   Boolean  @default(true)
+  isDefault   Boolean  @default(false)
+  userId      String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  recipeIds   String[] @db.ObjectId @default([])
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
