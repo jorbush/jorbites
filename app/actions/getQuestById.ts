@@ -45,6 +45,7 @@ export default async function getQuestById(params: IParams) {
                         userId: true,
                         coCooksIds: true,
                         linkedRecipeIds: true,
+                        listIds: true,
                         youtubeUrl: true,
                         questId: true,
                         createdAt: true,

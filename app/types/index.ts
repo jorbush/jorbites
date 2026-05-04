@@ -4,6 +4,7 @@ import {
     Comment,
     Workshop,
     WorkshopParticipant,
+    List,
 } from '@prisma/client';
 
 export type SafeRecipe = Omit<Recipe, 'createdAt'> & {
@@ -65,4 +66,9 @@ export type SafeWorkshop = Omit<
 
 export type SafeWorkshopParticipant = Omit<WorkshopParticipant, 'joinedAt'> & {
     joinedAt: string;
+};
+
+export type SafeList = Omit<List, 'createdAt' | 'updatedAt'> & {
+    createdAt: string;
+    updatedAt: string;
 };
