@@ -441,6 +441,17 @@ export async function DELETE(
             }
         }
 
+        // First, explicitly clear the many-to-many relationship with lists
+        // In MongoDB, Prisma doesn't cascade deletes for implicit m-n relations automatically.
+        await prisma.recipe.update({
+            where: { id: recipeId },
+            data: {
+                lists: {
+                    set: [],
+                },
+            },
+        });
+
         const deletedRecipe = await prisma.recipe.delete({
             where: {
                 id: recipeId,
