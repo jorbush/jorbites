@@ -11,6 +11,8 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import Avatar from '@/app/components/utils/Avatar';
 import { formatDate } from '@/app/utils/date-utils';
+import { AiOutlineDelete } from 'react-icons/ai';
+import ConfirmModal from '@/app/components/modals/ConfirmModal';
 
 interface ListClientProps {
     list: SafeList;
@@ -27,6 +29,7 @@ const ListClient: React.FC<ListClientProps> = ({
     const { t } = useTranslation();
     const [isPrivate, setIsPrivate] = useState(list.isPrivate);
     const [isLoading, setIsLoading] = useState(false);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
     const isOwner = currentUser?.id === list.userId;
 
@@ -48,7 +51,24 @@ const ListClient: React.FC<ListClientProps> = ({
         } finally {
             setIsLoading(false);
         }
-    }, [isOwner, isPrivate, list.id, router]);
+    }, [isOwner, isPrivate, list.id, router, t]);
+
+    const onDelete = useCallback(async () => {
+        if (!isOwner) return;
+        setIsLoading(true);
+        try {
+            await axios.delete(`/api/lists/${list.id}`);
+            toast.success(t('list_deleted'));
+            router.push('/lists');
+            router.refresh();
+        } catch (error) {
+            toast.error(t('something_went_wrong'));
+            console.error(error);
+        } finally {
+            setIsLoading(false);
+            setIsConfirmModalOpen(false);
+        }
+    }, [isOwner, list.id, router, t]);
 
     return (
         <Container>
@@ -80,15 +100,27 @@ const ListClient: React.FC<ListClientProps> = ({
                         )}
                     </div>
                     {isOwner && (
-                        <div className="flex flex-row items-center gap-2">
-                            <span className="text-sm font-semibold text-neutral-500">
-                                {isPrivate ? t('private') : t('public')}
-                            </span>
-                            <ToggleSwitch
-                                checked={isPrivate}
-                                onChange={togglePrivacy}
-                                disabled={isLoading}
-                            />
+                        <div className="flex flex-row items-center gap-4">
+                            <div className="flex flex-row items-center gap-2">
+                                <span className="text-sm font-semibold text-neutral-500">
+                                    {isPrivate ? t('private') : t('public')}
+                                </span>
+                                <ToggleSwitch
+                                    checked={isPrivate}
+                                    onChange={togglePrivacy}
+                                    disabled={isLoading}
+                                />
+                            </div>
+                            {!list.isDefault && (
+                                <button
+                                    onClick={() => setIsConfirmModalOpen(true)}
+                                    disabled={isLoading}
+                                    className="rounded-full p-2 text-rose-500 transition hover:bg-rose-100 dark:hover:bg-rose-900"
+                                    title={t('delete_list') || 'Delete list'}
+                                >
+                                    <AiOutlineDelete size={24} />
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>
@@ -110,6 +142,15 @@ const ListClient: React.FC<ListClientProps> = ({
                     </div>
                 )}
             </div>
+            <ConfirmModal
+                open={isConfirmModalOpen}
+                setIsOpen={setIsConfirmModalOpen}
+                onConfirm={onDelete}
+                description={
+                    t('delete_list_confirmation') ||
+                    'Are you sure you want to delete this list?'
+                }
+            />
         </Container>
     );
 };

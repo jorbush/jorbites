@@ -625,6 +625,7 @@
     "push_notifications_unsubscribed_success": "¡Suscripción cancelada con éxito!",
     "push_notifications_unsubscribe_error": "Error al cancelar la suscripción.",
     "my_lists": "Mis Listas",
+    "delete_list": "Eliminar lista",
     "list_deleted": "Lista eliminada",
     "list_is_now_public": "La lista ahora es pública",
     "list_is_now_private": "La lista ahora es privada",

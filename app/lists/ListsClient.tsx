@@ -116,7 +116,7 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                                             setDeleteListId(list.id);
                                         }
                                     }}
-                                    className="absolute top-4 right-4 z-10 hidden rounded-full p-2 text-rose-500 transition group-hover:block hover:bg-rose-100 dark:hover:bg-rose-900"
+                                    className="absolute top-4 right-4 z-10 md:hidden rounded-full p-2 text-rose-500 transition group-hover:block hover:bg-rose-100 dark:hover:bg-rose-900"
                                     title={t('delete_list') || 'Delete list'}
                                 >
                                     <AiOutlineDelete size={20} />

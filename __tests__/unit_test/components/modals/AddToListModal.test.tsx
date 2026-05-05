@@ -2,6 +2,7 @@ import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import AddToListModal from '@/app/components/modals/AddToListModal';
 import useAddToListModal from '@/app/hooks/useAddToListModal';
+import axios from 'axios';
 
 vi.mock('@/app/hooks/useAddToListModal');
 vi.mock('axios');
@@ -25,6 +26,7 @@ describe('AddToListModal', () => {
             onClose: vi.fn(),
             onOpen: vi.fn(),
         } as any);
+        vi.mocked(axios.get).mockResolvedValue({ data: [] });
     });
 
     afterEach(() => {

@@ -624,6 +624,7 @@
     "push_notifications_unsubscribed_success": "Unsubscribed successfully!",
     "push_notifications_unsubscribe_error": "Failed to unsubscribe.",
     "my_lists": "My Lists",
+    "delete_list": "Delete list",
     "list_deleted": "List deleted",
     "list_is_now_public": "List is now public",
     "list_is_now_private": "List is now private",
