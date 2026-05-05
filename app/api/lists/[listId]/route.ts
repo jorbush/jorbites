@@ -2,6 +2,7 @@ import { NextResponse } from 'next/dist/server/web/spec-extension/response';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
+import { USER_SELECT_FIELDS } from '@/app/utils/constants';
 import {
     unauthorized,
     internalServerError,
@@ -68,17 +69,7 @@ export async function PATCH(
             },
             include: {
                 user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        image: true,
-                        verified: true,
-                        level: true,
-                        badges: true,
-                        createdAt: true,
-                        updatedAt: true,
-                        emailVerified: true,
-                    },
+                    select: USER_SELECT_FIELDS,
                 },
             },
         });

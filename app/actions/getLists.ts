@@ -1,6 +1,7 @@
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from './getCurrentUser';
 import { logger } from '../lib/axiom/server';
+import { USER_SELECT_FIELDS } from '../utils/constants';
 
 export default async function getLists() {
     try {
@@ -16,17 +17,7 @@ export default async function getLists() {
             },
             include: {
                 user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        image: true,
-                        verified: true,
-                        level: true,
-                        badges: true,
-                        createdAt: true,
-                        updatedAt: true,
-                        emailVerified: true,
-                    },
+                    select: USER_SELECT_FIELDS,
                 },
             },
             orderBy: {
@@ -45,17 +36,7 @@ export default async function getLists() {
                     },
                     include: {
                         user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                image: true,
-                                verified: true,
-                                level: true,
-                                badges: true,
-                                createdAt: true,
-                                updatedAt: true,
-                                emailVerified: true,
-                            },
+                            select: USER_SELECT_FIELDS,
                         },
                     },
                 });
@@ -66,17 +47,7 @@ export default async function getLists() {
                     where: { userId: currentUser.id },
                     include: {
                         user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                image: true,
-                                verified: true,
-                                level: true,
-                                badges: true,
-                                createdAt: true,
-                                updatedAt: true,
-                                emailVerified: true,
-                            },
+                            select: USER_SELECT_FIELDS,
                         },
                     },
                     orderBy: { createdAt: 'asc' },

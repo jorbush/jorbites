@@ -2,6 +2,7 @@ import prisma from '@/app/lib/prismadb';
 import getCurrentUser from './getCurrentUser';
 import { SafeList, SafeRecipe, SafeUser } from '@/app/types';
 import { logger } from '@/app/lib/axiom/server';
+import { USER_SELECT_FIELDS } from '../utils/constants';
 
 interface IParams {
     listId?: string;
@@ -26,17 +27,7 @@ export default async function getListById(
             where: { id: listId },
             include: {
                 user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        image: true,
-                        verified: true,
-                        level: true,
-                        badges: true,
-                        createdAt: true,
-                        updatedAt: true,
-                        emailVerified: true,
-                    },
+                    select: USER_SELECT_FIELDS,
                 },
             },
         });
@@ -72,17 +63,7 @@ export default async function getListById(
             },
             include: {
                 user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        image: true,
-                        verified: true,
-                        level: true,
-                        badges: true,
-                        createdAt: true,
-                        updatedAt: true,
-                        emailVerified: true,
-                    },
+                    select: USER_SELECT_FIELDS,
                 },
             },
         });

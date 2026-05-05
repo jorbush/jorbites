@@ -38,3 +38,15 @@ export enum STEPS {
 export const STEPS_LENGTH = Object.keys(STEPS).length;
 export const QUEST_TITLE_MAX_LENGTH = 200;
 export const QUEST_DESCRIPTION_MAX_LENGTH = 1000;
+
+export const USER_SELECT_FIELDS = {
+    id: true,
+    name: true,
+    image: true,
+    verified: true,
+    level: true,
+    badges: true,
+    createdAt: true,
+    updatedAt: true,
+    emailVerified: true,
+} as const;
