@@ -48,7 +48,25 @@ const ListClient: React.FC<ListClientProps> = ({
         } finally {
             setIsLoading(false);
         }
-    }, [isOwner, isPrivate, list.id, router]);
+    }, [isOwner, isPrivate, list.id, router, t]);
+
+    const handleRemoveRecipe = useCallback(
+        async (recipeId: string) => {
+            if (!isOwner || isLoading) return;
+            setIsLoading(true);
+            try {
+                await axios.delete(`/api/lists/${list.id}/recipes/${recipeId}`);
+                toast.success(t('recipe_removed_from_list'));
+                router.refresh();
+            } catch (error) {
+                toast.error(t('something_went_wrong'));
+                console.error(error);
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        [isOwner, list.id, router, t]
+    );
 
     return (
         <Container>
@@ -105,6 +123,8 @@ const ListClient: React.FC<ListClientProps> = ({
                                 key={recipe.id}
                                 data={recipe}
                                 user={recipe.user}
+                                onRemove={isOwner ? handleRemoveRecipe : undefined}
+                                disabled={isLoading}
                             />
                         ))}
                     </div>

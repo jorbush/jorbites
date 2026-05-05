@@ -9,12 +9,16 @@ import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { memo, useMemo } from 'react';
 import Avatar from '@/app/components/utils/Avatar';
 import ClientOnly from '@/app/components/utils/ClientOnly';
+import { IoClose } from 'react-icons/io5';
+import Tooltip from '@/app/components/utils/Tooltip';
 
 interface RecipeCardProps {
     data: SafeRecipe;
     currentUser?: SafeUser | null;
     isFirstCard?: boolean;
     user?: SafeUser | null;
+    onRemove?: (id: string) => void;
+    disabled?: boolean;
 }
 
 const RecipeCard = memo(function RecipeCard({
@@ -22,6 +26,8 @@ const RecipeCard = memo(function RecipeCard({
     currentUser,
     isFirstCard = false,
     user,
+    onRemove,
+    disabled,
 }: RecipeCardProps) {
     const router = useRouter();
     const { t } = useTranslation();
@@ -36,8 +42,8 @@ const RecipeCard = memo(function RecipeCard({
 
     return (
         <div
-            onClick={() => router.push(`/recipes/${data.id}`)}
-            className="group col-span-1 cursor-pointer"
+            onClick={() => !disabled && router.push(`/recipes/${data.id}`)}
+            className={`group col-span-1 cursor-pointer ${disabled ? 'opacity-50' : ''}`}
             id={isFirstCard ? 'lcp-container' : undefined}
         >
             <div className="flex w-full flex-col gap-2">
@@ -59,6 +65,25 @@ const RecipeCard = memo(function RecipeCard({
                             currentUser={currentUser}
                         />
                     </div>
+                    {onRemove && (
+                        <div className="absolute top-3 left-3">
+                            <Tooltip text={t('remove_from_list')}>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onRemove(data.id);
+                                    }}
+                                    disabled={disabled}
+                                    className="flex h-8 w-8 items-center justify-center rounded-full bg-white/80 transition hover:bg-white dark:bg-neutral-800/80 dark:hover:bg-neutral-800"
+                                >
+                                    <IoClose
+                                        size={20}
+                                        className="text-neutral-600 dark:text-neutral-400"
+                                    />
+                                </button>
+                            </Tooltip>
+                        </div>
+                    )}
                     <ClientOnly>
                         {isAwardWinning && (
                             <div className="absolute bottom-0 flex w-full items-center justify-center bg-gray-900/50 p-2 text-white">

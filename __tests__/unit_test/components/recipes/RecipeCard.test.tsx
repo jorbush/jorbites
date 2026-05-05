@@ -28,6 +28,15 @@ vi.mock('@/app/components/utils/Avatar', () => ({
     ),
 }));
 
+// Mock the Tooltip component
+vi.mock('@/app/components/utils/Tooltip', () => ({
+    default: ({ children, text }: { children: React.ReactNode; text: string }) => (
+        <div data-testid="tooltip-mock" title={text}>
+            {children}
+        </div>
+    ),
+}));
+
 describe('<RecipeCard />', () => {
     const mockRecipe: SafeRecipe = {
         id: '1',
@@ -71,13 +80,8 @@ describe('<RecipeCard />', () => {
     };
 
     beforeEach(() => {
-        render(
-            <RecipeCard
-                data={mockRecipe}
-                currentUser={mockUser}
-            />
-        );
         (useRouter as any).mockReturnValue(mockRouter);
+        vi.clearAllMocks();
     });
 
     afterEach(() => {
@@ -85,24 +89,54 @@ describe('<RecipeCard />', () => {
     });
 
     it('renders the recipe title', () => {
+        render(
+            <RecipeCard
+                data={mockRecipe}
+                currentUser={mockUser}
+            />
+        );
         expect(screen.getByText('Test Recipe')).toBeDefined();
     });
 
     it('renders the recipe cooking time', () => {
+        render(
+            <RecipeCard
+                data={mockRecipe}
+                currentUser={mockUser}
+            />
+        );
         expect(screen.getByText('30 min')).toBeDefined();
     });
 
     it('renders the recipe image', () => {
+        render(
+            <RecipeCard
+                data={mockRecipe}
+                currentUser={mockUser}
+            />
+        );
         const image = screen.getByAltText('recipe') as HTMLImageElement;
         expect(image).toBeDefined();
         expect(image.src).toContain('test-image.jpg');
     });
 
     it('renders the HeartButton component', () => {
+        render(
+            <RecipeCard
+                data={mockRecipe}
+                currentUser={mockUser}
+            />
+        );
         expect(screen.getByTestId('heart-button')).toBeDefined();
     });
 
     it('navigates to the recipe page when clicked', () => {
+        render(
+            <RecipeCard
+                data={mockRecipe}
+                currentUser={mockUser}
+            />
+        );
         fireEvent.click(screen.getByText('Test Recipe'));
         expect(mockRouter.push).toHaveBeenCalledWith('/recipes/1');
     });
@@ -177,6 +211,64 @@ describe('<RecipeCard />', () => {
 
             // Should NOT show avatar
             expect(screen.queryByTestId('avatar')).toBeNull();
+        });
+    });
+
+    describe('remove action', () => {
+        it('renders the remove button when onRemove is provided', () => {
+            const onRemove = vi.fn();
+            render(
+                <RecipeCard
+                    data={mockRecipe}
+                    onRemove={onRemove}
+                />
+            );
+
+            const removeButton = screen.getByTestId('tooltip-mock').querySelector('button');
+            expect(removeButton).toBeDefined();
+        });
+
+        it('calls onRemove when the remove button is clicked', () => {
+            const onRemove = vi.fn();
+            render(
+                <RecipeCard
+                    data={mockRecipe}
+                    onRemove={onRemove}
+                />
+            );
+
+            const removeButton = screen.getByTestId('tooltip-mock').querySelector('button');
+            if (removeButton) fireEvent.click(removeButton);
+
+            expect(onRemove).toHaveBeenCalledWith(mockRecipe.id);
+        });
+
+        it('does not navigate when the remove button is clicked', () => {
+            const onRemove = vi.fn();
+            render(
+                <RecipeCard
+                    data={mockRecipe}
+                    onRemove={onRemove}
+                />
+            );
+
+            const removeButton = screen.getByTestId('tooltip-mock').querySelector('button');
+            if (removeButton) fireEvent.click(removeButton);
+
+            expect(mockRouter.push).not.toHaveBeenCalled();
+        });
+
+        it('does not navigate when disabled', () => {
+            cleanup();
+            render(
+                <RecipeCard
+                    data={mockRecipe}
+                    disabled={true}
+                />
+            );
+
+            fireEvent.click(screen.getByText('Test Recipe'));
+            expect(mockRouter.push).not.toHaveBeenCalled();
         });
     });
 });

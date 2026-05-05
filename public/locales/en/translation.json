@@ -640,5 +640,7 @@
     "public": "Public",
     "private_list": "Private list",
     "done": "Done",
-    "delete_list_confirmation": "Are you sure you want to delete this list?"
+    "delete_list_confirmation": "Are you sure you want to delete this list?",
+    "remove_from_list": "Remove from list",
+    "recipe_removed_from_list": "Recipe removed from list"
 }
