@@ -11,6 +11,7 @@ import { AiOutlineDelete } from 'react-icons/ai';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
 import Avatar from '@/app/components/utils/Avatar';
 import { formatDate } from '@/app/utils/date-utils';
+import { FcBookmark } from 'react-icons/fc';
 
 interface ListsClientProps {
     initialLists: SafeList[];
@@ -45,9 +46,12 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
 
     return (
         <Container>
-            <div className="flex flex-col gap-6 pt-8 pb-12 dark:text-white">
-                <div className="text-3xl font-bold">{t('my_lists')}</div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <div className="flex flex-col gap-6 pb-12 md:pt-8 dark:text-white">
+                <div className="flex flex-row items-center gap-2">
+                    <FcBookmark size={32} />
+                    <div className="text-3xl font-bold">{t('my_lists')}</div>
+                </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
                     {lists.map((list) => (
                         <div
                             key={list.id}
