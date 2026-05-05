@@ -2,6 +2,7 @@ import { NextResponse } from 'next/dist/server/web/spec-extension/response';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
+import { USER_SELECT_FIELDS } from '@/app/utils/constants';
 import {
     unauthorized,
     internalServerError,
@@ -22,6 +23,11 @@ export async function GET() {
             where: {
                 userId: currentUser.id,
             },
+            include: {
+                user: {
+                    select: USER_SELECT_FIELDS,
+                },
+            },
             orderBy: {
                 createdAt: 'asc',
             },
@@ -38,6 +44,11 @@ export async function GET() {
                         isPrivate: true,
                         userId: currentUser.id,
                     },
+                    include: {
+                        user: {
+                            select: USER_SELECT_FIELDS,
+                        },
+                    },
                 });
                 lists = [defaultList];
             } catch (error: any) {
@@ -47,6 +58,11 @@ export async function GET() {
                 // If a parallel request already created it, re-fetch
                 lists = await prisma.list.findMany({
                     where: { userId: currentUser.id },
+                    include: {
+                        user: {
+                            select: USER_SELECT_FIELDS,
+                        },
+                    },
                     orderBy: { createdAt: 'asc' },
                 });
             }
@@ -56,7 +72,20 @@ export async function GET() {
             userId: currentUser.id,
             listCount: lists.length,
         });
-        return NextResponse.json(lists);
+
+        const safeLists = lists.map((list) => ({
+            ...list,
+            createdAt: list.createdAt.toISOString(),
+            updatedAt: list.updatedAt.toISOString(),
+            user: {
+                ...list.user,
+                createdAt: list.user.createdAt.toISOString(),
+                updatedAt: list.user.updatedAt.toISOString(),
+                emailVerified: list.user.emailVerified?.toISOString() || null,
+            },
+        }));
+
+        return NextResponse.json(safeLists);
     } catch (error: any) {
         logger.error('GET /api/lists - error', { error: error.message });
         return internalServerError('Internal Error');
@@ -88,10 +117,28 @@ export async function POST(request: Request) {
                 userId: currentUser.id,
                 ...(recipeId && { recipeIds: [recipeId] }),
             },
+            include: {
+                user: {
+                    select: USER_SELECT_FIELDS,
+                },
+            },
         });
 
         logger.info('POST /api/lists - success', { listId: list.id });
-        return NextResponse.json(list);
+
+        const safeList = {
+            ...list,
+            createdAt: list.createdAt.toISOString(),
+            updatedAt: list.updatedAt.toISOString(),
+            user: {
+                ...list.user,
+                createdAt: list.user.createdAt.toISOString(),
+                updatedAt: list.user.updatedAt.toISOString(),
+                emailVerified: list.user.emailVerified?.toISOString() || null,
+            },
+        };
+
+        return NextResponse.json(safeList);
     } catch (error: any) {
         logger.error('POST /api/lists - error', { error: error.message });
         return internalServerError('Internal Error');

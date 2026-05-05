@@ -2,6 +2,7 @@ import { NextResponse } from 'next/dist/server/web/spec-extension/response';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
+import { USER_SELECT_FIELDS } from '@/app/utils/constants';
 import {
     unauthorized,
     internalServerError,
@@ -66,12 +67,31 @@ export async function PATCH(
                         ? isPrivate
                         : existingList.isPrivate,
             },
+            include: {
+                user: {
+                    select: USER_SELECT_FIELDS,
+                },
+            },
         });
 
         logger.info('PATCH /api/lists/[listId] - success', {
             listId: updatedList.id,
         });
-        return NextResponse.json(updatedList);
+
+        const safeList = {
+            ...updatedList,
+            createdAt: updatedList.createdAt.toISOString(),
+            updatedAt: updatedList.updatedAt.toISOString(),
+            user: {
+                ...updatedList.user,
+                createdAt: updatedList.user.createdAt.toISOString(),
+                updatedAt: updatedList.user.updatedAt.toISOString(),
+                emailVerified:
+                    updatedList.user.emailVerified?.toISOString() || null,
+            },
+        };
+
+        return NextResponse.json(safeList);
     } catch (error: any) {
         logger.error('PATCH /api/lists/[listId] - error', {
             error: error.message,

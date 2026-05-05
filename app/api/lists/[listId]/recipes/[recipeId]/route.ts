@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
+import { USER_SELECT_FIELDS } from '@/app/utils/constants';
 import {
     unauthorized,
     internalServerError,
@@ -65,13 +66,32 @@ export async function POST(
                     connect: { id: recipeId },
                 },
             },
+            include: {
+                user: {
+                    select: USER_SELECT_FIELDS,
+                },
+            },
         });
 
         logger.info('POST /api/lists/[listId]/recipes/[recipeId] - success', {
             listId,
             recipeId,
         });
-        return NextResponse.json(updatedList);
+
+        const safeList = {
+            ...updatedList,
+            createdAt: updatedList.createdAt.toISOString(),
+            updatedAt: updatedList.updatedAt.toISOString(),
+            user: {
+                ...updatedList.user,
+                createdAt: updatedList.user.createdAt.toISOString(),
+                updatedAt: updatedList.user.updatedAt.toISOString(),
+                emailVerified:
+                    updatedList.user.emailVerified?.toISOString() || null,
+            },
+        };
+
+        return NextResponse.json(safeList);
     } catch (error: any) {
         logger.error('POST /api/lists/[listId]/recipes/[recipeId] - error', {
             error: error.message,
@@ -123,13 +143,32 @@ export async function DELETE(
                     disconnect: { id: recipeId },
                 },
             },
+            include: {
+                user: {
+                    select: USER_SELECT_FIELDS,
+                },
+            },
         });
 
         logger.info('DELETE /api/lists/[listId]/recipes/[recipeId] - success', {
             listId,
             recipeId,
         });
-        return NextResponse.json(updatedList);
+
+        const safeList = {
+            ...updatedList,
+            createdAt: updatedList.createdAt.toISOString(),
+            updatedAt: updatedList.updatedAt.toISOString(),
+            user: {
+                ...updatedList.user,
+                createdAt: updatedList.user.createdAt.toISOString(),
+                updatedAt: updatedList.user.updatedAt.toISOString(),
+                emailVerified:
+                    updatedList.user.emailVerified?.toISOString() || null,
+            },
+        };
+
+        return NextResponse.json(safeList);
     } catch (error: any) {
         logger.error('DELETE /api/lists/[listId]/recipes/[recipeId] - error', {
             error: error.message,
