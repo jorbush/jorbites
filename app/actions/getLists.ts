@@ -42,6 +42,9 @@ export default async function getLists() {
                 });
                 lists = [defaultList];
             } catch (error: any) {
+                logger.error('getLists - error creating default list', {
+                    error: error.message,
+                });
                 // If a parallel request already created it, re-fetch
                 lists = await prisma.list.findMany({
                     where: { userId: currentUser.id },

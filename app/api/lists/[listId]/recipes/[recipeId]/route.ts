@@ -86,7 +86,8 @@ export async function POST(
                 ...updatedList.user,
                 createdAt: updatedList.user.createdAt.toISOString(),
                 updatedAt: updatedList.user.updatedAt.toISOString(),
-                emailVerified: updatedList.user.emailVerified?.toISOString() || null,
+                emailVerified:
+                    updatedList.user.emailVerified?.toISOString() || null,
             },
         };
 
@@ -162,7 +163,8 @@ export async function DELETE(
                 ...updatedList.user,
                 createdAt: updatedList.user.createdAt.toISOString(),
                 updatedAt: updatedList.user.updatedAt.toISOString(),
-                emailVerified: updatedList.user.emailVerified?.toISOString() || null,
+                emailVerified:
+                    updatedList.user.emailVerified?.toISOString() || null,
             },
         };
 

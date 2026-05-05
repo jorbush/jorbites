@@ -78,7 +78,9 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                             </div>
                             <div className="flex flex-row items-center justify-between">
                                 <div className="text-xs text-neutral-400">
-                                    {list.isPrivate ? t('private') : t('public')}
+                                    {list.isPrivate
+                                        ? t('private')
+                                        : t('public')}
                                 </div>
                                 {list.user && (
                                     <div className="flex flex-row items-center gap-2">

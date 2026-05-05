@@ -86,7 +86,8 @@ export async function PATCH(
                 ...updatedList.user,
                 createdAt: updatedList.user.createdAt.toISOString(),
                 updatedAt: updatedList.user.updatedAt.toISOString(),
-                emailVerified: updatedList.user.emailVerified?.toISOString() || null,
+                emailVerified:
+                    updatedList.user.emailVerified?.toISOString() || null,
             },
         };
 
