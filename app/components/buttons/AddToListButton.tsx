@@ -1,4 +1,4 @@
-import { AiOutlineMenuFold } from 'react-icons/ai';
+import { PiListPlusBold } from 'react-icons/pi';
 import { SafeUser } from '@/app/types';
 import useAddToListModal from '@/app/hooks/useAddToListModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
@@ -34,7 +34,7 @@ const AddToListButton: React.FC<AddToListButtonProps> = ({
             data-cy="add-to-list-button"
             title={t('add_to_list') || 'Add to list'}
         >
-            <AiOutlineMenuFold
+            <PiListPlusBold
                 size={28}
                 className="fill-neutral-500/70 hover:fill-black dark:hover:fill-white"
             />
