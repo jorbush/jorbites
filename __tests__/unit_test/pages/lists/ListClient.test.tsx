@@ -158,13 +158,42 @@ describe('ListClient', () => {
             />
         );
 
-        const toggle = screen.getByRole('switch');
+        const toggleButton = screen.getByText('private').closest('button');
+        expect(toggleButton).toBeDefined();
+
         await act(async () => {
-            fireEvent.click(toggle);
+            fireEvent.click(toggleButton!);
         });
 
         expect(axios.patch).toHaveBeenCalledWith('/api/lists/list-1', {
             isPrivate: false,
         });
+    });
+
+    it('renders the correct padlock icon based on privacy state', () => {
+        const { unmount } = render(
+            <ListClient
+                list={mockList} // isPrivate: true
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
+
+        expect(screen.getByText('private')).toBeDefined();
+        expect(screen.getByTestId('lock-icon')).toBeDefined();
+
+        unmount();
+
+        const publicList = { ...mockList, isPrivate: false };
+        render(
+            <ListClient
+                list={publicList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
+
+        expect(screen.getByText('public')).toBeDefined();
+        expect(screen.getByTestId('lock-open-icon')).toBeDefined();
     });
 });
