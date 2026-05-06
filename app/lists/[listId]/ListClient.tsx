@@ -3,7 +3,6 @@
 import { SafeList, SafeRecipe, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
-import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
 import { useCallback, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -12,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import Avatar from '@/app/components/utils/Avatar';
 import { formatDate } from '@/app/utils/date-utils';
 import { AiOutlineDelete } from 'react-icons/ai';
+import { GiPadlock, GiPadlockOpen } from 'react-icons/gi';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
 
 interface ListClientProps {
@@ -101,16 +101,28 @@ const ListClient: React.FC<ListClientProps> = ({
                     </div>
                     {isOwner && (
                         <div className="flex flex-row items-center gap-4">
-                            <div className="flex flex-row items-center gap-2">
+                            <button
+                                onClick={togglePrivacy}
+                                disabled={isLoading}
+                                className="flex flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
+                            >
                                 <span className="text-sm font-semibold text-neutral-500">
                                     {isPrivate ? t('private') : t('public')}
                                 </span>
-                                <ToggleSwitch
-                                    checked={isPrivate}
-                                    onChange={togglePrivacy}
-                                    disabled={isLoading}
-                                />
-                            </div>
+                                {isPrivate ? (
+                                    <GiPadlock
+                                        size={20}
+                                        className="text-neutral-500"
+                                        data-testid="lock-icon"
+                                    />
+                                ) : (
+                                    <GiPadlockOpen
+                                        size={20}
+                                        className="text-neutral-500"
+                                        data-testid="lock-open-icon"
+                                    />
+                                )}
+                            </button>
                             {!list.isDefault && (
                                 <button
                                     onClick={() => setIsConfirmModalOpen(true)}
