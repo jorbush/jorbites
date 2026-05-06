@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, cleanup, waitFor, act } from '@testing-library/react';
+import {
+    render,
+    screen,
+    fireEvent,
+    cleanup,
+    act,
+} from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ListsClient from '@/app/lists/ListsClient';
 import { SafeList, SafeUser } from '@/app/types';
@@ -64,8 +70,6 @@ describe('ListsClient', () => {
     it('shows delete button only for non-default lists', () => {
         render(<ListsClient initialLists={mockLists} />);
 
-        // Use container to find the list items and check for delete buttons
-        const listItems = screen.getAllByRole('button');
         // Filter those that have the delete icon/title
         const deleteButtons = screen.queryAllByTitle('delete_list');
 

@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, cleanup, act } from '@testing-library/react';
+import {
+    render,
+    screen,
+    fireEvent,
+    cleanup,
+    act,
+} from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ListClient from '@/app/lists/[listId]/ListClient';
 import { SafeList, SafeUser, SafeRecipe } from '@/app/types';
@@ -14,7 +20,9 @@ vi.mock('next/navigation', () => ({
 
 // Mock RecipeCard
 vi.mock('@/app/components/recipes/RecipeCard', () => ({
-    default: ({ data }: { data: SafeRecipe }) => <div data-testid="recipe-card">{data.title}</div>,
+    default: ({ data }: { data: SafeRecipe }) => (
+        <div data-testid="recipe-card">{data.title}</div>
+    ),
 }));
 
 const mockUser: SafeUser = {
@@ -69,7 +77,13 @@ describe('ListClient', () => {
     });
 
     it('renders list details and recipes', () => {
-        render(<ListClient list={mockList} recipes={mockRecipes} currentUser={mockUser} />);
+        render(
+            <ListClient
+                list={mockList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
 
         expect(screen.getByText('My Special List')).toBeDefined();
         expect(screen.getByText('Recipe 1')).toBeDefined();
@@ -77,28 +91,52 @@ describe('ListClient', () => {
     });
 
     it('shows delete button for owner if not default list', () => {
-        render(<ListClient list={mockList} recipes={mockRecipes} currentUser={mockUser} />);
+        render(
+            <ListClient
+                list={mockList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
 
         expect(screen.getByTitle('delete_list')).toBeDefined();
     });
 
     it('does not show delete button if not owner', () => {
         const otherUser = { ...mockUser, id: 'other-id' };
-        render(<ListClient list={mockList} recipes={mockRecipes} currentUser={otherUser} />);
+        render(
+            <ListClient
+                list={mockList}
+                recipes={mockRecipes}
+                currentUser={otherUser}
+            />
+        );
 
         expect(screen.queryByTitle('delete_list')).toBeNull();
     });
 
     it('does not show delete button for default list', () => {
         const defaultList = { ...mockList, isDefault: true };
-        render(<ListClient list={defaultList} recipes={mockRecipes} currentUser={mockUser} />);
+        render(
+            <ListClient
+                list={defaultList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
 
         expect(screen.queryByTitle('delete_list')).toBeNull();
     });
 
     it('calls axios.delete when confirmed', async () => {
         vi.mocked(axios.delete).mockResolvedValue({ data: {} });
-        render(<ListClient list={mockList} recipes={mockRecipes} currentUser={mockUser} />);
+        render(
+            <ListClient
+                list={mockList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
 
         fireEvent.click(screen.getByTitle('delete_list'));
 
@@ -112,13 +150,21 @@ describe('ListClient', () => {
 
     it('toggles privacy', async () => {
         vi.mocked(axios.patch).mockResolvedValue({ data: {} });
-        render(<ListClient list={mockList} recipes={mockRecipes} currentUser={mockUser} />);
+        render(
+            <ListClient
+                list={mockList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
 
         const toggle = screen.getByRole('switch');
         await act(async () => {
             fireEvent.click(toggle);
         });
 
-        expect(axios.patch).toHaveBeenCalledWith('/api/lists/list-1', { isPrivate: false });
+        expect(axios.patch).toHaveBeenCalledWith('/api/lists/list-1', {
+            isPrivate: false,
+        });
     });
 });
