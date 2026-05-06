@@ -638,5 +638,7 @@
     "public": "Pública",
     "private_list": "Llista privada",
     "done": "Fet",
-    "delete_list_confirmation": "Estàs segur que vols eliminar aquesta llista?"
+    "delete_list_confirmation": "Estàs segur que vols eliminar aquesta llista?",
+    "remove_from_list": "Eliminar de la llista",
+    "recipe_removed_from_list": "Recepta eliminada de la llista"
 }
