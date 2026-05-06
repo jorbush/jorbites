@@ -4,6 +4,7 @@ import { SafeRecipe, SafeUser } from '@/app/types';
 import { useRouter } from 'next/navigation';
 import HeartButton from '@/app/components/buttons/HeartButton';
 import { GiTrophyCup } from 'react-icons/gi';
+import { IconType } from 'react-icons';
 import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { memo, useMemo } from 'react';
@@ -15,6 +16,10 @@ interface RecipeCardProps {
     currentUser?: SafeUser | null;
     isFirstCard?: boolean;
     user?: SafeUser | null;
+    onAction?: (id: string) => void;
+    actionLabel?: string;
+    actionIcon?: IconType;
+    disabled?: boolean;
 }
 
 const RecipeCard = memo(function RecipeCard({
@@ -22,6 +27,10 @@ const RecipeCard = memo(function RecipeCard({
     currentUser,
     isFirstCard = false,
     user,
+    onAction,
+    actionLabel,
+    actionIcon: Icon,
+    disabled,
 }: RecipeCardProps) {
     const router = useRouter();
     const { t } = useTranslation();
@@ -59,6 +68,22 @@ const RecipeCard = memo(function RecipeCard({
                             currentUser={currentUser}
                         />
                     </div>
+                    {onAction && Icon && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onAction(data.id);
+                            }}
+                            disabled={disabled}
+                            className="absolute top-3 left-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-800/80 dark:hover:bg-neutral-800"
+                            title={actionLabel}
+                        >
+                            <Icon
+                                size={18}
+                                className="text-rose-500"
+                            />
+                        </button>
+                    )}
                     <ClientOnly>
                         {isAwardWinning && (
                             <div className="absolute bottom-0 flex w-full items-center justify-center bg-gray-900/50 p-2 text-white">
