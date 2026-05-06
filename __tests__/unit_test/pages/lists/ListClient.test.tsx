@@ -20,8 +20,26 @@ vi.mock('next/navigation', () => ({
 
 // Mock RecipeCard
 vi.mock('@/app/components/recipes/RecipeCard', () => ({
-    default: ({ data }: { data: SafeRecipe }) => (
-        <div data-testid="recipe-card">{data.title}</div>
+    default: ({
+        data,
+        onAction,
+        actionLabel,
+    }: {
+        data: SafeRecipe;
+        onAction?: (id: string) => void;
+        actionLabel?: string;
+    }) => (
+        <div data-testid="recipe-card">
+            {data.title}
+            {onAction && (
+                <button
+                    onClick={() => onAction(data.id)}
+                    title={actionLabel}
+                >
+                    Action
+                </button>
+            )}
+        </div>
     ),
 }));
 
@@ -168,6 +186,26 @@ describe('ListClient', () => {
         expect(axios.patch).toHaveBeenCalledWith('/api/lists/list-1', {
             isPrivate: false,
         });
+    });
+
+    it('calls axios.delete to remove a recipe when onAction is triggered', async () => {
+        vi.mocked(axios.delete).mockResolvedValue({ data: {} });
+        render(
+            <ListClient
+                list={mockList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
+
+        const removeButton = screen.getByTitle('remove_from_list');
+        await act(async () => {
+            fireEvent.click(removeButton);
+        });
+
+        expect(axios.delete).toHaveBeenCalledWith(
+            '/api/lists/list-1/recipes/recipe-1'
+        );
     });
 
     it('renders the correct padlock icon based on privacy state', () => {

@@ -107,6 +107,29 @@ describe('<RecipeCard />', () => {
         expect(mockRouter.push).toHaveBeenCalledWith('/recipes/1');
     });
 
+    it('calls onAction when action button is clicked', () => {
+        const onAction = vi.fn();
+        const actionIcon = () => <div data-testid="action-icon" />;
+        cleanup();
+        // Reset the router mock calls before the test
+        mockRouter.push.mockClear();
+
+        const { getByTitle } = render(
+            <RecipeCard
+                data={mockRecipe}
+                onAction={onAction}
+                actionIcon={actionIcon as any}
+                actionLabel="Remove"
+            />
+        );
+
+        const actionButton = getByTitle('Remove');
+        fireEvent.click(actionButton);
+
+        expect(onAction).toHaveBeenCalledWith('1');
+        expect(mockRouter.push).not.toHaveBeenCalled();
+    });
+
     describe('user parameter logic', () => {
         const mockRecipeUser: SafeUser = {
             id: '2',
