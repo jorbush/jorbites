@@ -87,7 +87,7 @@ describe('ListClient', () => {
 
         expect(screen.getByText('My Special List')).toBeDefined();
         expect(screen.getByText('Recipe 1')).toBeDefined();
-        expect(screen.getByText('private')).toBeDefined();
+        expect(screen.queryByText('private')).toBeNull();
     });
 
     it('shows delete button for owner if not default list', () => {
@@ -158,7 +158,7 @@ describe('ListClient', () => {
             />
         );
 
-        const toggleButton = screen.getByText('private').closest('button');
+        const toggleButton = screen.getByTitle('private');
         expect(toggleButton).toBeDefined();
 
         await act(async () => {
@@ -179,7 +179,7 @@ describe('ListClient', () => {
             />
         );
 
-        expect(screen.getByText('private')).toBeDefined();
+        expect(screen.getByTitle('private')).toBeDefined();
         expect(screen.getByTestId('lock-icon')).toBeDefined();
 
         unmount();
@@ -193,7 +193,7 @@ describe('ListClient', () => {
             />
         );
 
-        expect(screen.getByText('public')).toBeDefined();
+        expect(screen.getByTitle('public')).toBeDefined();
         expect(screen.getByTestId('lock-open-icon')).toBeDefined();
     });
 });

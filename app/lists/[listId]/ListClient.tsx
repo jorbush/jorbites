@@ -105,10 +105,8 @@ const ListClient: React.FC<ListClientProps> = ({
                                 onClick={togglePrivacy}
                                 disabled={isLoading}
                                 className="flex flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
+                                title={isPrivate ? t('private') : t('public')}
                             >
-                                <span className="text-sm font-semibold text-neutral-500">
-                                    {isPrivate ? t('private') : t('public')}
-                                </span>
                                 {isPrivate ? (
                                     <GiPadlock
                                         size={20}
