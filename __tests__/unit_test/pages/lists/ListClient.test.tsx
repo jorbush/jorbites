@@ -170,7 +170,7 @@ describe('ListClient', () => {
         });
     });
 
-    it('renders the correct padlock icon based on privacy state', () => {
+    it('renders the correct padlock icon and styles based on privacy state', () => {
         const { unmount } = render(
             <ListClient
                 list={mockList} // isPrivate: true
@@ -180,7 +180,10 @@ describe('ListClient', () => {
         );
 
         expect(screen.getByTitle('private')).toBeDefined();
-        expect(screen.getByTestId('lock-icon')).toBeDefined();
+        const lockIcon = screen.getByTestId('lock-icon');
+        expect(lockIcon).toBeDefined();
+        expect(lockIcon.getAttribute('class')).toContain('text-neutral-700');
+        expect(lockIcon.getAttribute('class')).toContain('dark:text-neutral-300');
 
         unmount();
 
@@ -194,6 +197,11 @@ describe('ListClient', () => {
         );
 
         expect(screen.getByTitle('public')).toBeDefined();
-        expect(screen.getByTestId('lock-open-icon')).toBeDefined();
+        const lockOpenIcon = screen.getByTestId('lock-open-icon');
+        expect(lockOpenIcon).toBeDefined();
+        expect(lockOpenIcon.getAttribute('class')).toContain('text-neutral-700');
+        expect(lockOpenIcon.getAttribute('class')).toContain(
+            'dark:text-neutral-300'
+        );
     });
 });
