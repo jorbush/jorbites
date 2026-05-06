@@ -622,6 +622,7 @@
     "push_notifications_unsubscribed_success": "Subscripció cancel·lada amb èxit!",
     "push_notifications_unsubscribe_error": "Error en cancel·lar la subscripció.",
     "my_lists": "Les Meves Llistes",
+    "delete_list": "Eliminar llista",
     "list_deleted": "Llista eliminada",
     "list_is_now_public": "La llista ara és pública",
     "list_is_now_private": "La llista ara és privada",
