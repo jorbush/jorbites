@@ -72,7 +72,7 @@ const ListClient: React.FC<ListClientProps> = ({
 
     return (
         <Container>
-            <div className="flex flex-col gap-6 pb-12 sm:pt-8 dark:text-white">
+            <div className="flex flex-col gap-6 pb-12 md:pt-8 dark:text-white">
                 <div className="flex flex-row items-start justify-between">
                     <div className="flex flex-col gap-2">
                         <div className="text-3xl font-bold">
