@@ -183,7 +183,9 @@ describe('ListClient', () => {
         const lockIcon = screen.getByTestId('lock-icon');
         expect(lockIcon).toBeDefined();
         expect(lockIcon.getAttribute('class')).toContain('text-neutral-700');
-        expect(lockIcon.getAttribute('class')).toContain('dark:text-neutral-300');
+        expect(lockIcon.getAttribute('class')).toContain(
+            'dark:text-neutral-300'
+        );
 
         unmount();
 
@@ -199,7 +201,9 @@ describe('ListClient', () => {
         expect(screen.getByTitle('public')).toBeDefined();
         const lockOpenIcon = screen.getByTestId('lock-open-icon');
         expect(lockOpenIcon).toBeDefined();
-        expect(lockOpenIcon.getAttribute('class')).toContain('text-neutral-700');
+        expect(lockOpenIcon.getAttribute('class')).toContain(
+            'text-neutral-700'
+        );
         expect(lockOpenIcon.getAttribute('class')).toContain(
             'dark:text-neutral-300'
         );
