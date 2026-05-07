@@ -6,15 +6,20 @@ import HeartButton from '@/app/components/buttons/HeartButton';
 import { GiTrophyCup } from 'react-icons/gi';
 import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import Avatar from '@/app/components/utils/Avatar';
 import ClientOnly from '@/app/components/utils/ClientOnly';
+import { IconType } from 'react-icons';
 
 interface RecipeCardProps {
     data: SafeRecipe;
     currentUser?: SafeUser | null;
     isFirstCard?: boolean;
     user?: SafeUser | null;
+    onAction?: (id: string) => void;
+    disabled?: boolean;
+    actionLabel?: string;
+    actionIcon?: IconType;
 }
 
 const RecipeCard = memo(function RecipeCard({
@@ -22,9 +27,26 @@ const RecipeCard = memo(function RecipeCard({
     currentUser,
     isFirstCard = false,
     user,
+    onAction,
+    disabled,
+    actionLabel,
+    actionIcon: ActionIcon,
 }: RecipeCardProps) {
     const router = useRouter();
     const { t } = useTranslation();
+
+    const handleCancel = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
+
+            if (disabled) {
+                return;
+            }
+
+            onAction?.(data.id);
+        },
+        [onAction, data.id, disabled]
+    );
 
     const isAwardWinning = useMemo(() => {
         return (
@@ -59,6 +81,19 @@ const RecipeCard = memo(function RecipeCard({
                             currentUser={currentUser}
                         />
                     </div>
+                    {onAction && ActionIcon && (
+                        <button
+                            disabled={disabled}
+                            onClick={handleCancel}
+                            className="absolute top-3 left-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/80 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800/80 dark:hover:bg-neutral-800"
+                            title={actionLabel}
+                        >
+                            <ActionIcon
+                                size={18}
+                                className="text-neutral-700 dark:text-neutral-200"
+                            />
+                        </button>
+                    )}
                     <ClientOnly>
                         {isAwardWinning && (
                             <div className="absolute bottom-0 flex w-full items-center justify-center bg-gray-900/50 p-2 text-white">

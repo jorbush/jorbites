@@ -29,6 +29,7 @@ const ListClient: React.FC<ListClientProps> = ({
     const { t } = useTranslation();
     const [isPrivate, setIsPrivate] = useState(list.isPrivate);
     const [isLoading, setIsLoading] = useState(false);
+    const [deletingId, setDeletingId] = useState('');
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
     const isOwner = currentUser?.id === list.userId;
@@ -70,6 +71,26 @@ const ListClient: React.FC<ListClientProps> = ({
         }
     }, [isOwner, list.id, router, t]);
 
+    const onRemoveRecipe = useCallback(
+        async (recipeId: string) => {
+            if (!isOwner) return;
+            setDeletingId(recipeId);
+            try {
+                await axios.delete(
+                    `/api/lists/${list.id}/recipes/${recipeId}`
+                );
+                toast.success(t('recipe_removed'));
+                router.refresh();
+            } catch (error) {
+                toast.error(t('something_went_wrong'));
+                console.error(error);
+            } finally {
+                setDeletingId('');
+            }
+        },
+        [isOwner, list.id, router, t]
+    );
+
     return (
         <Container>
             <div className="flex flex-col gap-6 pb-12 md:pt-8 dark:text-white">
@@ -104,7 +125,7 @@ const ListClient: React.FC<ListClientProps> = ({
                             <button
                                 onClick={togglePrivacy}
                                 disabled={isLoading}
-                                className="flex flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
+                                className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
                                 title={
                                     (isPrivate ? t('private') : t('public')) ||
                                     ''
@@ -128,7 +149,7 @@ const ListClient: React.FC<ListClientProps> = ({
                                 <button
                                     onClick={() => setIsConfirmModalOpen(true)}
                                     disabled={isLoading}
-                                    className="rounded-full p-2 text-rose-500 transition hover:bg-rose-100 dark:hover:bg-rose-900"
+                                    className="cursor-pointer rounded-full p-2 text-rose-500 transition hover:bg-rose-100 dark:hover:bg-rose-900"
                                     title={t('delete_list') || 'Delete list'}
                                 >
                                     <AiOutlineDelete size={24} />
@@ -150,6 +171,10 @@ const ListClient: React.FC<ListClientProps> = ({
                                 key={recipe.id}
                                 data={recipe}
                                 user={recipe.user}
+                                onAction={isOwner ? onRemoveRecipe : undefined}
+                                disabled={deletingId === recipe.id}
+                                actionLabel={t('delete') || 'Delete'}
+                                actionIcon={isOwner ? AiOutlineDelete : undefined}
                             />
                         ))}
                     </div>

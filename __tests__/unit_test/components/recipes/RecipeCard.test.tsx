@@ -71,6 +71,7 @@ describe('<RecipeCard />', () => {
     };
 
     beforeEach(() => {
+        vi.clearAllMocks();
         render(
             <RecipeCard
                 data={mockRecipe}
@@ -105,6 +106,51 @@ describe('<RecipeCard />', () => {
     it('navigates to the recipe page when clicked', () => {
         fireEvent.click(screen.getByText('Test Recipe'));
         expect(mockRouter.push).toHaveBeenCalledWith('/recipes/1');
+    });
+
+    it('renders and calls onAction when action button is clicked', () => {
+        const onAction = vi.fn();
+        const ActionIcon = () => <div data-testid="action-icon" />;
+
+        cleanup();
+        render(
+            <RecipeCard
+                data={mockRecipe}
+                onAction={onAction}
+                actionIcon={ActionIcon}
+                actionLabel="Delete Action"
+            />
+        );
+
+        const actionButton = screen.getByTitle('Delete Action');
+        expect(actionButton).toBeDefined();
+        expect(screen.getByTestId('action-icon')).toBeDefined();
+
+        fireEvent.click(actionButton);
+
+        expect(onAction).toHaveBeenCalledWith(mockRecipe.id);
+        expect(mockRouter.push).not.toHaveBeenCalled();
+    });
+
+    it('does not call onAction when disabled', () => {
+        const onAction = vi.fn();
+        const ActionIcon = () => <div data-testid="action-icon" />;
+
+        cleanup();
+        render(
+            <RecipeCard
+                data={mockRecipe}
+                onAction={onAction}
+                actionIcon={ActionIcon}
+                actionLabel="Delete Action"
+                disabled
+            />
+        );
+
+        const actionButton = screen.getByTitle('Delete Action');
+        fireEvent.click(actionButton);
+
+        expect(onAction).not.toHaveBeenCalled();
     });
 
     describe('user parameter logic', () => {
