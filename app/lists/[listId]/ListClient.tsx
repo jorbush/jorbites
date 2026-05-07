@@ -104,7 +104,7 @@ const ListClient: React.FC<ListClientProps> = ({
                             <button
                                 onClick={togglePrivacy}
                                 disabled={isLoading}
-                                className="flex flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
+                                className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
                                 title={
                                     (isPrivate ? t('private') : t('public')) ||
                                     ''
@@ -128,7 +128,7 @@ const ListClient: React.FC<ListClientProps> = ({
                                 <button
                                     onClick={() => setIsConfirmModalOpen(true)}
                                     disabled={isLoading}
-                                    className="rounded-full p-2 text-rose-500 transition hover:bg-rose-100 dark:hover:bg-rose-900"
+                                    className="cursor-pointer rounded-full p-2 text-rose-500 transition hover:bg-rose-100 dark:hover:bg-rose-900"
                                     title={t('delete_list') || 'Delete list'}
                                 >
                                     <AiOutlineDelete size={24} />
