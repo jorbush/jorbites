@@ -35,7 +35,11 @@ describe('AddToListModal', () => {
 
     it('renders the modal when open', () => {
         render(<AddToListModal />);
-        expect(screen.getByText('save_to_list')).toBeDefined();
+        // Title should be in the modal (passed as title prop)
+        const titleElement = screen.getByTestId('modal-title');
+        expect(titleElement.textContent).toContain('save_to_list');
+        // Description should be in the body
+        expect(screen.getByText('add_to_list_description')).toBeDefined();
     });
 
     it('shows loading state initially', () => {

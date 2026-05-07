@@ -634,6 +634,7 @@
     "list_no_recipes": "Esta lista aún no tiene recetas.",
     "add_to_list": "Añadir a la lista",
     "save_to_list": "Guardar en la lista",
+    "add_to_list_description": "Selecciona la lista donde quieras añadir esta receta",
     "create_new_list": "Crear nueva lista",
     "list_name": "Nombre de la lista",
     "private_list_description": "Lista privada",
