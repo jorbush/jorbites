@@ -76,9 +76,7 @@ const ListClient: React.FC<ListClientProps> = ({
             if (!isOwner) return;
             setDeletingId(recipeId);
             try {
-                await axios.delete(
-                    `/api/lists/${list.id}/recipes/${recipeId}`
-                );
+                await axios.delete(`/api/lists/${list.id}/recipes/${recipeId}`);
                 toast.success(t('recipe_removed'));
                 router.refresh();
             } catch (error) {
@@ -174,7 +172,9 @@ const ListClient: React.FC<ListClientProps> = ({
                                 onAction={isOwner ? onRemoveRecipe : undefined}
                                 disabled={deletingId === recipe.id}
                                 actionLabel={t('delete') || 'Delete'}
-                                actionIcon={isOwner ? AiOutlineDelete : undefined}
+                                actionIcon={
+                                    isOwner ? AiOutlineDelete : undefined
+                                }
                             />
                         ))}
                     </div>
