@@ -133,8 +133,8 @@ const ListClient: React.FC<ListClientProps> = ({
                                         })
                                     }
                                     className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                                    aria-label="Share"
-                                    title="Share"
+                                    aria-label={t('share') || 'Share'}
+                                    title={t('share') || 'Share'}
                                 >
                                     <FiShare2
                                         size={20}
