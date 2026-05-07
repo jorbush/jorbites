@@ -627,6 +627,7 @@
     "my_lists": "Mis Listas",
     "delete_list": "Eliminar lista",
     "list_deleted": "Lista eliminada",
+    "recipe_removed": "Receta eliminada",
     "list_is_now_public": "La lista ahora es pública",
     "list_is_now_private": "La lista ahora es privada",
     "make_public": "Hacer pública",

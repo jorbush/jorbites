@@ -29,6 +29,7 @@ const ListClient: React.FC<ListClientProps> = ({
     const { t } = useTranslation();
     const [isPrivate, setIsPrivate] = useState(list.isPrivate);
     const [isLoading, setIsLoading] = useState(false);
+    const [deletingId, setDeletingId] = useState('');
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
     const isOwner = currentUser?.id === list.userId;
@@ -69,6 +70,24 @@ const ListClient: React.FC<ListClientProps> = ({
             setIsConfirmModalOpen(false);
         }
     }, [isOwner, list.id, router, t]);
+
+    const onRemoveRecipe = useCallback(
+        async (recipeId: string) => {
+            if (!isOwner) return;
+            setDeletingId(recipeId);
+            try {
+                await axios.delete(`/api/lists/${list.id}/recipes/${recipeId}`);
+                toast.success(t('recipe_removed'));
+                router.refresh();
+            } catch (error) {
+                toast.error(t('something_went_wrong'));
+                console.error(error);
+            } finally {
+                setDeletingId('');
+            }
+        },
+        [isOwner, list.id, router, t]
+    );
 
     return (
         <Container>
@@ -150,6 +169,12 @@ const ListClient: React.FC<ListClientProps> = ({
                                 key={recipe.id}
                                 data={recipe}
                                 user={recipe.user}
+                                onAction={isOwner ? onRemoveRecipe : undefined}
+                                disabled={deletingId === recipe.id}
+                                actionLabel={t('delete') || 'Delete'}
+                                actionIcon={
+                                    isOwner ? AiOutlineDelete : undefined
+                                }
                             />
                         ))}
                     </div>

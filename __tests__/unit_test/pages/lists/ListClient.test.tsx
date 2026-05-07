@@ -20,8 +20,26 @@ vi.mock('next/navigation', () => ({
 
 // Mock RecipeCard
 vi.mock('@/app/components/recipes/RecipeCard', () => ({
-    default: ({ data }: { data: SafeRecipe }) => (
-        <div data-testid="recipe-card">{data.title}</div>
+    default: ({
+        data,
+        onAction,
+        actionLabel,
+    }: {
+        data: SafeRecipe;
+        onAction?: (id: string) => void;
+        actionLabel?: string;
+    }) => (
+        <div data-testid="recipe-card">
+            {data.title}
+            {onAction && (
+                <button
+                    onClick={() => onAction(data.id)}
+                    title={actionLabel}
+                >
+                    Delete Recipe
+                </button>
+            )}
+        </div>
     ),
 }));
 
@@ -168,6 +186,39 @@ describe('ListClient', () => {
         expect(axios.patch).toHaveBeenCalledWith('/api/lists/list-1', {
             isPrivate: false,
         });
+    });
+
+    it('calls axios.delete to remove a recipe from the list', async () => {
+        vi.mocked(axios.delete).mockResolvedValue({ data: {} });
+        render(
+            <ListClient
+                list={mockList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
+
+        const deleteRecipeButton = screen.getByText('Delete Recipe');
+        await act(async () => {
+            fireEvent.click(deleteRecipeButton);
+        });
+
+        expect(axios.delete).toHaveBeenCalledWith(
+            '/api/lists/list-1/recipes/recipe-1'
+        );
+    });
+
+    it('does not show remove recipe button if not owner', () => {
+        const otherUser = { ...mockUser, id: 'other-id' };
+        render(
+            <ListClient
+                list={mockList}
+                recipes={mockRecipes}
+                currentUser={otherUser}
+            />
+        );
+
+        expect(screen.queryByText('Delete Recipe')).toBeNull();
     });
 
     it('renders the correct padlock icon and styles based on privacy state', () => {
