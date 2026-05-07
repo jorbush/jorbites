@@ -125,7 +125,13 @@ const ListClient: React.FC<ListClientProps> = ({
                         <div className="flex flex-row items-center gap-4">
                             {!isPrivate && (
                                 <button
-                                    onClick={() => share()}
+                                    onClick={() =>
+                                        share({
+                                            title: list.isDefault
+                                                ? t('to_cook_later')
+                                                : list.name,
+                                        })
+                                    }
                                     className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 dark:hover:bg-neutral-800"
                                     aria-label="Share"
                                     title="Share"

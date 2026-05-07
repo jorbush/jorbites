@@ -271,6 +271,8 @@ describe('ListClient', () => {
         expect(shareButton).toBeDefined();
 
         fireEvent.click(shareButton);
-        expect(mockShare).toHaveBeenCalledTimes(1);
+        expect(mockShare).toHaveBeenCalledWith({
+            title: 'My Special List',
+        });
     });
 });
