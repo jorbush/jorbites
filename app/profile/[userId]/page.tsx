@@ -64,6 +64,9 @@ export async function generateMetadata(props: {
             description,
             images: [user.image || '/jorbites-social.jpg'],
         },
+        alternates: {
+            canonical: `/profile/${params.userId}`,
+        },
     };
 }
 

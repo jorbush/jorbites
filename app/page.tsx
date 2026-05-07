@@ -5,6 +5,13 @@ import Pagination from '@/app/components/navigation/Pagination';
 import { isMobile } from '@/app/utils/deviceDetector';
 import getRecipes, { IRecipesParams } from '@/app/actions/getRecipes';
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    alternates: {
+        canonical: '/',
+    },
+};
 
 import { headers } from 'next/headers';
 import ErrorDisplay from '@/app/components/utils/ErrorDisplay';

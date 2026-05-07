@@ -44,6 +44,9 @@ export async function generateMetadata(props: {
                 : [],
             type: 'article',
         },
+        alternates: {
+            canonical: `/workshops/${params.workshopId}`,
+        },
     };
 }
 

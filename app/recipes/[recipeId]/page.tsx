@@ -68,6 +68,9 @@ export async function generateMetadata(props: {
             ],
             type: 'article',
         },
+        alternates: {
+            canonical: `/recipes/${params.recipeId}`,
+        },
     };
 }
 

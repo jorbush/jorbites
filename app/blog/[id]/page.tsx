@@ -50,6 +50,9 @@ export async function generateMetadata(props: {
             description: blog.frontmatter.description,
             images: [ogImage],
         },
+        alternates: {
+            canonical: `/blog/${params.id}`,
+        },
     };
 }
 

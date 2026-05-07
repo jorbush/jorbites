@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         type: 'website',
         url: 'https://jorbites.com/events',
     },
+    alternates: {
+        canonical: '/events',
+    },
 };
 
 const EventsPage = () => {
