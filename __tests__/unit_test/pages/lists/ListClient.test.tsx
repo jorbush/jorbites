@@ -18,6 +18,13 @@ vi.mock('next/navigation', () => ({
     }),
 }));
 
+const mockShare = vi.fn();
+vi.mock('@/app/hooks/useShare', () => ({
+    default: () => ({
+        share: mockShare,
+    }),
+}));
+
 // Mock RecipeCard
 vi.mock('@/app/components/recipes/RecipeCard', () => ({
     default: ({ data }: { data: SafeRecipe }) => (
@@ -168,6 +175,35 @@ describe('ListClient', () => {
         expect(axios.patch).toHaveBeenCalledWith('/api/lists/list-1', {
             isPrivate: false,
         });
+    });
+
+    it('renders the share button when the list is public and calls share when clicked', () => {
+        const publicList = { ...mockList, isPrivate: false };
+        render(
+            <ListClient
+                list={publicList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
+
+        const shareButton = screen.getByTestId('share-button');
+        expect(shareButton).toBeDefined();
+
+        fireEvent.click(shareButton);
+        expect(mockShare).toHaveBeenCalledWith({ title: 'My Special List' });
+    });
+
+    it('does not render the share button when the list is private', () => {
+        render(
+            <ListClient
+                list={mockList} // isPrivate: true
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
+
+        expect(screen.queryByTestId('share-button')).toBeNull();
     });
 
     it('renders the correct padlock icon and styles based on privacy state', () => {
