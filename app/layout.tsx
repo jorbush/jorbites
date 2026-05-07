@@ -81,9 +81,6 @@ export const metadata = {
         ],
         type: 'website',
     },
-    alternates: {
-        canonical: 'https://jorbites.com',
-    },
 };
 
 export default async function RootLayout({

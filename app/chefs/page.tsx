@@ -18,6 +18,9 @@ export const metadata: Metadata = {
     title: 'Chefs | Jorbites',
     description:
         'Discover talented chefs and their culinary creations on Jorbites',
+    alternates: {
+        canonical: '/chefs',
+    },
 };
 
 const ChefsPage = async ({ searchParams }: ChefsPageProps) => {

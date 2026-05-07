@@ -8,6 +8,9 @@ import WorkshopsListSkeleton from '@/app/components/workshops/WorkshopsListSkele
 export const metadata: Metadata = {
     title: 'Workshops | Jorbites',
     description: 'Discover and join cooking workshops in your area',
+    alternates: {
+        canonical: '/workshops',
+    },
 };
 
 const WorkshopsPage = async () => {

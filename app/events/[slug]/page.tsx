@@ -46,6 +46,9 @@ export async function generateMetadata(props: {
             description: event.frontmatter.description,
             images: [event.frontmatter.image],
         },
+        alternates: {
+            canonical: `/events/${params.slug}`,
+        },
     };
 }
 

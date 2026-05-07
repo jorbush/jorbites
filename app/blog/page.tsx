@@ -14,6 +14,9 @@ export const metadata: Metadata = {
         type: 'website',
         url: 'https://jorbites.com/blog',
     },
+    alternates: {
+        canonical: '/blog',
+    },
 };
 
 interface BlogPageProps {
