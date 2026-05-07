@@ -77,7 +77,7 @@ const ListClient: React.FC<ListClientProps> = ({
             setDeletingId(recipeId);
             try {
                 await axios.delete(`/api/lists/${list.id}/recipes/${recipeId}`);
-                toast.success(t('success'));
+                toast.success(t('recipe_removed'));
                 router.refresh();
             } catch (error) {
                 toast.error(t('something_went_wrong'));
