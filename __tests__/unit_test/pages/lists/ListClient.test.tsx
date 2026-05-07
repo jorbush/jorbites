@@ -245,7 +245,9 @@ describe('ListClient', () => {
         expect(lockIcon.getAttribute('class')).toContain(
             'dark:text-neutral-300'
         );
-        expect(screen.queryByTitle('share')).toBeNull();
+        expect(
+            screen.queryByRole('button', { name: /share/i })
+        ).toBeNull();
 
         unmount();
 
@@ -267,7 +269,7 @@ describe('ListClient', () => {
         expect(lockOpenIcon.getAttribute('class')).toContain(
             'dark:text-neutral-300'
         );
-        const shareButton = screen.getByTitle('share');
+        const shareButton = screen.getByRole('button', { name: /share/i });
         expect(shareButton).toBeDefined();
 
         fireEvent.click(shareButton);
