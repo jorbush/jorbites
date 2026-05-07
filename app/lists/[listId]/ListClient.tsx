@@ -113,13 +113,13 @@ const ListClient: React.FC<ListClientProps> = ({
                                 {isPrivate ? (
                                     <GiPadlock
                                         size={20}
-                                        className="text-neutral-500"
+                                        className="text-neutral-700 dark:text-neutral-300"
                                         data-testid="lock-icon"
                                     />
                                 ) : (
                                     <GiPadlockOpen
                                         size={20}
-                                        className="text-neutral-500"
+                                        className="text-neutral-700 dark:text-neutral-300"
                                         data-testid="lock-open-icon"
                                     />
                                 )}
