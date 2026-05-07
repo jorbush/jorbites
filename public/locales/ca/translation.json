@@ -631,6 +631,7 @@
     "list_no_recipes": "Aquesta llista encara no té receptes.",
     "add_to_list": "Afegir a la llista",
     "save_to_list": "Guardar a la llista",
+    "add_to_list_description": "Selecciona la llista on vulguis afegir aquesta recepta",
     "create_new_list": "Crear nova llista",
     "list_name": "Nom de la llista",
     "private_list_description": "Llista privada",

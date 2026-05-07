@@ -633,6 +633,7 @@
     "list_no_recipes": "This list has no recipes yet.",
     "add_to_list": "Add to list",
     "save_to_list": "Save to list",
+    "add_to_list_description": "Select the list where you want to add this recipe",
     "create_new_list": "Create new list",
     "list_name": "List name",
     "private_list_description": "Private list",

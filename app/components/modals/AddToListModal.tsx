@@ -108,8 +108,8 @@ const AddToListModal = () => {
 
     let bodyContent = (
         <div className="flex flex-col gap-4">
-            <div className="text-center">
-                <div className="text-2xl font-bold">{t('save_to_list')}</div>
+            <div className="text-neutral-500">
+                {t('add_to_list_description')}
             </div>
             {isLoading && lists.length === 0 ? (
                 <div className="text-center text-neutral-500">
@@ -214,7 +214,7 @@ const AddToListModal = () => {
         <Modal
             disabled={isLoading}
             isOpen={addToListModal.isOpen}
-            title=""
+            title={t('save_to_list') || ''}
             actionLabel={t('done')}
             onClose={handleClose}
             onSubmit={isCreating ? handleSubmit(onSubmitNewList) : handleClose}
