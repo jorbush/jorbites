@@ -12,7 +12,9 @@ import Avatar from '@/app/components/utils/Avatar';
 import { formatDate } from '@/app/utils/date-utils';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { GiPadlock, GiPadlockOpen } from 'react-icons/gi';
+import { FiShare2 } from 'react-icons/fi';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
+import useShare from '@/app/hooks/useShare';
 
 interface ListClientProps {
     list: SafeList;
@@ -27,6 +29,7 @@ const ListClient: React.FC<ListClientProps> = ({
 }) => {
     const router = useRouter();
     const { t } = useTranslation();
+    const { share } = useShare();
     const [isPrivate, setIsPrivate] = useState(list.isPrivate);
     const [isLoading, setIsLoading] = useState(false);
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -99,43 +102,69 @@ const ListClient: React.FC<ListClientProps> = ({
                             </div>
                         )}
                     </div>
-                    {isOwner && (
-                        <div className="flex flex-row items-center gap-4">
+                    <div className="flex flex-row items-center gap-4">
+                        {!isPrivate && (
                             <button
-                                onClick={togglePrivacy}
-                                disabled={isLoading}
-                                className="flex flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
-                                title={
-                                    (isPrivate ? t('private') : t('public')) ||
-                                    ''
+                                onClick={() =>
+                                    share({
+                                        title: list.isDefault
+                                            ? t('to_cook_later')
+                                            : list.name,
+                                    })
                                 }
+                                className="flex flex-row items-center gap-2 rounded-lg p-2 transition hover:bg-neutral-100 focus:outline-hidden dark:hover:bg-neutral-800"
+                                title={t('share') || 'Share'}
+                                aria-label={t('share') || 'Share'}
                             >
-                                {isPrivate ? (
-                                    <GiPadlock
-                                        size={20}
-                                        className="text-neutral-700 dark:text-neutral-300"
-                                        data-testid="lock-icon"
-                                    />
-                                ) : (
-                                    <GiPadlockOpen
-                                        size={20}
-                                        className="text-neutral-700 dark:text-neutral-300"
-                                        data-testid="lock-open-icon"
-                                    />
-                                )}
+                                <FiShare2
+                                    size={20}
+                                    className="text-neutral-700 dark:text-neutral-300"
+                                />
                             </button>
-                            {!list.isDefault && (
+                        )}
+                        {isOwner && (
+                            <>
                                 <button
-                                    onClick={() => setIsConfirmModalOpen(true)}
+                                    onClick={togglePrivacy}
                                     disabled={isLoading}
-                                    className="rounded-full p-2 text-rose-500 transition hover:bg-rose-100 dark:hover:bg-rose-900"
-                                    title={t('delete_list') || 'Delete list'}
+                                    className="flex flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
+                                    title={
+                                        (isPrivate
+                                            ? t('private')
+                                            : t('public')) || ''
+                                    }
                                 >
-                                    <AiOutlineDelete size={24} />
+                                    {isPrivate ? (
+                                        <GiPadlock
+                                            size={20}
+                                            className="text-neutral-700 dark:text-neutral-300"
+                                            data-testid="lock-icon"
+                                        />
+                                    ) : (
+                                        <GiPadlockOpen
+                                            size={20}
+                                            className="text-neutral-700 dark:text-neutral-300"
+                                            data-testid="lock-open-icon"
+                                        />
+                                    )}
                                 </button>
-                            )}
-                        </div>
-                    )}
+                                {!list.isDefault && (
+                                    <button
+                                        onClick={() =>
+                                            setIsConfirmModalOpen(true)
+                                        }
+                                        disabled={isLoading}
+                                        className="rounded-full p-2 text-rose-500 transition hover:bg-rose-100 dark:hover:bg-rose-900"
+                                        title={
+                                            t('delete_list') || 'Delete list'
+                                        }
+                                    >
+                                        <AiOutlineDelete size={24} />
+                                    </button>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 {recipes.length === 0 ? (

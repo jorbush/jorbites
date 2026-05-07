@@ -18,6 +18,13 @@ vi.mock('next/navigation', () => ({
     }),
 }));
 
+const mockShare = vi.fn();
+vi.mock('@/app/hooks/useShare', () => ({
+    default: () => ({
+        share: mockShare,
+    }),
+}));
+
 // Mock RecipeCard
 vi.mock('@/app/components/recipes/RecipeCard', () => ({
     default: ({ data }: { data: SafeRecipe }) => (
@@ -167,6 +174,71 @@ describe('ListClient', () => {
 
         expect(axios.patch).toHaveBeenCalledWith('/api/lists/list-1', {
             isPrivate: false,
+        });
+    });
+
+    it('renders share button when list is public', () => {
+        const publicList = { ...mockList, isPrivate: false };
+        render(
+            <ListClient
+                list={publicList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
+
+        expect(screen.getByTitle('share')).toBeDefined();
+    });
+
+    it('does not render share button when list is private', () => {
+        render(
+            <ListClient
+                list={mockList} // isPrivate: true
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
+
+        expect(screen.queryByTitle('share')).toBeNull();
+    });
+
+    it('calls share function when share button is clicked', () => {
+        const publicList = { ...mockList, isPrivate: false };
+        render(
+            <ListClient
+                list={publicList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
+
+        const shareButton = screen.getByTitle('share');
+        fireEvent.click(shareButton);
+
+        expect(mockShare).toHaveBeenCalledWith({
+            title: 'My Special List',
+        });
+    });
+
+    it('calls share function with "to_cook_later" for default public list', () => {
+        const publicDefaultList = {
+            ...mockList,
+            isPrivate: false,
+            isDefault: true,
+        };
+        render(
+            <ListClient
+                list={publicDefaultList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
+
+        const shareButton = screen.getByTitle('share');
+        fireEvent.click(shareButton);
+
+        expect(mockShare).toHaveBeenCalledWith({
+            title: 'to_cook_later',
         });
     });
 
