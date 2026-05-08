@@ -245,9 +245,7 @@ describe('ListClient', () => {
         expect(lockIcon.getAttribute('class')).toContain(
             'dark:text-neutral-300'
         );
-        expect(
-            screen.queryByRole('button', { name: /share/i })
-        ).toBeNull();
+        expect(screen.queryByRole('button', { name: /share/i })).toBeNull();
 
         unmount();
 
