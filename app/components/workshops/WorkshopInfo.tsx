@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import getUserDisplayName from '@/app/utils/responsive';
 import VerificationBadge from '@/app/components/VerificationBadge';
+import { formatDateLanguage, formatDate } from '@/app/utils/date-utils';
 import {
     MdLocationOn,
     MdCalendarToday,
@@ -50,7 +51,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
     participants = [],
     whitelistedUserIds,
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const router = useRouter();
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
@@ -75,15 +76,12 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
     }, [whitelistedUserIds]);
 
     const workshopDate = new Date(date);
-    const formatDate = (date: Date) => {
-        return new Intl.DateTimeFormat('default', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        }).format(date);
+    const formatWorkshopDate = (date: Date) => {
+        return formatDateLanguage(
+            date,
+            'EEEE, d MMMM yyyy, HH:mm',
+            i18n.language
+        );
     };
 
     return (
@@ -125,7 +123,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                 <div className="flex items-center gap-2 text-lg">
                     <MdCalendarToday size={24} />
                     <span data-cy="workshop-date-display">
-                        {formatDate(workshopDate)}
+                        {formatWorkshopDate(workshopDate)}
                     </span>
                 </div>
                 {isRecurrent && recurrencePattern && (
@@ -269,9 +267,10 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                                     <div className="h-2 w-2 rounded-full bg-green-500" />
                                     <span>
                                         {t('joined_at')}:{' '}
-                                        {new Date(
-                                            participant.joinedAt
-                                        ).toLocaleDateString()}
+                                        {formatDate(
+                                            participant.joinedAt,
+                                            i18n.language
+                                        )}
                                     </span>
                                 </div>
                             ))}

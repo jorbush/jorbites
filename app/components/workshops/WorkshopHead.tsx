@@ -3,7 +3,9 @@
 import { FiChevronLeft, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/navigation/Heading';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
+import { formatDateLanguage } from '@/app/utils/date-utils';
 import useShare from '@/app/hooks/useShare';
 
 interface WorkshopHeadProps {
@@ -18,14 +20,15 @@ const WorkshopHead: React.FC<WorkshopHeadProps> = ({
     imageSrc,
 }) => {
     const router = useRouter();
+    const { i18n } = useTranslation();
     const { share } = useShare();
 
     const workshopDate = new Date(date);
-    const formattedDate = new Intl.DateTimeFormat('default', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    }).format(workshopDate);
+    const formattedDate = formatDateLanguage(
+        workshopDate,
+        'MMM d, yyyy',
+        i18n.language
+    );
 
     return (
         <>

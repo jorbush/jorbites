@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { memo } from 'react';
 import Avatar from '../utils/Avatar';
+import { formatDateLanguage } from '@/app/utils/date-utils';
 import {
     MdLocationOn,
     MdCalendarToday,
@@ -25,20 +26,18 @@ const WorkshopCard = memo(function WorkshopCard({
     isFirstCard = false,
 }: WorkshopCardProps) {
     const router = useRouter();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const workshopDate = new Date(data.date);
     const isPast = workshopDate < new Date();
     const participantCount = data.participants?.length || 0;
 
     const formatDate = (date: Date) => {
-        return new Intl.DateTimeFormat('default', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        }).format(date);
+        return formatDateLanguage(
+            date,
+            'MMM d, yyyy, HH:mm',
+            i18n.language
+        );
     };
 
     return (
