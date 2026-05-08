@@ -6,7 +6,7 @@ import React from 'react';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
-    useTranslation: () => ({
+    useTranslation: () => ({ i18n: { language: "en" },
         t: (key: string) => {
             const translations: Record<string, string> = {
                 recipe_contribution_graph: 'Recipe Contribution Graph',

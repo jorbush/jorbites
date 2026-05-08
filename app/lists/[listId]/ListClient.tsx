@@ -28,7 +28,7 @@ const ListClient: React.FC<ListClientProps> = ({
     currentUser,
 }) => {
     const router = useRouter();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { share } = useShare();
     const [isPrivate, setIsPrivate] = useState(list.isPrivate);
     const [isLoading, setIsLoading] = useState(false);
@@ -108,7 +108,7 @@ const ListClient: React.FC<ListClientProps> = ({
                             </div>
                             <div className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600" />
                             <div className="text-sm text-neutral-500">
-                                {formatDate(list.createdAt)}
+                                {formatDate(list.createdAt, i18n.language)}
                             </div>
                         </div>
                         {list.user && (

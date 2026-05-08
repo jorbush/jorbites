@@ -3,6 +3,7 @@
 import { SafeUser, SafeWorkshopParticipant } from '@/app/types';
 import Avatar from '@/app/components/utils/Avatar';
 import { useTranslation } from 'react-i18next';
+import { formatDateLanguage } from '@/app/utils/date-utils';
 import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import getUserDisplayName from '@/app/utils/responsive';
@@ -50,7 +51,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
     participants = [],
     whitelistedUserIds,
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const router = useRouter();
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
@@ -76,14 +77,11 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
 
     const workshopDate = new Date(date);
     const formatDate = (date: Date) => {
-        return new Intl.DateTimeFormat('default', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        }).format(date);
+        return formatDateLanguage(
+            date,
+            'eeee, d MMMM yyyy, HH:mm',
+            i18n.language
+        );
     };
 
     return (

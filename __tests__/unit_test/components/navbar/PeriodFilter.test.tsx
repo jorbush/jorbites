@@ -17,7 +17,7 @@ vi.mock('react-icons/fi', () => ({
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
-    useTranslation: () => ({
+    useTranslation: () => ({ i18n: { language: "en" },
         t: (key: string) => {
             const translations: { [key: string]: string } = {
                 filter_by_date: 'Filter by date',
