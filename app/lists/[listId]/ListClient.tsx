@@ -36,11 +36,8 @@ const ListClient: React.FC<ListClientProps> = ({
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
     const isOwner = currentUser?.id === list.userId;
-    const toCookLaterTitle = t('to_cook_later');
-    const shareTitle =
-        list.isDefault && typeof toCookLaterTitle === 'string'
-            ? toCookLaterTitle
-            : list.name;
+    const toCookLaterTitle = t('to_cook_later') as string;
+    const shareTitle = list.isDefault ? toCookLaterTitle : list.name;
 
     const togglePrivacy = useCallback(async () => {
         if (!isOwner) return;
