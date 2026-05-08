@@ -12,7 +12,9 @@ import Avatar from '@/app/components/utils/Avatar';
 import { formatDate } from '@/app/utils/date-utils';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { GiPadlock, GiPadlockOpen } from 'react-icons/gi';
+import { FiShare2 } from 'react-icons/fi';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
+import useShare from '@/app/hooks/useShare';
 
 interface ListClientProps {
     list: SafeList;
@@ -27,12 +29,15 @@ const ListClient: React.FC<ListClientProps> = ({
 }) => {
     const router = useRouter();
     const { t } = useTranslation();
+    const { share } = useShare();
     const [isPrivate, setIsPrivate] = useState(list.isPrivate);
     const [isLoading, setIsLoading] = useState(false);
     const [deletingId, setDeletingId] = useState('');
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
     const isOwner = currentUser?.id === list.userId;
+    const defaultListTitle = t('to_cook_later') as string;
+    const shareTitle = list.isDefault ? defaultListTitle : list.name;
 
     const togglePrivacy = useCallback(async () => {
         if (!isOwner) return;
@@ -120,6 +125,23 @@ const ListClient: React.FC<ListClientProps> = ({
                     </div>
                     {isOwner && (
                         <div className="flex flex-row items-center gap-4">
+                            {!isPrivate && (
+                                <button
+                                    onClick={() =>
+                                        share({
+                                            title: shareTitle,
+                                        })
+                                    }
+                                    className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                    aria-label={t('share') || 'Share'}
+                                    title={t('share') || 'Share'}
+                                >
+                                    <FiShare2
+                                        size={20}
+                                        className="text-neutral-700 dark:text-neutral-300"
+                                    />
+                                </button>
+                            )}
                             <button
                                 onClick={togglePrivacy}
                                 disabled={isLoading}

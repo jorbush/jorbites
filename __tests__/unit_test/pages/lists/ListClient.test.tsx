@@ -10,11 +10,18 @@ import ListClient from '@/app/lists/[listId]/ListClient';
 import { SafeList, SafeUser, SafeRecipe } from '@/app/types';
 import axios from 'axios';
 
+const mockShare = vi.fn();
+
 vi.mock('axios');
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
         refresh: vi.fn(),
         push: vi.fn(),
+    }),
+}));
+vi.mock('@/app/hooks/useShare', () => ({
+    default: () => ({
+        share: mockShare,
     }),
 }));
 
@@ -88,6 +95,7 @@ const mockRecipes: (SafeRecipe & { user: SafeUser })[] = [
 describe('ListClient', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        mockShare.mockReset();
     });
 
     afterEach(() => {
@@ -237,6 +245,7 @@ describe('ListClient', () => {
         expect(lockIcon.getAttribute('class')).toContain(
             'dark:text-neutral-300'
         );
+        expect(screen.queryByRole('button', { name: /share/i })).toBeNull();
 
         unmount();
 
@@ -258,5 +267,12 @@ describe('ListClient', () => {
         expect(lockOpenIcon.getAttribute('class')).toContain(
             'dark:text-neutral-300'
         );
+        const shareButton = screen.getByRole('button', { name: /share/i });
+        expect(shareButton).toBeDefined();
+
+        fireEvent.click(shareButton);
+        expect(mockShare).toHaveBeenCalledWith({
+            title: 'My Special List',
+        });
     });
 });
