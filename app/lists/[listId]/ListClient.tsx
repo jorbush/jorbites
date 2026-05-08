@@ -128,7 +128,10 @@ const ListClient: React.FC<ListClientProps> = ({
                                     onClick={() =>
                                         share({
                                             title: list.isDefault
-                                                ? t('to_cook_later')
+                                                ? String(
+                                                      t('to_cook_later') ||
+                                                          'To cook later'
+                                                  )
                                                 : list.name,
                                         })
                                     }
