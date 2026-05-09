@@ -36,7 +36,8 @@ vi.mock('@/app/components/optimization/CustomProxyImage', () => ({
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ i18n: { language: "en" },
+    useTranslation: () => ({
+        i18n: { language: 'en' },
         t: (key: string) => key,
     }),
 }));

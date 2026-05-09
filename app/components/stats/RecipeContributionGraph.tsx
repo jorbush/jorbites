@@ -240,7 +240,9 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                                         title={
                                                             day.count > 0
                                                                 ? `${formatDate(day.date)}: ${day.count} ${day.count === 1 ? t('recipe') : t('recipes')}`
-                                                                : formatDate(day.date)
+                                                                : formatDate(
+                                                                      day.date
+                                                                  )
                                                         }
                                                     />
                                                 ))}
