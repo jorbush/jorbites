@@ -97,84 +97,89 @@ const ListClient: React.FC<ListClientProps> = ({
     return (
         <Container>
             <div className="flex flex-col gap-6 pb-12 md:pt-8 dark:text-white">
-                <div className="flex flex-row items-start justify-between">
-                    <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2">
+                    <div className="flex flex-row items-start justify-between gap-4">
                         <div className="text-3xl font-bold">
                             {list.isDefault ? t('to_cook_later') : list.name}
                         </div>
-                        <div className="flex flex-row items-center gap-2">
-                            <div className="text-sm text-neutral-500">
-                                {recipes.length} {t('recipes')}
-                            </div>
-                            <div className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600" />
-                            <div className="text-sm text-neutral-500">
-                                {formatDate(list.createdAt, i18n.language)}
-                            </div>
-                        </div>
-                        {list.user && (
-                            <div className="mt-2 flex flex-row items-center gap-2">
-                                <Avatar
-                                    src={list.user.image}
-                                    size={24}
-                                />
-                                <div className="text-sm font-medium">
-                                    {list.user.name}
-                                </div>
+                        {isOwner && (
+                            <div className="flex shrink-0 flex-row items-center gap-4">
+                                {!isPrivate && (
+                                    <button
+                                        onClick={() =>
+                                            share({
+                                                title: shareTitle,
+                                            })
+                                        }
+                                        className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                        aria-label={t('share') || 'Share'}
+                                        title={t('share') || 'Share'}
+                                    >
+                                        <FiShare2
+                                            size={20}
+                                            className="text-neutral-700 dark:text-neutral-300"
+                                        />
+                                    </button>
+                                )}
+                                <button
+                                    onClick={togglePrivacy}
+                                    disabled={isLoading}
+                                    className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
+                                    title={
+                                        (isPrivate
+                                            ? t('private')
+                                            : t('public')) || ''
+                                    }
+                                >
+                                    {isPrivate ? (
+                                        <GiPadlock
+                                            size={20}
+                                            className="text-neutral-700 dark:text-neutral-300"
+                                            data-testid="lock-icon"
+                                        />
+                                    ) : (
+                                        <GiPadlockOpen
+                                            size={20}
+                                            className="text-neutral-700 dark:text-neutral-300"
+                                            data-testid="lock-open-icon"
+                                        />
+                                    )}
+                                </button>
+                                {!list.isDefault && (
+                                    <button
+                                        onClick={() =>
+                                            setIsConfirmModalOpen(true)
+                                        }
+                                        disabled={isLoading}
+                                        className="cursor-pointer rounded-full p-2 text-rose-500 transition hover:bg-rose-100 dark:hover:bg-rose-900"
+                                        title={
+                                            t('delete_list') || 'Delete list'
+                                        }
+                                    >
+                                        <AiOutlineDelete size={24} />
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>
-                    {isOwner && (
-                        <div className="flex flex-row items-center gap-4">
-                            {!isPrivate && (
-                                <button
-                                    onClick={() =>
-                                        share({
-                                            title: shareTitle,
-                                        })
-                                    }
-                                    className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                                    aria-label={t('share') || 'Share'}
-                                    title={t('share') || 'Share'}
-                                >
-                                    <FiShare2
-                                        size={20}
-                                        className="text-neutral-700 dark:text-neutral-300"
-                                    />
-                                </button>
-                            )}
-                            <button
-                                onClick={togglePrivacy}
-                                disabled={isLoading}
-                                className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
-                                title={
-                                    (isPrivate ? t('private') : t('public')) ||
-                                    ''
-                                }
-                            >
-                                {isPrivate ? (
-                                    <GiPadlock
-                                        size={20}
-                                        className="text-neutral-700 dark:text-neutral-300"
-                                        data-testid="lock-icon"
-                                    />
-                                ) : (
-                                    <GiPadlockOpen
-                                        size={20}
-                                        className="text-neutral-700 dark:text-neutral-300"
-                                        data-testid="lock-open-icon"
-                                    />
-                                )}
-                            </button>
-                            {!list.isDefault && (
-                                <button
-                                    onClick={() => setIsConfirmModalOpen(true)}
-                                    disabled={isLoading}
-                                    className="cursor-pointer rounded-full p-2 text-rose-500 transition hover:bg-rose-100 dark:hover:bg-rose-900"
-                                    title={t('delete_list') || 'Delete list'}
-                                >
-                                    <AiOutlineDelete size={24} />
-                                </button>
-                            )}
+                    <div className="flex flex-row items-center gap-2">
+                        <div className="text-sm text-neutral-500">
+                            {recipes.length} {t('recipes')}
+                        </div>
+                        <div className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+                        <div className="text-sm text-neutral-500">
+                            {formatDate(list.createdAt, i18n.language)}
+                        </div>
+                    </div>
+                    {list.user && (
+                        <div className="mt-2 flex flex-row items-center gap-2">
+                            <Avatar
+                                src={list.user.image}
+                                size={24}
+                            />
+                            <div className="text-sm font-medium">
+                                {list.user.name}
+                            </div>
                         </div>
                     )}
                 </div>
