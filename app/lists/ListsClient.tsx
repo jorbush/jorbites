@@ -19,7 +19,7 @@ interface ListsClientProps {
 
 const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
     const router = useRouter();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [lists, setLists] = useState<SafeList[]>(initialLists);
 
     useEffect(() => {
@@ -77,7 +77,7 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                                 </div>
                                 <div className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600" />
                                 <div className="text-sm text-neutral-500">
-                                    {formatDate(list.createdAt)}
+                                    {formatDate(list.createdAt, i18n.language)}
                                 </div>
                             </div>
                             <div className="flex flex-row items-center justify-between">

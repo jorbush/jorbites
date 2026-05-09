@@ -5,6 +5,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { FiCalendar, FiX } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import Button from '../buttons/Button';
+import { formatDateLanguage } from '@/app/utils/date-utils';
 
 export interface DateRange {
     startDate: string;
@@ -12,7 +13,7 @@ export interface DateRange {
 }
 
 const PeriodFilter: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -97,14 +98,11 @@ const PeriodFilter: React.FC = () => {
         const formatDate = (dateStr: string) => {
             if (!dateStr) return '';
             const date = new Date(dateStr);
-            return date.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year:
-                    date.getFullYear() !== new Date().getFullYear()
-                        ? 'numeric'
-                        : undefined,
-            });
+            const formatStr =
+                date.getFullYear() !== new Date().getFullYear()
+                    ? 'MMM d, yyyy'
+                    : 'MMM d';
+            return formatDateLanguage(date, formatStr, i18n.language);
         };
 
         if (currentStartDate && currentEndDate) {

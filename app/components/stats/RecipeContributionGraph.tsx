@@ -18,7 +18,7 @@ interface DayData {
 const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
     recipes,
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [hoveredDay, setHoveredDay] = useState<DayData | null>(null);
     const [tooltipPosition, setTooltipPosition] = useState<{
         x: number;
@@ -90,7 +90,11 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
         weeks.forEach((week, weekIndex) => {
             const firstDay = week[0]?.date;
             if (firstDay) {
-                const month = formatDateLanguage(firstDay, 'MMM');
+                const month = formatDateLanguage(
+                    firstDay,
+                    'MMM',
+                    i18n.language
+                );
                 if (month !== lastMonth) {
                     labels.push({ weekIndex, month });
                     lastMonth = month;
@@ -99,7 +103,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
         });
 
         return labels;
-    }, [weeks]);
+    }, [weeks, i18n.language]);
 
     // Day of week labels - translated
     const dayLabels = [
@@ -147,7 +151,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
     };
 
     const formatDate = (date: Date) => {
-        return formatDateLanguage(date, 'MMM d, yyyy');
+        return formatDateLanguage(date, 'MMM d, yyyy', i18n.language);
     };
 
     if (recipes.length === 0) {

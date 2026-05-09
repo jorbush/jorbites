@@ -9,6 +9,7 @@ import axios from 'axios';
 vi.mock('axios');
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
+        i18n: { language: 'en' },
         t: (key: string) => key,
     }),
 }));
