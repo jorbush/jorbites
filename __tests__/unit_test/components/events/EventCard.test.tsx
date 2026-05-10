@@ -48,6 +48,9 @@ vi.mock('@/app/utils/date-utils', () => ({
     formatDateRange: (start: string, end: string) => {
         return `May 1, 2024${start !== end ? ' - May 2, 2024' : ''}`;
     },
+    formatRecurrentDate: (day: number) => {
+        return `${day} of each month`;
+    },
 }));
 
 vi.mock('next/image', () => ({
@@ -83,6 +86,15 @@ describe('EventCard', () => {
         },
     };
 
+    const recurrentEvent: Event = {
+        ...mockEvent,
+        frontmatter: {
+            ...mockEvent.frontmatter,
+            recurrent: true,
+            dayOfMonth: 29,
+        },
+    };
+
     afterEach(() => {
         cleanup();
     });
@@ -113,5 +125,12 @@ describe('EventCard', () => {
         const dateElement =
             screen.getByText(/May/i) || screen.getByText(/2024/i);
         expect(dateElement).toBeDefined();
+    });
+
+    it('formats recurrent date correctly', () => {
+        render(<EventCard event={recurrentEvent} />);
+
+        // Check if the recurrent date string is displayed
+        expect(screen.getByText('29 of each month')).toBeDefined();
     });
 });

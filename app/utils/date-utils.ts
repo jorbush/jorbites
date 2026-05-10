@@ -116,3 +116,18 @@ export const formatDistanceToNowLocale = (
     const locale = locales[currentLocale] || locales.es;
     return formatDistanceToNow(parsedDate, { addSuffix: true, locale });
 };
+
+/**
+ * Formats a recurrent date (e.g., 29 of each month)
+ */
+export const formatRecurrentDate = (day: number, lang?: string): string => {
+    try {
+        const i18n = require('i18next');
+        const currentLang = lang || i18n.language || 'es';
+        return i18n.t('recurrent_date', { day, lng: currentLang }) || '';
+    } catch {
+        // Fallback if i18next is not available
+        if (lang === 'en') return `${day} of each month`;
+        return `${day} de cada mes`;
+    }
+};
