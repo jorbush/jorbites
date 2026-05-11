@@ -32,9 +32,21 @@ export async function POST(request: Request) {
         // Check for CRON_SECRET authorization
         const cronSecret = process.env.CRON_SECRET;
         const authHeader = request.headers.get('Authorization');
-        if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-            logger.error('api/weekly-challenge POST - unauthorized');
-            return unauthorized('Invalid or missing CRON_SECRET');
+
+        if (!cronSecret) {
+            logger.error('api/weekly-challenge POST - CRON_SECRET not configured');
+            return internalServerError('CRON_SECRET not configured');
+        }
+
+        if (!authHeader) {
+            logger.error('api/weekly-challenge POST - missing Authorization header');
+            return unauthorized('Missing Authorization header');
+        }
+
+        const [scheme, token] = authHeader.trim().split(/\s+/);
+        if (scheme.toLowerCase() !== 'bearer' || token !== cronSecret) {
+            logger.error('api/weekly-challenge POST - invalid token or scheme');
+            return unauthorized('Invalid token or scheme');
         }
 
         const challenge = await rotateWeeklyChallenge();

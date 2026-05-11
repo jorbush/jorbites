@@ -11,19 +11,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Rotate weekly challenge
+        id: rotate-challenge
         env:
           JORBITES_URL: https://jorbites.com
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           if [ -z "$CRON_SECRET" ]; then
             echo "CRON_SECRET is missing. Skipping rotation."
+            echo "rotated=false" >> $GITHUB_OUTPUT
           else
             echo "Rotating weekly challenge..."
             curl -s -f -X POST "$JORBITES_URL/api/weekly-challenge" \
               -H "Authorization: Bearer $CRON_SECRET" || { echo "Failed to rotate weekly challenge"; exit 1; }
+            echo "rotated=true" >> $GITHUB_OUTPUT
           fi
 
       - name: Fetch current weekly challenge
+        if: steps.rotate-challenge.outputs.rotated == 'true'
         id: fetch-challenge
         env:
           JORBITES_URL: https://jorbites.com
@@ -46,6 +50,7 @@ jobs:
           echo "description=$description" >> $GITHUB_OUTPUT
 
       - name: Send NEW_CHALLENGE notification
+        if: steps.rotate-challenge.outputs.rotated == 'true'
         env:
           JORBITES_NOTIFIER_URL: ${{ secrets.JORBITES_NOTIFIER_URL }}
           JORBITES_NOTIFIER_API_KEY: ${{ secrets.JORBITES_NOTIFIER_API_KEY }}

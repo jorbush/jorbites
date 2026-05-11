@@ -18,9 +18,15 @@ import { getCurrentChallenge, rotateWeeklyChallenge } from '@/app/lib/weekly-cha
 import { logger } from '@/app/lib/axiom/server';
 
 describe('Weekly Challenge API', () => {
+    const originalEnv = process.env;
+
     beforeEach(() => {
         jest.clearAllMocks();
-        process.env.CRON_SECRET = 'test-secret';
+        process.env = { ...originalEnv, CRON_SECRET: 'test-secret' };
+    });
+
+    afterEach(() => {
+        process.env = originalEnv;
     });
 
     describe('GET /api/weekly-challenge', () => {
@@ -91,7 +97,7 @@ describe('Weekly Challenge API', () => {
     });
 
     describe('POST /api/weekly-challenge', () => {
-        it('should rotate weekly challenge successfully with valid CRON_SECRET', async () => {
+        it('should rotate weekly challenge successfully with valid CRON_SECRET (case-insensitive)', async () => {
             const mockChallenge = {
                 id: 'challenge-456',
                 title: 'New Challenge',
@@ -110,7 +116,7 @@ describe('Weekly Challenge API', () => {
             const request = new Request('http://localhost/api/weekly-challenge', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer test-secret'
+                    'Authorization': 'bearer test-secret '
                 }
             });
 
@@ -140,11 +146,11 @@ describe('Weekly Challenge API', () => {
             expect(response.status).toBe(401);
             expect(data).toBeDefined();
             expect(data).toMatchObject({
-                error: 'Invalid or missing CRON_SECRET',
+                error: 'Invalid token or scheme',
                 code: 'UNAUTHORIZED',
             });
             expect(logger.error).toHaveBeenCalledWith(
-                'api/weekly-challenge POST - unauthorized'
+                'api/weekly-challenge POST - invalid token or scheme'
             );
         });
 
@@ -157,6 +163,13 @@ describe('Weekly Challenge API', () => {
             const data = await response.json();
 
             expect(response.status).toBe(401);
+            expect(data).toMatchObject({
+                error: 'Missing Authorization header',
+                code: 'UNAUTHORIZED'
+            });
+            expect(logger.error).toHaveBeenCalledWith(
+                'api/weekly-challenge POST - missing Authorization header'
+            );
         });
 
         it('should return 500 when rotateWeeklyChallenge throws an error', async () => {
