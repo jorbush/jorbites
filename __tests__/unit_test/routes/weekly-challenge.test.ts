@@ -62,7 +62,11 @@ describe('Weekly Challenge API', () => {
             const data = await response.json();
 
             expect(response.status).toBe(500);
-            expect(data.error).toBe('Failed to fetch weekly challenge');
+            expect(data).toMatchObject({
+                error: 'Failed to fetch weekly challenge',
+                code: 'INTERNAL_SERVER_ERROR',
+            });
+            expect(data.timestamp).toBeDefined();
             expect(logger.error).toHaveBeenCalledWith(
                 'api/weekly-challenge GET - error',
                 { error: 'Database error' }
