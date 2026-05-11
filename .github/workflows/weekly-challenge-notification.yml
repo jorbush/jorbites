@@ -1,0 +1,68 @@
+name: Weekly Challenge Notification
+
+on:
+  schedule:
+    # Run every Monday at 06:00 UTC (08:00 Europe/Madrid in summer CEST)
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  notify-weekly-challenge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch current weekly challenge
+        id: fetch-challenge
+        env:
+          JORBITES_URL: https://jorbites.com
+        run: |
+          echo "Fetching current weekly challenge..."
+          response=$(curl -s -f "$JORBITES_URL/api/weekly-challenge") || { echo "Failed to fetch weekly challenge"; exit 1; }
+
+          title=$(echo "$response" | jq -r '.title // empty')
+          description=$(echo "$response" | jq -r '.description // empty')
+
+          if [ -z "$title" ] || [ -z "$description" ]; then
+            echo "Challenge title or description is empty. Aborting."
+            exit 1
+          fi
+
+          echo "Challenge title: $title"
+          echo "Challenge description: $description"
+
+          echo "title=$title" >> $GITHUB_OUTPUT
+          echo "description=$description" >> $GITHUB_OUTPUT
+
+      - name: Send NEW_CHALLENGE notification
+        env:
+          JORBITES_NOTIFIER_URL: ${{ secrets.JORBITES_NOTIFIER_URL }}
+          JORBITES_NOTIFIER_API_KEY: ${{ secrets.JORBITES_NOTIFIER_API_KEY }}
+          CHALLENGE_TITLE: ${{ steps.fetch-challenge.outputs.title }}
+          CHALLENGE_DESCRIPTION: ${{ steps.fetch-challenge.outputs.description }}
+        run: |
+          if [ -z "$JORBITES_NOTIFIER_URL" ] || [ -z "$JORBITES_NOTIFIER_API_KEY" ]; then
+            echo "Notifier secrets are missing. Skipping notification."
+            exit 0
+          fi
+
+          echo "Sending NEW_CHALLENGE notification..."
+
+          payload=$(jq -n \
+            --arg title "$CHALLENGE_TITLE" \
+            --arg description "$CHALLENGE_DESCRIPTION" \
+            '{type: "NEW_CHALLENGE", metadata: {title: $title, description: $description}}')
+
+          response=$(curl -s -w "\n%{http_code}" -X POST "$JORBITES_NOTIFIER_URL/notifications" \
+            -H "Content-Type: application/json" \
+            -H "X-API-Key: $JORBITES_NOTIFIER_API_KEY" \
+            -d "$payload")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+            echo "✓ NEW_CHALLENGE notification sent successfully (HTTP $http_code)"
+          else
+            echo "✗ Failed to send NEW_CHALLENGE notification (HTTP $http_code)"
+            echo "Response: $body"
+            exit 1
+          fi
