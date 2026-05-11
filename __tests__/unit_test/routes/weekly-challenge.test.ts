@@ -138,6 +138,7 @@ describe('Weekly Challenge API', () => {
             const data = await response.json();
 
             expect(response.status).toBe(401);
+            expect(data).toBeDefined();
             expect(data).toMatchObject({
                 error: 'Invalid or missing CRON_SECRET',
                 code: 'UNAUTHORIZED',

@@ -10,6 +10,19 @@ jobs:
   notify-weekly-challenge:
     runs-on: ubuntu-latest
     steps:
+      - name: Rotate weekly challenge
+        env:
+          JORBITES_URL: https://jorbites.com
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "CRON_SECRET is missing. Skipping rotation."
+          else
+            echo "Rotating weekly challenge..."
+            curl -s -f -X POST "$JORBITES_URL/api/weekly-challenge" \
+              -H "Authorization: Bearer $CRON_SECRET" || { echo "Failed to rotate weekly challenge"; exit 1; }
+          fi
+
       - name: Fetch current weekly challenge
         id: fetch-challenge
         env:

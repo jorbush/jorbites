@@ -72,9 +72,6 @@ export async function getCurrentChallenge(): Promise<WeeklyChallenge | null> {
 export async function rotateWeeklyChallenge(): Promise<WeeklyChallenge> {
     logger.info('lib/weekly-challenge rotateWeeklyChallenge - start');
 
-    // Delete any existing challenges
-    await prisma.weeklyChallenge.deleteMany({});
-
     // Select a random challenge type
     const challengeTypes: ChallengeType[] = [
         'ingredient',
@@ -150,15 +147,24 @@ export async function rotateWeeklyChallenge(): Promise<WeeklyChallenge> {
         999
     );
 
-    const challenge = await prisma.weeklyChallenge.create({
-        data: {
-            title: template.title,
-            description: template.description.replace(`{${randomType}}`, value),
-            type: randomType,
-            value,
-            startDate,
-            endDate,
-        },
+    const challenge = await prisma.$transaction(async (tx) => {
+        // Delete any existing challenges
+        await tx.weeklyChallenge.deleteMany({});
+
+        // Create the challenge
+        return await tx.weeklyChallenge.create({
+            data: {
+                title: template.title,
+                description: template.description.replace(
+                    `{${randomType}}`,
+                    value
+                ),
+                type: randomType,
+                value,
+                startDate,
+                endDate,
+            },
+        });
     });
 
     logger.info('lib/weekly-challenge rotateWeeklyChallenge - success', {
