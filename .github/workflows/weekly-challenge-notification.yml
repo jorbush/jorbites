@@ -10,13 +10,23 @@ jobs:
   notify-weekly-challenge:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch current weekly challenge
+      - name: Fetch or generate current weekly challenge
         id: fetch-challenge
         env:
           JORBITES_URL: https://jorbites.com
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           echo "Fetching current weekly challenge..."
-          response=$(curl -s -f "$JORBITES_URL/api/weekly-challenge") || { echo "Failed to fetch weekly challenge"; exit 1; }
+          # Try to get the current challenge
+          response=$(curl -s "$JORBITES_URL/api/weekly-challenge")
+          http_code=$?
+
+          # If it doesn't exist (404) or we couldn't fetch it, try to generate it
+          if [ -z "$response" ] || [ "$(echo "$response" | jq -r '.code // empty')" == "NOT_FOUND" ]; then
+            echo "No active challenge found. Generating a new one..."
+            response=$(curl -s -f -X POST "$JORBITES_URL/api/weekly-challenge" \
+              -H "Authorization: Bearer $CRON_SECRET") || { echo "Failed to generate weekly challenge"; exit 1; }
+          fi
 
           title=$(echo "$response" | jq -r '.title // empty')
           description=$(echo "$response" | jq -r '.description // empty')
