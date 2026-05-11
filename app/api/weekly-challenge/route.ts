@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getCurrentChallenge } from '@/app/actions/weekly-challenge';
 import { logger } from '@/app/lib/axiom/server';
+import { internalServerError } from '@/app/utils/apiErrors';
 
 export async function GET() {
     try {
@@ -14,9 +15,6 @@ export async function GET() {
         logger.error('api/weekly-challenge GET - error', {
             error: error.message,
         });
-        return NextResponse.json(
-            { error: 'Failed to fetch weekly challenge' },
-            { status: 500 }
-        );
+        return internalServerError('Failed to fetch weekly challenge');
     }
 }
