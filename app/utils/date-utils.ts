@@ -1,5 +1,6 @@
 import { format, formatDistanceToNow } from 'date-fns';
 import { es, enUS, ca } from 'date-fns/locale';
+import { Event } from '@/app/utils/markdownUtils';
 
 type LocaleType = 'es' | 'en' | 'ca';
 
@@ -120,14 +121,35 @@ export const formatDistanceToNowLocale = (
 /**
  * Formats a recurrent date (e.g., 29 of each month)
  */
-export const formatRecurrentDate = (day: number, lang?: string): string => {
-    try {
-        const i18n = require('i18next');
-        const currentLang = lang || i18n.language || 'es';
-        return i18n.t('recurrent_date', { day, lng: currentLang }) || '';
-    } catch {
-        // Fallback if i18next is not available
-        if (lang === 'en') return `${day} of each month`;
-        return `${day} de cada mes`;
+export const formatRecurrentDate = (
+    day: number,
+    t: (key: string, options?: any) => string
+): string => {
+    return t('recurrent_date', { day }) || '';
+};
+
+/**
+ * Gets the date display string for an event
+ */
+export const getEventDateDisplay = (
+    event: Event,
+    lang: string,
+    t: (key: string, options?: any) => string
+): string | null => {
+    const isPermanent = event.frontmatter.permanent === true;
+    const isRecurrent = event.frontmatter.recurrent === true;
+
+    if (isPermanent) {
+        return null;
     }
+
+    if (isRecurrent && event.frontmatter.dayOfMonth) {
+        return formatRecurrentDate(event.frontmatter.dayOfMonth, t);
+    }
+
+    return formatDateRange(
+        event.frontmatter.date,
+        event.frontmatter.endDate,
+        lang
+    );
 };

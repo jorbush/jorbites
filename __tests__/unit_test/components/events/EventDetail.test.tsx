@@ -47,6 +47,12 @@ vi.mock('@/app/utils/date-utils', () => ({
     formatDateRange: (start: string, end: string) => {
         return `May 1, 2024${start !== end ? ' - May 2, 2024' : ''}`;
     },
+    getEventDateDisplay: (event: any) => {
+        if (event.frontmatter.permanent) return null;
+        if (event.frontmatter.recurrent)
+            return `${event.frontmatter.dayOfMonth} of each month`;
+        return `May 1, 2024${event.frontmatter.date !== event.frontmatter.endDate ? ' - May 2, 2024' : ''}`;
+    },
 }));
 
 vi.mock('react-markdown', () => ({

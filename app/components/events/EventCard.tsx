@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { FiCalendar } from 'react-icons/fi';
 import Image from 'next/image';
-import { formatDateRange, formatRecurrentDate } from '@/app/utils/date-utils';
+import { getEventDateDisplay } from '@/app/utils/date-utils';
 
 interface EventCardProps {
     event: Event;
@@ -28,27 +28,9 @@ export const EventCardSkeleton = () => {
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
     const router = useRouter();
-    const { i18n } = useTranslation();
+    const { i18n, t } = useTranslation();
 
-    // Don't process dates for permanent events
-    const isPermanent = event.frontmatter.permanent === true;
-    const isRecurrent = event.frontmatter.recurrent === true;
-
-    let dateDisplay;
-    if (!isPermanent) {
-        if (isRecurrent && event.frontmatter.dayOfMonth) {
-            dateDisplay = formatRecurrentDate(
-                event.frontmatter.dayOfMonth,
-                i18n.language
-            );
-        } else {
-            dateDisplay = formatDateRange(
-                event.frontmatter.date,
-                event.frontmatter.endDate,
-                i18n.language
-            );
-        }
-    }
+    const dateDisplay = getEventDateDisplay(event, i18n.language, t);
 
     const handleClick = () => {
         router.push(`/events/${event.slug}`);
@@ -70,7 +52,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
             </div>
             <div className="p-4">
                 <h3 className="text-xl font-bold">{event.frontmatter.title}</h3>
-                {!isPermanent && dateDisplay && (
+                {dateDisplay && (
                     <div className="mt-2 flex items-center text-sm text-neutral-500 dark:text-neutral-400">
                         <FiCalendar className="mr-2" />
                         <span>{dateDisplay}</span>

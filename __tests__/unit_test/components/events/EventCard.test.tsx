@@ -51,6 +51,12 @@ vi.mock('@/app/utils/date-utils', () => ({
     formatRecurrentDate: (day: number) => {
         return `${day} of each month`;
     },
+    getEventDateDisplay: (event: any) => {
+        if (event.frontmatter.permanent) return null;
+        if (event.frontmatter.recurrent)
+            return `${event.frontmatter.dayOfMonth} of each month`;
+        return `May 1, 2024${event.frontmatter.date !== event.frontmatter.endDate ? ' - May 2, 2024' : ''}`;
+    },
 }));
 
 vi.mock('next/image', () => ({

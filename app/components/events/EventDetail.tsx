@@ -9,7 +9,7 @@ import Heading from '@/app/components/navigation/Heading';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Components } from 'react-markdown';
-import { formatDateRange, formatRecurrentDate } from '@/app/utils/date-utils';
+import { getEventDateDisplay } from '@/app/utils/date-utils';
 import useShare from '@/app/hooks/useShare';
 
 interface EventDetailProps {
@@ -19,27 +19,9 @@ interface EventDetailProps {
 const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
     const router = useRouter();
     const { share } = useShare();
-    const { i18n } = useTranslation();
+    const { i18n, t } = useTranslation();
 
-    // Don't process dates for permanent events
-    const isPermanent = event.frontmatter.permanent === true;
-    const isRecurrent = event.frontmatter.recurrent === true;
-
-    let dateDisplay;
-    if (!isPermanent) {
-        if (isRecurrent && event.frontmatter.dayOfMonth) {
-            dateDisplay = formatRecurrentDate(
-                event.frontmatter.dayOfMonth,
-                i18n.language
-            );
-        } else {
-            dateDisplay = formatDateRange(
-                event.frontmatter.date,
-                event.frontmatter.endDate,
-                i18n.language
-            );
-        }
-    }
+    const dateDisplay = getEventDateDisplay(event, i18n.language, t);
 
     const markdownComponents: Components = {
         h1: (props) => (
@@ -139,7 +121,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                 />
             </div>
 
-            {!isPermanent && dateDisplay && (
+            {dateDisplay && (
                 <div className="mb-6 flex items-center text-neutral-500 dark:text-neutral-400">
                     <FiCalendar className="mr-2 text-lg" />
                     <span>{dateDisplay}</span>
