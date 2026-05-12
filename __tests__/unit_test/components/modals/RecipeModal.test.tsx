@@ -48,7 +48,7 @@ vi.mock('react-hot-toast', () => ({
 vi.mock('axios');
 
 describe('<RecipeModal />', () => {
-    const mockUser = {
+    const mockUser = { badges: [],
         id: 'user1',
         name: 'Test User',
         email: 'test@example.com',
@@ -61,8 +61,8 @@ describe('<RecipeModal />', () => {
         badgeIds: [],
         isActive: true,
         lastActiveAt: '2022-01-01',
-        resetToken: null,
-        resetTokenExpiry: null,
+
+
     } as any;
 
     beforeEach(() => {
@@ -577,7 +577,7 @@ describe('<RecipeModal />', () => {
             vi.mocked(useRecipeModal.default).mockReturnValue({
                 isOpen: true,
                 isEditMode: true,
-                editRecipeData: {
+                editRecipeData: { listIds: [],
                     id: '1',
                     title: 'Test Recipe',
                     description: 'Test description',
@@ -602,7 +602,7 @@ describe('<RecipeModal />', () => {
         });
 
         it('should pre-populate form with edit data', async () => {
-            const mockEditData = {
+            const mockEditData = { listIds: [],
                 id: '1',
                 title: 'Test Recipe',
                 description: 'Test description',
@@ -640,7 +640,7 @@ describe('<RecipeModal />', () => {
             vi.mocked(useRecipeModal.default).mockReturnValue({
                 isOpen: true,
                 isEditMode: true,
-                editRecipeData: {
+                editRecipeData: { listIds: [],
                     id: '1',
                     title: 'Test Recipe',
                     description: 'Test description',
@@ -709,7 +709,7 @@ describe('<RecipeModal />', () => {
         });
 
         it('should support loading edit data without errors', async () => {
-            const mockEditData = {
+            const mockEditData = { listIds: [],
                 id: '1',
                 title: 'Edit Recipe',
                 description: 'Edit description',

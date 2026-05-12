@@ -40,14 +40,14 @@ vi.mock('@/app/components/VerificationBadge', () => ({
 describe('MentionInput', () => {
     const mockOnChange = vi.fn();
     const mockUsers = [
-        {
+        { badges: [],
             id: 'user1',
             name: 'John Doe',
             image: '/john.jpg',
             verified: true,
             level: 5,
         },
-        {
+        { badges: [],
             id: 'user2',
             name: 'Jane Smith',
             image: '/jane.jpg',

@@ -70,7 +70,7 @@ describe('<WorkshopCard />', () => {
             email: 'host@example.com',
             emailVerified: null,
             image: '/host-image.jpg',
-            hashedPassword: null,
+
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             favoriteIds: [],
@@ -78,8 +78,8 @@ describe('<WorkshopCard />', () => {
             level: 5,
             verified: true,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
+
+
         },
         participants: [
             {
@@ -97,7 +97,7 @@ describe('<WorkshopCard />', () => {
         email: 'test@example.com',
         emailVerified: null,
         image: null,
-        hashedPassword: null,
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],
@@ -105,8 +105,8 @@ describe('<WorkshopCard />', () => {
         level: 0,
         verified: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
+
+
     };
 
     const mockRouter = {

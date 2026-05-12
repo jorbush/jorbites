@@ -29,14 +29,14 @@ describe('<SearchInput />', () => {
     const mockIsSelected = vi.fn().mockReturnValue(false);
 
     const mockUsers = [
-        {
+        { badges: [],
             id: 'user1',
             name: 'User 1',
             image: '/user1.jpg',
             level: 5,
             verified: true,
         },
-        {
+        { badges: [],
             id: 'user2',
             name: 'User 2',
             image: '/user2.jpg',

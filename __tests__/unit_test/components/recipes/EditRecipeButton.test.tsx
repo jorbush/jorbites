@@ -37,7 +37,7 @@ describe('EditRecipeButton', () => {
         createdAt: '2022-01-01',
         coCooksIds: ['cook1', 'cook2'],
         linkedRecipeIds: ['recipe1'],
-        user: {
+        user: { badges: [],
             id: 'user1',
             name: 'Test User',
         } as SafeUser,
@@ -78,7 +78,7 @@ describe('EditRecipeButton', () => {
 
         await waitFor(() => {
             expect(mockOnOpenEdit).toHaveBeenCalledWith(
-                expect.objectContaining({
+                expect.objectContaining({ listIds: [],
                     id: '1',
                     title: 'Test Recipe',
                     description: 'Test description',
@@ -111,7 +111,7 @@ describe('EditRecipeButton', () => {
         });
 
         const axios = await import('axios');
-        const mockCooksData = [{ id: 'cook1', name: 'Cook 1' }];
+        const mockCooksData = [{ badges: [], id: 'cook1', name: 'Cook 1' }];
         vi.mocked(axios.default.get).mockResolvedValue({ data: mockCooksData });
 
         const { getByText } = render(<EditRecipeButton recipe={mockRecipe} />);

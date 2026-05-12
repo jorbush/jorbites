@@ -50,7 +50,7 @@ describe('<WorkshopInfo />', () => {
         email: 'host@example.com',
         emailVerified: null,
         image: '/host-image.jpg',
-        hashedPassword: null,
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],
@@ -58,8 +58,8 @@ describe('<WorkshopInfo />', () => {
         level: 5,
         verified: true,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
+
+
     };
 
     const mockParticipants: SafeWorkshopParticipant[] = [
@@ -317,8 +317,8 @@ describe('<WorkshopInfo />', () => {
 
     it('fetches and displays whitelisted users for private workshop when user is host', async () => {
         const mockWhitelistedUsers = [
-            { id: 'user1', name: 'User 1', image: null },
-            { id: 'user2', name: 'User 2', image: null },
+            { badges: [], id: 'user1', name: 'User 1', image: null },
+            { badges: [], id: 'user2', name: 'User 2', image: null },
         ];
 
         (axios.get as any).mockResolvedValueOnce({
@@ -357,7 +357,7 @@ describe('<WorkshopInfo />', () => {
         const otherUser: SafeUser = { ...mockHost, id: 'other-user' };
 
         (axios.get as any).mockResolvedValueOnce({
-            data: [{ id: 'user1', name: 'User 1', image: null }],
+            data: [{ badges: [], id: 'user1', name: 'User 1', image: null }],
         });
 
         render(

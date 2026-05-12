@@ -55,7 +55,7 @@ describe('FavoritesPage', () => {
 
     it('renders FavoritesClient with favorite recipes', async () => {
         const mockFavoriteRecipes = [
-            {
+            { listIds: [],
                 id: 'recipe1',
                 title: 'Recipe 1',
                 description: 'Description 1',
@@ -66,7 +66,7 @@ describe('FavoritesPage', () => {
                 youtubeUrl: '',
                 questId: null,
             },
-            {
+            { listIds: [],
                 id: 'recipe2',
                 title: 'Recipe 2',
                 description: 'Description 2',
@@ -78,13 +78,13 @@ describe('FavoritesPage', () => {
                 questId: null,
             },
         ];
-        const mockCurrentUser = {
+        const mockCurrentUser = { badges: [],
             id: 'user1',
             name: 'Test User',
             email: null,
             emailVerified: null,
             image: null,
-            hashedPassword: null,
+
             createdAt: new Date().toISOString(),
         };
 

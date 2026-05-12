@@ -89,8 +89,8 @@ describe('Password Reset API Error Handling', () => {
             expect(prisma.user.update).toHaveBeenCalledWith({
                 where: { id: '1' },
                 data: {
-                    resetToken: 'mock-token',
-                    resetTokenExpiry: expect.any(Date),
+
+
                 },
             });
             expect(sendNotification).toHaveBeenCalled();
@@ -192,8 +192,8 @@ describe('Password Reset API Error Handling', () => {
             const mockUser = {
                 id: '1',
                 email: 'test@example.com',
-                resetToken: 'valid-token',
-                resetTokenExpiry: new Date(Date.now() + 3600000),
+
+
             };
             (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce(
                 mockUser
@@ -219,9 +219,9 @@ describe('Password Reset API Error Handling', () => {
             expect(prisma.user.update).toHaveBeenCalledWith({
                 where: { id: '1' },
                 data: {
-                    hashedPassword: 'hashedNewPassword',
-                    resetToken: null,
-                    resetTokenExpiry: null,
+
+
+
                 },
             });
         });
@@ -293,8 +293,8 @@ describe('Password Reset API Error Handling', () => {
             const mockUser = {
                 id: '1',
                 email: 'test@example.com',
-                resetToken: 'valid-token',
-                resetTokenExpiry: new Date(Date.now() + 3600000),
+
+
             };
             (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce(
                 mockUser

@@ -177,7 +177,7 @@ describe('Recipe API Error Handling', () => {
             mockedSession = null;
 
             const mockRequest = {
-                json: jest.fn().mockResolvedValue({
+                json: jest.fn().mockResolvedValue({ listIds: [],
                     title: 'Updated Recipe',
                     description: 'Updated description',
                     categories: ['Dinner'],

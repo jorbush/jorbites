@@ -43,7 +43,7 @@ vi.mock('next/headers', () => ({
 
 describe('Home', () => {
     const mockRecipes = [
-        {
+        { listIds: [],
             id: '1',
             title: 'Recipe 1',
             createdAt: '',
@@ -62,7 +62,7 @@ describe('Home', () => {
             youtubeUrl: '',
             questId: null,
         },
-        {
+        { listIds: [],
             id: '2',
             title: 'Recipe 2',
             createdAt: '',

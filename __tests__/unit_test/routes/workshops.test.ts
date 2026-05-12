@@ -42,7 +42,7 @@ describe('Workshops API Routes and Server Actions', () => {
         const userData = {
             name: 'Workshop Test User',
             email: `workshop_test_${currentDate.getTime()}@test.com`,
-            hashedPassword: 'hashedPassword',
+
         };
 
         const { PrismaClient } = require('@prisma/client');

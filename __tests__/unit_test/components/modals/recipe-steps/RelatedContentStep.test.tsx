@@ -71,7 +71,7 @@ vi.mock('@/app/components/inputs/SearchInput', () => ({
                 onClick={() =>
                     // Mock select button that simulates selecting a user or recipe
                     searchType === 'users'
-                        ? onSelectResult({ id: 'user1', name: 'Test User' })
+                        ? onSelectResult({ badges: [], id: 'user1', name: 'Test User' })
                         : onSelectResult({
                               id: 'recipe1',
                               title: 'Test Recipe',
@@ -139,10 +139,13 @@ describe('<RelatedContentStep />', () => {
         isLoading: false,
         selectedCoCooks: [],
         selectedLinkedRecipes: [],
+        selectedQuest: null,
         onAddCoCook: vi.fn(),
         onRemoveCoCook: vi.fn(),
         onAddLinkedRecipe: vi.fn(),
         onRemoveLinkedRecipe: vi.fn(),
+        onSelectQuest: vi.fn(),
+        onRemoveQuest: vi.fn(),
         register: createMockRegister(),
         errors: {},
         youtubeUrl: '',
@@ -157,12 +160,12 @@ describe('<RelatedContentStep />', () => {
         mockedAxios.get.mockResolvedValue({
             data: {
                 users: [
-                    {
+                    { badges: [],
                         id: 'user1',
                         name: 'User 1',
                         image: '/user1.jpg',
                     },
-                    {
+                    { badges: [],
                         id: 'user2',
                         name: 'User 2',
                         image: '/user2.jpg',
@@ -267,7 +270,7 @@ describe('<RelatedContentStep />', () => {
         fireEvent.click(screen.getByTestId('mock-select-user'));
 
         // Verify that onAddCoCook callback was called with correct user data
-        expect(mockProps.onAddCoCook).toHaveBeenCalledWith({
+        expect(mockProps.onAddCoCook).toHaveBeenCalledWith({ badges: [],
             id: 'user1',
             name: 'Test User',
         });
@@ -296,7 +299,7 @@ describe('<RelatedContentStep />', () => {
         const propsWithSelectedCooks = {
             ...mockProps,
             selectedCoCooks: [
-                { id: 'user1', name: 'Test User', image: '/test.jpg' },
+                { badges: [], id: 'user1', name: 'Test User', image: '/test.jpg' },
             ],
         };
 
@@ -339,7 +342,7 @@ describe('<RelatedContentStep />', () => {
         const propsWithSelectedCooks = {
             ...mockProps,
             selectedCoCooks: [
-                { id: 'user1', name: 'Test User', image: '/test.jpg' },
+                { badges: [], id: 'user1', name: 'Test User', image: '/test.jpg' },
             ],
         };
 

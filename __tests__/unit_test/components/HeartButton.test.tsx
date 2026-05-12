@@ -20,13 +20,13 @@ vi.mock('react-icons/ai', () => ({
 
 describe('<HeartButton />', () => {
     const mockRecipeId = '123';
-    const mockCurrentUser: SafeUser = {
+    const mockCurrentUser: SafeUser = { badges: [],
         id: '456',
         name: 'Test User',
         email: null,
         emailVerified: null,
         image: null,
-        hashedPassword: null,
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],

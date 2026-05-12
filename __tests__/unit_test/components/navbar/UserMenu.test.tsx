@@ -43,13 +43,13 @@ vi.mock('@/app/components/utils/Avatar', () => ({
 }));
 
 describe('<UserMenu />', () => {
-    const mockCurrentUser: SafeUser = {
+    const mockCurrentUser: SafeUser = { badges: [],
         id: '1',
         name: 'John Doe',
         email: 'john@example.com',
         emailVerified: new Date().toISOString(),
         image: 'https://example.com/avatar.jpg',
-        hashedPassword: 'hashedPassword',
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],

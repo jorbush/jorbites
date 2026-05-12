@@ -58,7 +58,7 @@ describe('Comments', () => {
         name: 'Test User',
         email: null,
         emailVerified: null,
-        hashedPassword: null,
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],
@@ -66,8 +66,8 @@ describe('Comments', () => {
         level: 1,
         verified: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
+
+
     };
 
     const mockComments: SafeComment[] = [

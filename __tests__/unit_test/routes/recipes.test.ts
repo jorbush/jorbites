@@ -55,7 +55,7 @@ jest.mock('next-auth/next', () => ({
 }));
 
 describe('Recipes API Routes and Server Actions', () => {
-    let initialRecipes: {
+    let initialRecipes: { listIds: [],
         createdAt: string;
         id: string;
         title: string;
@@ -70,7 +70,7 @@ describe('Recipes API Routes and Server Actions', () => {
         extraImages: string[];
         userId: string;
     }[] = [];
-    let publishedRecipe: {
+    let publishedRecipe: { listIds: [],
         id: string;
         title: string;
         description: string;
@@ -86,7 +86,7 @@ describe('Recipes API Routes and Server Actions', () => {
         userId: string;
     } | null = null;
 
-    let initialUser: {
+    let initialUser: { badges: [],
         createdAt: string;
         updatedAt: string;
         emailVerified: string | null;
@@ -94,7 +94,7 @@ describe('Recipes API Routes and Server Actions', () => {
         name: string | null;
         email: string | null;
         image: string | null;
-        hashedPassword: string | null;
+
         favoriteIds: string[];
         emailNotifications: boolean;
         level: number;
@@ -144,7 +144,7 @@ describe('Recipes API Routes and Server Actions', () => {
         const response = await RecipePOST(mockRequest);
         const result = await response.json();
         expect(result).toMatchObject(mockRecipe);
-        publishedRecipe = result as {
+        publishedRecipe = result as { listIds: [],
             id: string;
             title: string;
             description: string;
@@ -345,7 +345,7 @@ describe('Recipes API Error Handling', () => {
     it('should return 400 when title exceeds max length', async () => {
         const request = new NextRequest('http://localhost:3000/api/recipes', {
             method: 'POST',
-            body: JSON.stringify({
+            body: JSON.stringify({ listIds: [],
                 title: 'a'.repeat(RECIPE_TITLE_MAX_LENGTH + 1),
                 description: 'Test description',
                 imageSrc: 'test.jpg',
@@ -369,7 +369,7 @@ describe('Recipes API Error Handling', () => {
     it('should return 400 when description exceeds max length', async () => {
         const request = new NextRequest('http://localhost:3000/api/recipes', {
             method: 'POST',
-            body: JSON.stringify({
+            body: JSON.stringify({ listIds: [],
                 title: 'Test title',
                 description: 'a'.repeat(RECIPE_DESCRIPTION_MAX_LENGTH + 1),
                 imageSrc: 'test.jpg',
@@ -393,7 +393,7 @@ describe('Recipes API Error Handling', () => {
     it('should return 400 when ingredient exceeds max length', async () => {
         const request = new NextRequest('http://localhost:3000/api/recipes', {
             method: 'POST',
-            body: JSON.stringify({
+            body: JSON.stringify({ listIds: [],
                 title: 'Test title',
                 description: 'Test description',
                 imageSrc: 'test.jpg',
@@ -417,7 +417,7 @@ describe('Recipes API Error Handling', () => {
     it('should return 400 when step exceeds max length', async () => {
         const request = new NextRequest('http://localhost:3000/api/recipes', {
             method: 'POST',
-            body: JSON.stringify({
+            body: JSON.stringify({ listIds: [],
                 title: 'Test title',
                 description: 'Test description',
                 imageSrc: 'test.jpg',
@@ -443,7 +443,7 @@ describe('Recipes API Error Handling', () => {
 
         const request = new NextRequest('http://localhost:3000/api/recipes', {
             method: 'POST',
-            body: JSON.stringify({
+            body: JSON.stringify({ listIds: [],
                 title: 'Test title',
                 description: 'Test description',
                 imageSrc: 'test.jpg',
@@ -511,7 +511,7 @@ describe('Recipes API Error Handling', () => {
 
         const request = new NextRequest('http://localhost:3000/api/recipes', {
             method: 'POST',
-            body: JSON.stringify({
+            body: JSON.stringify({ listIds: [],
                 title: 'a'.repeat(RECIPE_TITLE_MAX_LENGTH + 1),
                 description: 'Test description',
                 imageSrc: 'test.jpg',
@@ -549,7 +549,7 @@ describe('Recipes API Error Handling', () => {
 
         const request = new NextRequest('http://localhost:3000/api/recipes', {
             method: 'POST',
-            body: JSON.stringify({
+            body: JSON.stringify({ listIds: [],
                 title: 'Test title',
                 description: 'Test description',
                 imageSrc: 'test.jpg',
@@ -585,7 +585,7 @@ describe('Recipes API Error Handling', () => {
 
         const request = new NextRequest('http://localhost:3000/api/recipes', {
             method: 'POST',
-            body: JSON.stringify({
+            body: JSON.stringify({ listIds: [],
                 title: 'Test title',
                 description: 'Test description',
                 imageSrc: 'test.jpg',
@@ -619,7 +619,7 @@ describe('Recipes API Error Handling', () => {
 
         const request = new NextRequest('http://localhost:3000/api/recipes', {
             method: 'POST',
-            body: JSON.stringify({
+            body: JSON.stringify({ listIds: [],
                 title: 'Test title',
                 description: 'Test description',
                 imageSrc: 'test.jpg',

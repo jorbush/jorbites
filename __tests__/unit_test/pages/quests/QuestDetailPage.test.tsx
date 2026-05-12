@@ -63,7 +63,7 @@ describe('<QuestDetailClient />', () => {
         status: 'open',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        user: {
+        user: { badges: [],
             id: 'user1',
             name: 'Quest Owner',
             image: null,
@@ -82,13 +82,14 @@ describe('<QuestDetailClient />', () => {
                 ingredients: ['ingredient1', 'ingredient2'],
                 steps: ['step1', 'step2'],
                 extraImages: [],
+                listIds: [],
                 userId: 'user2',
                 coCooksIds: [],
                 linkedRecipeIds: [],
                 youtubeUrl: null,
                 questId: 'quest1',
                 createdAt: new Date().toISOString(),
-                user: {
+                user: { badges: [],
                     id: 'user2',
                     name: 'Recipe Author',
                     image: null,
@@ -98,7 +99,7 @@ describe('<QuestDetailClient />', () => {
         ],
     };
 
-    const mockUser = {
+    const mockUser = { badges: [],
         id: 'user1',
         name: 'Quest Owner',
         email: 'owner@example.com',
@@ -111,8 +112,8 @@ describe('<QuestDetailClient />', () => {
         badgeIds: [],
         isActive: true,
         lastActiveAt: '2022-01-01',
-        resetToken: null,
-        resetTokenExpiry: null,
+
+
     } as any;
 
     beforeEach(() => {

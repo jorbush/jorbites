@@ -35,7 +35,7 @@ describe('<WorkshopList />', () => {
         email: 'test@example.com',
         emailVerified: null,
         image: null,
-        hashedPassword: null,
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],
@@ -43,12 +43,12 @@ describe('<WorkshopList />', () => {
         level: 0,
         verified: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
+
+
     };
 
     const mockWorkshops: SafeWorkshop[] = [
-        {
+        { listIds: [],
             id: '1',
             title: 'Test Workshop 1',
             description: 'Description 1',
@@ -68,7 +68,7 @@ describe('<WorkshopList />', () => {
             host: mockUser,
             participants: [],
         },
-        {
+        { listIds: [],
             id: '2',
             title: 'Test Workshop 2',
             description: 'Description 2',

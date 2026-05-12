@@ -27,7 +27,7 @@ describe('PATCH /api/userName/[userId]', () => {
         email: 'test@example.com',
         emailVerified: null,
         image: null,
-        hashedPassword: null,
+
         createdAt: '2024-01-01T00:00:00.000Z',
         updatedAt: '2024-01-01T00:00:00.000Z',
         favoriteIds: [],
@@ -35,8 +35,8 @@ describe('PATCH /api/userName/[userId]', () => {
         level: 0,
         verified: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
+
+
     };
 
     const createRequest = (userName: string) => {
@@ -134,7 +134,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'User_Name' },
-            select: { id: true, name: true },
+            select: { badges: [], id: true, name: true },
         });
     });
 
@@ -157,7 +157,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'User123' },
-            select: { id: true, name: true },
+            select: { badges: [], id: true, name: true },
         });
     });
 
@@ -169,7 +169,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'Username' },
-            select: { id: true, name: true },
+            select: { badges: [], id: true, name: true },
         });
     });
 
@@ -181,7 +181,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: '123456' },
-            select: { id: true, name: true },
+            select: { badges: [], id: true, name: true },
         });
     });
 
@@ -193,7 +193,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'user__name__123' },
-            select: { id: true, name: true },
+            select: { badges: [], id: true, name: true },
         });
     });
 
@@ -205,7 +205,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: '_username' },
-            select: { id: true, name: true },
+            select: { badges: [], id: true, name: true },
         });
     });
 
@@ -217,7 +217,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'username_' },
-            select: { id: true, name: true },
+            select: { badges: [], id: true, name: true },
         });
     });
 
@@ -229,7 +229,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: '___' },
-            select: { id: true, name: true },
+            select: { badges: [], id: true, name: true },
         });
     });
 
@@ -241,12 +241,12 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'test_user_123' },
-            select: { id: true, name: true },
+            select: { badges: [], id: true, name: true },
         });
     });
 
     it('should reject username if already taken by another user', async () => {
-        const existingUser = { id: 'another-user', name: 'TakenUser' };
+        const existingUser = { badges: [], id: 'another-user', name: 'TakenUser' };
         mockPrisma.user.findFirst.mockResolvedValue(existingUser);
 
         const request = createRequest('TakenUser');
@@ -280,7 +280,7 @@ describe('PATCH /api/userName/[userId]', () => {
         expect(mockPrisma.user.update).toHaveBeenCalledWith({
             where: { id: 'user123' },
             data: { name: 'Valid123' },
-            select: { id: true, name: true },
+            select: { badges: [], id: true, name: true },
         });
     });
 

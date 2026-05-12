@@ -31,9 +31,8 @@ describe('Lists API Endpoints - Error Cases', () => {
     describe('GET /api/lists', () => {
         it('should return 401 if user is not authenticated', async () => {
             mockGetCurrentUser.mockResolvedValue(null);
-            const request = new Request('http://localhost/api/lists');
-            const response = await GET(request);
-            expect(response.status).toBe(401);
+            const response = await GET();
+            expect((response as any).status).toBe(401);
         });
 
         it('should return 500 on internal error', async () => {
@@ -41,9 +40,8 @@ describe('Lists API Endpoints - Error Cases', () => {
             (prisma.list.findMany as jest.Mock).mockRejectedValue(
                 new Error('DB Error')
             );
-            const request = new Request('http://localhost/api/lists');
-            const response = await GET(request);
-            expect(response.status).toBe(500);
+            const response = await GET();
+            expect((response as any).status).toBe(500);
         });
     });
 
@@ -55,7 +53,7 @@ describe('Lists API Endpoints - Error Cases', () => {
                 body: JSON.stringify({ name: 'My List' }),
             });
             const response = await POST(request);
-            expect(response.status).toBe(401);
+            expect((response as any).status).toBe(401);
         });
 
         it('should return 400 if name is missing', async () => {
@@ -65,7 +63,7 @@ describe('Lists API Endpoints - Error Cases', () => {
                 body: JSON.stringify({ isPrivate: true }),
             });
             const response = await POST(request);
-            expect(response.status).toBe(400);
+            expect((response as any).status).toBe(400);
         });
     });
 
@@ -79,7 +77,7 @@ describe('Lists API Endpoints - Error Cases', () => {
             const response = await PATCH(request, {
                 params: Promise.resolve({ listId: 'list-id' }),
             });
-            expect(response.status).toBe(401);
+            expect((response as any).status).toBe(401);
         });
 
         it('should return 404 if list not found', async () => {
@@ -92,7 +90,7 @@ describe('Lists API Endpoints - Error Cases', () => {
             const response = await PATCH(request, {
                 params: Promise.resolve({ listId: 'list-id' }),
             });
-            expect(response.status).toBe(404);
+            expect((response as any).status).toBe(404);
         });
 
         it('should return 404 if user is not list owner', async () => {
@@ -107,7 +105,7 @@ describe('Lists API Endpoints - Error Cases', () => {
             const response = await PATCH(request, {
                 params: Promise.resolve({ listId: 'list-id' }),
             });
-            expect(response.status).toBe(404);
+            expect((response as any).status).toBe(404);
         });
     });
 
@@ -120,7 +118,7 @@ describe('Lists API Endpoints - Error Cases', () => {
             const response = await DELETE(request, {
                 params: Promise.resolve({ listId: 'list-id' }),
             });
-            expect(response.status).toBe(401);
+            expect((response as any).status).toBe(401);
         });
 
         it('should return 400 if trying to delete default list', async () => {
@@ -135,7 +133,7 @@ describe('Lists API Endpoints - Error Cases', () => {
             const response = await DELETE(request, {
                 params: Promise.resolve({ listId: 'list-id' }),
             });
-            expect(response.status).toBe(400);
+            expect((response as any).status).toBe(400);
         });
     });
 
@@ -149,7 +147,7 @@ describe('Lists API Endpoints - Error Cases', () => {
                     recipeId: 'recipe-id',
                 }),
             });
-            expect(response.status).toBe(401);
+            expect((response as any).status).toBe(401);
         });
 
         it('should return 404 if recipe not found', async () => {
@@ -165,7 +163,7 @@ describe('Lists API Endpoints - Error Cases', () => {
                     recipeId: 'recipe-id',
                 }),
             });
-            expect(response.status).toBe(404);
+            expect((response as any).status).toBe(404);
         });
     });
 
@@ -179,7 +177,7 @@ describe('Lists API Endpoints - Error Cases', () => {
                     recipeId: 'recipe-id',
                 }),
             });
-            expect(response.status).toBe(401);
+            expect((response as any).status).toBe(401);
         });
     });
 });

@@ -59,7 +59,7 @@ const mockUser: SafeUser = {
     badges: [],
 };
 
-const mockList: SafeList = {
+const mockList: SafeList = { badges: [],
     id: 'list-1',
     name: 'My Special List',
     userId: 'user-id',

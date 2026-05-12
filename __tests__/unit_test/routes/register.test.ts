@@ -152,11 +152,11 @@ describe('Register API Error Handling', () => {
             (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce(null);
             (bcrypt.hash as jest.Mock).mockResolvedValueOnce('hashedPassword');
 
-            const mockUser = {
+            const mockUser = { badges: [],
                 id: '1',
                 email: 'test@example.com',
                 name: 'Test User',
-                hashedPassword: 'hashedPassword',
+
             };
             (prisma.user.create as jest.Mock).mockResolvedValueOnce(mockUser);
 
@@ -175,9 +175,9 @@ describe('Register API Error Handling', () => {
                 data: {
                     email: 'test@example.com',
                     name: 'Test User',
-                    hashedPassword: 'hashedPassword',
+
                 },
-                select: {
+                select: { badges: [],
                     id: true,
                     name: true,
                     email: true,
@@ -189,7 +189,7 @@ describe('Register API Error Handling', () => {
             (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce(null);
             (bcrypt.hash as jest.Mock).mockResolvedValueOnce('hashedPassword');
 
-            const mockUser = {
+            const mockUser = { badges: [],
                 id: '1',
                 email: 'test@example.com',
                 name: 'Test User',
@@ -214,9 +214,9 @@ describe('Register API Error Handling', () => {
                 data: {
                     email: 'test@example.com',
                     name: 'Test User',
-                    hashedPassword: 'hashedPassword',
+
                 },
-                select: {
+                select: { badges: [],
                     id: true,
                     name: true,
                     email: true,

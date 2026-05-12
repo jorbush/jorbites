@@ -18,7 +18,7 @@ vi.mock('next/navigation', () => ({
 
 // Mock data
 const mockRecipes: SafeRecipe[] = [
-    {
+    { listIds: [],
         id: 'recipe1',
         title: 'Recipe 1',
         description: 'Description 1',
@@ -37,7 +37,7 @@ const mockRecipes: SafeRecipe[] = [
         youtubeUrl: '',
         questId: null,
     },
-    {
+    { listIds: [],
         id: 'recipe2',
         title: 'Recipe 2',
         description: 'Description 2',
@@ -63,7 +63,7 @@ const mockCurrentUser: SafeUser = {
     email: null,
     emailVerified: null,
     image: '/test-image.jpg',
-    hashedPassword: null,
+
     createdAt: '',
     updatedAt: '', // Add the updatedAt property
     favoriteIds: [],
@@ -71,8 +71,8 @@ const mockCurrentUser: SafeUser = {
     level: 0,
     verified: false,
     badges: [],
-    resetToken: null,
-    resetTokenExpiry: null,
+
+
 };
 
 describe('FavoritesClient', () => {

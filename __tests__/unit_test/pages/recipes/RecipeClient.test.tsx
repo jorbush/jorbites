@@ -54,13 +54,13 @@ describe('RecipeClient', () => {
         youtubeUrl: '',
         questId: null,
         createdAt: '2022-01-01', // Add the createdAt property with a valid date string
-        user: {
+        user: { badges: [],
             id: 'user1',
             name: 'Test User',
         } as SafeUser,
     };
 
-    const mockCurrentUser: SafeUser = {
+    const mockCurrentUser: SafeUser = { badges: [],
         id: 'user1',
         name: 'Test User',
     } as SafeUser;
@@ -73,7 +73,7 @@ describe('RecipeClient', () => {
             comment: '',
             recipeId: '',
             createdAt: '2022-01-01', // Add the createdAt property with a valid date string
-            user: {
+            user: { badges: [],
                 id: 'user2',
                 name: 'Test User',
             } as SafeUser, // Add the user property with a valid SafeUser object

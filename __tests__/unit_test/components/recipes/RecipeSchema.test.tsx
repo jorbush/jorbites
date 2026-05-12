@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
 
 describe('RecipeSchema', () => {
-    const mockProps = {
+    const mockProps = { listIds: [],
         title: 'Test Recipe',
         description: 'A test recipe description',
         imageSrc:

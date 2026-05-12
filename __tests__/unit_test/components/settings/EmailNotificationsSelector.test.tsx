@@ -28,14 +28,14 @@ vi.mock('axios');
 vi.mock('react-hot-toast');
 
 describe('<EmailNotificationsSelector />', () => {
-    const mockUser = {
+    const mockUser = { badges: [],
         id: '1',
         emailNotifications: true,
         name: null,
         email: null,
         emailVerified: null,
         image: null,
-        hashedPassword: null,
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],

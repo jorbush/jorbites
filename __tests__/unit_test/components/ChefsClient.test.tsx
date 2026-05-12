@@ -83,12 +83,12 @@ describe('<ChefsClient />', () => {
             image: null,
             level: 5,
             verified: true,
-            hashedPassword: null,
+
             favoriteIds: [],
             emailNotifications: false,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
+
+
             createdAt: '2024-01-01T00:00:00.000Z',
             updatedAt: '2024-01-01T00:00:00.000Z',
             emailVerified: null,
@@ -102,12 +102,12 @@ describe('<ChefsClient />', () => {
             image: null,
             level: 3,
             verified: false,
-            hashedPassword: null,
+
             favoriteIds: [],
             emailNotifications: false,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
+
+
             createdAt: '2024-01-02T00:00:00.000Z',
             updatedAt: '2024-01-02T00:00:00.000Z',
             emailVerified: null,

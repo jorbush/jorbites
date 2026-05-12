@@ -45,13 +45,13 @@ vi.mock('next-cloudinary', () => ({
 }));
 
 describe('<ChangeUserImageSelector />', () => {
-    const mockCurrentUser = {
+    const mockCurrentUser = { badges: [],
         id: '1',
         name: 'John Doe',
         email: 'john@example.com',
         emailVerified: new Date().toISOString(),
         image: 'https://example.com/current-image.jpg',
-        hashedPassword: 'hashedPassword',
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],

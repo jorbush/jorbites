@@ -32,7 +32,7 @@ vi.mock('react-i18next', () => ({
     I18nextProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-const mockUser = { id: 'user1', name: 'Test User' };
+const mockUser = { badges: [], id: 'user1', name: 'Test User' };
 const mockRecipes = [
     {
         id: 'recipe1',
@@ -73,7 +73,7 @@ const mockRecipes = [
         questId: null,
     },
 ];
-const mockCurrentUser = {
+const mockCurrentUser = { badges: [],
     id: 'currentUserId',
     name: 'Current User',
 };
@@ -104,14 +104,14 @@ describe('ProfilePage', () => {
             name: mockCurrentUser.name,
             email: null,
             image: null,
-            hashedPassword: null,
+
             favoriteIds: [],
             emailNotifications: false,
             level: 0,
             verified: false,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
+
+
         });
 
         const params = Promise.resolve({ userId: 'user1' });
@@ -146,14 +146,14 @@ describe('ProfilePage', () => {
             name: mockUser.name,
             email: null,
             image: null,
-            hashedPassword: null,
+
             favoriteIds: [],
             emailNotifications: false,
             level: 0,
             verified: false,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
+
+
         });
         vi.mocked(getCurrentUser).mockResolvedValue({
             createdAt: '',
@@ -163,14 +163,14 @@ describe('ProfilePage', () => {
             name: mockCurrentUser.name,
             email: null,
             image: null,
-            hashedPassword: null,
+
             favoriteIds: [],
             emailNotifications: false,
             level: 0,
             verified: false,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
+
+
         });
 
         const profilePage = await ProfilePage({
@@ -202,14 +202,14 @@ describe('ProfilePage', () => {
             name: mockUser.name,
             email: null,
             image: null,
-            hashedPassword: null,
+
             favoriteIds: [],
             emailNotifications: false,
             level: 0,
             verified: false,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
+
+
         });
         vi.mocked(getCurrentUser).mockResolvedValue({
             createdAt: '',
@@ -219,14 +219,14 @@ describe('ProfilePage', () => {
             name: mockCurrentUser.name,
             email: null,
             image: null,
-            hashedPassword: null,
+
             favoriteIds: [],
             emailNotifications: false,
             level: 0,
             verified: false,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
+
+
         });
 
         const profilePage = await ProfilePage({

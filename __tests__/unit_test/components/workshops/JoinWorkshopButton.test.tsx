@@ -36,7 +36,7 @@ describe('<JoinWorkshopButton />', () => {
         email: 'test@example.com',
         emailVerified: null,
         image: null,
-        hashedPassword: null,
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],
@@ -44,8 +44,8 @@ describe('<JoinWorkshopButton />', () => {
         level: 0,
         verified: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
+
+
     };
 
     const mockRouter = {

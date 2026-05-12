@@ -55,7 +55,7 @@ vi.mock('@/app/components/recipes/RecipeCategoryAndMethod', () => ({
 }));
 
 describe('RecipeInfo', () => {
-    const mockUser: SafeUser = {
+    const mockUser: SafeUser = { badges: [],
         id: '1',
         name: 'John Doe',
         email: 'john@example.com',
@@ -65,7 +65,7 @@ describe('RecipeInfo', () => {
         level: 5,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        hashedPassword: null,
+
         favoriteIds: [],
         emailNotifications: false,
     };

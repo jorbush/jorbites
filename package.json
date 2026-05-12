@@ -11,7 +11,8 @@
     "vitest": "vitest run __tests__/unit_test/components __tests__/unit_test/pages __tests__/unit_test/utils __tests__/unit_test/hooks",
     "jest": "jest __tests__/unit_test/routes",
     "cypress:open": "cypress open",
-    "cypress": "cypress run"
+    "cypress": "cypress run",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@axiomhq/js": "^1.3.1",

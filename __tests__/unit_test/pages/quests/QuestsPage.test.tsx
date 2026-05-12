@@ -49,7 +49,7 @@ describe('<QuestsClient />', () => {
             status: 'open',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            user: {
+            user: { badges: [],
                 id: 'user1',
                 name: 'Test User',
                 image: null,
@@ -64,7 +64,7 @@ describe('<QuestsClient />', () => {
             status: 'in_progress',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            user: {
+            user: { badges: [],
                 id: 'user2',
                 name: 'Test User 2',
                 image: null,
@@ -75,7 +75,7 @@ describe('<QuestsClient />', () => {
                     id: 'recipe1',
                     title: 'Test Recipe',
                     imageSrc: '/test.jpg',
-                    user: {
+                    user: { badges: [],
                         id: 'user3',
                         name: 'Chef User',
                         image: null,
@@ -85,7 +85,7 @@ describe('<QuestsClient />', () => {
         },
     ];
 
-    const mockUser = {
+    const mockUser = { badges: [],
         id: 'user1',
         name: 'Test User',
         email: 'test@example.com',
@@ -98,8 +98,8 @@ describe('<QuestsClient />', () => {
         badgeIds: [],
         isActive: true,
         lastActiveAt: '2022-01-01',
-        resetToken: null,
-        resetTokenExpiry: null,
+
+
     } as any;
 
     beforeEach(() => {

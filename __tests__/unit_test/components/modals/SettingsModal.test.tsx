@@ -155,7 +155,7 @@ describe('SettingsModal', () => {
     });
 
     it('renders both preferences and account tabs when current user is provided', () => {
-        const currentUser = {
+        const currentUser = { badges: [],
             id: '1',
             name: 'Test User',
         } as SafeUser;
@@ -181,7 +181,7 @@ describe('SettingsModal', () => {
     });
 
     it('switches to account tab and shows account content', async () => {
-        const currentUser = {
+        const currentUser = { badges: [],
             id: '1',
             name: 'Test User',
         } as SafeUser;
@@ -214,7 +214,7 @@ describe('SettingsModal', () => {
     });
 
     it('switches back to preferences tab correctly', async () => {
-        const currentUser = {
+        const currentUser = { badges: [],
             id: '1',
             name: 'Test User',
         } as SafeUser;
@@ -266,7 +266,7 @@ describe('SettingsModal', () => {
     });
 
     it('renders correct tab labels with icons', () => {
-        const currentUser = {
+        const currentUser = { badges: [],
             id: '1',
             name: 'Test User',
         } as SafeUser;
@@ -292,7 +292,7 @@ describe('SettingsModal', () => {
     it('closes modal when save button is clicked with current user', async () => {
         vi.useFakeTimers();
 
-        const currentUser = {
+        const currentUser = { badges: [],
             id: '1',
             name: 'Test User',
         } as SafeUser;
@@ -326,7 +326,7 @@ describe('SettingsModal', () => {
     it('does not close modal when clicking account tab after save button', async () => {
         vi.useFakeTimers();
 
-        const currentUser = {
+        const currentUser = { badges: [],
             id: '1',
             name: 'Test User',
         } as SafeUser;

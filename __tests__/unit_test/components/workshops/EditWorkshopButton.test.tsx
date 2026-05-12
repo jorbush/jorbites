@@ -50,7 +50,7 @@ describe('<EditWorkshopButton />', () => {
             email: 'host@example.com',
             emailVerified: null,
             image: '/host-image.jpg',
-            hashedPassword: null,
+
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             favoriteIds: [],
@@ -58,8 +58,8 @@ describe('<EditWorkshopButton />', () => {
             level: 5,
             verified: true,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
+
+
         },
         participants: [],
     };
@@ -89,7 +89,7 @@ describe('<EditWorkshopButton />', () => {
         const button = screen.getByTestId('edit-button');
         fireEvent.click(button);
 
-        expect(mockOnOpenEdit).toHaveBeenCalledWith({
+        expect(mockOnOpenEdit).toHaveBeenCalledWith({ listIds: [],
             id: mockWorkshop.id,
             title: mockWorkshop.title,
             description: mockWorkshop.description,

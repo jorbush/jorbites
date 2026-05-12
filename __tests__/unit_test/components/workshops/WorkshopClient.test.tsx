@@ -48,7 +48,7 @@ describe('<WorkshopClient />', () => {
         email: 'test@example.com',
         emailVerified: null,
         image: null,
-        hashedPassword: null,
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],
@@ -56,8 +56,8 @@ describe('<WorkshopClient />', () => {
         level: 1,
         verified: true,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
+
+
     };
 
     const mockWorkshop: SafeWorkshop & { host: SafeUser } = {
@@ -84,7 +84,7 @@ describe('<WorkshopClient />', () => {
             email: 'host@example.com',
             emailVerified: null,
             image: null,
-            hashedPassword: null,
+
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             favoriteIds: [],
@@ -92,8 +92,8 @@ describe('<WorkshopClient />', () => {
             level: 2,
             verified: true,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
+
+
         },
         participants: [],
     };

@@ -53,7 +53,7 @@ describe('<RecipeCard />', () => {
         email: 'test@example.com',
         emailVerified: null,
         image: null,
-        hashedPassword: null,
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],
@@ -61,8 +61,8 @@ describe('<RecipeCard />', () => {
         level: 0,
         verified: false,
         badges: [],
-        resetToken: null,
-        resetTokenExpiry: null,
+
+
     };
 
     const mockRouter = {
@@ -160,7 +160,7 @@ describe('<RecipeCard />', () => {
             email: 'author@example.com',
             emailVerified: null,
             image: '/author-image.jpg',
-            hashedPassword: null,
+
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             favoriteIds: [],
@@ -168,8 +168,8 @@ describe('<RecipeCard />', () => {
             level: 5,
             verified: true,
             badges: [],
-            resetToken: null,
-            resetTokenExpiry: null,
+
+
         };
 
         beforeEach(() => {

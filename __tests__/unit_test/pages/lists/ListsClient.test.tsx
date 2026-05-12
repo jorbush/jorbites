@@ -28,7 +28,7 @@ const mockUser: SafeUser = {
 };
 
 const mockLists: SafeList[] = [
-    {
+    { badges: [],
         id: 'list-1',
         name: 'To cook later',
         userId: 'user-id',
@@ -39,7 +39,7 @@ const mockLists: SafeList[] = [
         updatedAt: new Date().toISOString(),
         user: mockUser,
     },
-    {
+    { badges: [],
         id: 'list-2',
         name: 'My Special List',
         userId: 'user-id',

@@ -28,16 +28,16 @@ vi.mock('@/app/components/shared/ActionCard', () => ({
 }));
 
 describe('<CallToAction />', () => {
-    const mockCurrentUser: any = {
+    const mockCurrentUser: any = { badges: [],
         id: 'user1',
         name: 'John Doe',
         email: 'john@example.com',
     };
 
     const mockTopJorbiters: any[] = [
-        { id: 'user2', name: 'Top User', email: 'top@example.com' },
-        { id: 'user1', name: 'John Doe', email: 'john@example.com' },
-        { id: 'user3', name: 'Another User', email: 'another@example.com' },
+        { badges: [], id: 'user2', name: 'Top User', email: 'top@example.com' },
+        { badges: [], id: 'user1', name: 'John Doe', email: 'john@example.com' },
+        { badges: [], id: 'user3', name: 'Another User', email: 'another@example.com' },
     ];
 
     afterEach(() => {

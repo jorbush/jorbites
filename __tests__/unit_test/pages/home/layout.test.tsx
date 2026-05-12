@@ -64,7 +64,7 @@ describe('RootLayout', () => {
 
     it('renders the layout correctly', async () => {
         const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
-        vi.mocked(getCurrentUserMock.default).mockResolvedValue({
+        vi.mocked(getCurrentUserMock.default).mockResolvedValue({ badges: [],
             id: '1',
             name: 'Test User',
         } as any);

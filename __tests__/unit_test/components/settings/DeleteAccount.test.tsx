@@ -84,17 +84,17 @@ vi.mock('@/app/components/modals/WriteToDeleteModal', () => ({
 const mockAxios = axios as any;
 const mockSignOut = signOut as any;
 
-const mockCurrentUser = {
+const mockCurrentUser = { badges: [],
     id: '1',
     name: 'Test User',
     email: 'test@example.com',
     image: null,
     emailNotifications: true,
     favoriteIds: [],
-    hashedPassword: null,
+
     level: 1,
-    resetToken: null,
-    resetTokenExpiry: null,
+
+
     verified: false,
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
