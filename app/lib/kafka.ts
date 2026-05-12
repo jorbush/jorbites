@@ -10,6 +10,7 @@ let producer: Producer | null = null;
 if (process.env.KAFKA_BROKER) {
     if (
         process.env.NODE_ENV === 'production' &&
+        process.env.SKIP_ENV_VALIDATION !== 'true' &&
         (!process.env.KAFKA_SSL_KEY ||
             !process.env.KAFKA_SSL_CERT ||
             !process.env.KAFKA_SSL_CA)

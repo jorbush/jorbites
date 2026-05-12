@@ -24,7 +24,11 @@ const createMockRatelimit = (name: string) => {
 const hasUpstashConfig =
     process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN;
 
-if (!hasUpstashConfig && process.env.NODE_ENV === 'production') {
+if (
+    !hasUpstashConfig &&
+    process.env.NODE_ENV === 'production' &&
+    process.env.SKIP_ENV_VALIDATION !== 'true'
+) {
     throw new Error(
         'UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required in production for rate limiting'
     );

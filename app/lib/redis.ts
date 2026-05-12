@@ -28,7 +28,11 @@ const createMockRedis = (name: string) => {
     } as unknown as Redis;
 };
 
-if (!process.env.REDIS_URL && process.env.NODE_ENV === 'production') {
+if (
+    !process.env.REDIS_URL &&
+    process.env.NODE_ENV === 'production' &&
+    process.env.SKIP_ENV_VALIDATION !== 'true'
+) {
     throw new Error('REDIS_URL is required in production');
 }
 
