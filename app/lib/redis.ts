@@ -28,9 +28,19 @@ const createMockRedis = (name: string) => {
     } as unknown as Redis;
 };
 
+if (!process.env.REDIS_URL && process.env.NODE_ENV === 'production') {
+    throw new Error('REDIS_URL is required in production');
+}
+
 export const redis = process.env.REDIS_URL
     ? new Redis(process.env.REDIS_URL)
     : createMockRedis('redis');
+
+if (!process.env.REDIS_URL_CACHING && process.env.NODE_ENV === 'production') {
+    logger.warn(
+        'REDIS_URL_CACHING is not set in production. Caching is disabled.'
+    );
+}
 
 export const redisCache = process.env.REDIS_URL_CACHING
     ? new Redis(process.env.REDIS_URL_CACHING)

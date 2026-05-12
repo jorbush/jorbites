@@ -8,6 +8,17 @@ declare global {
 let producer: Producer | null = null;
 
 if (process.env.KAFKA_BROKER) {
+    if (
+        process.env.NODE_ENV === 'production' &&
+        (!process.env.KAFKA_SSL_KEY ||
+            !process.env.KAFKA_SSL_CERT ||
+            !process.env.KAFKA_SSL_CA)
+    ) {
+        throw new Error(
+            'KAFKA_SSL_KEY, KAFKA_SSL_CERT, and KAFKA_SSL_CA are required in production when KAFKA_BROKER is set'
+        );
+    }
+
     const kafka = new Kafka({
         clientId: 'jorbites-app',
         brokers: [process.env.KAFKA_BROKER],

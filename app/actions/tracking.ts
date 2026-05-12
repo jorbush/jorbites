@@ -17,6 +17,14 @@ export async function trackUserInteraction(
                 userId,
                 metadata,
             });
+        } else {
+            logger.warn(
+                `[Kafka Disabled] Dropping tracking event in production: ${eventType}`,
+                {
+                    recipeId,
+                    userId,
+                }
+            );
         }
         return;
     }

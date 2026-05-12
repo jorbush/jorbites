@@ -24,6 +24,12 @@ const createMockRatelimit = (name: string) => {
 const hasUpstashConfig =
     process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN;
 
+if (!hasUpstashConfig && process.env.NODE_ENV === 'production') {
+    throw new Error(
+        'UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required in production for rate limiting'
+    );
+}
+
 // Rate limiting for authenticated users - higher limits to support search functionality
 // 30 requests per 10 seconds allows for frequent search queries (debounced at 1s) + normal browsing
 export const authenticatedRatelimit = hasUpstashConfig
