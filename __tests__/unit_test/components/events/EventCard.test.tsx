@@ -48,6 +48,13 @@ vi.mock('@/app/utils/date-utils', () => ({
     formatDateRange: (start: string, end: string) => {
         return `May 1, 2024${start !== end ? ' - May 2, 2024' : ''}`;
     },
+    getEventDateDisplay: (frontmatter: any, t: any) => {
+        if (frontmatter.permanent) return undefined;
+        if (frontmatter.recurrent && frontmatter.dayOfMonth) {
+            return t('recurrent_date', { day: frontmatter.dayOfMonth });
+        }
+        return `May 1, 2024${frontmatter.date !== frontmatter.endDate ? ' - May 2, 2024' : ''}`;
+    },
 }));
 
 vi.mock('next/image', () => ({
@@ -83,6 +90,15 @@ describe('EventCard', () => {
         },
     };
 
+    const recurrentEvent: Event = {
+        ...mockEvent,
+        frontmatter: {
+            ...mockEvent.frontmatter,
+            recurrent: true,
+            dayOfMonth: 29,
+        },
+    };
+
     afterEach(() => {
         cleanup();
     });
@@ -113,5 +129,15 @@ describe('EventCard', () => {
         const dateElement =
             screen.getByText(/May/i) || screen.getByText(/2024/i);
         expect(dateElement).toBeDefined();
+    });
+
+    it('renders recurrent event date correctly', () => {
+        render(<EventCard event={recurrentEvent} />);
+
+        // In the mock, t(key, options) returns key, but our mock implementation returns the key with options interpolated if handled
+        // Actually the current mock t returns just key. Let's see.
+        // Wait, the mock t is: t: (key: string) => key
+        // So t('recurrent_date', { day: 29 }) will return 'recurrent_date'
+        expect(screen.getByText('recurrent_date')).toBeDefined();
     });
 });

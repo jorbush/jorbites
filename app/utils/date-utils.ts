@@ -116,3 +116,28 @@ export const formatDistanceToNowLocale = (
     const locale = locales[currentLocale] || locales.es;
     return formatDistanceToNow(parsedDate, { addSuffix: true, locale });
 };
+
+/**
+ * Gets the localized display string for an event date
+ */
+export const getEventDateDisplay = (
+    frontmatter: {
+        permanent?: boolean;
+        recurrent?: boolean;
+        dayOfMonth?: number;
+        date: string;
+        endDate: string;
+    },
+    t: any,
+    lang?: string
+): string | undefined => {
+    if (frontmatter.permanent) {
+        return undefined;
+    }
+
+    if (frontmatter.recurrent && frontmatter.dayOfMonth) {
+        return t('recurrent_date', { day: frontmatter.dayOfMonth });
+    }
+
+    return formatDateRange(frontmatter.date, frontmatter.endDate, lang);
+};

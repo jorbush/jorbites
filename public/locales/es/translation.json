@@ -196,6 +196,7 @@
     "no_permanent_events": "No hay eventos permanentes",
     "event_not_found_message": "No se ha encontrado el evento que buscas.",
     "back_to_events": "Volver a Eventos",
+    "recurrent_date": "{{day}} de cada mes",
     "date": "Fecha",
     "location": "Ubicación",
     "weekly_challenge": "Reto de la Semana",

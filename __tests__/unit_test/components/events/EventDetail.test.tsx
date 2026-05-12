@@ -47,6 +47,13 @@ vi.mock('@/app/utils/date-utils', () => ({
     formatDateRange: (start: string, end: string) => {
         return `May 1, 2024${start !== end ? ' - May 2, 2024' : ''}`;
     },
+    getEventDateDisplay: (frontmatter: any, t: any) => {
+        if (frontmatter.permanent) return undefined;
+        if (frontmatter.recurrent && frontmatter.dayOfMonth) {
+            return t('recurrent_date', { day: frontmatter.dayOfMonth });
+        }
+        return `May 1, 2024${frontmatter.date !== frontmatter.endDate ? ' - May 2, 2024' : ''}`;
+    },
 }));
 
 vi.mock('react-markdown', () => ({
@@ -90,6 +97,15 @@ describe('EventDetail', () => {
         },
         content: 'Event content with markdown',
         language: 'en',
+    };
+
+    const recurrentEvent: Event = {
+        ...mockEvent,
+        frontmatter: {
+            ...mockEvent.frontmatter,
+            recurrent: true,
+            dayOfMonth: 29,
+        },
     };
 
     afterEach(() => {
@@ -145,5 +161,10 @@ describe('EventDetail', () => {
             'className',
             expect.stringContaining('cursor-pointer')
         );
+    });
+
+    it('displays recurrent date correctly', () => {
+        render(<EventDetail event={recurrentEvent} />);
+        expect(screen.getByText('recurrent_date')).toBeDefined();
     });
 });
