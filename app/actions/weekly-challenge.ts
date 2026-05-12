@@ -1,7 +1,10 @@
 'use server';
 
 import { getCurrentChallenge as getCurrentChallengeLib } from '@/app/lib/weekly-challenge';
-import type { WeeklyChallenge, ChallengeType } from '@/app/lib/weekly-challenge';
+import type {
+    WeeklyChallenge,
+    ChallengeType,
+} from '@/app/lib/weekly-challenge';
 
 export type { WeeklyChallenge, ChallengeType };
 

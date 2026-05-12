@@ -56,13 +56,18 @@ export async function getCurrentChallenge(): Promise<WeeklyChallenge | null> {
     });
 
     if (currentChallenge) {
-        logger.info('lib/weekly-challenge getCurrentChallenge - found existing challenge', {
-            challengeId: currentChallenge.id,
-        });
+        logger.info(
+            'lib/weekly-challenge getCurrentChallenge - found existing challenge',
+            {
+                challengeId: currentChallenge.id,
+            }
+        );
         return currentChallenge as WeeklyChallenge;
     }
 
-    logger.info('lib/weekly-challenge getCurrentChallenge - no active challenge found');
+    logger.info(
+        'lib/weekly-challenge getCurrentChallenge - no active challenge found'
+    );
     return null;
 }
 

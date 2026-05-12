@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server';
-import { getCurrentChallenge, rotateWeeklyChallenge } from '@/app/lib/weekly-challenge';
+import {
+    getCurrentChallenge,
+    rotateWeeklyChallenge,
+} from '@/app/lib/weekly-challenge';
 import { logger } from '@/app/lib/axiom/server';
-import { internalServerError, notFound, unauthorized } from '@/app/utils/apiErrors';
+import {
+    internalServerError,
+    notFound,
+    unauthorized,
+} from '@/app/utils/apiErrors';
 
 export async function GET() {
     try {
@@ -34,12 +41,16 @@ export async function POST(request: Request) {
         const authHeader = request.headers.get('Authorization');
 
         if (!cronSecret) {
-            logger.error('api/weekly-challenge POST - CRON_SECRET not configured');
+            logger.error(
+                'api/weekly-challenge POST - CRON_SECRET not configured'
+            );
             return internalServerError('CRON_SECRET not configured');
         }
 
         if (!authHeader) {
-            logger.error('api/weekly-challenge POST - missing Authorization header');
+            logger.error(
+                'api/weekly-challenge POST - missing Authorization header'
+            );
             return unauthorized('Missing Authorization header');
         }
 

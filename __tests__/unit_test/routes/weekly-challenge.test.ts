@@ -1,4 +1,7 @@
-import { GET as WeeklyChallengeGET, POST as WeeklyChallengePOST } from '@/app/api/weekly-challenge/route';
+import {
+    GET as WeeklyChallengeGET,
+    POST as WeeklyChallengePOST,
+} from '@/app/api/weekly-challenge/route';
 
 // Mock the weekly challenge lib
 jest.mock('@/app/lib/weekly-challenge', () => ({
@@ -14,7 +17,10 @@ jest.mock('@/app/lib/axiom/server', () => ({
     },
 }));
 
-import { getCurrentChallenge, rotateWeeklyChallenge } from '@/app/lib/weekly-challenge';
+import {
+    getCurrentChallenge,
+    rotateWeeklyChallenge,
+} from '@/app/lib/weekly-challenge';
 import { logger } from '@/app/lib/axiom/server';
 
 describe('Weekly Challenge API', () => {
@@ -113,12 +119,15 @@ describe('Weekly Challenge API', () => {
                 mockChallenge
             );
 
-            const request = new Request('http://localhost/api/weekly-challenge', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'bearer test-secret '
+            const request = new Request(
+                'http://localhost/api/weekly-challenge',
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'bearer test-secret ',
+                    },
                 }
-            });
+            );
 
             const response = await WeeklyChallengePOST(request);
             const data = await response.json();
@@ -133,12 +142,15 @@ describe('Weekly Challenge API', () => {
         });
 
         it('should return 401 when CRON_SECRET is invalid', async () => {
-            const request = new Request('http://localhost/api/weekly-challenge', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer wrong-secret'
+            const request = new Request(
+                'http://localhost/api/weekly-challenge',
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer wrong-secret',
+                    },
                 }
-            });
+            );
 
             const response = await WeeklyChallengePOST(request);
             const data = await response.json();
@@ -155,9 +167,12 @@ describe('Weekly Challenge API', () => {
         });
 
         it('should return 401 when Authorization header is missing', async () => {
-            const request = new Request('http://localhost/api/weekly-challenge', {
-                method: 'POST'
-            });
+            const request = new Request(
+                'http://localhost/api/weekly-challenge',
+                {
+                    method: 'POST',
+                }
+            );
 
             const response = await WeeklyChallengePOST(request);
             const data = await response.json();
@@ -165,7 +180,7 @@ describe('Weekly Challenge API', () => {
             expect(response.status).toBe(401);
             expect(data).toMatchObject({
                 error: 'Missing Authorization header',
-                code: 'UNAUTHORIZED'
+                code: 'UNAUTHORIZED',
             });
             expect(logger.error).toHaveBeenCalledWith(
                 'api/weekly-challenge POST - missing Authorization header'
@@ -176,12 +191,15 @@ describe('Weekly Challenge API', () => {
             const error = new Error('Database error');
             (rotateWeeklyChallenge as jest.Mock).mockRejectedValueOnce(error);
 
-            const request = new Request('http://localhost/api/weekly-challenge', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer test-secret'
+            const request = new Request(
+                'http://localhost/api/weekly-challenge',
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer test-secret',
+                    },
                 }
-            });
+            );
 
             const response = await WeeklyChallengePOST(request);
             const data = await response.json();
