@@ -9,6 +9,26 @@ export async function trackUserInteraction(
     data: UserInteractionData
 ) {
     const { recipeId, userId, metadata } = data;
+
+    if (!producer) {
+        if (process.env.NODE_ENV !== 'production') {
+            logger.info(`[Kafka Disabled] Mock send: ${eventType}`, {
+                recipeId,
+                userId,
+                metadata,
+            });
+        } else {
+            logger.warn(
+                `[Kafka Disabled] Dropping tracking event in production: ${eventType}`,
+                {
+                    recipeId,
+                    userId,
+                }
+            );
+        }
+        return;
+    }
+
     try {
         await producer.connect();
         await producer.send({

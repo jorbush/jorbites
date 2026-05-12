@@ -60,3 +60,4 @@ jobs:
           NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
           REDIS_URL: redis://localhost:6379
           REDIS_URL_CACHING: redis://localhost:6379
+          SKIP_ENV_VALIDATION: 'true'
