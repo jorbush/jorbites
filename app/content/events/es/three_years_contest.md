@@ -18,6 +18,17 @@ Para nuestro tercer aniversario, queremos ver tus **Bocados de Fiesta Express**.
 
 Piensa en tapas rápidas, aperitivos fáciles de montar o cualquier plato festivo que no te mantenga en la cocina todo el día.
 
+### 🍱 Ideas de recetas para inspirarte:
+
+- **Mini Brochetas Caprese**: Tomates cherry, perlas de mozzarella y albahaca fresca.
+- **Champiñones Rellenos**: Relleno rápido de queso crema y hierbas, horneado a la perfección.
+- **Dátiles con Bacon**: Un clásico dulce y salado listo en un momento.
+- **Canapés de Salmón Ahumado**: Sobre rodajas de pepino o galletas saladas con un toque de eneldo.
+- **Mini Pizzas de Tortilla**: Snacks crujientes de tamaño personal con tus ingredientes favoritos.
+- **Guacamole con Totopos**: Una salsa fresca, cremosa y que siempre triunfa.
+- **Gambas al Ajillo**: Rápidas, elegantes y un éxito asegurado en cualquier fiesta.
+- **Fresas Bañadas en Chocolate**: El postre más sencillo y a la vez festivo.
+
 ## 📆 Fecha
 
 Sábado, 30 de mayo de 2026 – Hora de celebración
