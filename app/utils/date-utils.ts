@@ -1,5 +1,7 @@
 import { format, formatDistanceToNow } from 'date-fns';
 import { es, enUS, ca } from 'date-fns/locale';
+import { TFunction } from 'i18next';
+import { EventFrontmatter } from './markdownUtils';
 
 type LocaleType = 'es' | 'en' | 'ca';
 
@@ -121,21 +123,20 @@ export const formatDistanceToNowLocale = (
  * Gets the localized display string for an event date
  */
 export const getEventDateDisplay = (
-    frontmatter: {
-        permanent?: boolean;
-        recurrent?: boolean;
-        dayOfMonth?: number;
-        date: string;
-        endDate: string;
-    },
-    t: any,
+    frontmatter: EventFrontmatter,
+    t: TFunction,
     lang?: string
 ): string | undefined => {
     if (frontmatter.permanent) {
         return undefined;
     }
 
-    if (frontmatter.recurrent && frontmatter.dayOfMonth) {
+    if (
+        frontmatter.recurrent === true &&
+        typeof frontmatter.dayOfMonth === 'number' &&
+        frontmatter.dayOfMonth >= 1 &&
+        frontmatter.dayOfMonth <= 31
+    ) {
         return t('recurrent_date', { day: frontmatter.dayOfMonth });
     }
 
