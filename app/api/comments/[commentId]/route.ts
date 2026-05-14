@@ -11,6 +11,7 @@ import {
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { redisCache } from '@/app/lib/redis';
 
 interface IParams {
     commentId?: string;
@@ -62,6 +63,17 @@ export async function DELETE(
         logger.info('DELETE /api/comments/[commentId] - success', {
             commentId,
         });
+
+        // Invalidate comments cache for the recipe this comment belonged to
+        try {
+            await redisCache.del(`recipe:comments:${comment.recipeId}`);
+        } catch (cacheError: any) {
+            logger.error(
+                'DELETE /api/comments/[commentId] - cache invalidation error',
+                { error: cacheError.message, commentId }
+            );
+        }
+
         return NextResponse.json(deletedComment);
     } catch (error: any) {
         logger.error('DELETE /api/comments/[commentId] - error', {

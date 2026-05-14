@@ -15,6 +15,7 @@ import {
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { contentCreationRatelimit } from '@/app/lib/ratelimit';
+import { redisCache } from '@/app/lib/redis';
 
 export async function POST(request: Request) {
     try {
@@ -120,6 +121,17 @@ export async function POST(request: Request) {
                 recipeAndComment.comments[recipeAndComment.comments.length - 1]
                     ?.id,
         });
+
+        // Invalidate comments cache for this recipe
+        try {
+            await redisCache.del(`recipe:comments:${recipeId}`);
+        } catch (cacheError: any) {
+            logger.error('POST /api/comments - cache invalidation error', {
+                error: cacheError.message,
+                recipeId,
+            });
+        }
+
         return NextResponse.json(recipeAndComment);
     } catch (error: any) {
         logger.error('POST /api/comments - error', { error: error.message });
