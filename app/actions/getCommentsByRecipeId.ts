@@ -1,4 +1,5 @@
 import prisma from '@/app/lib/prismadb';
+import { redisCache } from '@/app/lib/redis';
 import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
@@ -7,10 +8,25 @@ interface IParams {
 
 export default async function getCommentsByRecipeId(params: IParams) {
     try {
+        const { recipeId } = params;
+        const cacheKey = `recipe:comments:${recipeId}`;
+
+        try {
+            const cachedData = await redisCache.get(cacheKey);
+            if (cachedData) {
+                logger.info('getCommentsByRecipeId - cache hit', { recipeId });
+                return JSON.parse(cachedData);
+            }
+        } catch (cacheError: any) {
+            logger.error('getCommentsByRecipeId - cache get error', {
+                error: cacheError.message,
+                recipeId,
+            });
+        }
+
         logger.info('getCommentsByRecipeId - start', {
             recipeId: params.recipeId,
         });
-        const { recipeId } = params;
 
         const query: any = {};
 
@@ -46,6 +62,21 @@ export default async function getCommentsByRecipeId(params: IParams) {
             recipeId,
             count: safeComments.length,
         });
+
+        try {
+            await redisCache.set(
+                cacheKey,
+                JSON.stringify(safeComments),
+                'EX',
+                86400
+            ); // 1 day
+        } catch (cacheError: any) {
+            logger.error('getCommentsByRecipeId - cache set error', {
+                error: cacheError.message,
+                recipeId,
+            });
+        }
+
         return safeComments;
     } catch (error: any) {
         logger.error('getCommentsByRecipeId - error', {

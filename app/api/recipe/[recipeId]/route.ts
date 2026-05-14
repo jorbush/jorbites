@@ -117,6 +117,16 @@ export async function POST(
             userId: currentRecipe.user.id,
         });
 
+        // Invalidate recipe cache so like count is fresh
+        try {
+            await redisCache.del(`recipe:${recipeId}`);
+        } catch (cacheError: any) {
+            logger.error(
+                'POST /api/recipe/[recipeId] - cache invalidation error',
+                { error: cacheError.message, recipeId }
+            );
+        }
+
         logger.info('POST /api/recipe/[recipeId] - success', {
             recipeId,
             operation,
@@ -205,14 +215,14 @@ export async function PATCH(
             }
 
             // Check for existing award-winning category
-            const existingCategories = recipe.categories || [];
+            const existingCategories: string[] = recipe.categories || [];
             const hasAwardWinning = existingCategories.some(
-                (cat) => cat.toLowerCase() === 'award-winning'
+                (cat: string) => cat.toLowerCase() === 'award-winning'
             );
 
             if (
                 categories.some(
-                    (cat) => cat.toLowerCase() === 'award-winning'
+                    (cat: string) => cat.toLowerCase() === 'award-winning'
                 ) &&
                 !hasAwardWinning
             ) {
@@ -224,7 +234,9 @@ export async function PATCH(
             // Prevent removal of the Award-winning category
             if (
                 hasAwardWinning &&
-                !categories.some((cat) => cat.toLowerCase() === 'award-winning')
+                !categories.some(
+                    (cat: string) => cat.toLowerCase() === 'award-winning'
+                )
             ) {
                 return badRequest('Cannot remove the Award-winning category');
             }
@@ -355,8 +367,9 @@ export async function PATCH(
 
         logger.info('PATCH /api/recipe/[recipeId] - success', { recipeId });
 
-        // Invalidate global recipe cache
+        // Invalidate per-recipe cache and global recipe cache
         try {
+            await redisCache.del(`recipe:${recipeId}`);
             await redisCache.incr('recipes:global:version');
         } catch (error: any) {
             logger.error(
@@ -457,6 +470,7 @@ export async function DELETE(
 
         // Invalidate cache
         try {
+            await redisCache.del(`recipe:${recipeId}`);
             await redisCache.del(`recipes:graph:${currentUser.id}`);
             await redisCache.incr('recipes:global:version');
         } catch (error: any) {
