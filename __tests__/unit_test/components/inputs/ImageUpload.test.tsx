@@ -25,7 +25,7 @@ vi.mock('next-cloudinary', () => ({
 
 // Mock next/image
 vi.mock('next/image', () => ({
-    default: (props: any) => <img {...props} />,
+    default: ({ alt, ...props }: any) => <img alt={alt} {...props} />,
 }));
 
 describe('ImageUpload', () => {
