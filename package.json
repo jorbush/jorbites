@@ -8,7 +8,7 @@
     "start": "next start",
     "format": "prettier --write 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
     "check-format": "prettier --check 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
-    "vitest": "vitest run __tests__/unit_test/components __tests__/unit_test/pages __tests__/unit_test/utils __tests__/unit_test/hooks",
+    "vitest": "vitest run __tests__/unit_test/components __tests__/unit_test/pages __tests__/unit_test/utils __tests__/unit_test/hooks __tests__/unit_test/actions",
     "jest": "jest __tests__/unit_test/routes",
     "cypress:open": "cypress open",
     "cypress": "cypress run"
