@@ -9,6 +9,12 @@ import {
 } from 'vitest';
 import { logger } from '@/app/lib/axiom/server';
 
+const mockGetCurrentUser = vi.fn();
+
+vi.doMock('@/app/actions/getCurrentUser', () => ({
+    default: mockGetCurrentUser,
+}));
+
 // ---------------------------------------------------------------------------
 // Helpers to build a mock producer
 // ---------------------------------------------------------------------------
@@ -55,10 +61,12 @@ describe('trackUserInteraction', () => {
     beforeEach(() => {
         vi.resetModules();
         vi.useFakeTimers();
+        mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
     });
 
     afterEach(() => {
         vi.useRealTimers();
+        vi.clearAllMocks();
     });
 
     it('is a no-op (with a warning) when Kafka producer is null', async () => {
@@ -172,6 +180,7 @@ describe('trackUserInteraction', () => {
         await p1;
 
         vi.clearAllMocks(); // reset spy call counts before the second assertion
+        mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
 
         // Second call – should attempt connect again (not skip it)
         const p2 = trackRecipeView('recipe-1', 'user-1');
@@ -180,5 +189,55 @@ describe('trackUserInteraction', () => {
 
         expect(connect).toHaveBeenCalledTimes(1); // 2nd overall, 1st since clearAllMocks
         expect(send).toHaveBeenCalledTimes(1);
+    });
+
+    describe('authentication', () => {
+        it('throws Unauthorized error when user is not authenticated', async () => {
+            mockGetCurrentUser.mockResolvedValue(null);
+            const { trackRecipeView } = await import('@/app/actions/tracking');
+
+            await expect(trackRecipeView('recipe-1', 'user-1')).rejects.toThrow(
+                'Unauthorized'
+            );
+        });
+
+        it('throws Unauthorized error when userId does not match authenticated user', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
+            const { trackRecipeView } = await import('@/app/actions/tracking');
+
+            await expect(trackRecipeView('recipe-1', 'user-2')).rejects.toThrow(
+                'Unauthorized'
+            );
+        });
+
+        it('throws Unauthorized error for trackUserInteraction when userId does not match', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
+            const { trackUserInteraction } =
+                await import('@/app/actions/tracking');
+            const { UserEventType } = await import('@/app/types/tracking');
+
+            await expect(
+                trackUserInteraction(UserEventType.RECIPE_VIEW, {
+                    recipeId: 'recipe-1',
+                    userId: 'user-2',
+                })
+            ).rejects.toThrow('Unauthorized');
+        });
+
+        it('allows trackUserInteraction without userId if authenticated', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
+            const { trackUserInteraction } =
+                await import('@/app/actions/tracking');
+            const { UserEventType } = await import('@/app/types/tracking');
+
+            // No producer, should log warning but not throw
+            vi.doMock('@/app/lib/kafka', () => ({ default: null }));
+
+            await expect(
+                trackUserInteraction(UserEventType.RECIPE_VIEW, {
+                    recipeId: 'recipe-1',
+                })
+            ).resolves.toBeUndefined();
+        });
     });
 });
