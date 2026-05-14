@@ -31,9 +31,10 @@ jobs:
         id: fetch-challenge
         env:
           JORBITES_URL: https://jorbites.com
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           echo "Fetching current weekly challenge..."
-          response=$(curl -s -f "$JORBITES_URL/api/weekly-challenge") || { echo "Failed to fetch weekly challenge"; exit 1; }
+          response=$(curl -s -f -H "Authorization: Bearer $CRON_SECRET" "$JORBITES_URL/api/weekly-challenge") || { echo "Failed to fetch weekly challenge"; exit 1; }
 
           title=$(echo "$response" | jq -r '.title // empty')
           description=$(echo "$response" | jq -r '.description // empty')
