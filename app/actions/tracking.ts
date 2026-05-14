@@ -24,17 +24,32 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 async function validateSession(userId: string) {
-    const currentUser = await getCurrentUser();
+    try {
+        const currentUser = await getCurrentUser();
 
-    if (!currentUser) {
-        throw new Error('Unauthorized: User authentication required');
+        if (!currentUser) {
+            logger.warn('Skipping tracking event: user authentication required', {
+                userId,
+            });
+            return null;
+        }
+
+        if (currentUser.id !== userId) {
+            logger.warn('Skipping tracking event: user ID mismatch', {
+                userId,
+                currentUserId: currentUser.id,
+            });
+            return null;
+        }
+
+        return currentUser;
+    } catch (error) {
+        logger.error('Failed to validate tracking session', {
+            userId,
+            error: error instanceof Error ? error.message : String(error),
+        });
+        return null;
     }
-
-    if (currentUser.id !== userId) {
-        throw new Error('Unauthorized: User ID mismatch');
-    }
-
-    return currentUser;
 }
 
 async function trackUserInteractionInternal(
