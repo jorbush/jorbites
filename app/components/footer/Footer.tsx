@@ -49,7 +49,7 @@ const Footer = () => {
             data-testid="footer"
         >
             <div className="mx-auto max-w-6xl">
-                <div className="flex flex-col items-center space-y-6">
+                <div className="flex flex-col items-center gap-y-6">
                     <FooterMenu />
                     <a
                         href={`https://github.com/jorbush/jorbites/releases/tag/v${packageJson.version}`}
@@ -59,31 +59,31 @@ const Footer = () => {
                     >
                         {`${t('version')} ${packageJson.version}`}
                     </a>
-                    <div className="flex space-x-6">
+                    <div className="flex gap-x-6">
                         {socialLinks.map((link) => (
                             <a
                                 key={link.label}
                                 href={link.href}
-                                className="text-neutral-500 transition-all duration-200 hover:-translate-y-1 hover:text-neutral-700 dark:text-gray-400 dark:hover:text-gray-300"
+                                className="text-neutral-500 transition-all duration-200 hover:-translate-y-1 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label={link.label}
                             >
-                                <link.icon className="h-5 w-5" />
+                                <link.icon className="size-5" />
                             </a>
                         ))}
                     </div>
                     <nav className="flex flex-wrap justify-center gap-6 text-sm">
                         <Link
                             href="/policies/privacy"
-                            className="text-neutral-500 transition-colors duration-200 hover:text-neutral-700 dark:text-gray-400 dark:hover:text-gray-300"
+                            className="text-neutral-500 transition-colors duration-200 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                             prefetch={false}
                         >
                             {t('privacy_policy')}
                         </Link>
                         <Link
                             href="/policies/cookies"
-                            className="text-neutral-500 transition-colors duration-200 hover:text-neutral-700 dark:text-gray-400 dark:hover:text-gray-300"
+                            className="text-neutral-500 transition-colors duration-200 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                             prefetch={false}
                         >
                             {t('cookies_policy')}
@@ -91,7 +91,7 @@ const Footer = () => {
                     </nav>
                     <Link
                         href="/"
-                        className="group flex items-center space-x-2 opacity-80 transition-opacity hover:opacity-100"
+                        className="group flex items-center gap-x-2 opacity-80 transition-opacity hover:opacity-100"
                     >
                         <Image
                             src="/avocado.webp"
@@ -104,7 +104,7 @@ const Footer = () => {
                             Jorbites
                         </span>
                     </Link>
-                    <div className="text-sm text-neutral-500 dark:text-gray-400">
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400">
                         © {currentYear} Jorbites. {t('rights_reserved')}.
                     </div>
                 </div>
