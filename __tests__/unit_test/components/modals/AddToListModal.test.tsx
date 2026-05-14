@@ -27,6 +27,7 @@ describe('AddToListModal', () => {
             onOpen: vi.fn(),
         } as any);
         vi.mocked(axios.get).mockResolvedValue({ data: [] });
+        vi.mocked(axios.post).mockResolvedValue({ data: [] });
     });
 
     afterEach(() => {

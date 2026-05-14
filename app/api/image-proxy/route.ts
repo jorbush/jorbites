@@ -99,7 +99,11 @@ export async function GET(request: NextRequest) {
 
                     // Parse the URL to add or replace size parameter
                     const urlObj = new URL(url);
-                    urlObj.searchParams.set('s', size.toString());
+                    const params = Object.fromEntries(
+                        urlObj.searchParams.entries()
+                    );
+                    params.s = size.toString();
+                    urlObj.search = new URLSearchParams(params).toString();
                     imageUrl = urlObj.toString();
                 }
                 // If no dimensions specified, use original URL for maximum quality

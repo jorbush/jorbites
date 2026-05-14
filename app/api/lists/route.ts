@@ -33,40 +33,6 @@ export async function GET() {
             },
         });
 
-        // Lazy create default list if the user has no lists
-        // Note: Restored per user request to ensure the AddToListModal always has the default list ready
-        if (lists.length === 0) {
-            try {
-                const defaultList = await prisma.list.create({
-                    data: {
-                        name: 'to cook later',
-                        isDefault: true,
-                        isPrivate: true,
-                        userId: currentUser.id,
-                    },
-                    include: {
-                        user: {
-                            select: USER_SELECT_FIELDS,
-                        },
-                    },
-                });
-                lists = [defaultList];
-            } catch (error: any) {
-                logger.error('GET /api/lists - error creating default list: ', {
-                    error: error.message,
-                });
-                // If a parallel request already created it, re-fetch
-                lists = await prisma.list.findMany({
-                    where: { userId: currentUser.id },
-                    include: {
-                        user: {
-                            select: USER_SELECT_FIELDS,
-                        },
-                    },
-                    orderBy: { createdAt: 'asc' },
-                });
-            }
-        }
 
         logger.info('GET /api/lists - success', {
             userId: currentUser.id,
