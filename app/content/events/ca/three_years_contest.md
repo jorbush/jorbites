@@ -18,6 +18,17 @@ Per al nostre tercer aniversari, volem veure les teves **Mossegades de Festa Exp
 
 Pensa en tapes ràpides, aperitius fàcils de muntar o qualsevol plat festiu que no et mantingui a la cuina tot el dia.
 
+### 🍱 Idees de receptes per inspirar-te:
+
+- **Mini Broquetes Caprese**: Tomàquets cherry, perles de mozzarella i alfàbrega fresca.
+- **Xampinyons Farcits**: Farcit ràpid de formatge crema i herbes, hornejat a la perfecció.
+- **Dàtils amb Bacó**: Un clàssic dolç i salat llest en un moment.
+- **Canapès de Salmó Fumat**: Sobre rodanxes de cogombre o galetes salades amb un toc de fonoll.
+- **Mini Pizzes de Tortilla**: Snacks cruixents de mida personal amb els teus ingredients preferits.
+- **Guacamole amb Totopos**: Una salsa fresca, cremosa i que sempre triomfa.
+- **Gambes a l'Allet**: Ràpides, elegants i un èxit assegurat en qualsevol festa.
+- **Maduixes Banyades en Xocolata**: Les postres més senzilles i alhora festives.
+
 ## 📆 Data
 
 Dissabte, 30 de maig de 2026 – Hora de celebració

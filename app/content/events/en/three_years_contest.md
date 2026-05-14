@@ -18,6 +18,17 @@ For our 3rd anniversary, we want to see your **Express Party Bites**. We’re lo
 
 Think quick tapas, easy-to-assemble appetizers, or any celebratory dish that won't keep you in the kitchen all day.
 
+### 🍱 Recipe ideas to inspire you:
+
+- **Mini Caprese Skewers**: Cherry tomatoes, mozzarella pearls, and fresh basil.
+- **Stuffed Mushrooms**: Quick cream cheese and herb filling baked to perfection.
+- **Bacon-Wrapped Dates**: A sweet and salty classic that's ready in no time.
+- **Smoked Salmon Canapés**: On cucumber slices or crackers with a touch of dill.
+- **Mini Tortilla Pizzas**: Personal-sized crispy snacks with your favorite toppings.
+- **Guacamole with Corn Chips**: A fresh, creamy, and crowd-pleasing dip.
+- **Garlic Butter Prawns**: Fast, elegant, and always a hit at any party.
+- **Chocolate Dipped Strawberries**: The simplest yet most festive dessert.
+
 ## 📆 Date
 
 Saturday, May 30, 2026 – Celebration time
