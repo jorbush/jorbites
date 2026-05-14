@@ -10,7 +10,12 @@ import SearchInput from '@/app/components/inputs/SearchInput';
 
 // Mock for Next.js images
 vi.mock('next/image', () => ({
-    default: (props: any) => <img {...props} />,
+    default: ({ alt, ...props }: any) => (
+        <img
+            alt={alt}
+            {...props}
+        />
+    ),
 }));
 
 // Mock for Avatar
