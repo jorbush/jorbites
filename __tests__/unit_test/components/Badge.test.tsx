@@ -10,9 +10,10 @@ import Badge from '@/app/components/utils/Badge';
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
-    default: vi.fn(({ onLoad, onError, ...props }) => {
+    default: vi.fn(({ onLoad, onError, alt, ...props }) => {
         return (
             <img
+                alt={alt}
                 {...props}
                 onLoad={(e) => {
                     if (onLoad) onLoad(e);
