@@ -4,6 +4,25 @@ import producer from '@/app/lib/kafka';
 import { logger } from '@/app/lib/axiom/server';
 import { UserEventType, UserInteractionData } from '@/app/types/tracking';
 
+const KAFKA_TIMEOUT_MS = 3000;
+
+let isConnected = false;
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+    return Promise.race([
+        promise,
+        new Promise<T>((_, reject) =>
+            setTimeout(
+                () =>
+                    reject(
+                        new Error(`Kafka operation timed out after ${ms}ms`)
+                    ),
+                ms
+            )
+        ),
+    ]);
+}
+
 export async function trackUserInteraction(
     eventType: UserEventType,
     data: UserInteractionData
@@ -30,23 +49,30 @@ export async function trackUserInteraction(
     }
 
     try {
-        await producer.connect();
-        await producer.send({
-            topic: 'user-events',
-            messages: [
-                {
-                    key: userId || 'anonymous',
-                    value: JSON.stringify({
-                        type: eventType,
-                        recipeId,
-                        userId,
-                        timestamp: new Date().toISOString(),
-                        metadata,
-                    }),
-                },
-            ],
-        });
+        if (!isConnected) {
+            await withTimeout(producer.connect(), KAFKA_TIMEOUT_MS);
+            isConnected = true;
+        }
+        await withTimeout(
+            producer.send({
+                topic: 'user-events',
+                messages: [
+                    {
+                        key: userId || 'anonymous',
+                        value: JSON.stringify({
+                            type: eventType,
+                            recipeId,
+                            userId,
+                            timestamp: new Date().toISOString(),
+                            metadata,
+                        }),
+                    },
+                ],
+            }),
+            KAFKA_TIMEOUT_MS
+        );
     } catch (error) {
+        isConnected = false;
         logger.error('Failed to track user interaction', {
             eventType,
             recipeId,
