@@ -13,4 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: npx --yes oxlint@latest --deny-warnings
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 11
+      - run: pnpm dlx oxlint@latest --deny-warnings
