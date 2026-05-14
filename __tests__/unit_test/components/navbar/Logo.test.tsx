@@ -11,7 +11,12 @@ vi.mock('next/navigation', () => ({
 
 // Mock the next/image component
 vi.mock('next/image', () => ({
-    default: (props: any) => <img {...props} />,
+    default: ({ alt, ...props }: any) => (
+        <img
+            alt={alt}
+            {...props}
+        />
+    ),
 }));
 
 describe('<Logo />', () => {
