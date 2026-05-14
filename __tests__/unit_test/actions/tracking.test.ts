@@ -55,10 +55,37 @@ describe('trackUserInteraction', () => {
     beforeEach(() => {
         vi.resetModules();
         vi.useFakeTimers();
+
+        // Default mock for getCurrentUser
+        vi.doMock('@/app/actions/getCurrentUser', () => ({
+            default: vi.fn().mockResolvedValue({ id: 'user-1' }),
+        }));
     });
 
     afterEach(() => {
         vi.useRealTimers();
+    });
+
+    it('throws an error when user is not authenticated', async () => {
+        // Override the default mock to return null (unauthenticated)
+        vi.doMock('@/app/actions/getCurrentUser', () => ({
+            default: vi.fn().mockResolvedValue(null),
+        }));
+
+        const { trackRecipeView } = await import('@/app/actions/tracking');
+
+        await expect(trackRecipeView('recipe-1', 'user-1')).rejects.toThrow(
+            'Unauthorized: User authentication required'
+        );
+    });
+
+    it('throws an error when user ID mismatch', async () => {
+        // Default mock returns user-1, so providing user-2 should fail
+        const { trackRecipeView } = await import('@/app/actions/tracking');
+
+        await expect(trackRecipeView('recipe-1', 'user-2')).rejects.toThrow(
+            'Unauthorized: User ID mismatch'
+        );
     });
 
     it('is a no-op (with a warning) when Kafka producer is null', async () => {
