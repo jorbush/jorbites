@@ -65,9 +65,8 @@ describe('RecipePage', () => {
             id: 'user1',
         } as any);
 
-        const getCommentsByRecipeIdMock = await import(
-            '@/app/actions/getCommentsByRecipeId'
-        );
+        const getCommentsByRecipeIdMock =
+            await import('@/app/actions/getCommentsByRecipeId');
         vi.mocked(getCommentsByRecipeIdMock.default).mockResolvedValue([
             { id: 'comment1' },
         ] as any);

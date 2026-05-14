@@ -80,9 +80,8 @@ describe('trackUserInteraction', () => {
     it('connects once and sends successfully on the happy path', async () => {
         const mockProducer = makeMockProducer();
         vi.doMock('@/app/lib/kafka', () => ({ default: mockProducer }));
-        const { trackRecipeView, trackRecipeLike } = await import(
-            '@/app/actions/tracking'
-        );
+        const { trackRecipeView, trackRecipeLike } =
+            await import('@/app/actions/tracking');
 
         // First event – should connect + send
         const p1 = trackRecipeView('recipe-1', 'user-1');

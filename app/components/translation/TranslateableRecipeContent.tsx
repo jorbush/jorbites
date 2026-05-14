@@ -180,8 +180,8 @@ export function TranslateableRecipeContent({
 
     const hasContent = Boolean(
         descriptionText ||
-            (ingredientsText && ingredientsText.length > 0) ||
-            (stepsText && stepsText.length > 0)
+        (ingredientsText && ingredientsText.length > 0) ||
+        (stepsText && stepsText.length > 0)
     );
 
     const handleTranslate = async () => {

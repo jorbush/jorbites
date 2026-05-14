@@ -1,0 +1,11 @@
+packages: []
+
+allowBuilds:
+  '@prisma/client': true
+  '@prisma/engines': true
+  '@vercel/speed-insights': true
+  bcrypt: true
+  cypress: true
+  esbuild: true
+  prisma: true
+  sharp: true
