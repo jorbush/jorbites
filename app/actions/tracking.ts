@@ -3,6 +3,7 @@
 import producer from '@/app/lib/kafka';
 import { logger } from '@/app/lib/axiom/server';
 import { UserEventType, UserInteractionData } from '@/app/types/tracking';
+import getCurrentUser from '@/app/actions/getCurrentUser';
 
 const KAFKA_TIMEOUT_MS = 3000;
 
@@ -22,7 +23,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
     });
 }
 
-export async function trackUserInteraction(
+async function trackUserInteractionInternal(
     eventType: UserEventType,
     data: UserInteractionData
 ) {
@@ -79,6 +80,19 @@ export async function trackUserInteraction(
             error: error instanceof Error ? error.message : String(error),
         });
     }
+}
+
+export async function trackUserInteraction(
+    eventType: UserEventType,
+    data: UserInteractionData
+) {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser || currentUser.id !== data.userId) {
+        throw new Error('Unauthorized');
+    }
+
+    return trackUserInteractionInternal(eventType, data);
 }
 
 export async function trackRecipeView(recipeId: string, userId: string) {

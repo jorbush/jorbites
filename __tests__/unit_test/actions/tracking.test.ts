@@ -8,6 +8,14 @@ import {
     MockInstance,
 } from 'vitest';
 import { logger } from '@/app/lib/axiom/server';
+import { UserEventType } from '@/app/types/tracking';
+
+// Mock getCurrentUser
+vi.mock('@/app/actions/getCurrentUser', () => ({
+    default: vi.fn(),
+}));
+
+import getCurrentUser from '@/app/actions/getCurrentUser';
 
 // ---------------------------------------------------------------------------
 // Helpers to build a mock producer
@@ -55,10 +63,30 @@ describe('trackUserInteraction', () => {
     beforeEach(() => {
         vi.resetModules();
         vi.useFakeTimers();
+        vi.clearAllMocks();
+
+        // Default: Authenticated user
+        (getCurrentUser as any).mockResolvedValue({ id: 'user-1' });
     });
 
     afterEach(() => {
         vi.useRealTimers();
+    });
+
+    it('throws Unauthorized error when no user is logged in', async () => {
+        (getCurrentUser as any).mockResolvedValue(null);
+        vi.doMock('@/app/lib/kafka', () => ({ default: null }));
+        const { trackRecipeView } = await import('@/app/actions/tracking');
+
+        await expect(trackRecipeView('recipe-1', 'user-1')).rejects.toThrow('Unauthorized');
+    });
+
+    it('throws Unauthorized error when userId does not match authenticated user', async () => {
+        (getCurrentUser as any).mockResolvedValue({ id: 'different-user' });
+        vi.doMock('@/app/lib/kafka', () => ({ default: null }));
+        const { trackRecipeView } = await import('@/app/actions/tracking');
+
+        await expect(trackRecipeView('recipe-1', 'user-1')).rejects.toThrow('Unauthorized');
     });
 
     it('is a no-op (with a warning) when Kafka producer is null', async () => {
@@ -173,6 +201,11 @@ describe('trackUserInteraction', () => {
         await p1;
 
         vi.clearAllMocks(); // reset spy call counts before the second assertion
+        // Need to re-mock getCurrentUser as it might have been cleared by clearAllMocks if not careful,
+        // but since we clear mocks in beforeEach, and we are inside an it, it should be fine.
+        // Actually, vi.clearAllMocks() clears call history, not the mock implementation itself if set by mockResolvedValue.
+        // Let's ensure getCurrentUser is still returning the user.
+        (getCurrentUser as any).mockResolvedValue({ id: 'user-1' });
 
         // Second call – should attempt connect again (not skip it)
         const p2 = trackRecipeView('recipe-1', 'user-1');
@@ -181,5 +214,16 @@ describe('trackUserInteraction', () => {
 
         expect(connect).toHaveBeenCalledTimes(1); // 2nd overall, 1st since clearAllMocks
         expect(send).toHaveBeenCalledTimes(1);
+    });
+
+    it('verifies trackUserInteraction also checks authorization', async () => {
+        (getCurrentUser as any).mockResolvedValue(null);
+        vi.doMock('@/app/lib/kafka', () => ({ default: null }));
+        const { trackUserInteraction } = await import('@/app/actions/tracking');
+
+        await expect(trackUserInteraction(UserEventType.RECIPE_VIEW, {
+            recipeId: 'recipe-1',
+            userId: 'user-1'
+        })).rejects.toThrow('Unauthorized');
     });
 });
