@@ -9,18 +9,17 @@ const KAFKA_TIMEOUT_MS = 3000;
 let isConnected = false;
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-    return Promise.race([
-        promise,
-        new Promise<T>((_, reject) =>
-            setTimeout(
-                () =>
-                    reject(
-                        new Error(`Kafka operation timed out after ${ms}ms`)
-                    ),
-                ms
-            )
-        ),
-    ]);
+    let timeoutHandle: ReturnType<typeof setTimeout>;
+
+    const timeoutPromise = new Promise<T>((_, reject) => {
+        timeoutHandle = setTimeout(() => {
+            reject(new Error(`Kafka operation timed out after ${ms}ms`));
+        }, ms);
+    });
+
+    return Promise.race([promise, timeoutPromise]).finally(() => {
+        clearTimeout(timeoutHandle);
+    });
 }
 
 export async function trackUserInteraction(
