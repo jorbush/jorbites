@@ -8,6 +8,15 @@ import {
     MockInstance,
 } from 'vitest';
 import { logger } from '@/app/lib/axiom/server';
+import { getServerSession } from 'next-auth/next';
+
+vi.mock('@/pages/api/auth/[...nextauth]', () => ({
+    authOptions: {},
+}));
+
+vi.mock('next-auth/next', () => ({
+    getServerSession: vi.fn(),
+}));
 
 // ---------------------------------------------------------------------------
 // Helpers to build a mock producer
@@ -55,6 +64,9 @@ describe('trackUserInteraction', () => {
     beforeEach(() => {
         vi.resetModules();
         vi.useFakeTimers();
+        vi.mocked(getServerSession).mockResolvedValue({
+            user: { email: 'test@example.com' },
+        } as any);
     });
 
     afterEach(() => {
@@ -75,6 +87,19 @@ describe('trackUserInteraction', () => {
         expect(logger.error).not.toHaveBeenCalled();
 
         vi.unstubAllEnvs();
+    });
+
+    it('returns early when user is unauthenticated', async () => {
+        const mockProducer = makeMockProducer();
+        vi.doMock('@/app/lib/kafka', () => ({ default: mockProducer }));
+        const { trackRecipeView } = await import('@/app/actions/tracking');
+
+        vi.mocked(getServerSession).mockResolvedValueOnce(null as any);
+        await trackRecipeView('recipe-1', 'user-1');
+
+        expect(mockProducer.connect).not.toHaveBeenCalled();
+        expect(mockProducer.send).not.toHaveBeenCalled();
+        expect(logger.error).not.toHaveBeenCalled();
     });
 
     it('connects once and sends successfully on the happy path', async () => {

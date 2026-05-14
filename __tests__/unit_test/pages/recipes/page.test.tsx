@@ -16,6 +16,10 @@ vi.mock('@/app/actions/getCommentsByRecipeId', () => ({
     default: vi.fn(),
 }));
 
+vi.mock('@/app/actions/tracking', () => ({
+    trackRecipeView: vi.fn(),
+}));
+
 vi.mock('next/navigation', () => ({
     useRouter: vi.fn(() => ({
         push: vi.fn(),
