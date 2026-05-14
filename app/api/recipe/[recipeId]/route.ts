@@ -215,14 +215,14 @@ export async function PATCH(
             }
 
             // Check for existing award-winning category
-            const existingCategories = recipe.categories || [];
+            const existingCategories: string[] = recipe.categories || [];
             const hasAwardWinning = existingCategories.some(
-                (cat) => cat.toLowerCase() === 'award-winning'
+                (cat: string) => cat.toLowerCase() === 'award-winning'
             );
 
             if (
                 categories.some(
-                    (cat) => cat.toLowerCase() === 'award-winning'
+                    (cat: string) => cat.toLowerCase() === 'award-winning'
                 ) &&
                 !hasAwardWinning
             ) {
@@ -234,7 +234,9 @@ export async function PATCH(
             // Prevent removal of the Award-winning category
             if (
                 hasAwardWinning &&
-                !categories.some((cat) => cat.toLowerCase() === 'award-winning')
+                !categories.some(
+                    (cat: string) => cat.toLowerCase() === 'award-winning'
+                )
             ) {
                 return badRequest('Cannot remove the Award-winning category');
             }
