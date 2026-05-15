@@ -1,5 +1,8 @@
 'use server';
 
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
+import getCurrentUser from './getCurrentUser';
 import producer from '@/app/lib/kafka';
 import { logger } from '@/app/lib/axiom/server';
 import { UserEventType, UserInteractionData } from '@/app/types/tracking';
@@ -22,7 +25,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
     });
 }
 
-export async function trackUserInteraction(
+async function trackUserInteractionInternal(
     eventType: UserEventType,
     data: UserInteractionData
 ) {
@@ -81,36 +84,103 @@ export async function trackUserInteraction(
     }
 }
 
+export async function trackUserInteraction(
+    eventType: UserEventType,
+    data: UserInteractionData
+) {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        throw new Error('Unauthorized');
+    }
+
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.id !== data.userId) {
+        throw new Error('Unauthorized');
+    }
+
+    return trackUserInteractionInternal(eventType, data);
+}
+
 export async function trackRecipeView(recipeId: string, userId: string) {
-    return trackUserInteraction(UserEventType.RECIPE_VIEW, {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        throw new Error('Unauthorized');
+    }
+
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.id !== userId) {
+        throw new Error('Unauthorized');
+    }
+
+    return trackUserInteractionInternal(UserEventType.RECIPE_VIEW, {
         recipeId,
         userId,
     });
 }
 
 export async function trackRecipeLike(recipeId: string, userId: string) {
-    return trackUserInteraction(UserEventType.RECIPE_LIKE, {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        throw new Error('Unauthorized');
+    }
+
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.id !== userId) {
+        throw new Error('Unauthorized');
+    }
+
+    return trackUserInteractionInternal(UserEventType.RECIPE_LIKE, {
         recipeId,
         userId,
     });
 }
 
 export async function trackRecipeUnlike(recipeId: string, userId: string) {
-    return trackUserInteraction(UserEventType.RECIPE_UNLIKE, {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        throw new Error('Unauthorized');
+    }
+
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.id !== userId) {
+        throw new Error('Unauthorized');
+    }
+
+    return trackUserInteractionInternal(UserEventType.RECIPE_UNLIKE, {
         recipeId,
         userId,
     });
 }
 
 export async function trackRecipeSave(recipeId: string, userId: string) {
-    return trackUserInteraction(UserEventType.RECIPE_SAVE, {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        throw new Error('Unauthorized');
+    }
+
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.id !== userId) {
+        throw new Error('Unauthorized');
+    }
+
+    return trackUserInteractionInternal(UserEventType.RECIPE_SAVE, {
         recipeId,
         userId,
     });
 }
 
 export async function trackRecipeUnsave(recipeId: string, userId: string) {
-    return trackUserInteraction(UserEventType.RECIPE_UNSAVE, {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        throw new Error('Unauthorized');
+    }
+
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.id !== userId) {
+        throw new Error('Unauthorized');
+    }
+
+    return trackUserInteractionInternal(UserEventType.RECIPE_UNSAVE, {
         recipeId,
         userId,
     });
@@ -121,7 +191,17 @@ export async function trackRecipeCooked(
     userId: string,
     metadata?: Record<string, unknown>
 ) {
-    return trackUserInteraction(UserEventType.RECIPE_COOKED, {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        throw new Error('Unauthorized');
+    }
+
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.id !== userId) {
+        throw new Error('Unauthorized');
+    }
+
+    return trackUserInteractionInternal(UserEventType.RECIPE_COOKED, {
         recipeId,
         userId,
         metadata,

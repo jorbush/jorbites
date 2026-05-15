@@ -4,6 +4,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import RecipePage from '@/app/recipes/[recipeId]/page';
 
 // Mocks
+vi.mock('next-auth/next', () => ({
+    getServerSession: vi.fn().mockResolvedValue({
+        user: { email: 'test@example.com' },
+    }),
+}));
+
+vi.mock('@/pages/api/auth/[...nextauth]', () => ({
+    authOptions: {},
+}));
+
 vi.mock('@/app/actions/getCurrentUser', () => ({
     default: vi.fn(),
 }));
@@ -63,6 +73,11 @@ describe('RecipePage', () => {
         const getCurrentUserMock = await import('@/app/actions/getCurrentUser');
         vi.mocked(getCurrentUserMock.default).mockResolvedValue({
             id: 'user1',
+        } as any);
+
+        const { getServerSession } = await import('next-auth/next');
+        vi.mocked(getServerSession).mockResolvedValue({
+            user: { email: 'test@example.com' },
         } as any);
 
         const getCommentsByRecipeIdMock =

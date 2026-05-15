@@ -8,6 +8,7 @@ import {
     MockInstance,
 } from 'vitest';
 import { logger } from '@/app/lib/axiom/server';
+import { UserEventType } from '@/app/types/tracking';
 
 // ---------------------------------------------------------------------------
 // Helpers to build a mock producer
@@ -51,14 +52,73 @@ function makeMockProducer({
 // ---------------------------------------------------------------------------
 
 describe('trackUserInteraction', () => {
+    const mockUser = { id: 'user-1' };
+    const mockSession = { user: { email: 'test@example.com' } };
+
     // We reload the module between tests to reset `isConnected` state.
     beforeEach(() => {
         vi.resetModules();
         vi.useFakeTimers();
+
+        // Default mocks for auth
+        vi.doMock('next-auth/next', () => ({
+            getServerSession: vi.fn().mockResolvedValue(mockSession),
+        }));
+        vi.doMock('@/pages/api/auth/[...nextauth]', () => ({
+            authOptions: {},
+        }));
+        vi.doMock('@/app/actions/getCurrentUser', () => ({
+            default: vi.fn().mockResolvedValue(mockUser),
+        }));
     });
 
     afterEach(() => {
         vi.useRealTimers();
+    });
+
+    describe('Authentication and Authorization', () => {
+        it('throws Unauthorized when there is no session', async () => {
+            vi.doMock('next-auth/next', () => ({
+                getServerSession: vi.fn().mockResolvedValue(null),
+            }));
+            const { trackRecipeView } = await import('@/app/actions/tracking');
+
+            await expect(
+                trackRecipeView('recipe-1', 'user-1')
+            ).rejects.toThrow('Unauthorized');
+        });
+
+        it('throws Unauthorized when there is no current user', async () => {
+            vi.doMock('@/app/actions/getCurrentUser', () => ({
+                default: vi.fn().mockResolvedValue(null),
+            }));
+            const { trackRecipeView } = await import('@/app/actions/tracking');
+
+            await expect(
+                trackRecipeView('recipe-1', 'user-1')
+            ).rejects.toThrow('Unauthorized');
+        });
+
+        it('throws Unauthorized when the userId does not match the current user', async () => {
+            const { trackRecipeView } = await import('@/app/actions/tracking');
+
+            await expect(
+                trackRecipeView('recipe-1', 'wrong-user')
+            ).rejects.toThrow('Unauthorized');
+        });
+
+        it('throws Unauthorized for generic trackUserInteraction when userId does not match', async () => {
+            const { trackUserInteraction } = await import(
+                '@/app/actions/tracking'
+            );
+
+            await expect(
+                trackUserInteraction(UserEventType.RECIPE_VIEW, {
+                    recipeId: 'recipe-1',
+                    userId: 'wrong-user',
+                })
+            ).rejects.toThrow('Unauthorized');
+        });
     });
 
     it('is a no-op (with a warning) when Kafka producer is null', async () => {

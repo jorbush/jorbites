@@ -23,6 +23,18 @@ jest.mock('next-auth/next', () => ({
     }),
 }));
 
+jest.mock('@/app/actions/getCurrentUser', () => ({
+    __esModule: true,
+    default: jest.fn(async () => {
+        if (!mockedSession) return null;
+        return {
+            id: 'user1',
+            email: mockedSession.user?.email,
+            favoriteIds: [],
+        };
+    }),
+}));
+
 describe('Favorites API Error Handling', () => {
     beforeEach(() => {
         jest.clearAllMocks();
