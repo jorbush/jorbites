@@ -95,7 +95,10 @@ export async function trackUserInteraction(
         throw new Error('Unauthorized');
     }
 
-    return trackUserInteractionInternal(eventType, data);
+    return trackUserInteractionInternal(eventType, {
+        ...data,
+        userId: currentUser.id,
+    });
 }
 
 export async function trackRecipeView(recipeId: string, userId: string) {
