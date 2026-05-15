@@ -151,7 +151,7 @@ describe('FooterMenu', () => {
             const className = link.getAttribute('class');
             expect(className).toContain('flex');
             expect(className).toContain('items-center');
-            expect(className).toContain('space-x-2');
+            expect(className).toContain('gap-x-2');
             expect(className).toContain('rounded-lg');
             expect(className).toContain('bg-neutral-50');
             expect(className).toContain('px-3');
@@ -171,14 +171,12 @@ describe('FooterMenu', () => {
 
         positiveIcons.forEach((icon) => {
             const className = icon.getAttribute('class');
-            expect(className).toContain('h-4');
-            expect(className).toContain('w-4');
+            expect(className).toContain('size-4');
         });
 
         aboutIcons.forEach((icon) => {
             const className = icon.getAttribute('class');
-            expect(className).toContain('h-4');
-            expect(className).toContain('w-4');
+            expect(className).toContain('size-4');
         });
     });
 
