@@ -22,10 +22,10 @@ Tots els Jorbiters que publiquin una recepta amb temàtica de xocolata durant la
 
 - **Pastissos Decadents**: Coulant de xocolata, tartes sense farina o brownies clàssics.
 - **Dolços Artesanals**: Tòfones, fruites banyades en xocolata o tauletes casolanes.
-- **Delícies d'Esmorzar**: Tortitas amb llavors de xocolata o batuts de cacau.
+- **Delícies d'Esmorzar**: Coquetes amb gotes de xocolata o batuts de cacau.
 - **Salat Creatiu**: Salses inspirades en el mole o carns amb crosta de xocolata.
-- **Capritxos Saludables**: Boletes energètiques de cacau pur o mousse de xocolata i aguacat.
+- **Capritxos Saludables**: Boletes energètiques de cacau pur o mousse de xocolata i alvocat.
 
 ### 🌶️ Per què ens agrada la xocolata
 
-La xocolata és més que un simple dolç; és un ingredient complex amb centenars de perfils de sabor. Des de les seves arrels antigues com a beguda ceremonial fins al seu estatus modern com a luxe gourmet, la xocolata aporta joia i consol a les cuines de tot el món. Experimenta amb diferents percentatges de cacau i maridatges per trobar la teva combinació perfecta. 🍫✨
+La xocolata és més que un simple dolç; és un ingredient complex amb centenars de perfils de sabor. Des de les seves arrels antigues com a beguda ceremonial fins al seu estatus modern com a luxe gourmet, la xocolata aporta alegria i consol a les cuines de tot el món. Experimenta amb diferents percentatges de cacau i maridatges per trobar la teva combinació perfecta. 🍫✨
