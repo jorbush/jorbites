@@ -15,8 +15,13 @@ import WeeklyChallenge from '@/app/components/events/WeeklyChallenge';
 import { FcCalendar } from 'react-icons/fc';
 import SectionHeader from '@/app/components/utils/SectionHeader';
 import EventCalendar from '@/app/components/events/EventCalendar';
+import { SafeWeeklyChallenge } from '@/app/types';
 
-const EventsClient = () => {
+interface EventsClientProps {
+    weeklyChallenge: SafeWeeklyChallenge | null;
+}
+
+const EventsClient: React.FC<EventsClientProps> = ({ weeklyChallenge }) => {
     const { t, i18n } = useTranslation();
     const [events, setEvents] = useState<{
         current: Event[];
@@ -74,7 +79,7 @@ const EventsClient = () => {
                     description={t('events_description')}
                 />
 
-                <WeeklyChallenge />
+                <WeeklyChallenge challenge={weeklyChallenge} />
 
                 <EventCalendar
                     currentEvents={events.current}
