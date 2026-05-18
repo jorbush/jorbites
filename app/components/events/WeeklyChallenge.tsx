@@ -3,16 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiAward } from 'react-icons/fi';
-import {
-    getCurrentChallenge,
-    WeeklyChallenge as WeeklyChallengeType,
-} from '@/app/actions/weekly-challenge';
+import { getCurrentChallenge } from '@/app/actions/weekly-challenge';
+import { SafeWeeklyChallenge } from '@/app/types';
 import Link from 'next/link';
 import { formatDateLanguage } from '@/app/utils/date-utils';
 
 const WeeklyChallenge = () => {
     const { t, i18n } = useTranslation();
-    const [challenge, setChallenge] = useState<WeeklyChallengeType | null>(
+    const [challenge, setChallenge] = useState<SafeWeeklyChallenge | null>(
         null
     );
     const [loading, setLoading] = useState(true);

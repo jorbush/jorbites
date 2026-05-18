@@ -5,7 +5,18 @@ import {
     Workshop,
     WorkshopParticipant,
     List,
+    WeeklyChallenge,
 } from '@prisma/client';
+
+export type SafeWeeklyChallenge = Omit<
+    WeeklyChallenge,
+    'startDate' | 'endDate' | 'createdAt' | 'updatedAt'
+> & {
+    startDate: string;
+    endDate: string;
+    createdAt: string;
+    updatedAt: string;
+};
 
 export type SafeRecipe = Omit<Recipe, 'createdAt'> & {
     createdAt: string;
