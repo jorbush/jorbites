@@ -1,51 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiAward } from 'react-icons/fi';
-import { getCurrentChallenge } from '@/app/actions/weekly-challenge';
 import { SafeWeeklyChallenge } from '@/app/types';
 import Link from 'next/link';
 import { formatDateLanguage } from '@/app/utils/date-utils';
 
-const WeeklyChallenge = () => {
+interface WeeklyChallengeProps {
+    challenge: SafeWeeklyChallenge | null;
+}
+
+const WeeklyChallenge: React.FC<WeeklyChallengeProps> = ({ challenge }) => {
     const { t, i18n } = useTranslation();
-    const [challenge, setChallenge] = useState<SafeWeeklyChallenge | null>(
-        null
-    );
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchChallenge = async () => {
-            try {
-                const data = await getCurrentChallenge();
-                setChallenge(data);
-            } catch (error) {
-                console.error('Error fetching weekly challenge:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchChallenge();
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="dark:bg-dark mb-10 animate-pulse rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700">
-                <div className="mb-4 flex items-center">
-                    <div className="mr-2 h-7 w-7 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                    <div className="h-6 w-48 rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                </div>
-                <div className="mb-2 h-5 w-40 rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="mb-4 space-y-2">
-                    <div className="h-4 w-full rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                    <div className="h-4 w-3/4 rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                </div>
-                <div className="h-4 w-52 rounded bg-neutral-200 dark:bg-neutral-700"></div>
-            </div>
-        );
-    }
 
     if (!challenge) return null;
 

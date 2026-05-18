@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import EventsClient from './events-client';
+import { getCurrentChallenge } from '@/app/actions/weekly-challenge';
 
 export const metadata: Metadata = {
     title: 'Eventos | Jorbites',
@@ -18,10 +19,12 @@ export const metadata: Metadata = {
     },
 };
 
-const EventsPage = () => {
+const EventsPage = async () => {
+    const challenge = await getCurrentChallenge();
+
     return (
         <ClientOnly>
-            <EventsClient />
+            <EventsClient weeklyChallenge={challenge} />
         </ClientOnly>
     );
 };
