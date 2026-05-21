@@ -65,9 +65,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                                 <VerificationBadge className="mt-1 ml-1" />
                             )}
                         </div>
-                        <div className="text-lg text-gray-400 md:text-xl">{`${t('level')} ${user?.level}`}</div>
+                        <div className="text-lg text-neutral-400 md:text-xl">{`${t('level')} ${user?.level}`}</div>
                         {user?.createdAt && (
-                            <div className="flex items-center gap-1 text-xs text-gray-500">
+                            <div className="flex items-center gap-1 text-xs text-neutral-500">
                                 <FiCalendar className="h-3 w-3" />
                                 <span>
                                     {t('since')}{' '}
@@ -78,7 +78,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                     </div>
                 </div>
                 <button
-                    className="flex cursor-pointer items-center space-x-2 text-gray-600 focus:outline-hidden dark:text-neutral-100"
+                    className="flex cursor-pointer items-center space-x-2 text-neutral-600 focus:outline-hidden dark:text-neutral-100"
                     onClick={() => share()}
                     aria-label="Share"
                 >

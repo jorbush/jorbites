@@ -233,14 +233,14 @@ export default function CustomProxyImage({
   if (!optimizedSrc) {
     return (
       <div
-        className={`${fill ? 'relative aspect-square' : ''} bg-gray-200 dark:bg-gray-700 overflow-hidden ${fill ? className : ''}`}
+        className={`${fill ? 'relative aspect-square' : ''} bg-neutral-200 dark:bg-neutral-700 overflow-hidden ${fill ? className : ''}`}
         style={!fill ? { width, height } : undefined}
       />
     );
   }
 
   return (
-    <div className={`${fill ? 'relative aspect-square' : ''} bg-gray-200 dark:bg-gray-700 overflow-hidden ${fill ? className : ''}`}>
+    <div className={`${fill ? 'relative aspect-square' : ''} bg-neutral-200 dark:bg-neutral-700 overflow-hidden ${fill ? className : ''}`}>
       {/* Blurry placeholder */}
       {!isLoaded && placeholderSrc && (
         <div
@@ -331,15 +331,15 @@ export default function RecipeCardSkeleton() {
           relative
           overflow-hidden
           rounded-xl
-          bg-gray-200
+          bg-neutral-200
           animate-pulse
         "/>
         <div className="flex flex-row items-center gap-1">
-          <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
-          <div className="w-20 h-4 bg-gray-200 animate-pulse rounded" />
+          <div className="w-8 h-8 rounded-full bg-neutral-200 animate-pulse" />
+          <div className="w-20 h-4 bg-neutral-200 animate-pulse rounded" />
         </div>
-        <div className="h-4 w-2/3 bg-gray-200 animate-pulse rounded" />
-        <div className="h-4 w-1/2 bg-gray-200 animate-pulse rounded" />
+        <div className="h-4 w-2/3 bg-neutral-200 animate-pulse rounded" />
+        <div className="h-4 w-1/2 bg-neutral-200 animate-pulse rounded" />
       </div>
     </div>
   );

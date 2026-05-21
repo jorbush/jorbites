@@ -119,7 +119,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
     const getDayColor = (level: number) => {
         switch (level) {
             case 0:
-                return 'bg-gray-100 dark:bg-neutral-800';
+                return 'bg-neutral-100 dark:bg-neutral-800';
             case 1:
                 return 'bg-green-450/30 dark:bg-green-450/20';
             case 2:
@@ -129,7 +129,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
             case 4:
                 return 'bg-green-450 dark:bg-green-450';
             default:
-                return 'bg-gray-100 dark:bg-neutral-800';
+                return 'bg-neutral-100 dark:bg-neutral-800';
         }
     };
 
@@ -187,7 +187,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                                     className="flex w-2.5 items-start justify-start sm:w-3"
                                                 >
                                                     {monthLabel && (
-                                                        <span className="text-[10px] text-gray-500 sm:text-xs dark:text-gray-400">
+                                                        <span className="text-[10px] text-neutral-500 sm:text-xs dark:text-neutral-400">
                                                             {monthLabel.month}
                                                         </span>
                                                     )}
@@ -204,7 +204,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                         {dayLabels.map((label, index) => (
                                             <div
                                                 key={label}
-                                                className="flex h-2.5 items-center justify-end text-[9px] text-gray-500 sm:h-3 sm:text-xs dark:text-gray-400"
+                                                className="flex h-2.5 items-center justify-end text-[9px] text-neutral-500 sm:h-3 sm:text-xs dark:text-neutral-400"
                                             >
                                                 {index % 2 === 0 && (
                                                     <span className="text-[8px] sm:text-[10px]">
@@ -257,7 +257,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                 tooltipPosition &&
                                 hoveredDay.count > 0 && (
                                     <div
-                                        className="pointer-events-none fixed z-50 rounded-md bg-gray-900 px-3 py-2 text-xs text-white shadow-lg dark:bg-neutral-950"
+                                        className="pointer-events-none fixed z-50 rounded-md bg-neutral-900 px-3 py-2 text-xs text-white shadow-lg dark:bg-neutral-950"
                                         style={{
                                             left: `${tooltipPosition.x}px`,
                                             top: `${tooltipPosition.y}px`,
@@ -276,10 +276,10 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                 )}
 
                             {/* Legend */}
-                            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 px-2 text-[10px] text-gray-500 sm:gap-4 sm:text-xs dark:text-gray-400">
+                            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 px-2 text-[10px] text-neutral-500 sm:gap-4 sm:text-xs dark:text-neutral-400">
                                 <span>{t('less')}</span>
                                 <div className="flex gap-0.5 sm:gap-1">
-                                    <div className="h-2.5 w-2.5 rounded-sm bg-gray-100 sm:h-3 sm:w-3 dark:bg-neutral-800" />
+                                    <div className="h-2.5 w-2.5 rounded-sm bg-neutral-100 sm:h-3 sm:w-3 dark:bg-neutral-800" />
                                     <div className="bg-green-450/30 dark:bg-green-450/20 h-2.5 w-2.5 rounded-sm sm:h-3 sm:w-3" />
                                     <div className="bg-green-450/50 dark:bg-green-450/40 h-2.5 w-2.5 rounded-sm sm:h-3 sm:w-3" />
                                     <div className="bg-green-450/70 dark:bg-green-450/60 h-2.5 w-2.5 rounded-sm sm:h-3 sm:w-3" />

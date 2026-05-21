@@ -56,7 +56,7 @@ const WorkshopCard = memo(function WorkshopCard({
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px"
                     />
                     {data.isPrivate && (
-                        <div className="absolute top-3 left-3 rounded-lg bg-gray-900/70 px-2 py-1 text-white">
+                        <div className="absolute top-3 left-3 rounded-lg bg-neutral-900/70 px-2 py-1 text-white">
                             <MdLock
                                 className="inline-block"
                                 size={16}
@@ -64,8 +64,8 @@ const WorkshopCard = memo(function WorkshopCard({
                         </div>
                     )}
                     {isPast && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50">
-                            <div className="rounded-lg bg-gray-900/80 px-4 py-2 font-semibold text-white">
+                        <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/50">
+                            <div className="rounded-lg bg-neutral-900/80 px-4 py-2 font-semibold text-white">
                                 {t('workshop_date_passed')}
                             </div>
                         </div>

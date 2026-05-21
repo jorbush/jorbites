@@ -23,7 +23,7 @@ const WorkshopsHeader: React.FC<WorkshopsHeaderProps> = ({
                 {title}
             </h1>
             {description && (
-                <p className="text-sm text-gray-600 sm:text-base dark:text-gray-300">
+                <p className="text-sm text-neutral-600 sm:text-base dark:text-neutral-300">
                     {description}
                 </p>
             )}

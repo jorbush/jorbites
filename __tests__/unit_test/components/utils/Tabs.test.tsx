@@ -71,10 +71,10 @@ describe('<Tabs />', () => {
         expect(activeTab.className).toContain('font-medium');
 
         // Inactive tab should have gray styling and hover effects
-        expect(inactiveTab.className).toContain('text-gray-500');
-        expect(inactiveTab.className).toContain('hover:text-gray-700');
-        expect(inactiveTab.className).toContain('dark:text-zinc-400');
-        expect(inactiveTab.className).toContain('dark:hover:text-zinc-100');
+        expect(inactiveTab.className).toContain('text-neutral-500');
+        expect(inactiveTab.className).toContain('hover:text-neutral-700');
+        expect(inactiveTab.className).toContain('dark:text-neutral-400');
+        expect(inactiveTab.className).toContain('dark:hover:text-neutral-100');
     });
 
     it('changes active tab when different tab is clicked', () => {
@@ -187,8 +187,8 @@ describe('<Tabs />', () => {
         const inactiveTab = screen.getByTestId('tab-tab2');
 
         // Check that dark mode classes are present
-        expect(inactiveTab.className).toContain('dark:text-zinc-400');
-        expect(inactiveTab.className).toContain('dark:hover:text-zinc-100');
+        expect(inactiveTab.className).toContain('dark:text-neutral-400');
+        expect(inactiveTab.className).toContain('dark:hover:text-neutral-100');
 
         // Check that the container has dark mode border class
         const container = inactiveTab.parentElement;

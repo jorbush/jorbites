@@ -72,7 +72,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                                 ? (t('write_comment') ?? 'Write a comment...')
                                 : 'write_comment'
                         }
-                        className="h-12 w-full resize-none rounded-md border border-gray-100 bg-gray-100 p-2 font-light text-zinc-900 focus:ring-0 focus:outline-hidden dark:border-neutral-600 dark:bg-zinc-800 dark:text-zinc-100"
+                        className="h-12 w-full resize-none rounded-md border border-neutral-100 bg-neutral-100 p-2 font-light text-neutral-900 focus:ring-0 focus:outline-hidden dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100"
                         disabled={isLoading || isButtonDisabled}
                         maxLength={COMMENT_MAX_LENGTH}
                         dataCy="comment-input"

@@ -104,7 +104,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
             case 'completed':
                 return 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200';
             default:
-                return 'bg-gray-100 text-gray-800 dark:bg-neutral-800 dark:text-neutral-200';
+                return 'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200';
         }
     };
 
@@ -127,11 +127,11 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                 <div>
                     <div className="flex items-center gap-3">
                         <FcTodoList className="mb-2 h-10 w-10" />
-                        <h1 className="pb-2 text-3xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="pb-2 text-3xl font-bold text-neutral-900 dark:text-white">
                             {t('quests') || 'Recipe Quests'}
                         </h1>
                     </div>
-                    <p className="mt-2 text-gray-600 dark:text-gray-400">
+                    <p className="mt-2 text-neutral-600 dark:text-neutral-400">
                         {t('quests_subtitle') ||
                             'Request recipes from the community or fulfill existing requests'}
                     </p>
@@ -158,7 +158,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                 className={`flex-shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition ${
                                     filter === status
                                         ? 'bg-rose-500 text-white'
-                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                                        : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
                                 }`}
                             >
                                 {t(status) || status.replace('_', ' ')}
@@ -180,12 +180,12 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
 
             {/* Quests Grid */}
             {quests.length === 0 ? (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center dark:border-neutral-800">
-                    <FiCircle className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                    <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
+                <div className="rounded-lg border-2 border-dashed border-neutral-300 p-12 text-center dark:border-neutral-800">
+                    <FiCircle className="mx-auto mb-4 h-12 w-12 text-neutral-400" />
+                    <h3 className="mb-2 text-lg font-medium text-neutral-900 dark:text-white">
                         {t('no_quests') || 'No quests found'}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p className="text-neutral-600 dark:text-neutral-400">
                         {t('no_quests_description') ||
                             'Be the first to request a recipe!'}
                     </p>
@@ -195,7 +195,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                     {quests.map((quest) => (
                         <div
                             key={quest.id}
-                            className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900"
+                            className="overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm transition hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900"
                         >
                             <div className="p-6">
                                 {/* Quest Header */}
@@ -214,7 +214,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                             </span>
                                         </div>
                                         <h2
-                                            className="mb-2 cursor-pointer text-xl font-semibold text-gray-900 hover:text-rose-500 dark:text-white dark:hover:text-rose-400"
+                                            className="mb-2 cursor-pointer text-xl font-semibold text-neutral-900 hover:text-rose-500 dark:text-white dark:hover:text-rose-400"
                                             onClick={() =>
                                                 router.push(
                                                     `/quests/${quest.id}`
@@ -225,7 +225,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                             {quest.title}
                                         </h2>
                                         <p
-                                            className="text-gray-600 dark:text-gray-400"
+                                            className="text-neutral-600 dark:text-neutral-400"
                                             data-cy="quest-card-description"
                                         >
                                             {quest.description}
@@ -234,17 +234,17 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                 </div>
 
                                 {/* Quest Footer */}
-                                <div className="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-neutral-800">
+                                <div className="flex items-center justify-between border-t border-neutral-200 pt-4 dark:border-neutral-800">
                                     <div className="flex items-center gap-3">
                                         <Avatar
                                             src={quest.user.image}
                                             size={32}
                                         />
                                         <div className="text-sm">
-                                            <p className="font-medium text-gray-900 dark:text-white">
+                                            <p className="font-medium text-neutral-900 dark:text-white">
                                                 {quest.user.name}
                                             </p>
-                                            <p className="text-gray-500 dark:text-gray-400">
+                                            <p className="text-neutral-500 dark:text-neutral-400">
                                                 {formatDistanceToNowLocale(
                                                     new Date(quest.createdAt)
                                                 )}
@@ -252,7 +252,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                                        <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                             {quest.recipes.length}{' '}
                                             {quest.recipes.length === 1
                                                 ? t('reply') || 'reply'
@@ -263,8 +263,8 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
 
                                 {/* Recipe Replies Preview */}
                                 {quest.recipes.length > 0 && (
-                                    <div className="mt-4 border-t border-gray-200 pt-4 dark:border-neutral-800">
-                                        <p className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <div className="mt-4 border-t border-neutral-200 pt-4 dark:border-neutral-800">
+                                        <p className="mb-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
                                             {t('recipe_replies') ||
                                                 'Recipe Replies'}
                                         </p>
@@ -296,8 +296,8 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                     </div>
                                                 ))}
                                             {quest.recipes.length > 4 && (
-                                                <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800">
-                                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                                <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800">
+                                                    <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
                                                         +
                                                         {quest.recipes.length -
                                                             4}

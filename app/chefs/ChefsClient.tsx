@@ -109,10 +109,10 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                             />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                            <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">
                                 {t('chefs')}
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400">
+                            <p className="text-neutral-600 dark:text-neutral-400">
                                 {t('chefs_subtitle')}
                             </p>
                         </div>
@@ -131,7 +131,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                                 {t('search_chefs') ?? ''}
                             </label>
                             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                                <FiSearch className="text-gray-400" />
+                                <FiSearch className="text-neutral-400" />
                             </div>
                             <input
                                 id="chef-search-input"
@@ -181,7 +181,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                                     className={`flex-shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition ${
                                         orderBy === order
                                             ? 'bg-orange-500 text-white'
-                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-neutral-700 dark:text-gray-300 dark:hover:bg-neutral-600'
+                                            : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300 dark:bg-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-600'
                                     }`}
                                     data-cy={`order-by-${order}`}
                                     data-testid={`order-by-${order}`}

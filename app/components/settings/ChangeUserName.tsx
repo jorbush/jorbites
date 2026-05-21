@@ -102,7 +102,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
         <div className="flex items-center">
             <div className="flex-1">
                 <p className="text-left">{t('update_username')}</p>
-                <p className="text-xs text-gray-500 dark:text-zinc-400">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
                     {t('username_requirements')}
                 </p>
             </div>
@@ -113,13 +113,13 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                             type="text"
                             value={newUserName}
                             onChange={handleUserNameChange}
-                            className="focus:ring-green-450 w-24 rounded border border-gray-300 px-2 py-1 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+                            className="focus:ring-green-450 w-24 rounded border border-neutral-300 px-2 py-1 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                             placeholder={t('username') || 'Username'}
                             disabled={isLoading}
                             maxLength={USERNAME_MAX_LENGTH}
                             data-testid="username-input"
                         />
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-neutral-400">
                             {newUserName.length}/{USERNAME_MAX_LENGTH}
                         </div>
                         {canSave && (
@@ -131,7 +131,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                         )}
                         <button
                             onClick={handleCancelEdit}
-                            className="text-xs text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                            className="text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
                             disabled={isLoading}
                             data-testid="cancel-edit-button"
                         >
@@ -140,14 +140,14 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                     </>
                 ) : (
                     <>
-                        <span className="text-base font-medium text-gray-700 dark:text-zinc-300">
+                        <span className="text-base font-medium text-neutral-700 dark:text-neutral-300">
                             {currentUser?.name ||
                                 t('no_username') ||
                                 'No username'}
                         </span>
                         <FiEdit3
                             data-testid="edit-username-icon"
-                            className="h-4 w-4 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                            className="h-4 w-4 cursor-pointer text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
                             onClick={handleEditClick}
                         />
                     </>

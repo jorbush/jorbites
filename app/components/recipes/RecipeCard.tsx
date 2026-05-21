@@ -96,7 +96,7 @@ const RecipeCard = memo(function RecipeCard({
                     )}
                     <ClientOnly>
                         {isAwardWinning && (
-                            <div className="absolute bottom-0 flex w-full items-center justify-center bg-gray-900/50 p-2 text-white">
+                            <div className="absolute bottom-0 flex w-full items-center justify-center bg-neutral-900/50 p-2 text-white">
                                 <GiTrophyCup
                                     className="mr-1 inline-block"
                                     size={20}

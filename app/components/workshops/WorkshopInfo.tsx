@@ -112,7 +112,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                                 <VerificationBadge className="mt-1 ml-1" />
                             )}
                         </div>
-                        <div className="text-sm text-gray-400">{`${t('host')}`}</div>
+                        <div className="text-sm text-neutral-400">{`${t('host')}`}</div>
                     </div>
                 </div>
             </div>

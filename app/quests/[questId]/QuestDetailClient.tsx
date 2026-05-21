@@ -106,7 +106,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
             case 'completed':
                 return 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200';
             default:
-                return 'bg-gray-100 text-gray-800 dark:bg-neutral-800 dark:text-neutral-200';
+                return 'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200';
         }
     };
 
@@ -158,14 +158,14 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                 {/* Back Button */}
                 <button
                     onClick={() => router.back()}
-                    className="mb-6 flex items-center gap-2 text-gray-600 transition hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+                    className="mb-6 flex items-center gap-2 text-neutral-600 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
                 >
                     <FiChevronLeft className="cursor-pointer text-xl" />
                     <span>{t('back') || 'Back'}</span>
                 </button>
 
                 {/* Quest Header */}
-                <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+                <div className="mb-8 rounded-lg border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
                     <div className="mb-4 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             {getStatusIcon(quest.status)}
@@ -182,7 +182,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                             <button
                                 onClick={() => share({ title: quest.title })}
                                 aria-label={t('share_quest') || 'Share Quest'}
-                                className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                                className="cursor-pointer rounded-lg border border-neutral-300 px-4 py-2 text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
                                 data-cy="share-quest"
                             >
                                 <FiShare2 />
@@ -194,7 +194,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                                         aria-label={
                                             t('edit_quest') || 'Edit Quest'
                                         }
-                                        className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                                        className="cursor-pointer rounded-lg border border-neutral-300 px-4 py-2 text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
                                         data-cy="edit-quest"
                                     >
                                         <FiEdit />
@@ -216,29 +216,29 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                     </div>
 
                     <h1
-                        className="mb-4 text-3xl font-bold text-gray-900 dark:text-white"
+                        className="mb-4 text-3xl font-bold text-neutral-900 dark:text-white"
                         data-cy="quest-title-display"
                     >
                         {quest.title}
                     </h1>
                     <p
-                        className="mb-6 text-gray-600 dark:text-gray-400"
+                        className="mb-6 text-neutral-600 dark:text-neutral-400"
                         data-cy="quest-description-display"
                     >
                         {quest.description}
                     </p>
 
-                    <div className="flex flex-col justify-between gap-5 border-t border-gray-200 pt-4 md:flex-row md:items-center dark:border-neutral-800">
+                    <div className="flex flex-col justify-between gap-5 border-t border-neutral-200 pt-4 md:flex-row md:items-center dark:border-neutral-800">
                         <div className="flex items-center gap-3">
                             <Avatar
                                 src={quest.user.image}
                                 size={40}
                             />
                             <div>
-                                <p className="font-medium text-gray-900 dark:text-white">
+                                <p className="font-medium text-neutral-900 dark:text-white">
                                     {quest.user.name}
                                 </p>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
                                     {formatDistanceToNowLocale(
                                         new Date(quest.createdAt)
                                     )}
@@ -263,13 +263,13 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
 
                 {/* Recipe Replies */}
                 <div>
-                    <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="mb-4 text-2xl font-bold text-neutral-900 dark:text-white">
                         {t('recipe_replies') || 'Recipe Replies'} (
                         {quest.recipes.length})
                     </h2>
                     {quest.recipes.length === 0 ? (
-                        <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center dark:border-neutral-800">
-                            <p className="text-gray-600 dark:text-gray-400">
+                        <div className="rounded-lg border-2 border-dashed border-neutral-300 p-12 text-center dark:border-neutral-800">
+                            <p className="text-neutral-600 dark:text-neutral-400">
                                 {t('no_recipes_yet') ||
                                     'No recipes have been submitted yet'}
                             </p>

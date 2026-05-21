@@ -30,7 +30,7 @@ const Tabs: React.FC<TabsProps> = ({
     }
     return (
         <div
-            className={`flex border-b border-gray-200 dark:border-neutral-600 ${className}`}
+            className={`flex border-b border-neutral-200 dark:border-neutral-600 ${className}`}
             data-testid={dataTestId}
             role="tablist"
         >
@@ -44,7 +44,7 @@ const Tabs: React.FC<TabsProps> = ({
                     } py-2 text-center ${
                         activeTab === tab.id
                             ? 'border-green-450 text-green-450 border-b-2 font-medium'
-                            : 'text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-100'
+                            : 'text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-100'
                     }`}
                     onClick={() => onTabChange(tab.id)}
                     data-testid={`tab-${tab.id}`}

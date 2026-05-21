@@ -12,10 +12,10 @@ const ChefsListSkeleton: React.FC<ChefsListSkeletonProps> = ({
             {/* Header */}
             <div className="mb-8">
                 <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-xl bg-gray-200 dark:bg-gray-700" />
+                    <div className="h-12 w-12 rounded-xl bg-neutral-200 dark:bg-neutral-700" />
                     <div>
-                        <div className="h-8 w-32 rounded-lg bg-gray-200 dark:bg-gray-700" />
-                        <div className="mt-2 h-4 w-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+                        <div className="h-8 w-32 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
+                        <div className="mt-2 h-4 w-48 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                     </div>
                 </div>
             </div>
@@ -24,8 +24,8 @@ const ChefsListSkeleton: React.FC<ChefsListSkeletonProps> = ({
             <div className="mb-6 space-y-4">
                 {/* Search Bar */}
                 <div className="flex flex-col gap-4 sm:flex-row">
-                    <div className="h-12 flex-1 rounded-full bg-gray-200 dark:bg-gray-700" />
-                    <div className="h-12 w-24 rounded-full bg-gray-200 dark:bg-gray-700" />
+                    <div className="h-12 flex-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+                    <div className="h-12 w-24 rounded-full bg-neutral-200 dark:bg-neutral-700" />
                 </div>
 
                 {/* Order By Filter Pills */}
@@ -34,7 +34,7 @@ const ChefsListSkeleton: React.FC<ChefsListSkeletonProps> = ({
                         {[...Array(7)].map((_, i) => (
                             <div
                                 key={i}
-                                className="h-10 w-24 rounded-full bg-gray-200 dark:bg-gray-700"
+                                className="h-10 w-24 rounded-full bg-neutral-200 dark:bg-neutral-700"
                             />
                         ))}
                     </div>

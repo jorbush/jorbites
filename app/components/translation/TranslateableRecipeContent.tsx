@@ -353,7 +353,7 @@ export function TranslateableRecipeContent({
                                 <button
                                     onClick={handleTranslate}
                                     disabled={isTranslating}
-                                    className="inline-flex cursor-pointer items-center gap-1 text-sm text-gray-600 hover:text-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-400 dark:hover:text-neutral-200"
+                                    className="inline-flex cursor-pointer items-center gap-1 text-sm text-neutral-600 hover:text-neutral-800 disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-400 dark:hover:text-neutral-200"
                                     title={t('translate') || 'Translate'}
                                     aria-label={t('translate') || 'Translate'}
                                 >
@@ -372,7 +372,7 @@ export function TranslateableRecipeContent({
                             ) : (
                                 <button
                                     onClick={handleShowOriginal}
-                                    className="inline-flex cursor-pointer items-center gap-1 text-sm text-gray-600 hover:text-gray-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+                                    className="inline-flex cursor-pointer items-center gap-1 text-sm text-neutral-600 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
                                 >
                                     <FiGlobe size={18} />
                                     <span className="text-xs">

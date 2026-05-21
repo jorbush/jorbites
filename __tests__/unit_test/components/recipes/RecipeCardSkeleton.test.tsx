@@ -29,8 +29,8 @@ describe('RecipeCardSkeleton', () => {
         // Find image placeholder
         const imagePlaceholder = container.querySelector('.aspect-square');
         expect(imagePlaceholder).not.toBeNull();
-        expect(imagePlaceholder?.className).toContain('bg-gray-200');
-        expect(imagePlaceholder?.className).toContain('dark:bg-gray-700');
+        expect(imagePlaceholder?.className).toContain('bg-neutral-200');
+        expect(imagePlaceholder?.className).toContain('dark:bg-neutral-700');
         expect(imagePlaceholder?.className).toContain('rounded-xl');
     });
 
@@ -44,15 +44,15 @@ describe('RecipeCardSkeleton', () => {
         const titlePlaceholder = divs[1];
         expect(titlePlaceholder.className).toContain('h-6');
         expect(titlePlaceholder.className).toContain('w-3/4');
-        expect(titlePlaceholder.className).toContain('bg-gray-200');
-        expect(titlePlaceholder.className).toContain('dark:bg-gray-700');
+        expect(titlePlaceholder.className).toContain('bg-neutral-200');
+        expect(titlePlaceholder.className).toContain('dark:bg-neutral-700');
 
         // Second text placeholder (subtitle)
         const subtitlePlaceholder = divs[2];
         expect(subtitlePlaceholder.className).toContain('h-4');
         expect(subtitlePlaceholder.className).toContain('w-1/4');
-        expect(subtitlePlaceholder.className).toContain('bg-gray-200');
-        expect(subtitlePlaceholder.className).toContain('dark:bg-gray-700');
+        expect(subtitlePlaceholder.className).toContain('bg-neutral-200');
+        expect(subtitlePlaceholder.className).toContain('dark:bg-neutral-700');
     });
 
     it('renders all three skeleton elements', () => {
@@ -61,7 +61,7 @@ describe('RecipeCardSkeleton', () => {
         // Check that we have exactly 3 placeholder elements
         // (image placeholder, title placeholder, and subtitle placeholder)
         const placeholderElements = container.querySelectorAll(
-            '.bg-gray-200.dark\\:bg-gray-700'
+            '.bg-neutral-200.dark\\:bg-neutral-700'
         );
         expect(placeholderElements.length).toBe(3);
     });

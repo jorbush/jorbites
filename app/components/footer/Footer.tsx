@@ -64,7 +64,7 @@ const Footer = () => {
                             <a
                                 key={link.label}
                                 href={link.href}
-                                className="text-neutral-500 transition-all duration-200 hover:-translate-y-1 hover:text-neutral-700 dark:text-gray-400 dark:hover:text-gray-300"
+                                className="text-neutral-500 transition-all duration-200 hover:-translate-y-1 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label={link.label}
@@ -76,14 +76,14 @@ const Footer = () => {
                     <nav className="flex flex-wrap justify-center gap-6 text-sm">
                         <Link
                             href="/policies/privacy"
-                            className="text-neutral-500 transition-colors duration-200 hover:text-neutral-700 dark:text-gray-400 dark:hover:text-gray-300"
+                            className="text-neutral-500 transition-colors duration-200 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                             prefetch={false}
                         >
                             {t('privacy_policy')}
                         </Link>
                         <Link
                             href="/policies/cookies"
-                            className="text-neutral-500 transition-colors duration-200 hover:text-neutral-700 dark:text-gray-400 dark:hover:text-gray-300"
+                            className="text-neutral-500 transition-colors duration-200 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                             prefetch={false}
                         >
                             {t('cookies_policy')}
@@ -104,7 +104,7 @@ const Footer = () => {
                             Jorbites
                         </span>
                     </Link>
-                    <div className="text-sm text-neutral-500 dark:text-gray-400">
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400">
                         © {currentYear} Jorbites. {t('rights_reserved')}.
                     </div>
                 </div>
