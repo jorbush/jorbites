@@ -71,7 +71,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                 </div>
                 {isFilterablePage && shouldRender && (
                     <div
-                        className={`navbar-categories border-b border-neutral-200/40 bg-white/80 backdrop-blur-lg dark:border-neutral-800/40 dark:bg-[#0F0F0F]/80 ${isFilterOpen ? 'open' : 'closing'}`}
+                        className={`navbar-categories border-b border-neutral-200/40 bg-white/75 shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition-all duration-300 dark:border-neutral-800/40 dark:bg-[#0F0F0F]/75 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)] ${isFilterOpen ? 'open' : 'closing'}`}
                         id="categories-menu"
                         role="region"
                         aria-label="Categories filter"

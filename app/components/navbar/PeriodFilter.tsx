@@ -141,7 +141,7 @@ const PeriodFilter: React.FC = () => {
 
             {isOpen && (
                 <div
-                    className="absolute top-12 right-0 z-50 min-w-[280px] rounded-lg border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
+                    className="absolute top-12 right-0 z-50 min-w-[280px] rounded-lg border border-neutral-200/40 bg-white/75 p-4 shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition-all duration-300 dark:border-neutral-800/40 dark:bg-[#0F0F0F]/75 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]"
                     style={{
                         animation: 'dropdownFadeIn 0.15s ease-out forwards',
                     }}
