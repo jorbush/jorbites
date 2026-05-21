@@ -1,23 +1,20 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { POST } from '@/app/api/lists/ensure-default/route';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
 
-vi.mock('@/app/actions/getCurrentUser');
-vi.mock('@/app/lib/prismadb', () => ({
-    default: {
-        list: {
-            count: vi.fn(),
-            create: vi.fn(),
-        },
+jest.mock('@/app/actions/getCurrentUser');
+jest.mock('@/app/lib/prismadb', () => ({
+    list: {
+        count: jest.fn(),
+        create: jest.fn(),
     },
 }));
 
-const mockGetCurrentUser = getCurrentUser as any;
+const mockGetCurrentUser = getCurrentUser as jest.Mock;
 
 describe('POST /api/lists/ensure-default', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     it('should return 401 if user is not authenticated', async () => {
@@ -28,8 +25,8 @@ describe('POST /api/lists/ensure-default', () => {
 
     it('should create default list if none exist', async () => {
         mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
-        vi.mocked(prisma.list.count).mockResolvedValue(0);
-        vi.mocked(prisma.list.create).mockResolvedValue({ id: 'list-id' } as any);
+        (prisma.list.count as jest.Mock).mockResolvedValue(0);
+        (prisma.list.create as jest.Mock).mockResolvedValue({ id: 'list-id' });
 
         const response = await POST();
         const data = await response.json();
@@ -41,7 +38,7 @@ describe('POST /api/lists/ensure-default', () => {
 
     it('should not create default list if some already exist', async () => {
         mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
-        vi.mocked(prisma.list.count).mockResolvedValue(1);
+        (prisma.list.count as jest.Mock).mockResolvedValue(1);
 
         const response = await POST();
         const data = await response.json();
@@ -53,7 +50,7 @@ describe('POST /api/lists/ensure-default', () => {
 
     it('should return 500 on internal error', async () => {
         mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
-        vi.mocked(prisma.list.count).mockRejectedValue(new Error('DB Error'));
+        (prisma.list.count as jest.Mock).mockRejectedValue(new Error('DB Error'));
 
         const response = await POST();
         expect(response.status).toBe(500);
