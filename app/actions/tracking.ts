@@ -85,28 +85,35 @@ async function trackUserInteractionInternal(
     }
 }
 
-async function validateUser(userId: string) {
+async function validateUser(userId: string): Promise<boolean> {
     const session = await getServerSession(authOptions);
     if (!session) {
-        unauthorized();
+        logger.warn('Unauthorized tracking attempt: no session');
+        return false;
     }
 
     const currentUser = await getCurrentUser();
     if (!currentUser || currentUser.id !== userId) {
-        unauthorized();
+        logger.warn('Unauthorized tracking attempt: user mismatch', {
+            userId,
+            currentUserId: currentUser?.id,
+        });
+        return false;
     }
+
+    return true;
 }
 
 export async function trackUserInteraction(
     eventType: UserEventType,
     data: UserInteractionData
 ) {
-    await validateUser(data.userId);
+    if (!(await validateUser(data.userId))) return;
     return trackUserInteractionInternal(eventType, data);
 }
 
 export async function trackRecipeView(recipeId: string, userId: string) {
-    await validateUser(userId);
+    if (!(await validateUser(userId))) return;
     return trackUserInteractionInternal(UserEventType.RECIPE_VIEW, {
         recipeId,
         userId,
@@ -114,7 +121,7 @@ export async function trackRecipeView(recipeId: string, userId: string) {
 }
 
 export async function trackRecipeLike(recipeId: string, userId: string) {
-    await validateUser(userId);
+    if (!(await validateUser(userId))) return;
     return trackUserInteractionInternal(UserEventType.RECIPE_LIKE, {
         recipeId,
         userId,
@@ -122,7 +129,7 @@ export async function trackRecipeLike(recipeId: string, userId: string) {
 }
 
 export async function trackRecipeUnlike(recipeId: string, userId: string) {
-    await validateUser(userId);
+    if (!(await validateUser(userId))) return;
     return trackUserInteractionInternal(UserEventType.RECIPE_UNLIKE, {
         recipeId,
         userId,
@@ -130,7 +137,7 @@ export async function trackRecipeUnlike(recipeId: string, userId: string) {
 }
 
 export async function trackRecipeSave(recipeId: string, userId: string) {
-    await validateUser(userId);
+    if (!(await validateUser(userId))) return;
     return trackUserInteractionInternal(UserEventType.RECIPE_SAVE, {
         recipeId,
         userId,
@@ -138,7 +145,7 @@ export async function trackRecipeSave(recipeId: string, userId: string) {
 }
 
 export async function trackRecipeUnsave(recipeId: string, userId: string) {
-    await validateUser(userId);
+    if (!(await validateUser(userId))) return;
     return trackUserInteractionInternal(UserEventType.RECIPE_UNSAVE, {
         recipeId,
         userId,
@@ -150,7 +157,7 @@ export async function trackRecipeCooked(
     userId: string,
     metadata?: Record<string, unknown>
 ) {
-    await validateUser(userId);
+    if (!(await validateUser(userId))) return;
     return trackUserInteractionInternal(UserEventType.RECIPE_COOKED, {
         recipeId,
         userId,
