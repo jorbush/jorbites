@@ -62,7 +62,10 @@ describe('trackUserInteraction', () => {
     });
 
     it('is a no-op (with a warning) when Kafka producer is null', async () => {
-        vi.doMock('@/app/lib/kafka', () => ({ default: null }));
+        vi.doMock('@/app/lib/kafka', () => ({
+            default: null,
+            kafkaStatus: { isConnected: false },
+        }));
         const { trackRecipeView } = await import('@/app/actions/tracking');
 
         vi.stubEnv('NODE_ENV', 'production');
@@ -79,7 +82,10 @@ describe('trackUserInteraction', () => {
 
     it('connects once and sends successfully on the happy path', async () => {
         const mockProducer = makeMockProducer();
-        vi.doMock('@/app/lib/kafka', () => ({ default: mockProducer }));
+        vi.doMock('@/app/lib/kafka', () => ({
+            default: mockProducer,
+            kafkaStatus: { isConnected: false },
+        }));
         const { trackRecipeView, trackRecipeLike } =
             await import('@/app/actions/tracking');
 
@@ -101,7 +107,10 @@ describe('trackUserInteraction', () => {
     it('times out and logs an error when connect exceeds KAFKA_TIMEOUT_MS', async () => {
         // connect takes 10 seconds – well above the 3-second timeout
         const mockProducer = makeMockProducer({ connectDelay: 10_000 });
-        vi.doMock('@/app/lib/kafka', () => ({ default: mockProducer }));
+        vi.doMock('@/app/lib/kafka', () => ({
+            default: mockProducer,
+            kafkaStatus: { isConnected: false },
+        }));
         const { trackRecipeView } = await import('@/app/actions/tracking');
 
         const promise = trackRecipeView('recipe-1', 'user-1');
@@ -123,7 +132,10 @@ describe('trackUserInteraction', () => {
             connectDelay: 0,
             sendDelay: 10_000,
         });
-        vi.doMock('@/app/lib/kafka', () => ({ default: mockProducer }));
+        vi.doMock('@/app/lib/kafka', () => ({
+            default: mockProducer,
+            kafkaStatus: { isConnected: false },
+        }));
         const { trackRecipeView } = await import('@/app/actions/tracking');
 
         const promise = trackRecipeView('recipe-1', 'user-1');
@@ -140,7 +152,10 @@ describe('trackUserInteraction', () => {
 
     it('does NOT propagate the error to the caller when Kafka times out', async () => {
         const mockProducer = makeMockProducer({ connectDelay: 10_000 });
-        vi.doMock('@/app/lib/kafka', () => ({ default: mockProducer }));
+        vi.doMock('@/app/lib/kafka', () => ({
+            default: mockProducer,
+            kafkaStatus: { isConnected: false },
+        }));
         const { trackRecipeView } = await import('@/app/actions/tracking');
 
         const promise = trackRecipeView('recipe-1', 'user-1');
@@ -163,7 +178,10 @@ describe('trackUserInteraction', () => {
             return Promise.resolve();
         });
         const send = vi.fn().mockResolvedValue(undefined);
-        vi.doMock('@/app/lib/kafka', () => ({ default: { connect, send } }));
+        vi.doMock('@/app/lib/kafka', () => ({
+            default: { connect, send },
+            kafkaStatus: { isConnected: false },
+        }));
         const { trackRecipeView } = await import('@/app/actions/tracking');
 
         // First call – times out, isConnected remains false

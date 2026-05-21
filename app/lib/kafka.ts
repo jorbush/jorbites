@@ -3,7 +3,10 @@ import { logger } from '@/app/lib/axiom/server';
 
 declare global {
     var kafkaProducer: Producer | undefined;
+    var kafkaStatus: { isConnected: boolean } | undefined;
 }
+
+export const kafkaStatus = global.kafkaStatus || { isConnected: false };
 
 let producer: Producer | null = null;
 
@@ -41,6 +44,7 @@ if (process.env.KAFKA_BROKER) {
 
     if (process.env.NODE_ENV !== 'production') {
         global.kafkaProducer = producer;
+        global.kafkaStatus = kafkaStatus;
     }
 }
 

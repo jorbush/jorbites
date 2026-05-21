@@ -1,12 +1,10 @@
 'use server';
 
-import producer from '@/app/lib/kafka';
+import producer, { kafkaStatus } from '@/app/lib/kafka';
 import { logger } from '@/app/lib/axiom/server';
 import { UserEventType, UserInteractionData } from '@/app/types/tracking';
 
 const KAFKA_TIMEOUT_MS = 3000;
-
-let isConnected = false;
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
     let timeoutHandle: ReturnType<typeof setTimeout>;
@@ -48,9 +46,9 @@ export async function trackUserInteraction(
     }
 
     try {
-        if (!isConnected) {
+        if (!kafkaStatus.isConnected) {
             await withTimeout(producer.connect(), KAFKA_TIMEOUT_MS);
-            isConnected = true;
+            kafkaStatus.isConnected = true;
         }
         await withTimeout(
             producer.send({
@@ -71,7 +69,7 @@ export async function trackUserInteraction(
             KAFKA_TIMEOUT_MS
         );
     } catch (error) {
-        isConnected = false;
+        kafkaStatus.isConnected = false;
         logger.error('Failed to track user interaction', {
             eventType,
             recipeId,
