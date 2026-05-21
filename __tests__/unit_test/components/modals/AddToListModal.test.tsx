@@ -26,6 +26,7 @@ describe('AddToListModal', () => {
             onClose: vi.fn(),
             onOpen: vi.fn(),
         } as any);
+        vi.mocked(axios.post).mockResolvedValue({ data: {} });
         vi.mocked(axios.get).mockResolvedValue({ data: [] });
     });
 
@@ -45,5 +46,11 @@ describe('AddToListModal', () => {
     it('shows loading state initially', () => {
         render(<AddToListModal />);
         expect(screen.getByText('loading')).toBeDefined();
+    });
+
+    it('calls ensure-default before fetching lists', async () => {
+        render(<AddToListModal />);
+
+        expect(axios.post).toHaveBeenCalledWith('/api/lists/ensure-default');
     });
 });

@@ -1,0 +1,63 @@
+import { NextResponse } from 'next/server';
+import prisma from '@/app/lib/prismadb';
+import getCurrentUser from '@/app/actions/getCurrentUser';
+import { logger } from '@/app/lib/axiom/server';
+import { USER_SELECT_FIELDS } from '@/app/utils/constants';
+import {
+    unauthorized,
+    internalServerError,
+} from '@/app/utils/apiErrors';
+
+export async function POST() {
+    try {
+        const currentUser = await getCurrentUser();
+
+        if (!currentUser) {
+            return unauthorized('Unauthorized');
+        }
+
+        logger.info('POST /api/lists/ensure-default - start', { userId: currentUser.id });
+
+        const listsCount = await prisma.list.count({
+            where: {
+                userId: currentUser.id,
+            },
+        });
+
+        if (listsCount === 0) {
+            try {
+                const defaultList = await prisma.list.create({
+                    data: {
+                        name: 'to cook later',
+                        isDefault: true,
+                        isPrivate: true,
+                        userId: currentUser.id,
+                    },
+                    include: {
+                        user: {
+                            select: USER_SELECT_FIELDS,
+                        },
+                    },
+                });
+
+                logger.info('POST /api/lists/ensure-default - default list created', {
+                    userId: currentUser.id,
+                    listId: defaultList.id,
+                });
+
+                return NextResponse.json({ message: 'Default list created', created: true });
+            } catch (error: any) {
+                logger.error('POST /api/lists/ensure-default - error creating default list', {
+                    error: error.message,
+                });
+                // If a parallel request already created it, that's fine
+                return NextResponse.json({ message: 'Default list already exists or error', created: false });
+            }
+        }
+
+        return NextResponse.json({ message: 'Lists already exist', created: false });
+    } catch (error: any) {
+        logger.error('POST /api/lists/ensure-default - error', { error: error.message });
+        return internalServerError('Internal Error');
+    }
+}

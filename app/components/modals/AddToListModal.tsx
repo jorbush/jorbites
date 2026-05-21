@@ -37,6 +37,7 @@ const AddToListModal = () => {
         if (!addToListModal.isOpen) return;
         setIsLoading(true);
         try {
+            await axios.post('/api/lists/ensure-default');
             const response = await axios.get('/api/lists');
             setLists(response.data);
         } catch (error) {
