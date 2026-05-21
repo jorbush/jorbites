@@ -449,7 +449,7 @@ export const RecipeBookPDF: React.FC<RecipeBookPDFProps> = ({
             )}
 
             {/* Recipe Pages (Page 3+) */}
-            {recipes.map((recipe, index) => {
+            {recipes.map((recipe) => {
                 // Construct secure proxied image URL.
                 let proxiedImageSrc = null;
                 if (recipe.imageSrc) {
