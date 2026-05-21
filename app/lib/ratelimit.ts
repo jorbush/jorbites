@@ -88,3 +88,14 @@ export const contentCreationRatelimit = hasUpstashConfig
           prefix: '@upstash/ratelimit/content-creation',
       })
     : createMockRatelimit('contentCreationRatelimit');
+
+// Rate limiting for expensive PDF recipe book downloads/user recipes fetch
+// 5 requests per minute per user - prevents database and rendering abuse
+export const recipeBookRatelimit = hasUpstashConfig
+    ? new Ratelimit({
+          redis: Redis.fromEnv(),
+          limiter: Ratelimit.slidingWindow(5, '1 m'),
+          analytics: true,
+          prefix: '@upstash/ratelimit/recipe-book',
+      })
+    : createMockRatelimit('recipeBookRatelimit');

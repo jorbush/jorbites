@@ -4,9 +4,11 @@ import {
     invalidInput,
     internalServerError,
     unauthorized,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import { recipeBookRatelimit } from '@/app/lib/ratelimit';
 
 interface IParams {
     userId?: string;
@@ -23,7 +25,7 @@ export async function GET(
 
         logger.info('GET /api/user/[userId]/recipes - start', {
             userId,
-            currentUser: currentUser,
+            currentUserId: currentUser?.id,
         });
 
         if (!currentUser) {
@@ -44,12 +46,35 @@ export async function GET(
             );
         }
 
+        // Rate limiting to prevent abuse
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await recipeBookRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                logger.warn(
+                    'GET /api/user/[userId]/recipes - rate limit exceeded',
+                    {
+                        userId: currentUser.id,
+                    }
+                );
+                return rateLimitExceeded(
+                    `Too many requests. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
+        }
+
         const recipes = await prisma.recipe.findMany({
             where: {
                 userId: userId,
             },
             orderBy: {
-                createdAt: 'desc',
+                createdAt: 'asc',
             },
         });
 

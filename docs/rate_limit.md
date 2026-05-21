@@ -7,10 +7,10 @@ This project implements a NextJS API with built-in rate limiting protection usin
 - [Overview](#overview)
 - [Features](#features)
 - [Rate Limiting](#rate-limiting)
-  - [How it Works](#how-it-works)
-  - [Configuration](#configuration)
-  - [Protected Endpoints](#protected-endpoints)
-  - [Sliding Window Algorithm](#sliding-window-algorithm)
+    - [How it Works](#how-it-works)
+    - [Configuration](#configuration)
+    - [Protected Endpoints](#protected-endpoints)
+    - [Sliding Window Algorithm](#sliding-window-algorithm)
 
 ## Overview
 
@@ -32,6 +32,7 @@ This NextJS application provides a recipe API with built-in protection against e
 Rate limiting is implemented using [Upstash RateLimit](https://github.com/upstash/ratelimit), a Redis-based rate limiting library. The system limits how many requests a user can make within a specified time period, protecting the database from excessive calls.
 
 In production environments, the system identifies users by:
+
 1. User ID for authenticated users
 2. IP address for anonymous users
 
@@ -42,6 +43,7 @@ When a user exceeds their allowed request quota, the API returns a structured er
 The rate limit configuration uses a sliding window approach with different limits for different operations:
 
 **General Browsing - Authenticated Users:**
+
 ```typescript
 export const authenticatedRatelimit = new Ratelimit({
     redis: Redis.fromEnv(),
@@ -52,6 +54,7 @@ export const authenticatedRatelimit = new Ratelimit({
 ```
 
 **General Browsing - Unauthenticated Users:**
+
 ```typescript
 export const unauthenticatedRatelimit = new Ratelimit({
     redis: Redis.fromEnv(),
@@ -62,6 +65,7 @@ export const unauthenticatedRatelimit = new Ratelimit({
 ```
 
 **Registration (Strict):**
+
 ```typescript
 export const registrationRatelimit = new Ratelimit({
     redis: Redis.fromEnv(),
@@ -72,6 +76,7 @@ export const registrationRatelimit = new Ratelimit({
 ```
 
 **Password Reset (Strict):**
+
 ```typescript
 export const passwordResetRatelimit = new Ratelimit({
     redis: Redis.fromEnv(),
@@ -82,6 +87,7 @@ export const passwordResetRatelimit = new Ratelimit({
 ```
 
 **Content Creation (Comments, Recipes):**
+
 ```typescript
 export const contentCreationRatelimit = new Ratelimit({
     redis: Redis.fromEnv(),
@@ -91,19 +97,33 @@ export const contentCreationRatelimit = new Ratelimit({
 });
 ```
 
+**Recipe Book PDF Downloads & User Recipes Retrieval (Strict/Expensive):**
+
+```typescript
+export const recipeBookRatelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(5, '1 m'),
+    analytics: true,
+    prefix: '@upstash/ratelimit/recipe-book',
+});
+```
+
 This tiered configuration allows:
+
 - **Authenticated users (browsing)**: 30 requests per 10-second window (180 requests/minute)
-  - Higher limits to support search functionality with 1-second debounce
-  - Better experience for registered users
+    - Higher limits to support search functionality with 1-second debounce
+    - Better experience for registered users
 - **Unauthenticated users (browsing)**: 15 requests per 10-second window (90 requests/minute)
-  - Moderate limits to prevent abuse while still allowing search
-  - Sufficient for normal browsing and searching
+    - Moderate limits to prevent abuse while still allowing search
+    - Sufficient for normal browsing and searching
 - **Registration**: 5 requests per hour per IP
-  - Prevents mass account creation/spam
+    - Prevents mass account creation/spam
 - **Password Reset**: 3 requests per 15 minutes per IP
-  - Prevents email bombing while allowing retries
+    - Prevents email bombing while allowing retries
 - **Content Creation**: 10 requests per minute per user
-  - Prevents spam while allowing normal usage
+    - Prevents spam while allowing normal usage
+- **Recipe Book Downloads**: 5 requests per minute per user
+    - Prevents DB and CPU rendering pressure due to the heavy load of PDF generation
 - Analytics enabled for monitoring
 - Redis credentials loaded from environment variables
 - Separate prefixes for tracking different operations
@@ -112,18 +132,20 @@ This tiered configuration allows:
 
 The following endpoints are protected with rate limiting:
 
-| Endpoint | Rate Limit | Identifier |
-|----------|-----------|------------|
+| Endpoint                            | Rate Limit                            | Identifier    |
+| ----------------------------------- | ------------------------------------- | ------------- |
 | `GET /api/recipes` (via getRecipes) | Authenticated: 30/10s, Unauth: 15/10s | User ID or IP |
-| `POST /api/register` | 5/hour | IP address |
-| `POST /api/password-reset/request` | 3/15min | IP address |
-| `POST /api/password-reset/reset` | 3/15min | IP address |
-| `POST /api/comments` | 10/min | User ID |
-| `POST /api/recipes` | 10/min | User ID |
+| `POST /api/register`                | 5/hour                                | IP address    |
+| `POST /api/password-reset/request`  | 3/15min                               | IP address    |
+| `POST /api/password-reset/reset`    | 3/15min                               | IP address    |
+| `POST /api/comments`                | 10/min                                | User ID       |
+| `POST /api/recipes`                 | 10/min                                | User ID       |
+| `GET /api/user/[userId]/recipes`    | 5/min                                 | User ID       |
 
 ### Sliding Window Algorithm
 
 The sliding window algorithm provides a more accurate rate limiting approach compared to fixed windows:
+
 - It tracks requests over a continuous time period that "slides" forward
 - Prevents request spikes that can occur at fixed window boundaries
 - Offers a smoother user experience while still providing protection
