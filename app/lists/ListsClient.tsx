@@ -24,7 +24,20 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
 
     useEffect(() => {
         setLists(initialLists);
-    }, [initialLists]);
+
+        const ensureDefault = async () => {
+            if (initialLists.length === 0) {
+                try {
+                    await axios.post('/api/lists/ensure-default');
+                    router.refresh();
+                } catch (error) {
+                    console.error('Error ensuring default list:', error);
+                }
+            }
+        };
+
+        ensureDefault();
+    }, [initialLists, router]);
 
     const [deleteListId, setDeleteListId] = useState<string | null>(null);
 
