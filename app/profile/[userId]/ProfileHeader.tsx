@@ -14,12 +14,14 @@ import ScrollableContainer from '@/app/components/utils/ScrollableContainer';
 import { formatDateLanguage } from '@/app/utils/date-utils';
 import { FiCalendar, FiShare2 } from 'react-icons/fi';
 import useShare from '@/app/hooks/useShare';
+import { RecipeBookButton } from '@/app/components/profile/RecipeBookButton';
 
 interface ProfileHeaderProps {
     user?: SafeUser | null;
+    currentUser?: SafeUser | null;
 }
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
     const router = useRouter();
     const { t } = useTranslation();
     const isMdOrSmaller = useMediaQuery('(max-width: 415px)');
@@ -77,13 +79,21 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                         )}
                     </div>
                 </div>
-                <button
-                    className="flex cursor-pointer items-center space-x-2 text-gray-600 focus:outline-hidden dark:text-neutral-100"
-                    onClick={() => share()}
-                    aria-label="Share"
-                >
-                    <FiShare2 className="text-xl" />
-                </button>
+                <div className="flex flex-row items-center gap-4">
+                    {currentUser && user && currentUser.id === user.id && (
+                        <RecipeBookButton
+                            userId={user.id}
+                            userName={user.name || 'User'}
+                        />
+                    )}
+                    <button
+                        className="flex cursor-pointer items-center space-x-2 text-gray-600 focus:outline-hidden dark:text-neutral-100"
+                        onClick={() => share()}
+                        aria-label="Share"
+                    >
+                        <FiShare2 className="text-xl" />
+                    </button>
+                </div>
             </div>
             <hr className="mt-2" />
             {user?.badges &&

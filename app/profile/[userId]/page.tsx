@@ -108,7 +108,10 @@ const ProfilePage = async (props: {
     return (
         <>
             <ClientOnly fallback={<ProfileHeaderSkeleton />}>
-                <ProfileHeader user={user} />
+                <ProfileHeader
+                    user={user}
+                    currentUser={currentUser}
+                />
             </ClientOnly>
 
             <ClientOnly fallback={<UserStatsSkeleton />}>

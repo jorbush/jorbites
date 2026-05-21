@@ -644,5 +644,15 @@
     "public": "Public",
     "private_list": "Private list",
     "done": "Done",
-    "delete_list_confirmation": "Are you sure you want to delete this list?"
+    "delete_list_confirmation": "Are you sure you want to delete this list?",
+    "recipe_book": "Recipe Book",
+    "generate_recipe_book": "Generate Recipe Book",
+    "recipe_book_generating": "Generating book...",
+    "recipe_book_download": "Download Book",
+    "recipe_book_cover_by": "Created by",
+    "recipe_book_cover_subtitle": "Collection of {{count}} recipes",
+    "page": "Page",
+    "table_of_contents": "Table of Contents",
+    "recipe_book_no_recipes": "You have no recipes to generate a book.",
+    "recipe_book_generated_success": "Recipe book generated successfully!"
 }
