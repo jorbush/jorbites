@@ -7,7 +7,14 @@ export async function GET(request: NextRequest) {
     const width = request.nextUrl.searchParams.get('w');
     const height = request.nextUrl.searchParams.get('h');
     const quality = request.nextUrl.searchParams.get('q') || 'auto:good';
-    const format = request.nextUrl.searchParams.get('f') || 'webp';
+    const allowedFormats = new Set(['webp', 'png', 'jpg', 'jpeg', 'avif']);
+    const requestedFormat =
+        request.nextUrl.searchParams.get('f')?.toLowerCase() || 'webp';
+    const format = allowedFormats.has(requestedFormat)
+        ? requestedFormat === 'jpeg'
+            ? 'jpg'
+            : requestedFormat
+        : 'webp';
 
     logger.info('GET /api/image-proxy - start', {
         url: url?.substring(0, 100),
