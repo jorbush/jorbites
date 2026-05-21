@@ -7,12 +7,14 @@ export async function GET(request: NextRequest) {
     const width = request.nextUrl.searchParams.get('w');
     const height = request.nextUrl.searchParams.get('h');
     const quality = request.nextUrl.searchParams.get('q') || 'auto:good';
+    const format = request.nextUrl.searchParams.get('f') || 'webp';
 
     logger.info('GET /api/image-proxy - start', {
         url: url?.substring(0, 100),
         width,
         height,
         quality,
+        format,
     });
 
     if (!url) {
@@ -41,12 +43,12 @@ export async function GET(request: NextRequest) {
 
                     // For maximum quality without dimensions, only apply format and quality transformations
                     if (quality === 'auto:best' && !width && !height) {
-                        imageUrl = `${baseUrl}/image/upload/f_webp,${qualityParam}/${imagePath}`;
+                        imageUrl = `${baseUrl}/image/upload/f_${format},${qualityParam}/${imagePath}`;
                     } else {
                         // Use provided dimensions or defaults
                         const w = width || '400';
                         const h = height || '400';
-                        imageUrl = `${baseUrl}/image/upload/f_webp,${qualityParam},w_${w},h_${h},c_fill/${imagePath}`;
+                        imageUrl = `${baseUrl}/image/upload/f_${format},${qualityParam},w_${w},h_${h},c_fill/${imagePath}`;
                     }
                 } else {
                     console.error(

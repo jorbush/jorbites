@@ -642,5 +642,15 @@
     "public": "Pública",
     "private_list": "Llista privada",
     "done": "Fet",
-    "delete_list_confirmation": "Estàs segur que vols eliminar aquesta llista?"
+    "delete_list_confirmation": "Estàs segur que vols eliminar aquesta llista?",
+    "recipe_book": "Llibre de Receptes",
+    "generate_recipe_book": "Generar llibre de receptes",
+    "recipe_book_generating": "Generant llibre...",
+    "recipe_book_download": "Descarregar llibre",
+    "recipe_book_cover_by": "Creat per",
+    "recipe_book_cover_subtitle": "Col·lecció de {{count}} receptes",
+    "page": "Pàgina",
+    "table_of_contents": "Índex",
+    "recipe_book_no_recipes": "No tens receptes per generar un llibre.",
+    "recipe_book_generated_success": "Llibre de receptes generat amb èxit!"
 }
