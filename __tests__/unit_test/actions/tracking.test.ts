@@ -55,6 +55,14 @@ describe('trackUserInteraction', () => {
     beforeEach(() => {
         vi.resetModules();
         vi.useFakeTimers();
+
+        vi.doMock('@/app/actions/getCurrentUser', () => ({
+            default: vi.fn().mockResolvedValue({
+                id: 'user-1',
+                email: 'test@example.com',
+                name: 'Test User',
+            }),
+        }));
     });
 
     afterEach(() => {

@@ -8,6 +8,10 @@ vi.mock('@/app/actions/getCurrentUser', () => ({
     default: vi.fn(),
 }));
 
+vi.mock('@/app/actions/tracking', () => ({
+    trackRecipeView: vi.fn(),
+}));
+
 vi.mock('@/app/actions/getRecipeById', () => ({
     default: vi.fn(),
 }));

@@ -46,6 +46,17 @@ vi.mock('react-i18next', () => ({
     Trans: ({ children }: any) => children,
 }));
 
+// Mock next-auth/next
+vi.mock('next-auth/next', () => ({
+    getServerSession: vi.fn().mockResolvedValue({
+        user: {
+            id: 'user-1',
+            email: 'test@example.com',
+            name: 'Test User',
+        },
+    }),
+}));
+
 // Mock Redis
 vi.mock('@/app/lib/redis', () => ({
     redis: {
