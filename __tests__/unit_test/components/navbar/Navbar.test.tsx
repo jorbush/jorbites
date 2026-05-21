@@ -151,10 +151,11 @@ describe('<Navbar />', () => {
         render(<Navbar />);
         const header = screen.getByRole('banner');
         expect(header.className).toContain('fixed');
-        expect(header.className).toContain('z-10');
+        expect(header.className).toContain('z-20');
         expect(header.className).toContain('w-full');
-        expect(header.className).toContain('bg-white');
-        expect(header.className).toContain('shadow-xs');
-        expect(header.className).toContain('dark:bg-dark');
+        expect(header.className).toContain('bg-white/75');
+        expect(header.className).toContain('backdrop-blur-lg');
+        expect(header.className).toContain('pt-[env(safe-area-inset-top,0px)]');
+        expect(header.className).toContain('dark:bg-[#0F0F0F]/75');
     });
 });

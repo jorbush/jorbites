@@ -45,7 +45,7 @@ const Footer = () => {
 
     return (
         <footer
-            className="dark:bg-dark w-full border-t border-neutral-200 bg-white px-4 py-8 dark:border-neutral-800"
+            className="dark:bg-dark w-full border-t border-neutral-200 bg-white px-4 pt-8 pb-[calc(2rem+env(safe-area-inset-bottom,0px))] dark:border-neutral-800"
             data-testid="footer"
         >
             <div className="mx-auto max-w-6xl">
