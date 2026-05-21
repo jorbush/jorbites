@@ -99,7 +99,15 @@ export default async function RootLayout({
             <head>
                 <meta
                     name="viewport"
-                    content="width=device-width, initial-scale=1"
+                    content="width=device-width, initial-scale=1, viewport-fit=cover"
+                />
+                <meta
+                    name="apple-mobile-web-app-capable"
+                    content="yes"
+                />
+                <meta
+                    name="apple-mobile-web-app-status-bar-style"
+                    content="black-translucent"
                 />
                 <meta
                     name="apple-mobile-web-app-title"
@@ -127,7 +135,7 @@ export default async function RootLayout({
                 </ClientOnly>
                 <main
                     id="main-content"
-                    className="grow pt-28 pb-20"
+                    className="grow pt-[calc(7rem+env(safe-area-inset-top,0px))] pb-[calc(5rem+env(safe-area-inset-bottom,0px))]"
                 >
                     {children}
                 </main>

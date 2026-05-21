@@ -124,7 +124,10 @@ describe('<Footer />', () => {
         const footerElement = screen.getByRole('contentinfo');
         expect(footerElement).toBeDefined();
         expect(footerElement.className).toContain('w-full');
-        expect(footerElement.className).toContain('py-8');
+        expect(footerElement.className).toContain('pt-8');
+        expect(footerElement.className).toContain(
+            'pb-[calc(2rem+env(safe-area-inset-bottom,0px))]'
+        );
         expect(footerElement.className).toContain('px-4');
         expect(footerElement.className).toContain('border-t');
         expect(footerElement.className).toContain('bg-white');

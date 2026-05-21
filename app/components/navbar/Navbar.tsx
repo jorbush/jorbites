@@ -48,9 +48,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     }, [isFilterOpen]);
 
     return (
-        <header className="dark:bg-dark fixed z-10 w-full bg-white shadow-xs">
+        <header className="fixed top-0 right-0 left-0 z-20 w-full border-b border-neutral-200/40 bg-white/75 pt-[env(safe-area-inset-top,0px)] shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition-all duration-300 dark:border-neutral-800/40 dark:bg-[#0F0F0F]/75 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]">
             <nav aria-label="Main navigation">
-                <div className="border-b-[1px] py-3 sm:py-4">
+                <div className="py-3 sm:py-4">
                     <Container>
                         <div className="flex min-h-[48px] flex-row items-center justify-between gap-3 md:gap-0">
                             <Search
@@ -71,7 +71,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                 </div>
                 {isFilterablePage && shouldRender && (
                     <div
-                        className={`navbar-categories ${isFilterOpen ? 'open' : 'closing'}`}
+                        className={`navbar-categories border-b border-neutral-200/40 bg-white/80 backdrop-blur-lg dark:border-neutral-800/40 dark:bg-[#0F0F0F]/80 ${isFilterOpen ? 'open' : 'closing'}`}
                         id="categories-menu"
                         role="region"
                         aria-label="Categories filter"

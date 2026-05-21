@@ -171,7 +171,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
             {/* Floating Action Button for mobile (below md) */}
             <button
                 onClick={handleRequestRecipe}
-                className="fixed right-6 bottom-16 z-10 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-rose-500 text-white shadow-lg transition hover:bg-rose-600 md:hidden"
+                className="fixed right-6 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-10 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-rose-500 text-white shadow-lg transition hover:bg-rose-600 md:hidden"
                 data-cy="request-recipe-button-mobile"
                 aria-label={t('request_recipe') || 'Request Recipe'}
             >

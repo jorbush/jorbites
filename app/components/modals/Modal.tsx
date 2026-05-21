@@ -109,9 +109,9 @@ const Modal: React.FC<ModalProps> = ({
                         className={`translate h-full duration-300 ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'} `}
                     >
                         <div className="translate dark:bg-dark relative flex h-full w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto">
-                            <div className="relative flex flex-shrink-0 items-center justify-center rounded-t border-b-[1px] p-6">
+                            <div className="relative flex flex-shrink-0 items-center justify-center rounded-t border-b-[1px] px-6 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-6 md:pt-6">
                                 <button
-                                    className="absolute left-9 border-0 p-1 text-black transition hover:opacity-70 dark:text-neutral-100"
+                                    className="absolute left-9 cursor-pointer border-0 p-1 text-black transition hover:opacity-70 dark:text-neutral-100"
                                     onClick={handleClose}
                                     data-testid="close-modal-button"
                                 >
@@ -131,7 +131,7 @@ const Modal: React.FC<ModalProps> = ({
                             <div className="relative min-h-0 flex-auto overflow-y-auto p-6 text-black dark:text-neutral-100">
                                 {body}
                             </div>
-                            <div className="flex flex-shrink-0 flex-col gap-2 border-t border-gray-200 p-6 dark:border-neutral-600">
+                            <div className="flex flex-shrink-0 flex-col gap-2 border-t border-gray-200 px-6 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6 dark:border-neutral-600">
                                 <div className="flex w-full flex-row items-center gap-4">
                                     {secondaryAction &&
                                         secondaryActionLabel && (
