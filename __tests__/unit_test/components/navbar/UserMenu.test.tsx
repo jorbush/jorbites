@@ -72,9 +72,17 @@ describe('<UserMenu />', () => {
         expect(screen.getByTestId('mock-avatar')).toBeDefined();
     });
 
-    it('opens the menu when avatar is clicked', () => {
+    it('opens the menu when avatar is clicked and has correct glass styling', () => {
         render(<UserMenu currentUser={mockCurrentUser} />);
         fireEvent.click(screen.getByTestId('mock-avatar').parentElement!);
+
+        const panel = screen.getByTestId('user-menu-panel');
+        expect(panel).toBeDefined();
+        expect(panel.className).toContain('bg-white/75');
+        expect(panel.className).toContain('backdrop-blur-lg');
+        expect(panel.className).toContain('border-neutral-200/40');
+        expect(panel.className).toContain('dark:bg-[#0F0F0F]/75');
+
         expect(screen.getByText('my_profile')).toBeDefined();
         expect(screen.getByText('my_favorites')).toBeDefined();
         expect(screen.getByText('settings')).toBeDefined();
@@ -96,6 +104,10 @@ describe('<UserMenu />', () => {
     it('renders login and signup options when user is not logged in', () => {
         render(<UserMenu currentUser={null} />);
         fireEvent.click(screen.getByTestId('mock-avatar').parentElement!);
+
+        const panel = screen.getByTestId('user-menu-panel');
+        expect(panel).toBeDefined();
+
         expect(screen.getByText('login')).toBeDefined();
         expect(screen.getByText('sign_up')).toBeDefined();
     });

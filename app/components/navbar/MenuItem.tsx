@@ -25,7 +25,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
     return (
         <div
             onClick={onClick}
-            className={`p-3 font-semibold transition hover:bg-neutral-100 hover:text-black ${extraClasses}`}
+            className={`p-3 font-semibold transition hover:bg-neutral-100/50 hover:text-black ${extraClasses}`}
             data-cy={dataCy}
         >
             <div className="flex w-full items-center justify-between">
