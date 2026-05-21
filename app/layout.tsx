@@ -47,6 +47,13 @@ const font = Nunito({
     display: 'swap',
 });
 
+export const viewport = {
+    themeColor: '#ffffff',
+    width: 'device-width',
+    initialScale: 1,
+    viewportFit: 'cover',
+};
+
 export const metadata = {
     metadataBase: new URL('https://jorbites.com'),
     title: 'Jorbites',
@@ -81,6 +88,11 @@ export const metadata = {
         ],
         type: 'website',
     },
+    appleWebApp: {
+        capable: true,
+        title: 'Jorbites',
+        statusBarStyle: 'black-translucent',
+    },
 };
 
 export default async function RootLayout({
@@ -96,24 +108,7 @@ export default async function RootLayout({
             translate="no"
         >
             <WebVitals />
-            <head>
-                <meta
-                    name="viewport"
-                    content="width=device-width, initial-scale=1, viewport-fit=cover"
-                />
-                <meta
-                    name="apple-mobile-web-app-capable"
-                    content="yes"
-                />
-                <meta
-                    name="apple-mobile-web-app-status-bar-style"
-                    content="black-translucent"
-                />
-                <meta
-                    name="apple-mobile-web-app-title"
-                    content="Jorbites"
-                />
-            </head>
+            <head />
             <body
                 className={`${font.className} dark:bg-dark flex min-h-screen flex-col`}
             >
