@@ -2,14 +2,16 @@ import { useEffect } from 'react';
 
 const useTheme = () => {
     useEffect(() => {
+        const isDarkDefault =
+            document.documentElement.classList.contains('dark');
         const cachedTheme = localStorage.getItem('theme');
         if (cachedTheme) {
-            document.documentElement.classList.toggle(
-                'dark',
-                cachedTheme === 'dark'
-            );
+            const isDark = cachedTheme === 'dark';
+            document.documentElement.classList.toggle('dark', isDark);
 
-            updateStatusBarStyle(cachedTheme === 'dark');
+            updateStatusBarStyle(isDark);
+        } else {
+            updateStatusBarStyle(isDarkDefault);
         }
         const themeChangedListener = (e: Event) => {
             const isDark = (e as CustomEvent).detail.isDark;
@@ -34,10 +36,7 @@ const useTheme = () => {
             );
             document.head.appendChild(statusBarMeta);
         }
-        statusBarMeta.setAttribute(
-            'content',
-            isDark ? 'black-translucent' : 'default'
-        );
+        statusBarMeta.setAttribute('content', 'black-translucent');
         let themeColorMeta = document.querySelector('meta[name="theme-color"]');
 
         if (!themeColorMeta) {
