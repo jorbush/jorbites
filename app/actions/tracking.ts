@@ -3,10 +3,7 @@
 import producer from '@/app/lib/kafka';
 import { logger } from '@/app/lib/axiom/server';
 import { UserEventType, UserInteractionData } from '@/app/types/tracking';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import { unauthorized } from 'next/navigation';
 
 const KAFKA_TIMEOUT_MS = 3000;
 
@@ -86,12 +83,6 @@ async function trackUserInteractionInternal(
 }
 
 async function validateUser(userId: string): Promise<boolean> {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-        logger.warn('Unauthorized tracking attempt: no session');
-        return false;
-    }
-
     const currentUser = await getCurrentUser();
     if (!currentUser || currentUser.id !== userId) {
         logger.warn('Unauthorized tracking attempt: user mismatch', {

@@ -3,8 +3,6 @@
 import webpush from 'web-push';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import { logger } from '@/app/lib/axiom/server';
 
 if (
@@ -21,10 +19,9 @@ if (
 }
 
 export async function subscribeUser(sub: webpush.PushSubscription) {
-    const session = await getServerSession(authOptions);
     const currentUser = await getCurrentUser();
 
-    if (!session || !currentUser) {
+    if (!currentUser) {
         logger.warn('Unauthorized subscribe attempt');
         return { success: false, error: 'Unauthorized' };
     }
@@ -54,10 +51,9 @@ export async function subscribeUser(sub: webpush.PushSubscription) {
 }
 
 export async function unsubscribeUser(sub?: webpush.PushSubscription | null) {
-    const session = await getServerSession(authOptions);
     const currentUser = await getCurrentUser();
 
-    if (!session || !currentUser) {
+    if (!currentUser) {
         logger.warn('Unauthorized unsubscribe attempt');
         return { success: false, error: 'Unauthorized' };
     }
