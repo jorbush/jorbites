@@ -7,6 +7,7 @@ jest.mock('@/app/lib/prismadb', () => ({
     list: {
         count: jest.fn(),
         create: jest.fn(),
+        findFirst: jest.fn(),
     },
 }));
 
@@ -54,5 +55,23 @@ describe('POST /api/lists/ensure-default', () => {
 
         const response = await POST();
         expect(response.status).toBe(500);
+    });
+
+    it('should return 200 if creation fails but list exists (race condition)', async () => {
+        mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
+        (prisma.list.count as jest.Mock).mockResolvedValue(0);
+        (prisma.list.create as jest.Mock).mockRejectedValue(
+            new Error('Unique constraint failed')
+        );
+        (prisma.list.findFirst as jest.Mock).mockResolvedValue({
+            id: 'list-id',
+        });
+
+        const response = await POST();
+        const data = await response.json();
+
+        expect(response.status).toBe(200);
+        expect(data.created).toBe(false);
+        expect(data.message).toBe('Default list already exists');
     });
 });

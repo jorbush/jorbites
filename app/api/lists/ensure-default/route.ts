@@ -40,22 +40,49 @@ export async function POST() {
                     },
                 });
 
-                logger.info('POST /api/lists/ensure-default - default list created', {
-                    userId: currentUser.id,
-                    listId: defaultList.id,
+                logger.info(
+                    'POST /api/lists/ensure-default - default list created',
+                    {
+                        userId: currentUser.id,
+                        listId: defaultList.id,
+                    }
+                );
+
+                return NextResponse.json({
+                    message: 'Default list created',
+                    created: true,
+                });
+            } catch (error: any) {
+                logger.error(
+                    'POST /api/lists/ensure-default - error creating default list',
+                    {
+                        error: error.message,
+                    }
+                );
+
+                // Check if it was a parallel request that already created it
+                const existingDefaultList = await prisma.list.findFirst({
+                    where: {
+                        userId: currentUser.id,
+                        isDefault: true,
+                    },
                 });
 
-                return NextResponse.json({ message: 'Default list created', created: true });
-            } catch (error: any) {
-                logger.error('POST /api/lists/ensure-default - error creating default list', {
-                    error: error.message,
-                });
-                // If a parallel request already created it, that's fine
-                return NextResponse.json({ message: 'Default list already exists or error', created: false });
+                if (existingDefaultList) {
+                    return NextResponse.json({
+                        message: 'Default list already exists',
+                        created: false,
+                    });
+                }
+
+                return internalServerError('Failed to create default list');
             }
         }
 
-        return NextResponse.json({ message: 'Lists already exist', created: false });
+        return NextResponse.json({
+            message: 'Lists already exist',
+            created: false,
+        });
     } catch (error: any) {
         logger.error('POST /api/lists/ensure-default - error', { error: error.message });
         return internalServerError('Internal Error');
