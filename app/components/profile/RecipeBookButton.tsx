@@ -10,11 +10,13 @@ import { SafeRecipe } from '@/app/types';
 interface RecipeBookButtonProps {
     userId: string;
     userName: string;
+    userImage?: string | null;
 }
 
 export const RecipeBookButton: React.FC<RecipeBookButtonProps> = ({
     userId,
     userName,
+    userImage,
 }) => {
     const { t } = useTranslation();
     const [isGenerating, setIsGenerating] = useState(false);
@@ -93,6 +95,7 @@ export const RecipeBookButton: React.FC<RecipeBookButtonProps> = ({
                 <RecipeBookPDF
                     recipes={translatedRecipes}
                     userName={userName}
+                    userImage={userImage}
                     logoUrl={logoUrl}
                     labels={labels}
                 />
