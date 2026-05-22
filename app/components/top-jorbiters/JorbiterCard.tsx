@@ -27,17 +27,17 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
             case 0:
                 return 'text-yellow-400';
             case 1:
-                return 'text-gray-400';
+                return 'text-neutral-400';
             case 2:
                 return 'text-amber-600';
             default:
-                return 'text-gray-300';
+                return 'text-neutral-300';
         }
     };
 
     return (
         <div
-            className={`dark:bg-dark relative cursor-pointer overflow-hidden rounded-lg border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-gray-700 ${
+            className={`dark:bg-dark relative cursor-pointer overflow-hidden rounded-lg border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-700 ${
                 index < 3
                     ? 'border-2 ' +
                       getMedalColor(index).replace('text', 'border')
@@ -75,7 +75,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                                 />
                             )}
                         </div>
-                        <div className="sm:text-md text-sm text-gray-400 md:text-lg">
+                        <div className="sm:text-md text-sm text-neutral-400 md:text-lg">
                             {`${t('level')} ${jorbiter.level}`}
                         </div>
                     </div>

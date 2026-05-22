@@ -28,7 +28,7 @@ const QuestsClientSkeleton = () => {
                     {[1, 2, 3].map((i) => (
                         <div
                             key={i}
-                            className="overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+                            className="overflow-hidden rounded-lg border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
                         >
                             {/* Header */}
                             <div className="mb-4 flex items-start justify-between">
@@ -45,7 +45,7 @@ const QuestsClientSkeleton = () => {
                             </div>
 
                             {/* Footer */}
-                            <div className="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-neutral-800">
+                            <div className="flex items-center justify-between border-t border-neutral-200 pt-4 dark:border-neutral-800">
                                 <div className="flex items-center gap-3">
                                     <div className="h-8 w-8 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
                                     <div className="space-y-1">

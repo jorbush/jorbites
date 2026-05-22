@@ -38,7 +38,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
             tabIndex={0}
             role="button"
             aria-label={`View ${chef.name || t('anonymous')}'s profile`}
-            className="group cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:focus:ring-offset-gray-900"
+            className="group cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:focus:ring-offset-neutral-900"
             data-cy="chef-card"
             data-testid="chef-card"
         >
@@ -51,7 +51,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                             className="text-yellow-500"
                             size={16}
                         />
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                             {t('level')} {chef.level}
                         </span>
                     </div>
@@ -70,7 +70,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                 {/* Chef Name */}
                 <div className="mb-2 flex items-center gap-2">
                     <h3
-                        className="text-lg font-semibold text-gray-900 hover:text-orange-500 dark:text-white dark:hover:text-orange-400"
+                        className="text-lg font-semibold text-neutral-900 hover:text-orange-500 dark:text-white dark:hover:text-orange-400"
                         data-cy="chef-card-name"
                         data-testid="chef-card-name"
                     >
@@ -86,26 +86,26 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
 
                 {/* Most Used Category */}
                 {chef.mostUsedCategory && (
-                    <div className="mb-3 text-sm text-gray-600 dark:text-gray-400">
+                    <div className="mb-3 text-sm text-neutral-600 dark:text-neutral-400">
                         {t(chef.mostUsedCategory.toLowerCase())}
                     </div>
                 )}
 
                 {/* Stats Grid */}
-                <div className="mt-2 grid w-full grid-cols-3 gap-3 border-t border-gray-200 pt-4 dark:border-gray-700">
+                <div className="mt-2 grid w-full grid-cols-3 gap-3 border-t border-neutral-200 pt-4 dark:border-neutral-700">
                     {/* Recipes */}
                     <div className="flex flex-col items-center">
-                        <div className="mb-1 flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                        <div className="mb-1 flex items-center gap-1 text-neutral-500 dark:text-neutral-400">
                             <FiBook size={16} />
                         </div>
                         <div
-                            className="text-lg font-bold text-gray-900 dark:text-white"
+                            className="text-lg font-bold text-neutral-900 dark:text-white"
                             data-cy="chef-card-recipes"
                             data-testid="chef-card-recipes"
                         >
                             {chef.recipeCount || 0}
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-neutral-500 dark:text-neutral-400">
                             {chef.recipeCount === 1
                                 ? t('recipe')
                                 : t('recipes')}
@@ -114,34 +114,34 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
 
                     {/* Likes */}
                     <div className="flex flex-col items-center">
-                        <div className="mb-1 flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                        <div className="mb-1 flex items-center gap-1 text-neutral-500 dark:text-neutral-400">
                             <FiHeart size={16} />
                         </div>
                         <div
-                            className="text-lg font-bold text-gray-900 dark:text-white"
+                            className="text-lg font-bold text-neutral-900 dark:text-white"
                             data-cy="chef-card-likes"
                             data-testid="chef-card-likes"
                         >
                             {chef.likesReceived || 0}
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-neutral-500 dark:text-neutral-400">
                             {t('likes')}
                         </div>
                     </div>
 
                     {/* Badges */}
                     <div className="flex flex-col items-center">
-                        <div className="mb-1 flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                        <div className="mb-1 flex items-center gap-1 text-neutral-500 dark:text-neutral-400">
                             <SlBadge size={16} />
                         </div>
                         <div
-                            className="text-lg font-bold text-gray-900 dark:text-white"
+                            className="text-lg font-bold text-neutral-900 dark:text-white"
                             data-cy="chef-card-badges"
                             data-testid="chef-card-badges"
                         >
                             {chef.badges?.length || 0}
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-neutral-500 dark:text-neutral-400">
                             {t('badges')}
                         </div>
                     </div>
@@ -180,7 +180,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                 {/* Average likes indicator */}
                 {chef.avgLikesPerRecipe != null &&
                     chef.avgLikesPerRecipe > 0 && (
-                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                        <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
                             ~{chef.avgLikesPerRecipe} {t('likes_per_recipe')}
                         </div>
                     )}

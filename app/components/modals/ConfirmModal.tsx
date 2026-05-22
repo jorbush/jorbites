@@ -29,7 +29,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         <div className="flex flex-col gap-4">
             <Heading title={t('confirm_title')} />
             {description && (
-                <p className="text-sm text-gray-600 dark:text-zinc-400">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
                     {description}
                 </p>
             )}

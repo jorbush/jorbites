@@ -73,13 +73,13 @@ const Comment: React.FC<CommentProps> = ({
             <div className="mt-2 ml-4 grow">
                 <div className="mb-1 flex flex-row">
                     <p
-                        className="cursor-pointer truncate text-justify font-bold whitespace-normal text-gray-800 dark:text-neutral-100"
+                        className="cursor-pointer truncate text-justify font-bold whitespace-normal text-neutral-800 dark:text-neutral-100"
                         onClick={() => router.push('/profile/' + userId)}
                     >
                         {userName}
                     </p>
                     {verified && <VerificationBadge className="mt-1 ml-1" />}
-                    <div className="mt-0.5 ml-1.5 text-sm text-gray-400">
+                    <div className="mt-0.5 ml-1.5 text-sm text-neutral-400">
                         {mounted
                             ? `${t('level')} ${userLevel}`
                             : `level ${userLevel}`}
@@ -89,10 +89,10 @@ const Comment: React.FC<CommentProps> = ({
                     content={comment}
                     renderButton={false}
                     onButtonStateChange={setTranslateButton}
-                    className="text-justify break-words whitespace-normal text-gray-800 dark:text-neutral-100"
+                    className="text-justify break-words whitespace-normal text-neutral-800 dark:text-neutral-100"
                     renderContent={(content) => (
                         <p
-                            className="text-justify break-words whitespace-normal text-gray-800 dark:text-neutral-100"
+                            className="text-justify break-words whitespace-normal text-neutral-800 dark:text-neutral-100"
                             data-cy="comment-text"
                         >
                             {typeof content === 'string'
@@ -101,7 +101,7 @@ const Comment: React.FC<CommentProps> = ({
                         </p>
                     )}
                 />
-                <div className="mt-2 flex min-h-[24px] items-center justify-between text-sm text-gray-400">
+                <div className="mt-2 flex min-h-[24px] items-center justify-between text-sm text-neutral-400">
                     <div className="shrink-0">{translateButton}</div>
                     <div className="ml-auto">{formattedDate}</div>
                 </div>

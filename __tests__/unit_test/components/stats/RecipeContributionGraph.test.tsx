@@ -215,7 +215,7 @@ describe('<RecipeContributionGraph />', () => {
         );
         const monthLabels =
             monthLabelsRow?.querySelectorAll(
-                '.text-xs.text-gray-500, .text-\\[10px\\].text-gray-500'
+                '.text-xs.text-neutral-500, .text-\\[10px\\].text-neutral-500'
             ) || [];
         expect(monthLabels.length).toBeGreaterThan(0);
     });

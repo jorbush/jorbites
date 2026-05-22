@@ -25,7 +25,7 @@ const StatCard: React.FC<StatCardProps> = ({
         <div className="rounded-lg bg-white p-3 shadow-xs dark:bg-neutral-800">
             <div className="flex items-start justify-between">
                 <div className="flex flex-col">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
                         {title}
                     </p>
                     <p className="text-green-450 mt-1 text-2xl font-bold">

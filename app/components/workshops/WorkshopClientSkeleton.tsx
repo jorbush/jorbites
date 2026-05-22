@@ -9,7 +9,7 @@ const WorkshopClientSkeleton = () => {
                     {/* Navigation and title area with back/share buttons */}
                     <div className="flex items-baseline justify-between sm:mr-4 sm:ml-4">
                         {/* Back button */}
-                        <div className="mr-4 flex translate-y-3 items-center space-x-2 text-gray-600 md:translate-y-0">
+                        <div className="mr-4 flex translate-y-3 items-center space-x-2 text-neutral-600 md:translate-y-0">
                             <div className="h-6 w-6 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                         </div>
 
@@ -20,7 +20,7 @@ const WorkshopClientSkeleton = () => {
                         </div>
 
                         {/* Share button */}
-                        <div className="ml-4 flex translate-y-3 items-center space-x-2 text-gray-600 md:translate-y-0">
+                        <div className="ml-4 flex translate-y-3 items-center space-x-2 text-neutral-600 md:translate-y-0">
                             <div className="h-6 w-6 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                         </div>
                     </div>

@@ -121,7 +121,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                     <p className="text-left">
                         {t('change_password') || 'Change Password'}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-zinc-400">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
                         {t('password_requirements') ||
                             'Password must be at least 6 characters long'}
                     </p>
@@ -130,13 +130,13 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                     {!isEditing ? (
                         <FiEdit3
                             data-testid="edit-password-icon"
-                            className="h-4 w-4 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                            className="h-4 w-4 cursor-pointer text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
                             onClick={handleEditClick}
                         />
                     ) : (
                         <button
                             onClick={handleCancelEdit}
-                            className="text-xs text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                            className="text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
                             disabled={isLoading}
                             data-testid="cancel-edit-button"
                         >
@@ -150,7 +150,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                 <div className="flex flex-col gap-3">
                     {/* Current Password */}
                     <div className="flex flex-col gap-1">
-                        <label className="text-sm font-medium text-gray-700 dark:text-zinc-300">
+                        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                             {t('current_password') || 'Current Password'}
                         </label>
                         <div className="relative">
@@ -160,7 +160,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                                     required: true,
                                     minLength: 1,
                                 })}
-                                className="focus:ring-green-450 w-full rounded border border-gray-300 px-3 py-2 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+                                className="focus:ring-green-450 w-full rounded border border-neutral-300 px-3 py-2 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                                 placeholder={
                                     t('enter_current_password') ||
                                     'Enter current password'
@@ -170,7 +170,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                             />
                             <button
                                 type="button"
-                                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-zinc-500 dark:hover:text-zinc-300"
+                                className="absolute top-1/2 right-3 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
                                 onClick={() =>
                                     setShowCurrentPassword(!showCurrentPassword)
                                 }
@@ -187,7 +187,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 
                     {/* New Password */}
                     <div className="flex flex-col gap-1">
-                        <label className="text-sm font-medium text-gray-700 dark:text-zinc-300">
+                        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                             {t('new_password') || 'New Password'}
                         </label>
                         <div className="relative">
@@ -201,7 +201,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                                         t('new_password_must_be_different') ||
                                         'New password must be different from current password',
                                 })}
-                                className="focus:ring-green-450 w-full rounded border border-gray-300 px-3 py-2 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+                                className="focus:ring-green-450 w-full rounded border border-neutral-300 px-3 py-2 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                                 placeholder={
                                     t('enter_new_password') ||
                                     'Enter new password'
@@ -211,7 +211,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                             />
                             <button
                                 type="button"
-                                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-zinc-500 dark:hover:text-zinc-300"
+                                className="absolute top-1/2 right-3 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
                                 onClick={() =>
                                     setShowNewPassword(!showNewPassword)
                                 }
@@ -234,7 +234,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 
                     {/* Confirm Password */}
                     <div className="flex flex-col gap-1">
-                        <label className="text-sm font-medium text-gray-700 dark:text-zinc-300">
+                        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                             {t('confirm_password') || 'Confirm Password'}
                         </label>
                         <div className="relative">
@@ -247,7 +247,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                                         t('passwords_dont_match') ||
                                         'Passwords do not match',
                                 })}
-                                className="focus:ring-green-450 w-full rounded border border-gray-300 px-3 py-2 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+                                className="focus:ring-green-450 w-full rounded border border-neutral-300 px-3 py-2 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                                 placeholder={
                                     t('confirm_new_password') ||
                                     'Confirm new password'
@@ -257,7 +257,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                             />
                             <button
                                 type="button"
-                                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-zinc-500 dark:hover:text-zinc-300"
+                                className="absolute top-1/2 right-3 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
                                 onClick={() =>
                                     setShowConfirmPassword(!showConfirmPassword)
                                 }

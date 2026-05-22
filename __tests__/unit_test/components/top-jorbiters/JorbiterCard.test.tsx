@@ -91,6 +91,6 @@ describe('<JorbiterCard />', () => {
             />
         );
         const cardDiv = container.firstChild as HTMLElement;
-        expect(cardDiv.className).toContain('border-gray-400');
+        expect(cardDiv.className).toContain('border-neutral-400');
     });
 });

@@ -134,7 +134,7 @@ export const RecipeBookButton: React.FC<RecipeBookButtonProps> = ({
         <button
             onClick={handleGenerate}
             disabled={isGenerating}
-            className="flex cursor-pointer items-center space-x-2 text-gray-600 transition hover:text-green-600 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-100 dark:hover:text-green-400"
+            className="flex cursor-pointer items-center space-x-2 text-neutral-600 transition hover:text-green-600 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-100 dark:hover:text-green-400"
             title={t('generate_recipe_book') || 'Generate Recipe Book'}
             aria-label={t('generate_recipe_book') || 'Generate Recipe Book'}
             data-cy="recipe-book-button"
