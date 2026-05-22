@@ -29,7 +29,9 @@ const RankIcon: React.FC<RankIconProps> = ({ rank }) => {
         return <FaMedal className={`${getMedalColor(rank)} text-2xl`} />;
     }
 
-    return <span className="text-xl font-bold text-neutral-400">#{rank + 1}</span>;
+    return (
+        <span className="text-xl font-bold text-neutral-400">#{rank + 1}</span>
+    );
 };
 
 export default RankIcon;

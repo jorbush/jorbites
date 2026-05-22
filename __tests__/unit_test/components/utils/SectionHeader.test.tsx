@@ -74,7 +74,9 @@ describe('<SectionHeader />', () => {
         expect(descriptionElement).toBeDefined();
         expect(descriptionElement?.className).toContain('text-sm');
         expect(descriptionElement?.className).toContain('text-neutral-600');
-        expect(descriptionElement?.className).toContain('dark:text-neutral-300');
+        expect(descriptionElement?.className).toContain(
+            'dark:text-neutral-300'
+        );
     });
 
     it('applies correct classes to container', () => {
