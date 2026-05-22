@@ -153,9 +153,9 @@ describe('<Navbar />', () => {
         expect(header.className).toContain('fixed');
         expect(header.className).toContain('z-20');
         expect(header.className).toContain('w-full');
-        expect(header.className).toContain('bg-white/75');
+        expect(header.className).toContain('bg-white/85');
         expect(header.className).toContain('backdrop-blur-lg');
         expect(header.className).toContain('pt-[env(safe-area-inset-top,0px)]');
-        expect(header.className).toContain('dark:bg-[#0F0F0F]/75');
+        expect(header.className).toContain('dark:bg-[#0F0F0F]/85');
     });
 });
