@@ -366,7 +366,9 @@ describe('RecipeBookPDF Component', () => {
         expect(leftImages?.[0].getAttribute('src')).toContain(
             '/images/cake.png'
         );
-        expect((leftImages?.[0] as HTMLElement).style.height).toBe('162px');
+        expect(leftImages && (leftImages[0] as HTMLElement).style.height).toBe(
+            '162px'
+        );
 
         // Right column should contain the extra image gallery
         const rightImages = rightCol?.querySelectorAll(
@@ -376,7 +378,9 @@ describe('RecipeBookPDF Component', () => {
         expect(rightImages?.[0].getAttribute('src')).toContain(
             '/images/step1.png'
         );
-        expect((rightImages?.[0] as HTMLElement).style.height).toBe('133px');
+        expect(
+            rightImages && (rightImages[0] as HTMLElement).style.height
+        ).toBe('133px');
     });
 
     it('scales down the gallery image height when vertical space is constrained', () => {
