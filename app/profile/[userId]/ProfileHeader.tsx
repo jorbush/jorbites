@@ -84,6 +84,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                         <RecipeBookButton
                             userId={user.id}
                             userName={user.name || 'User'}
+                            userImage={user.image}
                         />
                     )}
                     <button

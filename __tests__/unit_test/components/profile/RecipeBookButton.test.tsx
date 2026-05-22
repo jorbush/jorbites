@@ -68,6 +68,7 @@ describe('RecipeBookButton', () => {
     const defaultProps = {
         userId: 'user-123',
         userName: 'John Doe',
+        userImage: 'https://example.com/avatar.png',
     };
 
     let clickSpy: any;

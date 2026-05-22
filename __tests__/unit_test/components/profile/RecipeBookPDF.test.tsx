@@ -76,6 +76,10 @@ describe('RecipeBookPDF Component', () => {
             title: 'Chocolate Cake',
             description: 'Delicious chocolate cake',
             imageSrc: 'https://example.com/cake.jpg',
+            extraImages: [
+                'https://example.com/step1.jpg',
+                'https://example.com/step2.jpg',
+            ],
             minutes: 45,
             method: 'Oven',
             categories: ['Dessert'],
@@ -121,11 +125,12 @@ describe('RecipeBookPDF Component', () => {
         cleanup();
     });
 
-    it('renders the cover page with title, subtitle, author, and logo', () => {
+    it('renders the cover page with title, subtitle, author, logo, and avatar', () => {
         render(
             <RecipeBookPDF
                 recipes={mockRecipes}
                 userName="Alice"
+                userImage="https://example.com/avatar.png"
                 logoUrl="https://example.com/logo.png"
                 labels={mockLabels}
             />
@@ -141,6 +146,9 @@ describe('RecipeBookPDF Component', () => {
         const images = screen.getAllByTestId('pdf-image');
         expect(images[0].getAttribute('src')).toBe(
             'https://example.com/logo.png'
+        );
+        expect(images[1].getAttribute('src')).toContain(
+            '/api/image-proxy?url=https%3A%2F%2Fexample.com%2Favatar.png'
         );
     });
 
@@ -197,13 +205,25 @@ describe('RecipeBookPDF Component', () => {
 
         // Check that the image source is proxied
         const images = screen.getAllByTestId('pdf-image');
+
+        // Recipe 1 main image
         expect(images[1].getAttribute('src')).toContain(
             '/api/image-proxy?url=https%3A%2F%2Fexample.com%2Fcake.jpg'
         );
+
+        // Recipe 1 extra images (gallery)
         expect(images[2].getAttribute('src')).toContain(
+            '/api/image-proxy?url=https%3A%2F%2Fexample.com%2Fstep1.jpg'
+        );
+        expect(images[3].getAttribute('src')).toContain(
+            '/api/image-proxy?url=https%3A%2F%2Fexample.com%2Fstep2.jpg'
+        );
+
+        // Recipe 2 main image
+        expect(images[4].getAttribute('src')).toContain(
             '/images/placeholder.png'
         );
-        expect(images[2].getAttribute('src')).not.toContain('/api/image-proxy');
+        expect(images[4].getAttribute('src')).not.toContain('/api/image-proxy');
     });
 
     it('renders page footers correctly', () => {
@@ -299,5 +319,122 @@ describe('RecipeBookPDF Component', () => {
         expect(boldItalicElements.some((el) => el.textContent === 'love')).toBe(
             true
         );
+    });
+
+    it('places the extraImages gallery in the column with more available space', () => {
+        const recipeLongIngredients = {
+            id: 'recipe-long-ing',
+            title: 'Long Ingredients Recipe',
+            description: 'Recipe with 15 ingredients and 2 short steps',
+            imageSrc: '/images/cake.webp',
+            extraImages: ['/images/step1.webp'],
+            minutes: 30,
+            method: 'Mix',
+            categories: ['Test'],
+            ingredients: Array(15).fill('Ingredient item text'),
+            steps: ['Short step 1', 'Short step 2'],
+            createdAt: '2026-05-21T00:00:00.000Z',
+            numLikes: 1,
+            userId: 'user-123',
+        };
+
+        const { container } = render(
+            <RecipeBookPDF
+                recipes={[recipeLongIngredients]}
+                userName="Alice"
+                logoUrl="https://example.com/logo.png"
+                labels={mockLabels}
+            />
+        );
+
+        const cols = container.querySelectorAll('[data-testid="pdf-view"]');
+        const leftCol = Array.from(cols).find(
+            (el) => (el as HTMLElement).style.width === '42%'
+        );
+        const rightCol = Array.from(cols).find(
+            (el) => (el as HTMLElement).style.width === '54%'
+        );
+
+        expect(leftCol).toBeDefined();
+        expect(rightCol).toBeDefined();
+
+        // Left column should contain the main image, but NOT the extra image gallery
+        const leftImages = leftCol?.querySelectorAll(
+            '[data-testid="pdf-image"]'
+        );
+        expect(leftImages?.length).toBe(1);
+        expect(leftImages?.[0].getAttribute('src')).toContain(
+            '/images/cake.png'
+        );
+        expect((leftImages?.[0] as HTMLElement).style.height).toBe('162px');
+
+        // Right column should contain the extra image gallery
+        const rightImages = rightCol?.querySelectorAll(
+            '[data-testid="pdf-image"]'
+        );
+        expect(rightImages?.length).toBe(1);
+        expect(rightImages?.[0].getAttribute('src')).toContain(
+            '/images/step1.png'
+        );
+        expect((rightImages?.[0] as HTMLElement).style.height).toBe('133px');
+    });
+
+    it('scales down the gallery image height when vertical space is constrained', () => {
+        const recipeConstrained = {
+            id: 'recipe-constrained',
+            title: 'Constrained Recipe',
+            description:
+                'Recipe with very long text description that takes up space ' +
+                'A'.repeat(300),
+            imageSrc: '/images/cake.webp',
+            extraImages: ['/images/step1.webp', '/images/step2.webp'],
+            minutes: 30,
+            method: 'Mix',
+            categories: ['Test'],
+            ingredients: Array(20).fill('Ingredient item text'),
+            steps: Array(11).fill(
+                'Step item text is extremely long and takes up multiple lines to constrain the height of the right column. We need to make this even longer to push the height to the limit!'
+            ),
+            createdAt: '2026-05-21T00:00:00.000Z',
+            numLikes: 1,
+            userId: 'user-123',
+        };
+
+        const { container } = render(
+            <RecipeBookPDF
+                recipes={[recipeConstrained]}
+                userName="Alice"
+                logoUrl="https://example.com/logo.png"
+                labels={mockLabels}
+            />
+        );
+
+        const cols = container.querySelectorAll('[data-testid="pdf-view"]');
+        const leftCol = Array.from(cols).find(
+            (el) => (el as HTMLElement).style.width === '42%'
+        );
+        const rightCol = Array.from(cols).find(
+            (el) => (el as HTMLElement).style.width === '54%'
+        );
+
+        const leftImages = leftCol?.querySelectorAll(
+            '[data-testid="pdf-image"]'
+        );
+        const rightImages = rightCol?.querySelectorAll(
+            '[data-testid="pdf-image"]'
+        );
+
+        let galleryImage: Element | undefined;
+        if (leftImages && leftImages.length > 1) {
+            // First image is main image, subsequent are gallery images
+            galleryImage = leftImages[1];
+        } else if (rightImages && rightImages.length > 0) {
+            galleryImage = rightImages[0];
+        }
+
+        expect(galleryImage).toBeDefined();
+        // Gallery images should be scaled down to 50px (minimum)
+        const galleryImageStyle = (galleryImage as HTMLElement).style;
+        expect(galleryImageStyle.height).toBe('50px');
     });
 });
