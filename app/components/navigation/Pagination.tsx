@@ -56,7 +56,7 @@ const Pagination = ({
                 />
             </button>
             <span
-                className="px-4 py-2 dark:text-gray-600"
+                className="px-4 py-2 dark:text-neutral-600"
                 suppressHydrationWarning
             >
                 {currentPage} {t('of')} {totalPages}

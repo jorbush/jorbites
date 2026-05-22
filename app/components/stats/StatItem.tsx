@@ -16,7 +16,7 @@ const StatItem: React.FC<StatItemProps> = ({ value, label, flexDirection }) => (
             {value}
         </p>
         <p
-            className={`text-gray-500 dark:text-gray-400 ${flexDirection !== 'row' ? 'text-sm' : 'text-xs'}`}
+            className={`text-neutral-500 dark:text-neutral-400 ${flexDirection !== 'row' ? 'text-sm' : 'text-xs'}`}
         >
             {label}
         </p>

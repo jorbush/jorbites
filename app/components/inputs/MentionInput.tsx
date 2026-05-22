@@ -319,7 +319,7 @@ const MentionInput: React.FC<MentionInputProps> = ({
             {showDropdown && users.length > 0 && (
                 <div
                     ref={dropdownRef}
-                    className={`rounded-md border border-gray-200 bg-white shadow-lg dark:border-neutral-600 dark:bg-zinc-800 ${
+                    className={`rounded-md border border-neutral-200 bg-white shadow-lg dark:border-neutral-600 dark:bg-neutral-800 ${
                         isMobile() ? 'w-full max-w-none' : 'w-auto max-w-sm'
                     }`}
                     style={getDropdownPosition()}
@@ -328,11 +328,11 @@ const MentionInput: React.FC<MentionInputProps> = ({
                         {users.map((user, index) => (
                             <div
                                 key={user.id}
-                                className={`flex cursor-pointer items-center gap-2 pr-5 hover:bg-gray-50 dark:hover:bg-zinc-700 ${
+                                className={`flex cursor-pointer items-center gap-2 pr-5 hover:bg-neutral-50 dark:hover:bg-neutral-700 ${
                                     isMobile() ? 'p-4' : 'p-3'
                                 } ${
                                     index === selectedIndex
-                                        ? 'bg-gray-50 dark:bg-zinc-700'
+                                        ? 'bg-neutral-50 dark:bg-neutral-700'
                                         : ''
                                 }`}
                                 onClick={() => selectUser(user)}
@@ -345,7 +345,7 @@ const MentionInput: React.FC<MentionInputProps> = ({
                                     size={32}
                                 />
                                 <div className="flex items-center gap-1">
-                                    <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                                    <span className="font-medium text-neutral-900 dark:text-neutral-100">
                                         {user.name}
                                     </span>
                                     {user.verified && (

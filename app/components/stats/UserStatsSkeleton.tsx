@@ -11,7 +11,7 @@ const UserStatsSkeleton = () => {
                     {[1, 2, 3, 4].map((index) => (
                         <div
                             key={index}
-                            className="rounded-lg bg-white p-3 shadow-xs dark:bg-gray-800"
+                            className="rounded-lg bg-white p-3 shadow-xs dark:bg-neutral-800"
                         >
                             <div className="flex items-start justify-between">
                                 <div className="flex flex-col">
@@ -40,7 +40,7 @@ const UserStatsSkeleton = () => {
                     {[1, 2].map((index) => (
                         <div
                             key={index}
-                            className="flex items-center gap-3 rounded-lg bg-white p-4 shadow-xs dark:bg-gray-800"
+                            className="flex items-center gap-3 rounded-lg bg-white p-4 shadow-xs dark:bg-neutral-800"
                         >
                             {/* Icon skeleton */}
                             <div className="rounded-full bg-neutral-200 p-3 dark:bg-neutral-700">

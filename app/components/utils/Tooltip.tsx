@@ -46,7 +46,7 @@ const Tooltip: React.FC<TooltipProps> = ({
             {children}
             {isVisible && (
                 <div
-                    className={`pointer-events-none absolute z-1 rounded-sm bg-white px-2 py-1 text-xs whitespace-nowrap text-gray-800 opacity-100 shadow-md dark:bg-neutral-950 dark:text-white ${positionClasses[position]}`}
+                    className={`pointer-events-none absolute z-1 rounded-sm bg-white px-2 py-1 text-xs whitespace-nowrap text-neutral-800 opacity-100 shadow-md dark:bg-neutral-950 dark:text-white ${positionClasses[position]}`}
                     data-testid="tooltip"
                 >
                     {text}

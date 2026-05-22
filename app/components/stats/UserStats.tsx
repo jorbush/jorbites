@@ -40,26 +40,26 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
             <>
                 <FaArrowUp className="mr-1 text-green-500" />
                 <span className="font-medium text-green-500">{trend}% </span>
-                <span className="ml-1 text-gray-500 dark:text-gray-400">
+                <span className="ml-1 text-neutral-500 dark:text-neutral-400">
                     {t('this_year')}
                 </span>
             </>
         ) : null;
 
     const likesFooter = (
-        <span className="text-gray-500 dark:text-gray-400">
+        <span className="text-neutral-500 dark:text-neutral-400">
             {t('avg')}: {user?.avgLikesPerRecipe || 0} {t('per_recipe')}
         </span>
     );
 
     const cookingTimeFooter = (
-        <span className="text-gray-500 dark:text-gray-400">
+        <span className="text-neutral-500 dark:text-neutral-400">
             {user?.totalCookingTime || 0} {t('minutes_total')}
         </span>
     );
 
     const thisYearFooter = (
-        <span className="text-gray-500 dark:text-gray-400">
+        <span className="text-neutral-500 dark:text-neutral-400">
             {Math.round(
                 ((user?.recipesThisYear || 0) / (recipeCount || 1)) * 100
             )}

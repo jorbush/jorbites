@@ -23,7 +23,7 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
                 id={id}
                 {...register(id)}
                 disabled={disabled}
-                className={`peer w-full cursor-pointer appearance-none rounded-md border-2 bg-white p-4 pt-6 font-light text-zinc-900 outline-hidden transition disabled:cursor-not-allowed disabled:opacity-70 dark:bg-zinc-800 dark:text-zinc-100 ${
+                className={`peer w-full cursor-pointer appearance-none rounded-md border-2 bg-white p-4 pt-6 font-light text-neutral-900 outline-hidden transition disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800 dark:text-neutral-100 ${
                     errors[id]
                         ? 'border-rose-500 focus:border-rose-500'
                         : 'border-neutral-300 focus:border-black dark:border-neutral-600 dark:focus:border-white'
@@ -38,13 +38,13 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
                 className={`text-md absolute top-5 left-4 z-10 origin-[0] -translate-y-3 scale-75 transform duration-150 ${
                     errors[id]
                         ? 'text-rose-500'
-                        : 'text-zinc-400 dark:text-zinc-500'
+                        : 'text-neutral-400 dark:text-neutral-500'
                 }`}
             >
                 {t('currency')}
             </label>
             {/* Dropdown arrow */}
-            <div className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400 dark:text-zinc-500">
+            <div className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-neutral-400 dark:text-neutral-500">
                 <svg
                     width="12"
                     height="8"

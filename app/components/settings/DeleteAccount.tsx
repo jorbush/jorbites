@@ -58,7 +58,7 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
                     <p className="text-left text-red-600 dark:text-red-400">
                         {t('delete_account') || 'Delete Account'}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-zinc-400">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
                         {t('action_cannot_be_undone') ||
                             'This action cannot be undone.'}
                     </p>

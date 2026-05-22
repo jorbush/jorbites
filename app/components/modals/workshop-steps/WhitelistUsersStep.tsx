@@ -102,9 +102,9 @@ const WhitelistUsersStep: React.FC<WhitelistUsersStepProps> = ({
             {/* Display of selected users */}
             {selectedUsers.length > 0 && (
                 <div>
-                    <h3 className="mb-2 text-sm font-medium text-gray-500 dark:text-zinc-400">
+                    <h3 className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
                         {t('workshop_whitelist') || 'Invited Users'}
-                        <span className="ml-1 text-xs text-gray-400 dark:text-zinc-500">
+                        <span className="ml-1 text-xs text-neutral-400 dark:text-neutral-500">
                             ({selectedUsers.length})
                         </span>
                     </h3>
@@ -112,18 +112,18 @@ const WhitelistUsersStep: React.FC<WhitelistUsersStepProps> = ({
                         {selectedUsers.map((user) => (
                             <div
                                 key={user.id}
-                                className="flex items-center gap-2 rounded-full bg-gray-100 py-1 pr-2 pl-1 dark:bg-zinc-800"
+                                className="flex items-center gap-2 rounded-full bg-neutral-100 py-1 pr-2 pl-1 dark:bg-neutral-800"
                             >
                                 <Avatar
                                     src={user.image}
                                     size={24}
                                 />
-                                <span className="text-sm text-zinc-900 dark:text-zinc-100">
+                                <span className="text-sm text-neutral-900 dark:text-neutral-100">
                                     {user.name}
                                 </span>
                                 <button
                                     onClick={() => onRemoveUser(user.id)}
-                                    className="ml-1 text-gray-500 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-500"
+                                    className="ml-1 text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
                                     type="button"
                                 >
                                     <AiFillDelete size={16} />
@@ -135,8 +135,8 @@ const WhitelistUsersStep: React.FC<WhitelistUsersStepProps> = ({
             )}
 
             {selectedUsers.length === 0 && (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center dark:border-zinc-700">
-                    <p className="text-sm text-gray-500 dark:text-zinc-400">
+                <div className="rounded-lg border-2 border-dashed border-neutral-300 p-4 text-center dark:border-neutral-700">
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
                         {t('no_whitelisted_users')}
                     </p>
                 </div>

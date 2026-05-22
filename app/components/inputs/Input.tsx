@@ -92,7 +92,7 @@ const Input: React.FC<InputProps> = ({
                     type === 'date' || type === 'datetime-local'
                         ? 'w-0 flex-1 flex-shrink'
                         : 'w-full'
-                } rounded-md border-2 bg-white p-4 pt-6 font-light text-zinc-900 outline-hidden transition disabled:cursor-not-allowed disabled:opacity-70 dark:bg-zinc-800 dark:text-zinc-100 ${
+                } rounded-md border-2 bg-white p-4 pt-6 font-light text-neutral-900 outline-hidden transition disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800 dark:text-neutral-100 ${
                     formatPrice ? 'pl-9' : 'pl-4'
                 } ${
                     errors[id]
@@ -110,7 +110,7 @@ const Input: React.FC<InputProps> = ({
                 className={`text-md absolute top-5 z-10 origin-[0] -translate-y-3 transform duration-150 ${formatPrice ? 'left-9' : 'left-4'} peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 ${
                     errors[id]
                         ? 'text-rose-500'
-                        : 'text-zinc-400 dark:text-zinc-500'
+                        : 'text-neutral-400 dark:text-neutral-500'
                 } `}
             >
                 {label}

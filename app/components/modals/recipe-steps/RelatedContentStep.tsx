@@ -215,9 +215,9 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                 {/* Selected co-cooks */}
                 {searchType === 'users' && selectedCoCooks.length > 0 && (
                     <div>
-                        <h3 className="mb-2 text-sm font-medium text-gray-500 dark:text-zinc-400">
+                        <h3 className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
                             {t('selected_co_cooks') || 'Selected Co-Cooks'}
-                            <span className="ml-1 text-xs text-gray-400 dark:text-zinc-500">
+                            <span className="ml-1 text-xs text-neutral-400 dark:text-neutral-500">
                                 ({selectedCoCooks.length}/4)
                             </span>
                         </h3>
@@ -225,18 +225,18 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                             {selectedCoCooks.map((user) => (
                                 <div
                                     key={user.id}
-                                    className="flex items-center gap-2 rounded-full bg-gray-100 py-1 pr-2 pl-1 dark:bg-neutral-900"
+                                    className="flex items-center gap-2 rounded-full bg-neutral-100 py-1 pr-2 pl-1 dark:bg-neutral-900"
                                 >
                                     <Avatar
                                         src={user.image}
                                         size={24}
                                     />
-                                    <span className="text-sm text-zinc-900 dark:text-zinc-100">
+                                    <span className="text-sm text-neutral-900 dark:text-neutral-100">
                                         {user.name}
                                     </span>
                                     <button
                                         onClick={() => onRemoveCoCook(user.id)}
-                                        className="ml-1 text-gray-500 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-500"
+                                        className="ml-1 text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
                                     >
                                         <AiFillDelete size={16} />
                                     </button>
@@ -249,16 +249,16 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                 {/* Selected quest */}
                 {searchType === 'quests' && selectedQuest && (
                     <div>
-                        <h3 className="mb-2 text-sm font-medium text-gray-500 dark:text-zinc-400">
+                        <h3 className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
                             {t('selected_quest') || 'Selected Quest'}
                         </h3>
                         <div className="rounded-lg border border-neutral-300 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900">
                             <div className="flex items-start justify-between">
                                 <div className="flex-1">
-                                    <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                                    <p className="font-medium text-neutral-900 dark:text-neutral-100">
                                         {selectedQuest.title}
                                     </p>
-                                    <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">
+                                    <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                                         {selectedQuest.description.length > 100
                                             ? selectedQuest.description.substring(
                                                   0,
@@ -269,7 +269,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                 </div>
                                 <button
                                     onClick={onRemoveQuest}
-                                    className="ml-2 text-gray-500 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-500"
+                                    className="ml-2 text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
                                 >
                                     <AiFillDelete size={20} />
                                 </button>
@@ -282,10 +282,10 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                 {searchType === 'recipes' &&
                     selectedLinkedRecipes.length > 0 && (
                         <div>
-                            <h3 className="mb-2 text-sm font-medium text-gray-500 dark:text-zinc-400">
+                            <h3 className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
                                 {t('selected_linked_recipes') ||
                                     'Selected Linked Recipes'}
-                                <span className="ml-1 text-xs text-gray-400 dark:text-zinc-500">
+                                <span className="ml-1 text-xs text-neutral-400 dark:text-neutral-500">
                                     ({selectedLinkedRecipes.length}/2)
                                 </span>
                             </h3>
@@ -311,10 +311,10 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                                 />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                                <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                                                     {recipe.title}
                                                 </p>
-                                                <p className="text-xs text-gray-500 dark:text-zinc-400">
+                                                <p className="text-xs text-neutral-500 dark:text-neutral-400">
                                                     {recipe.user.name}
                                                 </p>
                                             </div>
@@ -323,7 +323,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                             onClick={() =>
                                                 onRemoveLinkedRecipe(recipe.id)
                                             }
-                                            className="text-gray-500 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-500"
+                                            className="text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
                                         >
                                             <AiFillDelete size={20} />
                                         </button>

@@ -18,7 +18,7 @@ describe('<RankIcon />', () => {
         render(<RankIcon rank={1} />);
         const icon = document.querySelector('svg');
         expect(icon).toBeDefined();
-        expect(icon?.classList.contains('text-gray-400')).toBeTruthy();
+        expect(icon?.classList.contains('text-neutral-400')).toBeTruthy();
     });
 
     it('renders medal for third place', () => {

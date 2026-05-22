@@ -27,7 +27,7 @@ const PreferenceCard: React.FC<PreferenceCardProps> = ({
                 <div className={`text-xl ${iconColor}`}>{icon}</div>
             </div>
             <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
                     {title}
                 </p>
                 <p className="text-green-450 text-lg font-semibold">{value}</p>

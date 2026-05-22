@@ -1,6 +1,6 @@
 const JorbiterCardSkeleton = () => {
     return (
-        <div className="dark:bg-dark relative overflow-hidden rounded-lg border bg-white p-4 shadow-sm dark:border-gray-700">
+        <div className="dark:bg-dark relative overflow-hidden rounded-lg border bg-white p-4 shadow-sm dark:border-neutral-700">
             <div className="flex items-center justify-between">
                 {/* Left section - Avatar and Basic Info */}
                 <div className="flex items-center space-x-2 sm:space-x-4">
