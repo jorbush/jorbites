@@ -25,6 +25,7 @@ interface RecipeStepsStepProps {
     onSetSteps?: (steps: string[]) => void;
     getValues?: (name?: string | string[]) => any;
     setValue?: (name: string, value: any) => void;
+    onModeChange?: (mode: 'list' | 'text') => void;
 }
 
 const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
@@ -36,6 +37,7 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
     onSetSteps,
     getValues,
     setValue,
+    onModeChange,
 }) => {
     const { t } = useTranslation();
     const [inputMode, setInputMode] = useState<'list' | 'text'>('list');
@@ -73,7 +75,13 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
     };
 
     const handleModeToggle = () => {
-        setInputMode((mode) => (mode === 'list' ? 'text' : 'list'));
+        setInputMode((mode) => {
+            const newMode = mode === 'list' ? 'text' : 'list';
+            if (onModeChange) {
+                onModeChange(newMode);
+            }
+            return newMode;
+        });
     };
 
     const renderStepsInputs = () => {
@@ -170,6 +178,9 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
                                 if (parsedItems.length > 0) {
                                     onSetSteps(parsedItems);
                                     setInputMode('list');
+                                    if (onModeChange) {
+                                        onModeChange('list');
+                                    }
                                     toast.success(
                                         `${parsedItems.length} ${t('steps_applied')}`
                                     );

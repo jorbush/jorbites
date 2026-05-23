@@ -25,6 +25,7 @@ interface IngredientsStepProps {
     onSetIngredients?: (ingredients: string[]) => void;
     getValues?: (name?: string | string[]) => any;
     setValue?: (name: string, value: any) => void;
+    onModeChange?: (mode: 'list' | 'text') => void;
 }
 
 const IngredientsStep: React.FC<IngredientsStepProps> = ({
@@ -36,6 +37,7 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
     onSetIngredients,
     getValues,
     setValue,
+    onModeChange,
 }) => {
     const { t } = useTranslation();
     const [inputMode, setInputMode] = useState<'list' | 'text'>('list');
@@ -73,7 +75,13 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
     };
 
     const handleModeToggle = () => {
-        setInputMode((mode) => (mode === 'list' ? 'text' : 'list'));
+        setInputMode((mode) => {
+            const newMode = mode === 'list' ? 'text' : 'list';
+            if (onModeChange) {
+                onModeChange(newMode);
+            }
+            return newMode;
+        });
     };
 
     const renderIngredientInputs = () => {
@@ -169,6 +177,9 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
                                 if (parsedItems.length > 0) {
                                     onSetIngredients(parsedItems);
                                     setInputMode('list');
+                                    if (onModeChange) {
+                                        onModeChange('list');
+                                    }
                                     toast.success(
                                         `${parsedItems.length} ${t('ingredients_applied')}`
                                     );

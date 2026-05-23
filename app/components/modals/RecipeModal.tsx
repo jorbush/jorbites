@@ -36,6 +36,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const [step, setStep] = useState(STEPS.CATEGORY);
     const [numIngredients, setNumIngredients] = useState(1);
     const [numSteps, setNumSteps] = useState(1);
+    const [isPlainTextMode, setIsPlainTextMode] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingDraft, setIsLoadingDraft] = useState(false);
     const hasLoadedDraft = useRef(false);
@@ -377,6 +378,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             setSelectedCoCooks([]);
             setSelectedLinkedRecipes([]);
             setSelectedQuest(null);
+            setIsPlainTextMode(false);
             hasLoadedDraft.current = false;
             hasLoadedEditData.current = false;
         } else {
@@ -434,9 +436,11 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const onBack = () => {
         setStep((value) => Math.max(value - 1, 0));
+        setIsPlainTextMode(false);
     };
 
     const onNext = () => {
+        setIsPlainTextMode(false);
         if (step >= STEPS_LENGTH - 1) {
             return;
         }
@@ -634,6 +638,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     onSetIngredients={setIngredients}
                     getValues={getValues}
                     setValue={setValue}
+                    onModeChange={(mode) => setIsPlainTextMode(mode === 'text')}
                 />
             );
         }
@@ -649,6 +654,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     onSetSteps={setSteps}
                     getValues={getValues}
                     setValue={setValue}
+                    onModeChange={(mode) => setIsPlainTextMode(mode === 'text')}
                 />
             );
         }
@@ -720,6 +726,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             actionLabel={actionLabel}
             secondaryActionLabel={secondaryActionLabel}
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
+            disabled={isPlainTextMode}
             title={
                 recipeModal.isEditMode
                     ? (t('edit_recipe') ?? 'Edit recipe')
