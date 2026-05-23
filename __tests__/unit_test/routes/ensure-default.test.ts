@@ -26,7 +26,7 @@ describe('POST /api/lists/ensure-default', () => {
 
     it('should create default list if none exist', async () => {
         mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
-        (prisma.list.count as jest.Mock).mockResolvedValue(0);
+        (prisma.list.findFirst as jest.Mock).mockResolvedValue(null);
         (prisma.list.create as jest.Mock).mockResolvedValue({ id: 'list-id' });
 
         const response = await POST();
@@ -37,21 +37,26 @@ describe('POST /api/lists/ensure-default', () => {
         expect(prisma.list.create).toHaveBeenCalled();
     });
 
-    it('should not create default list if some already exist', async () => {
+    it('should not create default list if it already exists', async () => {
         mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
-        (prisma.list.count as jest.Mock).mockResolvedValue(1);
+        (prisma.list.findFirst as jest.Mock).mockResolvedValue({
+            id: 'list-id',
+        });
 
         const response = await POST();
         const data = await response.json();
 
         expect(response.status).toBe(200);
         expect(data.created).toBe(false);
+        expect(data.message).toBe('Default list already exists');
         expect(prisma.list.create).not.toHaveBeenCalled();
     });
 
     it('should return 500 on internal error', async () => {
         mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
-        (prisma.list.count as jest.Mock).mockRejectedValue(new Error('DB Error'));
+        (prisma.list.findFirst as jest.Mock).mockRejectedValue(
+            new Error('DB Error')
+        );
 
         const response = await POST();
         expect(response.status).toBe(500);
@@ -59,7 +64,11 @@ describe('POST /api/lists/ensure-default', () => {
 
     it('should return 200 if creation fails but list exists (race condition)', async () => {
         mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
-        (prisma.list.count as jest.Mock).mockResolvedValue(0);
+        (prisma.list.findFirst as jest.Mock)
+            .mockResolvedValueOnce(null)
+            .mockResolvedValueOnce({
+                id: 'list-id',
+            });
         (prisma.list.create as jest.Mock).mockRejectedValue(
             new Error('Unique constraint failed')
         );

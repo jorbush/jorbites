@@ -16,15 +16,18 @@ export async function POST() {
             return unauthorized('Unauthorized');
         }
 
-        logger.info('POST /api/lists/ensure-default - start', { userId: currentUser.id });
+        logger.info('POST /api/lists/ensure-default - start', {
+            userId: currentUser.id,
+        });
 
-        const listsCount = await prisma.list.count({
+        const existingDefaultList = await prisma.list.findFirst({
             where: {
                 userId: currentUser.id,
+                isDefault: true,
             },
         });
 
-        if (listsCount === 0) {
+        if (!existingDefaultList) {
             try {
                 const defaultList = await prisma.list.create({
                     data: {
@@ -32,11 +35,6 @@ export async function POST() {
                         isDefault: true,
                         isPrivate: true,
                         userId: currentUser.id,
-                    },
-                    include: {
-                        user: {
-                            select: USER_SELECT_FIELDS,
-                        },
                     },
                 });
 
@@ -61,14 +59,14 @@ export async function POST() {
                 );
 
                 // Check if it was a parallel request that already created it
-                const existingDefaultList = await prisma.list.findFirst({
+                const retryExistingDefaultList = await prisma.list.findFirst({
                     where: {
                         userId: currentUser.id,
                         isDefault: true,
                     },
                 });
 
-                if (existingDefaultList) {
+                if (retryExistingDefaultList) {
                     return NextResponse.json({
                         message: 'Default list already exists',
                         created: false,
@@ -80,7 +78,7 @@ export async function POST() {
         }
 
         return NextResponse.json({
-            message: 'Lists already exist',
+            message: 'Default list already exists',
             created: false,
         });
     } catch (error: any) {
