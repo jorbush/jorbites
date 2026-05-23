@@ -24,14 +24,25 @@ vi.mock('@/app/components/navbar/Categories', () => ({
 vi.mock('@/app/components/navbar/Search', () => ({
     default: ({
         onSearchModeChange,
+        onFilterToggle,
     }: {
         onSearchModeChange?: (isActive: boolean) => void;
+        onFilterToggle?: () => void;
+        isFilterOpen?: boolean;
     }) => (
-        <div
-            data-testid="search"
-            onClick={() => onSearchModeChange?.(true)}
-        >
-            Search
+        <div data-testid="search-wrapper">
+            <div
+                data-testid="search"
+                onClick={() => onSearchModeChange?.(true)}
+            >
+                Search
+            </div>
+            <button
+                data-testid="filter-button"
+                onClick={() => onFilterToggle?.()}
+            >
+                Filter
+            </button>
         </div>
     ),
 }));
@@ -98,27 +109,55 @@ describe('<Navbar />', () => {
         expect(screen.queryByTestId('categories')).toBeNull();
     });
 
-    it('shows Categories when search mode is activated', () => {
+    it('shows Categories when filter is toggled', async () => {
         render(<Navbar />);
-        const search = screen.getByTestId('search');
+        const filterButton = screen.getByTestId('filter-button');
 
-        fireEvent.click(search);
-        waitFor(() => {
-            fireEvent.click(screen.getByTestId('filter-button'));
+        fireEvent.click(filterButton);
+        await waitFor(() => {
             expect(screen.getByTestId('categories')).toBeDefined();
         });
     });
 
-    it('shows Categories only on main page when search mode is active', () => {
+    it('shows Categories only on main page when filter is toggled', async () => {
         // This test is simplified since the mock is at module level
         render(<Navbar />);
-        const search = screen.getByTestId('search');
+        const filterButton = screen.getByTestId('filter-button');
 
-        fireEvent.click(search);
-        waitFor(() => {
+        fireEvent.click(filterButton);
+        await waitFor(() => {
             // On main page (mocked as '/'), categories should show
-            fireEvent.click(screen.getByTestId('filter-button'));
             expect(screen.getByTestId('categories')).toBeDefined();
+        });
+    });
+
+    it('applies correct liquid glass CSS classes to the Categories menu container', async () => {
+        render(<Navbar />);
+        const filterButton = screen.getByTestId('filter-button');
+
+        fireEvent.click(filterButton);
+        await waitFor(() => {
+            const categoriesMenu = document.getElementById('categories-menu');
+            expect(categoriesMenu).not.toBeNull();
+            expect(categoriesMenu!.className).toContain('navbar-categories');
+            expect(categoriesMenu!.className).toContain('relative');
+            expect(categoriesMenu!.className).toContain('z-0');
+            expect(categoriesMenu!.className).toContain('backdrop-blur-lg');
+            expect(categoriesMenu!.className).toContain('bg-white/75');
+            expect(categoriesMenu!.className).toContain('dark:bg-[#0F0F0F]/75');
+            expect(categoriesMenu!.className).toContain('border-b');
+            expect(categoriesMenu!.className).toContain(
+                'border-neutral-200/40'
+            );
+            expect(categoriesMenu!.className).toContain(
+                'dark:border-neutral-800/40'
+            );
+            expect(categoriesMenu!.className).toContain(
+                'shadow-[0_2px_20px_rgba(0,0,0,0.03)]'
+            );
+            expect(categoriesMenu!.className).toContain(
+                'dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]'
+            );
         });
     });
 
@@ -129,7 +168,6 @@ describe('<Navbar />', () => {
             email: null,
             emailVerified: null,
             image: null,
-            hashedPassword: null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             favoriteIds: [],
@@ -153,9 +191,14 @@ describe('<Navbar />', () => {
         expect(header.className).toContain('fixed');
         expect(header.className).toContain('z-20');
         expect(header.className).toContain('w-full');
-        expect(header.className).toContain('bg-white/75');
-        expect(header.className).toContain('backdrop-blur-lg');
         expect(header.className).toContain('pt-[env(safe-area-inset-top,0px)]');
-        expect(header.className).toContain('dark:bg-[#0F0F0F]/75');
+
+        const topRow = screen.getByTestId('navbar-top-row');
+        expect(topRow.className).toContain('relative');
+        expect(topRow.className).toContain('z-10');
+        expect(topRow.className).toContain('border-b');
+        expect(topRow.className).toContain('bg-white/75');
+        expect(topRow.className).toContain('backdrop-blur-lg');
+        expect(topRow.className).toContain('dark:bg-[#0F0F0F]/75');
     });
 });

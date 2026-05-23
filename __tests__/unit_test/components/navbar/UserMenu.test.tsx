@@ -106,4 +106,26 @@ describe('<UserMenu />', () => {
         fireEvent.click(screen.getByText('logout'));
         expect(mockSignOut).toHaveBeenCalled();
     });
+
+    it('applies correct liquid glass CSS classes to the dropdown menu panel', () => {
+        const { container } = render(
+            <UserMenu currentUser={mockCurrentUser} />
+        );
+        fireEvent.click(screen.getByTestId('mock-avatar').parentElement!);
+
+        const panel = container.querySelector('[data-cy="user-menu-panel"]');
+        expect(panel).not.toBeNull();
+        expect(panel!.className).toContain('absolute');
+        expect(panel!.className).toContain('backdrop-blur-lg');
+        expect(panel!.className).toContain('bg-white/97');
+        expect(panel!.className).toContain('dark:bg-dark/97');
+        expect(panel!.className).toContain('border-neutral-200/40');
+        expect(panel!.className).toContain('dark:border-neutral-800/40');
+        expect(panel!.className).toContain(
+            'shadow-[0_2px_20px_rgba(0,0,0,0.03)]'
+        );
+        expect(panel!.className).toContain(
+            'dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]'
+        );
+    });
 });
