@@ -11,7 +11,7 @@ interface CookiesPolicyProps {
 }
 
 const CookiesPolicy: React.FC<CookiesPolicyProps> = ({ policy }) => {
-    const router = useRouter();
+    const { back } = useRouter();
 
     return (
         <Container>
@@ -20,7 +20,7 @@ const CookiesPolicy: React.FC<CookiesPolicyProps> = ({ policy }) => {
                     <div className="mb-5 flex items-center justify-between">
                         <button
                             className="flex items-center space-x-2 text-neutral-600 focus:outline-hidden dark:text-neutral-100"
-                            onClick={() => router.back()}
+                            onClick={() => back()}
                         >
                             <FiChevronLeft className="text-xl" />
                         </button>

@@ -57,7 +57,7 @@ const ListClient: React.FC<ListClientProps> = ({
         } finally {
             setIsLoading(false);
         }
-    }, [isOwner, isPrivate, list.id, router, t]);
+    }, [isOwner, isPrivate, list.id, refresh, t]);
 
     const onDelete = useCallback(async () => {
         if (!isOwner) return;
@@ -74,7 +74,7 @@ const ListClient: React.FC<ListClientProps> = ({
             setIsLoading(false);
             setIsConfirmModalOpen(false);
         }
-    }, [isOwner, list.id, router, t]);
+    }, [isOwner, list.id, push, refresh, t]);
 
     const onRemoveRecipe = useCallback(
         async (recipeId: string) => {
@@ -91,7 +91,7 @@ const ListClient: React.FC<ListClientProps> = ({
                 setDeletingId('');
             }
         },
-        [isOwner, list.id, router, t]
+        [isOwner, list.id, refresh, t]
     );
 
     return (

@@ -35,7 +35,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     comments,
 }) => {
     const loginModal = useLoginModal();
-    const router = useRouter();
+    const { refresh } = useRouter();
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -82,10 +82,10 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 })
                 .finally(() => {
                     setIsLoading(false);
-                    router.refresh();
+                    refresh();
                 });
         },
-        [recipe?.id, router, currentUser, loginModal, t]
+        [recipe?.id, refresh, currentUser, loginModal, t]
     );
 
     const formattedDescription = useMemo(() => {

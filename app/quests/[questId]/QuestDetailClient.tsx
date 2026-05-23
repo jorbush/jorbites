@@ -75,7 +75,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
     quest,
 }) => {
     const { t } = useTranslation();
-    const router = useRouter();
+    const { push, refresh, back } = useRouter();
     const questModal = useQuestModal();
     const recipeModal = useRecipeModal();
     const [isDeleting, setIsDeleting] = useState(false);
@@ -129,8 +129,8 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
         try {
             await axios.delete(`/api/quest/${quest.id}`);
             toast.success(t('quest_deleted') || 'Quest deleted successfully');
-            router.push('/quests');
-            router.refresh();
+            push('/quests');
+            refresh();
         } catch (error: any) {
             console.error('Failed to delete quest', error);
             toast.error(
@@ -157,7 +157,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
             <div className="mx-auto max-w-7xl p-4 sm:px-6 lg:px-8">
                 {/* Back Button */}
                 <button
-                    onClick={() => router.back()}
+                    onClick={() => back()}
                     className="mb-6 flex items-center gap-2 text-neutral-600 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
                 >
                     <FiChevronLeft className="cursor-pointer text-xl" />

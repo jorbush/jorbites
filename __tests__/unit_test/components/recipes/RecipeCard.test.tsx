@@ -68,17 +68,18 @@ describe('<RecipeCard />', () => {
     const mockRouter = {
         back: vi.fn(),
         push: vi.fn(),
+        refresh: vi.fn(),
     };
 
     beforeEach(() => {
         vi.clearAllMocks();
+        (useRouter as any).mockReturnValue(mockRouter);
         render(
             <RecipeCard
                 data={mockRecipe}
                 currentUser={mockUser}
             />
         );
-        (useRouter as any).mockReturnValue(mockRouter);
     });
 
     afterEach(() => {

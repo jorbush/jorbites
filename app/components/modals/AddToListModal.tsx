@@ -75,7 +75,7 @@ const AddToListModal = () => {
                 setIsLoading(false);
             }
         },
-        [addToListModal.recipeId, fetchLists, router, t]
+        [addToListModal.recipeId, fetchLists, refresh, t]
     );
 
     const handleClose = useCallback(() => {
@@ -103,7 +103,7 @@ const AddToListModal = () => {
                 setIsLoading(false);
             }
         },
-        [addToListModal.recipeId, fetchLists, reset, router, t]
+        [addToListModal.recipeId, fetchLists, reset, refresh, t]
     );
 
     let bodyContent = (

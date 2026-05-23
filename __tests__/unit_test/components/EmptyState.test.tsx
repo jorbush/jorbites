@@ -12,7 +12,10 @@ vi.mock('next/navigation', () => ({
     useRouter: () => ({
         push: pushMock,
     }),
-    useSearchParams: () => mockSearchParams,
+    useSearchParams: () => ({
+        get: (key: string) => mockSearchParams.get(key),
+        toString: () => mockSearchParams.toString(),
+    }),
     usePathname: () => mockPathname,
 }));
 

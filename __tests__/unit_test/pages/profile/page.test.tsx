@@ -19,7 +19,7 @@ vi.mock('next/navigation', () => ({
         push: vi.fn(),
         query: {},
     })),
-    useSearchParams: vi.fn(() => new URLSearchParams()),
+    useSearchParams: vi.fn(() => ({ get: (key) => new URLSearchParams().get(key), toString: () => new URLSearchParams().toString() })),
     usePathname: vi.fn(() => '/profile/user1'),
 }));
 

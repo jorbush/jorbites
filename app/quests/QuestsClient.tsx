@@ -53,13 +53,13 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
     currentPage,
 }) => {
     const { t } = useTranslation();
-    const router = useRouter();
-    const searchParams = useSearchParams();
+    const { push } = useRouter();
+    const { get } = useSearchParams() || {};
     const questModal = useQuestModal();
     const loginModal = useLoginModal();
 
     const getInitialFilter = () => {
-        const status = searchParams?.get('status') || 'all';
+        const status = get?.('status') || 'all';
         if (
             status === 'open' ||
             status === 'in_progress' ||
@@ -117,7 +117,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
             params.delete('status');
         }
         params.set('page', '1');
-        router.push(`/quests?${params.toString()}`);
+        push(`/quests?${params.toString()}`);
     };
 
     return (
@@ -216,9 +216,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                         <h2
                                             className="mb-2 cursor-pointer text-xl font-semibold text-neutral-900 hover:text-rose-500 dark:text-white dark:hover:text-rose-400"
                                             onClick={() =>
-                                                router.push(
-                                                    `/quests/${quest.id}`
-                                                )
+                                                push(`/quests/${quest.id}`)
                                             }
                                             data-cy="quest-card-title"
                                         >
@@ -276,9 +274,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                         key={recipe.id}
                                                         className="group relative h-20 w-20 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg"
                                                         onClick={() =>
-                                                            router.push(
-                                                                `/recipes/${recipe.id}`
-                                                            )
+                                                            push(`/recipes/${recipe.id}`)
                                                         }
                                                     >
                                                         <CustomProxyImage

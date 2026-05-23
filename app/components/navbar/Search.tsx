@@ -81,11 +81,12 @@ const Search: React.FC<SearchProps> = ({
             }
         }
     }, [
-        searchParams,
+        get,
+        toString,
         isFilterablePage,
         isMainPage,
         pathname,
-        router,
+        replace,
         currentSearch,
         isSearchMode,
         onSearchModeChange,

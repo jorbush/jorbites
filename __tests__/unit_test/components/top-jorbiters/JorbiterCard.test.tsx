@@ -4,7 +4,9 @@ import JorbiterCard from '@/app/components/top-jorbiters/JorbiterCard';
 
 // Mock dependencies
 vi.mock('next/navigation', () => ({
-    useRouter: vi.fn(),
+    useRouter: () => ({
+        push: vi.fn(),
+    }),
 }));
 
 vi.mock('@/app/hooks/useMediaQuery', () => ({

@@ -77,7 +77,7 @@ vi.mock('next/navigation', () => ({
         push: mockPush,
         replace: mockReplace,
     }),
-    useSearchParams: () => mockSearchParams,
+    useSearchParams: () => ({ get: (key: string) => mockSearchParams.get(key), toString: () => mockSearchParams.toString() }),
     usePathname: () => '/',
 }));
 

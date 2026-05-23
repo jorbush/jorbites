@@ -11,7 +11,7 @@ vi.mock('next/navigation', () => ({
     useRouter: () => ({
         push: mockPush,
     }),
-    useSearchParams: () => mockSearchParams,
+    useSearchParams: () => ({ get: (key: string) => mockSearchParams.get(key), toString: () => mockSearchParams.toString() }),
 }));
 
 // Mock react-i18next
