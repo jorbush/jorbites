@@ -154,7 +154,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('my_lists') || 'My Lists'}
                                     icon={FcBookmark}
-                                    isNew
                                 />
                                 {/* <MenuItem
                                     onClick={() => {
