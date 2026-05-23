@@ -48,8 +48,40 @@ vi.mock('@/app/components/modals/SettingsModal', () => ({
     default: () => <div data-testid="settings-modal">SettingsModal</div>,
 }));
 
-vi.mock('@/app/components/footer/Footer', () => ({
-    default: () => <div data-testid="footer">Footer</div>,
+vi.mock('@/app/components/footer/SmartFooter', () => ({
+    default: () => <div data-testid="smart-footer">SmartFooter</div>,
+}));
+
+vi.mock('@/app/components/modals/WorkshopModal', () => ({
+    default: () => <div data-testid="workshop-modal">WorkshopModal</div>,
+}));
+
+vi.mock('@/app/components/utils/PullToRefresh', () => ({
+    default: () => <div data-testid="pull-to-refresh">PullToRefresh</div>,
+}));
+
+vi.mock('@/app/components/modals/ForgotPasswordModal', () => ({
+    default: () => (
+        <div data-testid="forgot-password-modal">ForgotPasswordModal</div>
+    ),
+}));
+
+vi.mock('@/app/components/modals/QuestModal', () => ({
+    default: () => <div data-testid="quest-modal">QuestModal</div>,
+}));
+
+vi.mock('@/app/components/modals/AddToListModal', () => ({
+    default: () => <div data-testid="add-to-list-modal">AddToListModal</div>,
+}));
+
+vi.mock('next/navigation', () => ({
+    useRouter: () => ({
+        push: vi.fn(),
+        replace: vi.fn(),
+        prefetch: vi.fn(),
+    }),
+    usePathname: () => '/',
+    useSearchParams: () => new URLSearchParams(),
 }));
 
 describe('RootLayout', () => {
@@ -83,7 +115,12 @@ describe('RootLayout', () => {
         expect(await findByTestId('login-modal')).toBeDefined();
         expect(await findByTestId('recipe-modal')).toBeDefined();
         expect(await findByTestId('settings-modal')).toBeDefined();
-        expect(await findByTestId('footer')).toBeDefined();
+        expect(await findByTestId('workshop-modal')).toBeDefined();
+        expect(await findByTestId('pull-to-refresh')).toBeDefined();
+        expect(await findByTestId('forgot-password-modal')).toBeDefined();
+        expect(await findByTestId('quest-modal')).toBeDefined();
+        expect(await findByTestId('add-to-list-modal')).toBeDefined();
+        expect(await findByTestId('smart-footer')).toBeDefined();
 
         // Check if the children are rendered
         expect(await findByText('Test Content')).toBeDefined();

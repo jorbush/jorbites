@@ -165,6 +165,28 @@ describe('<PeriodFilter />', () => {
             fireEvent.click(button);
             expect(button.getAttribute('aria-expanded')).toBe('true');
         });
+
+        it('applies correct liquid glass CSS classes to the dropdown', () => {
+            render(<PeriodFilter />);
+
+            const button = screen.getByTestId('period-filter-button');
+            fireEvent.click(button);
+
+            const dropdown = screen.getByTestId('period-filter-dropdown');
+            expect(dropdown).toBeDefined();
+            expect(dropdown.className).toContain('absolute');
+            expect(dropdown.className).toContain('backdrop-blur-lg');
+            expect(dropdown.className).toContain('bg-white/97');
+            expect(dropdown.className).toContain('dark:bg-dark/97');
+            expect(dropdown.className).toContain('border-neutral-200/40');
+            expect(dropdown.className).toContain('dark:border-neutral-800/40');
+            expect(dropdown.className).toContain(
+                'shadow-[0_2px_20px_rgba(0,0,0,0.03)]'
+            );
+            expect(dropdown.className).toContain(
+                'dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]'
+            );
+        });
     });
 
     describe('Date input functionality', () => {
