@@ -184,6 +184,33 @@ describe('<OrderByDropdown />', () => {
                 'text-green-450'
             );
         });
+
+        it('applies correct liquid glass CSS classes to the Dropdown container when opened', () => {
+            render(<OrderByDropdown />);
+
+            const dropdownButton = screen.getByRole('button');
+            fireEvent.click(dropdownButton);
+
+            const listbox = screen.getByRole('listbox');
+            const dropdownContainer = listbox.parentElement;
+            expect(dropdownContainer).not.toBeNull();
+            expect(dropdownContainer!.className).toContain('absolute');
+            expect(dropdownContainer!.className).toContain('backdrop-blur-lg');
+            expect(dropdownContainer!.className).toContain('bg-white/97');
+            expect(dropdownContainer!.className).toContain('dark:bg-dark/97');
+            expect(dropdownContainer!.className).toContain(
+                'border-neutral-200/40'
+            );
+            expect(dropdownContainer!.className).toContain(
+                'dark:border-neutral-800/40'
+            );
+            expect(dropdownContainer!.className).toContain(
+                'shadow-[0_2px_20px_rgba(0,0,0,0.03)]'
+            );
+            expect(dropdownContainer!.className).toContain(
+                'dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]'
+            );
+        });
     });
 
     describe('Order selection', () => {

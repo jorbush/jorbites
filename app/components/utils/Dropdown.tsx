@@ -167,7 +167,7 @@ function Dropdown<T extends string>({
                 <div
                     className={
                         dropdownClassName ||
-                        'dark:bg-dark absolute top-full right-0 z-50 mt-2 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:text-neutral-100'
+                        'dark:bg-dark/97 absolute top-full right-0 z-50 mt-2 overflow-hidden rounded-xl border border-neutral-200/40 bg-white/97 text-sm shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition-all duration-300 dark:border-neutral-800/40 dark:text-neutral-100 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]'
                     }
                     style={{
                         animation: 'dropdownFadeIn 0.2s ease-out forwards',

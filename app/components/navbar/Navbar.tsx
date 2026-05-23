@@ -48,9 +48,13 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     }, [isFilterOpen]);
 
     return (
-        <header className="fixed top-0 right-0 left-0 z-20 w-full border-b border-neutral-200/40 bg-white/75 pt-[env(safe-area-inset-top,0px)] shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition-all duration-300 dark:border-neutral-800/40 dark:bg-[#0F0F0F]/75 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]">
+        <header className="fixed top-0 right-0 left-0 z-20 w-full pt-[env(safe-area-inset-top,0px)] transition-all duration-300">
             <nav aria-label="Main navigation">
-                <div className="py-3 sm:py-4">
+                {/* Top Row with its own glass panel styling (75% opacity) */}
+                <div
+                    data-testid="navbar-top-row"
+                    className="relative z-10 border-b border-neutral-200/40 bg-white/75 py-3 shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition-all duration-300 sm:py-4 dark:border-neutral-800/40 dark:bg-[#0F0F0F]/75 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]"
+                >
                     <Container>
                         <div className="flex min-h-[48px] flex-row items-center justify-between gap-3 md:gap-0">
                             <Search
@@ -69,9 +73,10 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                         </div>
                     </Container>
                 </div>
+                {/* Categories Row with its own liquid glass panel styling (75% opacity) */}
                 {isFilterablePage && shouldRender && (
                     <div
-                        className={`navbar-categories border-b border-neutral-200/40 bg-white/80 backdrop-blur-lg dark:border-neutral-800/40 dark:bg-[#0F0F0F]/80 ${isFilterOpen ? 'open' : 'closing'}`}
+                        className={`navbar-categories relative z-0 border-b border-neutral-200/40 bg-white/75 shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition-all duration-300 dark:border-neutral-800/40 dark:bg-[#0F0F0F]/75 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)] ${isFilterOpen ? 'open' : 'closing'}`}
                         id="categories-menu"
                         role="region"
                         aria-label="Categories filter"
