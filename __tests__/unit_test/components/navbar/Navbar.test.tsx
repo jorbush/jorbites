@@ -191,7 +191,8 @@ describe('<Navbar />', () => {
         expect(header.className).toContain('fixed');
         expect(header.className).toContain('z-20');
         expect(header.className).toContain('w-full');
-        expect(header.className).toContain('pt-[env(safe-area-inset-top,0px)]');
+        expect(header.className).not.toContain('bg-white/75');
+        expect(header.className).not.toContain('backdrop-blur-lg');
 
         const topRow = screen.getByTestId('navbar-top-row');
         expect(topRow.className).toContain('relative');
@@ -199,6 +200,9 @@ describe('<Navbar />', () => {
         expect(topRow.className).toContain('border-b');
         expect(topRow.className).toContain('bg-white/75');
         expect(topRow.className).toContain('backdrop-blur-lg');
+        expect(topRow.className).toContain(
+            'pt-[calc(0.75rem+env(safe-area-inset-top,0px))]'
+        );
         expect(topRow.className).toContain('dark:bg-[#0F0F0F]/75');
     });
 });
