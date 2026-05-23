@@ -34,8 +34,8 @@ Piensa en tapas rápidas, aperitivos fáciles de montar o cualquier plato festiv
 Sábado, 30 de mayo de 2026 – Hora de celebración
 
 ## 🏆 Premios
-- Un regalo conmemorativo exclusivo del 3er Aniversario de Jorbites.
-- La medalla exclusiva "Leyenda de los 3 Años" para el ganador/a.
+- 🎁 **Ganador/a**: Un regalo físico conmemorativo exclusivo del 3er Aniversario de Jorbites.
+- 🏅 **Todos los participantes**: La medalla digital exclusiva "Leyenda de los 3 Años".
 
 ## 📌 Reglas
 - ✅ **Solo Recetas Nuevas**: Este concurso es para recetas **completamente nuevas** publicadas por primera vez en Jorbites.

@@ -34,8 +34,8 @@ Pensa en tapes ràpides, aperitius fàcils de muntar o qualsevol plat festiu que
 Dissabte, 30 de maig de 2026 – Hora de celebració
 
 ## 🏆 Premis
-- Un regal commemoratiu exclusiu del 3r Aniversari de Jorbites.
-- La medalla exclusiva "Llegenda dels 3 Anys" per al guanyador/a.
+- 🎁 **Guanyador/a**: Un regal físic commemoratiu exclusiu del 3r Aniversari de Jorbites.
+- 🏅 **Tots els participants**: La medalla digital exclusiva "Llegenda dels 3 Anys".
 
 ## 📌 Regles
 - ✅ **Només Receptes Noves**: Aquest concurs és per a receptes **completament noves** publicades per primera vegada a Jorbites.
