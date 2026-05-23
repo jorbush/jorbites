@@ -61,7 +61,9 @@ vi.mock('@/app/components/utils/PullToRefresh', () => ({
 }));
 
 vi.mock('@/app/components/modals/ForgotPasswordModal', () => ({
-    default: () => <div data-testid="forgot-password-modal">ForgotPasswordModal</div>,
+    default: () => (
+        <div data-testid="forgot-password-modal">ForgotPasswordModal</div>
+    ),
 }));
 
 vi.mock('@/app/components/modals/QuestModal', () => ({
