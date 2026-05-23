@@ -7,7 +7,7 @@ import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
 
 const ThemeSelector: React.FC = () => {
     const [theme, setTheme] = useState<string>('light');
-    const router = useRouter();
+    const { refresh } = useRouter();
     const { t } = useTranslation();
 
     const toggleTheme = () => {
@@ -15,7 +15,7 @@ const ThemeSelector: React.FC = () => {
         setTheme(newTheme);
         localStorage.setItem('theme', newTheme);
         document.documentElement.classList.toggle('dark', newTheme === 'dark');
-        router.refresh();
+        refresh();
     };
 
     useEffect(() => {

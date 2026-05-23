@@ -19,7 +19,7 @@ const DeleteWorkshopModal: React.FC<DeleteWorkshopModalProps> = ({
     id,
 }) => {
     const { t } = useTranslation();
-    const router = useRouter();
+    const { push, refresh } = useRouter();
 
     const handleDeleteWorkshop = () => {
         axios
@@ -32,8 +32,8 @@ const DeleteWorkshopModal: React.FC<DeleteWorkshopModalProps> = ({
                 toast.error(t('something_went_wrong'));
             })
             .finally(() => {
-                router.push('/workshops');
-                router.refresh();
+                push('/workshops');
+                refresh();
             });
     };
 

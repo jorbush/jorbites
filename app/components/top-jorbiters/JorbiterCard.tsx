@@ -17,7 +17,7 @@ interface JorbiterCardProps {
 }
 
 const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
-    const router = useRouter();
+    const { push } = useRouter();
     const isMdOrSmaller = useMediaQuery('(max-width: 675px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 530px)');
     const { t } = useTranslation();
@@ -43,7 +43,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                       getMedalColor(index).replace('text', 'border')
                     : ''
             }`}
-            onClick={() => router.push('/profile/' + jorbiter.id)}
+            onClick={() => push('/profile/' + jorbiter.id)}
         >
             <div className="flex items-center justify-between">
                 {/* Left section - Avatar and Basic Info */}
@@ -54,7 +54,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                     <Avatar
                         src={jorbiter.image}
                         size={50}
-                        onClick={() => router.push('/profile/' + jorbiter.id)}
+                        onClick={() => push('/profile/' + jorbiter.id)}
                         extraClasses="sm:h-[65px] sm:w-[65px] md:h-[70px] md:w-[70px]"
                         quality="auto:best"
                     />

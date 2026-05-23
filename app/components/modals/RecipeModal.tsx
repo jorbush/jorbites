@@ -30,7 +30,7 @@ interface RecipeModalProps {
 }
 
 const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
-    const router = useRouter();
+    const { refresh } = useRouter();
     const { t } = useTranslation();
     const recipeModal = useRecipeModal();
     const [step, setStep] = useState(STEPS.CATEGORY);
@@ -522,7 +522,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             setSelectedLinkedRecipes([]);
             setSelectedQuest(null);
             recipeModal.onClose();
-            router.refresh();
+            refresh();
         } catch (error) {
             console.error('Failed to save recipe', error);
             toast.error(t('something_went_wrong') ?? 'Something went wrong');

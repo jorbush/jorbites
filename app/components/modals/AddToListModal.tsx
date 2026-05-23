@@ -15,7 +15,7 @@ import { FaCheckCircle } from 'react-icons/fa';
 
 const AddToListModal = () => {
     const addToListModal = useAddToListModal();
-    const router = useRouter();
+    const { refresh } = useRouter();
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
     const [lists, setLists] = useState<SafeList[]>([]);
@@ -67,7 +67,7 @@ const AddToListModal = () => {
                     );
                 }
                 fetchLists();
-                router.refresh();
+                refresh();
             } catch (error) {
                 toast.error(t('something_went_wrong'));
                 console.error(error);
@@ -95,7 +95,7 @@ const AddToListModal = () => {
                 setIsCreating(false);
                 reset();
                 fetchLists();
-                router.refresh();
+                refresh();
             } catch (error) {
                 toast.error(t('something_went_wrong'));
                 console.error(error);

@@ -11,11 +11,11 @@ interface BlogCardProps {
 }
 
 const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
-    const router = useRouter();
+    const { push } = useRouter();
     const { i18n } = useTranslation();
 
     const handleClick = () => {
-        router.push(`/blog/${blog.id}`);
+        push(`/blog/${blog.id}`);
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {

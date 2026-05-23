@@ -20,7 +20,7 @@ import { validateEmail } from '@/app/utils/validation';
 import useForgotPasswordModal from '@/app/hooks/useForgotPasswordModal';
 
 const LoginModal = () => {
-    const router = useRouter();
+    const { refresh } = useRouter();
     const loginModal = useLoginModal();
     const registerModal = useRegisterModal();
     const forgotPasswordModal = useForgotPasswordModal();
@@ -52,7 +52,7 @@ const LoginModal = () => {
 
             if (callback?.ok) {
                 toast.success(t('logged_in'));
-                router.refresh();
+                refresh();
                 loginModal.onClose();
             }
 

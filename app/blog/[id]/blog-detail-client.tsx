@@ -18,7 +18,7 @@ interface BlogDetailClientProps {
 
 const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
     const { t, i18n } = useTranslation();
-    const router = useRouter();
+    const { push } = useRouter();
     const [blog, setBlog] = useState<Blog | null>(null);
     const [author, setAuthor] = useState<SafeUser | null>(null);
     const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
@@ -110,7 +110,7 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
                             "The blog post you're looking for could not be found."}
                     </p>
                     <button
-                        onClick={() => router.push('/blog')}
+                        onClick={() => push('/blog')}
                         className="bg-green-450 cursor-pointer rounded-lg px-4 py-2 text-black"
                     >
                         {t('back_to_blog') || 'Back to Blog'}

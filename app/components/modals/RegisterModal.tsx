@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { validateEmail } from '@/app/utils/validation';
 
 const RegisterModal = () => {
-    const router = useRouter();
+    const { refresh } = useRouter();
     const registerModal = useRegisterModal();
     const loginModal = useLoginModal();
     const { t } = useTranslation();
@@ -56,7 +56,7 @@ const RegisterModal = () => {
                 }).then((callback) => {
                     if (callback?.ok) {
                         toast.success(t('logged_in'));
-                        router.refresh();
+                        refresh();
                     }
                     if (callback?.error) {
                         toast.error(callback.error);

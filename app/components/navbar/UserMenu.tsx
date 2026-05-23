@@ -35,7 +35,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
     const settingsModal = useSettingsModal();
     const [isOpen, setIsOpen] = useState(false);
     const { t } = useTranslation();
-    const router = useRouter();
+    const { push } = useRouter();
     const menuRef = useRef<HTMLDivElement>(null);
 
     const toggleOpen = useCallback(() => {
@@ -114,9 +114,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 <MenuItem
                                     onClick={() => {
-                                        router.push(
-                                            '/profile/' + currentUser.id
-                                        );
+                                        push('/profile/' + currentUser.id);
                                         toggleOpen();
                                     }}
                                     label={t('my_profile')}
@@ -125,7 +123,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 <MenuItem
                                     onClick={() => {
-                                        router.push('/favorites');
+                                        push('/favorites');
                                         toggleOpen();
                                     }}
                                     label={t('my_favorites')}
@@ -133,7 +131,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 <MenuItem
                                     onClick={() => {
-                                        router.push('/events');
+                                        push('/events');
                                         toggleOpen();
                                     }}
                                     label={t('events') || 'Events'}
@@ -141,7 +139,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 <MenuItem
                                     onClick={() => {
-                                        router.push('/quests');
+                                        push('/quests');
                                         toggleOpen();
                                     }}
                                     label={t('quests') || 'Quests'}
@@ -149,7 +147,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 <MenuItem
                                     onClick={() => {
-                                        router.push('/lists');
+                                        push('/lists');
                                         toggleOpen();
                                     }}
                                     label={t('my_lists') || 'My Lists'}
@@ -184,7 +182,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                             <>
                                 <MenuItem
                                     onClick={() => {
-                                        router.push('/events');
+                                        push('/events');
                                         toggleOpen();
                                     }}
                                     label={t('events') || 'Events'}
@@ -192,7 +190,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 <MenuItem
                                     onClick={() => {
-                                        router.push('/quests');
+                                        push('/quests');
                                         toggleOpen();
                                     }}
                                     label={t('quests') || 'Quests'}

@@ -12,10 +12,10 @@ interface ErrorDisplayProps {
 
 export default function ErrorDisplay({ code, message }: ErrorDisplayProps) {
     const { t } = useTranslation();
-    const router = useRouter();
+    const { refresh } = useRouter();
 
     const handleReset = () => {
-        router.refresh();
+        refresh();
     };
 
     const getErrorMessage = (message: string, statusCode?: number) => {

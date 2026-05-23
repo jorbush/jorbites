@@ -27,7 +27,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
     saveUserName,
     setSaveUserName,
 }) => {
-    const router = useRouter();
+    const { refresh } = useRouter();
     const { t } = useTranslation();
     const [newUserName, setNewUserName] = useState(currentUser?.name || '');
     const [canSave, setCanSave] = useState(false);
@@ -58,9 +58,9 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
             .finally(() => {
                 setCanSave(false);
                 setIsLoading(false);
-                router.refresh();
+                refresh();
             });
-    }, [currentUser?.id, currentUser?.name, newUserName, router, t, isLoading]);
+    }, [currentUser?.id, currentUser?.name, newUserName, refresh, t, isLoading]);
 
     const handleUserNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;

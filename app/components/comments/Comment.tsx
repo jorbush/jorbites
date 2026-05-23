@@ -41,7 +41,7 @@ const Comment: React.FC<CommentProps> = ({
     const [mounted, setMounted] = useState(false);
     const [translateButton, setTranslateButton] =
         useState<React.ReactNode | null>(null);
-    const router = useRouter();
+    const { refresh, push } = useRouter();
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -53,7 +53,7 @@ const Comment: React.FC<CommentProps> = ({
             .delete(`/api/comments/${commentId}`)
             .then(() => {
                 toast.success(t('comment_deleted'));
-                router.refresh();
+                refresh();
             })
             .catch(() => {
                 toast.error(t('something_went_wrong'));
@@ -66,7 +66,7 @@ const Comment: React.FC<CommentProps> = ({
             <div className="mt-2 shrink-0">
                 <Avatar
                     src={userImage}
-                    onClick={() => router.push('/profile/' + userId)}
+                    onClick={() => push('/profile/' + userId)}
                     quality="auto:eco"
                 />
             </div>
@@ -74,7 +74,7 @@ const Comment: React.FC<CommentProps> = ({
                 <div className="mb-1 flex flex-row">
                     <p
                         className="cursor-pointer truncate text-justify font-bold whitespace-normal text-neutral-800 dark:text-neutral-100"
-                        onClick={() => router.push('/profile/' + userId)}
+                        onClick={() => push('/profile/' + userId)}
                     >
                         {userName}
                     </p>

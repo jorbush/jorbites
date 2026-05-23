@@ -25,7 +25,7 @@ const JoinWorkshopButton: React.FC<JoinWorkshopButtonProps> = ({
     isPast,
     isHost,
 }) => {
-    const router = useRouter();
+    const { refresh } = useRouter();
     const loginModal = useLoginModal();
     const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
@@ -58,7 +58,7 @@ const JoinWorkshopButton: React.FC<JoinWorkshopButtonProps> = ({
                 toast.success(
                     isParticipant ? t('workshop_left') : t('workshop_joined')
                 );
-                router.refresh();
+                refresh();
             } catch (error: any) {
                 toast.error(
                     error?.response?.data?.error || t('something_went_wrong')
@@ -73,7 +73,7 @@ const JoinWorkshopButton: React.FC<JoinWorkshopButtonProps> = ({
             isParticipant,
             isPast,
             isHost,
-            router,
+            refresh,
             loginModal,
             t,
         ]

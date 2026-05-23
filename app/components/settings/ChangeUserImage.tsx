@@ -27,7 +27,7 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
     saveImage,
     setSaveImage,
 }) => {
-    const router = useRouter();
+    const { refresh } = useRouter();
     const { t } = useTranslation();
     const [newImage, setNewImage] = useState(currentUser?.image);
     const [canSave, setCanSave] = useState(false);
@@ -45,9 +45,9 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
             })
             .finally(() => {
                 setCanSave(false);
-                router.refresh();
+                refresh();
             });
-    }, [currentUser?.id, newImage, router, t]);
+    }, [currentUser?.id, newImage, refresh, t]);
 
     const handleUpload = useCallback((result: any) => {
         setNewImage(result.info.secure_url);

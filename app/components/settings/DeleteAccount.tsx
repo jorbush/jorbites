@@ -15,7 +15,7 @@ interface DeleteAccountProps {
 }
 
 const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
-    const router = useRouter();
+    const { push, refresh } = useRouter();
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -33,8 +33,8 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
 
             // Sign out the user after successful deletion
             await signOut({ redirect: false });
-            router.push('/');
-            router.refresh();
+            push('/');
+            refresh();
         } catch (error: any) {
             const errorMessage =
                 error.response?.data?.error || t('something_went_wrong');

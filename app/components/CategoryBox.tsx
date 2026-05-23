@@ -17,16 +17,16 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     label,
     selected,
 }) => {
-    const router = useRouter();
-    const params = useSearchParams();
+    const { push } = useRouter();
+    const { get, toString } = useSearchParams() || {};
     const pathname = usePathname();
     const { t } = useTranslation();
 
     const handleClick = useCallback(() => {
         let currentQuery = {};
 
-        if (params) {
-            currentQuery = qs.parse(params.toString());
+        if (toString) {
+            currentQuery = qs.parse(toString());
         }
 
         let updatedQuery: any = {
@@ -38,7 +38,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
             delete updatedQuery.page;
         }
 
-        if (params?.get('category') === label) {
+        if (get?.('category') === label) {
             delete updatedQuery.category;
         }
 
@@ -50,8 +50,8 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
             { skipNull: true }
         );
 
-        router.push(url);
-    }, [label, router, params, pathname]);
+        push(url);
+    }, [label, push, get, toString, pathname]);
 
     return (
         <div
