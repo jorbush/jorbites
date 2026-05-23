@@ -33,9 +33,9 @@ Think quick tapas, easy-to-assemble appetizers, or any celebratory dish that won
 
 Saturday, May 30, 2026 – Celebration time
 
-## 🏆 Prize
-- An exclusive Jorbites 3rd Anniversary commemorative gift.
-- The "Three Years Legend" exclusive medal for the winner.
+## 🏆 Prizes
+- 🎁 **Winner**: An exclusive Jorbites 3rd Anniversary commemorative physical gift.
+- 🏅 **All participants**: The "Three Years Legend" exclusive digital badge.
 
 ## 📌 Rules
 - ✅ **New Recipes Only**: This contest is for **brand-new** recipes published for the first time on Jorbites.
