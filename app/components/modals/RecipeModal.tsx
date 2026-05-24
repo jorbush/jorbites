@@ -24,6 +24,7 @@ import {
     STEPS,
     STEPS_LENGTH,
 } from '@/app/utils/constants';
+import { parseTextToList } from '@/app/utils/textParser';
 
 interface RecipeModalProps {
     currentUser?: SafeUser | null;
@@ -45,6 +46,12 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         []
     );
     const [selectedQuest, setSelectedQuest] = useState<any | null>(null);
+    const [ingredientsInputMode, setIngredientsInputMode] = useState<
+        'list' | 'text'
+    >('list');
+    const [stepsInputMode, setStepsInputMode] = useState<'list' | 'text'>(
+        'list'
+    );
 
     const {
         register,
@@ -160,18 +167,44 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const saveDraft = async () => {
         // Collect ingredients
-        const newIngredients: string[] = [];
-        for (let i = 0; i < numIngredients; i++) {
-            if (watch(`ingredient-${i}`) !== '') {
-                newIngredients.push(watch(`ingredient-${i}`));
+        let newIngredients: string[] = [];
+        if (ingredientsInputMode === 'text') {
+            const textareaValue = getValues('ingredients-plain-text');
+            const parsedItems = parseTextToList(
+                textareaValue,
+                RECIPE_MAX_INGREDIENTS
+            );
+            if (parsedItems.length > 0) {
+                newIngredients = parsedItems;
+                setIngredients(parsedItems);
+                setIngredientsInputMode('list');
+            }
+        } else {
+            for (let i = 0; i < numIngredients; i++) {
+                if (watch(`ingredient-${i}`) !== '') {
+                    newIngredients.push(watch(`ingredient-${i}`));
+                }
             }
         }
 
         // Collect steps
-        const newSteps: string[] = [];
-        for (let i = 0; i < numSteps; i++) {
-            if (watch(`step-${i}`) !== '') {
-                newSteps.push(watch(`step-${i}`));
+        let newSteps: string[] = [];
+        if (stepsInputMode === 'text') {
+            const textareaValue = getValues('steps-plain-text');
+            const parsedItems = parseTextToList(
+                textareaValue,
+                RECIPE_MAX_STEPS
+            );
+            if (parsedItems.length > 0) {
+                newSteps = parsedItems;
+                setSteps(parsedItems);
+                setStepsInputMode('list');
+            }
+        } else {
+            for (let i = 0; i < numSteps; i++) {
+                if (watch(`step-${i}`) !== '') {
+                    newSteps.push(watch(`step-${i}`));
+                }
             }
         }
 
@@ -377,6 +410,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             setSelectedCoCooks([]);
             setSelectedLinkedRecipes([]);
             setSelectedQuest(null);
+            setIngredientsInputMode('list');
+            setStepsInputMode('list');
             hasLoadedDraft.current = false;
             hasLoadedEditData.current = false;
         } else {
@@ -442,22 +477,60 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
 
         if (step === STEPS.INGREDIENTS) {
-            const newIngredients: string[] = [];
-            for (let i = 0; i < numIngredients; i++) {
-                if (watch(`ingredient-${i}`) !== '') {
-                    newIngredients.push(watch(`ingredient-${i}`));
+            if (ingredientsInputMode === 'text') {
+                const textareaValue = getValues('ingredients-plain-text');
+                const parsedItems = parseTextToList(
+                    textareaValue,
+                    RECIPE_MAX_INGREDIENTS
+                );
+                if (parsedItems.length > 0) {
+                    setIngredients(parsedItems);
+                    setIngredientsInputMode('list');
+                    toast.success(
+                        `${parsedItems.length} ${t('ingredients_applied')}`
+                    );
+                } else {
+                    toast.error(
+                        t('no_ingredients_found') || 'No ingredients found'
+                    );
+                    return;
                 }
+            } else {
+                const newIngredients: string[] = [];
+                for (let i = 0; i < numIngredients; i++) {
+                    if (watch(`ingredient-${i}`) !== '') {
+                        newIngredients.push(watch(`ingredient-${i}`));
+                    }
+                }
+                setCustomValue('ingredients', newIngredients);
             }
-            setCustomValue('ingredients', newIngredients);
         }
         if (step === STEPS.STEPS) {
-            const newSteps: string[] = [];
-            for (let i = 0; i < numSteps; i++) {
-                if (watch(`step-${i}`) !== '') {
-                    newSteps.push(watch(`step-${i}`));
+            if (stepsInputMode === 'text') {
+                const textareaValue = getValues('steps-plain-text');
+                const parsedItems = parseTextToList(
+                    textareaValue,
+                    RECIPE_MAX_STEPS
+                );
+                if (parsedItems.length > 0) {
+                    setSteps(parsedItems);
+                    setStepsInputMode('list');
+                    toast.success(
+                        `${parsedItems.length} ${t('steps_applied')}`
+                    );
+                } else {
+                    toast.error(t('no_steps_found') || 'No steps found');
+                    return;
                 }
+            } else {
+                const newSteps: string[] = [];
+                for (let i = 0; i < numSteps; i++) {
+                    if (watch(`step-${i}`) !== '') {
+                        newSteps.push(watch(`step-${i}`));
+                    }
+                }
+                setCustomValue('steps', newSteps);
             }
-            setCustomValue('steps', newSteps);
         }
         setStep((value) => value + 1);
     };
@@ -634,6 +707,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     onSetIngredients={setIngredients}
                     getValues={getValues}
                     setValue={setValue}
+                    inputMode={ingredientsInputMode}
+                    setInputMode={setIngredientsInputMode}
                 />
             );
         }
@@ -649,6 +724,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     onSetSteps={setSteps}
                     getValues={getValues}
                     setValue={setValue}
+                    inputMode={stepsInputMode}
+                    setInputMode={setStepsInputMode}
                 />
             );
         }

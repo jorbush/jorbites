@@ -47,6 +47,35 @@ vi.mock('react-hot-toast', () => ({
 // Mock axios
 vi.mock('axios');
 
+// Mock next-cloudinary
+vi.mock('next-cloudinary', () => ({
+    CldUploadWidget: ({ onSuccess, children }: any) => {
+        const handleUpload = () => {
+            onSuccess({
+                info: {
+                    secure_url: 'https://example.com/newimage.jpg',
+                },
+            });
+        };
+        return children({ open: handleUpload });
+    },
+}));
+
+// Mock Button component to remove the 2-second delay during tests
+vi.mock('@/app/components/buttons/Button', () => ({
+    default: ({ label, onClick, disabled, dataCy, icon: Icon }: any) => (
+        <button
+            data-testid={dataCy || 'button-component'}
+            data-cy={dataCy}
+            disabled={disabled}
+            onClick={onClick}
+        >
+            {Icon && <Icon data-testid="button-icon" />}
+            {label}
+        </button>
+    ),
+}));
+
 describe('<RecipeModal />', () => {
     const mockUser = {
         id: 'user1',
@@ -72,10 +101,47 @@ describe('<RecipeModal />', () => {
 
     afterEach(() => {
         cleanup();
+        vi.clearAllTimers();
+        vi.useRealTimers();
     });
 
     const renderComponent = () => {
         render(<RecipeModal />);
+    };
+
+    const fillDescriptionStep = () => {
+        const titleInput = document.body.querySelector(
+            'input[data-cy="recipe-title"]'
+        ) as HTMLInputElement;
+        const descriptionInput = document.body.querySelector(
+            'input[data-cy="recipe-description"]'
+        ) as HTMLInputElement;
+        act(() => {
+            fireEvent.change(titleInput, {
+                target: { value: 'My Recipe Title' },
+            });
+            fireEvent.change(descriptionInput, {
+                target: { value: 'My Recipe Description' },
+            });
+        });
+    };
+
+    const fillIngredientsStep = () => {
+        const ingredientInput = document.body.querySelector(
+            'input[data-cy="recipe-ingredient-0"]'
+        ) as HTMLInputElement;
+        act(() => {
+            fireEvent.change(ingredientInput, { target: { value: 'Water' } });
+        });
+    };
+
+    const fillStepsStep = () => {
+        const stepInput = document.body.querySelector(
+            'input[data-cy="recipe-step-0"]'
+        ) as HTMLInputElement;
+        act(() => {
+            fireEvent.change(stepInput, { target: { value: 'Step 1' } });
+        });
     };
 
     it('renders the modal with initial step (CATEGORY)', () => {
@@ -88,34 +154,35 @@ describe('<RecipeModal />', () => {
         const nextButton = screen.getByRole('button', {
             name: 'next',
         });
-        waitFor(
-            () => {
-                act(() => {
-                    fireEvent.click(nextButton);
-                });
-                expect(screen.getByText('title_description')).toBeDefined();
-            },
-            { timeout: 4000 }
-        );
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        expect(screen.getByText('title_description')).toBeDefined();
     });
 
-    it('goes back to the previous step (CATEGORY) when back button is clicked', () => {
+    it('goes back to the previous step (CATEGORY) when back button is clicked', async () => {
         renderComponent();
-        let nextButton = screen.getByRole('button', {
+        const nextButton = screen.getByRole('button', {
             name: 'next',
         });
-        waitFor(
-            () => {
-                act(() => {
-                    fireEvent.click(nextButton);
-                });
-                expect(screen.getByText('title_description')).toBeDefined();
-                const backButton = screen.getByRole('button', { name: 'back' });
-                fireEvent.click(backButton);
-                expect(screen.getByText('title_category_recipe')).toBeDefined();
-            },
-            { timeout: 4000 }
-        );
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        expect(screen.getByText('title_description')).toBeDefined();
+        const backButton = screen.getByRole('button', { name: 'back' });
+        act(() => {
+            fireEvent.click(backButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        expect(screen.getByText('title_category_recipe')).toBeDefined();
     });
 
     it('renders all category options', () => {
@@ -138,365 +205,389 @@ describe('<RecipeModal />', () => {
         expect(categoryButton.parentElement?.className).include('selected');
     });
 
-    it('renders all preparation methods when method step is reached', () => {
-        renderComponent();
-        const nextButton = screen.getByRole('button', {
-            name: 'next',
-        });
-        waitFor(
-            () => {
-                act(() => {
-                    fireEvent.click(nextButton);
-                }); // Move to DESCRIPTION step
-                waitFor(
-                    () => {
-                        act(() => {
-                            fireEvent.click(nextButton);
-                        }); // Move to INGREDIENTS step
-                        waitFor(
-                            () => {
-                                act(() => {
-                                    fireEvent.click(nextButton);
-                                }); // Move to STEPS step
-                                waitFor(
-                                    () => {
-                                        act(() => {
-                                            fireEvent.click(nextButton);
-                                        }); // Move to METHODS step
-                                        preparationMethods.forEach((method) => {
-                                            expect(
-                                                screen.getByText(method.label)
-                                            ).toBeDefined();
-                                        });
-                                    },
-                                    { timeout: 4000 }
-                                );
-                            },
-                            { timeout: 4000 }
-                        );
-                    },
-                    { timeout: 4000 }
-                );
-            },
-            { timeout: 4000 }
-        );
-    }, 20000);
-
-    it('selects a preparation method when clicked', () => {
+    it('renders all preparation methods when method step is reached', async () => {
         renderComponent();
         const nextButton = screen.getByRole('button', {
             name: 'next',
         });
 
-        waitFor(
-            () => {
-                act(() => {
-                    fireEvent.click(nextButton);
-                }); // Move to DESCRIPTION step
-                waitFor(
-                    () => {
-                        act(() => {
-                            fireEvent.click(nextButton);
-                        }); // Move to INGREDIENTS step
-                        waitFor(
-                            () => {
-                                act(() => {
-                                    fireEvent.click(nextButton);
-                                }); // Move to STEPS step
-                                waitFor(
-                                    () => {
-                                        act(() => {
-                                            fireEvent.click(nextButton);
-                                        }); // Move to METHODS step
-                                        const firstMethod =
-                                            preparationMethods[0];
-                                        const methodButton = screen.getByText(
-                                            firstMethod.label
-                                        );
-                                        fireEvent.click(methodButton);
-                                        expect(methodButton).toHaveProperty(
-                                            'selected'
-                                        );
-                                    },
-                                    { timeout: 4000 }
-                                );
-                            },
-                            { timeout: 4000 }
-                        );
-                    },
-                    { timeout: 4000 }
-                );
-            },
-            { timeout: 4000 }
-        );
-    }, 20000);
+        // 1. Move to DESCRIPTION step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillDescriptionStep();
 
-    it('renders and adds ingredient input when "+" button is clicked', () => {
+        // 2. Move to INGREDIENTS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillIngredientsStep();
+
+        // 3. Move to METHODS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        preparationMethods.forEach((method) => {
+            expect(screen.getByText(method.label.toLowerCase())).toBeDefined();
+        });
+    });
+
+    it('selects a preparation method when clicked', async () => {
         renderComponent();
         const nextButton = screen.getByRole('button', {
             name: 'next',
         });
-        waitFor(
-            () => {
-                act(() => {
-                    fireEvent.click(nextButton);
-                }); // Move to DESCRIPTION step
-                waitFor(
-                    () => {
-                        act(() => {
-                            fireEvent.click(nextButton);
-                        }); // Move to INGREDIENTS step
-                        const addButton = screen.getByRole('button', {
-                            name: '+',
-                        });
-                        fireEvent.click(addButton);
 
-                        const ingredientInputs = screen.getAllByLabelText('');
-                        expect(ingredientInputs.length).toBe(2);
-                    },
-                    { timeout: 4000 }
-                );
-            },
-            { timeout: 4000 }
-        );
-    }, 20000);
+        // 1. Move to DESCRIPTION step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillDescriptionStep();
 
-    it('removes an ingredient input when delete button is clicked', () => {
+        // 2. Move to INGREDIENTS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillIngredientsStep();
+
+        // 3. Move to METHODS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        const firstMethod = preparationMethods[0];
+        const methodButton = screen.getByText(firstMethod.label.toLowerCase());
+        act(() => {
+            fireEvent.click(methodButton);
+        });
+        expect(methodButton.parentElement?.className).include('selected');
+    });
+
+    it('renders and adds ingredient input when "+" button is clicked', async () => {
         renderComponent();
         const nextButton = screen.getByRole('button', {
             name: 'next',
         });
-        waitFor(
-            () => {
-                act(() => {
-                    fireEvent.click(nextButton);
-                }); // Move to DESCRIPTION step
-                waitFor(
-                    () => {
-                        act(() => {
-                            fireEvent.click(nextButton);
-                        }); // Move to INGREDIENTS step
-                        const addButton = screen.getByRole('button', {
-                            name: '+',
-                        });
-                        fireEvent.click(addButton);
-                        const deleteButton = screen.getAllByTestId(
-                            'remove-ingredient-button'
-                        )[0];
-                        fireEvent.click(deleteButton);
 
-                        const ingredientInputs = screen.getAllByLabelText('');
-                        expect(ingredientInputs.length).toBe(1);
-                    },
-                    { timeout: 4000 }
-                );
-            },
-            { timeout: 4000 }
+        // 1. Move to DESCRIPTION step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillDescriptionStep();
+
+        // 2. Move to INGREDIENTS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        const addButton = screen.getByRole('button', {
+            name: '+',
+        });
+        act(() => {
+            fireEvent.click(addButton);
+        });
+
+        const ingredientInputs = screen.getAllByLabelText('');
+        expect(ingredientInputs.length).toBe(2);
+    });
+
+    it('removes an ingredient input when delete button is clicked', async () => {
+        renderComponent();
+        const nextButton = screen.getByRole('button', {
+            name: 'next',
+        });
+
+        // 1. Move to DESCRIPTION step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillDescriptionStep();
+
+        // 2. Move to INGREDIENTS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        const addButton = screen.getByRole('button', {
+            name: '+',
+        });
+        act(() => {
+            fireEvent.click(addButton);
+        });
+        const deleteButton = screen.getAllByTestId(
+            'remove-ingredient-button'
+        )[0];
+        act(() => {
+            fireEvent.click(deleteButton);
+        });
+
+        const ingredientInputs = screen.getAllByLabelText('');
+        expect(ingredientInputs.length).toBe(1);
+    });
+
+    it('renders and adds step input when "+" button is clicked', async () => {
+        renderComponent();
+        const nextButton = screen.getByRole('button', {
+            name: 'next',
+        });
+
+        // 1. Move to DESCRIPTION step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillDescriptionStep();
+
+        // 2. Move to INGREDIENTS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillIngredientsStep();
+
+        // 3. Move to METHODS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        // 4. Move to STEPS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        const addButton = screen.getByRole('button', {
+            name: '+',
+        });
+        act(() => {
+            fireEvent.click(addButton);
+        });
+
+        const stepInputs = screen.getAllByLabelText('');
+        expect(stepInputs.length).toBe(2);
+    });
+
+    it('removes a step input when delete button is clicked', async () => {
+        renderComponent();
+        const nextButton = screen.getByRole('button', {
+            name: 'next',
+        });
+
+        // 1. Move to DESCRIPTION step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillDescriptionStep();
+
+        // 2. Move to INGREDIENTS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillIngredientsStep();
+
+        // 3. Move to METHODS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        // 4. Move to STEPS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        const addButton = screen.getByRole('button', {
+            name: '+',
+        });
+        act(() => {
+            fireEvent.click(addButton);
+        });
+        const deleteButton = screen.getAllByTestId('remove-step-button')[0];
+        act(() => {
+            fireEvent.click(deleteButton);
+        });
+
+        const stepInputs = screen.getAllByLabelText('');
+        expect(stepInputs.length).toBe(1);
+    });
+
+    it('shows an error toast when trying to submit without an image', async () => {
+        renderComponent();
+        const nextButton = screen.getByRole('button', {
+            name: 'next',
+        });
+
+        // 1. Move to DESCRIPTION step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillDescriptionStep();
+
+        // 2. Move to INGREDIENTS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillIngredientsStep();
+
+        // 3. Move to METHODS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        // 4. Move to STEPS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillStepsStep();
+
+        // 5. Move to RELATED_CONTENT step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        // 6. Move to IMAGES step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        const submitButton = screen.getByRole('button', {
+            name: 'create',
+        });
+        act(() => {
+            fireEvent.click(submitButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        const toast = await import('react-hot-toast');
+        expect(toast.toast.error).toHaveBeenCalledWith(
+            'You must upload an image'
         );
     });
 
-    it('renders and adds step input when "+" button is clicked', () => {
+    it('renders related content step when reached', async () => {
         renderComponent();
         const nextButton = screen.getByRole('button', {
             name: 'next',
         });
 
-        waitFor(
-            () => {
-                act(() => {
-                    fireEvent.click(nextButton);
-                }); // Move to DESCRIPTION step
-                waitFor(
-                    () => {
-                        act(() => {
-                            fireEvent.click(nextButton);
-                        }); // Move to INGREDIENTS step
-                        waitFor(
-                            () => {
-                                act(() => {
-                                    fireEvent.click(nextButton);
-                                }); // Move to STEPS step
-                                const addButton = screen.getByRole('button', {
-                                    name: '+',
-                                });
-                                fireEvent.click(addButton);
+        // 1. Move to DESCRIPTION step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillDescriptionStep();
 
-                                const stepInputs = screen.getAllByLabelText('');
-                                expect(stepInputs.length).toBe(2);
-                            },
-                            { timeout: 4000 }
-                        );
-                    },
-                    { timeout: 4000 }
-                );
-            },
-            { timeout: 4000 }
-        );
+        // 2. Move to INGREDIENTS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillIngredientsStep();
+
+        // 3. Move to METHODS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        // 4. Move to STEPS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillStepsStep();
+
+        // 5. Move to RELATED_CONTENT step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        expect(screen.getByText('related_content')).toBeDefined();
+        expect(screen.getByText('co_cooks')).toBeDefined();
+        expect(screen.getByText('linked_recipes')).toBeDefined();
     });
-
-    it('removes a step input when delete button is clicked', () => {
-        renderComponent();
-        const nextButton = screen.getByRole('button', {
-            name: 'next',
-        });
-
-        waitFor(
-            () => {
-                act(() => {
-                    fireEvent.click(nextButton);
-                }); // Move to DESCRIPTION step
-                waitFor(
-                    () => {
-                        act(() => {
-                            fireEvent.click(nextButton);
-                        }); // Move to INGREDIENTS step
-                        waitFor(
-                            () => {
-                                act(() => {
-                                    fireEvent.click(nextButton);
-                                }); // Move to STEPS step
-                                const addButton = screen.getByRole('button', {
-                                    name: '+',
-                                });
-                                fireEvent.click(addButton);
-                                const deleteButton =
-                                    screen.getAllByTestId(
-                                        'remove-step-button'
-                                    )[0];
-                                fireEvent.click(deleteButton);
-
-                                const stepInputs = screen.getAllByLabelText('');
-                                expect(stepInputs.length).toBe(1);
-                            },
-                            { timeout: 4000 }
-                        );
-                    },
-                    { timeout: 4000 }
-                );
-            },
-            { timeout: 4000 }
-        );
-    });
-
-    it('shows an error toast when trying to submit without an image', () => {
-        renderComponent();
-        const nextButton = screen.getByRole('button', {
-            name: 'next',
-        });
-        waitFor(
-            () => {
-                act(() => {
-                    fireEvent.click(nextButton);
-                }); // Move to DESCRIPTION step
-                waitFor(
-                    () => {
-                        act(() => {
-                            fireEvent.click(nextButton);
-                        }); // Move to INGREDIENTS step
-                        waitFor(
-                            () => {
-                                act(() => {
-                                    fireEvent.click(nextButton);
-                                }); // Move to STEPS step
-                                waitFor(
-                                    () => {
-                                        act(() => {
-                                            fireEvent.click(nextButton);
-                                        }); // Move to METHODS step
-                                        waitFor(
-                                            () => {
-                                                act(() => {
-                                                    fireEvent.click(nextButton);
-                                                }); // Move to IMAGES step
-                                                const submitButton =
-                                                    screen.getByRole('button', {
-                                                        name: 'create',
-                                                    });
-                                                fireEvent.click(submitButton);
-                                                expect(
-                                                    screen.getByText(
-                                                        'You must upload an image'
-                                                    )
-                                                ).toBeDefined();
-                                            },
-                                            {
-                                                timeout: 4000,
-                                            }
-                                        );
-                                    },
-                                    { timeout: 4000 }
-                                );
-                            },
-                            { timeout: 4000 }
-                        );
-                    },
-                    { timeout: 4000 }
-                );
-            },
-            { timeout: 4000 }
-        );
-    });
-
-    it('renders related content step when reached', () => {
-        renderComponent();
-        const nextButton = screen.getByRole('button', {
-            name: 'next',
-        });
-
-        waitFor(
-            () => {
-                act(() => {
-                    fireEvent.click(nextButton);
-                }); // Move to DESCRIPTION step
-                waitFor(
-                    () => {
-                        act(() => {
-                            fireEvent.click(nextButton);
-                        }); // Move to INGREDIENTS step
-                        waitFor(
-                            () => {
-                                act(() => {
-                                    fireEvent.click(nextButton);
-                                }); // Move to METHODS step
-                                waitFor(
-                                    () => {
-                                        act(() => {
-                                            fireEvent.click(nextButton);
-                                        }); // Move to STEPS step
-                                        waitFor(
-                                            () => {
-                                                act(() => {
-                                                    fireEvent.click(nextButton);
-                                                }); // Move to RELATED_CONTENT step
-                                                expect(
-                                                    screen.getByText(
-                                                        'related_content'
-                                                    )
-                                                ).toBeDefined();
-                                                expect(
-                                                    screen.getByText('co_cooks')
-                                                ).toBeDefined();
-                                                expect(
-                                                    screen.getByText(
-                                                        'linked_recipes'
-                                                    )
-                                                ).toBeDefined();
-                                            },
-                                            { timeout: 4000 }
-                                        );
-                                    },
-                                    { timeout: 4000 }
-                                );
-                            },
-                            { timeout: 4000 }
-                        );
-                    },
-                    { timeout: 4000 }
-                );
-            },
-            { timeout: 4000 }
-        );
-    }, 20000);
 
     it('should have constants imported correctly for ingredient and step limits', () => {
         // Test that the constants are properly imported and accessible
@@ -508,61 +599,91 @@ describe('<RecipeModal />', () => {
         expect(RECIPE_MAX_STEPS).toBeGreaterThan(0);
     });
 
-    it('should allow adding ingredients up to the maximum limit', () => {
+    it('should allow adding ingredients up to the maximum limit', async () => {
         renderComponent();
         const nextButton = screen.getByRole('button', { name: 'next' });
 
-        // Navigate to ingredients step
+        // 1. Move to DESCRIPTION step
         act(() => {
             fireEvent.click(nextButton);
-        }); // Move to DESCRIPTION step
-        waitFor(() => {
-            act(() => {
-                fireEvent.click(nextButton);
-            }); // Move to INGREDIENTS step
-
-            const addButton = screen.getByRole('button', { name: '+' });
-
-            // Add ingredients up to the limit (we start with 1, so add RECIPE_MAX_INGREDIENTS - 1 more)
-            for (let i = 1; i < RECIPE_MAX_INGREDIENTS; i++) {
-                fireEvent.click(addButton);
-            }
-
-            // Verify we have the maximum number of ingredients
-            const ingredientInputs = screen.getAllByRole('textbox');
-            expect(ingredientInputs.length).toBe(RECIPE_MAX_INGREDIENTS);
         });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillDescriptionStep();
+
+        // 2. Move to INGREDIENTS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        const addButton = screen.getByRole('button', { name: '+' });
+
+        // Add ingredients up to the limit (we start with 1, so add RECIPE_MAX_INGREDIENTS - 1 more)
+        for (let i = 1; i < RECIPE_MAX_INGREDIENTS; i++) {
+            act(() => {
+                fireEvent.click(addButton);
+            });
+        }
+
+        // Verify we have the maximum number of ingredients
+        const ingredientInputs = screen.getAllByRole('textbox');
+        expect(ingredientInputs.length).toBe(RECIPE_MAX_INGREDIENTS);
     });
 
-    it('should allow adding steps up to the maximum limit', () => {
+    it('should allow adding steps up to the maximum limit', async () => {
         renderComponent();
         const nextButton = screen.getByRole('button', { name: 'next' });
 
-        // Navigate to steps
+        // 1. Move to DESCRIPTION step
         act(() => {
             fireEvent.click(nextButton);
-        }); // Move to DESCRIPTION step
-        waitFor(() => {
-            act(() => {
-                fireEvent.click(nextButton);
-            }); // Move to INGREDIENTS step
-            waitFor(() => {
-                act(() => {
-                    fireEvent.click(nextButton);
-                }); // Move to STEPS step
-
-                const addButton = screen.getByRole('button', { name: '+' });
-
-                // Add just a few steps to verify the functionality works
-                for (let i = 1; i < 5; i++) {
-                    fireEvent.click(addButton);
-                }
-
-                // Verify we can add steps normally
-                const stepInputs = screen.getAllByRole('textbox');
-                expect(stepInputs.length).toBe(5);
-            });
         });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillDescriptionStep();
+
+        // 2. Move to INGREDIENTS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+        fillIngredientsStep();
+
+        // 3. Move to METHODS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        // 4. Move to STEPS step
+        act(() => {
+            fireEvent.click(nextButton);
+        });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(2000);
+        });
+
+        const addButton = screen.getByRole('button', { name: '+' });
+
+        // Add just a few steps to verify the functionality works
+        for (let i = 1; i < 5; i++) {
+            act(() => {
+                fireEvent.click(addButton);
+            });
+        }
+
+        // Verify we can add steps normally
+        const stepInputs = screen.getAllByRole('textbox');
+        expect(stepInputs.length).toBe(5);
     });
 
     it('should have correct maximum limits defined', () => {
@@ -781,6 +902,340 @@ describe('<RecipeModal />', () => {
 
             // Component should render the category step
             expect(screen.getByText('title_category_recipe')).toBeDefined();
+        });
+    });
+
+    describe('Plain Text Mode Bugfix', () => {
+        it('automatically parses and applies plain text ingredients in onNext', async () => {
+            renderComponent();
+            const nextButton = screen.getByRole('button', { name: 'next' });
+
+            // 1. Navigate to DESCRIPTION step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('title_description')).toBeDefined();
+
+            // 2. Fill in description fields
+            const titleInput = document.body.querySelector(
+                'input[data-cy="recipe-title"]'
+            ) as HTMLInputElement;
+            const descriptionInput = document.body.querySelector(
+                'input[data-cy="recipe-description"]'
+            ) as HTMLInputElement;
+            act(() => {
+                fireEvent.change(titleInput, {
+                    target: { value: 'My Recipe Title' },
+                });
+                fireEvent.change(descriptionInput, {
+                    target: { value: 'My Recipe Description' },
+                });
+            });
+
+            // 3. Move to INGREDIENTS step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('title_ingredients')).toBeDefined();
+
+            // 4. Switch to plain text mode
+            const toggleButton = screen.getByTestId('toggle-input-mode');
+            act(() => {
+                fireEvent.click(toggleButton);
+            });
+
+            // Verify textarea is shown
+            const textarea = document.body.querySelector(
+                'textarea[data-cy="ingredients-textarea"]'
+            ) as HTMLTextAreaElement;
+            expect(textarea).toBeDefined();
+
+            // 5. Enter ingredients in textarea
+            act(() => {
+                fireEvent.change(textarea, {
+                    target: { value: '1. flour\n2. sugar\n3. eggs' },
+                });
+            });
+
+            // 6. Click Next without clicking Apply
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // 7. Verify it auto-applied and transitioned to METHODS step
+            expect(screen.getByText('methods_title')).toBeDefined();
+            const toast = await import('react-hot-toast');
+            expect(toast.toast.success).toHaveBeenCalledWith(
+                '3 ingredients_applied'
+            );
+        });
+
+        it('blocks transition on INGREDIENTS step if plain text is empty', async () => {
+            renderComponent();
+            const nextButton = screen.getByRole('button', { name: 'next' });
+
+            // 1. Navigate to DESCRIPTION step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('title_description')).toBeDefined();
+
+            // 2. Fill in description fields
+            const titleInput = document.body.querySelector(
+                'input[data-cy="recipe-title"]'
+            ) as HTMLInputElement;
+            const descriptionInput = document.body.querySelector(
+                'input[data-cy="recipe-description"]'
+            ) as HTMLInputElement;
+            act(() => {
+                fireEvent.change(titleInput, {
+                    target: { value: 'My Recipe Title' },
+                });
+                fireEvent.change(descriptionInput, {
+                    target: { value: 'My Recipe Description' },
+                });
+            });
+
+            // 3. Move to INGREDIENTS step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('title_ingredients')).toBeDefined();
+
+            // 4. Switch to plain text mode
+            const toggleButton = screen.getByTestId('toggle-input-mode');
+            act(() => {
+                fireEvent.click(toggleButton);
+            });
+
+            const textarea = document.body.querySelector(
+                'textarea[data-cy="ingredients-textarea"]'
+            ) as HTMLTextAreaElement;
+            // Clear textarea
+            act(() => {
+                fireEvent.change(textarea, { target: { value: '' } });
+            });
+
+            // 5. Click Next
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // 6. Verify it blocked transition and showed toast error
+            const toast = await import('react-hot-toast');
+            expect(toast.toast.error).toHaveBeenCalledWith(
+                'no_ingredients_found'
+            );
+            expect(screen.getByText('title_ingredients')).toBeDefined(); // Still on ingredients step
+        });
+
+        it('automatically parses and applies plain text steps in onNext', async () => {
+            renderComponent();
+            const nextButton = screen.getByRole('button', { name: 'next' });
+
+            // 1. Navigate to DESCRIPTION step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('title_description')).toBeDefined();
+
+            // 2. Fill in description fields
+            const titleInput = document.body.querySelector(
+                'input[data-cy="recipe-title"]'
+            ) as HTMLInputElement;
+            const descriptionInput = document.body.querySelector(
+                'input[data-cy="recipe-description"]'
+            ) as HTMLInputElement;
+            act(() => {
+                fireEvent.change(titleInput, {
+                    target: { value: 'My Recipe Title' },
+                });
+                fireEvent.change(descriptionInput, {
+                    target: { value: 'My Recipe Description' },
+                });
+            });
+
+            // 3. Move to INGREDIENTS step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('title_ingredients')).toBeDefined();
+
+            // We need to provide a valid ingredient so we can advance
+            const firstIngredientField = document.body.querySelector(
+                'input[data-cy="recipe-ingredient-0"]'
+            ) as HTMLInputElement;
+            act(() => {
+                fireEvent.change(firstIngredientField, {
+                    target: { value: 'Water' },
+                });
+            });
+
+            // 4. Move to METHODS step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('methods_title')).toBeDefined();
+
+            // 5. Move to STEPS step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('title_steps')).toBeDefined();
+
+            // 6. Switch to plain text mode
+            const toggleButton = screen.getByTestId('toggle-input-mode');
+            act(() => {
+                fireEvent.click(toggleButton);
+            });
+
+            // Verify textarea is shown
+            const textarea = document.body.querySelector(
+                'textarea[data-cy="steps-textarea"]'
+            ) as HTMLTextAreaElement;
+            expect(textarea).toBeDefined();
+
+            // 7. Enter steps in textarea
+            act(() => {
+                fireEvent.change(textarea, {
+                    target: { value: '1. Mix\n2. Bake' },
+                });
+            });
+
+            // 8. Click Next without clicking Apply
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // 9. Verify it auto-applied and transitioned to RELATED_CONTENT step
+            expect(screen.getByText('related_content')).toBeDefined();
+            const toast = await import('react-hot-toast');
+            expect(toast.toast.success).toHaveBeenCalledWith('2 steps_applied');
+        });
+
+        it('blocks transition on STEPS step if plain text is empty', async () => {
+            renderComponent();
+            const nextButton = screen.getByRole('button', { name: 'next' });
+
+            // 1. Navigate to DESCRIPTION step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('title_description')).toBeDefined();
+
+            // 2. Fill in description fields
+            const titleInput = document.body.querySelector(
+                'input[data-cy="recipe-title"]'
+            ) as HTMLInputElement;
+            const descriptionInput = document.body.querySelector(
+                'input[data-cy="recipe-description"]'
+            ) as HTMLInputElement;
+            act(() => {
+                fireEvent.change(titleInput, {
+                    target: { value: 'My Recipe Title' },
+                });
+                fireEvent.change(descriptionInput, {
+                    target: { value: 'My Recipe Description' },
+                });
+            });
+
+            // 3. Move to INGREDIENTS step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('title_ingredients')).toBeDefined();
+
+            const firstIngredientField = document.body.querySelector(
+                'input[data-cy="recipe-ingredient-0"]'
+            ) as HTMLInputElement;
+            act(() => {
+                fireEvent.change(firstIngredientField, {
+                    target: { value: 'Water' },
+                });
+            });
+
+            // 4. Move to METHODS step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('methods_title')).toBeDefined();
+
+            // 5. Move to STEPS step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('title_steps')).toBeDefined();
+
+            // 6. Switch to plain text mode
+            const toggleButton = screen.getByTestId('toggle-input-mode');
+            act(() => {
+                fireEvent.click(toggleButton);
+            });
+
+            const textarea = document.body.querySelector(
+                'textarea[data-cy="steps-textarea"]'
+            ) as HTMLTextAreaElement;
+            act(() => {
+                fireEvent.change(textarea, { target: { value: '' } });
+            });
+
+            // 7. Click Next
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // 8. Verify it blocked transition and showed toast error
+            const toast = await import('react-hot-toast');
+            expect(toast.toast.error).toHaveBeenCalledWith('no_steps_found');
+            expect(screen.getByText('title_steps')).toBeDefined(); // Still on steps step
         });
     });
 });

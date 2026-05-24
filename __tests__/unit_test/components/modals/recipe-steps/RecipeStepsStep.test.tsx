@@ -440,4 +440,23 @@ describe('<RecipeStepsStep />', () => {
             'Bake',
         ]);
     });
+
+    it('respects inputMode prop and calls setInputMode when toggled', () => {
+        const setInputModeMock = vi.fn();
+        const props = {
+            ...mockProps,
+            inputMode: 'text' as const,
+            setInputMode: setInputModeMock,
+        };
+
+        render(<RecipeStepsStep {...props} />);
+
+        // Should display textarea immediately because inputMode is 'text'
+        expect(screen.queryByTestId('steps-textarea')).toBeDefined();
+
+        // Clicking toggle should call setInputMode with 'list'
+        const toggleButton = screen.getByTestId('toggle-input-mode');
+        fireEvent.click(toggleButton);
+        expect(setInputModeMock).toHaveBeenCalledWith('list');
+    });
 });
