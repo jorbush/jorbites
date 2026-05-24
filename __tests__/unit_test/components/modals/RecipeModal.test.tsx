@@ -4,7 +4,6 @@ import {
     fireEvent,
     act,
     cleanup,
-    waitFor,
 } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RecipeModal from '@/app/components/modals/RecipeModal';
