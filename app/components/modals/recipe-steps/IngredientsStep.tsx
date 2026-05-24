@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FieldValues, FieldErrors, UseFormRegister } from 'react-hook-form';
 import { AiFillDelete } from 'react-icons/ai';
 import { toast } from 'react-hot-toast';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Heading from '@/app/components/navigation/Heading';
 import Input from '@/app/components/inputs/Input';
 import Textarea from '@/app/components/inputs/Textarea';
@@ -25,6 +25,8 @@ interface IngredientsStepProps {
     onSetIngredients?: (ingredients: string[]) => void;
     getValues?: (name?: string | string[]) => any;
     setValue?: (name: string, value: any) => void;
+    inputMode?: 'list' | 'text';
+    setInputMode?: (mode: 'list' | 'text') => void;
 }
 
 const IngredientsStep: React.FC<IngredientsStepProps> = ({
@@ -36,30 +38,16 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
     onSetIngredients,
     getValues,
     setValue,
+    inputMode: propInputMode,
+    setInputMode: propSetInputMode,
 }) => {
     const { t } = useTranslation();
-    const [inputMode, setInputMode] = useState<'list' | 'text'>('list');
+    const [localInputMode, setLocalInputMode] = useState<'list' | 'text'>(
+        'list'
+    );
 
-    // Update plain text value when switching to text mode
-    useEffect(() => {
-        if (inputMode === 'text' && getValues && setValue) {
-            // Collect current ingredients
-            const currentIngredients: string[] = [];
-            for (let i = 0; i < numIngredients; i++) {
-                const value = getValues(`ingredient-${i}`);
-                if (value && value.trim() !== '') {
-                    currentIngredients.push(value.trim());
-                }
-            }
-            // Convert to numbered plain text format
-            const plainText = currentIngredients
-                .map((ingredient, index) => `${index + 1}. ${ingredient}`)
-                .join('\n');
-            setValue('ingredients-plain-text', plainText);
-        }
-        // getValues and setValue are stable references from react-hook-form
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [inputMode, numIngredients]);
+    const inputMode = propInputMode ?? localInputMode;
+    const setInputMode = propSetInputMode ?? setLocalInputMode;
 
     const handleAddIngredient = () => {
         if (numIngredients >= RECIPE_MAX_INGREDIENTS) {
@@ -73,7 +61,33 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
     };
 
     const handleModeToggle = () => {
-        setInputMode((mode) => (mode === 'list' ? 'text' : 'list'));
+        const nextMode = inputMode === 'list' ? 'text' : 'list';
+        if (nextMode === 'text' && getValues && setValue) {
+            // Collect current ingredients
+            const currentIngredients: string[] = [];
+            for (let i = 0; i < numIngredients; i++) {
+                const value = getValues(`ingredient-${i}`);
+                if (value && value.trim() !== '') {
+                    currentIngredients.push(value.trim());
+                }
+            }
+            // Convert to numbered plain text format
+            const plainText = currentIngredients
+                .map((ingredient, index) => `${index + 1}. ${ingredient}`)
+                .join('\n');
+            setValue('ingredients-plain-text', plainText);
+        } else if (nextMode === 'list' && getValues && onSetIngredients) {
+            // Collect text from textarea and parse it
+            const textareaValue = getValues('ingredients-plain-text');
+            const parsedItems = parseTextToList(
+                textareaValue,
+                RECIPE_MAX_INGREDIENTS
+            );
+            if (parsedItems.length > 0) {
+                onSetIngredients(parsedItems);
+            }
+        }
+        setInputMode(nextMode);
     };
 
     const renderIngredientInputs = () => {
