@@ -6,6 +6,7 @@ import {
     calculateLayoutParameters,
     chunkArray,
     parseFormattedText,
+    RecipeBookConfig,
 } from '@/app/utils/recipeBookUtils';
 
 interface RecipePageProps {
@@ -19,12 +20,14 @@ interface RecipePageProps {
         page: string;
         of: string;
     };
+    config?: RecipeBookConfig;
 }
 
 export const RecipePage: React.FC<RecipePageProps> = ({
     recipe,
     idx,
     labels,
+    config,
 }) => {
     // Construct secure proxied image URL.
     let proxiedImageSrc = null;
@@ -76,15 +79,18 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         galleryColumn,
         galleryImageHeight,
         colsPerRow,
-    } = calculateLayoutParameters(recipe, idx);
+    } = calculateLayoutParameters(recipe, idx, config);
 
-    const extraImageRows = chunkArray(proxiedExtraImages, colsPerRow);
+    const showExtraImages = config ? config.displayExtraImages : true;
+    const extraImageRows = showExtraImages
+        ? chunkArray(proxiedExtraImages, colsPerRow)
+        : [];
 
     const mainImage = proxiedImageSrc && (
         <Image
             src={proxiedImageSrc}
             style={
-                layout === 'right-top'
+                layout.startsWith('right')
                     ? [styles.recipeImageRight, { height: rightImageHeight }]
                     : [styles.recipeImageLeft, { height: leftImageHeight }]
             }
@@ -189,7 +195,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             {galleryColumn === 'left' && gallery}
                         </View>
                     )}
-                    {layout === 'right-top' &&
+                    {layout.startsWith('right') &&
                         galleryColumn === 'left' &&
                         gallery && (
                             <View style={{ marginTop: 15 }}>{gallery}</View>
@@ -217,7 +223,14 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                                 </Text>
                             </View>
                         ))}
+                    {layout === 'right-bottom' && (
+                        <View style={{ marginTop: 15 }}>
+                            {mainImage}
+                            {galleryColumn === 'right' && gallery}
+                        </View>
+                    )}
                     {layout !== 'right-top' &&
+                        layout !== 'right-bottom' &&
                         galleryColumn === 'right' &&
                         gallery && (
                             <View style={{ marginTop: 15 }}>{gallery}</View>

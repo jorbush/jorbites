@@ -1,6 +1,7 @@
 import React from 'react';
 import { Page, View, Image, Text } from '@react-pdf/renderer';
 import { styles } from './recipeBookStyles';
+import { RecipeBookConfig } from '@/app/utils/recipeBookUtils';
 
 interface RecipeBookCoverProps {
     userName: string;
@@ -13,6 +14,7 @@ interface RecipeBookCoverProps {
         subtitle: string;
         recipes: string;
     };
+    config?: RecipeBookConfig;
 }
 
 export const RecipeBookCover: React.FC<RecipeBookCoverProps> = ({
@@ -21,7 +23,10 @@ export const RecipeBookCover: React.FC<RecipeBookCoverProps> = ({
     logoUrl,
     recipesCount,
     labels,
+    config,
 }) => {
+    const showUserImage = config ? config.displayUserImage : true;
+
     // Construct secure proxied user image URL if available
     let proxiedUserImage = null;
     if (userImage) {
@@ -60,7 +65,7 @@ export const RecipeBookCover: React.FC<RecipeBookCoverProps> = ({
                 <View style={styles.coverDivider} />
                 <Text style={styles.coverSubtitle}>{labels.subtitle}</Text>
                 <View style={styles.coverFooter}>
-                    {proxiedUserImage && (
+                    {showUserImage && proxiedUserImage && (
                         <Image
                             src={proxiedUserImage}
                             style={styles.coverAvatar}

@@ -100,8 +100,25 @@ export const chunkArray = <T,>(arr: T[], size: number): T[][] => {
     return chunks;
 };
 
+export interface RecipeBookConfig {
+    imageDisplay:
+        | 'random'
+        | 'left-top'
+        | 'left-bottom'
+        | 'right-top'
+        | 'right-bottom';
+    displayExtraImages: boolean;
+    displayUserImage: boolean;
+}
+
+export const DEFAULT_RECIPE_BOOK_CONFIG: RecipeBookConfig = {
+    imageDisplay: 'random',
+    displayExtraImages: true,
+    displayUserImage: true,
+};
+
 export interface LayoutParameters {
-    layout: 'left-top' | 'left-bottom' | 'right-top';
+    layout: 'left-top' | 'left-bottom' | 'right-top' | 'right-bottom';
     leftImageHeight: number;
     rightImageHeight: number;
     galleryColumn: 'left' | 'right';
@@ -114,26 +131,34 @@ export interface LayoutParameters {
  */
 export const calculateLayoutParameters = (
     recipe: SafeRecipe,
-    idx: number
+    idx: number,
+    config?: RecipeBookConfig
 ): LayoutParameters => {
     const numSteps = recipe.steps ? recipe.steps.length : 0;
     const totalStepsLength = recipe.steps
         ? recipe.steps.reduce((sum, s) => sum + s.length, 0)
         : 0;
-    const hasExtraImages = recipe.extraImages && recipe.extraImages.length > 0;
+    const showExtraImages = config ? config.displayExtraImages : true;
+    const hasExtraImages =
+        showExtraImages && recipe.extraImages && recipe.extraImages.length > 0;
     const isLongRecipe =
         numSteps >= 8 || totalStepsLength > 400 || hasExtraImages;
 
-    let layout: 'left-top' | 'left-bottom' | 'right-top';
-    if (isLongRecipe) {
-        layout = idx % 2 === 0 ? 'left-top' : 'left-bottom';
+    let layout: 'left-top' | 'left-bottom' | 'right-top' | 'right-bottom';
+    if (config?.imageDisplay && config.imageDisplay !== 'random') {
+        layout = config.imageDisplay;
     } else {
-        const layouts: ('left-top' | 'left-bottom' | 'right-top')[] = [
-            'right-top',
-            'left-top',
-            'left-bottom',
-        ];
-        layout = layouts[idx % 3];
+        if (isLongRecipe) {
+            layout = idx % 2 === 0 ? 'left-top' : 'left-bottom';
+        } else {
+            const layouts: (
+                | 'left-top'
+                | 'left-bottom'
+                | 'right-top'
+                | 'right-bottom'
+            )[] = ['right-top', 'left-top', 'left-bottom'];
+            layout = layouts[idx % 3];
+        }
     }
 
     // Dynamic MaxColHeight calculation based on header content
@@ -171,16 +196,22 @@ export const calculateLayoutParameters = (
         leftImageHeight = Math.max(100, leftSpaceForImage);
     }
 
+    // Scale down right main image height if steps base height is very tall
+    const rightSpaceForImage = MaxColHeight - stepsBaseHeight - 15;
+    if (rightSpaceForImage < rightImageHeight) {
+        rightImageHeight = Math.max(120, rightSpaceForImage);
+    }
+
     // Calculate available space for gallery in each column
     const leftAvailableForGallery =
         MaxColHeight -
         (ingredientsBaseHeight +
-            (layout !== 'right-top' ? leftImageHeight + 15 : 0)) -
+            (layout.startsWith('left') ? leftImageHeight + 15 : 0)) -
         15;
     const rightAvailableForGallery =
         MaxColHeight -
         (stepsBaseHeight +
-            (layout === 'right-top' ? rightImageHeight + 15 : 0)) -
+            (layout.startsWith('right') ? rightImageHeight + 15 : 0)) -
         15;
 
     // Route gallery to the column with more available space
@@ -189,7 +220,8 @@ export const calculateLayoutParameters = (
 
     const columnWidth = galleryColumn === 'left' ? 216 : 278;
     const maxGalleryHeight = galleryColumn === 'left' ? 104 : 133;
-    const numExtraImages = recipe.extraImages ? recipe.extraImages.length : 0;
+    const numExtraImages =
+        showExtraImages && recipe.extraImages ? recipe.extraImages.length : 0;
     const allowedGalleryHeight =
         galleryColumn === 'left'
             ? leftAvailableForGallery

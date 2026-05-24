@@ -652,5 +652,13 @@
     "page": "Pàgina",
     "table_of_contents": "Índex",
     "recipe_book_no_recipes": "No tens receptes per generar un llibre.",
-    "recipe_book_generated_success": "Llibre de receptes generat amb èxit!"
+    "recipe_book_generated_success": "Llibre de receptes generat amb èxit!",
+    "recipe_image_display": "Visualització d'imatge de recepta",
+    "display_extra_images": "Mostrar imatges extra",
+    "display_user_image_in_cover": "Mostrar imatge d'usuari a la portada",
+    "random": "Aleatori",
+    "top_left": "A dalt a l'esquerra",
+    "top_right": "A dalt a la dreta",
+    "bottom_left": "A baix a l'esquerra",
+    "bottom_right": "A baix a la dreta"
 }

@@ -3,6 +3,7 @@ import { SafeRecipe } from '@/app/types';
 import { RecipeBookCover } from './RecipeBookCover';
 import { RecipeBookTOC } from './RecipeBookTOC';
 import { RecipePage } from './RecipePage';
+import { RecipeBookConfig } from '@/app/utils/recipeBookUtils';
 
 // Register Montserrat and Playfair Display Font weights from Google Fonts gstatic CDN
 Font.register({
@@ -76,6 +77,7 @@ interface RecipeBookPDFProps {
         timeUnit: string;
         recipes: string;
     };
+    config?: RecipeBookConfig;
 }
 
 export const RecipeBookPDF: React.FC<RecipeBookPDFProps> = ({
@@ -84,6 +86,7 @@ export const RecipeBookPDF: React.FC<RecipeBookPDFProps> = ({
     userImage,
     logoUrl,
     labels,
+    config,
 }) => {
     return (
         <Document>
@@ -94,6 +97,7 @@ export const RecipeBookPDF: React.FC<RecipeBookPDFProps> = ({
                 logoUrl={logoUrl}
                 recipesCount={recipes.length}
                 labels={labels}
+                config={config}
             />
 
             {/* Page 2: Table of Contents */}
@@ -111,6 +115,7 @@ export const RecipeBookPDF: React.FC<RecipeBookPDFProps> = ({
                     recipe={recipe}
                     idx={idx}
                     labels={labels}
+                    config={config}
                 />
             ))}
         </Document>

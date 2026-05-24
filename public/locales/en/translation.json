@@ -654,5 +654,13 @@
     "page": "Page",
     "table_of_contents": "Table of Contents",
     "recipe_book_no_recipes": "You have no recipes to generate a book.",
-    "recipe_book_generated_success": "Recipe book generated successfully!"
+    "recipe_book_generated_success": "Recipe book generated successfully!",
+    "recipe_image_display": "Recipe image display",
+    "display_extra_images": "Display extra images",
+    "display_user_image_in_cover": "Display user image on cover",
+    "random": "Random",
+    "top_left": "Top Left",
+    "top_right": "Top Right",
+    "bottom_left": "Bottom Left",
+    "bottom_right": "Bottom Right"
 }
