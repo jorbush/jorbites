@@ -165,7 +165,10 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         setValue('questId', '');
     };
 
-    const saveDraft = async () => {
+    const saveDraft = async (stepOverride?: number | React.MouseEvent) => {
+        const stepToSave =
+            typeof stepOverride === 'number' ? stepOverride : step;
+
         // Collect ingredients
         let newIngredients: string[] = [];
         if (ingredientsInputMode === 'text') {
@@ -176,8 +179,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             );
             if (parsedItems.length > 0) {
                 newIngredients = parsedItems;
-                setIngredients(parsedItems);
-                setIngredientsInputMode('list');
             }
         } else {
             for (let i = 0; i < numIngredients; i++) {
@@ -197,8 +198,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             );
             if (parsedItems.length > 0) {
                 newSteps = parsedItems;
-                setSteps(parsedItems);
-                setStepsInputMode('list');
             }
         } else {
             for (let i = 0; i < numSteps; i++) {
@@ -209,7 +208,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
 
         const data = {
-            currentStep: step,
+            currentStep: stepToSave,
             categories: watch('categories'),
             method: watch('method'),
             imageSrc: watch('imageSrc'),
@@ -473,7 +472,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const onNext = () => {
         if (step >= STEPS_LENGTH - 1) {
-            return;
+            return false;
         }
 
         if (step === STEPS.INGREDIENTS) {
@@ -493,7 +492,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     toast.error(
                         t('no_ingredients_found') || 'No ingredients found'
                     );
-                    return;
+                    return false;
                 }
             } else {
                 const newIngredients: string[] = [];
@@ -520,7 +519,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     );
                 } else {
                     toast.error(t('no_steps_found') || 'No steps found');
-                    return;
+                    return false;
                 }
             } else {
                 const newSteps: string[] = [];
@@ -533,18 +532,20 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             }
         }
         setStep((value) => value + 1);
+        return true;
     };
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         if (step !== STEPS.IMAGES) {
-            // Only save draft on recipe creation in production
+            const success = onNext();
             if (
+                success &&
                 process.env.NODE_ENV === 'production' &&
                 !recipeModal.isEditMode
             ) {
-                await saveDraft();
+                await saveDraft(step + 1);
             }
-            return onNext();
+            return;
         }
 
         if (

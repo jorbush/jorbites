@@ -905,6 +905,105 @@ describe('<RecipeModal />', () => {
         });
     });
 
+    describe('Draft Saving on Step Transitions', () => {
+        let originalEnv: string | undefined;
+
+        beforeEach(() => {
+            originalEnv = process.env.NODE_ENV;
+        });
+
+        afterEach(() => {
+            process.env.NODE_ENV = originalEnv;
+        });
+
+        it('triggers saveDraft with the updated step when next is clicked in production', async () => {
+            process.env.NODE_ENV = 'production';
+            const axios = await import('axios');
+            vi.mocked(axios.default.post).mockResolvedValue({ data: {} });
+
+            renderComponent();
+            const nextButton = screen.getByRole('button', { name: 'next' });
+
+            // Transition from CATEGORY to DESCRIPTION step
+            await act(async () => {
+                fireEvent.click(nextButton);
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // Expect a POST to /api/draft with currentStep: 1 (DESCRIPTION step)
+            expect(axios.default.post).toHaveBeenCalledWith(
+                expect.stringContaining('/api/draft'),
+                expect.objectContaining({ currentStep: 1 })
+            );
+        });
+
+        it('does not trigger saveDraft if validation fails on step transition', async () => {
+            process.env.NODE_ENV = 'production';
+            const axios = await import('axios');
+            vi.mocked(axios.default.post).mockResolvedValue({ data: {} });
+
+            renderComponent();
+            const nextButton = screen.getByRole('button', { name: 'next' });
+
+            // 1. Move to DESCRIPTION step
+            await act(async () => {
+                fireEvent.click(nextButton);
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // Reset mock history
+            vi.mocked(axios.default.post).mockClear();
+
+            // Fill in description fields
+            const titleInput = document.body.querySelector(
+                'input[data-cy="recipe-title"]'
+            ) as HTMLInputElement;
+            const descriptionInput = document.body.querySelector(
+                'input[data-cy="recipe-description"]'
+            ) as HTMLInputElement;
+            act(() => {
+                fireEvent.change(titleInput, {
+                    target: { value: 'My Recipe Title' },
+                });
+                fireEvent.change(descriptionInput, {
+                    target: { value: 'My Recipe Description' },
+                });
+            });
+
+            // 2. Move to INGREDIENTS step
+            await act(async () => {
+                fireEvent.click(nextButton);
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // Clear mock call history
+            vi.mocked(axios.default.post).mockClear();
+
+            // 3. Switch to plain text mode
+            const toggleButton = screen.getByTestId('toggle-input-mode');
+            act(() => {
+                fireEvent.click(toggleButton);
+            });
+
+            const textarea = document.body.querySelector(
+                'textarea[data-cy="ingredients-textarea"]'
+            ) as HTMLTextAreaElement;
+            // Clear textarea
+            act(() => {
+                fireEvent.change(textarea, { target: { value: '' } });
+            });
+
+            // 4. Click Next - this should fail validation because textarea is empty
+            await act(async () => {
+                fireEvent.click(nextButton);
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // saveDraft should NOT have been called
+            expect(axios.default.post).not.toHaveBeenCalled();
+        });
+    });
+
     describe('Plain Text Mode Bugfix', () => {
         it('automatically parses and applies plain text ingredients in onNext', async () => {
             renderComponent();
