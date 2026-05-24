@@ -29,7 +29,7 @@ vi.mock('@react-pdf/renderer', () => ({
     }),
 }));
 
-vi.mock('../../profile/RecipeBookPDF', () => ({
+vi.mock('@/app/components/profile/RecipeBookPDF', () => ({
     RecipeBookPDF: () => <div data-testid="mock-pdf">RecipeBookPDF</div>,
 }));
 
