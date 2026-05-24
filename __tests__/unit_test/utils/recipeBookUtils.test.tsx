@@ -262,7 +262,7 @@ describe('recipeBookUtils', () => {
                     displayUserImage: true,
                 }
             );
-            const paramsWithoutGallery = calculateLayoutParameters(
+            const _paramsWithoutGallery = calculateLayoutParameters(
                 recipeWithImages,
                 0,
                 {
