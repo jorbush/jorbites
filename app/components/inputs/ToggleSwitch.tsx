@@ -28,6 +28,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
                 aria-checked={checked}
                 onClick={onChange}
                 data-cy={dataCy}
+                data-testid={dataCy}
                 disabled={disabled}
                 className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-neutral-900 ${
                     checked

@@ -238,5 +238,75 @@ describe('recipeBookUtils', () => {
             );
             expect(params.colsPerRow).toBe(4);
         });
+
+        it('overrides the layout if forced in the configuration', () => {
+            const params = calculateLayoutParameters(baseRecipe, 0, {
+                imageDisplay: 'right-bottom',
+                displayExtraImages: true,
+                displayUserImage: true,
+            });
+            expect(params.layout).toBe('right-bottom');
+        });
+
+        it('disables extra images if set in the configuration', () => {
+            const recipeWithImages = {
+                ...baseRecipe,
+                extraImages: ['/images/step1.webp', '/images/step2.webp'],
+            };
+            const paramsWithGallery = calculateLayoutParameters(
+                recipeWithImages,
+                0,
+                {
+                    imageDisplay: 'random',
+                    displayExtraImages: true,
+                    displayUserImage: true,
+                }
+            );
+            const paramsWithoutGallery = calculateLayoutParameters(
+                recipeWithImages,
+                0,
+                {
+                    imageDisplay: 'random',
+                    displayExtraImages: false,
+                    displayUserImage: true,
+                }
+            );
+
+            // With extra images, galleryImageHeight is > 0 and colsPerRow is 2
+            expect(paramsWithGallery.colsPerRow).toBe(2);
+
+            // Without extra images, colsPerRow defaults to 2 but galleryImageHeight calculation treats it as 0 rows, so max height is not limited
+            // Let's assert that the layout handles it without treating extraImages as active
+            // When displayExtraImages is false, it returns colsPerRow = 2 but has zero extra images in calculation
+            // We can check that the imageDisplay random selection behaves as if hasExtraImages is false
+            const longRecipeNoExtra = {
+                ...baseRecipe,
+                steps: Array(6).fill('Step description'), // Normally short (not long if no extra images)
+                extraImages: ['/images/step1.webp'],
+            };
+            const paramsEnabled = calculateLayoutParameters(
+                longRecipeNoExtra,
+                0,
+                {
+                    imageDisplay: 'random',
+                    displayExtraImages: true,
+                    displayUserImage: true,
+                }
+            );
+            const paramsDisabled = calculateLayoutParameters(
+                longRecipeNoExtra,
+                0,
+                {
+                    imageDisplay: 'random',
+                    displayExtraImages: false,
+                    displayUserImage: true,
+                }
+            );
+
+            // With extra images, isLongRecipe is true, so index 0 maps to 'left-top'
+            expect(paramsEnabled.layout).toBe('left-top');
+            // Without extra images, isLongRecipe is false, so it falls back to layouts[0] which is 'right-top'
+            expect(paramsDisabled.layout).toBe('right-top');
+        });
     });
 });

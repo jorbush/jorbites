@@ -655,5 +655,13 @@
     "page": "Página",
     "table_of_contents": "Índice",
     "recipe_book_no_recipes": "No tienes recetas para generar un libro.",
-    "recipe_book_generated_success": "¡Libro de recetas generado con éxito!"
+    "recipe_book_generated_success": "¡Libro de recetas generado con éxito!",
+    "recipe_image_display": "Visualización de imagen de receta",
+    "display_extra_images": "Mostrar imágenes extra",
+    "display_user_image_in_cover": "Mostrar imagen de usuario en portada",
+    "random": "Aleatorio",
+    "top_left": "Arriba Izquierda",
+    "top_right": "Arriba Derecha",
+    "bottom_left": "Abajo Izquierda",
+    "bottom_right": "Abajo Derecha"
 }
