@@ -182,8 +182,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             }
         } else {
             for (let i = 0; i < numIngredients; i++) {
-                if (watch(`ingredient-${i}`) !== '') {
-                    newIngredients.push(watch(`ingredient-${i}`));
+                const val = getValues(`ingredient-${i}`);
+                if (typeof val === 'string' && val.trim() !== '') {
+                    newIngredients.push(val);
                 }
             }
         }
@@ -201,8 +202,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             }
         } else {
             for (let i = 0; i < numSteps; i++) {
-                if (watch(`step-${i}`) !== '') {
-                    newSteps.push(watch(`step-${i}`));
+                const val = getValues(`step-${i}`);
+                if (typeof val === 'string' && val.trim() !== '') {
+                    newSteps.push(val);
                 }
             }
         }
@@ -497,8 +499,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             } else {
                 const newIngredients: string[] = [];
                 for (let i = 0; i < numIngredients; i++) {
-                    if (watch(`ingredient-${i}`) !== '') {
-                        newIngredients.push(watch(`ingredient-${i}`));
+                    const val = getValues(`ingredient-${i}`);
+                    if (typeof val === 'string' && val.trim() !== '') {
+                        newIngredients.push(val);
                     }
                 }
                 setCustomValue('ingredients', newIngredients);
@@ -524,8 +527,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             } else {
                 const newSteps: string[] = [];
                 for (let i = 0; i < numSteps; i++) {
-                    if (watch(`step-${i}`) !== '') {
-                        newSteps.push(watch(`step-${i}`));
+                    const val = getValues(`step-${i}`);
+                    if (typeof val === 'string' && val.trim() !== '') {
+                        newSteps.push(val);
                     }
                 }
                 setCustomValue('steps', newSteps);

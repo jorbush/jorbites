@@ -929,10 +929,14 @@ describe('<RecipeModal />', () => {
                 await vi.advanceTimersByTimeAsync(2000);
             });
 
-            // Expect a POST to /api/draft with currentStep: 1 (DESCRIPTION step)
+            // Expect a POST to /api/draft with currentStep: 1 (DESCRIPTION step) and empty ingredients/steps
             expect(axios.default.post).toHaveBeenCalledWith(
                 expect.stringContaining('/api/draft'),
-                expect.objectContaining({ currentStep: 1 })
+                expect.objectContaining({
+                    currentStep: 1,
+                    ingredients: [],
+                    steps: [],
+                })
             );
         });
 
