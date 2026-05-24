@@ -54,12 +54,12 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
 }) => {
     const { t } = useTranslation();
     const { push } = useRouter();
-    const { get, toString } = useSearchParams();
+    const { get } = useSearchParams() || {};
     const questModal = useQuestModal();
     const loginModal = useLoginModal();
 
     const getInitialFilter = () => {
-        const status = get('status') || 'all';
+        const status = get?.('status') || 'all';
         if (
             status === 'open' ||
             status === 'in_progress' ||
@@ -110,7 +110,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
 
     const handleFilterChange = (newFilter: typeof filter) => {
         setFilter(newFilter);
-        const params = new URLSearchParams(toString() || '');
+        const params = new URLSearchParams(window.location.search);
         if (newFilter !== 'all') {
             params.set('status', newFilter);
         } else {

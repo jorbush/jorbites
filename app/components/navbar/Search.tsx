@@ -24,7 +24,7 @@ const Search: React.FC<SearchProps> = ({
 }) => {
     const { t } = useTranslation();
     const { push, replace } = useRouter();
-    const { get, toString } = useSearchParams();
+    const { get, toString } = useSearchParams() || {};
     const pathname = usePathname();
     const [isSearchMode, setIsSearchMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -35,12 +35,12 @@ const Search: React.FC<SearchProps> = ({
     const isMainPage = pathname === '/';
     const isFavoritesPage = pathname === '/favorites';
     const isFilterablePage = isMainPage || isFavoritesPage;
-    const currentSearch = get('search') || '';
-    const isFiltering = get('category') || '';
+    const currentSearch = get?.('search') || '';
+    const isFiltering = get?.('category') || '';
 
-    const currentStartDate = get('startDate') || '';
-    const currentEndDate = get('endDate') || '';
-    const currentOrderBy = get('orderBy') || '';
+    const currentStartDate = get?.('startDate') || '';
+    const currentEndDate = get?.('endDate') || '';
+    const currentOrderBy = get?.('orderBy') || '';
     const hasActiveFilters =
         isFiltering || currentStartDate || currentEndDate || currentOrderBy;
 
@@ -49,7 +49,7 @@ const Search: React.FC<SearchProps> = ({
     useEffect(() => {
         debouncedUrlUpdate.current = debounce((value: string) => {
             if (!isFilterablePage) return;
-            const params = new URLSearchParams(toString() || '');
+            const params = new URLSearchParams(toString?.() || '');
             if (value.trim()) {
                 params.set('search', value.trim());
             } else {
@@ -98,7 +98,7 @@ const Search: React.FC<SearchProps> = ({
             setIsExplicitlyExiting(true);
             setSearchQuery('');
             if (isFilterablePage && searchQuery.trim()) {
-                const params = new URLSearchParams(toString() || '');
+                const params = new URLSearchParams(toString?.() || '');
                 params.delete('search');
                 const newUrl = isMainPage
                     ? params.toString()

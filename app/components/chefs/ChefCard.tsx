@@ -15,11 +15,11 @@ interface ChefCardProps {
 }
 
 const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
-    const { push } = useRouter();
+    const router = useRouter();
     const { t } = useTranslation();
 
     const handleClick = () => {
-        push(`/profile/${chef.id}`);
+        router.push(`/profile/${chef.id}`);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {

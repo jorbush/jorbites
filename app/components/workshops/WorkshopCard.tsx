@@ -25,7 +25,7 @@ const WorkshopCard = memo(function WorkshopCard({
     currentUser: _currentUser,
     isFirstCard = false,
 }: WorkshopCardProps) {
-    const { push } = useRouter();
+    const router = useRouter();
     const { t, i18n } = useTranslation();
 
     const workshopDate = new Date(data.date);
@@ -38,7 +38,7 @@ const WorkshopCard = memo(function WorkshopCard({
 
     return (
         <div
-            onClick={() => push(`/workshops/${data.id}`)}
+            onClick={() => router.push(`/workshops/${data.id}`)}
             className="group col-span-1 cursor-pointer"
             id={isFirstCard ? 'lcp-container' : undefined}
             data-testid="workshop-card"
