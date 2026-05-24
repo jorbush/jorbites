@@ -20,7 +20,8 @@ const useRecipeBookModal = create<RecipeBookModalStore>((set) => ({
     userImage: null,
     onOpen: (userId, userName, userImage = null) =>
         set({ isOpen: true, userId, userName, userImage }),
-    onClose: () => set({ isOpen: false }),
+    onClose: () =>
+        set({ isOpen: false, userId: '', userName: '', userImage: null }),
 }));
 
 export default useRecipeBookModal;

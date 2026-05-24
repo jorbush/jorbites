@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { SafeRecipe } from '@/app/types';
+import { RecipeBookConfig } from '@/app/utils/recipeBookUtils';
 
 import Modal from '@/app/components/modals/Modal';
 import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
@@ -16,9 +17,8 @@ const RecipeBookModal = () => {
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
 
-    const [imageDisplay, setImageDisplay] = useState<
-        'random' | 'left-top' | 'left-bottom' | 'right-top' | 'right-bottom'
-    >('random');
+    const [imageDisplay, setImageDisplay] =
+        useState<RecipeBookConfig['imageDisplay']>('random');
     const [displayExtraImages, setDisplayExtraImages] = useState(true);
     const [displayUserImage, setDisplayUserImage] = useState(true);
 
@@ -30,7 +30,10 @@ const RecipeBookModal = () => {
         }
     }, [recipeBookModal.isOpen]);
 
-    const imageDisplayOptions = [
+    const imageDisplayOptions: {
+        value: RecipeBookConfig['imageDisplay'];
+        label: string;
+    }[] = [
         { value: 'random', label: t('random') || 'Random' },
         { value: 'left-top', label: t('top_left') || 'Top Left' },
         { value: 'right-top', label: t('top_right') || 'Top Right' },
@@ -74,7 +77,7 @@ const RecipeBookModal = () => {
             // 2. Load PDF Renderer dynamically
             const [{ pdf }, { RecipeBookPDF }] = await Promise.all([
                 import('@react-pdf/renderer'),
-                import('../profile/RecipeBookPDF'),
+                import('@/app/components/profile/RecipeBookPDF'),
             ]);
 
             // 3. Prepare translations
@@ -185,7 +188,7 @@ const RecipeBookModal = () => {
                 <Dropdown
                     options={imageDisplayOptions}
                     value={imageDisplay}
-                    onChange={(val) => setImageDisplay(val as any)}
+                    onChange={(val) => setImageDisplay(val)}
                     buttonContent={dropdownButton}
                     ariaLabel={
                         t('recipe_image_display') || 'Recipe image display'
