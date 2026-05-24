@@ -156,7 +156,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 {/* <MenuItem
                                     onClick={() => {
-                                        router.push('/workshops');
+                                        push('/workshops');
                                         toggleOpen();
                                     }}
                                     label={t('workshops')}
@@ -198,7 +198,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 {/* <MenuItem
                                     onClick={() => {
-                                        router.push('/workshops');
+                                        push('/workshops');
                                         toggleOpen();
                                     }}
                                     label={t('workshops')}

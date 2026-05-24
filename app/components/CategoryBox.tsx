@@ -18,7 +18,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     selected,
 }) => {
     const { push } = useRouter();
-    const { get, toString } = useSearchParams() || {};
+    const { get, toString } = useSearchParams();
     const pathname = usePathname();
     const { t } = useTranslation();
 
@@ -38,7 +38,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
             delete updatedQuery.page;
         }
 
-        if (get?.('category') === label) {
+        if (get('category') === label) {
             delete updatedQuery.category;
         }
 

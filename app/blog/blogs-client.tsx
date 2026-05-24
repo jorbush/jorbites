@@ -24,10 +24,10 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
 }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter();
-    const { get } = useSearchParams() || {};
+    const { get } = useSearchParams();
 
-    const categoryParam = get?.('category');
-    const pageParam = get?.('page');
+    const categoryParam = get('category');
+    const pageParam = get('page');
 
     const currentCategory =
         categoryParam === 'releases' ? 'releases' : 'general';

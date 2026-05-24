@@ -36,25 +36,26 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
 }) => {
     const { t } = useTranslation();
     const { push } = useRouter();
-    const { get } = useSearchParams() || {};
+    const { get, toString } = useSearchParams();
 
-    const [searchQuery, setSearchQuery] = useState(
-        get?.('search') || ''
-    );
+    const [searchQuery, setSearchQuery] = useState(get('search') || '');
     const [orderBy, setOrderBy] = useState<ChefOrderByType>(
-        (get?.('orderBy') as ChefOrderByType) ||
-            ChefOrderByType.TRENDING
+        (get('orderBy') as ChefOrderByType) || ChefOrderByType.TRENDING
     );
 
     const updateURL = useCallback(
         (newSearch: string, newOrderBy: ChefOrderByType) => {
-            const params = new URLSearchParams();
+            const params = new URLSearchParams(toString() || '');
 
             if (newSearch) {
                 params.set('search', newSearch);
+            } else {
+                params.delete('search');
             }
             if (newOrderBy !== ChefOrderByType.TRENDING) {
                 params.set('orderBy', newOrderBy);
+            } else {
+                params.delete('orderBy');
             }
             params.set('page', '1');
 
@@ -63,7 +64,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                 scroll: false,
             });
         },
-        [push]
+        [push, toString]
     );
 
     const handleSearchChange = useCallback((value: string) => {

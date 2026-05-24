@@ -32,7 +32,7 @@ const RecipeCard = memo(function RecipeCard({
     actionLabel,
     actionIcon: ActionIcon,
 }: RecipeCardProps) {
-    const router = useRouter();
+    const { push } = useRouter();
     const { t } = useTranslation();
 
     const handleCancel = useCallback(
@@ -58,7 +58,7 @@ const RecipeCard = memo(function RecipeCard({
 
     return (
         <div
-            onClick={() => router.push(`/recipes/${data.id}`)}
+            onClick={() => push(`/recipes/${data.id}`)}
             className="group col-span-1 cursor-pointer"
             id={isFirstCard ? 'lcp-container' : undefined}
         >

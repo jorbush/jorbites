@@ -20,14 +20,14 @@ const EmptyStateContent: React.FC<EmptyStateProps> = ({
     height = 'h-[60vh]',
 }) => {
     const { push } = useRouter();
-    const { get } = useSearchParams() || {};
+    const { get } = useSearchParams();
     const pathname = usePathname();
     const { t } = useTranslation();
 
-    const searchQuery = get?.('search');
-    const category = get?.('category');
-    const startDate = get?.('startDate');
-    const endDate = get?.('endDate');
+    const searchQuery = get('search');
+    const category = get('category');
+    const startDate = get('startDate');
+    const endDate = get('endDate');
 
     // Note: orderBy is not a filter, it's a sorting option, so we don't include it
     const hasFilters = !!(searchQuery || category || startDate || endDate);
