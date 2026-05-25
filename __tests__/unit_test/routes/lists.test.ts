@@ -11,6 +11,7 @@ jest.mock('@/app/actions/getCurrentUser');
 jest.mock('@/app/lib/prismadb', () => ({
     list: {
         findUnique: jest.fn(),
+        findFirst: jest.fn(),
         create: jest.fn(),
         findMany: jest.fn(),
         update: jest.fn(),
@@ -45,6 +46,33 @@ describe('Lists API Endpoints - Error Cases', () => {
             const response = await GET(request);
             expect(response.status).toBe(500);
         });
+
+        it('should return 200 and list of lists', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
+            const mockLists = [
+                {
+                    id: 'list-1',
+                    name: 'List 1',
+                    userId: 'user-id',
+                    isDefault: false,
+                    isPrivate: true,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    user: {
+                        id: 'user-id',
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                    },
+                },
+            ];
+            (prisma.list.findMany as jest.Mock).mockResolvedValue(mockLists);
+            const request = new Request('http://localhost/api/lists');
+            const response = await GET(request);
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.length).toBe(1);
+            expect(data[0].name).toBe('List 1');
+        });
     });
 
     describe('POST /api/lists', () => {
@@ -66,6 +94,104 @@ describe('Lists API Endpoints - Error Cases', () => {
             });
             const response = await POST(request);
             expect(response.status).toBe(400);
+        });
+
+        it('should successfully create a list', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
+            const mockList = {
+                id: 'list-1',
+                name: 'My List',
+                userId: 'user-id',
+                isDefault: false,
+                isPrivate: true,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                user: {
+                    id: 'user-id',
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+            };
+            (prisma.list.create as jest.Mock).mockResolvedValue(mockList);
+
+            const request = new Request('http://localhost/api/lists', {
+                method: 'POST',
+                body: JSON.stringify({ name: 'My List' }),
+            });
+            const response = await POST(request);
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.name).toBe('My List');
+            expect(data.isDefault).toBe(false);
+        });
+
+        it('should create default list if isDefault is true and name is missing', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
+            const mockList = {
+                id: 'default-list-id',
+                name: 'to cook later',
+                userId: 'user-id',
+                isDefault: true,
+                isPrivate: true,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                user: {
+                    id: 'user-id',
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+            };
+            (prisma.list.findFirst as jest.Mock).mockResolvedValue(null);
+            (prisma.list.create as jest.Mock).mockResolvedValue(mockList);
+
+            const request = new Request('http://localhost/api/lists', {
+                method: 'POST',
+                body: JSON.stringify({ isDefault: true }),
+            });
+            const response = await POST(request);
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.name).toBe('to cook later');
+            expect(data.isDefault).toBe(true);
+            expect(prisma.list.create).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    data: expect.objectContaining({
+                        name: 'to cook later',
+                        isDefault: true,
+                    }),
+                })
+            );
+        });
+
+        it('should return existing default list if isDefault is true and it already exists', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
+            const mockExistingList = {
+                id: 'existing-default-id',
+                name: 'to cook later',
+                userId: 'user-id',
+                isDefault: true,
+                isPrivate: true,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                user: {
+                    id: 'user-id',
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+            };
+            (prisma.list.findFirst as jest.Mock).mockResolvedValue(
+                mockExistingList
+            );
+
+            const request = new Request('http://localhost/api/lists', {
+                method: 'POST',
+                body: JSON.stringify({ isDefault: true }),
+            });
+            const response = await POST(request);
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.id).toBe('existing-default-id');
+            expect(prisma.list.create).not.toHaveBeenCalled();
         });
     });
 

@@ -27,6 +27,15 @@ describe('AddToListModal', () => {
             onOpen: vi.fn(),
         } as any);
         vi.mocked(axios.get).mockResolvedValue({ data: [] });
+        vi.mocked(axios.post).mockResolvedValue({
+            data: {
+                id: 'default-list-id',
+                name: 'to cook later',
+                isDefault: true,
+                isPrivate: true,
+                recipeIds: [],
+            },
+        });
     });
 
     afterEach(() => {
