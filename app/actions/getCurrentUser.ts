@@ -26,6 +26,7 @@ export default async function getCurrentUser() {
                 createdAt: true,
                 updatedAt: true,
                 favoriteIds: true,
+                savedPlanningIds: true,
                 emailNotifications: true,
                 level: true,
                 verified: true,

@@ -12,7 +12,7 @@ import EventsList from '@/app/components/events/EventsList';
 import { EventCardSkeleton } from '@/app/components/events/EventCard';
 import useTheme from '@/app/hooks/useTheme';
 import WeeklyChallenge from '@/app/components/events/WeeklyChallenge';
-import { FcCalendar } from 'react-icons/fc';
+import { FcIdea } from 'react-icons/fc';
 import SectionHeader from '@/app/components/utils/SectionHeader';
 import EventCalendar from '@/app/components/events/EventCalendar';
 import { SafeWeeklyChallenge } from '@/app/types';
@@ -74,8 +74,8 @@ const EventsClient: React.FC<EventsClientProps> = ({ weeklyChallenge }) => {
         <Container>
             <div className="px-4 py-8">
                 <SectionHeader
-                    icon={FcCalendar}
-                    title={`${t('events')} 🏆`}
+                    icon={FcIdea}
+                    title={`${t('events')}`}
                     description={t('events_description')}
                 />
 

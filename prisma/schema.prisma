@@ -20,6 +20,7 @@ model User {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
   favoriteIds         String[]  @db.ObjectId
+  savedPlanningIds    String[]  @db.ObjectId
   emailNotifications  Boolean   @default(false)
   level               Int       @default(0)
   verified            Boolean   @default(false)
@@ -35,6 +36,7 @@ model User {
   quests              Quest[]
   pushSubscriptions   PushSubscription[]
   lists               List[]
+  plannings           Planning[]
 }
 
 model Account {
@@ -80,6 +82,7 @@ model Recipe {
   comments Comment[]
   quest Quest? @relation(fields: [questId], references: [id], onDelete: SetNull)
   lists List[] @relation(fields: [listIds], references: [id])
+  planningMeals PlanningMeal[]
 }
 
 model Comment {
@@ -181,3 +184,28 @@ model List {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipes     Recipe[] @relation(fields: [recipeIds], references: [id])
 }
+
+model Planning {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  isPrivate   Boolean        @default(true)
+  userId      String         @db.ObjectId
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meals       PlanningMeal[]
+}
+
+model PlanningMeal {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  planningId  String   @db.ObjectId
+  day         String   // "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
+  mealType    String   // "breakfast", "lunch", "dinner", "snack"
+  recipeId    String   @db.ObjectId
+
+  planning    Planning @relation(fields: [planningId], references: [id], onDelete: Cascade)
+  recipe      Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+

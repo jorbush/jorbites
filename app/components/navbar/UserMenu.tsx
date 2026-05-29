@@ -15,13 +15,14 @@ import {
     FcAddImage,
     FcManager,
     FcLike,
-    FcCalendar,
+    FcIdea,
     FcSettings,
     FcExport,
     FcImport,
     FcPortraitMode,
     FcTodoList,
     FcBookmark,
+    FcPlanner,
 } from 'react-icons/fc';
 
 interface UserMenuProps {
@@ -137,7 +138,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('events') || 'Events'}
-                                    icon={FcCalendar}
+                                    icon={FcIdea}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -154,6 +155,15 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('my_lists') || 'My Lists'}
                                     icon={FcBookmark}
+                                />
+                                <MenuItem
+                                    onClick={() => {
+                                        router.push('/plannings');
+                                        toggleOpen();
+                                    }}
+                                    label={t('meal_planner') || 'Meal Planner'}
+                                    icon={FcPlanner}
+                                    isNew
                                 />
                                 {/* <MenuItem
                                     onClick={() => {
@@ -187,7 +197,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('events') || 'Events'}
-                                    icon={FcCalendar}
+                                    icon={FcIdea}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -196,6 +206,15 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('quests') || 'Quests'}
                                     icon={FcTodoList}
+                                />
+                                <MenuItem
+                                    onClick={() => {
+                                        router.push('/plannings');
+                                        toggleOpen();
+                                    }}
+                                    label={t('meal_planner') || 'Meal Planner'}
+                                    icon={FcPlanner}
+                                    isNew
                                 />
                                 {/* <MenuItem
                                     onClick={() => {
