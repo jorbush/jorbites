@@ -6,6 +6,8 @@ import {
     WorkshopParticipant,
     List,
     WeeklyChallenge,
+    Planning,
+    PlanningMeal,
 } from '@prisma/client';
 
 export type SafeWeeklyChallenge = Omit<
@@ -42,6 +44,7 @@ export type SafeUser = Omit<
     | 'resetTokenExpiry'
     | 'email'
     | 'favoriteIds'
+    | 'savedPlanningIds'
     | 'emailNotifications'
     | 'language'
 > & {
@@ -50,6 +53,7 @@ export type SafeUser = Omit<
     emailVerified?: string | null;
     email?: string | null;
     favoriteIds?: string[];
+    savedPlanningIds?: string[];
     emailNotifications?: boolean;
     language?: string | null;
     recipeCount?: number | null | undefined;
@@ -83,4 +87,17 @@ export type SafeList = Omit<List, 'createdAt' | 'updatedAt'> & {
     createdAt: string;
     updatedAt: string;
     user?: SafeUser;
+};
+
+export type SafePlanningMeal = Omit<PlanningMeal, 'id' | 'planningId'> & {
+    id: string;
+    planningId: string;
+    recipe?: SafeRecipe & { user?: SafeUser };
+};
+
+export type SafePlanning = Omit<Planning, 'createdAt' | 'updatedAt'> & {
+    createdAt: string;
+    updatedAt: string;
+    user?: SafeUser;
+    meals?: SafePlanningMeal[];
 };
