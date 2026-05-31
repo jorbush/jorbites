@@ -3,7 +3,7 @@ title: 🍣 Sabors del Japó: La Recerca de l'Umami 🍣
 date: 2026-06-02
 endDate: 2026-06-30T23:59:59
 image: /images/events/taste_of_japan.webp
-description: Emporta't a un viatge culinari al Japó! Descobreix l'harmonia de sabors, des del sushi clàssic fins al ramen reconfortant.
+description: Embarca't en un viatge culinari al Japó! Descobreix l'harmonia de sabors, des del sushi clàssic fins al ramen reconfortant.
 ---
 
 # 🍣 Sabors del Japó: La Recerca de l'Umami 🍣
