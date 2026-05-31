@@ -1,5 +1,5 @@
 ---
-title: 🍣 Sabores de Japón: La Búsqueda del Umami 🍣
+title: "🍣 Sabores de Japón: La Búsqueda del Umami 🍣"
 date: 2026-06-02
 endDate: 2026-06-30T23:59:59
 image: /images/events/taste_of_japan.webp

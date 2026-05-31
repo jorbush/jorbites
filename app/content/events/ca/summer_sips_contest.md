@@ -1,5 +1,5 @@
 ---
-title: 🍹 Glops d'Estiu: Concurs de Còctels 🍹
+title: "🍹 Glops d'Estiu: Concurs de Còctels 🍹"
 date: 2026-07-13
 endDate: 2026-07-13T23:59:59
 image: /images/events/summer_sips_contest.webp

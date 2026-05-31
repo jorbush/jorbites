@@ -1,5 +1,5 @@
 ---
-title: 🍔 Campionat d'Hamburgueses: Hora del Smash! 🍔
+title: "🍔 Campionat d'Hamburgueses: Hora del Smash! 🍔"
 date: 2026-06-27
 endDate: 2026-06-27T21:59:59
 image: /images/events/smash_burger_championship.webp

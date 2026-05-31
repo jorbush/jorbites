@@ -1,5 +1,5 @@
 ---
-title: 🌿 Sa i Fresc: Nutreix el teu Cos 🌿
+title: "🌿 Sa i Fresc: Nutreix el teu Cos 🌿"
 date: 2026-06-15
 endDate: 2026-06-30T23:59:59
 image: /images/events/fit_and_fresh.webp
