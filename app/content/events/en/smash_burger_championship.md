@@ -1,5 +1,5 @@
 ---
-title: 🍔 Burger Championship: Smash Time! 🍔
+title: "🍔 Burger Championship: Smash Time! 🍔"
 date: 2026-06-27
 endDate: 2026-06-27T21:59:59
 image: /images/events/smash_burger_championship.webp

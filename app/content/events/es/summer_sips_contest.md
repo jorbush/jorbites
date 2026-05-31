@@ -1,5 +1,5 @@
 ---
-title: 🍹 Tragos de Verano: Concurso de Cócteles 🍹
+title: "🍹 Tragos de Verano: Concurso de Cócteles 🍹"
 date: 2026-07-13
 endDate: 2026-07-13T23:59:59
 image: /images/events/summer_sips_contest.webp
