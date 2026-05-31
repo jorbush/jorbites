@@ -1,12 +1,12 @@
 ---
-title: 🍹 Trargs de Estiu: Concurs de Còctels 🍹
+title: 🍹 Glops d'Estiu: Concurs de Còctels 🍹
 date: 2026-07-13
 endDate: 2026-07-13T23:59:59
 image: /images/events/summer_sips_contest.webp
 description: Combat la calor en l'enfrontament definitiu de cocteleria i mocktails de l'estiu!
 ---
 
-# 🍹 Tragos d'Estiu: Concurs de Còctels Jorbites 🍹
+# 🍹 Glops d'Estiu: Concurs de Còctels Jorbites 🍹
 
 Benvingut a l'enfrontament definitiu de cocteleria estiuenca a Jorbites! A mesura que la calor de l'estiu arriba al seu punt màxim, és hora de refrescar-se amb les teves creacions de begudes més creatives, refrescants i boniques.
 
