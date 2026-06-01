@@ -10,7 +10,7 @@ import ButtonSelector from '@/app/components/comments/ButtonSelector';
 /* eslint-disable unused-imports/no-unused-vars */
 interface CommentsProps {
     currentUser?: SafeUser | null;
-    onCreateComment: (comment: string) => void;
+    onCreateComment: (comment: string, rating: number | null) => void;
     comments?: SafeComment[];
     isLoading?: boolean;
 }
@@ -101,6 +101,7 @@ const Comments: React.FC<CommentsProps> = ({
                             canDelete={currentUser?.id === comment.userId}
                             commentId={comment.id}
                             userLevel={comment.user.level}
+                            rating={comment.rating}
                         />
                     </div>
                 ))}

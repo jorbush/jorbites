@@ -61,8 +61,11 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
         return preparationMethods.find((item) => item.label === recipe.method);
     }, [recipe.method]);
 
+    const averageRating = recipe.averageRating || 0;
+    const ratingCount = recipe.ratingCount || 0;
+
     const onCreateComment = useCallback(
-        (comment: string) => {
+        (comment: string, rating: number | null) => {
             if (!currentUser) {
                 return loginModal.onOpen();
             }
@@ -73,6 +76,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 .post('/api/comments', {
                     comment: comment,
                     recipeId: recipe?.id,
+                    rating: rating,
                 })
                 .then(() => {
                     toast.success(t('comment_created'));
@@ -115,6 +119,9 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 extraImages={recipe.extraImages}
                 youtubeUrl={recipe.youtubeUrl}
                 recipeId={recipe.id}
+                averageRating={averageRating}
+                ratingCount={ratingCount}
+                comments={comments}
             />
             <div className="mx-auto max-w-[800px]">
                 <div className="flex flex-col gap-6">
@@ -140,14 +147,18 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             coCooksIds={recipe.coCooksIds || []}
                             linkedRecipeIds={recipe.linkedRecipeIds || []}
                             youtubeUrl={recipe.youtubeUrl || undefined}
+                            averageRating={averageRating}
+                            ratingCount={ratingCount}
                         />
                     </div>
-                    <Comments
-                        currentUser={currentUser}
-                        onCreateComment={onCreateComment}
-                        comments={comments}
-                        isLoading={isLoading}
-                    />
+                    <div id="comments-section">
+                        <Comments
+                            currentUser={currentUser}
+                            onCreateComment={onCreateComment}
+                            comments={comments}
+                            isLoading={isLoading}
+                        />
+                    </div>
                     {currentUser?.id === recipe.userId && (
                         <>
                             <EditRecipeButton recipe={recipe} />

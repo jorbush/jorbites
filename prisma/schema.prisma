@@ -77,6 +77,8 @@ model Recipe {
   listIds String[] @db.ObjectId @default([])
   youtubeUrl String?
   questId String? @db.ObjectId
+  averageRating Float @default(0)
+  ratingCount Int @default(0)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]
@@ -90,6 +92,7 @@ model Comment {
   userId String @db.ObjectId
   comment String
   recipeId String @db.ObjectId
+  rating Int?
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

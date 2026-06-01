@@ -31,20 +31,30 @@ describe('getPrismaOrderByClause', () => {
         expect(result).toEqual([{ numLikes: 'desc' }, { id: 'asc' }]);
     });
 
-    it('should always include id as secondary sort for consistent pagination', () => {
-        // Test all order types to ensure they all have id as secondary sort
+    it('should return correct order for BEST_RATED', () => {
+        const result = getPrismaOrderByClause(OrderByType.BEST_RATED);
+        expect(result).toEqual([
+            { averageRating: 'desc' },
+            { ratingCount: 'desc' },
+            { id: 'asc' },
+        ]);
+    });
+
+    it('should always include id as final sort for consistent pagination', () => {
+        // Test all order types to ensure they all have id as final sort
         const orderTypes = [
             OrderByType.NEWEST,
             OrderByType.OLDEST,
             OrderByType.TITLE_ASC,
             OrderByType.TITLE_DESC,
             OrderByType.MOST_LIKED,
+            OrderByType.BEST_RATED,
         ];
 
         orderTypes.forEach((orderType) => {
             const result = getPrismaOrderByClause(orderType);
-            expect(result).toHaveLength(2);
-            expect(result[1]).toEqual({ id: 'asc' });
+            expect(result.length).toBeGreaterThanOrEqual(2);
+            expect(result[result.length - 1]).toEqual({ id: 'asc' });
         });
     });
 });

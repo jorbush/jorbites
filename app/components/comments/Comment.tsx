@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import VerificationBadge from '@/app/components/VerificationBadge';
 import { formatText } from '@/app/utils/textFormatting';
 import { TranslateableContent } from '@/app/components/utils/TranslateableContent';
+import StarRating from '@/app/components/utils/StarRating';
 
 interface CommentProps {
     userId: string;
@@ -23,6 +24,7 @@ interface CommentProps {
     verified?: boolean;
     commentId: string;
     userLevel: number;
+    rating?: number | null;
 }
 
 const Comment: React.FC<CommentProps> = ({
@@ -35,6 +37,7 @@ const Comment: React.FC<CommentProps> = ({
     verified,
     commentId,
     userLevel,
+    rating,
 }) => {
     const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -85,6 +88,17 @@ const Comment: React.FC<CommentProps> = ({
                             : `level ${userLevel}`}
                     </div>
                 </div>
+                {rating !== undefined && rating !== null && rating > 0 && (
+                    <div
+                        className="mt-1 mb-2 flex items-center"
+                        data-testid="comment-rating"
+                    >
+                        <StarRating
+                            rating={rating}
+                            size={14}
+                        />
+                    </div>
+                )}
                 <TranslateableContent
                     content={comment}
                     renderButton={false}

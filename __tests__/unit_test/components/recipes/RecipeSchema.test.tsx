@@ -138,4 +138,125 @@ describe('RecipeSchema', () => {
 
         expect(data.video).toBeUndefined();
     });
+
+    it('includes aggregateRating when averageRating and ratingCount are provided', () => {
+        const props = {
+            ...mockProps,
+            averageRating: 4.8,
+            ratingCount: 15,
+        };
+        const { container } = render(<RecipeSchema {...props} />);
+
+        const scriptTag = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const data = JSON.parse(scriptTag?.innerHTML || '{}');
+
+        expect(data.aggregateRating).toBeDefined();
+        expect(data.aggregateRating).toMatchObject({
+            '@type': 'AggregateRating',
+            ratingValue: '4.8',
+            ratingCount: 15,
+            bestRating: '5',
+            worstRating: '1',
+        });
+    });
+
+    it('includes reviews schema when comments with ratings are provided', () => {
+        const mockComments = [
+            {
+                id: 'c1',
+                userId: 'u1',
+                comment: 'Delicious!',
+                rating: 5,
+                createdAt: '2023-01-02T10:00:00.000Z',
+                recipeId: 'recipe1',
+                user: {
+                    id: 'u1',
+                    name: 'Reviewer Alice',
+                    image: null,
+                    level: 3,
+                    verified: false,
+                    badges: [],
+                },
+            },
+            {
+                id: 'c2',
+                userId: 'u2',
+                comment: 'Good, but too sweet',
+                rating: 3,
+                createdAt: '2023-01-03T12:00:00.000Z',
+                recipeId: 'recipe1',
+                user: {
+                    id: 'u2',
+                    name: 'Reviewer Bob',
+                    image: null,
+                    level: 2,
+                    verified: true,
+                    badges: [],
+                },
+            },
+            {
+                id: 'c3',
+                userId: 'u3',
+                comment: 'Just a question without a rating',
+                rating: null,
+                createdAt: '2023-01-04T15:00:00.000Z',
+                recipeId: 'recipe1',
+                user: {
+                    id: 'u3',
+                    name: 'Guest User',
+                    image: null,
+                    level: 1,
+                    verified: false,
+                    badges: [],
+                },
+            },
+        ];
+        const props = {
+            ...mockProps,
+            comments: mockComments,
+        };
+        const { container } = render(<RecipeSchema {...props} />);
+
+        const scriptTag = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const data = JSON.parse(scriptTag?.innerHTML || '{}');
+
+        expect(data.review).toBeDefined();
+        expect(data.review).toHaveLength(2); // Only c1 and c2 have ratings
+
+        expect(data.review[0]).toMatchObject({
+            '@type': 'Review',
+            author: {
+                '@type': 'Person',
+                name: 'Reviewer Alice',
+            },
+            datePublished: '2023-01-02T10:00:00.000Z',
+            reviewBody: 'Delicious!',
+            reviewRating: {
+                '@type': 'Rating',
+                ratingValue: 5,
+                bestRating: '5',
+                worstRating: '1',
+            },
+        });
+
+        expect(data.review[1]).toMatchObject({
+            '@type': 'Review',
+            author: {
+                '@type': 'Person',
+                name: 'Reviewer Bob',
+            },
+            datePublished: '2023-01-03T12:00:00.000Z',
+            reviewBody: 'Good, but too sweet',
+            reviewRating: {
+                '@type': 'Rating',
+                ratingValue: 3,
+                bestRating: '5',
+                worstRating: '1',
+            },
+        });
+    });
 });

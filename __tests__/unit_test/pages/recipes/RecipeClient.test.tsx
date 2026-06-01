@@ -53,6 +53,8 @@ describe('RecipeClient', () => {
         linkedRecipeIds: [],
         youtubeUrl: '',
         questId: null,
+        averageRating: 4.5,
+        ratingCount: 1,
         createdAt: '2022-01-01', // Add the createdAt property with a valid date string
         user: {
             id: 'user1',
@@ -153,6 +155,7 @@ describe('RecipeClient', () => {
             expect(axios.default.post).toHaveBeenCalledWith('/api/comments', {
                 comment: 'New comment',
                 recipeId: '1',
+                rating: null,
             });
         });
     });

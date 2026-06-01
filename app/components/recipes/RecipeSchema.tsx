@@ -2,6 +2,7 @@
 import React from 'react';
 import { getHighResImageUrl, getYoutubeVideoId } from '@/app/utils/seo-utils';
 import { JORBITES_URL } from '@/app/utils/constants';
+import { SafeComment } from '@/app/types';
 
 interface RecipeSchemaProps {
     title: string;
@@ -16,6 +17,9 @@ interface RecipeSchemaProps {
     categories?: string[];
     youtubeUrl?: string | null;
     recipeId?: string;
+    averageRating?: number;
+    ratingCount?: number;
+    comments?: SafeComment[];
 }
 
 export default function RecipeSchema({
@@ -31,6 +35,9 @@ export default function RecipeSchema({
     categories,
     youtubeUrl,
     recipeId,
+    averageRating,
+    ratingCount,
+    comments,
 }: RecipeSchemaProps) {
     const recipeCategories = categories || [];
 
@@ -89,6 +96,37 @@ export default function RecipeSchema({
         video: videoSchema,
         keywords: recipeCategories.join(', '),
     };
+
+    if (averageRating && ratingCount && averageRating > 0 && ratingCount > 0) {
+        schemaData.aggregateRating = {
+            '@type': 'AggregateRating',
+            ratingValue: averageRating.toFixed(1),
+            ratingCount: ratingCount,
+            bestRating: '5',
+            worstRating: '1',
+        };
+    }
+
+    const reviews = comments?.filter(
+        (c) => c.rating !== undefined && c.rating !== null && c.rating > 0
+    );
+    if (reviews && reviews.length > 0) {
+        schemaData.review = reviews.map((c) => ({
+            '@type': 'Review',
+            author: {
+                '@type': 'Person',
+                name: c.user?.name || 'Usuario de Jorbites',
+            },
+            datePublished: c.createdAt,
+            reviewBody: c.comment,
+            reviewRating: {
+                '@type': 'Rating',
+                ratingValue: c.rating,
+                bestRating: '5',
+                worstRating: '1',
+            },
+        }));
+    }
 
     return (
         <script
