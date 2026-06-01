@@ -1,12 +1,12 @@
 ---
-title: "🌿 Sa i Fresc: Nutreix el teu Cos 🌿"
+title: "🌿 Sa i Fresc 🌿"
 date: 2026-06-15
 endDate: 2026-06-30T23:59:59
 image: /images/events/fit_and_fresh.webp
 description: Alimenta el teu cos amb creacions vibrants i plenes de nutrients que fan del menjar sa una celebració!
 ---
 
-# 🌿 Sa i Fresc: Nutreix el teu Cos 🌿
+# 🌿 Sa i Fresc 🌿
 
 Celebra els aliments sans, nutritius i energitzants aquest mes de juny a Jorbites!
 

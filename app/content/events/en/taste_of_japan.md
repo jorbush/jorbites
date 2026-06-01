@@ -1,12 +1,12 @@
 ---
-title: "🍣 Taste of Japan: The Umami Quest 🍣"
+title: "🍣 Taste of Japan 🍣"
 date: 2026-06-02
 endDate: 2026-06-30T23:59:59
 image: /images/events/taste_of_japan.webp
 description: Embark on a culinary journey to Japan! Discover the harmony of flavors, from classic sushi to comforting ramen.
 ---
 
-# 🍣 Taste of Japan: The Umami Quest 🍣
+# 🍣 Taste of Japan 🍣
 
 Celebrate the rich traditions, delicate balance, and deep umami flavors of Japanese cuisine this June on Jorbites!
 
