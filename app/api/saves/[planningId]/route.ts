@@ -5,8 +5,10 @@ import {
     unauthorized,
     invalidInput,
     internalServerError,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { planningRatelimit } from '@/app/lib/ratelimit';
 
 interface IParams {
     planningId?: string;
@@ -22,6 +24,26 @@ export async function POST(
 
         if (!currentUser) {
             return unauthorized('User authentication required to save plan');
+        }
+
+        // Rate limiting for saving plans - prevent spam
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await planningRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                logger.warn('POST /api/saves/[planningId] - rate limit exceeded', {
+                    userId: currentUser.id,
+                });
+                return rateLimitExceeded(
+                    `Too many planning operations. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
         }
 
         const { planningId } = params;
@@ -79,6 +101,29 @@ export async function DELETE(
 
         if (!currentUser) {
             return unauthorized('User authentication required to unsave plan');
+        }
+
+        // Rate limiting for unsaving plans - prevent spam
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await planningRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                logger.warn(
+                    'DELETE /api/saves/[planningId] - rate limit exceeded',
+                    {
+                        userId: currentUser.id,
+                    }
+                );
+                return rateLimitExceeded(
+                    `Too many planning operations. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
         }
 
         const { planningId } = params;

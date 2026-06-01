@@ -23,6 +23,24 @@ jest.mock('next-auth/next', () => ({
     }),
 }));
 
+jest.mock('@/app/actions/getCurrentUser', () => ({
+    __esModule: true,
+    default: jest.fn(async () => {
+        if (!mockedSession) return null;
+        return {
+            id: 'user-123',
+            email: mockedSession.user?.email,
+            name: mockedSession.user?.name,
+        };
+    }),
+}));
+
+jest.mock('@/app/lib/ratelimit', () => ({
+    planningRatelimit: {
+        limit: jest.fn().mockResolvedValue({ success: true, reset: 0 }),
+    },
+}));
+
 describe('Saves API Error Handling', () => {
     beforeEach(() => {
         jest.clearAllMocks();

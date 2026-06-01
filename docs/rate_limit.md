@@ -108,6 +108,17 @@ export const recipeBookRatelimit = new Ratelimit({
 });
 ```
 
+**Planning Operations (Create, Update, Save):**
+
+```typescript
+export const planningRatelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(15, '1 m'),
+    analytics: true,
+    prefix: '@upstash/ratelimit/planning',
+});
+```
+
 This tiered configuration allows:
 
 - **Authenticated users (browsing)**: 30 requests per 10-second window (180 requests/minute)
@@ -124,6 +135,8 @@ This tiered configuration allows:
     - Prevents spam while allowing normal usage
 - **Recipe Book Downloads**: 5 requests per minute per user
     - Prevents DB and CPU rendering pressure due to the heavy load of PDF generation
+- **Planning Operations**: 15 requests per minute per user
+    - Prevents spam while allowing normal planning usage
 - Analytics enabled for monitoring
 - Redis credentials loaded from environment variables
 - Separate prefixes for tracking different operations
@@ -141,6 +154,10 @@ The following endpoints are protected with rate limiting:
 | `POST /api/comments`                | 10/min                                | User ID       |
 | `POST /api/recipes`                 | 10/min                                | User ID       |
 | `GET /api/user/[userId]/recipes`    | 5/min                                 | User ID       |
+| `POST /api/plannings`               | 15/min                                | User ID       |
+| `PATCH /api/plannings/[id]`         | 15/min                                | User ID       |
+| `POST /api/saves/[id]`              | 15/min                                | User ID       |
+| `DELETE /api/saves/[id]`            | 15/min                                | User ID       |
 
 ### Sliding Window Algorithm
 

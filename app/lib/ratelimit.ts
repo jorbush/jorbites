@@ -99,3 +99,14 @@ export const recipeBookRatelimit = hasUpstashConfig
           prefix: '@upstash/ratelimit/recipe-book',
       })
     : createMockRatelimit('recipeBookRatelimit');
+
+// Rate limiting for planning operations (create, update, save)
+// 15 requests per minute per user - prevents spam while allowing normal usage
+export const planningRatelimit = hasUpstashConfig
+    ? new Ratelimit({
+          redis: Redis.fromEnv(),
+          limiter: Ratelimit.slidingWindow(15, '1 m'),
+          analytics: true,
+          prefix: '@upstash/ratelimit/planning',
+      })
+    : createMockRatelimit('planningRatelimit');

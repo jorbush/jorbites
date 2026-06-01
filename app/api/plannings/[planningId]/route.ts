@@ -8,7 +8,14 @@ import {
     internalServerError,
     badRequest,
     notFound,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
+import {
+    planningRatelimit,
+    authenticatedRatelimit,
+    unauthenticatedRatelimit,
+} from '@/app/lib/ratelimit';
+import { headers } from 'next/headers';
 
 interface IParams {
     planningId?: string;
@@ -23,6 +30,29 @@ export async function GET(
         const { planningId } = params;
 
         logger.info('GET /api/plannings/[planningId] - start', { planningId });
+
+        if (process.env.ENV === 'production') {
+            const currentUser = await getCurrentUser();
+            const rateLimitKey = currentUser
+                ? currentUser.id
+                : ((await headers()).get('x-forwarded-for') ?? 'unknown-ip');
+
+            const ratelimit = currentUser
+                ? authenticatedRatelimit
+                : unauthenticatedRatelimit;
+
+            const { success, reset } = await ratelimit.limit(rateLimitKey);
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                return rateLimitExceeded(
+                    `Too many requests. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
+        }
 
         if (!planningId || typeof planningId !== 'string') {
             return badRequest('Invalid ID');
@@ -109,6 +139,29 @@ export async function PATCH(
 
         if (!currentUser) {
             return unauthorized('Unauthorized');
+        }
+
+        // Rate limiting for planning updates - prevent spam
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await planningRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                logger.warn(
+                    'PATCH /api/plannings/[planningId] - rate limit exceeded',
+                    {
+                        userId: currentUser.id,
+                    }
+                );
+                return rateLimitExceeded(
+                    `Too many planning operations. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
         }
 
         const { planningId } = params;
