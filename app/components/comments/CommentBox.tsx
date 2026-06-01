@@ -110,7 +110,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                                     data-testid="clear-rating"
                                     aria-label={
                                         mounted
-                                            ? t('clear_rating')
+                                            ? `${t('clear_rating')}`
                                             : 'Clear rating'
                                     }
                                 >
