@@ -96,11 +96,13 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
     }
 
     return (
-        <RecipeClient
-            recipe={recipe}
-            currentUser={currentUser}
-            comments={comments}
-        />
+        <ClientOnly>
+            <RecipeClient
+                recipe={recipe}
+                currentUser={currentUser}
+                comments={comments}
+            />
+        </ClientOnly>
     );
 };
 
