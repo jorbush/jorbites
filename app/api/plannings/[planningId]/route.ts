@@ -135,6 +135,19 @@ export async function PATCH(
             return badRequest('Invalid isPrivate flag');
         }
 
+        if (meals !== undefined && Array.isArray(meals)) {
+            const counts: Record<string, number> = {};
+            for (const m of meals) {
+                const key = `${m.day}-${m.mealType}`;
+                counts[key] = (counts[key] || 0) + 1;
+                if (counts[key] > 4) {
+                    return badRequest(
+                        `Maximum of 4 recipes allowed per meal (${m.day} ${m.mealType})`
+                    );
+                }
+            }
+        }
+
         const existingPlanning = await prisma.planning.findUnique({
             where: { id: planningId },
         });

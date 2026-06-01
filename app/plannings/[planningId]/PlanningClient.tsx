@@ -44,6 +44,7 @@ const DAYS_OF_WEEK = [
     'sunday',
 ];
 const MEAL_TYPES = ['breakfast', 'lunch', 'snack', 'dinner'];
+const MAX_RECIPES_PER_MEAL = 4;
 
 const PlanningClient: React.FC<PlanningClientProps> = ({
     planning,
@@ -157,6 +158,17 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
 
     const handleRecipeSelect = async (recipe: any) => {
         if (!activeSlot) return;
+
+        const currentSlotMeals = meals.filter(
+            (m) =>
+                m.day.toLowerCase() === activeSlot.day.toLowerCase() &&
+                m.mealType.toLowerCase() === activeSlot.mealType.toLowerCase()
+        );
+
+        if (currentSlotMeals.length >= MAX_RECIPES_PER_MEAL) {
+            toast.error(t('max_recipes_per_meal_reached'));
+            return;
+        }
 
         const newMeal = {
             id: `temp-${Date.now()}-${Math.random()}`,
@@ -491,6 +503,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                         return (
                                             <div
                                                 key={mealType}
+                                                data-testid="meal-slot"
                                                 className="border-neutral-250 flex min-h-[140px] flex-col overflow-hidden rounded-2xl border bg-white/40 dark:border-neutral-900 dark:bg-neutral-900/30"
                                             >
                                                 {/* Meal Slot Header */}
@@ -577,25 +590,27 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                     })}
 
                                                     {/* Add Recipe Button (in Edit Mode) */}
-                                                    {isOwner && (
-                                                        <button
-                                                            onClick={() =>
-                                                                handleAddRecipeClick(
-                                                                    day,
-                                                                    mealType
-                                                                )
-                                                            }
+                                                    {isOwner &&
+                                                        slotMeals.length <
+                                                            MAX_RECIPES_PER_MEAL && (
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleAddRecipeClick(
+                                                                        day,
+                                                                        mealType
+                                                                    )
+                                                                }
                                                             className="dark:border-neutral-850 flex cursor-pointer items-center justify-center gap-1 rounded-xl border border-dashed border-neutral-300 py-3 text-xs text-neutral-500 transition hover:bg-neutral-50 hover:text-neutral-900 dark:hover:bg-neutral-900/60 dark:hover:text-white"
-                                                            data-testid="add-recipe-button"
-                                                        >
-                                                            <FiPlus size={14} />
-                                                            <span>
-                                                                {t(
-                                                                    'add_recipe'
-                                                                )}
-                                                            </span>
-                                                        </button>
-                                                    )}
+                                                                data-testid="add-recipe-button"
+                                                            >
+                                                                <FiPlus size={14} />
+                                                                <span>
+                                                                    {t(
+                                                                        'add_recipe'
+                                                                    )}
+                                                                </span>
+                                                            </button>
+                                                        )}
 
                                                     {!isOwner &&
                                                         slotMeals.length ===
