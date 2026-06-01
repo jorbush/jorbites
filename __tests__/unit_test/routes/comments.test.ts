@@ -48,7 +48,6 @@ jest.mock('@/app/actions/getCurrentUser', () =>
 );
 
 import prisma from '@/app/lib/prismadb';
-import getCurrentUser from '@/app/actions/getCurrentUser';
 
 describe('Comments API Error Handling', () => {
     beforeEach(() => {
