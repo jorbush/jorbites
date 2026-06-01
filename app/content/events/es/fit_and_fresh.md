@@ -1,12 +1,12 @@
 ---
-title: "🌿 Sano y Fresco: Nutre tu Cuerpo 🌿"
+title: "🌿 Sano y Fresco 🌿"
 date: 2026-06-15
 endDate: 2026-06-30T23:59:59
 image: /images/events/fit_and_fresh.webp
 description: ¡Alimenta tu cuerpo con creaciones vibrantes y llenas de nutrientes que hacen de comer sano una celebración!
 ---
 
-# 🌿 Sano y Fresco: Nutre tu Cuerpo 🌿
+# 🌿 Sano y Fresco 🌿
 
 ¡Celebra los alimentos sanos, nutritivos y energizantes este mes de junio en Jorbites!
 

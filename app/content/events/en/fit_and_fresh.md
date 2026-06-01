@@ -1,12 +1,12 @@
 ---
-title: "🌿 Fit & Fresh: Nourish & Flourish 🌿"
+title: "🌿 Fit & Fresh 🌿"
 date: 2026-06-15
 endDate: 2026-06-30T23:59:59
 image: /images/events/fit_and_fresh.webp
 description: Fuel your body with vibrant, nutrient-packed creations that make healthy eating a celebration!
 ---
 
-# 🌿 Fit & Fresh: Nourish & Flourish 🌿
+# 🌿 Fit & Fresh 🌿
 
 Celebrate wholesome, nutrient-dense, and energizing foods this June on Jorbites!
 
