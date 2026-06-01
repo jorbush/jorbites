@@ -49,6 +49,8 @@ export default async function getQuestById(params: IParams) {
                         youtubeUrl: true,
                         questId: true,
                         createdAt: true,
+                        averageRating: true,
+                        ratingCount: true,
                         user: {
                             select: {
                                 id: true,

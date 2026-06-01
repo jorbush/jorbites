@@ -6,6 +6,7 @@ export enum OrderByType {
     TITLE_ASC = 'title_asc',
     TITLE_DESC = 'title_desc',
     MOST_LIKED = 'most_liked',
+    BEST_RATED = 'best_rated',
 }
 
 export const ORDER_BY_OPTIONS = [
@@ -14,6 +15,7 @@ export const ORDER_BY_OPTIONS = [
     OrderByType.TITLE_ASC,
     OrderByType.TITLE_DESC,
     OrderByType.MOST_LIKED,
+    OrderByType.BEST_RATED,
 ] as const;
 
 export const ORDER_BY_LABELS = {
@@ -22,6 +24,7 @@ export const ORDER_BY_LABELS = {
     [OrderByType.TITLE_ASC]: 'title_a_z',
     [OrderByType.TITLE_DESC]: 'title_z_a',
     [OrderByType.MOST_LIKED]: 'most_liked',
+    [OrderByType.BEST_RATED]: 'best_rated',
 } as const;
 
 export const ORDER_BY_FALLBACK_LABELS = {
@@ -30,6 +33,7 @@ export const ORDER_BY_FALLBACK_LABELS = {
     [OrderByType.TITLE_ASC]: 'Title A-Z',
     [OrderByType.TITLE_DESC]: 'Title Z-A',
     [OrderByType.MOST_LIKED]: 'Most liked',
+    [OrderByType.BEST_RATED]: 'Best rated',
 } as const;
 
 export const getPrismaOrderByClause = (
@@ -44,6 +48,12 @@ export const getPrismaOrderByClause = (
             return [{ title: 'desc' }, { id: 'asc' }];
         case OrderByType.MOST_LIKED:
             return [{ numLikes: 'desc' }, { id: 'asc' }];
+        case OrderByType.BEST_RATED:
+            return [
+                { averageRating: 'desc' },
+                { ratingCount: 'desc' },
+                { id: 'asc' },
+            ];
         case OrderByType.NEWEST:
         default:
             return [{ createdAt: 'desc' }, { id: 'asc' }];

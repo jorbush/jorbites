@@ -79,7 +79,7 @@ describe('CommentBox', () => {
 
         await waitFor(
             () => {
-                const submitButton = screen.getByRole('button');
+                const submitButton = screen.getByTestId('submit-comment');
                 expect(submitButton).toHaveProperty('disabled', false);
             },
             { timeout: 4000 }
@@ -89,11 +89,11 @@ describe('CommentBox', () => {
     it('disables submit button when comment is empty', () => {
         render(<CommentBox {...mockProps} />);
 
-        const submitButton = screen.getByRole('button');
+        const submitButton = screen.getByTestId('submit-comment');
         expect(submitButton).toHaveProperty('disabled');
     });
 
-    it('calls onCreateComment with the comment text when submitted', async () => {
+    it('calls onCreateComment with the comment text and null rating when submitted without rating', async () => {
         render(<CommentBox {...mockProps} />);
 
         const textarea = screen.getByPlaceholderText('write_comment');
@@ -101,12 +101,64 @@ describe('CommentBox', () => {
             target: { value: 'This is a test comment' },
         });
 
-        const submitButton = screen.getByRole('button');
+        const submitButton = screen.getByTestId('submit-comment');
         fireEvent.click(submitButton);
 
         await waitFor(() => {
             expect(mockProps.onCreateComment).toHaveBeenCalledWith(
-                'This is a test comment'
+                'This is a test comment',
+                null
+            );
+        });
+    });
+
+    it('calls onCreateComment with comment and selected rating when rating is clicked', async () => {
+        render(<CommentBox {...mockProps} />);
+
+        const textarea = screen.getByPlaceholderText('write_comment');
+        fireEvent.change(textarea, {
+            target: { value: 'Very nice!' },
+        });
+
+        const star = screen.getByTestId('star-4');
+        fireEvent.click(star);
+
+        const submitButton = screen.getByTestId('submit-comment');
+        fireEvent.click(submitButton);
+
+        await waitFor(() => {
+            expect(mockProps.onCreateComment).toHaveBeenCalledWith(
+                'Very nice!',
+                4
+            );
+        });
+    });
+
+    it('clears the rating when clear button is clicked', async () => {
+        render(<CommentBox {...mockProps} />);
+
+        const star = screen.getByTestId('star-4');
+        fireEvent.click(star);
+
+        const clearButton = screen.getByTestId('clear-rating');
+        expect(clearButton).toBeDefined();
+
+        fireEvent.click(clearButton);
+
+        expect(screen.queryByTestId('clear-rating')).toBeNull();
+
+        const textarea = screen.getByPlaceholderText('write_comment');
+        fireEvent.change(textarea, {
+            target: { value: 'No rating comment' },
+        });
+
+        const submitButton = screen.getByTestId('submit-comment');
+        fireEvent.click(submitButton);
+
+        await waitFor(() => {
+            expect(mockProps.onCreateComment).toHaveBeenCalledWith(
+                'No rating comment',
+                null
             );
         });
     });
@@ -119,7 +171,7 @@ describe('CommentBox', () => {
             target: { value: 'This is a test comment' },
         });
 
-        const submitButton = screen.getByRole('button');
+        const submitButton = screen.getByTestId('submit-comment');
         fireEvent.click(submitButton);
 
         await waitFor(

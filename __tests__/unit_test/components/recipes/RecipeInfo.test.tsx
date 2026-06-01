@@ -150,4 +150,56 @@ describe('RecipeInfo', () => {
         render(<RecipeInfo {...mockProps} />);
         expect(screen.getByTestId('recipe-category-and-method')).toBeDefined();
     });
+
+    it('renders average rating when averageRating is greater than 0', () => {
+        render(
+            <RecipeInfo
+                {...mockProps}
+                averageRating={4.5}
+                ratingCount={3}
+            />
+        );
+
+        expect(screen.getByTestId('recipe-average-rating')).toBeDefined();
+        expect(screen.getByText('4.5')).toBeDefined();
+        expect(
+            screen.getByText(
+                (content, element) => element?.textContent === '(3 reviews)'
+            )
+        ).toBeDefined();
+    });
+
+    it('scrolls to comments section when review count is clicked', () => {
+        const scrollIntoViewMock = vi.fn();
+
+        // Mock scrollIntoView and append mock comments-section target
+        const commentsSection = document.createElement('div');
+        commentsSection.id = 'comments-section';
+        commentsSection.scrollIntoView = scrollIntoViewMock;
+        document.body.appendChild(commentsSection);
+
+        render(
+            <RecipeInfo
+                {...mockProps}
+                averageRating={4.5}
+                ratingCount={3}
+            />
+        );
+
+        const reviewsButton = screen.getByText(
+            (content, element) => element?.textContent === '(3 reviews)'
+        );
+        fireEvent.click(reviewsButton);
+
+        expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'smooth' });
+
+        // Clean up body
+        document.body.removeChild(commentsSection);
+    });
+
+    it('does not render average rating when averageRating is 0 or undefined', () => {
+        render(<RecipeInfo {...mockProps} />);
+
+        expect(screen.queryByTestId('recipe-average-rating')).toBeNull();
+    });
 });

@@ -29,6 +29,7 @@ vi.mock('react-i18next', () => ({
                 title_a_z: 'Title A-Z',
                 title_z_a: 'Title Z-A',
                 most_liked: 'Most liked',
+                best_rated: 'Best rated',
             };
             return translations[key] || key;
         },
@@ -148,6 +149,7 @@ describe('<OrderByDropdown />', () => {
             expect(screen.getByText('Title A-Z')).toBeDefined();
             expect(screen.getByText('Title Z-A')).toBeDefined();
             expect(screen.getByText('Most liked')).toBeDefined();
+            expect(screen.getByText('Best rated')).toBeDefined();
         });
 
         it('closes dropdown when clicking outside', () => {
@@ -311,6 +313,7 @@ describe('<OrderByDropdown />', () => {
                 { param: 'title_asc', expected: 'Title A-Z' },
                 { param: 'title_desc', expected: 'Title Z-A' },
                 { param: 'most_liked', expected: 'Most liked' },
+                { param: 'best_rated', expected: 'Best rated' },
             ];
 
             testCases.forEach(({ param, expected }) => {

@@ -88,6 +88,8 @@ describe('<QuestDetailClient />', () => {
                 youtubeUrl: null,
                 questId: 'quest1',
                 createdAt: new Date().toISOString(),
+                averageRating: 0,
+                ratingCount: 0,
                 user: {
                     id: 'user2',
                     name: 'Recipe Author',

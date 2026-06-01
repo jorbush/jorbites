@@ -56,6 +56,8 @@ interface Quest {
         youtubeUrl: string | null;
         questId: string | null;
         createdAt: string;
+        averageRating: number;
+        ratingCount: number;
         user: {
             id: string;
             name: string | null;

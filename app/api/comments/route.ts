@@ -46,11 +46,12 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { recipeId, comment } = body;
+        const { recipeId, comment, rating } = body;
 
         logger.info('POST /api/comments - start', {
             recipeId,
             userId: currentUser.id,
+            rating,
         });
 
         if (!recipeId || !comment) {
@@ -61,6 +62,19 @@ export async function POST(request: Request) {
             return validationError(
                 `Comment must be ${COMMENT_MAX_LENGTH} characters or less`
             );
+        }
+
+        if (rating !== undefined && rating !== null) {
+            const parsedRating = Number(rating);
+            if (
+                !Number.isInteger(parsedRating) ||
+                parsedRating < 1 ||
+                parsedRating > 5
+            ) {
+                return validationError(
+                    'Rating must be an integer between 1 and 5'
+                );
+            }
         }
 
         const currentRecipe = await prisma.recipe.findUnique({
@@ -94,11 +108,39 @@ export async function POST(request: Request) {
                     create: {
                         userId: currentUser.id,
                         comment: comment,
+                        rating:
+                            rating !== undefined && rating !== null
+                                ? Number(rating)
+                                : null,
                     },
                 },
             },
             include: {
                 comments: true,
+            },
+        });
+
+        // Recalculate average rating and review count
+        const stats = await prisma.comment.aggregate({
+            where: {
+                recipeId: recipeId,
+                rating: { not: null },
+            },
+            _avg: {
+                rating: true,
+            },
+            _count: {
+                rating: true,
+            },
+        });
+
+        await prisma.recipe.update({
+            where: {
+                id: recipeId,
+            },
+            data: {
+                averageRating: stats._avg.rating || 0,
+                ratingCount: stats._count.rating || 0,
             },
         });
 
@@ -122,9 +164,10 @@ export async function POST(request: Request) {
                     ?.id,
         });
 
-        // Invalidate comments cache for this recipe
+        // Invalidate comments cache and recipe cache for this recipe
         try {
             await redisCache.del(`recipe:comments:${recipeId}`);
+            await redisCache.del(`recipe:${recipeId}`);
         } catch (cacheError: any) {
             logger.error('POST /api/comments - cache invalidation error', {
                 error: cacheError.message,

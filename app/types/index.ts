@@ -32,6 +32,7 @@ export type CommentAuthor = Pick<
 export type SafeComment = Omit<Comment, 'createdAt'> & {
     createdAt: string;
     user: CommentAuthor;
+    rating?: number | null;
 };
 
 export type SafeUser = Omit<

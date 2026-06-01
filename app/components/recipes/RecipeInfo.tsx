@@ -17,6 +17,7 @@ import YouTubePreview from '@/app/components/utils/YouTubePreview';
 import { TranslateableRecipeContent } from '@/app/components/translation/TranslateableRecipeContent';
 import { formatText } from '@/app/utils/textFormatting';
 import axios from 'axios';
+import StarRating from '@/app/components/utils/StarRating';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -43,6 +44,8 @@ interface RecipeInfoProps {
     coCooksIds?: string[];
     linkedRecipeIds?: string[];
     youtubeUrl?: string | null;
+    averageRating?: number;
+    ratingCount?: number;
 }
 
 const RecipeInfo: React.FC<RecipeInfoProps> = ({
@@ -61,6 +64,8 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     coCooksIds = [],
     linkedRecipeIds = [],
     youtubeUrl,
+    averageRating = 0,
+    ratingCount = 0,
 }) => {
     const { t } = useTranslation();
     const router = useRouter();
@@ -200,7 +205,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-row items-center gap-4 font-light text-neutral-500">
+                <div className="flex flex-wrap items-center gap-4 font-light text-neutral-500">
                     <div>
                         {steps.length}{' '}
                         {mounted ? t('steps').toLowerCase() : 'steps'}
@@ -211,6 +216,38 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                             ? t('ingredients').toLowerCase()
                             : 'ingredients'}
                     </div>
+                    {averageRating > 0 && (
+                        <div
+                            className="flex items-center gap-1.5 border-l border-neutral-300 pl-4 dark:border-neutral-700"
+                            data-testid="recipe-average-rating"
+                        >
+                            <span className="font-semibold text-neutral-800 dark:text-neutral-200">
+                                {averageRating.toFixed(1)}
+                            </span>
+                            <StarRating
+                                rating={averageRating}
+                                size={14}
+                            />
+                            <button
+                                onClick={() => {
+                                    document
+                                        .getElementById('comments-section')
+                                        ?.scrollIntoView({
+                                            behavior: 'smooth',
+                                        });
+                                }}
+                                className="cursor-pointer text-sm text-neutral-500 transition-colors hover:text-neutral-700 hover:underline focus:outline-hidden dark:hover:text-neutral-300"
+                                type="button"
+                            >
+                                ({ratingCount}
+                                <span className="hidden md:inline">
+                                    {' '}
+                                    {mounted ? t('reviews') : 'reviews'}
+                                </span>
+                                )
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 

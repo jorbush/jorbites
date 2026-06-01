@@ -147,4 +147,21 @@ describe('Comment', () => {
             expect(toast.error).toHaveBeenCalledWith('something_went_wrong');
         });
     });
+
+    it('renders rating stars when rating is provided', () => {
+        render(
+            <Comment
+                {...mockProps}
+                rating={4}
+            />
+        );
+
+        expect(screen.getByTestId('comment-rating')).toBeDefined();
+    });
+
+    it('does not render rating stars when rating is not provided', () => {
+        render(<Comment {...mockProps} />);
+
+        expect(screen.queryByTestId('comment-rating')).toBeNull();
+    });
 });

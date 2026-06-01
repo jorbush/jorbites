@@ -9,6 +9,10 @@ jest.mock('@/app/actions/getCommentById', () => jest.fn());
 jest.mock('@/app/lib/prismadb', () => ({
     comment: {
         delete: jest.fn(),
+        aggregate: jest.fn(),
+    },
+    recipe: {
+        update: jest.fn(),
     },
 }));
 
@@ -121,7 +125,7 @@ describe('Comment Delete API Error Handling', () => {
             expect(data.timestamp).toBeDefined();
         });
 
-        it('should delete comment successfully when user is the owner', async () => {
+        it('should delete comment successfully when user is the owner and recalculate rating aggregates', async () => {
             const mockUser = { id: 'test-user-id', email: 'test@example.com' };
             (getCurrentUser as jest.Mock).mockResolvedValueOnce(mockUser);
 
@@ -135,6 +139,11 @@ describe('Comment Delete API Error Handling', () => {
             (prisma.comment.delete as jest.Mock).mockResolvedValueOnce(
                 mockComment
             );
+            (prisma.comment.aggregate as jest.Mock).mockResolvedValueOnce({
+                _avg: { rating: 4.5 },
+                _count: { rating: 10 },
+            });
+            (prisma.recipe.update as jest.Mock).mockResolvedValueOnce({});
 
             const mockParams = {
                 params: Promise.resolve({ commentId: 'comment-id' }),
@@ -147,6 +156,21 @@ describe('Comment Delete API Error Handling', () => {
             expect(data).toEqual(mockComment);
             expect(prisma.comment.delete).toHaveBeenCalledWith({
                 where: { id: 'comment-id' },
+            });
+            expect(prisma.comment.aggregate).toHaveBeenCalledWith({
+                where: {
+                    recipeId: 'recipe-id',
+                    rating: { not: null },
+                },
+                _avg: { rating: true },
+                _count: { rating: true },
+            });
+            expect(prisma.recipe.update).toHaveBeenCalledWith({
+                where: { id: 'recipe-id' },
+                data: {
+                    averageRating: 4.5,
+                    ratingCount: 10,
+                },
             });
         });
 

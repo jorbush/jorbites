@@ -60,13 +60,38 @@ export async function DELETE(
             },
         });
 
+        // Recalculate average rating and review count
+        const stats = await prisma.comment.aggregate({
+            where: {
+                recipeId: comment.recipeId,
+                rating: { not: null },
+            },
+            _avg: {
+                rating: true,
+            },
+            _count: {
+                rating: true,
+            },
+        });
+
+        await prisma.recipe.update({
+            where: {
+                id: comment.recipeId,
+            },
+            data: {
+                averageRating: stats._avg.rating || 0,
+                ratingCount: stats._count.rating || 0,
+            },
+        });
+
         logger.info('DELETE /api/comments/[commentId] - success', {
             commentId,
         });
 
-        // Invalidate comments cache for the recipe this comment belonged to
+        // Invalidate comments cache and recipe cache for the recipe this comment belonged to
         try {
             await redisCache.del(`recipe:comments:${comment.recipeId}`);
+            await redisCache.del(`recipe:${comment.recipeId}`);
         } catch (cacheError: any) {
             logger.error(
                 'DELETE /api/comments/[commentId] - cache invalidation error',

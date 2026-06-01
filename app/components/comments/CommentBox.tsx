@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
+import { FiTrash } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import Avatar from '@/app/components/utils/Avatar';
 import MentionInput from '@/app/components/inputs/MentionInput';
+import StarRating from '@/app/components/utils/StarRating';
 import {
     COMMENT_MAX_LENGTH,
     CHAR_COUNT_WARNING_THRESHOLD,
@@ -13,7 +15,7 @@ import {
 
 interface CommentBoxProps {
     userImage: string | undefined | null;
-    onCreateComment: (comment: string) => void;
+    onCreateComment: (comment: string, rating: number | null) => void;
     isLoading?: boolean;
 }
 
@@ -23,6 +25,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
     isLoading = false,
 }) => {
     const [comment, setComment] = useState('');
+    const [rating, setRating] = useState<number | null>(null);
     const [isButtonDisabled, setButtonDisabled] = useState(false);
     const [mounted, setMounted] = useState(false);
     const { t } = useTranslation();
@@ -44,15 +47,16 @@ const CommentBox: React.FC<CommentBoxProps> = ({
             return;
         }
 
-        onCreateComment(comment);
+        onCreateComment(comment, rating);
 
         setComment('');
+        setRating(null);
         setButtonDisabled(false);
     };
 
     return (
-        <div className="mb-4 flex items-center">
-            <div className="mt-4 mr-4 mb-4">
+        <div className="mb-4 flex items-start">
+            <div className="mt-4 mr-4 mb-4 shrink-0">
                 <Avatar
                     src={userImage}
                     quality="auto:eco"
@@ -86,6 +90,34 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                         }`}
                     >
                         {comment.length}/{COMMENT_MAX_LENGTH}
+                    </div>
+                </div>
+
+                <div className="mt-2 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <StarRating
+                            rating={rating || 0}
+                            interactive
+                            onChange={setRating}
+                            size={18}
+                        />
+                        <div className="flex h-6 w-6 shrink-0 items-center justify-center">
+                            {rating !== null && (
+                                <button
+                                    type="button"
+                                    onClick={() => setRating(null)}
+                                    className="flex cursor-pointer items-center justify-center rounded-full p-1 text-neutral-500 transition hover:bg-neutral-200 hover:text-rose-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-rose-400"
+                                    data-testid="clear-rating"
+                                    aria-label={
+                                        mounted
+                                            ? t('clear_rating')
+                                            : 'Clear rating'
+                                    }
+                                >
+                                    <FiTrash size={16} />
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </form>
