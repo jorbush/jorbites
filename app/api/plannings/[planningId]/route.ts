@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
+import { redisCache } from '@/app/lib/redis';
 import { USER_SELECT_FIELDS } from '@/app/utils/constants';
 import {
     unauthorized,
@@ -218,6 +219,16 @@ export async function PATCH(
             planningId: updatedPlanning.id,
         });
 
+        try {
+            await redisCache.del(`planning:${planningId}`);
+            await redisCache.incr('plannings:global:version');
+        } catch (error: any) {
+            logger.error('PATCH /api/plannings/[planningId] - cache invalidation error', {
+                error: error.message,
+                planningId,
+            });
+        }
+
         const safePlanning = {
             ...updatedPlanning,
             createdAt: updatedPlanning.createdAt.toISOString(),
@@ -300,6 +311,17 @@ export async function DELETE(
         logger.info('DELETE /api/plannings/[planningId] - success', {
             planningId,
         });
+
+        try {
+            await redisCache.del(`planning:${planningId}`);
+            await redisCache.incr('plannings:global:version');
+        } catch (error: any) {
+            logger.error('DELETE /api/plannings/[planningId] - cache invalidation error', {
+                error: error.message,
+                planningId,
+            });
+        }
+
         return NextResponse.json({ message: 'Planning deleted' });
     } catch (error: any) {
         logger.error('DELETE /api/plannings/[planningId] - error', {

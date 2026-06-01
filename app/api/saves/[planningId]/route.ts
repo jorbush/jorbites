@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
+import { redisCache } from '@/app/lib/redis';
 import {
     unauthorized,
     invalidInput,
@@ -60,6 +61,16 @@ export async function POST(
             planningId,
             userId: user.id,
         });
+
+        try {
+            await redisCache.incr('plannings:global:version');
+        } catch (error: any) {
+            logger.error('POST /api/saves/[planningId] - cache invalidation error', {
+                error: error.message,
+                userId: user.id,
+            });
+        }
+
         return NextResponse.json(user);
     } catch (error: any) {
         logger.error('POST /api/saves/[planningId] - error', {
@@ -115,6 +126,16 @@ export async function DELETE(
             planningId,
             userId: user.id,
         });
+
+        try {
+            await redisCache.incr('plannings:global:version');
+        } catch (error: any) {
+            logger.error('DELETE /api/saves/[planningId] - cache invalidation error', {
+                error: error.message,
+                userId: user.id,
+            });
+        }
+
         return NextResponse.json(user);
     } catch (error: any) {
         logger.error('DELETE /api/saves/[planningId] - error', {
