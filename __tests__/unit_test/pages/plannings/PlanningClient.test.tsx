@@ -222,10 +222,34 @@ describe('PlanningClient', () => {
 
     it('hides add recipe button when meal limit (4) is reached', () => {
         const fullMeals = [
-            { id: '1', day: 'monday', mealType: 'breakfast', recipeId: 'r1', recipe: { title: 'R1', imageSrc: '' } },
-            { id: '2', day: 'monday', mealType: 'breakfast', recipeId: 'r2', recipe: { title: 'R2', imageSrc: '' } },
-            { id: '3', day: 'monday', mealType: 'breakfast', recipeId: 'r3', recipe: { title: 'R3', imageSrc: '' } },
-            { id: '4', day: 'monday', mealType: 'breakfast', recipeId: 'r4', recipe: { title: 'R4', imageSrc: '' } },
+            {
+                id: '1',
+                day: 'monday',
+                mealType: 'breakfast',
+                recipeId: 'r1',
+                recipe: { title: 'R1', imageSrc: '' },
+            },
+            {
+                id: '2',
+                day: 'monday',
+                mealType: 'breakfast',
+                recipeId: 'r2',
+                recipe: { title: 'R2', imageSrc: '' },
+            },
+            {
+                id: '3',
+                day: 'monday',
+                mealType: 'breakfast',
+                recipeId: 'r3',
+                recipe: { title: 'R3', imageSrc: '' },
+            },
+            {
+                id: '4',
+                day: 'monday',
+                mealType: 'breakfast',
+                recipeId: 'r4',
+                recipe: { title: 'R4', imageSrc: '' },
+            },
         ];
 
         render(
@@ -240,15 +264,19 @@ describe('PlanningClient', () => {
         const dayContainer = mondayHeading.closest('div');
 
         // Find all meal slots in that day
-        const mealSlots = dayContainer!.querySelectorAll('[data-testid="meal-slot"]');
+        const mealSlots = dayContainer!.querySelectorAll(
+            '[data-testid="meal-slot"]'
+        );
 
         // Find the breakfast slot
-        const breakfastSlot = Array.from(mealSlots).find(slot =>
+        const breakfastSlot = Array.from(mealSlots).find((slot) =>
             slot.textContent?.toLowerCase().includes('breakfast')
         );
 
         expect(breakfastSlot).toBeDefined();
-        const addButton = breakfastSlot!.querySelector('[data-testid="add-recipe-button"]');
+        const addButton = breakfastSlot!.querySelector(
+            '[data-testid="add-recipe-button"]'
+        );
         expect(addButton).toBeNull();
     });
 });

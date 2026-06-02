@@ -111,7 +111,11 @@ export async function POST(request: Request) {
 
             const counts: Record<string, number> = {};
             for (const m of meals) {
-                if (!m || typeof m.day !== 'string' || typeof m.mealType !== 'string') {
+                if (
+                    !m ||
+                    typeof m.day !== 'string' ||
+                    typeof m.mealType !== 'string'
+                ) {
                     return badRequest('Invalid meal entry');
                 }
 

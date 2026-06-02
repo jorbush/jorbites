@@ -600,10 +600,12 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                                         mealType
                                                                     )
                                                                 }
-                                                            className="dark:border-neutral-850 flex cursor-pointer items-center justify-center gap-1 rounded-xl border border-dashed border-neutral-300 py-3 text-xs text-neutral-500 transition hover:bg-neutral-50 hover:text-neutral-900 dark:hover:bg-neutral-900/60 dark:hover:text-white"
+                                                                className="dark:border-neutral-850 flex cursor-pointer items-center justify-center gap-1 rounded-xl border border-dashed border-neutral-300 py-3 text-xs text-neutral-500 transition hover:bg-neutral-50 hover:text-neutral-900 dark:hover:bg-neutral-900/60 dark:hover:text-white"
                                                                 data-testid="add-recipe-button"
                                                             >
-                                                                <FiPlus size={14} />
+                                                                <FiPlus
+                                                                    size={14}
+                                                                />
                                                                 <span>
                                                                     {t(
                                                                         'add_recipe'
