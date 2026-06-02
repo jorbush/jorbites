@@ -135,14 +135,25 @@ export async function PATCH(
             return badRequest('Invalid isPrivate flag');
         }
 
-        if (meals !== undefined && Array.isArray(meals)) {
+        if (meals !== undefined) {
+            if (!Array.isArray(meals)) {
+                return badRequest('Invalid meals payload');
+            }
+
             const counts: Record<string, number> = {};
             for (const m of meals) {
-                const key = `${m.day}-${m.mealType}`;
+                if (!m || typeof m.day !== 'string' || typeof m.mealType !== 'string' || typeof m.recipeId !== 'string') {
+                    return badRequest('Invalid meal entry');
+                }
+
+                const day = m.day.toLowerCase();
+                const mealType = m.mealType.toLowerCase();
+                const key = `${day}-${mealType}`;
+
                 counts[key] = (counts[key] || 0) + 1;
                 if (counts[key] > 4) {
                     return badRequest(
-                        `Maximum of 4 recipes allowed per meal (${m.day} ${m.mealType})`
+                        `Maximum of 4 recipes allowed per meal (${day} ${mealType})`
                     );
                 }
             }
