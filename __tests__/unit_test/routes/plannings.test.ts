@@ -88,6 +88,33 @@ describe('Plannings API Routes', () => {
             expect(response.status).toBe(400);
         });
 
+        it('should return 400 if more than 4 recipes are added to the same meal slot', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
+
+            const tooManyMeals = [
+                { day: 'monday', mealType: 'breakfast', recipeId: 'r1' },
+                { day: 'monday', mealType: 'breakfast', recipeId: 'r2' },
+                { day: 'monday', mealType: 'breakfast', recipeId: 'r3' },
+                { day: 'monday', mealType: 'breakfast', recipeId: 'r4' },
+                { day: 'monday', mealType: 'breakfast', recipeId: 'r5' },
+            ];
+
+            const request = new Request('http://localhost/api/plannings', {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: 'Keto Diet',
+                    meals: tooManyMeals,
+                }),
+            });
+            const response = await POST(request);
+
+            expect(response.status).toBe(400);
+            const data = await response.json();
+            expect(data.error).toContain(
+                'Maximum of 4 recipes allowed per meal'
+            );
+        });
+
         it('should create new plan on success', async () => {
             mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
             (prisma.planning.create as jest.Mock).mockResolvedValue({
@@ -189,6 +216,39 @@ describe('Plannings API Routes', () => {
             });
 
             expect(response.status).toBe(404);
+        });
+
+        it('should return 400 if more than 4 recipes are added to the same meal slot', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
+            (prisma.planning.findUnique as jest.Mock).mockResolvedValue({
+                id: 'plan-1',
+                userId: 'user-1',
+            });
+
+            const tooManyMeals = [
+                { day: 'monday', mealType: 'breakfast', recipeId: 'r1' },
+                { day: 'monday', mealType: 'breakfast', recipeId: 'r2' },
+                { day: 'monday', mealType: 'breakfast', recipeId: 'r3' },
+                { day: 'monday', mealType: 'breakfast', recipeId: 'r4' },
+                { day: 'monday', mealType: 'breakfast', recipeId: 'r5' },
+            ];
+
+            const request = new Request(
+                'http://localhost/api/plannings/plan-1',
+                {
+                    method: 'PATCH',
+                    body: JSON.stringify({ meals: tooManyMeals }),
+                }
+            );
+            const response = await PATCH(request, {
+                params: Promise.resolve({ planningId: 'plan-1' }),
+            });
+
+            expect(response.status).toBe(400);
+            const data = await response.json();
+            expect(data.error).toContain(
+                'Maximum of 4 recipes allowed per meal'
+            );
         });
     });
 

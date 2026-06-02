@@ -723,5 +723,6 @@
     "empty_slot": "No meals scheduled",
     "PREVIEW_RECIPES": "Recipes Preview",
     "type_to_search": "Type at least 2 characters to search",
-    "calendar_exported_success": "Calendar file downloaded!"
+    "calendar_exported_success": "Calendar file downloaded!",
+    "max_recipes_per_meal_reached": "Maximum of 4 recipes per meal allowed"
 }

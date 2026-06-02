@@ -724,5 +724,6 @@
     "empty_slot": "No hay comidas programadas",
     "PREVIEW_RECIPES": "Vista previa de recetas",
     "type_to_search": "Escribe al menos 2 caracteres para buscar",
-    "calendar_exported_success": "¡Archivo de calendario descargado con éxito!"
+    "calendar_exported_success": "¡Archivo de calendario descargado con éxito!",
+    "max_recipes_per_meal_reached": "Máximo de 4 recetas por comida permitido"
 }

@@ -98,10 +98,38 @@ export async function POST(request: Request) {
         logger.info('POST /api/plannings - start', { userId: currentUser.id });
 
         const body = await request.json();
-        const { name, description, isPrivate } = body;
+        const { name, description, isPrivate, meals } = body;
 
         if (typeof name !== 'string' || name.trim().length === 0) {
             return badRequest('Missing or invalid name');
+        }
+
+        if (meals !== undefined) {
+            if (!Array.isArray(meals)) {
+                return badRequest('Invalid meals payload');
+            }
+
+            const counts: Record<string, number> = {};
+            for (const m of meals) {
+                if (
+                    !m ||
+                    typeof m.day !== 'string' ||
+                    typeof m.mealType !== 'string'
+                ) {
+                    return badRequest('Invalid meal entry');
+                }
+
+                const day = m.day.toLowerCase();
+                const mealType = m.mealType.toLowerCase();
+                const key = `${day}-${mealType}`;
+
+                counts[key] = (counts[key] || 0) + 1;
+                if (counts[key] > 4) {
+                    return badRequest(
+                        `Maximum of 4 recipes allowed per meal (${day} ${mealType})`
+                    );
+                }
+            }
         }
 
         const planning = await prisma.planning.create({
