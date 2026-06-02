@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import EmptyState from '@/app/components/utils/EmptyState';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import getCurrentUser from '@/app/actions/getCurrentUser';
@@ -6,6 +7,29 @@ import PlanningClient from './PlanningClient';
 
 interface IParams {
     planningId?: string;
+}
+
+export async function generateMetadata(props: {
+    params: Promise<IParams>;
+}): Promise<Metadata> {
+    const params = await props.params;
+    const planning = await getPlanningById(params);
+
+    if (!planning || planning.isPrivate) {
+        return {
+            title: 'Plan de comidas | Jorbites',
+        };
+    }
+
+    return {
+        title: `${planning.name} | Jorbites`,
+        description:
+            planning.description?.substring(0, 160) ||
+            `Plan de comidas: ${planning.name} compartido en Jorbites`,
+        alternates: {
+            canonical: `/plannings/${params.planningId}`,
+        },
+    };
 }
 
 const PlanningPage = async (props: { params: Promise<IParams> }) => {
