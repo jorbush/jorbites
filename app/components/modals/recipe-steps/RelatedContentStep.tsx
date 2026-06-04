@@ -298,7 +298,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                         className="flex items-center justify-between rounded-lg border border-neutral-300 bg-white p-2 dark:border-neutral-800 dark:bg-neutral-900"
                                     >
                                         <div className="flex items-center gap-2">
-                                            <div className="relative h-10 w-10 overflow-hidden rounded-md">
+                                            <div className="relative size-10 overflow-hidden rounded-md">
                                                 <CustomProxyImage
                                                     src={
                                                         recipe.imageSrc ||

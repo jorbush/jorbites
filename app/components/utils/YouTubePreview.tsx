@@ -64,7 +64,7 @@ const YouTubePreview: React.FC<YouTubePreviewProps> = ({
                     data-testid="youtube-thumbnail"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="bg-opacity-90 bg-green-450 flex h-16 w-16 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-110">
+                    <div className="bg-opacity-90 bg-green-450 flex size-16 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-110">
                         <FiPlay
                             size={24}
                             className="ml-1"

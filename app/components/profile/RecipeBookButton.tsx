@@ -33,7 +33,7 @@ export const RecipeBookButton: React.FC<RecipeBookButtonProps> = ({
             data-testid="recipe-book-button"
         >
             <FiBookOpen
-                className="h-5 w-5"
+                className="size-5"
                 data-testid="book-icon"
             />
         </button>

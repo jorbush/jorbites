@@ -113,7 +113,7 @@ const WeeklyShoppingListModal: React.FC<WeeklyShoppingListModalProps> = ({
                                                 className="flex cursor-pointer flex-row items-center gap-2 py-0.5 select-none"
                                             >
                                                 <div
-                                                    className={`flex h-4 w-4 items-center justify-center rounded-sm border transition ${
+                                                    className={`flex size-4 items-center justify-center rounded-sm border transition ${
                                                         isChecked
                                                             ? 'border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900'
                                                             : 'dark:border-neutral-750 border-neutral-300'

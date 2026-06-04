@@ -69,7 +69,7 @@ const Footer = () => {
                                 rel="noopener noreferrer"
                                 aria-label={link.label}
                             >
-                                <link.icon className="h-5 w-5" />
+                                <link.icon className="size-5" />
                             </a>
                         ))}
                     </div>

@@ -22,7 +22,7 @@ const UserStatsSkeleton = () => {
                                 </div>
                                 {/* Icon skeleton */}
                                 <div className="rounded-full bg-neutral-200 p-2 dark:bg-neutral-700">
-                                    <div className="h-5 w-5 animate-pulse rounded bg-neutral-300 dark:bg-neutral-600"></div>
+                                    <div className="size-5 animate-pulse rounded bg-neutral-300 dark:bg-neutral-600"></div>
                                 </div>
                             </div>
                             {/* Footer skeleton */}
@@ -44,7 +44,7 @@ const UserStatsSkeleton = () => {
                         >
                             {/* Icon skeleton */}
                             <div className="rounded-full bg-neutral-200 p-3 dark:bg-neutral-700">
-                                <div className="h-5 w-5 animate-pulse rounded bg-neutral-300 dark:bg-neutral-600"></div>
+                                <div className="size-5 animate-pulse rounded bg-neutral-300 dark:bg-neutral-600"></div>
                             </div>
                             <div>
                                 {/* Title skeleton */}

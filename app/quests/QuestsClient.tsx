@@ -126,7 +126,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <div className="flex items-center gap-3">
-                        <FcTodoList className="mb-2 h-10 w-10" />
+                        <FcTodoList className="mb-2 size-10" />
                         <h1 className="pb-2 text-3xl font-bold text-neutral-900 dark:text-white">
                             {t('quests') || 'Recipe Quests'}
                         </h1>
@@ -173,17 +173,17 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
             <button
                 type="button"
                 onClick={handleRequestRecipe}
-                className="fixed right-6 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-10 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-rose-500 text-white shadow-lg transition hover:bg-rose-600 md:hidden"
+                className="fixed right-6 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-10 flex size-14 cursor-pointer items-center justify-center rounded-full bg-rose-500 text-white shadow-lg transition hover:bg-rose-600 md:hidden"
                 data-cy="request-recipe-button-mobile"
                 aria-label={t('request_recipe') || 'Request Recipe'}
             >
-                <FiPlus className="h-6 w-6" />
+                <FiPlus className="size-6" />
             </button>
 
             {/* Quests Grid */}
             {quests.length === 0 ? (
                 <div className="rounded-lg border-2 border-dashed border-neutral-300 p-12 text-center dark:border-neutral-800">
-                    <FiCircle className="mx-auto mb-4 h-12 w-12 text-neutral-400" />
+                    <FiCircle className="mx-auto mb-4 size-12 text-neutral-400" />
                     <h3 className="mb-2 text-lg font-medium text-neutral-900 dark:text-white">
                         {t('no_quests') || 'No quests found'}
                     </h3>
@@ -276,7 +276,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                 .map((recipe) => (
                                                     <div
                                                         key={recipe.id}
-                                                        className="group relative h-20 w-20 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg"
+                                                        className="group relative size-20 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg"
                                                         onClick={() =>
                                                             router.push(
                                                                 `/recipes/${recipe.id}`
@@ -298,7 +298,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                     </div>
                                                 ))}
                                             {quest.recipes.length > 4 && (
-                                                <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800">
+                                                <div className="flex size-20 flex-shrink-0 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800">
                                                     <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
                                                         +
                                                         {quest.recipes.length -

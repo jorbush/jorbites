@@ -10,7 +10,7 @@ const WorkshopClientSkeleton = () => {
                     <div className="flex items-baseline justify-between sm:mr-4 sm:ml-4">
                         {/* Back button */}
                         <div className="mr-4 flex translate-y-3 items-center space-x-2 text-neutral-600 md:translate-y-0">
-                            <div className="h-6 w-6 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                            <div className="size-6 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                         </div>
 
                         {/* Title and date */}
@@ -21,7 +21,7 @@ const WorkshopClientSkeleton = () => {
 
                         {/* Share button */}
                         <div className="ml-4 flex translate-y-3 items-center space-x-2 text-neutral-600 md:translate-y-0">
-                            <div className="h-6 w-6 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                            <div className="size-6 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                         </div>
                     </div>
 
@@ -35,7 +35,7 @@ const WorkshopClientSkeleton = () => {
                     <div className="col-span-4 flex flex-col gap-8 pr-2 pl-2">
                         {/* Host info */}
                         <div className="flex flex-row items-center gap-2">
-                            <div className="h-10 w-10 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                            <div className="size-10 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                             <div className="flex flex-col gap-1">
                                 <div className="h-5 w-32 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                                 <div className="h-4 w-16 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
@@ -51,7 +51,7 @@ const WorkshopClientSkeleton = () => {
                                     key={i}
                                     className="flex items-center gap-2"
                                 >
-                                    <div className="h-6 w-6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                                    <div className="size-6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                                     <div className="h-5 w-48 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                                 </div>
                             ))}

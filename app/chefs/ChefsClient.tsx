@@ -102,7 +102,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                 {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-amber-500">
+                        <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-amber-500">
                             <IoRestaurantOutline
                                 className="text-white"
                                 size={28}

@@ -121,7 +121,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 {imagesSrc.map((imageSrc, index) => (
                     <div
                         key={index}
-                        className="absolute h-full w-full transition-all duration-300 ease-in-out"
+                        className="absolute size-full transition-all duration-300 ease-in-out"
                         style={{
                             transform: `translateX(${
                                 (index - currentImageIndex) * 100

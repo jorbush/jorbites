@@ -208,7 +208,7 @@ const Search: React.FC<SearchProps> = ({
                         >
                             <FiFilter size={18} />
                             {isFiltering && (
-                                <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
+                                <span className="absolute -top-1 -right-1 size-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
                             )}
                         </button>
                     </form>
@@ -222,7 +222,7 @@ const Search: React.FC<SearchProps> = ({
                     >
                         <BiSearch size={18} />
                         {hasActiveFilters && (
-                            <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
+                            <span className="absolute -top-0.5 -right-0.5 size-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
                         )}
                     </button>
                 )}
@@ -293,7 +293,7 @@ const Search: React.FC<SearchProps> = ({
                     >
                         <FiFilter size={18} />
                         {isFiltering && (
-                            <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
+                            <span className="absolute -top-1 -right-1 size-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
                         )}
                     </button>
                 </div>
@@ -311,7 +311,7 @@ const Search: React.FC<SearchProps> = ({
                     >
                         <BiSearch size={18} />
                         {hasActiveFilters && (
-                            <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
+                            <span className="absolute -top-0.5 -right-0.5 size-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
                         )}
                     </button>
                 </div>

@@ -125,7 +125,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                         {canSave && (
                             <FaRegSave
                                 data-testid="save-username-icon"
-                                className="text-green-450 h-4 w-4 cursor-pointer hover:opacity-70"
+                                className="text-green-450 size-4 cursor-pointer hover:opacity-70"
                                 onClick={updateUserName}
                             />
                         )}
@@ -148,7 +148,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                         </span>
                         <FiEdit3
                             data-testid="edit-username-icon"
-                            className="h-4 w-4 cursor-pointer text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+                            className="size-4 cursor-pointer text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
                             onClick={handleEditClick}
                         />
                     </>

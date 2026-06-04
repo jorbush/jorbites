@@ -543,7 +543,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                                     alt={
                                                                         recipe.title
                                                                     }
-                                                                    className="h-10 w-10 shrink-0 rounded-lg object-cover"
+                                                                    className="size-10 shrink-0 rounded-lg object-cover"
                                                                 />
                                                                 <div
                                                                     onClick={() =>

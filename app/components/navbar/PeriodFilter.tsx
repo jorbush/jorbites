@@ -136,7 +136,7 @@ const PeriodFilter: React.FC = () => {
             >
                 <FiCalendar size={18} />
                 {hasDateFilter && (
-                    <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
+                    <span className="absolute -top-1 -right-1 size-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
                 )}
             </button>
 

@@ -29,7 +29,7 @@ describe('FooterSkeleton', () => {
 
     it('renders 5 social icon placeholders', () => {
         const { container } = render(<FooterSkeleton />);
-        const socialIcons = container.querySelectorAll('.h-5.w-5.rounded-full');
+        const socialIcons = container.querySelectorAll('.size-5.rounded-full');
         expect(socialIcons.length).toBe(5);
         expect(socialIcons[0].className).toContain('bg-neutral-200');
     });

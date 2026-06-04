@@ -70,7 +70,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                         <div className="text-lg text-neutral-400 md:text-xl">{`${t('level')} ${user?.level}`}</div>
                         {user?.createdAt && (
                             <div className="flex items-center gap-1 text-xs text-neutral-500">
-                                <FiCalendar className="h-3 w-3" />
+                                <FiCalendar className="size-3" />
                                 <span>
                                     {t('since')}{' '}
                                     {formatMemberSince(user.createdAt)}

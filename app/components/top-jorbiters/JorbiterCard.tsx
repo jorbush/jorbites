@@ -55,7 +55,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                         src={jorbiter.image}
                         size={50}
                         onClick={() => router.push('/profile/' + jorbiter.id)}
-                        extraClasses="sm:h-[65px] sm:w-[65px] md:h-[70px] md:w-[70px]"
+                        extraClasses="sm:size-[65px] md:size-[70px]"
                         quality="auto:best"
                     />
                     <div className="flex min-w-0 flex-col">

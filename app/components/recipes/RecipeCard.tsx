@@ -72,7 +72,7 @@ const RecipeCard = memo(function RecipeCard({
                         alt="recipe"
                         fill
                         priority={isFirstCard}
-                        className="h-full w-full object-cover transition group-hover:scale-110"
+                        className="size-full object-cover transition group-hover:scale-110"
                         width={209}
                         height={209}
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px"
@@ -98,7 +98,7 @@ const RecipeCard = memo(function RecipeCard({
                                 type="button"
                                 disabled={disabled}
                                 onClick={handleCancel}
-                                className="absolute top-3 left-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/80 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800/80 dark:hover:bg-neutral-800"
+                                className="absolute top-3 left-3 flex size-8 cursor-pointer items-center justify-center rounded-full bg-white/80 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800/80 dark:hover:bg-neutral-800"
                                 title={actionLabel}
                             >
                                 <ActionIcon

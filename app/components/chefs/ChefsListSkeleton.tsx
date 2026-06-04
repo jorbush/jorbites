@@ -12,7 +12,7 @@ const ChefsListSkeleton: React.FC<ChefsListSkeletonProps> = ({
             {/* Header */}
             <div className="mb-8">
                 <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-xl bg-neutral-200 dark:bg-neutral-700" />
+                    <div className="size-12 rounded-xl bg-neutral-200 dark:bg-neutral-700" />
                     <div>
                         <div className="h-8 w-32 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                         <div className="mt-2 h-4 w-48 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-700" />
