@@ -37,8 +37,14 @@ export default async function getPinnedRecipesByUserId(
             },
         });
 
-        if (!user || !user.pinnedRecipeIds || user.pinnedRecipeIds.length === 0) {
-            logger.info('getPinnedRecipesByUserId - no pinned recipes found', { userId });
+        if (
+            !user ||
+            !user.pinnedRecipeIds ||
+            user.pinnedRecipeIds.length === 0
+        ) {
+            logger.info('getPinnedRecipesByUserId - no pinned recipes found', {
+                userId,
+            });
             return [];
         }
 
@@ -52,7 +58,7 @@ export default async function getPinnedRecipesByUserId(
 
         const orderedRecipes = user.pinnedRecipeIds
             .map((id) => recipes.find((recipe) => recipe.id === id))
-            .filter((recipe): recipe is typeof recipes[0] => !!recipe);
+            .filter((recipe): recipe is (typeof recipes)[0] => !!recipe);
 
         const safeRecipes = orderedRecipes.map((recipe) => ({
             ...recipe,

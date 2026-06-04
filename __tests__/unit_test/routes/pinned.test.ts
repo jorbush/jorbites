@@ -187,7 +187,9 @@ describe('Pinned Recipes API Route', () => {
                 })
             );
             const { redisCache } = require('@/app/lib/redis');
-            expect(redisCache.del).toHaveBeenCalledWith('pinned_recipes:user-123');
+            expect(redisCache.del).toHaveBeenCalledWith(
+                'pinned_recipes:user-123'
+            );
         });
     });
 
@@ -234,7 +236,9 @@ describe('Pinned Recipes API Route', () => {
                 })
             );
             const { redisCache } = require('@/app/lib/redis');
-            expect(redisCache.del).toHaveBeenCalledWith('pinned_recipes:user-123');
+            expect(redisCache.del).toHaveBeenCalledWith(
+                'pinned_recipes:user-123'
+            );
         });
     });
 });

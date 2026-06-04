@@ -55,7 +55,12 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                                 currentUser={currentUser}
                                 key={`pinned-${recipe.id}`}
                                 data={recipe}
-                                canPin={isOwnProfile && currentUser?.id === recipe.userId}
+                                canPin={
+                                    !!(
+                                        isOwnProfile &&
+                                        currentUser?.id === recipe.userId
+                                    )
+                                }
                             />
                         ))}
                     </div>
@@ -72,7 +77,12 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                         currentUser={currentUser}
                         key={recipe.id}
                         data={recipe}
-                        canPin={isOwnProfile && currentUser?.id === recipe.userId}
+                        canPin={
+                            !!(
+                                isOwnProfile &&
+                                currentUser?.id === recipe.userId
+                            )
+                        }
                     />
                 ))}
             </div>

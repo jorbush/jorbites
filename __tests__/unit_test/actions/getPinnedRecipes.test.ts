@@ -45,7 +45,9 @@ describe('getPinnedRecipesByUserId Server Action', () => {
                 createdAt: '2026-05-20T12:00:00.000Z',
             },
         ];
-        vi.mocked(redisCache.get).mockResolvedValue(JSON.stringify(mockRecipes));
+        vi.mocked(redisCache.get).mockResolvedValue(
+            JSON.stringify(mockRecipes)
+        );
 
         const result = await getPinnedRecipesByUserId('user-1');
 
