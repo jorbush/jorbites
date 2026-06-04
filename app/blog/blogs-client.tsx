@@ -114,6 +114,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                             </h2>
                             {currentCategory === 'releases' && (
                                 <button
+                                    type="button"
                                     onClick={handleBackToStories}
                                     className="text-primary-600 hover:text-primary-700 cursor-pointer text-sm font-medium dark:text-white"
                                 >
@@ -175,6 +176,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                 </h3>
                                 {currentCategory !== 'releases' && (
                                     <button
+                                        type="button"
                                         onClick={handleViewAllReleases}
                                         className="text-primary-600 hover:text-primary-700 cursor-pointer text-sm font-semibold dark:text-white"
                                     >

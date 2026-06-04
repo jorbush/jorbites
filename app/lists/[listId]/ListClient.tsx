@@ -106,6 +106,7 @@ const ListClient: React.FC<ListClientProps> = ({
                             <div className="flex shrink-0 flex-row items-center gap-4">
                                 {!isPrivate && (
                                     <button
+                                        type="button"
                                         onClick={() =>
                                             share({
                                                 title: shareTitle,
@@ -122,6 +123,7 @@ const ListClient: React.FC<ListClientProps> = ({
                                     </button>
                                 )}
                                 <button
+                                    type="button"
                                     onClick={togglePrivacy}
                                     disabled={isLoading}
                                     className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
@@ -147,6 +149,7 @@ const ListClient: React.FC<ListClientProps> = ({
                                 </button>
                                 {!list.isDefault && (
                                     <button
+                                        type="button"
                                         onClick={() =>
                                             setIsConfirmModalOpen(true)
                                         }

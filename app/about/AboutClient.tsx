@@ -332,6 +332,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                             </Link>
                             {!currentUser && (
                                 <button
+                                    type="button"
                                     onClick={registerModal.onOpen}
                                     className="rounded-lg border border-neutral-300 px-6 py-3 text-neutral-800 transition-colors hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-200 dark:hover:bg-neutral-800"
                                 >

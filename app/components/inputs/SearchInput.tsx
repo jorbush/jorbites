@@ -180,6 +180,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
                                   )}
                                   {onSelectResult && (
                                       <button
+                                          type="button"
                                           onClick={(e) => {
                                               e.stopPropagation();
                                               onSelectResult(result);
