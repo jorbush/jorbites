@@ -21,6 +21,7 @@ model User {
   updatedAt           DateTime  @updatedAt
   favoriteIds         String[]  @db.ObjectId
   savedPlanningIds    String[]  @db.ObjectId
+  pinnedRecipeIds     String[]  @db.ObjectId
   emailNotifications  Boolean   @default(false)
   level               Int       @default(0)
   verified            Boolean   @default(false)

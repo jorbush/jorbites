@@ -46,6 +46,7 @@ export type SafeUser = Omit<
     | 'email'
     | 'favoriteIds'
     | 'savedPlanningIds'
+    | 'pinnedRecipeIds'
     | 'emailNotifications'
     | 'language'
 > & {
@@ -55,6 +56,7 @@ export type SafeUser = Omit<
     email?: string | null;
     favoriteIds?: string[];
     savedPlanningIds?: string[];
+    pinnedRecipeIds?: string[];
     emailNotifications?: boolean;
     language?: string | null;
     recipeCount?: number | null | undefined;

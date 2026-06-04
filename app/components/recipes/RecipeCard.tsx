@@ -3,6 +3,7 @@
 import { SafeRecipe, SafeUser } from '@/app/types';
 import { useRouter } from 'next/navigation';
 import HeartButton from '@/app/components/buttons/HeartButton';
+import PinButton from '@/app/components/buttons/PinButton';
 import { GiTrophyCup } from 'react-icons/gi';
 import { useTranslation } from 'react-i18next';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
@@ -20,6 +21,7 @@ interface RecipeCardProps {
     disabled?: boolean;
     actionLabel?: string;
     actionIcon?: IconType;
+    canPin?: boolean;
 }
 
 const RecipeCard = memo(function RecipeCard({
@@ -31,6 +33,7 @@ const RecipeCard = memo(function RecipeCard({
     disabled,
     actionLabel,
     actionIcon: ActionIcon,
+    canPin = false,
 }: RecipeCardProps) {
     const router = useRouter();
     const { t } = useTranslation();
@@ -81,19 +84,29 @@ const RecipeCard = memo(function RecipeCard({
                             currentUser={currentUser}
                         />
                     </div>
-                    {onAction && ActionIcon && (
-                        <button
-                            type="button"
-                            disabled={disabled}
-                            onClick={handleCancel}
-                            className="absolute top-3 left-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/80 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800/80 dark:hover:bg-neutral-800"
-                            title={actionLabel}
-                        >
-                            <ActionIcon
-                                size={18}
-                                className="text-neutral-700 dark:text-neutral-200"
+                    {canPin && !onAction ? (
+                        <div className="absolute top-3 left-3">
+                            <PinButton
+                                recipeId={data.id}
+                                currentUser={currentUser}
                             />
-                        </button>
+                        </div>
+                    ) : (
+                        onAction &&
+                        ActionIcon && (
+                            <button
+                                type="button"
+                                disabled={disabled}
+                                onClick={handleCancel}
+                                className="absolute top-3 left-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/80 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800/80 dark:hover:bg-neutral-800"
+                                title={actionLabel}
+                            >
+                                <ActionIcon
+                                    size={18}
+                                    className="text-neutral-700 dark:text-neutral-200"
+                                />
+                            </button>
+                        )
                     )}
                     <ClientOnly>
                         {isAwardWinning && (

@@ -88,6 +88,7 @@ describe('ProfileClient', () => {
                 totalPages={1}
                 currentPage={1}
                 searchParams={{}}
+                profileUserId="user1"
             />
         );
 
@@ -104,6 +105,7 @@ describe('ProfileClient', () => {
                 totalPages={1}
                 currentPage={1}
                 searchParams={{}}
+                profileUserId="user1"
             />
         );
 
@@ -120,10 +122,35 @@ describe('ProfileClient', () => {
                 totalPages={0}
                 currentPage={1}
                 searchParams={{}}
+                profileUserId="user1"
             />
         );
 
         // Assert that no recipes are displayed
         expect(container.querySelector('.grid')?.nodeValue).toBeNull();
+    });
+
+    it('renders pinned recipes when pinnedRecipes is provided', () => {
+        const mockPinnedRecipes = [
+            {
+                ...mockRecipes[0],
+                id: 'pinned1',
+                title: 'Pinned Recipe 1',
+            },
+        ];
+        const { getByText } = render(
+            <ProfileClient
+                recipes={mockRecipes}
+                pinnedRecipes={mockPinnedRecipes}
+                currentUser={mockCurrentUser}
+                totalPages={1}
+                currentPage={1}
+                searchParams={{}}
+                profileUserId="user1"
+            />
+        );
+
+        expect(getByText('Pinned Recipe 1')).toBeDefined();
+        expect(getByText('Recipe 1')).toBeDefined();
     });
 });

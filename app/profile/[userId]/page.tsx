@@ -5,6 +5,7 @@ import ProfileClient from '@/app/profile/[userId]/ProfileClient';
 import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
 import getRecipesForGraph from '@/app/actions/getRecipesForGraph';
 import getUserById from '@/app/actions/getUserById';
+import getPinnedRecipesByUserId from '@/app/actions/getPinnedRecipesByUserId';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
 import UserStats from '@/app/components/stats/UserStats';
 import RecipeContributionGraph from '@/app/components/stats/RecipeContributionGraph';
@@ -93,6 +94,7 @@ const ProfilePage = async (props: {
 
     const user = await getUserById({ userId: params.userId, withStats: true });
     const currentUser = await getCurrentUser();
+    const pinnedRecipes = await getPinnedRecipesByUserId(params.userId || '');
 
     if (!user && recipesResponse.recipes.length === 0) {
         return (
@@ -128,10 +130,12 @@ const ProfilePage = async (props: {
                 <ClientOnly fallback={<ProfileClientSkeleton />}>
                     <ProfileClient
                         recipes={recipesResponse.recipes}
+                        pinnedRecipes={pinnedRecipes}
                         currentUser={currentUser}
                         totalPages={recipesResponse.totalPages}
                         currentPage={recipesResponse.currentPage}
                         searchParams={searchParams}
+                        profileUserId={params.userId || ''}
                     />
                 </ClientOnly>
             )}

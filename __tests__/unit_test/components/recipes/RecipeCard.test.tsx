@@ -15,6 +15,15 @@ vi.mock('@/app/components/HeartButton', () => ({
     default: () => <button data-testid="heart-button">Heart</button>,
 }));
 
+// Mock the PinButton component
+vi.mock('@/app/components/buttons/PinButton', () => ({
+    default: () => <button data-testid="pin-button">Pin</button>,
+}));
+
+vi.mock('react-icons/bs', () => ({
+    BsPinAngleFill: () => <div data-testid="static-pin" />,
+}));
+
 // Mock the Avatar component
 vi.mock('@/app/components/utils/Avatar', () => ({
     default: ({ src, size }: { src: string | null; size: number }) => (
@@ -223,6 +232,32 @@ describe('<RecipeCard />', () => {
 
             // Should NOT show avatar
             expect(screen.queryByTestId('avatar')).toBeNull();
+        });
+    });
+
+    describe('pinning logic', () => {
+        it('renders PinButton when canPin is true', () => {
+            cleanup();
+            render(
+                <RecipeCard
+                    data={mockRecipe}
+                    currentUser={mockUser}
+                    canPin={true}
+                />
+            );
+            expect(screen.getByTestId('pin-button')).toBeDefined();
+        });
+
+        it('does not render PinButton when canPin is false', () => {
+            cleanup();
+            render(
+                <RecipeCard
+                    data={mockRecipe}
+                    currentUser={mockUser}
+                    canPin={false}
+                />
+            );
+            expect(screen.queryByTestId('pin-button')).toBeNull();
         });
     });
 });

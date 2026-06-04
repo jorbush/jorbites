@@ -27,6 +27,7 @@ export default async function getCurrentUser() {
                 updatedAt: true,
                 favoriteIds: true,
                 savedPlanningIds: true,
+                pinnedRecipeIds: true,
                 emailNotifications: true,
                 level: true,
                 verified: true,

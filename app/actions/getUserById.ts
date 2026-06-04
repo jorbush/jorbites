@@ -29,6 +29,7 @@ export default async function getUserById(params: IParams) {
                 verified: true,
                 language: true,
                 badges: true,
+                pinnedRecipeIds: true,
             },
         });
 

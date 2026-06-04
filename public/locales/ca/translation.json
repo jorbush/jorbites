@@ -722,5 +722,9 @@
     "PREVIEW_RECIPES": "Vista prèvia de receptes",
     "type_to_search": "Escriu almenys 2 caràcters per cercar",
     "calendar_exported_success": "¡Arxiu de calendari descarregat amb èxit!",
-    "max_recipes_per_meal_reached": "Màxim de 4 receptes per àpat permès"
+    "max_recipes_per_meal_reached": "Màxim de 4 receptes per àpat permès",
+    "pinned_recipes": "Receptes destacades",
+    "pin_limit_reached": "Només pots destacar fins a 4 receptes",
+    "pin_success": "Recepta destacada amb èxit",
+    "unpin_success": "Recepta desmarcada amb èxit"
 }

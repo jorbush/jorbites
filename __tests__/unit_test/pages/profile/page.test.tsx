@@ -5,6 +5,7 @@ import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
 import getRecipesForGraph from '@/app/actions/getRecipesForGraph';
 import getUserById from '@/app/actions/getUserById';
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import getPinnedRecipesByUserId from '@/app/actions/getPinnedRecipesByUserId';
 
 // Mock implementations
 vi.mock('@/app/hooks/useMediaQuery', () => ({
@@ -14,6 +15,7 @@ vi.mock('@/app/actions/getRecipesByUserId');
 vi.mock('@/app/actions/getRecipesForGraph');
 vi.mock('@/app/actions/getUserById');
 vi.mock('@/app/actions/getCurrentUser');
+vi.mock('@/app/actions/getPinnedRecipesByUserId');
 vi.mock('next/navigation', () => ({
     useRouter: vi.fn(() => ({
         push: vi.fn(),
@@ -81,6 +83,7 @@ const mockCurrentUser = {
 describe('ProfilePage', () => {
     beforeEach(() => {
         vi.resetAllMocks();
+        vi.mocked(getPinnedRecipesByUserId).mockResolvedValue([]);
     });
 
     afterEach(() => {
@@ -242,5 +245,57 @@ describe('ProfilePage', () => {
                 getByText('Looks like this user has not created recipes.')
             ).toBeDefined();
         });
+    });
+
+    it('fetches and passes pinned recipes to ProfileClient', async () => {
+        vi.mocked(getRecipesByUserId).mockResolvedValue({
+            recipes: mockRecipes as any,
+            totalRecipes: 2,
+            totalPages: 1,
+            currentPage: 1,
+        });
+        vi.mocked(getRecipesForGraph).mockResolvedValue([]);
+        vi.mocked(getUserById).mockResolvedValue({
+            createdAt: '',
+            updatedAt: '',
+            emailVerified: null,
+            id: mockUser.id,
+            name: mockUser.name,
+            email: null,
+            image: null,
+            hashedPassword: null,
+            favoriteIds: [],
+            emailNotifications: false,
+            level: 0,
+            verified: false,
+            badges: [],
+            resetToken: null,
+            resetTokenExpiry: null,
+        });
+        vi.mocked(getCurrentUser).mockResolvedValue({
+            createdAt: '',
+            updatedAt: '',
+            emailVerified: null,
+            id: mockCurrentUser.id,
+            name: mockCurrentUser.name,
+            email: null,
+            image: null,
+            hashedPassword: null,
+            favoriteIds: [],
+            emailNotifications: false,
+            level: 0,
+            verified: false,
+            badges: [],
+            resetToken: null,
+            resetTokenExpiry: null,
+        });
+        vi.mocked(getPinnedRecipesByUserId).mockResolvedValue([]);
+
+        await ProfilePage({
+            params: Promise.resolve({ userId: 'user1' }),
+            searchParams: Promise.resolve({}),
+        });
+
+        expect(getPinnedRecipesByUserId).toHaveBeenCalledWith('user1');
     });
 });
