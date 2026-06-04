@@ -62,7 +62,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
 
     return (
         <div className="mb-10">
-            <h2 className="mb-5 text-2xl font-bold dark:text-neutral-100">
+            <h2 className="mb-5 text-2xl font-semibold dark:text-neutral-100">
                 {title}
             </h2>
 

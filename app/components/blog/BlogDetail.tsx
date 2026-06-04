@@ -35,19 +35,19 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
     const markdownComponents: Components = {
         h1: (props) => (
             <h1
-                className="mt-6 mb-4 text-3xl font-bold"
+                className="mt-6 mb-4 text-3xl font-semibold"
                 {...props}
             />
         ),
         h2: (props) => (
             <h2
-                className="mt-5 mb-3 text-2xl font-bold"
+                className="mt-5 mb-3 text-2xl font-semibold"
                 {...props}
             />
         ),
         h3: (props) => (
             <h3
-                className="mt-4 mb-2 text-xl font-bold"
+                className="mt-4 mb-2 text-xl font-semibold"
                 {...props}
             />
         ),
@@ -84,7 +84,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
         ),
         strong: (props) => (
             <strong
-                className="font-bold"
+                className="font-semibold"
                 {...props}
             />
         ),
@@ -180,7 +180,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
             {/* See More Section */}
             {relatedBlogs.length > 0 && (
                 <div className="mt-12 border-t border-neutral-200 pt-8 dark:border-neutral-700">
-                    <h2 className="mb-6 text-2xl font-bold dark:text-neutral-100">
+                    <h2 className="mb-6 text-2xl font-semibold dark:text-neutral-100">
                         {t('see_more') || 'See more'}
                     </h2>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -35,6 +35,6 @@ describe('<LeaderboardHeader />', () => {
         const heading = screen.getByText('Top Jorbiters 👨‍🍳');
         expect(heading.tagName).toBe('H1');
         expect(heading.className).toContain('text-3xl');
-        expect(heading.className).toContain('font-bold');
+        expect(heading.className).toContain('font-semibold');
     });
 });

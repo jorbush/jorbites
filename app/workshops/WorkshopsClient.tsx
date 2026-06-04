@@ -41,7 +41,7 @@ const WorkshopsClient: React.FC<WorkshopsClientProps> = ({
                     description={t('workshops_description')}
                 />
                 <div className="mb-6">
-                    <h1 className="text-3xl font-bold dark:text-neutral-100">
+                    <h1 className="text-3xl font-semibold dark:text-neutral-100">
                         {t('upcoming_workshops')}
                     </h1>
                 </div>
@@ -52,7 +52,7 @@ const WorkshopsClient: React.FC<WorkshopsClientProps> = ({
                     emptyStateSubtitle={t('check_back_later')}
                 />
                 <div className="mt-12 mb-6">
-                    <h1 className="text-3xl font-bold dark:text-neutral-100">
+                    <h1 className="text-3xl font-semibold dark:text-neutral-100">
                         {t('past_workshops')}
                     </h1>
                 </div>

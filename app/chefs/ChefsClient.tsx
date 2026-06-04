@@ -109,7 +109,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                             />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">
+                            <h1 className="text-3xl font-semibold text-neutral-900 dark:text-white">
                                 {t('chefs')}
                             </h1>
                             <p className="text-neutral-600 dark:text-neutral-400">

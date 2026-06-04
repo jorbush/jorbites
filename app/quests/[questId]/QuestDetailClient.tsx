@@ -222,7 +222,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                     </div>
 
                     <h1
-                        className="mb-4 text-3xl font-bold text-neutral-900 dark:text-white"
+                        className="mb-4 text-3xl font-semibold text-neutral-900 dark:text-white"
                         data-cy="quest-title-display"
                     >
                         {quest.title}
@@ -269,7 +269,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
 
                 {/* Recipe Replies */}
                 <div>
-                    <h2 className="mb-4 text-2xl font-bold text-neutral-900 dark:text-white">
+                    <h2 className="mb-4 text-2xl font-semibold text-neutral-900 dark:text-white">
                         {t('recipe_replies') || 'Recipe Replies'} (
                         {quest.recipes.length})
                     </h2>

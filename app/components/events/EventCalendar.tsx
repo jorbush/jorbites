@@ -87,7 +87,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
     return (
         <div className="mb-10 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm md:p-6 dark:border-neutral-700 dark:bg-neutral-900">
             <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-xl font-bold md:text-2xl dark:text-neutral-100">
+                <h2 className="text-xl font-semibold md:text-2xl dark:text-neutral-100">
                     {monthName} {year}
                 </h2>
                 <div className="flex gap-2">

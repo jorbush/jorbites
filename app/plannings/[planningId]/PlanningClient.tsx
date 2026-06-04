@@ -331,7 +331,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                             >
                                 <FiChevronLeft className="text-2xl" />
                             </button>
-                            <h1 className="truncate text-3xl font-black tracking-tight">
+                            <h1 className="truncate text-3xl font-semibold tracking-tight">
                                 {editedName}
                             </h1>
                         </div>
@@ -496,7 +496,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                 className="flex flex-col gap-4 rounded-3xl border border-neutral-200/50 bg-neutral-50/20 p-5 shadow-xs dark:border-neutral-800/80 dark:bg-neutral-950/20"
                             >
                                 {/* Day Title */}
-                                <h3 className="text-xl font-black tracking-tight capitalize">
+                                <h3 className="text-xl font-semibold tracking-tight capitalize">
                                     {t(day)}
                                 </h3>
 

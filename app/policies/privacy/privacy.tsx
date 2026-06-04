@@ -26,7 +26,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ policy }) => {
                         >
                             <FiChevronLeft className="text-xl" />
                         </button>
-                        <h1 className="text-3xl font-bold">
+                        <h1 className="text-3xl font-semibold">
                             {policy.frontmatter.title}
                         </h1>
                         <div className="w-8"></div>
