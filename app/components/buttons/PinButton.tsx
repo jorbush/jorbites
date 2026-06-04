@@ -39,6 +39,7 @@ const PinButton: React.FC<PinButtonProps> = ({ recipeId, currentUser }) => {
 
     return (
         <button
+            type="button"
             onClick={handleButtonClick}
             disabled={isDisabled || isLoading}
             className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/80 transition hover:scale-105 hover:bg-white disabled:cursor-not-allowed disabled:opacity-75 dark:bg-neutral-800/80 dark:hover:bg-neutral-800"
