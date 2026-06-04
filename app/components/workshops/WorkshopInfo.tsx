@@ -180,9 +180,9 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                             className="flex flex-col gap-2"
                             data-cy="workshop-ingredients-section"
                         >
-                            {ingredients.map((ingredient, index) => (
+                            {ingredients.map((ingredient) => (
                                 <div
-                                    key={index}
+                                    key={ingredient}
                                     className="text-neutral-500"
                                 >
                                     • {ingredient}
@@ -209,7 +209,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                         >
                             {previousSteps.map((step, index) => (
                                 <div
-                                    key={index}
+                                    key={step}
                                     className="text-neutral-500"
                                     data-cy={`workshop-previous-step-display-${index}`}
                                 >

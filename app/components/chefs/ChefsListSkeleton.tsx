@@ -33,7 +33,7 @@ const ChefsListSkeleton: React.FC<ChefsListSkeletonProps> = ({
                     <div className="flex min-w-max gap-2 pb-2">
                         {[...Array(7)].map((_, i) => (
                             <div
-                                key={i}
+                                key={`filter-pill-skeleton-${i}`}
                                 className="h-10 w-24 rounded-full bg-neutral-200 dark:bg-neutral-700"
                             />
                         ))}
@@ -48,7 +48,7 @@ const ChefsListSkeleton: React.FC<ChefsListSkeletonProps> = ({
                 data-testid="chefs-list-skeleton"
             >
                 {[...Array(count)].map((_, i) => (
-                    <ChefCardSkeleton key={i} />
+                    <ChefCardSkeleton key={`chef-card-skeleton-${i}`} />
                 ))}
             </div>
         </div>

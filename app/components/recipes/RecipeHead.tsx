@@ -120,7 +120,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
             >
                 {imagesSrc.map((imageSrc, index) => (
                     <div
-                        key={index}
+                        key={imageSrc}
                         className="absolute size-full transition-all duration-300 ease-in-out"
                         style={{
                             transform: `translateX(${
@@ -174,9 +174,9 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                         </div>
                         {/* Dot Indicators */}
                         <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 transform gap-2">
-                            {imagesSrc.map((_, index) => (
+                            {imagesSrc.map((imageSrc, index) => (
                                 <button
-                                    key={index}
+                                    key={`dot-${imageSrc}`}
                                     type="button"
                                     onClick={() => {
                                         if (isTransitioning) return;

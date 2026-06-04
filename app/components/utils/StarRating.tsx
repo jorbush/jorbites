@@ -49,7 +49,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
             const isFilled = starValue <= displayRating;
             return (
                 <button
-                    key={index}
+                    key={starValue}
                     type="button"
                     onClick={() => handleClick(starValue)}
                     onMouseEnter={() => handleMouseEnter(starValue)}
@@ -73,7 +73,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
             // Full star
             return (
                 <span
-                    key={index}
+                    key={starValue}
                     className="text-amber-500"
                     data-testid={`star-filled-${index}`}
                 >
@@ -84,7 +84,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
             // Half star
             return (
                 <span
-                    key={index}
+                    key={starValue}
                     className="text-amber-500"
                     data-testid={`star-half-${index}`}
                 >
@@ -95,7 +95,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
             // Empty star
             return (
                 <span
-                    key={index}
+                    key={starValue}
                     className="text-neutral-300 dark:text-neutral-600"
                     data-testid={`star-empty-${index}`}
                 >

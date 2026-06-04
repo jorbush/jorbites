@@ -19,6 +19,7 @@ export const RecipeBookTOC: React.FC<RecipeBookTOCProps> = ({
     // Generate Table of Contents mappings.
     // Cover is Page 1, TOC is Page 2. Recipes start at Page 3.
     const tocItems = recipes.map((recipe, index) => ({
+        id: recipe.id,
         title: recipe.title,
         pageNumber: index + 3,
     }));
@@ -36,7 +37,7 @@ export const RecipeBookTOC: React.FC<RecipeBookTOCProps> = ({
             <View style={{ marginTop: 10 }}>
                 {tocItems.map((item, index) => (
                     <View
-                        key={index}
+                        key={item.id}
                         style={styles.tocItem}
                     >
                         <Text style={styles.tocItemText}>
