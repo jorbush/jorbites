@@ -724,5 +724,9 @@
     "PREVIEW_RECIPES": "Recipes Preview",
     "type_to_search": "Type at least 2 characters to search",
     "calendar_exported_success": "Calendar file downloaded!",
-    "max_recipes_per_meal_reached": "Maximum of 4 recipes per meal allowed"
+    "max_recipes_per_meal_reached": "Maximum of 4 recipes per meal allowed",
+    "pinned_recipes": "Pinned Recipes",
+    "pin_limit_reached": "You can only pin up to 4 recipes",
+    "pin_success": "Recipe pinned successfully",
+    "unpin_success": "Recipe unpinned successfully"
 }
