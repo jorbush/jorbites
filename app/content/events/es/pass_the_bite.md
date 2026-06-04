@@ -1,14 +1,14 @@
 ---
 title: 🤝 Pass the Bite 🤝
-date: 2025-12-01
-endDate: 2025-12-31T21:59:59
+date: 2026-07-02
+endDate: 2026-07-31T21:59:59
 image: /images/events/pass_the_bite.webp
 description: Un mes para conectar con tu gente y compartir recetas.
 ---
 
 # 🤝 Pass the Bite 🤝
 
-¡Ayúdanos a hacer crecer la comunidad de Jorbites! Este diciembre, lanzamos "Pass the Bite" - un evento emocionante donde puedes ganar recompensas increíbles invitando nuevas personas a unirse a nuestra plataforma.
+¡Ayúdanos a hacer crecer la comunidad de Jorbites! Este julio, lanzamos "Pass the Bite" - un evento emocionante donde puedes ganar recompensas increíbles invitando nuevas personas a unirse a nuestra plataforma.
 
 ### 🏆 ¡Cómo participar y ganar!
 
@@ -39,6 +39,6 @@ Jorbites es más que una plataforma de recetas - es una comunidad de apasionados
 
 ### 📅 Duración del evento
 
-Este evento se extiende del **1 al 31 de diciembre de 2025**. ¡No te pierdas esta oportunidad de compartir el amor por la cocina!
+Este evento se extiende del **2 al 31 de julio de 2026**. ¡No te pierdas esta oportunidad de compartir el amor por la cocina!
 
 **¿Listo para Pass the Bite? ¡Comienza a invitar hoy! 🚀**
