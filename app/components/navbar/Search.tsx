@@ -157,6 +157,7 @@ const Search: React.FC<SearchProps> = ({
                         className="animate-search-fade-in flex items-center gap-3"
                     >
                         <button
+                            type="button"
                             onClick={handleSearchToggle}
                             className="flex min-h-[40px] min-w-[40px] flex-shrink-0 cursor-pointer items-center justify-center rounded-full p-2 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
                             aria-label={t('back') || 'Back'}
@@ -192,6 +193,7 @@ const Search: React.FC<SearchProps> = ({
                         <PeriodFilter />
 
                         <button
+                            type="button"
                             onClick={onFilterToggle}
                             className={`relative cursor-pointer rounded-full p-2 shadow-xs transition hover:shadow-md ${
                                 isFilterOpen
@@ -213,6 +215,7 @@ const Search: React.FC<SearchProps> = ({
                 ) : (
                     // Desktop button mode - only search button
                     <button
+                        type="button"
                         onClick={handleSearchToggle}
                         className="bg-green-450 dark:text-dark relative flex min-h-[40px] min-w-[40px] cursor-pointer items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
                         aria-label={t('search_recipes') || 'Search recipes'}
@@ -234,6 +237,7 @@ const Search: React.FC<SearchProps> = ({
                 // Mobile search mode - header transformation
                 <div className="animate-mobile-search-in flex w-full items-center gap-3">
                     <button
+                        type="button"
                         onClick={handleSearchToggle}
                         className="flex min-h-[40px] min-w-[40px] flex-shrink-0 cursor-pointer items-center justify-center rounded-full p-2 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
                         aria-label={t('back') || 'Back'}
@@ -274,6 +278,7 @@ const Search: React.FC<SearchProps> = ({
                     <PeriodFilter />
 
                     <button
+                        type="button"
                         onClick={onFilterToggle}
                         className={`relative cursor-pointer rounded-full p-2 shadow-xs transition hover:shadow-md ${
                             isFilterOpen
@@ -297,6 +302,7 @@ const Search: React.FC<SearchProps> = ({
                 <div className="flex w-full flex-row items-center gap-1 md:gap-3">
                     <Logo />
                     <button
+                        type="button"
                         onClick={handleSearchToggle}
                         className="bg-green-450 dark:text-dark relative flex min-h-[40px] min-w-[40px] cursor-pointer items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
                         aria-label={

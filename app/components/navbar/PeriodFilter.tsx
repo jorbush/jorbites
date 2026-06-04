@@ -123,6 +123,7 @@ const PeriodFilter: React.FC = () => {
             data-testid="period-filter-container"
         >
             <button
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={`relative cursor-pointer rounded-full p-2 shadow-xs transition hover:shadow-md ${
                     hasDateFilter
@@ -154,6 +155,7 @@ const PeriodFilter: React.FC = () => {
                             </h3>
                             {hasDateFilter && (
                                 <button
+                                    type="button"
                                     onClick={handleClear}
                                     className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
                                     aria-label={

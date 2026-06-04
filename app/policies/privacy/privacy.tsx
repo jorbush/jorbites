@@ -20,6 +20,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ policy }) => {
                 <div className="mx-auto max-w-[700px] gap-10 px-1 py-0 md:px-4 md:py-6">
                     <div className="mb-5 flex items-center justify-between">
                         <button
+                            type="button"
                             className="flex items-center space-x-2 text-neutral-600 focus:outline-hidden dark:text-neutral-100"
                             onClick={() => router.back()}
                         >

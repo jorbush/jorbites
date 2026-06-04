@@ -201,6 +201,7 @@ export function TranslateableContent({
                     />
                 ) : (
                     <button
+                        type="button"
                         onClick={handleShowOriginal}
                         className="inline-flex cursor-pointer items-center gap-1 text-xs text-neutral-600 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
                     >

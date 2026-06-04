@@ -95,7 +95,8 @@ const RecipeCard = memo(function RecipeCard({
                         onAction &&
                         ActionIcon && (
                             <button
-                                disabled={disabled}
+                                type="button"
+                            disabled={disabled}
                                 onClick={handleCancel}
                                 className="absolute top-3 left-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/80 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800/80 dark:hover:bg-neutral-800"
                                 title={actionLabel}

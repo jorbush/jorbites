@@ -37,6 +37,7 @@ const Tabs: React.FC<TabsProps> = ({
             {tabs.map((tab) => (
                 <button
                     key={tab.id}
+                    type="button"
                     className={`flex flex-1 items-center justify-center ${
                         responsiveLabels
                             ? 'gap-1 px-1 md:gap-2 md:px-4'

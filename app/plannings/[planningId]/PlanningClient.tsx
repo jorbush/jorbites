@@ -324,6 +324,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                         {/* Title & Back Button Row */}
                         <div className="flex w-full flex-row items-center gap-2.5">
                             <button
+                                type="button"
                                 onClick={() => router.push('/plannings')}
                                 className="flex shrink-0 cursor-pointer items-center justify-center rounded-full p-2 text-neutral-600 transition hover:bg-neutral-100 focus:outline-hidden dark:text-neutral-400 dark:hover:bg-neutral-800"
                                 aria-label="Back"
@@ -364,6 +365,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
 
                                 {isOwner && (
                                     <button
+                                        type="button"
                                         onClick={togglePrivacy}
                                         disabled={isSaving}
                                         className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
@@ -395,6 +397,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                     {/* Actions */}
                     <div className="flex shrink-0 flex-wrap items-center gap-2 pl-12 md:pl-0">
                         <button
+                            type="button"
                             onClick={() => setIsShoppingListOpen(true)}
                             className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white/60 p-2.5 text-sm font-semibold transition hover:bg-neutral-100 md:px-4 md:py-2.5 dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:bg-neutral-950"
                             data-testid="shopping-list-button"
@@ -407,6 +410,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                         </button>
 
                         <button
+                            type="button"
                             onClick={() => setIsCalendarExportOpen(true)}
                             className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white/60 p-2.5 text-sm font-semibold transition hover:bg-neutral-100 md:px-4 md:py-2.5 dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:bg-neutral-950"
                             data-testid="export-calendar-button"
@@ -420,6 +424,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
 
                         {!isPrivate && (
                             <button
+                                type="button"
                                 onClick={() => share({ title: editedName })}
                                 className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white/60 p-2.5 text-sm font-semibold transition hover:bg-neutral-100 md:px-4 md:py-2.5 dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:bg-neutral-950"
                                 data-testid="share-button"
@@ -434,6 +439,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
 
                         {!isOwner && (
                             <button
+                                type="button"
                                 onClick={handleSaveToggle}
                                 disabled={isSaving}
                                 className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white/60 p-2.5 text-sm font-semibold transition hover:bg-neutral-100 md:px-4 md:py-2.5 dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:bg-neutral-950"
@@ -466,6 +472,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
 
                         {isOwner && (
                             <button
+                                type="button"
                                 onClick={() => setIsPlanningModalOpen(true)}
                                 className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl bg-neutral-900 p-2.5 text-sm font-semibold text-white transition hover:opacity-90 md:px-4 md:py-2.5 dark:bg-white dark:text-neutral-900"
                                 data-testid="edit-plan-button"
@@ -565,6 +572,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                                 {/* Remove button in Edit mode */}
                                                                 {isOwner && (
                                                                     <button
+                                                                        type="button"
                                                                         onClick={() =>
                                                                             handleRemoveRecipe(
                                                                                 meal.id
@@ -594,6 +602,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                         slotMeals.length <
                                                             MAX_RECIPES_PER_MEAL && (
                                                             <button
+                                                                type="button"
                                                                 onClick={() =>
                                                                     handleAddRecipeClick(
                                                                         day,

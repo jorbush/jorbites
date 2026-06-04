@@ -110,6 +110,7 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
                             "The blog post you're looking for could not be found."}
                     </p>
                     <button
+                        type="button"
                         onClick={() => router.push('/blog')}
                         className="bg-green-450 cursor-pointer rounded-lg px-4 py-2 text-black"
                     >
