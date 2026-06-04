@@ -220,7 +220,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                                                 key={recipe.id}
                                                 src={recipe.imageSrc}
                                                 alt={recipe.title}
-                                                className="inline-block h-8 w-8 rounded-full object-cover ring-2 ring-white transition-all group-hover:scale-105 dark:ring-neutral-900"
+                                                className="inline-block size-8 rounded-full object-cover ring-2 ring-white transition-all group-hover:scale-105 dark:ring-neutral-900"
                                                 title={recipe.title}
                                             />
                                         ))}

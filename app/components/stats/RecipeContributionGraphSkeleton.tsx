@@ -61,7 +61,7 @@ const RecipeContributionGraphSkeleton = () => {
                                                     (_, dayIndex) => (
                                                         <div
                                                             key={dayIndex}
-                                                            className="h-2.5 w-2.5 animate-pulse rounded-sm bg-neutral-200 sm:h-3 sm:w-3 dark:bg-neutral-700"
+                                                            className="size-2.5 animate-pulse rounded-sm bg-neutral-200 sm:size-3 dark:bg-neutral-700"
                                                         />
                                                     )
                                                 )}
@@ -79,7 +79,7 @@ const RecipeContributionGraphSkeleton = () => {
                                         (_, index) => (
                                             <div
                                                 key={index}
-                                                className="h-2.5 w-2.5 animate-pulse rounded-sm bg-neutral-200 sm:h-3 sm:w-3 dark:bg-neutral-700"
+                                                className="size-2.5 animate-pulse rounded-sm bg-neutral-200 sm:size-3 dark:bg-neutral-700"
                                             />
                                         )
                                     )}

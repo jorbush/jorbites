@@ -62,7 +62,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                         )}
                         {value && (
                             <>
-                                <div className="absolute inset-0 h-full w-full overflow-hidden rounded-lg">
+                                <div className="absolute inset-0 size-full overflow-hidden rounded-lg">
                                     <CustomProxyImage
                                         fill
                                         src={value}

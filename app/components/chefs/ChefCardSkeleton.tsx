@@ -11,7 +11,7 @@ const ChefCardSkeleton = () => {
             {/* Avatar overlapping the header */}
             <div className="relative -mt-12 flex flex-col items-center px-4 pb-4">
                 <div className="mb-3 rounded-full border-4 border-white bg-neutral-300 dark:border-neutral-800 dark:bg-neutral-600">
-                    <div className="h-24 w-24 rounded-full" />
+                    <div className="size-24 rounded-full" />
                 </div>
 
                 {/* Chef Name */}
@@ -27,21 +27,21 @@ const ChefCardSkeleton = () => {
                 <div className="mt-2 grid w-full grid-cols-3 gap-3 border-t border-neutral-200 pt-4 dark:border-neutral-700">
                     {/* Recipes */}
                     <div className="flex flex-col items-center">
-                        <div className="mb-1 h-5 w-5 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
+                        <div className="mb-1 size-5 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                         <div className="h-5 w-8 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                         <div className="mt-1 h-3 w-12 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                     </div>
 
                     {/* Likes */}
                     <div className="flex flex-col items-center">
-                        <div className="mb-1 h-5 w-5 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
+                        <div className="mb-1 size-5 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                         <div className="h-5 w-8 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                         <div className="mt-1 h-3 w-10 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                     </div>
 
                     {/* Badges */}
                     <div className="flex flex-col items-center">
-                        <div className="mb-1 h-5 w-5 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
+                        <div className="mb-1 size-5 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                         <div className="h-5 w-8 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                         <div className="mt-1 h-3 w-12 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                     </div>

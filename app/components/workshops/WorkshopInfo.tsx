@@ -264,7 +264,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                                     key={participant.id}
                                     className="flex items-center gap-2 text-sm"
                                 >
-                                    <div className="h-2 w-2 rounded-full bg-green-500" />
+                                    <div className="size-2 rounded-full bg-green-500" />
                                     <span>
                                         {t('joined_at')}:{' '}
                                         {new Date(

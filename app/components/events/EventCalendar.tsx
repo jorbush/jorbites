@@ -164,7 +164,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                                             className="cursor-pointer"
                                             prefetch={false}
                                         >
-                                            <div className="group border-green-450 relative h-6 w-6 overflow-hidden rounded-full border md:h-8 md:w-8">
+                                            <div className="group border-green-450 relative size-6 overflow-hidden rounded-full border md:size-8">
                                                 <Image
                                                     src={
                                                         event.frontmatter

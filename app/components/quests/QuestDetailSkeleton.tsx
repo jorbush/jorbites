@@ -13,8 +13,8 @@ const QuestDetailSkeleton = () => {
                 <div className="mb-4 flex items-center justify-between">
                     <div className="h-6 w-20 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
                     <div className="flex gap-2">
-                        <div className="h-10 w-10 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-800"></div>
-                        <div className="h-10 w-10 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-800"></div>
+                        <div className="size-10 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-800"></div>
+                        <div className="size-10 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-800"></div>
                     </div>
                 </div>
 
@@ -24,7 +24,7 @@ const QuestDetailSkeleton = () => {
 
                 <div className="flex items-center justify-between border-t border-neutral-200 pt-4 dark:border-neutral-800">
                     <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
+                        <div className="size-10 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
                         <div>
                             <div className="mb-2 h-4 w-24 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800"></div>
                             <div className="h-3 w-20 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800"></div>

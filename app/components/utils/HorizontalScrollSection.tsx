@@ -80,7 +80,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                             className="absolute top-1/2 left-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition-[opacity,background-color] duration-200 ease-in-out group-hover:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
                             aria-label="Scroll left"
                         >
-                            <FiChevronLeft className="h-6 w-6 text-neutral-700 dark:text-neutral-200" />
+                            <FiChevronLeft className="size-6 text-neutral-700 dark:text-neutral-200" />
                         </button>
                     )}
 
@@ -107,7 +107,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                             className="absolute top-1/2 right-0 z-10 hidden -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 shadow-lg transition-[opacity,background-color] duration-200 ease-in-out group-hover:block hover:bg-white dark:bg-neutral-800/90 dark:hover:bg-neutral-800"
                             aria-label="Scroll right"
                         >
-                            <FiChevronRight className="h-6 w-6 text-neutral-700 dark:text-neutral-200" />
+                            <FiChevronRight className="size-6 text-neutral-700 dark:text-neutral-200" />
                         </button>
                     )}
                 </div>

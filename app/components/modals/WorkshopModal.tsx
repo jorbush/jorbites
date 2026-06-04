@@ -317,7 +317,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                     type="checkbox"
                     {...register('isRecurrent')}
                     disabled={isLoading}
-                    className="accent-green-450 h-5 w-5"
+                    className="accent-green-450 size-5"
                 />
                 <label
                     htmlFor="isRecurrent"
@@ -406,7 +406,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                         type="checkbox"
                         {...register('isPrivate')}
                         disabled={isLoading}
-                        className="accent-green-450 h-5 w-5"
+                        className="accent-green-450 size-5"
                     />
                     <label
                         htmlFor="isPrivate"

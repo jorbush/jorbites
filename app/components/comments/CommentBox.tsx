@@ -101,7 +101,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                             onChange={setRating}
                             size={18}
                         />
-                        <div className="flex h-6 w-6 shrink-0 items-center justify-center">
+                        <div className="flex size-6 shrink-0 items-center justify-center">
                             {rating !== null && (
                                 <button
                                     type="button"

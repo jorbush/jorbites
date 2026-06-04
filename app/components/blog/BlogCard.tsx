@@ -60,7 +60,7 @@ export const BlogCardSkeleton = () => {
                 <div className="h-3 w-2/3 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
             </div>
             <div className="flex justify-end">
-                <div className="h-4 w-4 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="size-4 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
             </div>
         </div>
     );

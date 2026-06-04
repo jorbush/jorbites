@@ -7,7 +7,7 @@ const PolicySkeleton = () => {
                 <div className="mx-auto max-w-[700px] gap-10 px-1 py-0 md:px-4 md:py-6">
                     {/* Header with back button and title */}
                     <div className="mb-5 flex items-center justify-between">
-                        <div className="h-6 w-6 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                        <div className="size-6 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                         <div className="h-10 w-48 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                         <div className="w-8"></div>
                     </div>
@@ -44,7 +44,7 @@ const PolicySkeleton = () => {
                                         key={item}
                                         className="flex"
                                     >
-                                        <div className="mt-2 mr-2 h-2 w-2 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                                        <div className="mt-2 mr-2 size-2 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                                         <div className="h-4 w-5/6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                                     </div>
                                 ))}

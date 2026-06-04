@@ -18,7 +18,7 @@ export const EventCardSkeleton = () => {
             <div className="p-4">
                 <div className="h-6 w-3/4 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                 <div className="mt-2 flex items-center">
-                    <div className="mr-2 h-4 w-4 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="mr-2 size-4 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                     <div className="h-4 w-1/2 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                 </div>
             </div>

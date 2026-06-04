@@ -141,7 +141,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
                                   ) : searchType === 'recipes' ? (
                                       <Fragment>
                                           <div className="flex items-center gap-3">
-                                              <div className="relative h-10 w-10 overflow-hidden rounded-md">
+                                              <div className="relative size-10 overflow-hidden rounded-md">
                                                   <CustomProxyImage
                                                       src={
                                                           result.imageSrc ||

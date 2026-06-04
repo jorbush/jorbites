@@ -225,7 +225,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                                 {week.map((day, dayIndex) => (
                                                     <div
                                                         key={`${weekIndex}-${dayIndex}`}
-                                                        className={`h-2.5 w-2.5 rounded-sm transition-colors sm:h-3 sm:w-3 ${getDayColor(
+                                                        className={`size-2.5 rounded-sm transition-colors sm:size-3 ${getDayColor(
                                                             day.level
                                                         )} ${day.count > 0 ? 'hover:ring-green-450/50 cursor-pointer hover:ring-2' : ''}`}
                                                         onMouseEnter={(e) =>
@@ -279,11 +279,11 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                             <div className="mt-4 flex flex-wrap items-center justify-center gap-2 px-2 text-[10px] text-neutral-500 sm:gap-4 sm:text-xs dark:text-neutral-400">
                                 <span>{t('less')}</span>
                                 <div className="flex gap-0.5 sm:gap-1">
-                                    <div className="h-2.5 w-2.5 rounded-sm bg-neutral-100 sm:h-3 sm:w-3 dark:bg-neutral-800" />
-                                    <div className="bg-green-450/30 dark:bg-green-450/20 h-2.5 w-2.5 rounded-sm sm:h-3 sm:w-3" />
-                                    <div className="bg-green-450/50 dark:bg-green-450/40 h-2.5 w-2.5 rounded-sm sm:h-3 sm:w-3" />
-                                    <div className="bg-green-450/70 dark:bg-green-450/60 h-2.5 w-2.5 rounded-sm sm:h-3 sm:w-3" />
-                                    <div className="bg-green-450 dark:bg-green-450 h-2.5 w-2.5 rounded-sm sm:h-3 sm:w-3" />
+                                    <div className="size-2.5 rounded-sm bg-neutral-100 sm:size-3 dark:bg-neutral-800" />
+                                    <div className="bg-green-450/30 dark:bg-green-450/20 size-2.5 rounded-sm sm:size-3" />
+                                    <div className="bg-green-450/50 dark:bg-green-450/40 size-2.5 rounded-sm sm:size-3" />
+                                    <div className="bg-green-450/70 dark:bg-green-450/60 size-2.5 rounded-sm sm:size-3" />
+                                    <div className="bg-green-450 dark:bg-green-450 size-2.5 rounded-sm sm:size-3" />
                                 </div>
                                 <span>{t('more')}</span>
                             </div>

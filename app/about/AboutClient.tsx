@@ -278,14 +278,14 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
-                                            <FaGithub className="h-5 w-5" />
+                                            <FaGithub className="size-5" />
                                             <span>{t('github')}</span>
                                         </a>
                                         <a
                                             href={`mailto:${CONTACT_EMAIL}`}
                                             className="flex items-center space-x-2 text-neutral-600 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
                                         >
-                                            <FaEnvelope className="h-5 w-5" />
+                                            <FaEnvelope className="size-5" />
                                             <span>{t('contact')}</span>
                                         </a>
                                         <a
@@ -294,7 +294,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
-                                            <RiGitRepositoryLine className="h-5 w-5" />
+                                            <RiGitRepositoryLine className="size-5" />
                                             <span>{t('repository')}</span>
                                         </a>
                                         <a
@@ -303,7 +303,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
-                                            <FaHeart className="h-4 w-4" />
+                                            <FaHeart className="size-4" />
                                             <span>
                                                 {t('sponsor_on_github')}
                                             </span>

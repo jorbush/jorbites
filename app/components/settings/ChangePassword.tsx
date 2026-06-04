@@ -130,7 +130,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                     {!isEditing ? (
                         <FiEdit3
                             data-testid="edit-password-icon"
-                            className="h-4 w-4 cursor-pointer text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+                            className="size-4 cursor-pointer text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
                             onClick={handleEditClick}
                         />
                     ) : (
@@ -297,7 +297,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                                 className="bg-green-450 flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white transition-colors hover:opacity-80 disabled:opacity-50 dark:text-black dark:hover:opacity-100"
                                 data-testid="save-password-button"
                             >
-                                <FaRegSave className="h-4 w-4" />
+                                <FaRegSave className="size-4" />
                                 {isLoading
                                     ? t('saving') || 'Saving...'
                                     : t('save_password') || 'Save Password'}

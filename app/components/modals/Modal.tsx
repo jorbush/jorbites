@@ -108,7 +108,7 @@ const Modal: React.FC<ModalProps> = ({
                     <div
                         className={`translate h-full duration-300 ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'} `}
                     >
-                        <div className="translate dark:bg-dark relative flex h-full w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto">
+                        <div className="translate dark:bg-dark relative flex size-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto">
                             <div className="relative flex flex-shrink-0 items-center justify-center rounded-t border-b-[1px] px-6 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-6 md:pt-6">
                                 <button
                                     type="button"

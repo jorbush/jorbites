@@ -75,7 +75,7 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                                 <div className="text-sm text-neutral-500">
                                     {list.recipeIds.length} {t('recipes')}
                                 </div>
-                                <div className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+                                <div className="size-1 rounded-full bg-neutral-300 dark:bg-neutral-600" />
                                 <div className="text-sm text-neutral-500">
                                     {formatDate(list.createdAt, i18n.language)}
                                 </div>

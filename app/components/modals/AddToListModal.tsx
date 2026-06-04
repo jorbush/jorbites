@@ -145,7 +145,7 @@ const AddToListModal = () => {
                                         : list.name}
                                 </div>
                                 {isSelected && (
-                                    <div className="relative h-5 w-5">
+                                    <div className="relative size-5">
                                         <FaCheckCircle
                                             size={20}
                                             className="absolute inset-0 text-green-500 transition-opacity duration-200"
@@ -179,7 +179,7 @@ const AddToListModal = () => {
                             id="isPrivate"
                             type="checkbox"
                             {...register('isPrivate')}
-                            className="h-4 w-4 rounded border-neutral-300 bg-neutral-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-neutral-600 dark:bg-neutral-700 dark:ring-offset-neutral-800 dark:focus:ring-blue-600"
+                            className="size-4 rounded border-neutral-300 bg-neutral-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-neutral-600 dark:bg-neutral-700 dark:ring-offset-neutral-800 dark:focus:ring-blue-600"
                         />
                         <label
                             htmlFor="isPrivate"

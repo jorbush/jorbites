@@ -51,7 +51,7 @@ const Tooltip: React.FC<TooltipProps> = ({
                 >
                     {text}
                     <div
-                        className={`absolute h-0 w-0 border-4 border-transparent ${
+                        className={`absolute size-0 border-4 border-transparent ${
                             position === 'top'
                                 ? `bottom-[-8px] left-1/2 -translate-x-1/2 border-t-white dark:border-t-neutral-950`
                                 : position === 'right'
