@@ -169,6 +169,7 @@ export function TranslateButton({
 
     return (
         <button
+            type="button"
             onClick={handleTranslate}
             disabled={isTranslating}
             className={`inline-flex cursor-pointer items-center gap-1 text-sm text-neutral-600 hover:text-neutral-800 disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-400 dark:hover:text-neutral-200 ${className}`}

@@ -159,6 +159,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
             <div className="mx-auto max-w-7xl p-4 sm:px-6 lg:px-8">
                 {/* Back Button */}
                 <button
+                    type="button"
                     onClick={() => router.back()}
                     className="mb-6 flex items-center gap-2 text-neutral-600 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
                 >
@@ -182,6 +183,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                         </div>
                         <div className="flex gap-2">
                             <button
+                                type="button"
                                 onClick={() => share({ title: quest.title })}
                                 aria-label={t('share_quest') || 'Share Quest'}
                                 className="cursor-pointer rounded-lg border border-neutral-300 px-4 py-2 text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
@@ -192,6 +194,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                             {isOwner && (
                                 <>
                                     <button
+                                        type="button"
                                         onClick={handleEdit}
                                         aria-label={
                                             t('edit_quest') || 'Edit Quest'
@@ -202,6 +205,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                                         <FiEdit />
                                     </button>
                                     <button
+                                        type="button"
                                         onClick={handleDeleteClick}
                                         disabled={isDeleting}
                                         aria-label={

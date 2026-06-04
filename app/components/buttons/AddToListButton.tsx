@@ -29,6 +29,7 @@ const AddToListButton: React.FC<AddToListButtonProps> = ({
 
     return (
         <button
+            type="button"
             onClick={handleButtonClick}
             className="relative cursor-pointer transition hover:opacity-80"
             data-cy="add-to-list-button"

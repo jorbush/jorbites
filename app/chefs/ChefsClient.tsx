@@ -162,6 +162,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                             )}
                         </div>
                         <button
+                            type="button"
                             onClick={handleSearchSubmit}
                             className="rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
                             data-cy="chef-search-button"
@@ -177,6 +178,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                             {Object.values(ChefOrderByType).map((order) => (
                                 <button
                                     key={order}
+                                    type="button"
                                     onClick={() => handleOrderByChange(order)}
                                     className={`flex-shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition ${
                                         orderBy === order

@@ -130,6 +130,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                             />
                         )}
                         <button
+                            type="button"
                             onClick={handleCancelEdit}
                             className="text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
                             disabled={isLoading}

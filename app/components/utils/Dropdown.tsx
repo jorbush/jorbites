@@ -140,6 +140,7 @@ function Dropdown<T extends string>({
         >
             <button
                 ref={buttonRef}
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 onKeyDown={handleKeyDown}
                 className={

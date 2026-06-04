@@ -70,6 +70,7 @@ const EventDetailClient: React.FC<EventDetailClientProps> = ({ slug }) => {
                             "The event you're looking for could not be found."}
                     </p>
                     <button
+                        type="button"
                         onClick={() => router.push('/events')}
                         className="bg-green-450 cursor-pointer rounded-lg px-4 py-2 text-black"
                     >

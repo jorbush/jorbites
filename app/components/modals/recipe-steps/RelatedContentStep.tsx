@@ -235,6 +235,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                         {user.name}
                                     </span>
                                     <button
+                                        type="button"
                                         onClick={() => onRemoveCoCook(user.id)}
                                         className="ml-1 text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
                                     >
@@ -268,6 +269,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                     </p>
                                 </div>
                                 <button
+                                    type="button"
                                     onClick={onRemoveQuest}
                                     className="ml-2 text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
                                 >
@@ -320,6 +322,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                             </div>
                                         </div>
                                         <button
+                                            type="button"
                                             onClick={() =>
                                                 onRemoveLinkedRecipe(recipe.id)
                                             }

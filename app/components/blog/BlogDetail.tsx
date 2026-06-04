@@ -110,6 +110,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
         <div className="mx-auto max-w-[800px] px-4 py-6 dark:text-neutral-100">
             <div className="mb-6 flex items-baseline justify-between">
                 <button
+                    type="button"
                     className="mr-4 flex translate-y-3 cursor-pointer items-center space-x-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
                     onClick={() => router.back()}
                     aria-label={t('back') as string}
@@ -121,6 +122,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                     center
                 />
                 <button
+                    type="button"
                     className="ml-4 flex translate-y-3 cursor-pointer items-center space-x-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
                     onClick={() => share({ title: blog.frontmatter.title })}
                     aria-label="Share"

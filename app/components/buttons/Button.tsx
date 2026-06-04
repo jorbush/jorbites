@@ -13,6 +13,7 @@ interface ButtonProps {
     deleteButton?: boolean;
     rose?: boolean;
     dataCy?: string;
+    type?: 'button' | 'submit' | 'reset';
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -26,6 +27,7 @@ const Button: React.FC<ButtonProps> = ({
     deleteButton,
     rose,
     dataCy,
+    type = 'button',
 }) => {
     const [isDisabled, setIsDisabled] = useState(false);
     const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -73,6 +75,7 @@ const Button: React.FC<ButtonProps> = ({
 
     return (
         <button
+            type={type}
             disabled={disabled || isDisabled}
             onClick={handleButtonClick}
             className={`${getBaseClasses()} ${getRoseButtonClasses()}`}

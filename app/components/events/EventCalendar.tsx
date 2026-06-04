@@ -92,6 +92,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                 </h2>
                 <div className="flex gap-2">
                     <button
+                        type="button"
                         onClick={prevMonth}
                         className="cursor-pointer rounded-full p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700"
                         aria-label="Previous Month"
@@ -102,6 +103,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                         />
                     </button>
                     <button
+                        type="button"
                         onClick={nextMonth}
                         className="cursor-pointer rounded-full p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700"
                         aria-label="Next Month"
