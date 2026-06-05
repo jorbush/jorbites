@@ -33,6 +33,7 @@ const AddToListButton: React.FC<AddToListButtonProps> = ({
             className="relative cursor-pointer transition hover:opacity-80"
             data-cy="add-to-list-button"
             title={t('add_to_list') || 'Add to list'}
+            suppressHydrationWarning
         >
             <PiListPlusBold
                 size={28}
