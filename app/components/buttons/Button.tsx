@@ -81,6 +81,7 @@ const Button: React.FC<ButtonProps> = ({
             className={`${getBaseClasses()} ${getRoseButtonClasses()}`}
             data-cy={dataCy}
             data-testid={dataCy || 'button-component'}
+            suppressHydrationWarning
         >
             {Icon && (
                 <Icon
