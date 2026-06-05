@@ -127,7 +127,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                 <div>
                     <div className="flex items-center gap-3">
                         <FcTodoList className="mb-2 size-10" />
-                        <h1 className="pb-2 text-3xl font-bold text-neutral-900 dark:text-white">
+                        <h1 className="pb-2 text-3xl font-semibold text-neutral-900 dark:text-white">
                             {t('quests') || 'Recipe Quests'}
                         </h1>
                     </div>

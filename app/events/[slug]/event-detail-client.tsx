@@ -62,7 +62,7 @@ const EventDetailClient: React.FC<EventDetailClientProps> = ({ slug }) => {
                 <EventDetailSkeleton />
             ) : error ? (
                 <div className="py-10 text-center">
-                    <h2 className="mb-4 text-2xl font-bold text-red-500 dark:text-red-400">
+                    <h2 className="mb-4 text-2xl font-semibold text-red-500 dark:text-red-400">
                         {error}
                     </h2>
                     <p className="mb-6 text-neutral-600 dark:text-neutral-400">

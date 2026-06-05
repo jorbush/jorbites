@@ -92,7 +92,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
         <Container>
             <div className="px-4 py-12 md:px-8">
                 <div className="mb-12 text-center">
-                    <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-neutral-900 md:text-5xl dark:text-white">
+                    <h1 className="mb-4 text-4xl font-semibold tracking-tight text-neutral-900 md:text-5xl dark:text-white">
                         {t('blog')}
                     </h1>
                     <p className="mx-auto max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
@@ -104,7 +104,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                     {/* Main Content */}
                     <div className="lg:col-span-2">
                         <div className="mb-8 flex items-center justify-between">
-                            <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                            <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">
                                 {currentCategory === 'releases'
                                     ? t(
                                           'jorbites_releases',
@@ -168,7 +168,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                         {/* Releases Section */}
                         <div>
                             <div className="mb-6 flex items-center justify-between">
-                                <h3 className="flex items-center text-xl font-bold text-neutral-900 dark:text-white">
+                                <h3 className="flex items-center text-xl font-semibold text-neutral-900 dark:text-white">
                                     <span className="text-primary-500 mr-2">
                                         ⚡
                                     </span>

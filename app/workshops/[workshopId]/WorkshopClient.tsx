@@ -41,7 +41,7 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
             <Container>
                 <div className="mx-auto flex max-w-screen-lg flex-col gap-6 pt-24">
                     <div className="rounded-lg bg-yellow-100 p-6 text-center dark:bg-yellow-900/30">
-                        <h2 className="mb-2 text-2xl font-bold dark:text-neutral-100">
+                        <h2 className="mb-2 text-2xl font-semibold dark:text-neutral-100">
                             {t('private_workshop_title')}
                         </h2>
                         <p className="text-neutral-600 dark:text-neutral-400">

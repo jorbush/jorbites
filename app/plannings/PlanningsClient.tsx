@@ -176,7 +176,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                         >
                             <div className="flex flex-col gap-2">
                                 <div className="flex flex-row items-center justify-between gap-2">
-                                    <div className="truncate text-xl font-bold text-neutral-900 group-hover:text-black dark:text-neutral-100 dark:group-hover:text-white">
+                                    <div className="truncate text-xl font-semibold text-neutral-900 group-hover:text-black dark:text-neutral-100 dark:group-hover:text-white">
                                         {plan.name}
                                     </div>
                                     {showDelete && (
@@ -286,7 +286,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                             <FcPlanner size={40} />
                         </div>
                         <div className="flex flex-col">
-                            <h1 className="text-3xl font-black tracking-tight">
+                            <h1 className="text-3xl font-semibold tracking-tight">
                                 {t('meal_planner')}
                             </h1>
                             <p className="text-sm font-light text-neutral-500 dark:text-neutral-400">
@@ -299,7 +299,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                     <button
                         type="button"
                         onClick={handleCreateClick}
-                        className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl bg-neutral-900 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-neutral-800 active:scale-[0.98] dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+                        className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl bg-neutral-900 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-neutral-800 active:scale-[0.98] dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
                         data-testid="create-meal-plan-button"
                     >
                         <BiPlus size={20} />
@@ -313,7 +313,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                         <button
                             type="button"
                             onClick={() => setActiveTab('my')}
-                            className={`cursor-pointer border-b-2 px-6 py-3.5 text-sm font-bold transition ${
+                            className={`cursor-pointer border-b-2 px-6 py-3.5 text-sm font-semibold transition ${
                                 activeTab === 'my'
                                     ? 'border-neutral-900 text-neutral-900 dark:border-neutral-100 dark:text-white'
                                     : 'border-transparent text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300'
@@ -326,7 +326,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                         <button
                             type="button"
                             onClick={() => setActiveTab('saved')}
-                            className={`cursor-pointer border-b-2 px-6 py-3.5 text-sm font-bold transition ${
+                            className={`cursor-pointer border-b-2 px-6 py-3.5 text-sm font-semibold transition ${
                                 activeTab === 'saved'
                                     ? 'border-neutral-900 text-neutral-900 dark:border-neutral-100 dark:text-white'
                                     : 'border-transparent text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300'
@@ -338,7 +338,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                     <button
                         type="button"
                         onClick={() => setActiveTab('community')}
-                        className={`cursor-pointer border-b-2 px-6 py-3.5 text-sm font-bold transition ${
+                        className={`cursor-pointer border-b-2 px-6 py-3.5 text-sm font-semibold transition ${
                             activeTab === 'community'
                                 ? 'border-neutral-900 text-neutral-900 dark:border-neutral-100 dark:text-white'
                                 : 'border-transparent text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300'

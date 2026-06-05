@@ -37,7 +37,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                 <div className="space-y-8">
                     {/* What is Jorbites Section */}
                     <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
-                        <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+                        <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
                             {t('what_is_jorbites')}
                         </h2>
                         <p className="mb-4 text-neutral-600 dark:text-neutral-400">
@@ -50,7 +50,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
 
                     {/* Why Jorbites Section */}
                     <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
-                        <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+                        <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
                             {t('why_jorbites')}
                         </h2>
                         <p className="mb-4 text-neutral-600 dark:text-neutral-400">
@@ -69,7 +69,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
 
                     {/* Features Section */}
                     <section>
-                        <h2 className="mb-6 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+                        <h2 className="mb-6 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
                             {t('features')}
                         </h2>
                         <div className="grid gap-4 md:grid-cols-2">
@@ -110,7 +110,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
 
                     {/* Architecture Section */}
                     <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
-                        <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+                        <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
                             {t('architecture')}
                         </h2>
                         <p className="mb-4 text-neutral-600 dark:text-neutral-400">
@@ -192,7 +192,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
 
                     {/* Documentation Section */}
                     <section>
-                        <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+                        <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
                             {t('documentation')}
                         </h2>
                         <div className="grid gap-3 md:grid-cols-2">
@@ -253,7 +253,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
 
                     {/* The Project Section */}
                     <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
-                        <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+                        <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
                             {t('the_project')}
                         </h2>
                         <div className="flex flex-col items-center space-y-4 md:flex-row md:items-start md:space-y-0 md:space-x-6">
@@ -316,7 +316,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
 
                     {/* Get Started Section */}
                     <section className="text-center">
-                        <h2 className="mb-4 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+                        <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
                             {t('get_started')}
                         </h2>
                         <p className="mb-6 text-neutral-600 dark:text-neutral-400">

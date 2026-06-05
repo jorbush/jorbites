@@ -58,7 +58,7 @@ describe('<SectionHeader />', () => {
         const titleElement = container.querySelector('h1');
         expect(titleElement).toBeDefined();
         expect(titleElement?.className).toContain('text-3xl');
-        expect(titleElement?.className).toContain('font-bold');
+        expect(titleElement?.className).toContain('font-semibold');
         expect(titleElement?.className).toContain('dark:text-neutral-100');
     });
 

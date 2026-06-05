@@ -45,7 +45,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                             className="text-green-450"
                             size={22}
                         />
-                        <h2 className="text-xl font-bold dark:text-neutral-100">
+                        <h2 className="text-xl font-semibold dark:text-neutral-100">
                             {t('pinned_recipes')}
                         </h2>
                     </div>

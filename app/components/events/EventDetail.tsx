@@ -36,19 +36,19 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
     const markdownComponents: Components = {
         h1: (props) => (
             <h1
-                className="mt-6 mb-4 text-3xl font-bold"
+                className="mt-6 mb-4 text-3xl font-semibold"
                 {...props}
             />
         ),
         h2: (props) => (
             <h2
-                className="mt-5 mb-3 text-2xl font-bold"
+                className="mt-5 mb-3 text-2xl font-semibold"
                 {...props}
             />
         ),
         h3: (props) => (
             <h3
-                className="mt-4 mb-2 text-xl font-bold"
+                className="mt-4 mb-2 text-xl font-semibold"
                 {...props}
             />
         ),
@@ -85,7 +85,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
         ),
         strong: (props) => (
             <strong
-                className="font-bold"
+                className="font-semibold"
                 {...props}
             />
         ),
