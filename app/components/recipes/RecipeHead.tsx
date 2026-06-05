@@ -155,6 +155,15 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                 className="absolute top-1/2 left-3 -translate-y-1/2 transform rounded-full bg-white/90 p-2 shadow-lg transition-colors hover:bg-white"
                                 style={{ pointerEvents: 'auto' }}
                                 onClick={goToPreviousImage}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        goToPreviousImage();
+                                    }
+                                }}
+                                role="button"
+                                tabIndex={0}
+                                aria-label="Previous image"
                             >
                                 <FiChevronLeft className="cursor-pointer text-2xl text-neutral-800" />
                             </div>
@@ -168,6 +177,15 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                 className="absolute top-1/2 right-3 -translate-y-1/2 transform rounded-full bg-white/90 p-2 shadow-lg transition-colors hover:bg-white"
                                 style={{ pointerEvents: 'auto' }}
                                 onClick={goToNextImage}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        goToNextImage();
+                                    }
+                                }}
+                                role="button"
+                                tabIndex={0}
+                                aria-label="Next image"
                             >
                                 <FiChevronRight className="cursor-pointer text-2xl text-neutral-800" />
                             </div>

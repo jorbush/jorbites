@@ -65,6 +65,14 @@ const ForgotPasswordModal = () => {
             <div className="mt-6 text-center">
                 <span
                     onClick={onBackToLogin}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onBackToLogin();
+                        }
+                    }}
+                    role="button"
+                    tabIndex={0}
                     className="cursor-pointer text-neutral-800 hover:underline"
                 >
                     {t('back_to_login')}

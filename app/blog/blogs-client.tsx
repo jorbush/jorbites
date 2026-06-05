@@ -204,6 +204,19 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                             onClick={() =>
                                                 router.push(`/blog/${blog.id}`)
                                             }
+                                            onKeyDown={(e) => {
+                                                if (
+                                                    e.key === 'Enter' ||
+                                                    e.key === ' '
+                                                ) {
+                                                    e.preventDefault();
+                                                    router.push(
+                                                        `/blog/${blog.id}`
+                                                    );
+                                                }
+                                            }}
+                                            role="button"
+                                            tabIndex={0}
                                             className="group hover:border-primary-500 dark:hover:border-primary-500 cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-800"
                                         >
                                             <div className="mb-2 flex items-center justify-between">

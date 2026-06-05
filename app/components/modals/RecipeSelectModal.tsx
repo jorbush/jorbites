@@ -96,6 +96,15 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                                     onSelect(recipe);
                                     handleClose();
                                 }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        onSelect(recipe);
+                                        handleClose();
+                                    }
+                                }}
+                                role="button"
+                                tabIndex={0}
                                 className="dark:hover:bg-neutral-850 flex cursor-pointer flex-row items-center gap-3 rounded-xl p-2 transition hover:bg-neutral-100"
                             >
                                 {recipe.imageSrc && (

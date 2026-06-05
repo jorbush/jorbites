@@ -49,6 +49,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                                 open?.();
                             }
                         }}
+                        onKeyDown={(e) => {
+                            if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
+                                e.preventDefault();
+                                open?.();
+                            }
+                        }}
+                        role="button"
+                        tabIndex={disabled ? -1 : 0}
                         className={`relative flex h-50 cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-neutral-300 px-20 py-14 text-neutral-600 transition hover:opacity-70 ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
                     >
                         <TbPhotoPlus

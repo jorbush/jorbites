@@ -38,6 +38,19 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
     return (
         <div
             onClick={handleButtonClick}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleButtonClick(
+                        e as unknown as React.MouseEvent<
+                            HTMLDivElement,
+                            MouseEvent
+                        >
+                    );
+                }
+            }}
+            role="button"
+            tabIndex={0}
             className="relative cursor-pointer transition hover:opacity-80"
             data-cy="heart-button"
         >

@@ -50,6 +50,14 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
         <div
             className="dark:bg-dark cursor-pointer overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white transition hover:shadow-md dark:border-neutral-700 dark:text-neutral-100"
             onClick={handleClick}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleClick();
+                }
+            }}
+            role="button"
+            tabIndex={0}
         >
             <div className="relative h-40 w-full">
                 <Image

@@ -212,8 +212,8 @@ describe('<QuestDetailClient />', () => {
             />
         );
         const buttons = screen.getAllByRole('button');
-        // Should have back, share, edit, delete, and fulfill quest buttons
-        expect(buttons.length).toBeGreaterThanOrEqual(5);
+        // Should have back, share, edit, delete, fulfill quest buttons, and recipe card/heart button
+        expect(buttons.length).toBeGreaterThanOrEqual(7);
     });
 
     it('does not render edit and delete buttons for non-owner', () => {
@@ -225,8 +225,8 @@ describe('<QuestDetailClient />', () => {
             />
         );
         const buttons = screen.getAllByRole('button');
-        // Should have back, share, and fulfill quest buttons only
-        expect(buttons.length).toBeLessThan(5);
+        // Should have back, share, fulfill quest buttons, recipe card, and heart button
+        expect(buttons.length).toBe(5);
     });
 
     it('opens delete confirmation modal when delete button is clicked', () => {

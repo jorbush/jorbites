@@ -44,6 +44,14 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                     : ''
             }`}
             onClick={() => router.push('/profile/' + jorbiter.id)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    router.push('/profile/' + jorbiter.id);
+                }
+            }}
+            role="button"
+            tabIndex={0}
         >
             <div className="flex items-center justify-between">
                 {/* Left section - Avatar and Basic Info */}

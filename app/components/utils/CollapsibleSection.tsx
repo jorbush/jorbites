@@ -23,6 +23,15 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
             <div
                 className="flex cursor-pointer items-center justify-between p-4"
                 onClick={() => setIsOpen(!isOpen)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setIsOpen(!isOpen);
+                    }
+                }}
+                role="button"
+                aria-expanded={isOpen}
+                tabIndex={0}
                 data-cy={dataCy}
             >
                 <div>

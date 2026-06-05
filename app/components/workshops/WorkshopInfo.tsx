@@ -101,6 +101,14 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                                 onClick={() =>
                                     router.push('/profile/' + host.id)
                                 }
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        router.push('/profile/' + host.id);
+                                    }
+                                }}
+                                role="button"
+                                tabIndex={0}
                             >
                                 {getUserDisplayName(
                                     host,
@@ -238,6 +246,19 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                                         onClick={() =>
                                             router.push('/profile/' + user.id)
                                         }
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === 'Enter' ||
+                                                e.key === ' '
+                                            ) {
+                                                e.preventDefault();
+                                                router.push(
+                                                    '/profile/' + user.id
+                                                );
+                                            }
+                                        }}
+                                        role="button"
+                                        tabIndex={0}
                                     >
                                         <Avatar
                                             src={user.image}

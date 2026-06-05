@@ -31,6 +31,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
             onClick={handleClick}
             tabIndex={0}
             onKeyDown={handleKeyDown}
+            role="button"
         >
             <div className="flex h-full flex-col">
                 <div className="mb-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">

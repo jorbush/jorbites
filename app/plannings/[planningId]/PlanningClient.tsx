@@ -551,6 +551,21 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                                             `/recipes/${recipe.id}`
                                                                         )
                                                                     }
+                                                                    onKeyDown={(e) => {
+                                                                        if (
+                                                                            e.key ===
+                                                                                'Enter' ||
+                                                                            e.key ===
+                                                                                ' '
+                                                                        ) {
+                                                                            e.preventDefault();
+                                                                            router.push(
+                                                                                `/recipes/${recipe.id}`
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                    role="button"
+                                                                    tabIndex={0}
                                                                     className="flex-1 cursor-pointer truncate pr-6"
                                                                 >
                                                                     <div className="truncate text-xs font-semibold text-neutral-800 hover:underline dark:text-neutral-200">

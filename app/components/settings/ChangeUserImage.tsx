@@ -86,6 +86,17 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                                         <div
                                             className="cursor-pointer"
                                             onClick={() => open?.()}
+                                            onKeyDown={(e) => {
+                                                if (
+                                                    e.key === 'Enter' ||
+                                                    e.key === ' '
+                                                ) {
+                                                    e.preventDefault();
+                                                    open?.();
+                                                }
+                                            }}
+                                            role="button"
+                                            tabIndex={0}
                                         >
                                             <CustomProxyImage
                                                 src={

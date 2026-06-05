@@ -9,7 +9,16 @@ const Logo = () => {
     return (
         <div
             onClick={() => router.push('/')}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    router.push('/');
+                }
+            }}
+            role="button"
+            tabIndex={0}
             className="cursor-pointer md:block"
+            aria-label="Jorbites Home"
         >
             <Image
                 alt="Logo"

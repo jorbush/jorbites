@@ -118,6 +118,15 @@ const SearchInput: React.FC<SearchInputProps> = ({
                                   onClick={() =>
                                       onSelectResult && onSelectResult(result)
                                   }
+                                  onKeyDown={(e) => {
+                                      if (e.key === 'Enter' || e.key === ' ') {
+                                          e.preventDefault();
+                                          onSelectResult &&
+                                              onSelectResult(result);
+                                      }
+                                  }}
+                                  role="button"
+                                  tabIndex={0}
                               >
                                   {searchType === 'users' ? (
                                       <Fragment>

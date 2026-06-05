@@ -160,6 +160,14 @@ const AddToListModal = () => {
             {!isCreating ? (
                 <div
                     onClick={() => setIsCreating(true)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setIsCreating(true);
+                        }
+                    }}
+                    role="button"
+                    tabIndex={0}
                     className="mt-4 cursor-pointer text-center font-bold underline"
                 >
                     {t('create_new_list')}

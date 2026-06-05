@@ -56,6 +56,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                                 onClick={() =>
                                     router.push('/profile/' + user?.id)
                                 }
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        router.push('/profile/' + user?.id);
+                                    }
+                                }}
+                                role="button"
+                                tabIndex={0}
                             >
                                 {getUserDisplayName(
                                     user,

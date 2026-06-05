@@ -222,6 +222,19 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                     `/quests/${quest.id}`
                                                 )
                                             }
+                                            onKeyDown={(e) => {
+                                                if (
+                                                    e.key === 'Enter' ||
+                                                    e.key === ' '
+                                                ) {
+                                                    e.preventDefault();
+                                                    router.push(
+                                                        `/quests/${quest.id}`
+                                                    );
+                                                }
+                                            }}
+                                            role="button"
+                                            tabIndex={0}
                                             data-cy="quest-card-title"
                                         >
                                             {quest.title}

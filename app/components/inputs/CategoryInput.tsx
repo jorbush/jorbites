@@ -24,6 +24,14 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     return (
         <div
             onClick={() => onClick(label)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onClick(label);
+                }
+            }}
+            role="button"
+            tabIndex={0}
             className={`flex cursor-pointer flex-col gap-3 rounded-xl border-2 p-4 transition hover:border-black ${selected ? 'selected border-black dark:border-neutral-200' : 'border-neutral-200 dark:border-black'} `}
             data-cy={dataCy}
         >

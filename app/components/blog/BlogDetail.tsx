@@ -147,6 +147,14 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                                 onClick={() =>
                                     router.push('/profile/' + author.id)
                                 }
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        router.push('/profile/' + author.id);
+                                    }
+                                }}
+                                role="button"
+                                tabIndex={0}
                             >
                                 {author.name}
                             </div>

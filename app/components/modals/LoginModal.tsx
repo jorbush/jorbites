@@ -100,6 +100,14 @@ const LoginModal = () => {
             <div className="text-right">
                 <span
                     onClick={onForgotPassword}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onForgotPassword();
+                        }
+                    }}
+                    role="button"
+                    tabIndex={0}
                     className="cursor-pointer text-sm text-neutral-600 hover:underline"
                 >
                     {t('forgot_password') ||
@@ -129,6 +137,14 @@ const LoginModal = () => {
                     {t('first_jorbites')}
                     <span
                         onClick={onToggle}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                onToggle();
+                            }
+                        }}
+                        role="button"
+                        tabIndex={0}
                         className="cursor-pointer text-neutral-800 hover:underline"
                     >
                         {' '}

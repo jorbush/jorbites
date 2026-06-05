@@ -337,6 +337,14 @@ const MentionInput: React.FC<MentionInputProps> = ({
                                         : ''
                                 }`}
                                 onClick={() => selectUser(user)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        selectUser(user);
+                                    }
+                                }}
+                                role="button"
+                                tabIndex={0}
                                 style={{
                                     minHeight: isMobile() ? '48px' : 'auto',
                                 }}

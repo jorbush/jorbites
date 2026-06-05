@@ -110,6 +110,27 @@ const WeeklyShoppingListModal: React.FC<WeeklyShoppingListModalProps> = ({
                                                         })
                                                     );
                                                 }}
+                                                onKeyDown={(e) => {
+                                                    if (
+                                                        e.key === 'Enter' ||
+                                                        e.key === ' '
+                                                    ) {
+                                                        e.preventDefault();
+                                                        setCheckedIngredients(
+                                                            (prev) => ({
+                                                                ...prev,
+                                                                [ing]: !prev[
+                                                                    ing
+                                                                ],
+                                                            })
+                                                        );
+                                                    }
+                                                }}
+                                                role="checkbox"
+                                                aria-checked={
+                                                    !!checkedIngredients[ing]
+                                                }
+                                                tabIndex={0}
                                                 className="flex cursor-pointer flex-row items-center gap-2 py-0.5 select-none"
                                             >
                                                 <div

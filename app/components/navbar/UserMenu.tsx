@@ -78,6 +78,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             <div className="flex flex-row items-center gap-2 md:gap-3">
                 <div
                     onClick={onPost}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onPost();
+                        }
+                    }}
+                    role="button"
+                    tabIndex={0}
                     className="hidden cursor-pointer rounded-full border-[1px] px-3 py-2 text-xs font-semibold transition hover:bg-neutral-100 hover:text-black sm:block sm:text-sm md:px-4 md:py-3 dark:text-neutral-100 dark:hover:text-black"
                     data-cy="post-recipe"
                 >
@@ -87,6 +95,16 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                 </div>
                 <div
                     onClick={toggleOpen}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            toggleOpen();
+                        }
+                    }}
+                    role="button"
+                    aria-expanded={isOpen}
+                    aria-haspopup="true"
+                    tabIndex={0}
                     className="flex min-h-[40px] min-w-[40px] cursor-pointer flex-row items-center justify-center gap-3 rounded-full border-[1px] border-neutral-200 p-1 transition hover:shadow-md"
                     data-cy="user-menu"
                 >
@@ -101,7 +119,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                     className="dark:bg-dark/97 absolute top-14 right-0 overflow-hidden rounded-xl border border-neutral-200/40 bg-white/97 text-sm shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition-all duration-300 dark:border-neutral-800/40 dark:text-neutral-100 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]"
                     data-cy="user-menu-panel"
                 >
-                    <div className="w-max cursor-pointer">
+                    <div
+                        className="w-max cursor-pointer"
+                        role="menu"
+                    >
                         {currentUser ? (
                             <>
                                 <MenuItem
