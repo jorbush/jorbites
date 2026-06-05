@@ -41,7 +41,6 @@ const Pagination = ({
     return (
         <nav
             className="mt-10 flex justify-center pt-10"
-            role="navigation"
             aria-label="Pagination"
         >
             <button

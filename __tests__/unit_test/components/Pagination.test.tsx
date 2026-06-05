@@ -43,6 +43,8 @@ describe('<Pagination />', () => {
 
         expect(screen.getByText('2 of 5')).toBeDefined();
         expect(screen.getAllByRole('button')).toHaveLength(2);
+        expect(screen.getByRole('navigation')).toBeDefined();
+        expect(screen.getByLabelText('Pagination')).toBeDefined();
     });
 
     it('disables previous button on first page', () => {
