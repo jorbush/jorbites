@@ -170,6 +170,9 @@ const Search: React.FC<SearchProps> = ({
                                 ref={inputRef}
                                 type="text"
                                 placeholder={t('search_recipes') + '...'}
+                                aria-label={
+                                    t('search_recipes') || 'Search recipes'
+                                }
                                 value={searchQuery}
                                 onChange={(e) =>
                                     handleSearchChange(e.target.value)
@@ -254,6 +257,9 @@ const Search: React.FC<SearchProps> = ({
                                 ref={inputRef}
                                 type="text"
                                 placeholder={t('search_recipes') + '...'}
+                                aria-label={
+                                    t('search_recipes') || 'Search recipes'
+                                }
                                 value={searchQuery}
                                 onChange={(e) =>
                                     handleSearchChange(e.target.value)

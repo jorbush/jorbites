@@ -61,11 +61,15 @@ const ExportCalendarModal: React.FC<ExportCalendarModalProps> = ({
                     'Export this weekly plan to a .ics file that can be imported directly into Google Calendar, Apple Calendar, or Microsoft Outlook.'}
             </p>
             <div className="flex flex-col gap-1">
-                <label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+                <label
+                    htmlFor="export-calendar-start-date"
+                    className="text-sm font-semibold text-neutral-700 dark:text-neutral-300"
+                >
                     {t('select_week_start') ||
                         'Select week start date (Monday):'}
                 </label>
                 <input
+                    id="export-calendar-start-date"
                     type="date"
                     value={calendarStartDate}
                     onChange={(e) => setCalendarStartDate(e.target.value)}

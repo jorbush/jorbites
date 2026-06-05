@@ -26,6 +26,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
                 type="button"
                 role="switch"
                 aria-checked={checked}
+                aria-label={label || 'Toggle switch'}
                 onClick={onChange}
                 data-cy={dataCy}
                 data-testid={dataCy}

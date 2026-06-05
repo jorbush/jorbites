@@ -115,6 +115,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                             onChange={handleUserNameChange}
                             className="focus:ring-green-450 w-24 rounded border border-neutral-300 px-2 py-1 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                             placeholder={t('username') || 'Username'}
+                            aria-label={t('username') || 'Username'}
                             disabled={isLoading}
                             maxLength={USERNAME_MAX_LENGTH}
                             data-testid="username-input"

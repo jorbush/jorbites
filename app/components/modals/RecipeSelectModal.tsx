@@ -73,6 +73,9 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                         t('search_recipes_placeholder') ||
                         'Search recipes by title...'
                     }
+                    aria-label={
+                        t('search_recipes_placeholder') || 'Search recipes'
+                    }
                     className="focus:border-neutral-450 w-full rounded-xl border border-neutral-200 bg-neutral-50 py-3 pr-4 pl-10 text-sm font-light text-neutral-900 outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-neutral-700"
                     autoFocus
                 />
