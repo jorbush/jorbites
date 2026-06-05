@@ -180,10 +180,14 @@ const PeriodFilter: React.FC = () => {
 
                         <div className="flex flex-col space-y-3">
                             <div className="flex flex-col">
-                                <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                                <label
+                                    htmlFor="period-filter-start-date"
+                                    className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                                >
                                     {t('from_date') || 'From date'}
                                 </label>
                                 <input
+                                    id="period-filter-start-date"
                                     type="date"
                                     value={tempStartDate}
                                     max={tempEndDate || today}
@@ -196,10 +200,14 @@ const PeriodFilter: React.FC = () => {
                             </div>
 
                             <div className="flex flex-col">
-                                <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                                <label
+                                    htmlFor="period-filter-end-date"
+                                    className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                                >
                                     {t('to_date') || 'To date'}
                                 </label>
                                 <input
+                                    id="period-filter-end-date"
                                     type="date"
                                     value={tempEndDate}
                                     min={tempStartDate}

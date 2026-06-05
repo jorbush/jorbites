@@ -87,6 +87,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
                 )}
                 <input
                     id={id}
+                    aria-label={label}
                     disabled={disabled}
                     value={value}
                     onChange={onChange}

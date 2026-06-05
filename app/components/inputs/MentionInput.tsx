@@ -308,6 +308,7 @@ const MentionInput: React.FC<MentionInputProps> = ({
                 ref={textareaRef}
                 className={className}
                 placeholder={placeholder}
+                aria-label={placeholder || 'Mention'}
                 value={value}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
