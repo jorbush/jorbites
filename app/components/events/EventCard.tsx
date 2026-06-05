@@ -61,7 +61,9 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
                 />
             </div>
             <div className="p-4">
-                <h3 className="text-xl font-semibold">{event.frontmatter.title}</h3>
+                <h3 className="text-xl font-semibold">
+                    {event.frontmatter.title}
+                </h3>
                 {!isPermanent && dateDisplay && (
                     <div className="mt-2 flex items-center text-sm text-neutral-500 dark:text-neutral-400">
                         <FiCalendar className="mr-2" />
