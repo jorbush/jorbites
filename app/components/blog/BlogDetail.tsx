@@ -144,7 +144,15 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                         <div className="flex flex-row items-center">
                             <div
                                 className="cursor-pointer text-xl font-semibold dark:text-neutral-100"
+                                role="button"
+                                tabIndex={0}
                                 onClick={() => push('/profile/' + author.id)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        push('/profile/' + author.id);
+                                    }
+                                }}
                             >
                                 {author.name}
                             </div>

@@ -98,7 +98,15 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                         <div className="flex flex-row items-center">
                             <div
                                 className="cursor-pointer"
+                                role="button"
+                                tabIndex={0}
                                 onClick={() => push('/profile/' + host.id)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        push('/profile/' + host.id);
+                                    }
+                                }}
                             >
                                 {getUserDisplayName(
                                     host,
@@ -232,10 +240,21 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                                 {whitelistedUsers.map((user) => (
                                     <div
                                         key={user.id}
+                                        role="button"
+                                        tabIndex={0}
                                         className="flex cursor-pointer items-center gap-2 hover:opacity-75"
                                         onClick={() =>
                                             push('/profile/' + user.id)
                                         }
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === 'Enter' ||
+                                                e.key === ' '
+                                            ) {
+                                                e.preventDefault();
+                                                push('/profile/' + user.id);
+                                            }
+                                        }}
                                     >
                                         <Avatar
                                             src={user.image}

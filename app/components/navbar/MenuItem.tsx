@@ -24,7 +24,15 @@ const MenuItem: React.FC<MenuItemProps> = ({
 }) => {
     return (
         <div
+            role="button"
+            tabIndex={0}
             onClick={onClick}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onClick();
+                }
+            }}
             className={`p-3 font-semibold transition hover:bg-neutral-100 hover:text-black ${extraClasses}`}
             data-cy={dataCy}
         >

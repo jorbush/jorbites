@@ -21,8 +21,16 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     return (
         <div className="rounded-lg border dark:border-neutral-700">
             <div
+                role="button"
+                tabIndex={0}
                 className="flex cursor-pointer items-center justify-between p-4"
                 onClick={() => setIsOpen(!isOpen)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setIsOpen(!isOpen);
+                    }
+                }}
                 data-cy={dataCy}
             >
                 <div>

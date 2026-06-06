@@ -547,11 +547,28 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                                     className="size-10 shrink-0 rounded-lg object-cover"
                                                                 />
                                                                 <div
+                                                                    role="button"
+                                                                    tabIndex={0}
                                                                     onClick={() =>
                                                                         push(
                                                                             `/recipes/${recipe.id}`
                                                                         )
                                                                     }
+                                                                    onKeyDown={(
+                                                                        e
+                                                                    ) => {
+                                                                        if (
+                                                                            e.key ===
+                                                                                'Enter' ||
+                                                                            e.key ===
+                                                                                ' '
+                                                                        ) {
+                                                                            e.preventDefault();
+                                                                            push(
+                                                                                `/recipes/${recipe.id}`
+                                                                            );
+                                                                        }
+                                                                    }}
                                                                     className="flex-1 cursor-pointer truncate pr-6"
                                                                 >
                                                                     <div className="truncate text-xs font-semibold text-neutral-800 hover:underline dark:text-neutral-200">

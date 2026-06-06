@@ -61,7 +61,15 @@ const RecipeCard = memo(function RecipeCard({
 
     return (
         <div
+            role="button"
+            tabIndex={0}
             onClick={() => push(`/recipes/${data.id}`)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    push(`/recipes/${data.id}`);
+                }
+            }}
             className="group col-span-1 cursor-pointer"
             id={isFirstCard ? 'lcp-container' : undefined}
         >

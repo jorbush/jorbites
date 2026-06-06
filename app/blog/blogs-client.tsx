@@ -202,9 +202,20 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                     sidebarReleases.map((blog) => (
                                         <div
                                             key={blog.id}
+                                            role="button"
+                                            tabIndex={0}
                                             onClick={() =>
                                                 push(`/blog/${blog.id}`)
                                             }
+                                            onKeyDown={(e) => {
+                                                if (
+                                                    e.key === 'Enter' ||
+                                                    e.key === ' '
+                                                ) {
+                                                    e.preventDefault();
+                                                    push(`/blog/${blog.id}`);
+                                                }
+                                            }}
                                             className="group hover:border-primary-500 dark:hover:border-primary-500 cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-800"
                                         >
                                             <div className="mb-2 flex items-center justify-between">
