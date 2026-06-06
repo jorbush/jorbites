@@ -12,7 +12,7 @@ interface PrivacyPolicyProps {
 }
 
 const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ policy }) => {
-    const router = useRouter();
+    const { back } = useRouter() || {};
 
     return (
         <Container>
@@ -22,7 +22,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ policy }) => {
                         <button
                             type="button"
                             className="flex items-center space-x-2 text-neutral-600 focus:outline-hidden dark:text-neutral-100"
-                            onClick={() => router.back()}
+                            onClick={() => back()}
                         >
                             <FiChevronLeft className="text-xl" />
                         </button>

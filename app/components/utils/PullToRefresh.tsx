@@ -17,7 +17,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
     const pullDistanceRef = useRef<number>(0);
     const [refreshing, setRefreshing] = useState(false);
     const [displayPullDistance, setDisplayPullDistance] = useState(0);
-    const router = useRouter();
+    const { refresh } = useRouter() || {};
 
     // Helper function to check if the touch event is inside a modal
     const isInsideModal = useCallback((target: Node): boolean => {
@@ -74,7 +74,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
                 if (pullDistanceRef.current > threshold) {
                     setRefreshing(true);
                     setTimeout(() => {
-                        router.refresh();
+                        refresh();
                         setTimeout(() => {
                             setRefreshing(false);
                         }, 500);
@@ -99,7 +99,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             document.removeEventListener('touchmove', handleTouchMove);
             document.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [threshold, router, isInsideModal]);
+    }, [threshold, refresh, isInsideModal]);
 
     return (
         <>

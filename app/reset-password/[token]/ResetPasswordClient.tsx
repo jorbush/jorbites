@@ -16,7 +16,7 @@ interface ResetPasswordClientProps {
 }
 
 const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
-    const router = useRouter();
+    const { push } = useRouter() || {};
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
     const [isValid, setIsValid] = useState(true);
@@ -80,7 +80,7 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
                     t('password_reset_success') ||
                         'Password updated successfully'
                 );
-                router.push('/');
+                push('/');
             })
             .catch((error) => {
                 toast.error(
@@ -109,7 +109,7 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
                     <div className="mt-6 text-center">
                         <Button
                             label={t('back_to_home') || 'Back to Home'}
-                            onClick={() => router.push('/')}
+                            onClick={() => push('/')}
                         />
                     </div>
                 </div>

@@ -18,7 +18,7 @@ interface ListsClientProps {
 }
 
 const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
-    const router = useRouter();
+    const { push, refresh } = useRouter() || {};
     const { t, i18n } = useTranslation();
     const [lists, setLists] = useState<SafeList[]>(initialLists);
 
@@ -33,7 +33,7 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
         try {
             await axios.delete(`/api/lists/${deleteListId}`);
             toast.success(t('list_deleted') || 'List deleted');
-            router.refresh();
+            refresh();
             setLists((current) =>
                 current.filter((list) => list.id !== deleteListId)
             );
@@ -42,7 +42,7 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
         } finally {
             setDeleteListId(null);
         }
-    }, [deleteListId, router, t]);
+    }, [deleteListId, push, refresh, t]);
 
     return (
         <Container>
@@ -57,11 +57,11 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                             key={list.id}
                             role="button"
                             tabIndex={0}
-                            onClick={() => router.push(`/lists/${list.id}`)}
+                            onClick={() => push(`/lists/${list.id}`)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === ' ') {
                                     e.preventDefault();
-                                    router.push(`/lists/${list.id}`);
+                                    push(`/lists/${list.id}`);
                                 }
                             }}
                             className="group relative flex cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 transition hover:shadow-lg dark:border-neutral-700"

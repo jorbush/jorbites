@@ -50,7 +50,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
     planning,
     currentUser,
 }) => {
-    const router = useRouter();
+    const { push, refresh } = useRouter() || {};
     const { t, i18n } = useTranslation();
     const { share } = useShare();
 
@@ -111,7 +111,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                 })),
             });
             toast.success(t('meal_plan_updated'));
-            router.refresh();
+            refresh();
         } catch {
             toast.error(t('something_went_wrong'));
         } finally {
@@ -142,7 +142,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
             setIsPrivate(data.isPrivate);
             toast.success(t('meal_plan_updated'));
             setIsPlanningModalOpen(false);
-            router.refresh();
+            refresh();
         } catch {
             toast.error(t('something_went_wrong'));
         } finally {
@@ -219,13 +219,13 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                 setIsSaved(true);
                 toast.success(t('meal_plan_updated'));
             }
-            router.refresh();
+            refresh();
         } catch {
             toast.error(t('something_went_wrong'));
         } finally {
             setIsSaving(false);
         }
-    }, [currentUser, isSaved, planning.id, loginModal, router, t]);
+    }, [currentUser, isSaved, planning.id, loginModal, push, refresh, t]);
 
     // Toggle privacy setting
     const togglePrivacy = useCallback(async () => {
@@ -246,7 +246,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
             toast.success(
                 !isPrivate ? t('plan_is_private') : t('plan_is_public')
             );
-            router.refresh();
+            refresh();
         } catch {
             toast.error(t('something_went_wrong'));
         } finally {
@@ -259,7 +259,8 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
         editedDesc,
         meals,
         planning.id,
-        router,
+        push,
+        refresh,
         t,
     ]);
 
@@ -325,7 +326,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                         <div className="flex w-full flex-row items-center gap-2.5">
                             <button
                                 type="button"
-                                onClick={() => router.push('/plannings')}
+                                onClick={() => push('/plannings')}
                                 className="flex shrink-0 cursor-pointer items-center justify-center rounded-full p-2 text-neutral-600 transition hover:bg-neutral-100 focus:outline-hidden dark:text-neutral-400 dark:hover:bg-neutral-800"
                                 aria-label="Back"
                             >
@@ -547,7 +548,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                                 />
                                                                 <div
                                                                     onClick={() =>
-                                                                        router.push(
+                                                                        push(
                                                                             `/recipes/${recipe.id}`
                                                                         )
                                                                     }

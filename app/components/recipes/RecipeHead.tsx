@@ -20,7 +20,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(false);
-    const router = useRouter();
+    const { back } = useRouter() || {};
     const { share } = useShare();
     const touchStartX = useRef(0);
     const touchEndX = useRef(0);
@@ -94,7 +94,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 <button
                     type="button"
                     className="mr-4 flex translate-y-3 cursor-pointer items-center space-x-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
-                    onClick={() => router.back()}
+                    onClick={() => back()}
                 >
                     <FiChevronLeft className="text-xl" />
                 </button>

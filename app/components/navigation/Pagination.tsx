@@ -15,7 +15,7 @@ const Pagination = ({
     currentPage,
     searchParams,
 }: PaginationProps) => {
-    const router = useRouter();
+    const { push } = useRouter() || {};
     const { t } = useTranslation();
 
     const handlePageChange = (page: number) => {
@@ -35,7 +35,7 @@ const Pagination = ({
             filteredSearchParams
         ).toString();
         const newUrl = `?${queryString}`;
-        router.push(newUrl);
+        push(newUrl);
     };
 
     return (

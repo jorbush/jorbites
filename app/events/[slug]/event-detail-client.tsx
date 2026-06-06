@@ -16,7 +16,7 @@ interface EventDetailClientProps {
 
 const EventDetailClient: React.FC<EventDetailClientProps> = ({ slug }) => {
     const { t, i18n } = useTranslation();
-    const router = useRouter();
+    const { push } = useRouter() || {};
     const [event, setEvent] = useState<Event | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -71,7 +71,7 @@ const EventDetailClient: React.FC<EventDetailClientProps> = ({ slug }) => {
                     </p>
                     <button
                         type="button"
-                        onClick={() => router.push('/events')}
+                        onClick={() => push('/events')}
                         className="bg-green-450 cursor-pointer rounded-lg px-4 py-2 text-black"
                     >
                         {t('back_to_events') || 'Back to Events'}

@@ -52,7 +52,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
     whitelistedUserIds,
 }) => {
     const { t, i18n } = useTranslation();
-    const router = useRouter();
+    const { push } = useRouter() || {};
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
 
@@ -91,16 +91,14 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                     <Avatar
                         src={host?.image}
                         size={40}
-                        onClick={() => router.push('/profile/' + host.id)}
+                        onClick={() => push('/profile/' + host.id)}
                         quality="auto:eco"
                     />
                     <div className="flex flex-col">
                         <div className="flex flex-row items-center">
                             <div
                                 className="cursor-pointer"
-                                onClick={() =>
-                                    router.push('/profile/' + host.id)
-                                }
+                                onClick={() => push('/profile/' + host.id)}
                             >
                                 {getUserDisplayName(
                                     host,
@@ -236,7 +234,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                                         key={user.id}
                                         className="flex cursor-pointer items-center gap-2 hover:opacity-75"
                                         onClick={() =>
-                                            router.push('/profile/' + user.id)
+                                            push('/profile/' + user.id)
                                         }
                                     >
                                         <Avatar

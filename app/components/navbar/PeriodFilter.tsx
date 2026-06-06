@@ -14,8 +14,9 @@ export interface DateRange {
 
 const PeriodFilter: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const router = useRouter();
+    const { replace } = useRouter() || {};
     const searchParams = useSearchParams();
+    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [tempStartDate, setTempStartDate] = useState('');
@@ -25,8 +26,8 @@ const PeriodFilter: React.FC = () => {
     const isMainPage = pathname === '/';
     const isFavoritesPage = pathname === '/favorites';
     const isFilterablePage = isMainPage || isFavoritesPage;
-    const currentStartDate = searchParams?.get('startDate') || '';
-    const currentEndDate = searchParams?.get('endDate') || '';
+    const currentStartDate = get('startDate') || '';
+    const currentEndDate = get('endDate') || '';
     const hasDateFilter = currentStartDate || currentEndDate;
 
     useEffect(() => {
@@ -75,7 +76,7 @@ const PeriodFilter: React.FC = () => {
             : params.toString()
               ? `${pathname}?${params.toString()}`
               : pathname;
-        router.replace(newUrl);
+        replace(newUrl);
     };
 
     const handleApply = () => {

@@ -68,7 +68,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     ratingCount = 0,
 }) => {
     const { t } = useTranslation();
-    const router = useRouter();
+    const { push } = useRouter() || {};
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
     const [mounted, setMounted] = useState(false);
@@ -160,16 +160,14 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         <Avatar
                             src={user?.image}
                             size={40}
-                            onClick={() => router.push('/profile/' + user.id)}
+                            onClick={() => push('/profile/' + user.id)}
                             quality="auto:eco"
                         />
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <div
                                     className="cursor-pointer"
-                                    onClick={() =>
-                                        router.push('/profile/' + user.id)
-                                    }
+                                    onClick={() => push('/profile/' + user.id)}
                                 >
                                     {getUserDisplayName(
                                         user,
@@ -274,9 +272,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                 <div
                                     key={cook.id}
                                     className="flex cursor-pointer items-center gap-2 rounded-full bg-neutral-100 px-2 py-1 dark:bg-neutral-900"
-                                    onClick={() =>
-                                        router.push(`/profile/${cook.id}`)
-                                    }
+                                    onClick={() => push(`/profile/${cook.id}`)}
                                 >
                                     <Avatar
                                         src={cook.image}

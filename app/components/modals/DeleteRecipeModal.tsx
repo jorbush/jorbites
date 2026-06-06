@@ -19,7 +19,7 @@ const DeleteRecipeModal: React.FC<DeleteRecipeModalProps> = ({
     id,
 }) => {
     const { t } = useTranslation();
-    const router = useRouter();
+    const { push, refresh } = useRouter() || {};
 
     const handleDeleteRecipe = () => {
         axios
@@ -32,8 +32,8 @@ const DeleteRecipeModal: React.FC<DeleteRecipeModalProps> = ({
                 toast.error(t('something_went_wrong'));
             })
             .finally(() => {
-                router.push('/');
-                router.refresh();
+                push('/');
+                refresh();
             });
     };
 

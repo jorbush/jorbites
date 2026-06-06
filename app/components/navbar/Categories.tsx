@@ -117,8 +117,11 @@ export const categories = [
 ];
 
 const Categories = () => {
-    const params = useSearchParams();
-    const category = params?.get('category');
+    const searchParamsVal = useSearchParams();
+    const get = searchParamsVal
+        ? searchParamsVal.get.bind(searchParamsVal)
+        : () => null;
+    const category = get('category');
     const pathname = usePathname();
     const isMainPage = pathname === '/';
     const isFavoritesPage = pathname === '/favorites';

@@ -35,7 +35,7 @@ enum WORKSHOP_STEPS {
 const WorkshopModal: React.FC<WorkshopModalProps> = ({
     currentUser: _currentUser,
 }) => {
-    const router = useRouter();
+    const { push, refresh } = useRouter() || {};
     const { t } = useTranslation();
     const workshopModal = useWorkshopModal();
     const [step, setStep] = useState(WORKSHOP_STEPS.INFO);
@@ -183,10 +183,10 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                     workshopData
                 );
                 toast.success(t('workshop_created'));
-                router.push(`/workshops/${response.data.id}`);
+                push(`/workshops/${response.data.id}`);
             }
 
-            router.refresh();
+            refresh();
             reset();
             setStep(WORKSHOP_STEPS.INFO);
             workshopModal.onClose();
