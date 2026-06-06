@@ -1,9 +1,9 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, cleanup } from '@testing-library/react';
 import FavoritesPage from '@/app/favorites/page';
 import getFavoriteRecipes from '@/app/actions/getFavoriteRecipes';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import { vi, it, describe, expect } from 'vitest';
+import { vi, it, describe, expect, afterEach } from 'vitest';
 
 vi.mock('@/app/actions/getFavoriteRecipes');
 vi.mock('@/app/actions/getCurrentUser');
@@ -30,6 +30,9 @@ vi.mock('react-i18next', () => ({
 }));
 
 describe('FavoritesPage', () => {
+    afterEach(() => {
+        cleanup();
+    });
     it('renders EmptyState when no favorite recipes are found', async () => {
         (getFavoriteRecipes as any).mockResolvedValue({
             recipes: [],
