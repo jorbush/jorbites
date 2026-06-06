@@ -116,12 +116,17 @@ describe('Lists API Endpoints - Error Cases', () => {
                     updatedAt: new Date(),
                 },
             };
-            (prisma.list.create as jest.Mock).mockRejectedValue(new Error('Unique constraint failed'));
+            (prisma.list.create as jest.Mock).mockRejectedValue(
+                new Error('Unique constraint failed')
+            );
             (prisma.list.findFirst as jest.Mock).mockResolvedValue(mockList);
 
             const request = new Request('http://localhost/api/lists', {
                 method: 'POST',
-                body: JSON.stringify({ name: 'to cook later', isDefault: true }),
+                body: JSON.stringify({
+                    name: 'to cook later',
+                    isDefault: true,
+                }),
             });
             const response = await POST(request);
             expect(response.status).toBe(200);

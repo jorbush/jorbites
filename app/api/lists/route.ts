@@ -92,9 +92,12 @@ export async function POST(request: Request) {
             });
         } catch (error: any) {
             if (isDefault) {
-                logger.warn('POST /api/lists - error creating default list, checking if already exists: ', {
-                    error: error.message,
-                });
+                logger.warn(
+                    'POST /api/lists - error creating default list, checking if already exists: ',
+                    {
+                        error: error.message,
+                    }
+                );
                 const existing = await prisma.list.findFirst({
                     where: {
                         userId: currentUser.id,
