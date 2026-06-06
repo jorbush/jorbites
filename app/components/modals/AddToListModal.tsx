@@ -38,7 +38,16 @@ const AddToListModal = () => {
         setIsLoading(true);
         try {
             const response = await axios.get('/api/lists');
-            setLists(response.data);
+            if (response.data.length === 0) {
+                const createResponse = await axios.post('/api/lists', {
+                    name: 'to cook later',
+                    isPrivate: true,
+                    isDefault: true,
+                });
+                setLists([createResponse.data]);
+            } else {
+                setLists(response.data);
+            }
         } catch (error) {
             toast.error(t('something_went_wrong'));
             console.error(error);

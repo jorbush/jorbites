@@ -15,6 +15,7 @@ jest.mock('@/app/lib/prismadb', () => ({
         findMany: jest.fn(),
         update: jest.fn(),
         delete: jest.fn(),
+        findFirst: jest.fn(),
     },
     recipe: {
         findUnique: jest.fn(),
@@ -66,6 +67,67 @@ describe('Lists API Endpoints - Error Cases', () => {
             });
             const response = await POST(request);
             expect(response.status).toBe(400);
+        });
+
+        it('should successfully create a list', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
+            const mockList = {
+                id: 'list-id',
+                name: 'My List',
+                isDefault: false,
+                isPrivate: true,
+                userId: 'user-id',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                user: {
+                    id: 'user-id',
+                    name: 'User',
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+            };
+            (prisma.list.create as jest.Mock).mockResolvedValue(mockList);
+
+            const request = new Request('http://localhost/api/lists', {
+                method: 'POST',
+                body: JSON.stringify({ name: 'My List' }),
+            });
+            const response = await POST(request);
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.name).toBe('My List');
+            expect(data.isDefault).toBe(false);
+        });
+
+        it('should successfully create a default list and handle parallel creation gracefully', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-id' });
+            const mockList = {
+                id: 'list-id',
+                name: 'to cook later',
+                isDefault: true,
+                isPrivate: true,
+                userId: 'user-id',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                user: {
+                    id: 'user-id',
+                    name: 'User',
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+            };
+            (prisma.list.create as jest.Mock).mockRejectedValue(new Error('Unique constraint failed'));
+            (prisma.list.findFirst as jest.Mock).mockResolvedValue(mockList);
+
+            const request = new Request('http://localhost/api/lists', {
+                method: 'POST',
+                body: JSON.stringify({ name: 'to cook later', isDefault: true }),
+            });
+            const response = await POST(request);
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.name).toBe('to cook later');
+            expect(data.isDefault).toBe(true);
         });
     });
 
