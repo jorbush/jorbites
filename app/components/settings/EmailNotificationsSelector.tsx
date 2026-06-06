@@ -14,7 +14,7 @@ interface EmailNotificationProps {
 const EmailNotificationsSelector: React.FC<EmailNotificationProps> = ({
     currentUser,
 }) => {
-    const router = useRouter();
+    const { refresh } = useRouter() || {};
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
     const [isDisabled, setIsDisabled] = useState(false);
@@ -48,7 +48,7 @@ const EmailNotificationsSelector: React.FC<EmailNotificationProps> = ({
             })
             .finally(() => {
                 setIsLoading(false);
-                router.refresh();
+                refresh();
             });
     };
 

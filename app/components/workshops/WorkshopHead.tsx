@@ -17,7 +17,7 @@ const WorkshopHead: React.FC<WorkshopHeadProps> = ({
     date,
     imageSrc,
 }) => {
-    const router = useRouter();
+    const { back } = useRouter() || {};
     const { share } = useShare();
 
     const workshopDate = new Date(date);
@@ -33,7 +33,7 @@ const WorkshopHead: React.FC<WorkshopHeadProps> = ({
                 <button
                     type="button"
                     className="mr-4 flex translate-y-3 cursor-pointer items-center space-x-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
-                    onClick={() => router.back()}
+                    onClick={() => back()}
                 >
                     <FiChevronLeft className="text-xl" />
                 </button>

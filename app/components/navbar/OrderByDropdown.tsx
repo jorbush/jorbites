@@ -13,15 +13,16 @@ import Dropdown from '@/app/components/utils/Dropdown';
 
 const OrderByDropdown: React.FC = () => {
     const { t } = useTranslation();
-    const router = useRouter();
+    const { replace } = useRouter() || {};
     const searchParams = useSearchParams();
+    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
     const pathname = usePathname();
 
     const isMainPage = pathname === '/';
     const isProfilePage = pathname?.startsWith('/profile/');
     const isFavoritesPage = pathname === '/favorites';
     const currentOrderBy =
-        (searchParams?.get('orderBy') as OrderByType) || OrderByType.NEWEST;
+        (get('orderBy') as OrderByType) || OrderByType.NEWEST;
 
     const handleOrderChange = (orderBy: OrderByType) => {
         if (!isMainPage && !isProfilePage && !isFavoritesPage) return;
@@ -37,7 +38,7 @@ const OrderByDropdown: React.FC = () => {
                 ? `/?${params.toString()}`
                 : '/'
             : `${pathname}?${params.toString()}`;
-        router.replace(newUrl, { scroll: false });
+        replace(newUrl, { scroll: false });
     };
 
     const getOrderLabel = (orderBy: OrderByType) => {

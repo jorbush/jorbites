@@ -30,7 +30,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
     initialSavedPlannings,
     currentUser,
 }) => {
-    const router = useRouter();
+    const { push, refresh } = useRouter() || {};
     const { t, i18n } = useTranslation();
     const loginModal = useLoginModal();
 
@@ -69,12 +69,12 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                 setSavedPlannings((current) =>
                     current.filter((p) => p.id !== planId)
                 );
-                router.refresh();
+                refresh();
             } catch {
                 toast.error(t('something_went_wrong'));
             }
         },
-        [router, t]
+        [push, refresh, t]
     );
 
     const handleCreateClick = useCallback(() => {
@@ -99,8 +99,8 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
             });
             toast.success(t('meal_plan_created'));
             setIsCreateOpen(false);
-            router.push(`/plannings/${response.data.id}`);
-            router.refresh();
+            push(`/plannings/${response.data.id}`);
+            refresh();
         } catch {
             toast.error(t('something_went_wrong'));
         } finally {
@@ -120,13 +120,13 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
             setCommunityPlannings((current) =>
                 current.filter((p) => p.id !== deletePlanId)
             );
-            router.refresh();
+            refresh();
         } catch {
             toast.error(t('something_went_wrong'));
         } finally {
             setDeletePlanId(null);
         }
-    }, [deletePlanId, router, t]);
+    }, [deletePlanId, push, refresh, t]);
 
     // Unique recipes extraction for card preview
     const getPreviewRecipes = (plan: SafePlanning) => {
@@ -165,11 +165,11 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                             key={plan.id}
                             role="button"
                             tabIndex={0}
-                            onClick={() => router.push(`/plannings/${plan.id}`)}
+                            onClick={() => push(`/plannings/${plan.id}`)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === ' ') {
                                     e.preventDefault();
-                                    router.push(`/plannings/${plan.id}`);
+                                    push(`/plannings/${plan.id}`);
                                 }
                             }}
                             className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/60 bg-white/50 p-5 shadow-xs backdrop-blur-xs transition duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-xl dark:border-neutral-800/60 dark:bg-[#121212]/50 dark:hover:bg-[#181818]"

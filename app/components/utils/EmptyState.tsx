@@ -19,15 +19,18 @@ const EmptyStateContent: React.FC<EmptyStateProps> = ({
     showReset,
     height = 'h-[60vh]',
 }) => {
-    const router = useRouter();
-    const searchParams = useSearchParams();
+    const { push } = useRouter() || {};
+    const searchParamsVal = useSearchParams();
+    const get = searchParamsVal
+        ? searchParamsVal.get.bind(searchParamsVal)
+        : () => null;
     const pathname = usePathname();
     const { t } = useTranslation();
 
-    const searchQuery = searchParams?.get('search');
-    const category = searchParams?.get('category');
-    const startDate = searchParams?.get('startDate');
-    const endDate = searchParams?.get('endDate');
+    const searchQuery = get('search');
+    const category = get('category');
+    const startDate = get('startDate');
+    const endDate = get('endDate');
 
     // Note: orderBy is not a filter, it's a sorting option, so we don't include it
     const hasFilters = !!(searchQuery || category || startDate || endDate);
@@ -54,7 +57,7 @@ const EmptyStateContent: React.FC<EmptyStateProps> = ({
     const handleReset = () => {
         // Use pathname from usePathname hook instead of window.location
         // Navigate to the base path without any query parameters
-        router.push(pathname || '/');
+        push(pathname || '/');
     };
 
     return (

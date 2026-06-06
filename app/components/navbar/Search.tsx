@@ -23,8 +23,9 @@ const Search: React.FC<SearchProps> = ({
     isFilterOpen,
 }) => {
     const { t } = useTranslation();
-    const router = useRouter();
+    const { push, replace } = useRouter() || {};
     const searchParams = useSearchParams();
+    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
     const pathname = usePathname();
     const [isSearchMode, setIsSearchMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -35,12 +36,12 @@ const Search: React.FC<SearchProps> = ({
     const isMainPage = pathname === '/';
     const isFavoritesPage = pathname === '/favorites';
     const isFilterablePage = isMainPage || isFavoritesPage;
-    const currentSearch = searchParams?.get('search') || '';
-    const isFiltering = searchParams?.get('category') || '';
+    const currentSearch = get('search') || '';
+    const isFiltering = get('category') || '';
 
-    const currentStartDate = searchParams?.get('startDate') || '';
-    const currentEndDate = searchParams?.get('endDate') || '';
-    const currentOrderBy = searchParams?.get('orderBy') || '';
+    const currentStartDate = get('startDate') || '';
+    const currentEndDate = get('endDate') || '';
+    const currentOrderBy = get('orderBy') || '';
     const hasActiveFilters =
         isFiltering || currentStartDate || currentEndDate || currentOrderBy;
 
@@ -63,7 +64,7 @@ const Search: React.FC<SearchProps> = ({
                 : params.toString()
                   ? `${pathname}?${params.toString()}`
                   : pathname;
-            router.replace(newUrl);
+            replace(newUrl);
         }, 1000); // 1 second debounce on URL update in order to avoid request and typing conflicts
 
         if (currentSearch) {
@@ -85,7 +86,8 @@ const Search: React.FC<SearchProps> = ({
         isFilterablePage,
         isMainPage,
         pathname,
-        router,
+        push,
+        replace,
         currentSearch,
         isSearchMode,
         onSearchModeChange,
@@ -108,7 +110,7 @@ const Search: React.FC<SearchProps> = ({
                     : params.toString()
                       ? `${pathname}?${params.toString()}`
                       : pathname;
-                router.push(newUrl);
+                push(newUrl);
             } else {
                 setIsSearchMode(false);
                 onSearchModeChange?.(false);

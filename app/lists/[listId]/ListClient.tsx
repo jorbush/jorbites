@@ -27,7 +27,7 @@ const ListClient: React.FC<ListClientProps> = ({
     recipes,
     currentUser,
 }) => {
-    const router = useRouter();
+    const { push, refresh } = useRouter() || {};
     const { t, i18n } = useTranslation();
     const { share } = useShare();
     const [isPrivate, setIsPrivate] = useState(list.isPrivate);
@@ -50,14 +50,14 @@ const ListClient: React.FC<ListClientProps> = ({
             toast.success(
                 isPrivate ? t('list_is_now_public') : t('list_is_now_private')
             );
-            router.refresh();
+            refresh();
         } catch (error) {
             toast.error(t('something_went_wrong'));
             console.error(error);
         } finally {
             setIsLoading(false);
         }
-    }, [isOwner, isPrivate, list.id, router, t]);
+    }, [isOwner, isPrivate, list.id, push, refresh, t]);
 
     const onDelete = useCallback(async () => {
         if (!isOwner) return;
@@ -65,8 +65,8 @@ const ListClient: React.FC<ListClientProps> = ({
         try {
             await axios.delete(`/api/lists/${list.id}`);
             toast.success(t('list_deleted'));
-            router.push('/lists');
-            router.refresh();
+            push('/lists');
+            refresh();
         } catch (error) {
             toast.error(t('something_went_wrong'));
             console.error(error);
@@ -74,7 +74,7 @@ const ListClient: React.FC<ListClientProps> = ({
             setIsLoading(false);
             setIsConfirmModalOpen(false);
         }
-    }, [isOwner, list.id, router, t]);
+    }, [isOwner, list.id, push, refresh, t]);
 
     const onRemoveRecipe = useCallback(
         async (recipeId: string) => {
@@ -83,7 +83,7 @@ const ListClient: React.FC<ListClientProps> = ({
             try {
                 await axios.delete(`/api/lists/${list.id}/recipes/${recipeId}`);
                 toast.success(t('recipe_removed'));
-                router.refresh();
+                refresh();
             } catch (error) {
                 toast.error(t('something_went_wrong'));
                 console.error(error);
@@ -91,7 +91,7 @@ const ListClient: React.FC<ListClientProps> = ({
                 setDeletingId('');
             }
         },
-        [isOwner, list.id, router, t]
+        [isOwner, list.id, push, refresh, t]
     );
 
     return (

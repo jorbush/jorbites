@@ -23,11 +23,12 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
     initialPage,
 }) => {
     const { t, i18n } = useTranslation();
-    const router = useRouter();
+    const { push } = useRouter() || {};
     const searchParams = useSearchParams();
+    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
 
-    const categoryParam = searchParams?.get('category');
-    const pageParam = searchParams?.get('page');
+    const categoryParam = get('category');
+    const pageParam = get('page');
 
     const currentCategory =
         categoryParam === 'releases' ? 'releases' : 'general';
@@ -81,11 +82,11 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
     };
 
     const handleViewAllReleases = () => {
-        router.push('/blog?category=releases');
+        push('/blog?category=releases');
     };
 
     const handleBackToStories = () => {
-        router.push('/blog?category=general');
+        push('/blog?category=general');
     };
 
     return (
@@ -202,7 +203,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                         <div
                                             key={blog.id}
                                             onClick={() =>
-                                                router.push(`/blog/${blog.id}`)
+                                                push(`/blog/${blog.id}`)
                                             }
                                             className="group hover:border-primary-500 dark:hover:border-primary-500 cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-800"
                                         >

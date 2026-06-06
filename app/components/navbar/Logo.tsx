@@ -4,11 +4,11 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 const Logo = () => {
-    const router = useRouter();
+    const { push } = useRouter() || {};
 
     return (
         <div
-            onClick={() => router.push('/')}
+            onClick={() => push('/')}
             className="cursor-pointer md:block"
         >
             <Image

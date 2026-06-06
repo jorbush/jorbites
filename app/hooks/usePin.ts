@@ -12,7 +12,7 @@ interface IUsePin {
 }
 
 const usePin = ({ recipeId, currentUser }: IUsePin) => {
-    const router = useRouter();
+    const { refresh } = useRouter() || {};
     const [isLoading, setIsLoading] = useState(false);
     const loginModal = useLoginModal();
     const { t } = useTranslation();
@@ -51,7 +51,7 @@ const usePin = ({ recipeId, currentUser }: IUsePin) => {
                     toast.success(t('pin_success'));
                 }
 
-                router.refresh();
+                refresh();
             } catch (error: any) {
                 const message =
                     error.response?.data?.error ||
@@ -62,7 +62,7 @@ const usePin = ({ recipeId, currentUser }: IUsePin) => {
                 setIsLoading(false);
             }
         },
-        [currentUser, isPinned, recipeId, loginModal, router, isLoading, t]
+        [currentUser, isPinned, recipeId, loginModal, refresh, isLoading, t]
     );
 
     return {

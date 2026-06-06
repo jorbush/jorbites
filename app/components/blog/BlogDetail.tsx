@@ -27,7 +27,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
     relatedBlogs = [],
 }) => {
     const { t, i18n } = useTranslation();
-    const router = useRouter();
+    const { back, push } = useRouter() || {};
     const { share } = useShare();
 
     const dateDisplay = formatDate(blog.frontmatter.date, i18n.language);
@@ -112,7 +112,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                 <button
                     type="button"
                     className="mr-4 flex translate-y-3 cursor-pointer items-center space-x-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
-                    onClick={() => router.back()}
+                    onClick={() => back()}
                     aria-label={t('back') as string}
                 >
                     <FiChevronLeft className="text-xl" />
@@ -137,16 +137,14 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                     <Avatar
                         src={author?.image}
                         size={40}
-                        onClick={() => router.push('/profile/' + author.id)}
+                        onClick={() => push('/profile/' + author.id)}
                         quality="auto:eco"
                     />
                     <div className="flex flex-col">
                         <div className="flex flex-row items-center">
                             <div
                                 className="cursor-pointer text-xl font-semibold dark:text-neutral-100"
-                                onClick={() =>
-                                    router.push('/profile/' + author.id)
-                                }
+                                onClick={() => push('/profile/' + author.id)}
                             >
                                 {author.name}
                             </div>

@@ -16,7 +16,7 @@ import Heading from '@/app/components/navigation/Heading';
 import Input from '@/app/components/inputs/Input';
 
 const QuestModal = () => {
-    const router = useRouter();
+    const { refresh } = useRouter() || {};
     const { t } = useTranslation();
     const questModal = useQuestModal();
     const [isLoading, setIsLoading] = useState(false);
@@ -81,7 +81,7 @@ const QuestModal = () => {
                 status: 'open',
             });
             questModal.onClose();
-            router.refresh();
+            refresh();
         } catch (error: any) {
             console.error('Failed to save quest', error);
             const errorMessage =

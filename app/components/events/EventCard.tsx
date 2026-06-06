@@ -27,7 +27,7 @@ export const EventCardSkeleton = () => {
 };
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
-    const router = useRouter();
+    const { push } = useRouter() || {};
     const { i18n } = useTranslation();
 
     // Don't process dates for permanent events
@@ -43,7 +43,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     }
 
     const handleClick = () => {
-        router.push(`/events/${event.slug}`);
+        push(`/events/${event.slug}`);
     };
 
     return (

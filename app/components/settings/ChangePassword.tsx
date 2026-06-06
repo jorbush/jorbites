@@ -27,7 +27,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
     savePassword,
     setSavePassword,
 }) => {
-    const router = useRouter();
+    const { refresh } = useRouter() || {};
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -78,10 +78,10 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                 })
                 .finally(() => {
                     setIsLoading(false);
-                    router.refresh();
+                    refresh();
                 });
         },
-        [currentUser?.id, router, t, isLoading, reset]
+        [currentUser?.id, refresh, t, isLoading, reset]
     );
 
     // Check if form is valid and has actual changes

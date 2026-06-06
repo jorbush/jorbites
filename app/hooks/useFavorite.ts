@@ -12,7 +12,7 @@ interface IUseFavorite {
 }
 
 const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
-    const router = useRouter();
+    const { refresh } = useRouter() || {};
     const [isLoading, setIsLoading] = useState(false);
     const loginModal = useLoginModal();
     const { t } = useTranslation();
@@ -57,7 +57,7 @@ const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
 
                 await requestLike();
                 await request();
-                router.refresh();
+                refresh();
                 toast.success(t('success'));
             } catch (error) {
                 toast.error((error as Error).message);
@@ -65,7 +65,7 @@ const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
                 setIsLoading(false);
             }
         },
-        [currentUser, hasFavorited, recipeId, loginModal, router, isLoading, t]
+        [currentUser, hasFavorited, recipeId, loginModal, refresh, isLoading, t]
     );
 
     return {

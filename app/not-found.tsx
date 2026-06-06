@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Button from '@/app/components/buttons/Button';
 
 export default function NotFound() {
-    const router = useRouter();
+    const { push } = useRouter() || {};
 
     return (
         <div className="bg-background flex h-[90%] w-full flex-col items-center justify-center">
@@ -24,7 +24,7 @@ export default function NotFound() {
                     <div className="w-48">
                         <Button
                             label="Go Home"
-                            onClick={() => router.push('/')}
+                            onClick={() => push('/')}
                             outline
                             icon={FaHome}
                         />
