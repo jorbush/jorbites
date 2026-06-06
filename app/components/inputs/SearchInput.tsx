@@ -121,8 +121,9 @@ const SearchInput: React.FC<SearchInputProps> = ({
                                   onKeyDown={(e) => {
                                       if (e.key === 'Enter' || e.key === ' ') {
                                           e.preventDefault();
-                                          onSelectResult &&
+                                          if (onSelectResult) {
                                               onSelectResult(result);
+                                          }
                                       }
                                   }}
                                   role="button"

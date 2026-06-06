@@ -50,9 +50,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                             }
                         }}
                         onKeyDown={(e) => {
-                            if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
+                            if (
+                                !disabled &&
+                                (e.key === 'Enter' || e.key === ' ')
+                            ) {
                                 e.preventDefault();
-                                open?.();
+                                if (open) {
+                                    open();
+                                }
                             }
                         }}
                         role="button"

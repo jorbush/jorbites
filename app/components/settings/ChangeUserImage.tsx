@@ -92,7 +92,9 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                                                     e.key === ' '
                                                 ) {
                                                     e.preventDefault();
-                                                    open?.();
+                                                    if (open) {
+                                                        open();
+                                                    }
                                                 }
                                             }}
                                             role="button"
