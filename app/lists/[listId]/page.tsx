@@ -9,8 +9,10 @@ interface IParams {
 }
 
 const ListPage = async (props: { params: Promise<IParams> }) => {
-    const params = await props.params;
-    const currentUser = await getCurrentUser();
+    const [params, currentUser] = await Promise.all([
+        props.params,
+        getCurrentUser(),
+    ]);
 
     if (!params.listId) {
         return (

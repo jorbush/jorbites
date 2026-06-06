@@ -75,26 +75,28 @@ const ProfilePage = async (props: {
     params: Promise<IParams>;
     searchParams: Promise<ISearchParams>;
 }) => {
-    const params = await props.params;
-    const searchParams = await props.searchParams;
+    const [params, searchParams] = await Promise.all([
+        props.params,
+        props.searchParams,
+    ]);
     const page = parseInt(searchParams.page || '1');
 
     // Get paginated recipes for display
-    const recipesResponse = await getRecipesByUserId({
-        ...params,
-        orderBy: searchParams.orderBy,
-        page,
-        limit: 12,
-    });
-
-    // Get all recipes for the contribution graph
-    const graphRecipes = await getRecipesForGraph({
-        userId: params.userId,
-    });
-
-    const user = await getUserById({ userId: params.userId, withStats: true });
-    const currentUser = await getCurrentUser();
-    const pinnedRecipes = await getPinnedRecipesByUserId(params.userId || '');
+    const [recipesResponse, graphRecipes, user, currentUser, pinnedRecipes] =
+        await Promise.all([
+            getRecipesByUserId({
+                ...params,
+                orderBy: searchParams.orderBy,
+                page,
+                limit: 12,
+            }),
+            getRecipesForGraph({
+                userId: params.userId,
+            }),
+            getUserById({ userId: params.userId, withStats: true }),
+            getCurrentUser(),
+            getPinnedRecipesByUserId(params.userId || ''),
+        ]);
 
     if (!user && recipesResponse.recipes.length === 0) {
         return (

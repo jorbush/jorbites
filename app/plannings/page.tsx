@@ -14,9 +14,8 @@ export const metadata: Metadata = {
 };
 
 const PlanningsPage = async () => {
-    const currentUser = await getCurrentUser();
-    const { myPlannings, communityPlannings, savedPlannings } =
-        await getPlannings();
+    const [currentUser, { myPlannings, communityPlannings, savedPlannings }] =
+        await Promise.all([getCurrentUser(), getPlannings()]);
 
     return (
         <ClientOnly>

@@ -14,9 +14,10 @@ export const metadata: Metadata = {
 };
 
 const WorkshopsPage = async () => {
-    const currentUser = await getCurrentUser();
-
-    const allWorkshopsResponse = await getWorkshops();
+    const [currentUser, allWorkshopsResponse] = await Promise.all([
+        getCurrentUser(),
+        getWorkshops(),
+    ]);
 
     const allWorkshops = allWorkshopsResponse.data?.workshops || [];
     const now = new Date();

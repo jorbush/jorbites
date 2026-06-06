@@ -33,8 +33,10 @@ export async function generateMetadata(props: {
 }
 
 const PlanningPage = async (props: { params: Promise<IParams> }) => {
-    const params = await props.params;
-    const currentUser = await getCurrentUser();
+    const [params, currentUser] = await Promise.all([
+        props.params,
+        getCurrentUser(),
+    ]);
     const planning = await getPlanningById(params);
 
     if (!planning) {

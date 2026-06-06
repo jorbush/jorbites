@@ -52,8 +52,10 @@ export async function generateMetadata(props: {
 
 const WorkshopPage = async (props: { params: Promise<IParams> }) => {
     const params = await props.params;
-    const workshop = await getWorkshopById(params);
-    const currentUser = await getCurrentUser();
+    const [workshop, currentUser] = await Promise.all([
+        getWorkshopById(params),
+        getCurrentUser(),
+    ]);
 
     if (!workshop) {
         return (

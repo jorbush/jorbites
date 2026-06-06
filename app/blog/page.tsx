@@ -24,8 +24,10 @@ interface BlogPageProps {
 }
 
 const BlogPage = async ({ searchParams }: BlogPageProps) => {
-    const currentUser = await getCurrentUser();
-    const resolvedParams = await searchParams;
+    const [currentUser, resolvedParams] = await Promise.all([
+        getCurrentUser(),
+        searchParams,
+    ]);
     const page = parseInt(resolvedParams.page || '1');
 
     return (
