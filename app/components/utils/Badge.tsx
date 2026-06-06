@@ -32,8 +32,16 @@ const Badge: React.FC<BadgeProps> = ({
 
     return (
         <div
+            role="button"
+            tabIndex={0}
             className={`relative flex-shrink-0 cursor-pointer ${className}`}
             onClick={onClick}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onClick?.();
+                }
+            }}
             style={{ width: size, height: size }}
         >
             {/* Skeleton placeholder */}

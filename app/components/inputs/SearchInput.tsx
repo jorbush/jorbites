@@ -114,10 +114,22 @@ const SearchInput: React.FC<SearchInputProps> = ({
                         ? searchResults.map((result) => (
                               <div
                                   key={result.id}
+                                  role="button"
+                                  tabIndex={0}
                                   className={`flex cursor-pointer items-center justify-between gap-2 border-t border-neutral-100 p-3 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-700 ${isSelected && isSelected(result.id) ? 'bg-neutral-100 dark:bg-neutral-700' : ''}`}
-                                  onClick={() =>
-                                      onSelectResult && onSelectResult(result)
-                                  }
+                                  onClick={() => {
+                                      if (onSelectResult) {
+                                          onSelectResult(result);
+                                      }
+                                  }}
+                                  onKeyDown={(e) => {
+                                      if (e.key === 'Enter' || e.key === ' ') {
+                                          e.preventDefault();
+                                          if (onSelectResult) {
+                                              onSelectResult(result);
+                                          }
+                                      }
+                                  }}
                               >
                                   {searchType === 'users' ? (
                                       <Fragment>

@@ -217,10 +217,21 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                             </span>
                                         </div>
                                         <h2
+                                            role="button"
+                                            tabIndex={0}
                                             className="mb-2 cursor-pointer text-xl font-semibold text-neutral-900 hover:text-rose-500 dark:text-white dark:hover:text-rose-400"
                                             onClick={() =>
                                                 push(`/quests/${quest.id}`)
                                             }
+                                            onKeyDown={(e) => {
+                                                if (
+                                                    e.key === 'Enter' ||
+                                                    e.key === ' '
+                                                ) {
+                                                    e.preventDefault();
+                                                    push(`/quests/${quest.id}`);
+                                                }
+                                            }}
                                             data-cy="quest-card-title"
                                         >
                                             {quest.title}

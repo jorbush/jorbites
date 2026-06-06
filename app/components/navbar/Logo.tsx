@@ -8,7 +8,15 @@ const Logo = () => {
 
     return (
         <div
+            role="button"
+            tabIndex={0}
             onClick={() => push('/')}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    push('/');
+                }
+            }}
             className="cursor-pointer md:block"
         >
             <Image

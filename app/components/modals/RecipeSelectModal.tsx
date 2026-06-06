@@ -92,9 +92,18 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                         {results.map((recipe) => (
                             <div
                                 key={recipe.id}
+                                role="button"
+                                tabIndex={0}
                                 onClick={() => {
                                     onSelect(recipe);
                                     handleClose();
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        onSelect(recipe);
+                                        handleClose();
+                                    }
                                 }}
                                 className="dark:hover:bg-neutral-850 flex cursor-pointer flex-row items-center gap-3 rounded-xl p-2 transition hover:bg-neutral-100"
                             >

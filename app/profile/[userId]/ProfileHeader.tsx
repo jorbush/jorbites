@@ -52,8 +52,16 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                     <div className="flex flex-col gap-2 text-2xl md:text-3xl">
                         <div className="flex flex-row gap-2">
                             <div
+                                role="button"
+                                tabIndex={0}
                                 className="cursor-pointer"
                                 onClick={() => push('/profile/' + user?.id)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        push('/profile/' + user?.id);
+                                    }
+                                }}
                             >
                                 {getUserDisplayName(
                                     user,

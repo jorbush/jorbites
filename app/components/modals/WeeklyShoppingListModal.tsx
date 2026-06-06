@@ -58,6 +58,13 @@ const WeeklyShoppingListModal: React.FC<WeeklyShoppingListModalProps> = ({
         };
     }, [meals]);
 
+    const toggleIngredient = (ing: string) => {
+        setCheckedIngredients((prev) => ({
+            ...prev,
+            [ing]: !prev[ing],
+        }));
+    };
+
     // Copy ingredients checklist to clipboard
     const copyShoppingListToClipboard = () => {
         let text = `${planningName} - ${t('shopping_list')}\n\n`;
@@ -102,13 +109,19 @@ const WeeklyShoppingListModal: React.FC<WeeklyShoppingListModalProps> = ({
                                         return (
                                             <div
                                                 key={iIdx}
-                                                onClick={() => {
-                                                    setCheckedIngredients(
-                                                        (prev) => ({
-                                                            ...prev,
-                                                            [ing]: !prev[ing],
-                                                        })
-                                                    );
+                                                role="button"
+                                                tabIndex={0}
+                                                onClick={() =>
+                                                    toggleIngredient(ing)
+                                                }
+                                                onKeyDown={(e) => {
+                                                    if (
+                                                        e.key === 'Enter' ||
+                                                        e.key === ' '
+                                                    ) {
+                                                        e.preventDefault();
+                                                        toggleIngredient(ing);
+                                                    }
                                                 }}
                                                 className="flex cursor-pointer flex-row items-center gap-2 py-0.5 select-none"
                                             >

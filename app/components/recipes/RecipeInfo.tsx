@@ -167,7 +167,18 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                             <div className="flex flex-row">
                                 <div
                                     className="cursor-pointer"
+                                    role="button"
+                                    tabIndex={0}
                                     onClick={() => push('/profile/' + user.id)}
+                                    onKeyDown={(e) => {
+                                        if (
+                                            e.key === 'Enter' ||
+                                            e.key === ' '
+                                        ) {
+                                            e.preventDefault();
+                                            push('/profile/' + user.id);
+                                        }
+                                    }}
                                 >
                                     {getUserDisplayName(
                                         user,
@@ -271,8 +282,19 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                             {coCooks.map((cook) => (
                                 <div
                                     key={cook.id}
+                                    role="button"
+                                    tabIndex={0}
                                     className="flex cursor-pointer items-center gap-2 rounded-full bg-neutral-100 px-2 py-1 dark:bg-neutral-900"
                                     onClick={() => push(`/profile/${cook.id}`)}
+                                    onKeyDown={(e) => {
+                                        if (
+                                            e.key === 'Enter' ||
+                                            e.key === ' '
+                                        ) {
+                                            e.preventDefault();
+                                            push(`/profile/${cook.id}`);
+                                        }
+                                    }}
                                 >
                                     <Avatar
                                         src={cook.image}

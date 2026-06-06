@@ -137,7 +137,15 @@ const RegisterModal = () => {
                 <p>
                     {t('already_account')}
                     <span
+                        role="button"
+                        tabIndex={0}
                         onClick={onToggle}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                onToggle();
+                            }
+                        }}
                         className="cursor-pointer text-neutral-800 hover:underline"
                     >
                         {' '}

@@ -225,8 +225,8 @@ describe('<QuestDetailClient />', () => {
             />
         );
         const buttons = screen.getAllByRole('button');
-        // Should have back, share, and fulfill quest buttons only
-        expect(buttons.length).toBeLessThan(5);
+        // Should have back, share, fulfill quest buttons, and buttons from RecipeCard
+        expect(buttons.length).toBe(5);
     });
 
     it('opens delete confirmation modal when delete button is clicked', () => {

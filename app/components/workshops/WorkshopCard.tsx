@@ -38,7 +38,15 @@ const WorkshopCard = memo(function WorkshopCard({
 
     return (
         <div
+            role="button"
+            tabIndex={0}
             onClick={() => push(`/workshops/${data.id}`)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    push(`/workshops/${data.id}`);
+                }
+            }}
             className="group col-span-1 cursor-pointer"
             id={isFirstCard ? 'lcp-container' : undefined}
             data-testid="workshop-card"

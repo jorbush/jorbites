@@ -19,8 +19,16 @@ const Avatar: React.FC<AvatarProps> = ({
 }) => {
     return (
         <div
+            role={onClick ? 'button' : undefined}
+            tabIndex={onClick ? 0 : undefined}
             className={`inline-block ${onClick ? 'cursor-pointer' : ''}`}
             onClick={onClick}
+            onKeyDown={(e) => {
+                if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault();
+                    onClick();
+                }
+            }}
         >
             <CustomProxyImage
                 className={extraClasses || ''}
