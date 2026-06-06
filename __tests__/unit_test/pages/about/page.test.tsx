@@ -8,6 +8,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 // Mock getCurrentUser as a function
 vi.mock('@/app/actions/getCurrentUser', () => ({
     default: vi.fn(),
+    auth: vi.fn(() => Promise.resolve({ user: { email: 'user-1@test.com' } })),
 }));
 
 vi.mock('@/app/components/utils/ClientOnly', () => ({

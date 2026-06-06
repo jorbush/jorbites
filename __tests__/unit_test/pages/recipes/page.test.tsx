@@ -6,6 +6,7 @@ import RecipePage from '@/app/recipes/[recipeId]/page';
 // Mocks
 vi.mock('@/app/actions/getCurrentUser', () => ({
     default: vi.fn(),
+    auth: vi.fn(() => Promise.resolve({ user: { email: 'user-1@test.com' } })),
 }));
 
 vi.mock('@/app/actions/getRecipeById', () => ({

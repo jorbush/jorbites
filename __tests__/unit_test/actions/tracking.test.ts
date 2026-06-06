@@ -9,6 +9,18 @@ import {
 } from 'vitest';
 import { logger } from '@/app/lib/axiom/server';
 
+vi.mock('@/app/actions/getCurrentUser', async (importOriginal) => {
+    const original =
+        await importOriginal<typeof import('@/app/actions/getCurrentUser')>();
+    return {
+        ...original,
+        default: vi.fn(),
+        auth: vi.fn(() =>
+            Promise.resolve({ user: { email: 'user-1@test.com' } })
+        ),
+    };
+});
+
 // ---------------------------------------------------------------------------
 // Helpers to build a mock producer
 // ---------------------------------------------------------------------------

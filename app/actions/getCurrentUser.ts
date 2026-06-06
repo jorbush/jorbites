@@ -53,3 +53,7 @@ export default async function getCurrentUser() {
         return null;
     }
 }
+
+export async function auth() {
+    return await getServerSession(authOptions);
+}
