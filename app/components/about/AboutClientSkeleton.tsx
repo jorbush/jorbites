@@ -10,7 +10,7 @@ const AboutClientSkeleton = () => {
                     <div className="mx-auto h-6 w-64 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                 </div>
 
-                <div className="space-y-8">
+                <div className="flex flex-col gap-8">
                     {/* Section Skeletons */}
                     {[1, 2, 3, 4, 5, 6].map((index) => (
                         <section
@@ -18,7 +18,7 @@ const AboutClientSkeleton = () => {
                             className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900"
                         >
                             <div className="mb-4 h-8 w-48 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                            <div className="space-y-2">
+                            <div className="flex flex-col gap-2">
                                 <div className="h-4 w-full animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                                 <div className="h-4 w-5/6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                                 <div className="h-4 w-4/6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>

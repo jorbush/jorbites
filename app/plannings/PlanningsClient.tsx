@@ -214,13 +214,13 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                                         {t('PREVIEW_RECIPES') ||
                                             'Recipes Preview'}
                                     </span>
-                                    <div className="flex flex-row items-center -space-x-3 overflow-hidden py-1">
+                                    <div className="flex flex-row items-center overflow-hidden py-1">
                                         {previews.map((recipe: any) => (
                                             <img
                                                 key={recipe.id}
                                                 src={recipe.imageSrc}
                                                 alt={recipe.title}
-                                                className="inline-block size-8 rounded-full object-cover ring-2 ring-white transition-all group-hover:scale-105 dark:ring-neutral-900"
+                                                className="inline-block size-8 -ml-3 rounded-full object-cover ring-2 ring-white transition-all first:ml-0 group-hover:scale-105 dark:ring-neutral-900"
                                                 title={recipe.title}
                                             />
                                         ))}

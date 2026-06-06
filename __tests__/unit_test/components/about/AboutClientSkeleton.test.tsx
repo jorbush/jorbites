@@ -77,7 +77,7 @@ describe('AboutClientSkeleton', () => {
         // Each section should have content skeleton lines
         const sections = container.querySelectorAll('section');
         sections.forEach((section) => {
-            const contentLines = section.querySelectorAll('.space-y-2 > div');
+            const contentLines = section.querySelectorAll('.gap-2 > div');
             expect(contentLines.length).toBe(3);
         });
     });

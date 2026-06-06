@@ -64,7 +64,7 @@ describe('<WorkshopClientSkeleton />', () => {
         const { container } = render(<WorkshopClientSkeleton />);
 
         // Description should have multiple lines
-        const descriptionLines = container.querySelectorAll('.space-y-2');
+        const descriptionLines = container.querySelectorAll('.gap-2');
         expect(descriptionLines.length).toBeGreaterThan(0);
     });
 

@@ -9,7 +9,7 @@ const WorkshopClientSkeleton = () => {
                     {/* Navigation and title area with back/share buttons */}
                     <div className="flex items-baseline justify-between sm:mr-4 sm:ml-4">
                         {/* Back button */}
-                        <div className="mr-4 flex translate-y-3 items-center space-x-2 text-neutral-600 md:translate-y-0">
+                        <div className="mr-4 flex translate-y-3 items-center gap-2 text-neutral-600 md:translate-y-0">
                             <div className="size-6 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                         </div>
 
@@ -20,7 +20,7 @@ const WorkshopClientSkeleton = () => {
                         </div>
 
                         {/* Share button */}
-                        <div className="ml-4 flex translate-y-3 items-center space-x-2 text-neutral-600 md:translate-y-0">
+                        <div className="ml-4 flex translate-y-3 items-center gap-2 text-neutral-600 md:translate-y-0">
                             <div className="size-6 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                         </div>
                     </div>
@@ -62,7 +62,7 @@ const WorkshopClientSkeleton = () => {
                         {/* Description */}
                         <div className="flex flex-col gap-4">
                             <div className="h-6 w-24 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                            <div className="space-y-2">
+                            <div className="flex flex-col gap-2">
                                 <div className="h-4 w-full animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                                 <div className="h-4 w-5/6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                                 <div className="h-4 w-4/5 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
@@ -74,7 +74,7 @@ const WorkshopClientSkeleton = () => {
                         {/* Ingredients */}
                         <div className="flex flex-col gap-4">
                             <div className="h-6 w-32 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                            <div className="space-y-2">
+                            <div className="flex flex-col gap-2">
                                 {[1, 2, 3, 4].map((i) => (
                                     <div
                                         key={i}
@@ -93,7 +93,7 @@ const WorkshopClientSkeleton = () => {
 
                             {/* Info card */}
                             <div className="rounded-lg border p-4 dark:border-neutral-700">
-                                <div className="space-y-2">
+                                <div className="flex flex-col gap-2">
                                     <div className="h-5 w-32 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                                     <div className="h-4 w-24 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                                     <div className="h-4 w-20 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>

@@ -95,7 +95,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                     )}
                     <button
                         type="button"
-                        className="flex cursor-pointer items-center space-x-2 text-neutral-600 focus:outline-hidden dark:text-neutral-100"
+                        className="flex cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden dark:text-neutral-100"
                         onClick={() => share()}
                         aria-label="Share"
                     >

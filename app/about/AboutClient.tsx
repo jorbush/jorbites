@@ -34,7 +34,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                     />
                 </div>
 
-                <div className="space-y-8">
+                <div className="flex flex-col gap-8">
                     {/* What is Jorbites Section */}
                     <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
                         <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
@@ -116,12 +116,12 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                         <p className="mb-4 text-neutral-600 dark:text-neutral-400">
                             {t('architecture_description')}
                         </p>
-                        <div className="space-y-3">
+                        <div className="flex flex-col gap-3">
                             <div>
                                 <h3 className="mb-2 font-semibold text-neutral-800 dark:text-neutral-200">
                                     {t('core_platform')}
                                 </h3>
-                                <ul className="list-inside list-disc space-y-1 text-sm text-neutral-600 dark:text-neutral-400">
+                                <ul className="flex list-inside list-disc flex-col gap-1 text-sm text-neutral-600 dark:text-neutral-400">
                                     <li>{t('core_platform_nextjs')}</li>
                                     <li>{t('core_platform_mongodb')}</li>
                                     <li>{t('core_platform_nextauth')}</li>
@@ -133,7 +133,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                 <h3 className="mb-2 font-semibold text-neutral-800 dark:text-neutral-200">
                                     {t('microservices')}
                                 </h3>
-                                <ul className="list-inside list-disc space-y-1 text-sm text-neutral-600 dark:text-neutral-400">
+                                <ul className="flex list-inside list-disc flex-col gap-1 text-sm text-neutral-600 dark:text-neutral-400">
                                     <li>
                                         <a
                                             href="https://github.com/jorbush/jorbites-notifier"
@@ -173,7 +173,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                 <h3 className="mb-2 font-semibold text-neutral-800 dark:text-neutral-200">
                                     {t('videogames')}
                                 </h3>
-                                <ul className="list-inside list-disc space-y-1 text-sm text-neutral-600 dark:text-neutral-400">
+                                <ul className="flex list-inside list-disc flex-col gap-1 text-sm text-neutral-600 dark:text-neutral-400">
                                     <li>
                                         <a
                                             href="https://paltin-dash.vercel.app/"
@@ -256,7 +256,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                         <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
                             {t('the_project')}
                         </h2>
-                        <div className="flex flex-col items-center space-y-4 md:flex-row md:items-start md:space-y-0 md:space-x-6">
+                        <div className="flex flex-col items-center gap-4 md:flex-row md:items-start md:gap-6">
                             <div className="flex-shrink-0">
                                 <Image
                                     src="/avocado.webp"
@@ -270,11 +270,11 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                 <p className="mb-4 text-neutral-600 dark:text-neutral-400">
                                     {t('developer_description')}
                                 </p>
-                                <div className="flex flex-col items-center space-y-3 md:items-start">
+                                <div className="flex flex-col items-center gap-3 md:items-start">
                                     <div className="flex flex-wrap justify-center gap-4 md:justify-start">
                                         <a
                                             href="https://github.com/jorbush"
-                                            className="flex items-center space-x-2 text-neutral-600 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+                                            className="flex items-center gap-2 text-neutral-600 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -283,14 +283,14 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                         </a>
                                         <a
                                             href={`mailto:${CONTACT_EMAIL}`}
-                                            className="flex items-center space-x-2 text-neutral-600 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+                                            className="flex items-center gap-2 text-neutral-600 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
                                         >
                                             <FaEnvelope className="size-5" />
                                             <span>{t('contact')}</span>
                                         </a>
                                         <a
                                             href="https://github.com/jorbush/jorbites"
-                                            className="flex items-center space-x-2 text-neutral-600 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+                                            className="flex items-center gap-2 text-neutral-600 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -299,7 +299,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                                         </a>
                                         <a
                                             href="https://github.com/sponsors/jorbush"
-                                            className="inline-flex items-center space-x-2 rounded-lg bg-pink-600 px-4 py-2 text-white transition-colors hover:bg-pink-700"
+                                            className="inline-flex items-center gap-2 rounded-lg bg-pink-600 px-4 py-2 text-white transition-colors hover:bg-pink-700"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -322,7 +322,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ currentUser }) => {
                         <p className="mb-6 text-neutral-600 dark:text-neutral-400">
                             {t('get_started_description')}
                         </p>
-                        <div className="flex flex-col space-y-3 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
                             <Link
                                 href="/"
                                 prefetch={false}
