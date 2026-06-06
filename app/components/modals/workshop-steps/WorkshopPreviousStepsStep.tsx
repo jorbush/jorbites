@@ -45,7 +45,7 @@ const WorkshopPreviousStepsStep: React.FC<WorkshopPreviousStepsStepProps> = ({
         for (let i = 0; i < numPreviousSteps; i++) {
             components.push(
                 <div
-                    key={i}
+                    key={`workshop-previous-step-input-${i}`}
                     className="relative flex w-full items-center gap-3 px-2"
                 >
                     <div className="grow">

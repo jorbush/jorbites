@@ -103,12 +103,12 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                 const imageWidth = `${(100 - (colsPerRow - 1) * 4) / colsPerRow}%`;
                 return (
                     <View
-                        key={rowIdx}
+                        key={`row-${rowIdx}`}
                         style={styles.galleryRow}
                     >
                         {row.map((src, colIdx) => (
                             <Image
-                                key={colIdx}
+                                key={`extra-img-${colIdx}`}
                                 src={src}
                                 style={[
                                     styles.galleryImage,
@@ -180,7 +180,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     {recipe.ingredients &&
                         recipe.ingredients.map((ing, i) => (
                             <View
-                                key={i}
+                                key={`ing-${i}-${ing}`}
                                 style={styles.ingredientItem}
                             >
                                 <Text style={styles.bulletPoint}>•</Text>
@@ -214,7 +214,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     {recipe.steps &&
                         recipe.steps.map((step, i) => (
                             <View
-                                key={i}
+                                key={`step-${i}-${step}`}
                                 style={styles.stepItem}
                             >
                                 <Text style={styles.stepNum}>{i + 1}.</Text>

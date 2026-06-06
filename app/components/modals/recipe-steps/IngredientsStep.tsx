@@ -95,7 +95,7 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
         for (let i = 0; i < numIngredients; i++) {
             components.push(
                 <div
-                    key={i}
+                    key={`ingredient-input-${i}`}
                     className="relative flex w-full items-center gap-3 px-2"
                 >
                     <div className="grow">

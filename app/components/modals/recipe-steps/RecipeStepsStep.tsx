@@ -95,7 +95,7 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
         for (let i = 0; i < numSteps; i++) {
             components.push(
                 <div
-                    key={i}
+                    key={`step-input-${i}`}
                     className="relative flex w-full items-center gap-3 px-2"
                 >
                     <div className="shrink-0 text-base">{`${i + 1}.`}</div>
