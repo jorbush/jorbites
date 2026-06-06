@@ -19,7 +19,7 @@ export async function GET() {
 
         logger.info('GET /api/lists - start', { userId: currentUser.id });
 
-        let lists = await prisma.list.findMany({
+        const lists = await prisma.list.findMany({
             where: {
                 userId: currentUser.id,
             },
@@ -32,41 +32,6 @@ export async function GET() {
                 createdAt: 'asc',
             },
         });
-
-        // Lazy create default list if the user has no lists
-        // Note: Restored per user request to ensure the AddToListModal always has the default list ready
-        if (lists.length === 0) {
-            try {
-                const defaultList = await prisma.list.create({
-                    data: {
-                        name: 'to cook later',
-                        isDefault: true,
-                        isPrivate: true,
-                        userId: currentUser.id,
-                    },
-                    include: {
-                        user: {
-                            select: USER_SELECT_FIELDS,
-                        },
-                    },
-                });
-                lists = [defaultList];
-            } catch (error: any) {
-                logger.error('GET /api/lists - error creating default list: ', {
-                    error: error.message,
-                });
-                // If a parallel request already created it, re-fetch
-                lists = await prisma.list.findMany({
-                    where: { userId: currentUser.id },
-                    include: {
-                        user: {
-                            select: USER_SELECT_FIELDS,
-                        },
-                    },
-                    orderBy: { createdAt: 'asc' },
-                });
-            }
-        }
 
         logger.info('GET /api/lists - success', {
             userId: currentUser.id,
@@ -103,26 +68,56 @@ export async function POST(request: Request) {
         logger.info('POST /api/lists - start', { userId: currentUser.id });
 
         const body = await request.json();
-        const { name, isPrivate, recipeId } = body;
+        const { name, isPrivate, recipeId, isDefault } = body;
 
         if (typeof name !== 'string' || name.trim().length === 0) {
             return badRequest('Missing or invalid name');
         }
 
-        const list = await prisma.list.create({
-            data: {
-                name: name.trim(),
-                isPrivate: isPrivate !== undefined ? isPrivate : true,
-                isDefault: false,
-                userId: currentUser.id,
-                ...(recipeId && { recipeIds: [recipeId] }),
-            },
-            include: {
-                user: {
-                    select: USER_SELECT_FIELDS,
+        let list;
+        try {
+            list = await prisma.list.create({
+                data: {
+                    name: name.trim(),
+                    isPrivate: isPrivate !== undefined ? isPrivate : true,
+                    isDefault: isDefault === true,
+                    userId: currentUser.id,
+                    ...(recipeId && { recipeIds: [recipeId] }),
                 },
-            },
-        });
+                include: {
+                    user: {
+                        select: USER_SELECT_FIELDS,
+                    },
+                },
+            });
+        } catch (error: any) {
+            if (isDefault) {
+                logger.warn(
+                    'POST /api/lists - error creating default list, checking if already exists: ',
+                    {
+                        error: error.message,
+                    }
+                );
+                const existing = await prisma.list.findFirst({
+                    where: {
+                        userId: currentUser.id,
+                        isDefault: true,
+                    },
+                    include: {
+                        user: {
+                            select: USER_SELECT_FIELDS,
+                        },
+                    },
+                });
+                if (existing) {
+                    list = existing;
+                } else {
+                    throw error;
+                }
+            } else {
+                throw error;
+            }
+        }
 
         logger.info('POST /api/lists - success', { listId: list.id });
 
