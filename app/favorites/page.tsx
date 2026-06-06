@@ -19,14 +19,20 @@ interface FavoritesPageProps {
 }
 
 const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
-    const resolvedParams = await searchParams;
-    const favoriteRecipesResponse = await getFavoriteRecipes({
-        ...resolvedParams,
-        limit: isMobile((await headers()).get('user-agent') || '')
-            ? MOBILE_RECIPES_LIMIT
-            : DESKTOP_RECIPES_LIMIT,
-    });
-    const currentUser = await getCurrentUser();
+    const [resolvedParams, userHeaders] = await Promise.all([
+        searchParams,
+        headers(),
+    ]);
+
+    const [favoriteRecipesResponse, currentUser] = await Promise.all([
+        getFavoriteRecipes({
+            ...resolvedParams,
+            limit: isMobile(userHeaders.get('user-agent') || '')
+                ? MOBILE_RECIPES_LIMIT
+                : DESKTOP_RECIPES_LIMIT,
+        }),
+        getCurrentUser(),
+    ]);
 
     if (favoriteRecipesResponse.totalRecipes === 0) {
         // Check if it's because of filters or truly no favorites

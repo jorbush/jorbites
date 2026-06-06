@@ -5,8 +5,10 @@ import getLists from '@/app/actions/getLists';
 import ListsClient from '@/app/lists/ListsClient';
 
 const ListsPage = async () => {
-    const currentUser = await getCurrentUser();
-    const lists = await getLists();
+    const [currentUser, lists] = await Promise.all([
+        getCurrentUser(),
+        getLists(),
+    ]);
 
     if (!currentUser) {
         return (

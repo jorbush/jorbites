@@ -6,8 +6,10 @@ import TopJorbitersClient from './TopJorbitersClient';
 import TopJorbitersClientSkeleton from '@/app/components/top-jorbiters/TopJorbitersClientSkeleton';
 
 const TopJorbitersPage = async () => {
-    const currentUser = await getCurrentUser();
-    const topJorbiters = await getTopJorbiters();
+    const [currentUser, topJorbiters] = await Promise.all([
+        getCurrentUser(),
+        getTopJorbiters(),
+    ]);
 
     if (!topJorbiters) {
         return (

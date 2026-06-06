@@ -14,8 +14,10 @@ interface QuestsPageProps {
 }
 
 const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
-    const resolvedParams = await searchParams;
-    const currentUser = await getCurrentUser();
+    const [resolvedParams, currentUser] = await Promise.all([
+        searchParams,
+        getCurrentUser(),
+    ]);
     const page = parseInt(resolvedParams.page || '1');
     const status = resolvedParams.status;
 
