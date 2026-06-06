@@ -9,8 +9,23 @@ import fs from 'fs';
 import path from 'path';
 
 // Mock fs and path modules
-vi.mock('fs');
-vi.mock('path');
+vi.mock('fs', () => ({
+    default: {
+        readFileSync: vi.fn(),
+        existsSync: vi.fn(),
+        readdirSync: vi.fn(),
+    },
+    readFileSync: vi.fn(),
+    existsSync: vi.fn(),
+    readdirSync: vi.fn(),
+}));
+
+vi.mock('path', () => ({
+    default: {
+        join: vi.fn((...args) => args.join('/')),
+    },
+    join: vi.fn((...args) => args.join('/')),
+}));
 
 // Mock gray-matter
 vi.mock('gray-matter', () => ({
