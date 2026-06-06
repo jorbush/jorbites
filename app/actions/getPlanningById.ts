@@ -19,8 +19,15 @@ export default async function getPlanningById(params: IParams) {
         try {
             const cachedData = await redisCache.get(cacheKey);
             if (cachedData) {
-                logger.info('getPlanningById - cache hit', { planningId });
-                return JSON.parse(cachedData);
+                const parsedData = JSON.parse(cachedData);
+                // Extra safety: do not return from cache if it's somehow a private plan
+                if (!parsedData.isPrivate) {
+                    logger.info('getPlanningById - cache hit', { planningId });
+                    return parsedData;
+                }
+                logger.warn('getPlanningById - cache hit but plan is private', {
+                    planningId,
+                });
             }
         } catch (error: any) {
             logger.error('getPlanningById - cache error', {
