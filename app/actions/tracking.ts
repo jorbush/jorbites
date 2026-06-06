@@ -3,6 +3,8 @@
 import producer, { kafkaStatus } from '@/app/lib/kafka';
 import { logger } from '@/app/lib/axiom/server';
 import { UserEventType, UserInteractionData } from '@/app/types/tracking';
+import { auth } from '@/app/actions/getCurrentUser';
+import { unauthorized } from 'next/navigation';
 
 const KAFKA_TIMEOUT_MS = 3000;
 
@@ -24,6 +26,11 @@ export async function trackUserInteraction(
     eventType: UserEventType,
     data: UserInteractionData
 ) {
+    const session = await auth();
+    if (!session) {
+        unauthorized();
+    }
+
     const { recipeId, userId, metadata } = data;
 
     if (!producer) {
@@ -80,6 +87,11 @@ export async function trackUserInteraction(
 }
 
 export async function trackRecipeView(recipeId: string, userId: string) {
+    const session = await auth();
+    if (!session) {
+        unauthorized();
+    }
+
     return trackUserInteraction(UserEventType.RECIPE_VIEW, {
         recipeId,
         userId,
@@ -87,6 +99,11 @@ export async function trackRecipeView(recipeId: string, userId: string) {
 }
 
 export async function trackRecipeLike(recipeId: string, userId: string) {
+    const session = await auth();
+    if (!session) {
+        unauthorized();
+    }
+
     return trackUserInteraction(UserEventType.RECIPE_LIKE, {
         recipeId,
         userId,
@@ -94,6 +111,11 @@ export async function trackRecipeLike(recipeId: string, userId: string) {
 }
 
 export async function trackRecipeUnlike(recipeId: string, userId: string) {
+    const session = await auth();
+    if (!session) {
+        unauthorized();
+    }
+
     return trackUserInteraction(UserEventType.RECIPE_UNLIKE, {
         recipeId,
         userId,
@@ -101,6 +123,11 @@ export async function trackRecipeUnlike(recipeId: string, userId: string) {
 }
 
 export async function trackRecipeSave(recipeId: string, userId: string) {
+    const session = await auth();
+    if (!session) {
+        unauthorized();
+    }
+
     return trackUserInteraction(UserEventType.RECIPE_SAVE, {
         recipeId,
         userId,
@@ -108,6 +135,11 @@ export async function trackRecipeSave(recipeId: string, userId: string) {
 }
 
 export async function trackRecipeUnsave(recipeId: string, userId: string) {
+    const session = await auth();
+    if (!session) {
+        unauthorized();
+    }
+
     return trackUserInteraction(UserEventType.RECIPE_UNSAVE, {
         recipeId,
         userId,
@@ -119,6 +151,11 @@ export async function trackRecipeCooked(
     userId: string,
     metadata?: Record<string, unknown>
 ) {
+    const session = await auth();
+    if (!session) {
+        unauthorized();
+    }
+
     return trackUserInteraction(UserEventType.RECIPE_COOKED, {
         recipeId,
         userId,

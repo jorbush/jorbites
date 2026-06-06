@@ -2,7 +2,8 @@
 
 import webpush from 'web-push';
 import prisma from '@/app/lib/prismadb';
-import getCurrentUser from '@/app/actions/getCurrentUser';
+import getCurrentUser, { auth } from '@/app/actions/getCurrentUser';
+import { unauthorized } from 'next/navigation';
 
 if (
     !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
@@ -18,6 +19,11 @@ if (
 }
 
 export async function subscribeUser(sub: webpush.PushSubscription) {
+    const session = await auth();
+    if (!session) {
+        unauthorized();
+    }
+
     const currentUser = await getCurrentUser();
     if (!currentUser) {
         throw new Error('Not authenticated');
@@ -48,6 +54,11 @@ export async function subscribeUser(sub: webpush.PushSubscription) {
 }
 
 export async function unsubscribeUser(sub?: webpush.PushSubscription | null) {
+    const session = await auth();
+    if (!session) {
+        unauthorized();
+    }
+
     const currentUser = await getCurrentUser();
     if (!currentUser) {
         throw new Error('Not authenticated');
