@@ -3,7 +3,7 @@ import {
     isCloudinaryUrl,
     extractPublicId,
     deleteFromCloudinary,
-    deleteMultipleFromCloudinary
+    deleteMultipleFromCloudinary,
 } from '@/app/utils/cloudinary';
 import { v2 as cloudinary } from 'cloudinary';
 
@@ -24,11 +24,17 @@ describe('cloudinary utils', () => {
 
     describe('isCloudinaryUrl', () => {
         it('should return true for valid cloudinary URLs', () => {
-            expect(isCloudinaryUrl('https://res.cloudinary.com/demo/image/upload/sample.jpg')).toBe(true);
+            expect(
+                isCloudinaryUrl(
+                    'https://res.cloudinary.com/demo/image/upload/sample.jpg'
+                )
+            ).toBe(true);
         });
 
         it('should return false for non-cloudinary URLs', () => {
-            expect(isCloudinaryUrl('https://example.com/image.jpg')).toBe(false);
+            expect(isCloudinaryUrl('https://example.com/image.jpg')).toBe(
+                false
+            );
         });
 
         it('should return false for empty or non-string inputs', () => {
@@ -40,19 +46,35 @@ describe('cloudinary utils', () => {
 
     describe('extractPublicId', () => {
         it('should extract public_id from simple URL', () => {
-            expect(extractPublicId('https://res.cloudinary.com/demo/image/upload/sample.jpg')).toBe('sample');
+            expect(
+                extractPublicId(
+                    'https://res.cloudinary.com/demo/image/upload/sample.jpg'
+                )
+            ).toBe('sample');
         });
 
         it('should extract public_id from URL with version', () => {
-            expect(extractPublicId('https://res.cloudinary.com/demo/image/upload/v123456789/sample.jpg')).toBe('sample');
+            expect(
+                extractPublicId(
+                    'https://res.cloudinary.com/demo/image/upload/v123456789/sample.jpg'
+                )
+            ).toBe('sample');
         });
 
         it('should extract public_id from URL with transformations', () => {
-            expect(extractPublicId('https://res.cloudinary.com/demo/image/upload/w_400,h_400,c_fill/sample.jpg')).toBe('sample');
+            expect(
+                extractPublicId(
+                    'https://res.cloudinary.com/demo/image/upload/w_400,h_400,c_fill/sample.jpg'
+                )
+            ).toBe('sample');
         });
 
         it('should extract public_id from URL with folders', () => {
-            expect(extractPublicId('https://res.cloudinary.com/demo/image/upload/v1/folder/subfolder/sample.jpg')).toBe('folder/subfolder/sample');
+            expect(
+                extractPublicId(
+                    'https://res.cloudinary.com/demo/image/upload/v1/folder/subfolder/sample.jpg'
+                )
+            ).toBe('folder/subfolder/sample');
         });
 
         it('should return null for non-cloudinary URLs', () => {
@@ -62,32 +84,46 @@ describe('cloudinary utils', () => {
 
     describe('deleteFromCloudinary', () => {
         it('should return true when cloudinary deletion is successful', async () => {
-            vi.mocked(cloudinary.uploader.destroy).mockResolvedValue({ result: 'ok' });
+            vi.mocked(cloudinary.uploader.destroy).mockResolvedValue({
+                result: 'ok',
+            });
 
-            const result = await deleteFromCloudinary('https://res.cloudinary.com/demo/image/upload/sample.jpg');
+            const result = await deleteFromCloudinary(
+                'https://res.cloudinary.com/demo/image/upload/sample.jpg'
+            );
 
             expect(result).toBe(true);
             expect(cloudinary.uploader.destroy).toHaveBeenCalledWith('sample');
         });
 
         it('should return false when cloudinary deletion fails', async () => {
-            vi.mocked(cloudinary.uploader.destroy).mockResolvedValue({ result: 'not found' });
+            vi.mocked(cloudinary.uploader.destroy).mockResolvedValue({
+                result: 'not found',
+            });
 
-            const result = await deleteFromCloudinary('https://res.cloudinary.com/demo/image/upload/sample.jpg');
+            const result = await deleteFromCloudinary(
+                'https://res.cloudinary.com/demo/image/upload/sample.jpg'
+            );
 
             expect(result).toBe(false);
         });
 
         it('should return false when an error occurs', async () => {
-            vi.mocked(cloudinary.uploader.destroy).mockRejectedValue(new Error('Network error'));
+            vi.mocked(cloudinary.uploader.destroy).mockRejectedValue(
+                new Error('Network error')
+            );
 
-            const result = await deleteFromCloudinary('https://res.cloudinary.com/demo/image/upload/sample.jpg');
+            const result = await deleteFromCloudinary(
+                'https://res.cloudinary.com/demo/image/upload/sample.jpg'
+            );
 
             expect(result).toBe(false);
         });
 
         it('should work with public_id directly', async () => {
-            vi.mocked(cloudinary.uploader.destroy).mockResolvedValue({ result: 'ok' });
+            vi.mocked(cloudinary.uploader.destroy).mockResolvedValue({
+                result: 'ok',
+            });
 
             const result = await deleteFromCloudinary('sample');
 
@@ -98,11 +134,13 @@ describe('cloudinary utils', () => {
 
     describe('deleteMultipleFromCloudinary', () => {
         it('should delete multiple images and return results', async () => {
-            vi.mocked(cloudinary.uploader.destroy).mockResolvedValue({ result: 'ok' });
+            vi.mocked(cloudinary.uploader.destroy).mockResolvedValue({
+                result: 'ok',
+            });
 
             const urls = [
                 'https://res.cloudinary.com/demo/image/upload/img1.jpg',
-                'https://res.cloudinary.com/demo/image/upload/img2.jpg'
+                'https://res.cloudinary.com/demo/image/upload/img2.jpg',
             ];
 
             const result = await deleteMultipleFromCloudinary(urls);
@@ -121,7 +159,7 @@ describe('cloudinary utils', () => {
 
             const urls = [
                 'https://res.cloudinary.com/demo/image/upload/img1.jpg',
-                'https://res.cloudinary.com/demo/image/upload/img2.jpg'
+                'https://res.cloudinary.com/demo/image/upload/img2.jpg',
             ];
 
             const result = await deleteMultipleFromCloudinary(urls);
@@ -135,10 +173,12 @@ describe('cloudinary utils', () => {
         it('should handle non-cloudinary URLs by filtering them out', async () => {
             const urls = [
                 'https://res.cloudinary.com/demo/image/upload/img1.jpg',
-                'https://example.com/not-cloudinary.jpg'
+                'https://example.com/not-cloudinary.jpg',
             ];
 
-            vi.mocked(cloudinary.uploader.destroy).mockResolvedValue({ result: 'ok' });
+            vi.mocked(cloudinary.uploader.destroy).mockResolvedValue({
+                result: 'ok',
+            });
 
             const result = await deleteMultipleFromCloudinary(urls);
 
