@@ -43,7 +43,7 @@ const WorkshopsListSkeleton = () => {
                 {/* Call to Action Card Skeleton */}
                 <div className="flex w-full flex-row items-center justify-center">
                     <div className="border-green-450/20 from-green-450/10 to-green-450/20 dark:border-green-450/30 dark:from-green-450/10 dark:to-green-450/20 w-full max-w-2xl rounded-lg border-2 border-dashed bg-gradient-to-r p-8 text-center">
-                        <div className="mx-auto max-w-md space-y-4">
+                        <div className="mx-auto flex max-w-md flex-col gap-4">
                             <div className="mx-auto size-16 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                             <div className="mx-auto h-7 w-3/4 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                             <div className="mx-auto h-5 w-full animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>

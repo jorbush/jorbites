@@ -149,7 +149,7 @@ const PeriodFilter: React.FC = () => {
                     }}
                     data-testid="period-filter-dropdown"
                 >
-                    <div className="space-y-4">
+                    <div className="flex flex-col gap-4">
                         <div className="flex items-center justify-between">
                             <h3 className="font-medium text-neutral-900 dark:text-neutral-100">
                                 {t('filter_by_date') || 'Filter by date'}
@@ -179,7 +179,7 @@ const PeriodFilter: React.FC = () => {
                             </div>
                         )}
 
-                        <div className="flex flex-col space-y-3">
+                        <div className="flex flex-col gap-3">
                             <div className="flex flex-col">
                                 <label
                                     htmlFor="period-filter-start-date"

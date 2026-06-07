@@ -49,7 +49,7 @@ const Footer = () => {
             data-testid="footer"
         >
             <div className="mx-auto max-w-6xl">
-                <div className="flex flex-col items-center space-y-6">
+                <div className="flex flex-col items-center gap-6">
                     <FooterMenu />
                     <a
                         href={`https://github.com/jorbush/jorbites/releases/tag/v${packageJson.version}`}
@@ -59,7 +59,7 @@ const Footer = () => {
                     >
                         {`${t('version')} ${packageJson.version}`}
                     </a>
-                    <div className="flex space-x-6">
+                    <div className="flex gap-6">
                         {socialLinks.map((link) => (
                             <a
                                 key={link.label}
@@ -91,7 +91,7 @@ const Footer = () => {
                     </nav>
                     <Link
                         href="/"
-                        className="group flex items-center space-x-2 opacity-80 transition-opacity hover:opacity-100"
+                        className="group flex items-center gap-2 opacity-80 transition-opacity hover:opacity-100"
                     >
                         <Image
                             src="/avocado.webp"

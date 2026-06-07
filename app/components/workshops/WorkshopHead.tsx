@@ -32,7 +32,7 @@ const WorkshopHead: React.FC<WorkshopHeadProps> = ({
             <div className="flex items-baseline justify-between sm:mr-4 sm:ml-4">
                 <button
                     type="button"
-                    className="mr-4 flex translate-y-3 cursor-pointer items-center space-x-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    className="mr-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
                     onClick={() => back()}
                 >
                     <FiChevronLeft className="text-xl" />
@@ -45,7 +45,7 @@ const WorkshopHead: React.FC<WorkshopHeadProps> = ({
                 />
                 <button
                     type="button"
-                    className="ml-4 flex translate-y-3 cursor-pointer items-center space-x-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    className="ml-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
                     onClick={() => share()}
                     aria-label="Share"
                 >

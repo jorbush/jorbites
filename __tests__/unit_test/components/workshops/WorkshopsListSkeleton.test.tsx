@@ -87,7 +87,7 @@ describe('<WorkshopsListSkeleton />', () => {
         const { container } = render(<WorkshopsListSkeleton />);
 
         // CTA should have emoji skeleton (rounded-full), title, description, button
-        const ctaSkeletons = container.querySelectorAll('.space-y-4');
+        const ctaSkeletons = container.querySelectorAll('.gap-4');
         expect(ctaSkeletons.length).toBeGreaterThan(0);
     });
 

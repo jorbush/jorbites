@@ -55,7 +55,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
         >
             <div className="flex items-center justify-between">
                 {/* Left section - Avatar and Basic Info */}
-                <div className="flex min-w-0 items-center space-x-2 sm:space-x-4">
+                <div className="flex min-w-0 items-center gap-2 sm:gap-4">
                     <div className="flex items-center justify-center">
                         <RankIcon rank={index} />
                     </div>
