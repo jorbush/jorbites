@@ -29,7 +29,7 @@ export const parseFormattedText = (
             const cleanText = part.slice(3, -3);
             return (
                 <Text
-                    key={`text-part-${index}`}
+                    key={`bold-italic-${part}`}
                     style={[
                         baseStyle,
                         { fontWeight: 700, fontStyle: 'italic' },
@@ -48,7 +48,7 @@ export const parseFormattedText = (
             const cleanText = part.slice(2, -2);
             return (
                 <Text
-                    key={`text-part-${index}`}
+                    key={`bold-${part}`}
                     style={[baseStyle, { fontWeight: 700 }]}
                 >
                     {cleanText}
@@ -64,7 +64,7 @@ export const parseFormattedText = (
             const cleanText = part.slice(1, -1);
             return (
                 <Text
-                    key={`text-part-${index}`}
+                    key={`italic-${part}`}
                     style={[baseStyle, { fontStyle: 'italic' }]}
                 >
                     {cleanText}
