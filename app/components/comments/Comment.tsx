@@ -11,8 +11,8 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import VerificationBadge from '@/app/components/VerificationBadge';
 import { formatText } from '@/app/utils/textFormatting';
-import { TranslateableContent } from '@/app/components/utils/TranslateableContent';
 import StarRating from '@/app/components/utils/StarRating';
+import { useTranslateableContent } from '@/app/hooks/useTranslateableContent';
 
 interface CommentProps {
     userId: string;
@@ -42,10 +42,12 @@ const Comment: React.FC<CommentProps> = ({
     const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
-    const [translateButton, setTranslateButton] =
-        useState<React.ReactNode | null>(null);
     const { push, refresh } = useRouter() || {};
     const { t } = useTranslation();
+
+    const { displayContent, translateButtonElement } = useTranslateableContent({
+        content: comment,
+    });
 
     useEffect(() => {
         setMounted(true);
@@ -99,24 +101,18 @@ const Comment: React.FC<CommentProps> = ({
                         />
                     </div>
                 )}
-                <TranslateableContent
-                    content={comment}
-                    renderButton={false}
-                    onButtonStateChange={setTranslateButton}
-                    className="text-justify break-words whitespace-normal text-neutral-800 dark:text-neutral-100"
-                    renderContent={(content) => (
-                        <p
-                            className="text-justify break-words whitespace-normal text-neutral-800 dark:text-neutral-100"
-                            data-cy="comment-text"
-                        >
-                            {typeof content === 'string'
-                                ? formatText(content)
-                                : content}
-                        </p>
-                    )}
-                />
+                <div className="text-justify break-words whitespace-normal text-neutral-800 dark:text-neutral-100">
+                    <p
+                        className="text-justify break-words whitespace-normal text-neutral-800 dark:text-neutral-100"
+                        data-cy="comment-text"
+                    >
+                        {typeof displayContent === 'string'
+                            ? formatText(displayContent)
+                            : displayContent}
+                    </p>
+                </div>
                 <div className="mt-2 flex min-h-[24px] items-center justify-between text-sm text-neutral-400">
-                    <div className="shrink-0">{translateButton}</div>
+                    <div className="shrink-0">{translateButtonElement}</div>
                     <div className="ml-auto">{formattedDate}</div>
                 </div>
                 {canDelete && (
