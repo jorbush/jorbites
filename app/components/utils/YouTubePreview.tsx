@@ -34,7 +34,7 @@ const YouTubePreview: React.FC<YouTubePreviewProps> = ({
         ? `https://img.youtube.com/vi/${videoId}/default.jpg`
         : `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
-    const handleClick = () => {
+    const openVideo = () => {
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
@@ -45,12 +45,12 @@ const YouTubePreview: React.FC<YouTubePreviewProps> = ({
     return (
         <div
             className={`relative cursor-pointer overflow-hidden rounded-lg bg-black ${className}`}
-            onClick={handleClick}
+            onClick={openVideo}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                    handleClick();
+                    openVideo();
                 }
             }}
         >

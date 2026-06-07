@@ -42,7 +42,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
         );
     }
 
-    const handleClick = () => {
+    const navigateToEvent = () => {
         push(`/events/${event.slug}`);
     };
 
@@ -51,11 +51,11 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
             role="button"
             tabIndex={0}
             className="dark:bg-dark cursor-pointer overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white transition hover:shadow-md dark:border-neutral-700 dark:text-neutral-100"
-            onClick={handleClick}
+            onClick={navigateToEvent}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    handleClick();
+                    navigateToEvent();
                 }
             }}
         >

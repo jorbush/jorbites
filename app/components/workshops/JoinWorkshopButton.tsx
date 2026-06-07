@@ -30,7 +30,7 @@ const JoinWorkshopButton: React.FC<JoinWorkshopButtonProps> = ({
     const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
 
-    const handleClick = useCallback(
+    const toggleParticipation = useCallback(
         async (e: React.MouseEvent<HTMLButtonElement>) => {
             e.stopPropagation();
 
@@ -108,7 +108,7 @@ const JoinWorkshopButton: React.FC<JoinWorkshopButtonProps> = ({
                       ? t('leave_workshop')
                       : t('join_workshop')
             }
-            onClick={handleClick}
+            onClick={toggleParticipation}
             disabled={loading}
             deleteButton={isParticipant}
         />

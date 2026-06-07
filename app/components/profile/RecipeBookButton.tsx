@@ -18,14 +18,14 @@ export const RecipeBookButton: React.FC<RecipeBookButtonProps> = ({
     const { t } = useTranslation();
     const recipeBookModal = useRecipeBookModal();
 
-    const handleClick = () => {
+    const openRecipeBookModal = () => {
         recipeBookModal.onOpen(userId, userName, userImage);
     };
 
     return (
         <button
             type="button"
-            onClick={handleClick}
+            onClick={openRecipeBookModal}
             className="flex cursor-pointer items-center gap-2 text-neutral-600 transition hover:text-green-600 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-100 dark:hover:text-green-400"
             title={t('generate_recipe_book') || 'Generate Recipe Book'}
             aria-label={t('generate_recipe_book') || 'Generate Recipe Book'}
