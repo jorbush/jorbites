@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { FiChevronLeft, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/navigation/Heading';
 import { useRouter } from 'next/navigation';
@@ -20,12 +21,14 @@ const WorkshopHead: React.FC<WorkshopHeadProps> = ({
     const { back } = useRouter() || {};
     const { share } = useShare();
 
-    const workshopDate = new Date(date);
-    const formattedDate = new Intl.DateTimeFormat('default', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    }).format(workshopDate);
+    const formattedDate = useMemo(() => {
+        const workshopDate = new Date(date);
+        return new Intl.DateTimeFormat('default', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        }).format(workshopDate);
+    }, [date]);
 
     return (
         <>
