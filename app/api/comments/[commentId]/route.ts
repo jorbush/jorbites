@@ -4,10 +4,10 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
 import getCommentById from '@/app/actions/getCommentById';
 import {
-    unauthorized,
+    unauthorizedResponse,
     invalidInput,
-    notFound,
-    forbidden,
+    notFoundResponse,
+    forbiddenResponse,
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
@@ -26,7 +26,7 @@ export async function DELETE(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to delete comment'
             );
         }
@@ -47,11 +47,11 @@ export async function DELETE(
         const comment = await getCommentById({ commentId });
 
         if (!comment) {
-            return notFound('Comment not found');
+            return notFoundResponse('Comment not found');
         }
 
         if (comment.userId !== currentUser.id) {
-            return forbidden('You can only delete your own comments');
+            return forbiddenResponse('You can only delete your own comments');
         }
 
         const deletedComment = await prisma.comment.delete({

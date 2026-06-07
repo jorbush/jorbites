@@ -4,7 +4,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import sendNotification from '@/app/actions/sendNotification';
 import { NotificationType } from '@/app/types/notification';
 import {
-    unauthorized,
+    unauthorizedResponse,
     validationError,
     badRequest,
     internalServerError,
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('User authentication required to create quest');
+            return unauthorizedResponse('User authentication required to create quest');
         }
 
         const body = await request.json();

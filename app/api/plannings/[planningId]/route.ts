@@ -4,10 +4,10 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
 import { USER_SELECT_FIELDS } from '@/app/utils/constants';
 import {
-    unauthorized,
+    unauthorizedResponse,
     internalServerError,
     badRequest,
-    notFound,
+    notFoundResponse,
 } from '@/app/utils/apiErrors';
 
 interface IParams {
@@ -49,7 +49,7 @@ export async function GET(
         });
 
         if (!planning) {
-            return notFound('Planning not found');
+            return notFoundResponse('Planning not found');
         }
 
         const safePlanning = {
@@ -108,7 +108,7 @@ export async function PATCH(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('Unauthorized');
+            return unauthorizedResponse('Unauthorized');
         }
 
         const { planningId } = params;
@@ -169,7 +169,7 @@ export async function PATCH(
         });
 
         if (!existingPlanning || existingPlanning.userId !== currentUser.id) {
-            return notFound('Not found or unauthorized');
+            return notFoundResponse('Not found or unauthorized');
         }
 
         // Perform transactional update: delete existing meals and insert new ones
@@ -301,7 +301,7 @@ export async function DELETE(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('Unauthorized');
+            return unauthorizedResponse('Unauthorized');
         }
 
         const { planningId } = params;
@@ -319,7 +319,7 @@ export async function DELETE(
         });
 
         if (!existingPlanning || existingPlanning.userId !== currentUser.id) {
-            return notFound('Not found or unauthorized');
+            return notFoundResponse('Not found or unauthorized');
         }
 
         await prisma.planning.delete({

@@ -4,7 +4,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
 import { USERNAME_MAX_LENGTH } from '@/app/utils/constants';
 import {
-    unauthorized,
+    unauthorizedResponse,
     badRequest,
     conflict,
     internalServerError,
@@ -16,7 +16,7 @@ export async function PATCH(request: Request) {
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to update username'
             );
         }

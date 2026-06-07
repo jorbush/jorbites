@@ -114,7 +114,7 @@ describe('User Recipes API Route', () => {
         expect(data.timestamp).toBeDefined();
     });
 
-    it('should return 401 unauthorized when user is not logged in', async () => {
+    it('should return 401 unauthorizedResponse when user is not logged in', async () => {
         (getCurrentUser as jest.Mock).mockResolvedValueOnce(null);
 
         const response = await GET({} as Request, {
@@ -131,7 +131,7 @@ describe('User Recipes API Route', () => {
         expect(prisma.recipe.findMany).not.toHaveBeenCalled();
     });
 
-    it('should return 401 unauthorized when current user tries to access recipes of a different user account', async () => {
+    it('should return 401 unauthorizedResponse when current user tries to access recipes of a different user account', async () => {
         (getCurrentUser as jest.Mock).mockResolvedValueOnce({
             id: 'user-123',
             name: 'Test User',

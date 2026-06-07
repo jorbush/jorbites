@@ -7,7 +7,7 @@ import { NotificationType } from '@/app/types/notification';
 import { COMMENT_MAX_LENGTH } from '@/app/utils/constants';
 import { extractMentionedUserIds } from '@/app/utils/mentionUtils';
 import {
-    unauthorized,
+    unauthorizedResponse,
     badRequest,
     validationError,
     internalServerError,
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('User authentication required to post comment');
+            return unauthorizedResponse('User authentication required to post comment');
         }
 
         // Rate limiting for comment creation - prevent spam

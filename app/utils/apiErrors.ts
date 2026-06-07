@@ -79,16 +79,16 @@ export function createApiError(
 }
 
 // Convenience functions for common errors
-export const unauthorized = (message?: string) =>
+export const unauthorizedResponse = (message?: string) =>
     createApiError(ApiErrorType.UNAUTHORIZED, message);
 
 export const badRequest = (message?: string) =>
     createApiError(ApiErrorType.BAD_REQUEST, message);
 
-export const notFound = (message?: string) =>
+export const notFoundResponse = (message?: string) =>
     createApiError(ApiErrorType.NOT_FOUND, message);
 
-export const forbidden = (message?: string) =>
+export const forbiddenResponse = (message?: string) =>
     createApiError(ApiErrorType.FORBIDDEN, message);
 
 export const conflict = (message?: string) =>

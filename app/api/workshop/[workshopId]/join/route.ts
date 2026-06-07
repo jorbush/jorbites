@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import {
-    unauthorized,
+    unauthorizedResponse,
     invalidInput,
     badRequest,
-    forbidden,
-    notFound,
+    forbiddenResponse,
+    notFoundResponse,
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { WORKSHOP_MAX_PARTICIPANTS } from '@/app/utils/constants';
@@ -25,7 +25,7 @@ export async function POST(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to join workshop'
             );
         }
@@ -59,7 +59,7 @@ export async function POST(
         });
 
         if (!workshop) {
-            return notFound('Workshop not found');
+            return notFoundResponse('Workshop not found');
         }
 
         // Check if workshop is private and user is not whitelisted
@@ -68,7 +68,7 @@ export async function POST(
             !workshop.whitelistedUserIds.includes(currentUser.id) &&
             workshop.hostId !== currentUser.id
         ) {
-            return forbidden(
+            return forbiddenResponse(
                 'This is a private workshop and you are not invited'
             );
         }

@@ -4,10 +4,10 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
 import { USER_SELECT_FIELDS } from '@/app/utils/constants';
 import {
-    unauthorized,
+    unauthorizedResponse,
     internalServerError,
     badRequest,
-    notFound,
+    notFoundResponse,
 } from '@/app/utils/apiErrors';
 
 interface IParams {
@@ -24,7 +24,7 @@ export async function POST(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('Unauthorized');
+            return unauthorizedResponse('Unauthorized');
         }
 
         const { listId, recipeId } = params;
@@ -48,7 +48,7 @@ export async function POST(
         });
 
         if (!list || list.userId !== currentUser.id) {
-            return notFound('Not found or unauthorized');
+            return notFoundResponse('Not found or unauthorized');
         }
 
         const recipe = await prisma.recipe.findUnique({
@@ -56,7 +56,7 @@ export async function POST(
         });
 
         if (!recipe) {
-            return notFound('Recipe not found');
+            return notFoundResponse('Recipe not found');
         }
 
         const updatedList = await prisma.list.update({
@@ -109,7 +109,7 @@ export async function DELETE(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('Unauthorized');
+            return unauthorizedResponse('Unauthorized');
         }
 
         const { listId, recipeId } = params;
@@ -133,7 +133,7 @@ export async function DELETE(
         });
 
         if (!list || list.userId !== currentUser.id) {
-            return notFound('Not found or unauthorized');
+            return notFoundResponse('Not found or unauthorized');
         }
 
         const updatedList = await prisma.list.update({

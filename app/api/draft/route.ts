@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { redis } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import { unauthorized, internalServerError } from '@/app/utils/apiErrors';
+import { unauthorizedResponse, internalServerError } from '@/app/utils/apiErrors';
 import { STEPS_LENGTH } from '@/app/utils/constants';
 import { logger } from '@/app/lib/axiom/server';
 
@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     try {
         const currentUser = await getCurrentUser();
         if (!currentUser) {
-            return unauthorized('User authentication required to save draft');
+            return unauthorizedResponse('User authentication required to save draft');
         }
         const body = await request.json();
 
@@ -40,7 +40,7 @@ export async function GET() {
     try {
         const currentUser = await getCurrentUser();
         if (!currentUser) {
-            return unauthorized('User authentication required to get draft');
+            return unauthorizedResponse('User authentication required to get draft');
         }
 
         logger.info('GET /api/draft - start', { userId: currentUser.id });
@@ -60,7 +60,7 @@ export async function DELETE() {
     try {
         const currentUser = await getCurrentUser();
         if (!currentUser) {
-            return unauthorized('User authentication required to delete draft');
+            return unauthorizedResponse('User authentication required to delete draft');
         }
 
         logger.info('DELETE /api/draft - start', { userId: currentUser.id });
