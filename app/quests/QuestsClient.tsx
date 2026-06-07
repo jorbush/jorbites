@@ -73,7 +73,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
 
     const [filter, setFilter] = useState<
         'all' | 'open' | 'in_progress' | 'completed'
-    >(getInitialFilter());
+    >(() => getInitialFilter());
 
     const handleRequestRecipe = () => {
         if (!currentUser) {
