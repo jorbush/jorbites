@@ -145,22 +145,26 @@ export async function deleteMultipleFromCloudinary(
         return { successful, failed };
     }
 
-    // Process deletions in parallel but with some limitation to avoid rate limits
-    const deletionPromises = cloudinaryUrls.map(async (url) => {
-        try {
-            const success = await deleteFromCloudinary(url);
-            if (success) {
-                successful.push(url);
-            } else {
-                failed.push(url);
+    // Process deletions in parallel
+    const results = await Promise.all(
+        cloudinaryUrls.map(async (url) => {
+            try {
+                const success = await deleteFromCloudinary(url);
+                return { url, success };
+            } catch (error) {
+                console.error(`Failed to delete ${url}:`, error);
+                return { url, success: false };
             }
-        } catch (error) {
-            console.error(`Failed to delete ${url}:`, error);
+        })
+    );
+
+    results.forEach(({ url, success }) => {
+        if (success) {
+            successful.push(url);
+        } else {
             failed.push(url);
         }
     });
-
-    await Promise.allSettled(deletionPromises);
 
     return { successful, failed };
 }
