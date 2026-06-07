@@ -165,10 +165,9 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         />
                         <div className="flex flex-col">
                             <div className="flex flex-row">
-                                <div
-                                    className="cursor-pointer"
-                                    role="button"
-                                    tabIndex={0}
+                                <button
+                                    type="button"
+                                    className="cursor-pointer bg-transparent border-0 p-0 text-left"
                                     onClick={() => push('/profile/' + user.id)}
                                     onKeyDown={(e) => {
                                         if (
@@ -185,7 +184,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                         isMdOrSmaller,
                                         isSmOrSmaller
                                     )}
-                                </div>
+                                </button>
                                 {user.verified && (
                                     <VerificationBadge className="mt-1 ml-1" />
                                 )}
@@ -280,10 +279,9 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         </h3>
                         <div className="flex flex-wrap gap-2">
                             {coCooks.map((cook) => (
-                                <div
+                                <button
                                     key={cook.id}
-                                    role="button"
-                                    tabIndex={0}
+                                    type="button"
                                     className="flex cursor-pointer items-center gap-2 rounded-full bg-neutral-100 px-2 py-1 dark:bg-neutral-900"
                                     onClick={() => push(`/profile/${cook.id}`)}
                                     onKeyDown={(e) => {
@@ -309,7 +307,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                             size={16}
                                         />
                                     )}
-                                </div>
+                                </button>
                             ))}
                         </div>
                     </div>

@@ -216,10 +216,9 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                     quest.status}
                                             </span>
                                         </div>
-                                        <h2
-                                            role="button"
-                                            tabIndex={0}
-                                            className="mb-2 cursor-pointer text-xl font-semibold text-neutral-900 hover:text-rose-500 dark:text-white dark:hover:text-rose-400"
+                                        <button
+                                            type="button"
+                                            className="mb-2 cursor-pointer text-left text-xl font-semibold text-neutral-900 hover:text-rose-500 dark:text-white dark:hover:text-rose-400"
                                             onClick={() =>
                                                 push(`/quests/${quest.id}`)
                                             }
@@ -235,7 +234,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                             data-cy="quest-card-title"
                                         >
                                             {quest.title}
-                                        </h2>
+                                        </button>
                                         <p
                                             className="text-neutral-600 dark:text-neutral-400"
                                             data-cy="quest-card-description"

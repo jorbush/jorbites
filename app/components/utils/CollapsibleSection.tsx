@@ -20,10 +20,9 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 
     return (
         <div className="rounded-lg border dark:border-neutral-700">
-            <div
-                role="button"
-                tabIndex={0}
-                className="flex cursor-pointer items-center justify-between p-4"
+            <button
+                type="button"
+                className="flex w-full cursor-pointer items-center justify-between p-4 text-left"
                 onClick={() => setIsOpen(!isOpen)}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -40,7 +39,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
                     </p>
                 </div>
                 {isOpen ? <FiChevronUp /> : <FiChevronDown />}
-            </div>
+            </button>
             {isOpen && <div className="p-4">{children}</div>}
         </div>
     );

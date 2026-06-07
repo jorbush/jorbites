@@ -43,11 +43,10 @@ const YouTubePreview: React.FC<YouTubePreviewProps> = ({
     };
 
     return (
-        <div
-            className={`relative cursor-pointer overflow-hidden rounded-lg bg-black ${className}`}
+        <button
+            type="button"
+            className={`relative block w-full cursor-pointer overflow-hidden rounded-lg bg-black p-0 ${className}`}
             onClick={openVideo}
-            role="button"
-            tabIndex={0}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     openVideo();
@@ -72,7 +71,7 @@ const YouTubePreview: React.FC<YouTubePreviewProps> = ({
                     </div>
                 </div>
             </div>
-        </div>
+        </button>
     );
 };
 

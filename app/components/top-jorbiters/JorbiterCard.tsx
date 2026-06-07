@@ -36,10 +36,9 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
     };
 
     return (
-        <div
-            role="button"
-            tabIndex={0}
-            className={`dark:bg-dark relative cursor-pointer overflow-hidden rounded-lg border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-700 ${
+        <button
+            type="button"
+            className={`dark:bg-dark relative block w-full cursor-pointer overflow-hidden rounded-lg border bg-white p-4 text-left shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-700 ${
                 index < 3
                     ? 'border-2 ' +
                       getMedalColor(index).replace('text', 'border')
@@ -62,7 +61,6 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                     <Avatar
                         src={jorbiter.image}
                         size={50}
-                        onClick={() => push('/profile/' + jorbiter.id)}
                         extraClasses="sm:size-[65px] md:size-[70px]"
                         quality="auto:best"
                     />
@@ -116,7 +114,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                     )}
                 </div>
             </div>
-        </div>
+        </button>
     );
 };
 

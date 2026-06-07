@@ -70,7 +70,7 @@ const RecipeCard = memo(function RecipeCard({
                     push(`/recipes/${data.id}`);
                 }
             }}
-            className="group col-span-1 cursor-pointer"
+            className="group col-span-1 block w-full cursor-pointer text-left"
             id={isFirstCard ? 'lcp-container' : undefined}
         >
             <div className="flex w-full flex-col gap-2">

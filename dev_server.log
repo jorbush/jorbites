@@ -1,0 +1,18 @@
+
+> jorbites@2.2.4 dev /app
+> next dev --turbopack --port 3001
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.0.2:3001
+✓ Ready in 566ms
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          699231
+- Dir:          /app
+- Log:          .next/dev/logs/next-development.log
+
+Run kill 699231 to stop it.
+[?25h
+ ELIFECYCLE  Command failed with exit code 1.

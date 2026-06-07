@@ -161,10 +161,9 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                     const previews = getPreviewRecipes(plan);
                     const totalMealsCount = plan.meals?.length || 0;
                     return (
-                        <div
+                        <button
                             key={plan.id}
-                            role="button"
-                            tabIndex={0}
+                            type="button"
                             onClick={() => push(`/plannings/${plan.id}`)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === ' ') {
@@ -172,7 +171,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                                     push(`/plannings/${plan.id}`);
                                 }
                             }}
-                            className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/60 bg-white/50 p-5 shadow-xs backdrop-blur-xs transition duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-xl dark:border-neutral-800/60 dark:bg-[#121212]/50 dark:hover:bg-[#181818]"
+                            className="group relative flex w-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/60 bg-white/50 p-5 text-left shadow-xs backdrop-blur-xs transition duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-xl dark:border-neutral-800/60 dark:bg-[#121212]/50 dark:hover:bg-[#181818]"
                         >
                             <div className="flex flex-col gap-2">
                                 <div className="flex flex-row items-center justify-between gap-2">
@@ -182,6 +181,8 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                                     {showDelete && (
                                         <button
                                             type="button"
+                                            className="rounded-full p-2 text-neutral-400 hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-950/40"
+                                            title={t('delete') || 'Delete'}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 if (
@@ -194,8 +195,6 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                                                     setDeletePlanId(plan.id);
                                                 }
                                             }}
-                                            className="rounded-full p-2 text-neutral-400 hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-950/40"
-                                            title={t('delete') || 'Delete'}
                                         >
                                             <AiOutlineDelete size={18} />
                                         </button>
@@ -270,7 +269,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </button>
                     );
                 })}
             </div>

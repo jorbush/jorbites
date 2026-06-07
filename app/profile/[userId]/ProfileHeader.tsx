@@ -51,10 +51,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                     />
                     <div className="flex flex-col gap-2 text-2xl md:text-3xl">
                         <div className="flex flex-row gap-2">
-                            <div
-                                role="button"
-                                tabIndex={0}
-                                className="cursor-pointer"
+                            <button
+                                type="button"
+                                className="cursor-pointer bg-transparent border-0 p-0 text-left"
                                 onClick={() => push('/profile/' + user?.id)}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' || e.key === ' ') {
@@ -68,7 +67,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                                     isMdOrSmaller,
                                     isSmOrSmaller
                                 )}
-                            </div>
+                            </button>
                             {user?.verified && (
                                 <VerificationBadge className="mt-1 ml-1" />
                             )}

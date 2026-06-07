@@ -210,8 +210,7 @@ describe('<YouTubePreview />', () => {
             render(<YouTubePreview url={validUrl} />);
 
             const container = screen.getByRole('button');
-            expect(container.tabIndex).toBe(0);
-            expect(container.getAttribute('role')).toBe('button');
+            expect(container.tagName).toBe('BUTTON');
         });
 
         it('renders play button icon', () => {
@@ -222,8 +221,8 @@ describe('<YouTubePreview />', () => {
             expect(playButton).toBeDefined();
 
             // Check that the play icon container is present with correct styling
-            const playIconContainer = playButton.querySelector('.bg-red-600');
-            expect(playIconContainer).toBeDefined();
+            const playIconContainer = playButton.querySelector('.bg-green-450');
+            expect(playIconContainer).toBeTruthy();
         });
 
         it('has aspect video ratio styling', () => {

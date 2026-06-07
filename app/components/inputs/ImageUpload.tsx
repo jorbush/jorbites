@@ -43,9 +43,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         >
             {({ open }) => {
                 return (
-                    <div
-                        role="button"
-                        tabIndex={0}
+                    <button
+                        type="button"
                         onClick={() => {
                             if (!disabled) {
                                 open?.();
@@ -101,7 +100,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                                 )}
                             </>
                         )}
-                    </div>
+                    </button>
                 );
             }}
         </CldUploadWidget>

@@ -98,9 +98,8 @@ const LoginModal = () => {
                 dataCy="login-password"
             />
             <div className="text-right">
-                <span
-                    role="button"
-                    tabIndex={0}
+                <button
+                    type="button"
                     onClick={onForgotPassword}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -112,7 +111,7 @@ const LoginModal = () => {
                 >
                     {t('forgot_password') ||
                         'Have you forgotten your password?'}
-                </span>
+                </button>
             </div>
         </div>
     );
@@ -135,9 +134,8 @@ const LoginModal = () => {
             <div className="mt-4 text-center font-light text-neutral-500">
                 <p>
                     {t('first_jorbites')}
-                    <span
-                        role="button"
-                        tabIndex={0}
+                    <button
+                        type="button"
                         onClick={onToggle}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
@@ -145,11 +143,11 @@ const LoginModal = () => {
                                 onToggle();
                             }
                         }}
-                        className="cursor-pointer text-neutral-800 hover:underline"
+                        className="cursor-pointer font-light text-neutral-800 hover:underline"
                     >
                         {' '}
                         {t('create_account')}
-                    </span>
+                    </button>
                 </p>
             </div>
         </div>

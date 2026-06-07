@@ -63,9 +63,8 @@ const ForgotPasswordModal = () => {
                 subtitle={t('reset_link_sent_desc') ?? ''}
             />
             <div className="mt-6 text-center">
-                <span
-                    role="button"
-                    tabIndex={0}
+                <button
+                    type="button"
                     onClick={onBackToLogin}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -73,10 +72,10 @@ const ForgotPasswordModal = () => {
                             onBackToLogin();
                         }
                     }}
-                    className="cursor-pointer text-neutral-800 hover:underline"
+                    className="cursor-pointer font-light text-neutral-800 hover:underline"
                 >
                     {t('back_to_login')}
-                </span>
+                </button>
             </div>
         </div>
     ) : (

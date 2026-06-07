@@ -174,16 +174,15 @@ function Dropdown<T extends string>({
                         animation: 'dropdownFadeIn 0.2s ease-out forwards',
                     }}
                 >
-                    <div
+                    <ul
                         ref={listboxRef}
                         role="listbox"
                         aria-label={ariaLabel}
-                        className="w-max"
+                        className="w-max p-0 m-0 list-none"
                     >
                         {options.map((option, index) => (
-                            <button
+                            <li
                                 key={option.value}
-                                type="button"
                                 role="option"
                                 aria-selected={option.value === value}
                                 onClick={() => handleOptionClick(option.value)}
@@ -192,9 +191,9 @@ function Dropdown<T extends string>({
                                 <span className="whitespace-nowrap">
                                     {option.label}
                                 </span>
-                            </button>
+                            </li>
                         ))}
-                    </div>
+                    </ul>
                 </div>
             )}
         </div>

@@ -327,17 +327,16 @@ const MentionInput: React.FC<MentionInputProps> = ({
                 >
                     <div className="max-h-48 overflow-y-auto">
                         {users.map((user, index) => (
-                            <div
+                            <button
                                 key={user.id}
-                                className={`flex cursor-pointer items-center gap-2 pr-5 hover:bg-neutral-50 dark:hover:bg-neutral-700 ${
+                                type="button"
+                                className={`flex w-full cursor-pointer items-center gap-2 pr-5 text-left hover:bg-neutral-50 dark:hover:bg-neutral-700 ${
                                     isMobile() ? 'p-4' : 'p-3'
                                 } ${
                                     index === selectedIndex
                                         ? 'bg-neutral-50 dark:bg-neutral-700'
                                         : ''
                                 }`}
-                                role="button"
-                                tabIndex={0}
                                 onClick={() => selectUser(user)}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' || e.key === ' ') {
@@ -361,7 +360,7 @@ const MentionInput: React.FC<MentionInputProps> = ({
                                         <VerificationBadge className="ml-1" />
                                     )}
                                 </div>
-                            </div>
+                            </button>
                         ))}
                     </div>
                 </div>

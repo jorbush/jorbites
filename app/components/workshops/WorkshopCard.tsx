@@ -37,9 +37,8 @@ const WorkshopCard = memo(function WorkshopCard({
     };
 
     return (
-        <div
-            role="button"
-            tabIndex={0}
+        <button
+            type="button"
             onClick={() => push(`/workshops/${data.id}`)}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -47,7 +46,7 @@ const WorkshopCard = memo(function WorkshopCard({
                     push(`/workshops/${data.id}`);
                 }
             }}
-            className="group col-span-1 cursor-pointer"
+            className="group col-span-1 block w-full cursor-pointer text-left"
             id={isFirstCard ? 'lcp-container' : undefined}
             data-testid="workshop-card"
         >
@@ -124,7 +123,7 @@ const WorkshopCard = memo(function WorkshopCard({
                     </div>
                 )}
             </div>
-        </div>
+        </button>
     );
 });
 

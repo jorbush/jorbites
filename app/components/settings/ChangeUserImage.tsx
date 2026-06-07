@@ -83,10 +83,9 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                             <>
                                 {
                                     <div className="flex flex-row">
-                                        <div
-                                            role="button"
-                                            tabIndex={0}
-                                            className="cursor-pointer"
+                                        <button
+                                            type="button"
+                                            className="cursor-pointer bg-transparent border-0 p-0"
                                             onClick={() => open?.()}
                                             onKeyDown={(e) => {
                                                 if (
@@ -114,7 +113,7 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                                                     objectFit: 'cover',
                                                 }}
                                             />
-                                        </div>
+                                        </button>
 
                                         {canSave && (
                                             <FaRegSave

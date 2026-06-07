@@ -7,9 +7,8 @@ const Logo = () => {
     const { push } = useRouter() || {};
 
     return (
-        <div
-            role="button"
-            tabIndex={0}
+        <button
+            type="button"
             onClick={() => push('/')}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -17,7 +16,7 @@ const Logo = () => {
                     push('/');
                 }
             }}
-            className="cursor-pointer md:block"
+            className="cursor-pointer bg-transparent border-0 p-0 md:block"
         >
             <Image
                 alt="Logo"
@@ -37,7 +36,7 @@ const Logo = () => {
                 data-cy="logo-dark"
                 priority
             />
-        </div>
+        </button>
     );
 };
 

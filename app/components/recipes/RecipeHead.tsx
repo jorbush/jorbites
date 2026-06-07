@@ -151,11 +151,10 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                             style={{ pointerEvents: 'none' }}
                             data-testid="prev-button"
                         >
-                            <div
+                            <button
+                                type="button"
                                 className="absolute top-1/2 left-3 -translate-y-1/2 transform rounded-full bg-white/90 p-2 shadow-lg transition-colors hover:bg-white"
                                 style={{ pointerEvents: 'auto' }}
-                                role="button"
-                                tabIndex={0}
                                 onClick={goToPreviousImage}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' || e.key === ' ') {
@@ -165,18 +164,17 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                 }}
                             >
                                 <FiChevronLeft className="cursor-pointer text-2xl text-neutral-800" />
-                            </div>
+                            </button>
                         </div>
                         <div
                             className="absolute top-0 right-0 bottom-0 z-[2] flex w-1/4 items-center justify-center transition-colors hover:bg-gradient-to-l hover:from-black/10 hover:to-transparent"
                             style={{ pointerEvents: 'none' }}
                             data-testid="next-button"
                         >
-                            <div
+                            <button
+                                type="button"
                                 className="absolute top-1/2 right-3 -translate-y-1/2 transform rounded-full bg-white/90 p-2 shadow-lg transition-colors hover:bg-white"
                                 style={{ pointerEvents: 'auto' }}
-                                role="button"
-                                tabIndex={0}
                                 onClick={goToNextImage}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' || e.key === ' ') {
@@ -186,7 +184,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                 }}
                             >
                                 <FiChevronRight className="cursor-pointer text-2xl text-neutral-800" />
-                            </div>
+                            </button>
                         </div>
                         {/* Dot Indicators */}
                         <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 transform gap-2">

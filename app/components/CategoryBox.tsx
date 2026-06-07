@@ -55,9 +55,8 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     }, [label, push, params, pathname]);
 
     return (
-        <div
-            role="button"
-            tabIndex={0}
+        <button
+            type="button"
             onClick={handleCategorySelection}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -74,7 +73,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
             <div className="text-sm font-medium whitespace-nowrap">
                 {t(label.toLocaleLowerCase())}
             </div>
-        </div>
+        </button>
     );
 };
 

@@ -18,7 +18,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
         push(`/blog/${blog.id}`);
     };
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
         if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
             navigateToBlog();
@@ -26,11 +26,10 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
     };
 
     return (
-        <div
-            className="group hover:border-green-450/50 cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800"
-            role="button"
+        <button
+            type="button"
+            className="group hover:border-green-450/50 block w-full cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 text-left shadow-sm transition-all duration-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800"
             onClick={navigateToBlog}
-            tabIndex={0}
             onKeyDown={handleKeyDown}
         >
             <div className="flex h-full flex-col">
@@ -47,7 +46,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
                     <FiArrowRight className="group-hover:text-green-450 text-neutral-400 transition-transform duration-300 group-hover:translate-x-1" />
                 </div>
             </div>
-        </div>
+        </button>
     );
 };
 

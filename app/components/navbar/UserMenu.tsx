@@ -76,9 +76,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             ref={menuRef}
         >
             <div className="flex flex-row items-center gap-2 md:gap-3">
-                <div
-                    role="button"
-                    tabIndex={0}
+                <button
+                    type="button"
                     onClick={onPost}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -86,16 +85,15 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                             onPost();
                         }
                     }}
-                    className="hidden cursor-pointer rounded-full border-[1px] px-3 py-2 text-xs font-semibold transition hover:bg-neutral-100 hover:text-black sm:block sm:text-sm md:px-4 md:py-3 dark:text-neutral-100 dark:hover:text-black"
+                    className="hidden cursor-pointer rounded-full border-[1px] border-neutral-200 bg-transparent px-3 py-2 text-xs font-semibold transition hover:bg-neutral-100 hover:text-black sm:block sm:text-sm md:px-4 md:py-3 dark:text-neutral-100 dark:hover:text-black"
                     data-cy="post-recipe"
                 >
                     <span className="whitespace-nowrap">
                         {t('post_recipe')}
                     </span>
-                </div>
-                <div
-                    role="button"
-                    tabIndex={0}
+                </button>
+                <button
+                    type="button"
                     onClick={toggleOpen}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -103,14 +101,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                             toggleOpen();
                         }
                     }}
-                    className="flex min-h-[40px] min-w-[40px] cursor-pointer flex-row items-center justify-center gap-3 rounded-full border-[1px] border-neutral-200 p-1 transition hover:shadow-md"
+                    className="flex min-h-[40px] min-w-[40px] cursor-pointer flex-row items-center justify-center gap-3 rounded-full border-[1px] border-neutral-200 bg-transparent p-1 transition hover:shadow-md"
                     data-cy="user-menu"
                 >
                     <Avatar
                         src={currentUser?.image}
                         size={35}
                     />
-                </div>
+                </button>
             </div>
             {isOpen && (
                 <div

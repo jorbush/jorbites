@@ -32,13 +32,12 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
     };
 
     return (
-        <div
+        <button
+            type="button"
             onClick={navigateToProfile}
             onKeyDown={handleKeyDown}
-            tabIndex={0}
-            role="button"
             aria-label={`View ${chef.name || t('anonymous')}'s profile`}
-            className="group cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:focus:ring-offset-neutral-900"
+            className="group block w-full cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-white p-0 text-left shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:focus:ring-offset-neutral-900"
             data-cy="chef-card"
             data-testid="chef-card"
         >
@@ -185,7 +184,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                         </div>
                     )}
             </div>
-        </div>
+        </button>
     );
 });
 

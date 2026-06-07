@@ -111,26 +111,39 @@ const SearchInput: React.FC<SearchInputProps> = ({
                     style={{ maxHeight: '300px', overflowY: 'auto' }}
                 >
                     {hasResults
-                        ? searchResults.map((result) => (
-                              <div
-                                  key={result.id}
-                                  role="button"
-                                  tabIndex={0}
-                                  className={`flex cursor-pointer items-center justify-between gap-2 border-t border-neutral-100 p-3 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-700 ${isSelected && isSelected(result.id) ? 'bg-neutral-100 dark:bg-neutral-700' : ''}`}
-                                  onClick={() => {
-                                      if (onSelectResult) {
-                                          onSelectResult(result);
-                                      }
-                                  }}
-                                  onKeyDown={(e) => {
-                                      if (e.key === 'Enter' || e.key === ' ') {
-                                          e.preventDefault();
+                        ? searchResults.map((result) => {
+                              const selected =
+                                  isSelected && isSelected(result.id);
+                              const limitReached =
+                                  maxSelected > 0 &&
+                                  isSelected &&
+                                  searchResults.filter((r) => isSelected(r.id))
+                                      .length >= maxSelected;
+                              const isDisabled = selected || limitReached;
+
+                              return (
+                                  <button
+                                      key={result.id}
+                                      type="button"
+                                      disabled={isDisabled}
+                                      className={`flex w-full cursor-pointer items-center justify-between gap-2 border-t border-neutral-100 p-3 text-left hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-70 dark:border-neutral-700 dark:hover:bg-neutral-700 ${selected ? 'bg-neutral-100 dark:bg-neutral-700' : ''}`}
+                                      onClick={() => {
                                           if (onSelectResult) {
                                               onSelectResult(result);
                                           }
-                                      }
-                                  }}
-                              >
+                                      }}
+                                      onKeyDown={(e) => {
+                                          if (
+                                              e.key === 'Enter' ||
+                                              e.key === ' '
+                                          ) {
+                                              e.preventDefault();
+                                              if (onSelectResult) {
+                                                  onSelectResult(result);
+                                              }
+                                          }
+                                      }}
+                                  >
                                   {searchType === 'users' ? (
                                       <Fragment>
                                           <div className="flex items-center gap-2">
@@ -191,29 +204,16 @@ const SearchInput: React.FC<SearchInputProps> = ({
                                           </div>
                                       </Fragment>
                                   )}
-                                  {onSelectResult && (
-                                      <button
-                                          type="button"
-                                          onClick={(e) => {
-                                              e.stopPropagation();
-                                              onSelectResult(result);
-                                          }}
-                                          disabled={
-                                              (isSelected &&
-                                                  isSelected(result.id)) ||
-                                              (maxSelected > 0 &&
-                                                  isSelected &&
-                                                  searchResults.filter((r) =>
-                                                      isSelected(r.id)
-                                                  ).length >= maxSelected)
-                                          }
-                                          className={`rounded-full p-1 ${isSelected && isSelected(result.id) ? 'text-neutral-400 dark:text-neutral-500' : 'text-green-450 hover:bg-green-100 dark:hover:bg-green-900'}`}
-                                      >
-                                          <AiOutlinePlus size={20} />
-                                      </button>
-                                  )}
-                              </div>
-                          ))
+                                      {onSelectResult && (
+                                          <span
+                                              className={`rounded-full p-1 ${isDisabled ? 'text-neutral-400 dark:text-neutral-500' : 'text-green-450 hover:bg-green-100 dark:hover:bg-green-900'}`}
+                                          >
+                                              <AiOutlinePlus size={20} />
+                                          </span>
+                                      )}
+                                  </button>
+                              );
+                          })
                         : value.length >= 2 && (
                               <div className="p-4 text-center text-neutral-500 dark:text-neutral-400">
                                   {emptyMessage}

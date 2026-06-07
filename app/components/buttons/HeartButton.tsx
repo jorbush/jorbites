@@ -36,9 +36,8 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
     }, [isDisabled]);
 
     return (
-        <div
-            role="button"
-            tabIndex={0}
+        <button
+            type="button"
             onClick={handleButtonClick}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -46,7 +45,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
                     handleButtonClick(e as any);
                 }
             }}
-            className="relative cursor-pointer transition hover:opacity-80"
+            className="relative cursor-pointer bg-transparent border-0 p-0 transition hover:opacity-80"
             data-cy="heart-button"
         >
             <AiOutlineHeart
@@ -63,7 +62,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
                     pointerEvents: isDisabled ? 'none' : 'auto',
                 }}
             />
-        </div>
+        </button>
     );
 };
 

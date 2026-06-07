@@ -546,9 +546,8 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                                     }
                                                                     className="size-10 shrink-0 rounded-lg object-cover"
                                                                 />
-                                                                <div
-                                                                    role="button"
-                                                                    tabIndex={0}
+                                                                <button
+                                                                    type="button"
                                                                     onClick={() =>
                                                                         push(
                                                                             `/recipes/${recipe.id}`
@@ -569,7 +568,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                                             );
                                                                         }
                                                                     }}
-                                                                    className="flex-1 cursor-pointer truncate pr-6"
+                                                                    className="flex-1 cursor-pointer truncate pr-6 text-left"
                                                                 >
                                                                     <div className="truncate text-xs font-semibold text-neutral-800 hover:underline dark:text-neutral-200">
                                                                         {
@@ -585,7 +584,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                                                 'Anonymous'}
                                                                         </div>
                                                                     )}
-                                                                </div>
+                                                                </button>
 
                                                                 {/* Remove button in Edit mode */}
                                                                 {isOwner && (

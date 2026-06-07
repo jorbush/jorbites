@@ -53,10 +53,9 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                 </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
                     {lists.map((list) => (
-                        <div
+                        <button
                             key={list.id}
-                            role="button"
-                            tabIndex={0}
+                            type="button"
                             onClick={() => push(`/lists/${list.id}`)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === ' ') {
@@ -64,7 +63,7 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                                     push(`/lists/${list.id}`);
                                 }
                             }}
-                            className="group relative flex cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 transition hover:shadow-lg dark:border-neutral-700"
+                            className="group relative flex w-full cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 text-left transition hover:shadow-lg dark:border-neutral-700"
                         >
                             <div className="text-xl font-bold">
                                 {list.isDefault
@@ -99,9 +98,7 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                                 )}
                             </div>
                             {!list.isDefault && (
-                                <div
-                                    role="button"
-                                    tabIndex={0}
+                                <span
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setDeleteListId(list.id);
@@ -120,9 +117,9 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                                     title={t('delete_list') || 'Delete list'}
                                 >
                                     <AiOutlineDelete size={20} />
-                                </div>
+                                </span>
                             )}
-                        </div>
+                        </button>
                     ))}
                 </div>
             </div>
