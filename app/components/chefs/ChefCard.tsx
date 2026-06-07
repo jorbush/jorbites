@@ -18,22 +18,22 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
     const { push } = useRouter() || {};
     const { t } = useTranslation();
 
-    const handleClick = () => {
+    const navigateToProfile = () => {
         push(`/profile/${chef.id}`);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            handleClick();
+            navigateToProfile();
         } else if (e.key === ' ') {
-            handleClick();
+            navigateToProfile();
         }
     };
 
     return (
         <div
-            onClick={handleClick}
+            onClick={navigateToProfile}
             onKeyDown={handleKeyDown}
             tabIndex={0}
             role="button"

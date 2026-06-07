@@ -14,14 +14,14 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
     const { push } = useRouter() || {};
     const { i18n } = useTranslation();
 
-    const handleClick = () => {
+    const navigateToBlog = () => {
         push(`/blog/${blog.id}`);
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
         if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
-            handleClick();
+            navigateToBlog();
         }
     };
 
@@ -29,7 +29,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
         <div
             className="group hover:border-green-450/50 cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800"
             role="button"
-            onClick={handleClick}
+            onClick={navigateToBlog}
             tabIndex={0}
             onKeyDown={handleKeyDown}
         >

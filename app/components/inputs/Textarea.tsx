@@ -52,7 +52,7 @@ const Textarea: React.FC<TextareaProps> = ({
         ...rest
     } = register(id, validationRules);
 
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleValueChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const value = e.target.value;
         if (maxLength && value.length > maxLength) {
             e.target.value = value.slice(0, maxLength);
@@ -74,7 +74,7 @@ const Textarea: React.FC<TextareaProps> = ({
                 }}
                 disabled={disabled}
                 {...rest}
-                onChange={handleChange}
+                onChange={handleValueChange}
                 placeholder={placeholder}
                 rows={rows}
                 maxLength={maxLength}

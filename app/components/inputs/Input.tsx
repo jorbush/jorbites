@@ -53,7 +53,7 @@ const Input: React.FC<InputProps> = ({
         ...rest
     } = register(id, validationRules);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         if (maxLength && value.length > maxLength) {
             e.target.value = value.slice(0, maxLength);
@@ -84,7 +84,7 @@ const Input: React.FC<InputProps> = ({
                 }}
                 disabled={disabled}
                 {...rest}
-                onChange={handleChange}
+                onChange={handleValueChange}
                 placeholder=" "
                 type={type}
                 maxLength={maxLength}
