@@ -11,15 +11,15 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 
 export async function PUT(request: Request) {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to update profile image'
+        );
+    }
+
     try {
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to update profile image'
-            );
-        }
-
         logger.info('PUT /api/userImage/[userId] - start', {
             userId: currentUser.id,
         });

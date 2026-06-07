@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
 import {
@@ -55,6 +56,7 @@ export async function GET(
             createdAt: user.createdAt.toISOString(),
         });
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('GET /api/user/[userId] - error', {
             error: error.message,
             userId: (await props.params).userId,
@@ -67,17 +69,18 @@ export async function DELETE(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to delete account'
+        );
+    }
+
+    const { userId } = params;
+
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to delete account'
-            );
-        }
-
-        const { userId } = params;
 
         logger.info('DELETE /api/user/[userId] - start', {
             userId,
@@ -118,6 +121,7 @@ export async function DELETE(
             message: 'Account deleted successfully',
         });
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('DELETE /api/user/[userId] - error', {
             error: error.message,
         });

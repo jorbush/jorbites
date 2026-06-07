@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import prisma from '@/app/lib/prismadb';
 import { redisCache } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
@@ -36,19 +37,19 @@ export async function POST(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to interact with recipe'
+        );
+    }
+
     try {
-        const params = await props.params;
         const body = await request.json();
 
         const { operation } = body;
-
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to interact with recipe'
-            );
-        }
 
         const { recipeId } = params;
 
@@ -134,6 +135,7 @@ export async function POST(
         });
         return NextResponse.json(recipe);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('POST /api/recipe/[recipeId] - error', {
             error: error.message,
         });
@@ -145,15 +147,16 @@ export async function PATCH(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized('User authentication required to edit recipe');
+    }
+
+    const { recipeId } = params;
+
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized('User authentication required to edit recipe');
-        }
-
-        const { recipeId } = params;
 
         logger.info('PATCH /api/recipe/[recipeId] - start', {
             recipeId,
@@ -383,6 +386,7 @@ export async function PATCH(
 
         return NextResponse.json(updatedRecipe);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('PATCH /api/recipe/[recipeId] - error', {
             error: error.message,
         });
@@ -394,17 +398,18 @@ export async function DELETE(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to delete recipe'
+        );
+    }
+
+    const { recipeId } = params;
+
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to delete recipe'
-            );
-        }
-
-        const { recipeId } = params;
 
         logger.info('DELETE /api/recipe/[recipeId] - start', {
             recipeId,
@@ -485,6 +490,7 @@ export async function DELETE(
 
         return NextResponse.json(deletedRecipe);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('DELETE /api/recipe/[recipeId] - error', {
             error: error.message,
         });

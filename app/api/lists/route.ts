@@ -10,13 +10,13 @@ import {
 } from '@/app/utils/apiErrors';
 
 export async function GET() {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized('Unauthorized');
+    }
+
     try {
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized('Unauthorized');
-        }
-
         logger.info('GET /api/lists - start', { userId: currentUser.id });
 
         const lists = await prisma.list.findMany({
@@ -58,13 +58,13 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized('Unauthorized');
+    }
+
     try {
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized('Unauthorized');
-        }
-
         logger.info('POST /api/lists - start', { userId: currentUser.id });
 
         const body = await request.json();

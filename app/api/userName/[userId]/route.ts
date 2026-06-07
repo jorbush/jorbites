@@ -12,15 +12,15 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 
 export async function PATCH(request: Request) {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to update username'
+        );
+    }
+
     try {
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to update username'
-            );
-        }
-
         logger.info('PATCH /api/userName/[userId] - start', {
             userId: currentUser.id,
         });

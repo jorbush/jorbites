@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
@@ -19,13 +20,14 @@ export async function POST(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
-    try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
 
-        if (!currentUser) {
-            return unauthorized('Unauthorized');
-        }
+    if (!currentUser) {
+        return unauthorized('Unauthorized');
+    }
+
+    try {
 
         const { listId, recipeId } = params;
         logger.info('POST /api/lists/[listId]/recipes/[recipeId] - start', {
@@ -93,6 +95,7 @@ export async function POST(
 
         return NextResponse.json(safeList);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('POST /api/lists/[listId]/recipes/[recipeId] - error', {
             error: error.message,
         });
@@ -104,13 +107,14 @@ export async function DELETE(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
-    try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
 
-        if (!currentUser) {
-            return unauthorized('Unauthorized');
-        }
+    if (!currentUser) {
+        return unauthorized('Unauthorized');
+    }
+
+    try {
 
         const { listId, recipeId } = params;
         logger.info('DELETE /api/lists/[listId]/recipes/[recipeId] - start', {
@@ -170,6 +174,7 @@ export async function DELETE(
 
         return NextResponse.json(safeList);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('DELETE /api/lists/[listId]/recipes/[recipeId] - error', {
             error: error.message,
         });

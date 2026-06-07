@@ -18,33 +18,33 @@ export async function GET(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
-    try {
-        const params = await props.params;
-        const { userId } = params;
-        const currentUser = await getCurrentUser();
+    const params = await props.params;
+    const { userId } = params;
+    const currentUser = await getCurrentUser();
 
+    if (!currentUser) {
+        return unauthorized(
+            'You must be logged in to view all the recipes of a user (yours)'
+        );
+    }
+
+    if (!userId || typeof userId !== 'string') {
+        return invalidInput(
+            'User ID is required and must be a valid string'
+        );
+    }
+
+    if (currentUser.id !== userId) {
+        return unauthorized(
+            'You can only view all the recipes of your own account'
+        );
+    }
+
+    try {
         logger.info('GET /api/user/[userId]/recipes - start', {
             userId,
             currentUserId: currentUser?.id,
         });
-
-        if (!currentUser) {
-            return unauthorized(
-                'You must be logged in to view all the recipes of a user (yours)'
-            );
-        }
-
-        if (!userId || typeof userId !== 'string') {
-            return invalidInput(
-                'User ID is required and must be a valid string'
-            );
-        }
-
-        if (currentUser.id !== userId) {
-            return unauthorized(
-                'You can only view all the recipes of your own account'
-            );
-        }
 
         // Rate limiting to prevent abuse
         if (process.env.ENV === 'production') {

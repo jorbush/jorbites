@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/dist/server/web/spec-extension/response';
+import { unstable_rethrow } from 'next/navigation';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
@@ -93,6 +94,7 @@ export async function PATCH(
 
         return NextResponse.json(safeList);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('PATCH /api/lists/[listId] - error', {
             error: error.message,
         });
@@ -141,6 +143,7 @@ export async function DELETE(
         logger.info('DELETE /api/lists/[listId] - success', { listId });
         return NextResponse.json({ message: 'List deleted' });
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('DELETE /api/lists/[listId] - error', {
             error: error.message,
         });

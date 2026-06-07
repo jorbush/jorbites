@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import {
@@ -64,6 +65,7 @@ export async function GET(
         logger.info('GET /api/quest/[questId] - success', { questId });
         return NextResponse.json(quest);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('GET /api/quest/[questId] - error', {
             error: error.message,
         });
@@ -76,14 +78,15 @@ export async function PATCH(
     request: Request,
     { params }: { params: Promise<{ questId: string }> }
 ) {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized('User authentication required to update quest');
+    }
+
+    const { questId } = await params;
+
     try {
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized('User authentication required to update quest');
-        }
-
-        const { questId } = await params;
 
         if (!questId || typeof questId !== 'string') {
             return badRequest('Invalid quest ID');
@@ -163,6 +166,7 @@ export async function PATCH(
         });
         return NextResponse.json(quest);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('PATCH /api/quest/[questId] - error', {
             error: error.message,
         });
@@ -175,14 +179,15 @@ export async function DELETE(
     request: Request,
     { params }: { params: Promise<{ questId: string }> }
 ) {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized('User authentication required to delete quest');
+    }
+
+    const { questId } = await params;
+
     try {
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized('User authentication required to delete quest');
-        }
-
-        const { questId } = await params;
 
         if (!questId || typeof questId !== 'string') {
             return badRequest('Invalid quest ID');
@@ -215,6 +220,7 @@ export async function DELETE(
         });
         return NextResponse.json(quest);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('DELETE /api/quest/[questId] - error', {
             error: error.message,
         });

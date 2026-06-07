@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import {
@@ -20,16 +21,16 @@ export async function POST(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to join workshop'
+        );
+    }
+
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to join workshop'
-            );
-        }
-
         const { workshopId } = params;
         const body = await request.json();
         const { action } = body; // 'join' or 'leave'
@@ -157,6 +158,7 @@ export async function POST(
             return NextResponse.json({ message: 'Successfully left workshop' });
         }
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('POST /api/workshop/[workshopId]/join - error', {
             error: error.message,
         });

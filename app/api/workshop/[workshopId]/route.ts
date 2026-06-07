@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { deleteMultipleFromCloudinary } from '@/app/utils/cloudinary';
@@ -30,15 +31,16 @@ export async function PATCH(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
-    try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
 
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to edit workshop'
-            );
-        }
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to edit workshop'
+        );
+    }
+
+    try {
 
         const { workshopId } = params;
 
@@ -181,6 +183,7 @@ export async function PATCH(
         });
         return NextResponse.json(updatedWorkshop);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('PATCH /api/workshop/[workshopId] - error', {
             error: error.message,
         });
@@ -192,15 +195,16 @@ export async function DELETE(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
-    try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
 
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to delete workshop'
-            );
-        }
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to delete workshop'
+        );
+    }
+
+    try {
 
         const { workshopId } = params;
 
@@ -245,6 +249,7 @@ export async function DELETE(
         });
         return NextResponse.json(deletedWorkshop);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('DELETE /api/workshop/[workshopId] - error', {
             error: error.message,
         });

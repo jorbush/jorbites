@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
@@ -21,17 +22,18 @@ export async function DELETE(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to delete comment'
+        );
+    }
+
+    const { commentId } = params;
+
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to delete comment'
-            );
-        }
-
-        const { commentId } = params;
 
         logger.info('DELETE /api/comments/[commentId] - start', {
             commentId,
@@ -101,6 +103,7 @@ export async function DELETE(
 
         return NextResponse.json(deletedComment);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('DELETE /api/comments/[commentId] - error', {
             error: error.message,
         });

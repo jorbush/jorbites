@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import bcrypt from 'bcrypt';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
@@ -19,15 +20,16 @@ export async function PATCH(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
-    try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
 
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to change password'
-            );
-        }
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to change password'
+        );
+    }
+
+    try {
 
         const { userId } = params;
 
@@ -97,6 +99,7 @@ export async function PATCH(
             message: 'Password updated successfully',
         });
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('PATCH /api/password/[userId] - error', {
             error: error.message,
         });

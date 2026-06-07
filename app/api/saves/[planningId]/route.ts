@@ -16,15 +16,16 @@ export async function POST(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized('User authentication required to save plan');
+    }
+
+    const { planningId } = params;
+
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized('User authentication required to save plan');
-        }
-
-        const { planningId } = params;
 
         logger.info('POST /api/saves/[planningId] - start', {
             planningId,
@@ -73,15 +74,16 @@ export async function DELETE(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized('User authentication required to unsave plan');
+    }
+
+    const { planningId } = params;
+
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized('User authentication required to unsave plan');
-        }
-
-        const { planningId } = params;
 
         logger.info('DELETE /api/saves/[planningId] - start', {
             planningId,

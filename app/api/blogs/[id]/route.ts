@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import { getBlogById } from '@/app/utils/blog-utils';
 import { notFound, internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
@@ -30,6 +31,7 @@ export async function GET(
         logger.info('GET /api/blogs/[id] - success', { id, language });
         return NextResponse.json(blog);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('GET /api/blogs/[id] - error', {
             error: error.message,
         });

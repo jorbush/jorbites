@@ -16,13 +16,13 @@ import {
 } from '@/app/utils/constants';
 
 export async function POST(request: Request) {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized('User authentication required to create quest');
+    }
+
     try {
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized('User authentication required to create quest');
-        }
-
         const body = await request.json();
 
         logger.info('POST /api/quests - start', { userId: currentUser.id });

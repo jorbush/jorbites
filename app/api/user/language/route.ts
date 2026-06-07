@@ -9,13 +9,13 @@ import {
 } from '@/app/utils/apiErrors';
 
 export async function PATCH(request: Request) {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized();
+    }
+
     try {
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized();
-        }
-
         const body = await request.json();
         const { language } = body;
 

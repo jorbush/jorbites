@@ -17,13 +17,14 @@ export async function POST(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
-    try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
 
-        if (!currentUser) {
-            return unauthorized('User authentication required to pin recipe');
-        }
+    if (!currentUser) {
+        return unauthorized('User authentication required to pin recipe');
+    }
+
+    try {
 
         const { recipeId } = params;
 
@@ -106,13 +107,14 @@ export async function DELETE(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
-    try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
 
-        if (!currentUser) {
-            return unauthorized('User authentication required to unpin recipe');
-        }
+    if (!currentUser) {
+        return unauthorized('User authentication required to unpin recipe');
+    }
+
+    try {
 
         const { recipeId } = params;
 

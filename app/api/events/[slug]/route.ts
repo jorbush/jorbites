@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import { getEventBySlug } from '@/app/utils/event-utils';
 import { notFound, internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
@@ -30,6 +31,7 @@ export async function GET(
         logger.info('GET /api/events/[slug] - success', { slug, language });
         return NextResponse.json(event);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('GET /api/events/[slug] - error', {
             error: error.message,
         });

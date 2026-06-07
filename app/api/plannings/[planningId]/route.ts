@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
@@ -92,6 +93,7 @@ export async function GET(
 
         return NextResponse.json(safePlanning);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('GET /api/plannings/[planningId] - error', {
             error: error.message,
         });
@@ -103,15 +105,16 @@ export async function PATCH(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized('Unauthorized');
+    }
+
+    const { planningId } = params;
+
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized('Unauthorized');
-        }
-
-        const { planningId } = params;
         logger.info('PATCH /api/plannings/[planningId] - start', {
             planningId,
             userId: currentUser.id,
@@ -285,6 +288,7 @@ export async function PATCH(
 
         return NextResponse.json(safePlanning);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('PATCH /api/plannings/[planningId] - error', {
             error: error.message,
         });
@@ -296,15 +300,16 @@ export async function DELETE(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized('Unauthorized');
+    }
+
+    const { planningId } = params;
+
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized('Unauthorized');
-        }
-
-        const { planningId } = params;
         logger.info('DELETE /api/plannings/[planningId] - start', {
             planningId,
             userId: currentUser.id,
@@ -331,6 +336,7 @@ export async function DELETE(
         });
         return NextResponse.json({ message: 'Planning deleted' });
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('DELETE /api/plannings/[planningId] - error', {
             error: error.message,
         });

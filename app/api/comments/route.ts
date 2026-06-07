@@ -18,13 +18,13 @@ import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 import { redisCache } from '@/app/lib/redis';
 
 export async function POST(request: Request) {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized('User authentication required to post comment');
+    }
+
     try {
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized('User authentication required to post comment');
-        }
-
         // Rate limiting for comment creation - prevent spam
         if (process.env.ENV === 'production') {
             const { success, reset } = await contentCreationRatelimit.limit(

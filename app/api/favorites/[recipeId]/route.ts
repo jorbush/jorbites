@@ -17,13 +17,14 @@ export async function POST(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
-    try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
 
-        if (!currentUser) {
-            return unauthorized('User authentication required to add favorite');
-        }
+    if (!currentUser) {
+        return unauthorized('User authentication required to add favorite');
+    }
+
+    try {
 
         const { recipeId } = params;
 
@@ -72,15 +73,16 @@ export async function DELETE(
     request: Request,
     props: { params: Promise<IParams> }
 ) {
-    try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+    const params = await props.params;
+    const currentUser = await getCurrentUser();
 
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to remove favorite'
-            );
-        }
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to remove favorite'
+        );
+    }
+
+    try {
 
         const { recipeId } = params;
 

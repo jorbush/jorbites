@@ -19,15 +19,15 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 
 export async function POST(request: Request) {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to create workshop'
+        );
+    }
+
     try {
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to create workshop'
-            );
-        }
-
         const body = await request.json();
 
         logger.info('POST /api/workshops - start', { userId: currentUser.id });

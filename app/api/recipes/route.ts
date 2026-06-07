@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import prisma from '@/app/lib/prismadb';
 import { redisCache } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
@@ -28,15 +29,15 @@ import { YOUTUBE_URL_REGEX } from '@/app/utils/validation';
 import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 
 export async function POST(request: Request) {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to create recipe'
+        );
+    }
+
     try {
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to create recipe'
-            );
-        }
-
         // Rate limiting for recipe creation - prevent spam
         if (process.env.ENV === 'production') {
             const { success, reset } = await contentCreationRatelimit.limit(
@@ -257,6 +258,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json(recipe);
     } catch (error: any) {
+        unstable_rethrow(error);
         logger.error('POST /api/recipes - error', { error: error.message });
         console.error(error);
         return internalServerError('Failed to create recipe');

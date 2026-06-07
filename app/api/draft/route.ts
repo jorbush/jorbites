@@ -6,11 +6,11 @@ import { STEPS_LENGTH } from '@/app/utils/constants';
 import { logger } from '@/app/lib/axiom/server';
 
 export async function POST(request: Request) {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+        return unauthorized('User authentication required to save draft');
+    }
     try {
-        const currentUser = await getCurrentUser();
-        if (!currentUser) {
-            return unauthorized('User authentication required to save draft');
-        }
         const body = await request.json();
 
         logger.info('POST /api/draft - start', {
@@ -37,12 +37,12 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-    try {
-        const currentUser = await getCurrentUser();
-        if (!currentUser) {
-            return unauthorized('User authentication required to get draft');
-        }
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+        return unauthorized('User authentication required to get draft');
+    }
 
+    try {
         logger.info('GET /api/draft - start', { userId: currentUser.id });
         const data = await redis.get(currentUser.id);
         logger.info('GET /api/draft - success', {
@@ -57,12 +57,12 @@ export async function GET() {
 }
 
 export async function DELETE() {
-    try {
-        const currentUser = await getCurrentUser();
-        if (!currentUser) {
-            return unauthorized('User authentication required to delete draft');
-        }
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+        return unauthorized('User authentication required to delete draft');
+    }
 
+    try {
         logger.info('DELETE /api/draft - start', { userId: currentUser.id });
         const response = await redis.del(currentUser.id);
         logger.info('DELETE /api/draft - success', { userId: currentUser.id });

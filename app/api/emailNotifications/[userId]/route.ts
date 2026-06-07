@@ -7,15 +7,15 @@ import { unauthorized, internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 
 export async function PUT(_request: Request) {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        return unauthorized(
+            'User authentication required to update email notifications'
+        );
+    }
+
     try {
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            return unauthorized(
-                'User authentication required to update email notifications'
-            );
-        }
-
         logger.info('PUT /api/emailNotifications/[userId] - start', {
             userId: currentUser.id,
         });
