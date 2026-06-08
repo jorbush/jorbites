@@ -4,7 +4,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
 import { USER_SELECT_FIELDS } from '@/app/utils/constants';
 import {
-    unauthorized,
+    unauthorizedResponse,
     internalServerError,
     badRequest,
 } from '@/app/utils/apiErrors';
@@ -14,7 +14,7 @@ export async function GET() {
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('Unauthorized');
+            return unauthorizedResponse('Unauthorized');
         }
 
         logger.info('GET /api/lists - start', { userId: currentUser.id });
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('Unauthorized');
+            return unauthorizedResponse('Unauthorized');
         }
 
         logger.info('POST /api/lists - start', { userId: currentUser.id });

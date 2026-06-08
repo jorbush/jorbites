@@ -11,7 +11,7 @@ import {
     WORKSHOP_MAX_STEPS,
 } from '@/app/utils/constants';
 import {
-    unauthorized,
+    unauthorizedResponse,
     validationError,
     badRequest,
     internalServerError,
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to create workshop'
             );
         }

@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
 import {
-    unauthorized,
+    unauthorizedResponse,
     invalidInput,
-    forbidden,
-    notFound,
+    forbiddenResponse,
+    notFoundResponse,
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
@@ -46,7 +46,7 @@ export async function GET(
         });
 
         if (!user) {
-            return notFound('User not found');
+            return notFoundResponse('User not found');
         }
 
         logger.info('GET /api/user/[userId] - success', { userId });
@@ -72,7 +72,7 @@ export async function DELETE(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to delete account'
             );
         }
@@ -91,7 +91,7 @@ export async function DELETE(
         }
 
         if (userId !== currentUser.id) {
-            return forbidden('You can only delete your own account');
+            return forbiddenResponse('You can only delete your own account');
         }
 
         const userToDelete = await prisma.user.findUnique({
@@ -101,7 +101,7 @@ export async function DELETE(
         });
 
         if (!userToDelete) {
-            return notFound('User not found');
+            return notFoundResponse('User not found');
         }
 
         await prisma.$transaction(async (tx) => {

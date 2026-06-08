@@ -3,7 +3,7 @@ import prisma from '@/app/lib/prismadb';
 import {
     invalidInput,
     internalServerError,
-    unauthorized,
+    unauthorizedResponse,
     rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
@@ -29,7 +29,7 @@ export async function GET(
         });
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'You must be logged in to view all the recipes of a user (yours)'
             );
         }
@@ -41,7 +41,7 @@ export async function GET(
         }
 
         if (currentUser.id !== userId) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'You can only view all the recipes of your own account'
             );
         }

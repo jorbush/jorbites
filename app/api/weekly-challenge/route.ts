@@ -6,8 +6,8 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import {
     internalServerError,
-    notFound,
-    unauthorized,
+    notFoundResponse,
+    unauthorizedResponse,
 } from '@/app/utils/apiErrors';
 
 export async function GET() {
@@ -17,7 +17,7 @@ export async function GET() {
 
         if (!challenge) {
             logger.info('api/weekly-challenge GET - no active challenge found');
-            return notFound('No active weekly challenge found');
+            return notFoundResponse('No active weekly challenge found');
         }
 
         logger.info('api/weekly-challenge GET - success', {
@@ -51,13 +51,13 @@ export async function POST(request: Request) {
             logger.error(
                 'api/weekly-challenge POST - missing Authorization header'
             );
-            return unauthorized('Missing Authorization header');
+            return unauthorizedResponse('Missing Authorization header');
         }
 
         const [scheme, token] = authHeader.trim().split(/\s+/);
         if (scheme.toLowerCase() !== 'bearer' || token !== cronSecret) {
             logger.error('api/weekly-challenge POST - invalid token or scheme');
-            return unauthorized('Invalid token or scheme');
+            return unauthorizedResponse('Invalid token or scheme');
         }
 
         const challenge = await rotateWeeklyChallenge();

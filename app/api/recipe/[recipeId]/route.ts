@@ -8,11 +8,11 @@ import updateUserLevel from '@/app/actions/updateUserLevel';
 import { deleteMultipleFromCloudinary } from '@/app/utils/cloudinary';
 import { NotificationType } from '@/app/types/notification';
 import {
-    unauthorized,
+    unauthorizedResponse,
     invalidInput,
     badRequest,
-    forbidden,
-    notFound,
+    forbiddenResponse,
+    notFoundResponse,
     internalServerError,
     validationError,
 } from '@/app/utils/apiErrors';
@@ -45,7 +45,7 @@ export async function POST(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to interact with recipe'
             );
         }
@@ -83,7 +83,7 @@ export async function POST(
         });
 
         if (!currentRecipe) {
-            return notFound('Recipe not found');
+            return notFoundResponse('Recipe not found');
         }
 
         let numLikes = currentRecipe.numLikes;
@@ -150,7 +150,9 @@ export async function PATCH(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('User authentication required to edit recipe');
+            return unauthorizedResponse(
+                'User authentication required to edit recipe'
+            );
         }
 
         const { recipeId } = params;
@@ -169,11 +171,11 @@ export async function PATCH(
         const recipe = await getRecipeById({ recipeId });
 
         if (!recipe) {
-            return notFound('Recipe not found');
+            return notFoundResponse('Recipe not found');
         }
 
         if (recipe.userId !== currentUser.id) {
-            return forbidden('You can only edit your own recipes');
+            return forbiddenResponse('You can only edit your own recipes');
         }
 
         const body = await request.json();
@@ -226,7 +228,7 @@ export async function PATCH(
                 ) &&
                 !hasAwardWinning
             ) {
-                return forbidden(
+                return forbiddenResponse(
                     'The Award-winning category cannot be set via API'
                 );
             }
@@ -399,7 +401,7 @@ export async function DELETE(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to delete recipe'
             );
         }
@@ -420,11 +422,11 @@ export async function DELETE(
         const recipe = await getRecipeById({ recipeId });
 
         if (!recipe) {
-            return notFound('Recipe not found');
+            return notFoundResponse('Recipe not found');
         }
 
         if (recipe.userId !== currentUser.id) {
-            return forbidden('You can only delete your own recipes');
+            return forbiddenResponse('You can only delete your own recipes');
         }
 
         const imageUrls: string[] = [];

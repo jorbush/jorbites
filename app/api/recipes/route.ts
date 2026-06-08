@@ -15,10 +15,10 @@ import {
     RECIPE_MAX_CATEGORIES,
 } from '@/app/utils/constants';
 import {
-    unauthorized,
+    unauthorizedResponse,
     validationError,
     badRequest,
-    forbidden,
+    forbiddenResponse,
     conflict,
     internalServerError,
     rateLimitExceeded,
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to create recipe'
             );
         }
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
         }
 
         if (categories.some((cat) => cat.toLowerCase() === 'award-winning')) {
-            return forbidden(
+            return forbiddenResponse(
                 'The Award-winning category cannot be set via API'
             );
         }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getEventBySlug } from '@/app/utils/event-utils';
-import { notFound, internalServerError } from '@/app/utils/apiErrors';
+import { notFoundResponse, internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
@@ -25,7 +25,7 @@ export async function GET(
             logger.info('GET /api/events/[slug] - event not found', {
                 slug,
             });
-            return notFound('Event not found');
+            return notFoundResponse('Event not found');
         }
         logger.info('GET /api/events/[slug] - success', { slug, language });
         return NextResponse.json(event);

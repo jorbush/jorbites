@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import {
-    unauthorized,
+    unauthorizedResponse,
     validationError,
     badRequest,
-    notFound,
-    forbidden,
+    notFoundResponse,
+    forbiddenResponse,
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
@@ -58,7 +58,7 @@ export async function GET(
         });
 
         if (!quest) {
-            return notFound('Quest not found');
+            return notFoundResponse('Quest not found');
         }
 
         logger.info('GET /api/quest/[questId] - success', { questId });
@@ -80,7 +80,9 @@ export async function PATCH(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('User authentication required to update quest');
+            return unauthorizedResponse(
+                'User authentication required to update quest'
+            );
         }
 
         const { questId } = await params;
@@ -102,11 +104,11 @@ export async function PATCH(
         });
 
         if (!existingQuest) {
-            return notFound('Quest not found');
+            return notFoundResponse('Quest not found');
         }
 
         if (existingQuest.userId !== currentUser.id) {
-            return forbidden('You can only update your own quests');
+            return forbiddenResponse('You can only update your own quests');
         }
 
         if (title && title.length > QUEST_TITLE_MAX_LENGTH) {
@@ -179,7 +181,9 @@ export async function DELETE(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('User authentication required to delete quest');
+            return unauthorizedResponse(
+                'User authentication required to delete quest'
+            );
         }
 
         const { questId } = await params;
@@ -198,11 +202,11 @@ export async function DELETE(
         });
 
         if (!existingQuest) {
-            return notFound('Quest not found');
+            return notFoundResponse('Quest not found');
         }
 
         if (existingQuest.userId !== currentUser.id) {
-            return forbidden('You can only delete your own quests');
+            return forbiddenResponse('You can only delete your own quests');
         }
 
         const quest = await prisma.quest.delete({

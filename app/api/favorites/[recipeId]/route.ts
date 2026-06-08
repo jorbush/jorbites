@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
 import {
-    unauthorized,
+    unauthorizedResponse,
     invalidInput,
     internalServerError,
 } from '@/app/utils/apiErrors';
@@ -22,7 +22,9 @@ export async function POST(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('User authentication required to add favorite');
+            return unauthorizedResponse(
+                'User authentication required to add favorite'
+            );
         }
 
         const { recipeId } = params;
@@ -77,7 +79,7 @@ export async function DELETE(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to remove favorite'
             );
         }

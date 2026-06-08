@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBlogById } from '@/app/utils/blog-utils';
-import { notFound, internalServerError } from '@/app/utils/apiErrors';
+import { notFoundResponse, internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
@@ -25,7 +25,7 @@ export async function GET(
             logger.info('GET /api/blogs/[id] - blog not found', {
                 id,
             });
-            return notFound('Blog not found');
+            return notFoundResponse('Blog not found');
         }
         logger.info('GET /api/blogs/[id] - success', { id, language });
         return NextResponse.json(blog);

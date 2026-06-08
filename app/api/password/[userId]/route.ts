@@ -4,9 +4,9 @@ import bcrypt from 'bcrypt';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
 import {
-    unauthorized,
+    unauthorizedResponse,
     badRequest,
-    forbidden,
+    forbiddenResponse,
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
@@ -24,7 +24,7 @@ export async function PATCH(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to change password'
             );
         }
@@ -41,7 +41,7 @@ export async function PATCH(
         }
 
         if (userId !== currentUser.id) {
-            return forbidden('You can only change your own password');
+            return forbiddenResponse('You can only change your own password');
         }
 
         const body = await request.json();

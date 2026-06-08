@@ -3,7 +3,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
 import {
-    unauthorized,
+    unauthorizedResponse,
     internalServerError,
     badRequest,
 } from '@/app/utils/apiErrors';
@@ -13,7 +13,7 @@ export async function PATCH(request: Request) {
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized();
+            return unauthorizedResponse();
         }
 
         const body = await request.json();

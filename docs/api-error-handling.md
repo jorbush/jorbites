@@ -49,7 +49,7 @@ The system provides convenient helper functions for each error type:
 
 ```typescript
 // Authentication errors
-unauthorized(message?) → 401 response
+unauthorizedResponse(message?) → 401 response
 
 // Validation errors
 badRequest(message?) → 400 response
@@ -57,8 +57,8 @@ validationError(message?) → 400 response
 invalidInput(message?) → 400 response
 
 // Resource errors
-notFound(message?) → 404 response
-forbidden(message?) → 403 response
+notFoundResponse(message?) → 404 response
+forbiddenResponse(message?) → 403 response
 conflict(message?) → 409 response
 
 // Server errors
@@ -80,14 +80,14 @@ All errors return a consistent JSON structure:
 
 #### Basic Usage
 ```typescript
-import { unauthorized, badRequest, internalServerError } from '@/app/utils/apiErrors';
+import { unauthorizedResponse, badRequest, internalServerError } from '@/app/utils/apiErrors';
 
 export async function POST(request: Request) {
     try {
         // Authentication check
         const user = await getCurrentUser();
         if (!user) {
-            return unauthorized('Authentication required');
+            return unauthorizedResponse('Authentication required');
         }
 
         // Input validation
@@ -112,7 +112,7 @@ export async function POST(request: Request) {
 ```typescript
 // Resource ownership validation
 if (comment.userId !== currentUser.id) {
-    return forbidden('You can only delete your own comments');
+    return forbiddenResponse('You can only delete your own comments');
 }
 
 // Duplicate resource handling
@@ -146,12 +146,12 @@ if (password.length < 6) {
 // Authentication check
 const user = await getCurrentUser();
 if (!user) {
-    return unauthorized('User authentication required');
+    return unauthorizedResponse('User authentication required');
 }
 
 // Resource ownership
 if (resource.userId !== user.id) {
-    return forbidden('You can only access your own resources');
+    return forbiddenResponse('You can only access your own resources');
 }
 ```
 
@@ -160,7 +160,7 @@ if (resource.userId !== user.id) {
 // Resource existence
 const item = await getItemById(id);
 if (!item) {
-    return notFound('Item not found');
+    return notFoundResponse('Item not found');
 }
 
 // Duplicate prevention

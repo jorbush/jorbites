@@ -4,7 +4,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/lib/prismadb';
 import { deleteFromCloudinary, isCloudinaryUrl } from '@/app/utils/cloudinary';
 import {
-    unauthorized,
+    unauthorizedResponse,
     badRequest,
     internalServerError,
 } from '@/app/utils/apiErrors';
@@ -15,7 +15,7 @@ export async function PUT(request: Request) {
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to update profile image'
             );
         }

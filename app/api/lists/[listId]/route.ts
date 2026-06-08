@@ -4,10 +4,10 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
 import { USER_SELECT_FIELDS } from '@/app/utils/constants';
 import {
-    unauthorized,
+    unauthorizedResponse,
     internalServerError,
     badRequest,
-    notFound,
+    notFoundResponse,
 } from '@/app/utils/apiErrors';
 
 interface IParams {
@@ -23,7 +23,7 @@ export async function PATCH(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('Unauthorized');
+            return unauthorizedResponse('Unauthorized');
         }
 
         const { listId } = params;
@@ -55,7 +55,7 @@ export async function PATCH(
         });
 
         if (!existingList || existingList.userId !== currentUser.id) {
-            return notFound('Not found or unauthorized');
+            return notFoundResponse('Not found or unauthorized');
         }
 
         const updatedList = await prisma.list.update({
@@ -109,7 +109,7 @@ export async function DELETE(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized('Unauthorized');
+            return unauthorizedResponse('Unauthorized');
         }
 
         const { listId } = params;
@@ -127,7 +127,7 @@ export async function DELETE(
         });
 
         if (!existingList || existingList.userId !== currentUser.id) {
-            return notFound('Not found or unauthorized');
+            return notFoundResponse('Not found or unauthorized');
         }
 
         if (existingList.isDefault) {

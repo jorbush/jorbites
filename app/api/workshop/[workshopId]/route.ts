@@ -3,11 +3,11 @@ import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { deleteMultipleFromCloudinary } from '@/app/utils/cloudinary';
 import {
-    unauthorized,
+    unauthorizedResponse,
     invalidInput,
     badRequest,
-    forbidden,
-    notFound,
+    forbiddenResponse,
+    notFoundResponse,
     internalServerError,
     validationError,
 } from '@/app/utils/apiErrors';
@@ -35,7 +35,7 @@ export async function PATCH(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to edit workshop'
             );
         }
@@ -58,11 +58,11 @@ export async function PATCH(
         });
 
         if (!workshop) {
-            return notFound('Workshop not found');
+            return notFoundResponse('Workshop not found');
         }
 
         if (workshop.hostId !== currentUser.id) {
-            return forbidden('You can only edit your own workshops');
+            return forbiddenResponse('You can only edit your own workshops');
         }
 
         const body = await request.json();
@@ -197,7 +197,7 @@ export async function DELETE(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorized(
+            return unauthorizedResponse(
                 'User authentication required to delete workshop'
             );
         }
@@ -220,11 +220,11 @@ export async function DELETE(
         });
 
         if (!workshop) {
-            return notFound('Workshop not found');
+            return notFoundResponse('Workshop not found');
         }
 
         if (workshop.hostId !== currentUser.id) {
-            return forbidden('You can only delete your own workshops');
+            return forbiddenResponse('You can only delete your own workshops');
         }
 
         // Delete workshop image from Cloudinary if exists
