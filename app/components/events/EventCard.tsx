@@ -47,10 +47,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     };
 
     return (
-        <div
-            className="dark:bg-dark cursor-pointer overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white transition hover:shadow-md dark:border-neutral-700 dark:text-neutral-100"
-            onClick={navigateToEvent}
-        >
+        <div className="dark:bg-dark relative overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white transition hover:shadow-md dark:border-neutral-700 dark:text-neutral-100">
             <div className="relative h-40 w-full">
                 <Image
                     src={event.frontmatter.image || '/jorbites-social.jpg'}
@@ -68,7 +65,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
                             e.stopPropagation();
                             navigateToEvent();
                         }}
-                        className="cursor-pointer text-left text-xl font-semibold hover:underline focus:outline-hidden"
+                        className="cursor-pointer text-left text-xl font-semibold after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
                     >
                         {event.frontmatter.title}
                     </button>

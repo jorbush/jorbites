@@ -37,13 +37,12 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
 
     return (
         <div
-            className={`dark:bg-dark relative cursor-pointer overflow-hidden rounded-lg border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-700 ${
+            className={`dark:bg-dark relative overflow-hidden rounded-lg border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-700 ${
                 index < 3
                     ? 'border-2 ' +
                       getMedalColor(index).replace('text', 'border')
                     : ''
             }`}
-            onClick={() => push('/profile/' + jorbiter.id)}
         >
             <div className="flex items-center justify-between">
                 {/* Left section - Avatar and Basic Info */}
@@ -51,13 +50,15 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                     <div className="flex items-center justify-center">
                         <RankIcon rank={index} />
                     </div>
-                    <Avatar
-                        src={jorbiter.image}
-                        size={50}
-                        onClick={() => push('/profile/' + jorbiter.id)}
-                        extraClasses="sm:size-[65px] md:size-[70px]"
-                        quality="auto:best"
-                    />
+                    <div className="relative z-10">
+                        <Avatar
+                            src={jorbiter.image}
+                            size={50}
+                            onClick={() => push('/profile/' + jorbiter.id)}
+                            extraClasses="sm:size-[65px] md:size-[70px]"
+                            quality="auto:best"
+                        />
+                    </div>
                     <div className="flex min-w-0 flex-col">
                         <div className="flex flex-row items-center gap-1">
                             <div className="max-w-[50vw] truncate text-base font-semibold sm:max-w-[45vw] sm:text-xl md:max-w-[35vw] md:text-2xl lg:max-w-[30vw] dark:text-white">
@@ -67,7 +68,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                                         e.stopPropagation();
                                         push('/profile/' + jorbiter.id);
                                     }}
-                                    className="cursor-pointer text-left hover:underline focus:outline-hidden"
+                                    className="cursor-pointer text-left after:absolute after:inset-0 after:rounded-lg after:content-[''] hover:underline focus:outline-hidden"
                                 >
                                     {getUserDisplayName(
                                         jorbiter,

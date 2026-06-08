@@ -44,7 +44,7 @@ function Dropdown<T extends string>({
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
-    const listboxRef = useRef<HTMLUListElement>(null);
+    const listboxRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -174,14 +174,14 @@ function Dropdown<T extends string>({
                         animation: 'dropdownFadeIn 0.2s ease-out forwards',
                     }}
                 >
-                    <ul
+                    <div
                         ref={listboxRef}
                         role="listbox"
                         aria-label={ariaLabel}
                         className="w-max"
                     >
                         {options.map((option, index) => (
-                            <li
+                            <div
                                 key={option.value}
                                 role="option"
                                 aria-selected={option.value === value}
@@ -191,9 +191,9 @@ function Dropdown<T extends string>({
                                 <span className="whitespace-nowrap">
                                     {option.label}
                                 </span>
-                            </li>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 </div>
             )}
         </div>

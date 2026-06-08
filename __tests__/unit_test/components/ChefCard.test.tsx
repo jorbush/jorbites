@@ -116,8 +116,8 @@ describe('<ChefCard />', () => {
 
     it('navigates to profile when clicked', () => {
         render(<ChefCard chef={mockChef} />);
-        const card = screen.getByTestId('chef-card');
-        fireEvent.click(card);
+        const nameButton = screen.getByTestId('chef-card-name');
+        fireEvent.click(nameButton);
         expect(mockPush).toHaveBeenCalledWith('/profile/1');
     });
 
@@ -222,8 +222,8 @@ describe('<ChefCard />', () => {
 
     it('applies cursor-pointer class', () => {
         render(<ChefCard chef={mockChef} />);
-        const card = screen.getByTestId('chef-card');
-        expect(card.className).toContain('cursor-pointer');
+        const nameButton = screen.getByTestId('chef-card-name');
+        expect(nameButton.className).toContain('cursor-pointer');
     });
 
     it('renders without category if not provided', () => {

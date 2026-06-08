@@ -61,8 +61,7 @@ const RecipeCard = memo(function RecipeCard({
 
     return (
         <div
-            onClick={() => push(`/recipes/${data.id}`)}
-            className="group col-span-1 cursor-pointer"
+            className="group relative col-span-1"
             id={isFirstCard ? 'lcp-container' : undefined}
         >
             <div className="flex w-full flex-col gap-2">
@@ -78,14 +77,14 @@ const RecipeCard = memo(function RecipeCard({
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px"
                         quality="auto:eco"
                     />
-                    <div className="absolute top-3 right-3">
+                    <div className="absolute top-3 right-3 z-10">
                         <HeartButton
                             recipeId={data.id}
                             currentUser={currentUser}
                         />
                     </div>
                     {canPin && !onAction ? (
-                        <div className="absolute top-3 left-3">
+                        <div className="absolute top-3 left-3 z-10">
                             <PinButton
                                 recipeId={data.id}
                                 currentUser={currentUser}
@@ -98,7 +97,7 @@ const RecipeCard = memo(function RecipeCard({
                                 type="button"
                                 disabled={disabled}
                                 onClick={handleCancel}
-                                className="absolute top-3 left-3 flex size-8 cursor-pointer items-center justify-center rounded-full bg-white/80 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800/80 dark:hover:bg-neutral-800"
+                                className="absolute top-3 left-3 z-10 flex size-8 cursor-pointer items-center justify-center rounded-full bg-white/80 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800/80 dark:hover:bg-neutral-800"
                                 title={actionLabel}
                             >
                                 <ActionIcon
@@ -127,7 +126,7 @@ const RecipeCard = memo(function RecipeCard({
                             e.stopPropagation();
                             push(`/recipes/${data.id}`);
                         }}
-                        className="cursor-pointer text-left font-semibold hover:underline focus:outline-hidden"
+                        className="cursor-pointer text-left font-semibold after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
                         data-cy="recipe-card-title"
                     >
                         {data.title}

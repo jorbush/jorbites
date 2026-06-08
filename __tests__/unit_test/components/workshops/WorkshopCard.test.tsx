@@ -194,8 +194,8 @@ describe('<WorkshopCard />', () => {
             />
         );
 
-        const card = screen.getByTestId('workshop-card');
-        fireEvent.click(card);
+        const titleButton = screen.getByText('Test Workshop');
+        fireEvent.click(titleButton);
 
         expect(mockRouter.push).toHaveBeenCalledWith('/workshops/1');
     });

@@ -55,8 +55,7 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                     {lists.map((list) => (
                         <div
                             key={list.id}
-                            onClick={() => push(`/lists/${list.id}`)}
-                            className="group relative flex w-full cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 text-left transition hover:shadow-lg dark:border-neutral-700"
+                            className="group relative flex w-full flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 transition hover:shadow-lg dark:border-neutral-700"
                         >
                             <div className="text-xl font-bold">
                                 <button
@@ -65,7 +64,7 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                                         e.stopPropagation();
                                         push(`/lists/${list.id}`);
                                     }}
-                                    className="cursor-pointer text-left font-bold hover:underline focus:outline-hidden"
+                                    className="cursor-pointer text-left font-bold after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
                                 >
                                     {list.isDefault
                                         ? t('to_cook_later')

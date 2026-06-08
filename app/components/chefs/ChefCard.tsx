@@ -24,8 +24,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
 
     return (
         <div
-            onClick={navigateToProfile}
-            className="group cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
+            className="group relative overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
             data-cy="chef-card"
             data-testid="chef-card"
         >
@@ -63,7 +62,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                                 e.stopPropagation();
                                 navigateToProfile();
                             }}
-                            className="cursor-pointer text-left hover:text-orange-500 focus:outline-hidden dark:hover:text-orange-400"
+                            className="cursor-pointer text-left after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:text-orange-500 focus:outline-hidden dark:hover:text-orange-400"
                             data-cy="chef-card-name"
                             data-testid="chef-card-name"
                         >
