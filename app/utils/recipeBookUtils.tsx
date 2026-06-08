@@ -17,7 +17,7 @@ export const parseFormattedText = (
         /(\*\*\*[\s\S]+?\*\*\*|\*\*_(?:[\s\S]+?)_\*\*|__\*(?:[\s\S]+?)\*__|\*\*[\s\S]+?\*\*|__[\s\S]+?__|\*[\s\S]+?\*|_[\s\S]+?_)/g;
     const parts = text.split(regex);
 
-    return parts.map((part, index) => {
+    return parts.map((part) => {
         if (!part) return '';
 
         // Bold-italic
