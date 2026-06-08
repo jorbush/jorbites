@@ -181,8 +181,9 @@ function Dropdown<T extends string>({
                         className="w-max"
                     >
                         {options.map((option, index) => (
-                            <div
+                            <button
                                 key={option.value}
+                                type="button"
                                 role="option"
                                 aria-selected={option.value === value}
                                 onClick={() => handleOptionClick(option.value)}
@@ -191,7 +192,7 @@ function Dropdown<T extends string>({
                                 <span className="whitespace-nowrap">
                                     {option.label}
                                 </span>
-                            </div>
+                            </button>
                         ))}
                     </div>
                 </div>
