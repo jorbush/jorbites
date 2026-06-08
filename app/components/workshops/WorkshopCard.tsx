@@ -37,10 +37,9 @@ const WorkshopCard = memo(function WorkshopCard({
     };
 
     return (
-        <button
-            type="button"
+        <div
             onClick={() => push(`/workshops/${data.id}`)}
-            className="group col-span-1 w-full cursor-pointer border-0 bg-transparent p-0 text-left focus:outline-hidden"
+            className="group col-span-1 cursor-pointer"
             id={isFirstCard ? 'lcp-container' : undefined}
             data-testid="workshop-card"
         >
@@ -72,11 +71,18 @@ const WorkshopCard = memo(function WorkshopCard({
                         </div>
                     )}
                 </div>
-                <div
-                    className="text-lg font-semibold dark:text-neutral-100"
-                    data-cy="workshop-card-title"
-                >
-                    {data.title}
+                <div className="text-lg font-semibold dark:text-neutral-100">
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            push(`/workshops/${data.id}`);
+                        }}
+                        className="cursor-pointer text-left font-semibold hover:underline focus:outline-hidden"
+                        data-cy="workshop-card-title"
+                    >
+                        {data.title}
+                    </button>
                 </div>
                 {data.host && (
                     <div className="flex flex-row items-center gap-2">
@@ -117,7 +123,7 @@ const WorkshopCard = memo(function WorkshopCard({
                     </div>
                 )}
             </div>
-        </button>
+        </div>
     );
 });
 

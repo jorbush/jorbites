@@ -47,7 +47,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                         type="button"
                         disabled={disabled}
                         onClick={() => open?.()}
-                        className={`relative flex h-50 w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-neutral-300 px-20 py-14 text-neutral-600 transition hover:opacity-70 ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
+                        className={`relative flex h-50 w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-neutral-300 bg-transparent px-20 py-14 text-neutral-600 transition hover:opacity-70 focus:outline-hidden ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
                     >
                         <TbPhotoPlus
                             size={50}

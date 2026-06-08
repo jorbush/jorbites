@@ -19,9 +19,8 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
     };
 
     return (
-        <button
-            type="button"
-            className="group hover:border-green-450/50 w-full cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 text-left shadow-sm transition-all duration-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800"
+        <div
+            className="group hover:border-green-450/50 cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800"
             onClick={navigateToBlog}
         >
             <div className="flex h-full flex-col">
@@ -29,7 +28,16 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
                     {formatDate(blog.frontmatter.date, i18n.language)}
                 </div>
                 <h3 className="group-hover:text-green-450 mb-2 text-lg leading-tight font-semibold text-neutral-800 transition-colors dark:text-neutral-100">
-                    {blog.frontmatter.title}
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigateToBlog();
+                        }}
+                        className="cursor-pointer text-left hover:underline focus:outline-hidden"
+                    >
+                        {blog.frontmatter.title}
+                    </button>
                 </h3>
                 <p className="line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
                     {blog.frontmatter.description}
@@ -38,7 +46,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
                     <FiArrowRight className="group-hover:text-green-450 text-neutral-400 transition-transform duration-300 group-hover:translate-x-1" />
                 </div>
             </div>
-        </button>
+        </div>
     );
 };
 

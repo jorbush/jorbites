@@ -47,9 +47,8 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     };
 
     return (
-        <button
-            type="button"
-            className="dark:bg-dark w-full cursor-pointer overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white text-left transition hover:shadow-md dark:border-neutral-700 dark:text-neutral-100"
+        <div
+            className="dark:bg-dark cursor-pointer overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white transition hover:shadow-md dark:border-neutral-700 dark:text-neutral-100"
             onClick={navigateToEvent}
         >
             <div className="relative h-40 w-full">
@@ -63,7 +62,16 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
             </div>
             <div className="p-4">
                 <h3 className="text-xl font-semibold">
-                    {event.frontmatter.title}
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigateToEvent();
+                        }}
+                        className="cursor-pointer text-left text-xl font-semibold hover:underline focus:outline-hidden"
+                    >
+                        {event.frontmatter.title}
+                    </button>
                 </h3>
                 {!isPermanent && dateDisplay && (
                     <div className="mt-2 flex items-center text-sm text-neutral-500 dark:text-neutral-400">
@@ -72,7 +80,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
                     </div>
                 )}
             </div>
-        </button>
+        </div>
     );
 };
 

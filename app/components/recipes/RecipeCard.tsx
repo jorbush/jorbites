@@ -60,10 +60,9 @@ const RecipeCard = memo(function RecipeCard({
     }, [data]);
 
     return (
-        <button
-            type="button"
+        <div
             onClick={() => push(`/recipes/${data.id}`)}
-            className="group col-span-1 w-full cursor-pointer border-0 bg-transparent p-0 text-left focus:outline-hidden"
+            className="group col-span-1 cursor-pointer"
             id={isFirstCard ? 'lcp-container' : undefined}
         >
             <div className="flex w-full flex-col gap-2">
@@ -121,11 +120,18 @@ const RecipeCard = memo(function RecipeCard({
                         )}
                     </ClientOnly>
                 </div>
-                <div
-                    className="text-lg font-semibold dark:text-neutral-100"
-                    data-cy="recipe-card-title"
-                >
-                    {data.title}
+                <div className="text-lg font-semibold dark:text-neutral-100">
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            push(`/recipes/${data.id}`);
+                        }}
+                        className="cursor-pointer text-left font-semibold hover:underline focus:outline-hidden"
+                        data-cy="recipe-card-title"
+                    >
+                        {data.title}
+                    </button>
                 </div>
                 {user ? (
                     <div className="flex flex-row items-center gap-2">
@@ -141,7 +147,7 @@ const RecipeCard = memo(function RecipeCard({
                     </div>
                 )}
             </div>
-        </button>
+        </div>
     );
 });
 

@@ -23,11 +23,9 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
     };
 
     return (
-        <button
-            type="button"
+        <div
             onClick={navigateToProfile}
-            aria-label={`View ${chef.name || t('anonymous')}'s profile`}
-            className="group w-full cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-white text-left shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:focus:ring-offset-neutral-900"
+            className="group cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-lg dark:border-neutral-700 dark:bg-neutral-800"
             data-cy="chef-card"
             data-testid="chef-card"
         >
@@ -58,12 +56,19 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
 
                 {/* Chef Name */}
                 <div className="mb-2 flex items-center gap-2">
-                    <h3
-                        className="text-lg font-semibold text-neutral-900 hover:text-orange-500 dark:text-white dark:hover:text-orange-400"
-                        data-cy="chef-card-name"
-                        data-testid="chef-card-name"
-                    >
-                        {chef.name || t('anonymous')}
+                    <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigateToProfile();
+                            }}
+                            className="cursor-pointer text-left hover:text-orange-500 focus:outline-hidden dark:hover:text-orange-400"
+                            data-cy="chef-card-name"
+                            data-testid="chef-card-name"
+                        >
+                            {chef.name || t('anonymous')}
+                        </button>
                     </h3>
                     {chef.verified && (
                         <VerificationBadge
@@ -174,7 +179,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                         </div>
                     )}
             </div>
-        </button>
+        </div>
     );
 });
 
