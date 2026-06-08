@@ -7,7 +7,10 @@ import {
     INDEXNOW_API_URL,
 } from '@/app/utils/constants';
 
-import { internalServerError, unauthorizedResponse } from '@/app/utils/apiErrors';
+import {
+    internalServerError,
+    unauthorizedResponse,
+} from '@/app/utils/apiErrors';
 
 export async function POST(request: Request) {
     const authHeader = request.headers.get('authorization');

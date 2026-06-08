@@ -150,7 +150,9 @@ export async function PATCH(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorizedResponse('User authentication required to edit recipe');
+            return unauthorizedResponse(
+                'User authentication required to edit recipe'
+            );
         }
 
         const { recipeId } = params;

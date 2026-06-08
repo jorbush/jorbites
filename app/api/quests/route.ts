@@ -20,7 +20,9 @@ export async function POST(request: Request) {
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorizedResponse('User authentication required to create quest');
+            return unauthorizedResponse(
+                'User authentication required to create quest'
+            );
         }
 
         const body = await request.json();

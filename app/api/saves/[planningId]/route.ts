@@ -21,7 +21,9 @@ export async function POST(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorizedResponse('User authentication required to save plan');
+            return unauthorizedResponse(
+                'User authentication required to save plan'
+            );
         }
 
         const { planningId } = params;
@@ -78,7 +80,9 @@ export async function DELETE(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorizedResponse('User authentication required to unsave plan');
+            return unauthorizedResponse(
+                'User authentication required to unsave plan'
+            );
         }
 
         const { planningId } = params;

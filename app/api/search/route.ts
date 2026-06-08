@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import { unauthorizedResponse, internalServerError } from '@/app/utils/apiErrors';
+import {
+    unauthorizedResponse,
+    internalServerError,
+} from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 
 export async function GET(request: Request) {
@@ -17,7 +20,9 @@ export async function GET(request: Request) {
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorizedResponse('User authentication required to search');
+            return unauthorizedResponse(
+                'User authentication required to search'
+            );
         }
 
         logger.info('GET /api/search - start', {

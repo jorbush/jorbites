@@ -22,7 +22,9 @@ export async function POST(request: Request) {
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorizedResponse('User authentication required to post comment');
+            return unauthorizedResponse(
+                'User authentication required to post comment'
+            );
         }
 
         // Rate limiting for comment creation - prevent spam

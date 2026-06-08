@@ -80,7 +80,9 @@ export async function PATCH(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorizedResponse('User authentication required to update quest');
+            return unauthorizedResponse(
+                'User authentication required to update quest'
+            );
         }
 
         const { questId } = await params;
@@ -179,7 +181,9 @@ export async function DELETE(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorizedResponse('User authentication required to delete quest');
+            return unauthorizedResponse(
+                'User authentication required to delete quest'
+            );
         }
 
         const { questId } = await params;

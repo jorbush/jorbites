@@ -22,7 +22,9 @@ export async function POST(
         const currentUser = await getCurrentUser();
 
         if (!currentUser) {
-            return unauthorizedResponse('User authentication required to add favorite');
+            return unauthorizedResponse(
+                'User authentication required to add favorite'
+            );
         }
 
         const { recipeId } = params;
