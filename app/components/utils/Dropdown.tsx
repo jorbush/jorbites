@@ -44,7 +44,7 @@ function Dropdown<T extends string>({
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
-    const listboxRef = useRef<HTMLDivElement>(null);
+    const listboxRef = useRef<HTMLUListElement>(null);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

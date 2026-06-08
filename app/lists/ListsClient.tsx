@@ -53,16 +53,24 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                 </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
                     {lists.map((list) => (
-                        <button
+                        <div
                             key={list.id}
-                            type="button"
                             onClick={() => push(`/lists/${list.id}`)}
                             className="group relative flex w-full cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 text-left transition hover:shadow-lg dark:border-neutral-700"
                         >
                             <div className="text-xl font-bold">
-                                {list.isDefault
-                                    ? t('to_cook_later')
-                                    : list.name}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        push(`/lists/${list.id}`);
+                                    }}
+                                    className="cursor-pointer text-left font-bold hover:underline focus:outline-hidden"
+                                >
+                                    {list.isDefault
+                                        ? t('to_cook_later')
+                                        : list.name}
+                                </button>
                             </div>
                             <div className="flex flex-row items-center gap-2">
                                 <div className="text-sm text-neutral-500">
@@ -104,7 +112,7 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                                     <AiOutlineDelete size={20} />
                                 </button>
                             )}
-                        </button>
+                        </div>
                     ))}
                 </div>
             </div>

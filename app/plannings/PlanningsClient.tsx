@@ -161,19 +161,28 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                     const previews = getPreviewRecipes(plan);
                     const totalMealsCount = plan.meals?.length || 0;
                     return (
-                        <button
+                        <div
                             key={plan.id}
-                            type="button"
                             onClick={() => push(`/plannings/${plan.id}`)}
-                            className="group relative flex w-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/60 bg-white/50 p-5 text-left shadow-xs backdrop-blur-xs transition duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-xl focus:outline-hidden dark:border-neutral-800/60 dark:bg-[#121212]/50 dark:hover:bg-[#181818]"
+                            className="group relative flex w-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/60 bg-white/50 p-5 text-left shadow-xs backdrop-blur-xs transition duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-xl dark:border-neutral-800/60 dark:bg-[#121212]/50 dark:hover:bg-[#181818]"
                         >
                             <div className="flex w-full flex-col gap-2">
                                 <div className="flex flex-row items-center justify-between gap-2">
                                     <div className="truncate text-xl font-semibold text-neutral-900 group-hover:text-black dark:text-neutral-100 dark:group-hover:text-white">
-                                        {plan.name}
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                push(`/plannings/${plan.id}`);
+                                            }}
+                                            className="cursor-pointer text-left font-semibold hover:underline focus:outline-hidden"
+                                        >
+                                            {plan.name}
+                                        </button>
                                     </div>
                                     {showDelete && (
-                                        <div
+                                        <button
+                                            type="button"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 if (
@@ -186,11 +195,11 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                                                     setDeletePlanId(plan.id);
                                                 }
                                             }}
-                                            className="cursor-pointer rounded-full p-2 text-neutral-400 hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-950/40"
+                                            className="cursor-pointer rounded-full border-0 bg-transparent p-2 text-neutral-400 hover:bg-rose-50 hover:text-rose-500 focus:outline-hidden dark:hover:bg-rose-950/40"
                                             title={t('delete') || 'Delete'}
                                         >
                                             <AiOutlineDelete size={18} />
-                                        </div>
+                                        </button>
                                     )}
                                 </div>
                                 <p className="line-clamp-2 text-sm font-light text-neutral-500 dark:text-neutral-400">
@@ -262,7 +271,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                                     </div>
                                 </div>
                             </div>
-                        </button>
+                        </div>
                     );
                 })}
             </div>
