@@ -55,16 +55,9 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     }, [label, push, params, pathname]);
 
     return (
-        <div
-            role="button"
-            tabIndex={0}
+        <button
+            type="button"
             onClick={handleCategorySelection}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleCategorySelection();
-                }
-            }}
             className={`flex cursor-pointer flex-col items-center justify-center gap-2 border-b-2 p-3 transition hover:text-neutral-800 ${selected ? 'border-b-neutral-800 dark:border-b-neutral-100' : 'border-transparent'} ${selected ? 'text-neutral-800 dark:text-neutral-100' : 'text-neutral-500'} `}
         >
             <Icon
@@ -74,7 +67,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
             <div className="text-sm font-medium whitespace-nowrap">
                 {t(label.toLocaleLowerCase())}
             </div>
-        </div>
+        </button>
     );
 };
 

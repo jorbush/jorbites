@@ -73,16 +73,15 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                     </Container>
                 </div>
                 {isFilterablePage && shouldRender && (
-                    <div
+                    <section
                         className={`navbar-categories relative z-0 border-b border-neutral-200/40 bg-white/75 shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition-all duration-300 dark:border-neutral-800/40 dark:bg-[#0F0F0F]/75 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)] ${isFilterOpen ? 'open' : 'closing'}`}
                         id="categories-menu"
-                        role="region"
                         aria-label="Categories filter"
                         aria-hidden={!isFilterOpen}
                         onAnimationEnd={handleAnimationEnd}
                     >
                         <Categories />
-                    </div>
+                    </section>
                 )}
             </nav>
         </header>

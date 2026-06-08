@@ -17,10 +17,10 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
     const [isDisabled, setIsDisabled] = useState(false);
 
     const handleButtonClick = (
-        e: React.MouseEvent<HTMLDivElement, MouseEvent>
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         if (!isDisabled) {
-            toggleFavorite(e);
+            toggleFavorite(e as any);
             setIsDisabled(true);
         }
     };
@@ -36,17 +36,10 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
     }, [isDisabled]);
 
     return (
-        <div
-            role="button"
-            tabIndex={0}
+        <button
+            type="button"
             onClick={handleButtonClick}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleButtonClick(e as any);
-                }
-            }}
-            className="relative cursor-pointer transition hover:opacity-80"
+            className="relative cursor-pointer border-0 bg-transparent p-0 transition hover:opacity-80 focus:outline-hidden"
             data-cy="heart-button"
         >
             <AiOutlineHeart
@@ -63,7 +56,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
                     pointerEvents: isDisabled ? 'none' : 'auto',
                 }}
             />
-        </div>
+        </button>
     );
 };
 

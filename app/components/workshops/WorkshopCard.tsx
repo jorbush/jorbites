@@ -37,17 +37,10 @@ const WorkshopCard = memo(function WorkshopCard({
     };
 
     return (
-        <div
-            role="button"
-            tabIndex={0}
+        <button
+            type="button"
             onClick={() => push(`/workshops/${data.id}`)}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    push(`/workshops/${data.id}`);
-                }
-            }}
-            className="group col-span-1 cursor-pointer"
+            className="group col-span-1 w-full cursor-pointer border-0 bg-transparent p-0 text-left focus:outline-hidden"
             id={isFirstCard ? 'lcp-container' : undefined}
             data-testid="workshop-card"
         >
@@ -124,7 +117,7 @@ const WorkshopCard = memo(function WorkshopCard({
                     </div>
                 )}
             </div>
-        </div>
+        </button>
     );
 });
 

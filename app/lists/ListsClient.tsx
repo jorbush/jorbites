@@ -53,18 +53,11 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                 </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
                     {lists.map((list) => (
-                        <div
+                        <button
                             key={list.id}
-                            role="button"
-                            tabIndex={0}
+                            type="button"
                             onClick={() => push(`/lists/${list.id}`)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault();
-                                    push(`/lists/${list.id}`);
-                                }
-                            }}
-                            className="group relative flex cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 transition hover:shadow-lg dark:border-neutral-700"
+                            className="group relative flex w-full cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 text-left transition hover:shadow-lg dark:border-neutral-700"
                         >
                             <div className="text-xl font-bold">
                                 {list.isDefault
@@ -99,30 +92,19 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                                 )}
                             </div>
                             {!list.isDefault && (
-                                <div
-                                    role="button"
-                                    tabIndex={0}
+                                <button
+                                    type="button"
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setDeleteListId(list.id);
                                     }}
-                                    onKeyDown={(e) => {
-                                        if (
-                                            e.key === 'Enter' ||
-                                            e.key === ' '
-                                        ) {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            setDeleteListId(list.id);
-                                        }
-                                    }}
-                                    className="absolute top-4 right-4 z-10 cursor-pointer rounded-full p-2 text-rose-500 transition group-hover:block hover:bg-rose-100 md:hidden dark:hover:bg-rose-900"
+                                    className="absolute top-4 right-4 z-10 cursor-pointer rounded-full border-0 bg-transparent p-2 text-rose-500 transition group-hover:block hover:bg-rose-100 focus:outline-hidden md:hidden dark:hover:bg-rose-900"
                                     title={t('delete_list') || 'Delete list'}
                                 >
                                     <AiOutlineDelete size={20} />
-                                </div>
+                                </button>
                             )}
-                        </div>
+                        </button>
                     ))}
                 </div>
             </div>

@@ -142,20 +142,13 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                     />
                     <div className="flex flex-col">
                         <div className="flex flex-row items-center">
-                            <div
-                                className="cursor-pointer text-xl font-semibold dark:text-neutral-100"
-                                role="button"
-                                tabIndex={0}
+                            <button
+                                type="button"
+                                className="cursor-pointer text-left text-xl font-semibold focus:outline-hidden dark:text-neutral-100"
                                 onClick={() => push('/profile/' + author.id)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                        e.preventDefault();
-                                        push('/profile/' + author.id);
-                                    }
-                                }}
                             >
                                 {author.name}
-                            </div>
+                            </button>
                             {author.verified && (
                                 <VerificationBadge
                                     className="mt-1 ml-1"

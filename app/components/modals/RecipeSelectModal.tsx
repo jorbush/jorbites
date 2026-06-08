@@ -90,22 +90,14 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                 ) : results.length > 0 ? (
                     <div className="flex flex-col gap-2">
                         {results.map((recipe) => (
-                            <div
+                            <button
                                 key={recipe.id}
-                                role="button"
-                                tabIndex={0}
+                                type="button"
                                 onClick={() => {
                                     onSelect(recipe);
                                     handleClose();
                                 }}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                        e.preventDefault();
-                                        onSelect(recipe);
-                                        handleClose();
-                                    }
-                                }}
-                                className="dark:hover:bg-neutral-850 flex cursor-pointer flex-row items-center gap-3 rounded-xl p-2 transition hover:bg-neutral-100"
+                                className="dark:hover:bg-neutral-850 flex w-full cursor-pointer flex-row items-center gap-3 rounded-xl p-2 text-left transition hover:bg-neutral-100 focus:outline-hidden"
                             >
                                 {recipe.imageSrc && (
                                     <img
@@ -124,7 +116,7 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                                         </span>
                                     )}
                                 </div>
-                            </div>
+                            </button>
                         ))}
                     </div>
                 ) : query.trim().length >= 2 ? (

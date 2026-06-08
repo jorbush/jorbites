@@ -22,23 +22,12 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
         push(`/profile/${chef.id}`);
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            navigateToProfile();
-        } else if (e.key === ' ') {
-            navigateToProfile();
-        }
-    };
-
     return (
-        <div
+        <button
+            type="button"
             onClick={navigateToProfile}
-            onKeyDown={handleKeyDown}
-            tabIndex={0}
-            role="button"
             aria-label={`View ${chef.name || t('anonymous')}'s profile`}
-            className="group cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:focus:ring-offset-neutral-900"
+            className="group w-full cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-white text-left shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:focus:ring-offset-neutral-900"
             data-cy="chef-card"
             data-testid="chef-card"
         >
@@ -185,7 +174,7 @@ const ChefCard = memo(function ChefCard({ chef }: ChefCardProps) {
                         </div>
                     )}
             </div>
-        </div>
+        </button>
     );
 });
 

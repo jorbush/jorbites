@@ -131,18 +131,11 @@ const AddToListModal = () => {
                             addToListModal.recipeId || ''
                         );
                         return (
-                            <div
+                            <button
                                 key={list.id}
-                                role="button"
-                                tabIndex={0}
+                                type="button"
                                 onClick={() => handleToggleRecipeInList(list)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                        e.preventDefault();
-                                        handleToggleRecipeInList(list);
-                                    }
-                                }}
-                                className={`group flex cursor-pointer flex-row items-center justify-between rounded-lg border-2 p-4 transition hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
+                                className={`group flex w-full cursor-pointer flex-row items-center justify-between rounded-lg border-2 p-4 text-left transition hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
                                     isSelected
                                         ? 'border-black dark:border-white'
                                         : 'border-neutral-200 dark:border-neutral-700'
@@ -161,26 +154,19 @@ const AddToListModal = () => {
                                         />
                                     </div>
                                 )}
-                            </div>
+                            </button>
                         );
                     })}
                 </div>
             )}
             {!isCreating ? (
-                <div
-                    role="button"
-                    tabIndex={0}
+                <button
+                    type="button"
                     onClick={() => setIsCreating(true)}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            setIsCreating(true);
-                        }
-                    }}
-                    className="mt-4 cursor-pointer text-center font-bold underline"
+                    className="mt-4 w-full cursor-pointer border-0 bg-transparent text-center font-bold underline focus:outline-hidden"
                 >
                     {t('create_new_list')}
-                </div>
+                </button>
             ) : (
                 <div className="mt-4 flex flex-col gap-4 border-t pt-4">
                     <Input

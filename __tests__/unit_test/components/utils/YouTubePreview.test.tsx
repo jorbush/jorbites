@@ -211,7 +211,7 @@ describe('<YouTubePreview />', () => {
 
             const container = screen.getByRole('button');
             expect(container.tabIndex).toBe(0);
-            expect(container.getAttribute('role')).toBe('button');
+            expect(container.tagName).toBe('BUTTON');
         });
 
         it('renders play button icon', () => {

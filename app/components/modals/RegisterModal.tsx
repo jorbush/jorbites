@@ -135,22 +135,14 @@ const RegisterModal = () => {
             />
             <div className="mt-4 text-center font-light text-neutral-500">
                 <p>
-                    {t('already_account')}
-                    <span
-                        role="button"
-                        tabIndex={0}
+                    {t('already_account')}{' '}
+                    <button
+                        type="button"
                         onClick={onToggle}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                onToggle();
-                            }
-                        }}
-                        className="cursor-pointer text-neutral-800 hover:underline"
+                        className="cursor-pointer border-0 bg-transparent p-0 text-neutral-800 hover:underline focus:outline-hidden"
                     >
-                        {' '}
                         {t('login')}
-                    </span>
+                    </button>
                 </p>
             </div>
         </div>

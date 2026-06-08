@@ -47,17 +47,10 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     };
 
     return (
-        <div
-            role="button"
-            tabIndex={0}
-            className="dark:bg-dark cursor-pointer overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white transition hover:shadow-md dark:border-neutral-700 dark:text-neutral-100"
+        <button
+            type="button"
+            className="dark:bg-dark w-full cursor-pointer overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white text-left transition hover:shadow-md dark:border-neutral-700 dark:text-neutral-100"
             onClick={navigateToEvent}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    navigateToEvent();
-                }
-            }}
         >
             <div className="relative h-40 w-full">
                 <Image
@@ -79,7 +72,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
                     </div>
                 )}
             </div>
-        </div>
+        </button>
     );
 };
 

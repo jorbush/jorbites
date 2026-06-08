@@ -23,17 +23,10 @@ const MenuItem: React.FC<MenuItemProps> = ({
     avatarSrc,
 }) => {
     return (
-        <div
-            role="button"
-            tabIndex={0}
+        <button
+            type="button"
             onClick={onClick}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onClick();
-                }
-            }}
-            className={`p-3 font-semibold transition hover:bg-neutral-100 hover:text-black ${extraClasses}`}
+            className={`block w-full cursor-pointer border-0 bg-transparent p-3 text-left font-semibold transition hover:bg-neutral-100 hover:text-black focus:outline-hidden ${extraClasses}`}
             data-cy={dataCy}
         >
             <div className="flex w-full items-center justify-between">
@@ -62,7 +55,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
                     />
                 )}
             </div>
-        </div>
+        </button>
     );
 };
 

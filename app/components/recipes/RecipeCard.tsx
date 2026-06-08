@@ -60,17 +60,10 @@ const RecipeCard = memo(function RecipeCard({
     }, [data]);
 
     return (
-        <div
-            role="button"
-            tabIndex={0}
+        <button
+            type="button"
             onClick={() => push(`/recipes/${data.id}`)}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    push(`/recipes/${data.id}`);
-                }
-            }}
-            className="group col-span-1 cursor-pointer"
+            className="group col-span-1 w-full cursor-pointer border-0 bg-transparent p-0 text-left focus:outline-hidden"
             id={isFirstCard ? 'lcp-container' : undefined}
         >
             <div className="flex w-full flex-col gap-2">
@@ -148,7 +141,7 @@ const RecipeCard = memo(function RecipeCard({
                     </div>
                 )}
             </div>
-        </div>
+        </button>
     );
 });
 

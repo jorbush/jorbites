@@ -107,23 +107,13 @@ const WeeklyShoppingListModal: React.FC<WeeklyShoppingListModalProps> = ({
                                         const isChecked =
                                             !!checkedIngredients[ing];
                                         return (
-                                            <div
+                                            <button
                                                 key={iIdx}
-                                                role="button"
-                                                tabIndex={0}
+                                                type="button"
                                                 onClick={() =>
                                                     toggleIngredient(ing)
                                                 }
-                                                onKeyDown={(e) => {
-                                                    if (
-                                                        e.key === 'Enter' ||
-                                                        e.key === ' '
-                                                    ) {
-                                                        e.preventDefault();
-                                                        toggleIngredient(ing);
-                                                    }
-                                                }}
-                                                className="flex cursor-pointer flex-row items-center gap-2 py-0.5 select-none"
+                                                className="flex w-full cursor-pointer flex-row items-center gap-2 py-0.5 text-left select-none focus:outline-hidden"
                                             >
                                                 <div
                                                     className={`flex size-4 items-center justify-center rounded-sm border transition ${
@@ -145,7 +135,7 @@ const WeeklyShoppingListModal: React.FC<WeeklyShoppingListModalProps> = ({
                                                 >
                                                     {ing}
                                                 </span>
-                                            </div>
+                                            </button>
                                         );
                                     })}
                                 </div>

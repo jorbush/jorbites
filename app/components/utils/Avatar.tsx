@@ -17,19 +17,33 @@ const Avatar: React.FC<AvatarProps> = ({
     onClick,
     quality = 'auto:good',
 }) => {
+    if (onClick) {
+        return (
+            <button
+                type="button"
+                className="inline-block cursor-pointer border-0 bg-transparent p-0 focus:outline-hidden"
+                onClick={onClick}
+            >
+                <CustomProxyImage
+                    className={extraClasses || ''}
+                    width={size * 2}
+                    height={size * 2}
+                    alt="Avatar"
+                    src={src || '/images/placeholder.webp'}
+                    quality={quality}
+                    circular={true}
+                    style={{
+                        width: extraClasses ? undefined : size,
+                        height: extraClasses ? undefined : size,
+                        objectFit: 'cover',
+                    }}
+                />
+            </button>
+        );
+    }
+
     return (
-        <div
-            role={onClick ? 'button' : undefined}
-            tabIndex={onClick ? 0 : undefined}
-            className={`inline-block ${onClick ? 'cursor-pointer' : ''}`}
-            onClick={onClick}
-            onKeyDown={(e) => {
-                if (onClick && (e.key === 'Enter' || e.key === ' ')) {
-                    e.preventDefault();
-                    onClick();
-                }
-            }}
-        >
+        <div className="inline-block">
             <CustomProxyImage
                 className={extraClasses || ''}
                 width={size * 2}

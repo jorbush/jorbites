@@ -546,30 +546,14 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                                     }
                                                                     className="size-10 shrink-0 rounded-lg object-cover"
                                                                 />
-                                                                <div
-                                                                    role="button"
-                                                                    tabIndex={0}
+                                                                <button
+                                                                    type="button"
                                                                     onClick={() =>
                                                                         push(
                                                                             `/recipes/${recipe.id}`
                                                                         )
                                                                     }
-                                                                    onKeyDown={(
-                                                                        e
-                                                                    ) => {
-                                                                        if (
-                                                                            e.key ===
-                                                                                'Enter' ||
-                                                                            e.key ===
-                                                                                ' '
-                                                                        ) {
-                                                                            e.preventDefault();
-                                                                            push(
-                                                                                `/recipes/${recipe.id}`
-                                                                            );
-                                                                        }
-                                                                    }}
-                                                                    className="flex-1 cursor-pointer truncate pr-6"
+                                                                    className="flex-1 cursor-pointer truncate border-0 bg-transparent pr-6 text-left focus:outline-hidden"
                                                                 >
                                                                     <div className="truncate text-xs font-semibold text-neutral-800 hover:underline dark:text-neutral-200">
                                                                         {
@@ -585,7 +569,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                                                                                 'Anonymous'}
                                                                         </div>
                                                                     )}
-                                                                </div>
+                                                                </button>
 
                                                                 {/* Remove button in Edit mode */}
                                                                 {isOwner && (

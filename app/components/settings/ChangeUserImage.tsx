@@ -83,20 +83,10 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                             <>
                                 {
                                     <div className="flex flex-row">
-                                        <div
-                                            role="button"
-                                            tabIndex={0}
-                                            className="cursor-pointer"
+                                        <button
+                                            type="button"
+                                            className="cursor-pointer border-0 bg-transparent p-0 focus:outline-hidden"
                                             onClick={() => open?.()}
-                                            onKeyDown={(e) => {
-                                                if (
-                                                    e.key === 'Enter' ||
-                                                    e.key === ' '
-                                                ) {
-                                                    e.preventDefault();
-                                                    open?.();
-                                                }
-                                            }}
                                         >
                                             <CustomProxyImage
                                                 src={
@@ -114,7 +104,7 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
                                                     objectFit: 'cover',
                                                 }}
                                             />
-                                        </div>
+                                        </button>
 
                                         {canSave && (
                                             <FaRegSave

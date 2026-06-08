@@ -111,109 +111,97 @@ const SearchInput: React.FC<SearchInputProps> = ({
                     style={{ maxHeight: '300px', overflowY: 'auto' }}
                 >
                     {hasResults
-                        ? searchResults.map((result) => (
-                              <div
-                                  key={result.id}
-                                  role="button"
-                                  tabIndex={0}
-                                  className={`flex cursor-pointer items-center justify-between gap-2 border-t border-neutral-100 p-3 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-700 ${isSelected && isSelected(result.id) ? 'bg-neutral-100 dark:bg-neutral-700' : ''}`}
-                                  onClick={() => {
-                                      if (onSelectResult) {
-                                          onSelectResult(result);
-                                      }
-                                  }}
-                                  onKeyDown={(e) => {
-                                      if (e.key === 'Enter' || e.key === ' ') {
-                                          e.preventDefault();
+                        ? searchResults.map((result) => {
+                              const isResultDisabled = !!(
+                                  (isSelected && isSelected(result.id)) ||
+                                  (maxSelected > 0 &&
+                                      isSelected &&
+                                      searchResults.filter((r) =>
+                                          isSelected(r.id)
+                                      ).length >= maxSelected)
+                              );
+                              return (
+                                  <button
+                                      key={result.id}
+                                      type="button"
+                                      disabled={isResultDisabled}
+                                      className={`flex w-full cursor-pointer items-center justify-between gap-2 border-t border-neutral-100 p-3 text-left hover:bg-neutral-50 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700 dark:hover:bg-neutral-700 ${isSelected && isSelected(result.id) ? 'bg-neutral-100 dark:bg-neutral-700' : ''}`}
+                                      onClick={() => {
                                           if (onSelectResult) {
                                               onSelectResult(result);
                                           }
-                                      }
-                                  }}
-                              >
-                                  {searchType === 'users' ? (
-                                      <Fragment>
-                                          <div className="flex items-center gap-2">
-                                              <Avatar
-                                                  src={result.image}
-                                                  size={32}
-                                              />
-                                              <div className="flex items-center">
-                                                  <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                                                      {result.name}
-                                                  </span>
-                                                  {result.verified && (
-                                                      <VerificationBadge className="ml-1" />
-                                                  )}
-                                              </div>
-                                              <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                                                  Level {result.level}
-                                              </span>
-                                          </div>
-                                      </Fragment>
-                                  ) : searchType === 'recipes' ? (
-                                      <Fragment>
-                                          <div className="flex items-center gap-3">
-                                              <div className="relative size-10 overflow-hidden rounded-md">
-                                                  <CustomProxyImage
-                                                      src={
-                                                          result.imageSrc ||
-                                                          '/avocado.webp'
-                                                      }
-                                                      fill
-                                                      className="object-cover"
-                                                      alt={
-                                                          result.title ||
-                                                          'Recipe'
-                                                      }
-                                                      quality="auto:eco"
+                                      }}
+                                  >
+                                      {searchType === 'users' ? (
+                                          <Fragment>
+                                              <div className="flex items-center gap-2">
+                                                  <Avatar
+                                                      src={result.image}
+                                                      size={32}
                                                   />
+                                                  <div className="flex items-center">
+                                                      <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                                                          {result.name}
+                                                      </span>
+                                                      {result.verified && (
+                                                          <VerificationBadge className="ml-1" />
+                                                      )}
+                                                  </div>
+                                                  <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                                                      Level {result.level}
+                                                  </span>
                                               </div>
-                                              <div className="flex flex-col">
+                                          </Fragment>
+                                      ) : searchType === 'recipes' ? (
+                                          <Fragment>
+                                              <div className="flex items-center gap-3">
+                                                  <div className="relative size-10 overflow-hidden rounded-md">
+                                                      <CustomProxyImage
+                                                          src={
+                                                              result.imageSrc ||
+                                                              '/avocado.webp'
+                                                          }
+                                                          fill
+                                                          className="object-cover"
+                                                          alt={
+                                                              result.title ||
+                                                              'Recipe'
+                                                          }
+                                                          quality="auto:eco"
+                                                      />
+                                                  </div>
+                                                  <div className="flex flex-col">
+                                                      <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                                                          {result.title}
+                                                      </span>
+                                                      <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                                                          {result.user?.name}
+                                                      </span>
+                                                  </div>
+                                              </div>
+                                          </Fragment>
+                                      ) : (
+                                          <Fragment>
+                                              <div className="flex flex-1 flex-col gap-1">
                                                   <span className="font-medium text-neutral-900 dark:text-neutral-100">
                                                       {result.title}
                                                   </span>
-                                                  <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                                                      {result.user?.name}
+                                                  <span className="line-clamp-1 text-xs text-neutral-500 dark:text-neutral-400">
+                                                      {result.description}
                                                   </span>
                                               </div>
+                                          </Fragment>
+                                      )}
+                                      {onSelectResult && (
+                                          <div
+                                              className={`rounded-full p-1 ${isSelected && isSelected(result.id) ? 'text-neutral-400 dark:text-neutral-500' : 'text-green-450'}`}
+                                          >
+                                              <AiOutlinePlus size={20} />
                                           </div>
-                                      </Fragment>
-                                  ) : (
-                                      <Fragment>
-                                          <div className="flex flex-1 flex-col gap-1">
-                                              <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                                                  {result.title}
-                                              </span>
-                                              <span className="line-clamp-1 text-xs text-neutral-500 dark:text-neutral-400">
-                                                  {result.description}
-                                              </span>
-                                          </div>
-                                      </Fragment>
-                                  )}
-                                  {onSelectResult && (
-                                      <button
-                                          type="button"
-                                          onClick={(e) => {
-                                              e.stopPropagation();
-                                              onSelectResult(result);
-                                          }}
-                                          disabled={
-                                              (isSelected &&
-                                                  isSelected(result.id)) ||
-                                              (maxSelected > 0 &&
-                                                  isSelected &&
-                                                  searchResults.filter((r) =>
-                                                      isSelected(r.id)
-                                                  ).length >= maxSelected)
-                                          }
-                                          className={`rounded-full p-1 ${isSelected && isSelected(result.id) ? 'text-neutral-400 dark:text-neutral-500' : 'text-green-450 hover:bg-green-100 dark:hover:bg-green-900'}`}
-                                      >
-                                          <AiOutlinePlus size={20} />
-                                      </button>
-                                  )}
-                              </div>
-                          ))
+                                      )}
+                                  </button>
+                              );
+                          })
                         : value.length >= 2 && (
                               <div className="p-4 text-center text-neutral-500 dark:text-neutral-400">
                                   {emptyMessage}
