@@ -96,24 +96,17 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                     />
                     <div className="flex flex-col">
                         <div className="flex flex-row items-center">
-                            <div
-                                className="cursor-pointer"
-                                role="button"
-                                tabIndex={0}
+                            <button
+                                type="button"
+                                className="cursor-pointer text-left focus:outline-hidden"
                                 onClick={() => push('/profile/' + host.id)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                        e.preventDefault();
-                                        push('/profile/' + host.id);
-                                    }
-                                }}
                             >
                                 {getUserDisplayName(
                                     host,
                                     isMdOrSmaller,
                                     isSmOrSmaller
                                 )}
-                            </div>
+                            </button>
                             {host.verified && (
                                 <VerificationBadge className="mt-1 ml-1" />
                             )}
@@ -238,30 +231,20 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                             </div>
                             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                                 {whitelistedUsers.map((user) => (
-                                    <div
+                                    <button
                                         key={user.id}
-                                        role="button"
-                                        tabIndex={0}
-                                        className="flex cursor-pointer items-center gap-2 hover:opacity-75"
+                                        type="button"
+                                        className="flex cursor-pointer items-center gap-2 text-left hover:opacity-75 focus:outline-hidden"
                                         onClick={() =>
                                             push('/profile/' + user.id)
                                         }
-                                        onKeyDown={(e) => {
-                                            if (
-                                                e.key === 'Enter' ||
-                                                e.key === ' '
-                                            ) {
-                                                e.preventDefault();
-                                                push('/profile/' + user.id);
-                                            }
-                                        }}
                                     >
                                         <Avatar
                                             src={user.image}
                                             size={32}
                                         />
                                         <span>{user.name}</span>
-                                    </div>
+                                    </button>
                                 ))}
                             </div>
                         </div>

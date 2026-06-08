@@ -55,21 +55,21 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                     {lists.map((list) => (
                         <div
                             key={list.id}
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => push(`/lists/${list.id}`)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault();
-                                    push(`/lists/${list.id}`);
-                                }
-                            }}
-                            className="group relative flex cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 transition hover:shadow-lg dark:border-neutral-700"
+                            className="group relative flex w-full flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 transition hover:shadow-lg dark:border-neutral-700"
                         >
                             <div className="text-xl font-bold">
-                                {list.isDefault
-                                    ? t('to_cook_later')
-                                    : list.name}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        push(`/lists/${list.id}`);
+                                    }}
+                                    className="cursor-pointer text-left font-bold after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
+                                >
+                                    {list.isDefault
+                                        ? t('to_cook_later')
+                                        : list.name}
+                                </button>
                             </div>
                             <div className="flex flex-row items-center gap-2">
                                 <div className="text-sm text-neutral-500">
@@ -99,28 +99,17 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                                 )}
                             </div>
                             {!list.isDefault && (
-                                <div
-                                    role="button"
-                                    tabIndex={0}
+                                <button
+                                    type="button"
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setDeleteListId(list.id);
                                     }}
-                                    onKeyDown={(e) => {
-                                        if (
-                                            e.key === 'Enter' ||
-                                            e.key === ' '
-                                        ) {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            setDeleteListId(list.id);
-                                        }
-                                    }}
-                                    className="absolute top-4 right-4 z-10 cursor-pointer rounded-full p-2 text-rose-500 transition group-hover:block hover:bg-rose-100 md:hidden dark:hover:bg-rose-900"
+                                    className="absolute top-4 right-4 z-10 cursor-pointer rounded-full border-0 bg-transparent p-2 text-rose-500 transition group-hover:block hover:bg-rose-100 focus:outline-hidden md:hidden dark:hover:bg-rose-900"
                                     title={t('delete_list') || 'Delete list'}
                                 >
                                     <AiOutlineDelete size={20} />
-                                </div>
+                                </button>
                             )}
                         </div>
                     ))}

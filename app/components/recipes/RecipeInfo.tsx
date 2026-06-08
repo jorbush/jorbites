@@ -165,27 +165,17 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         />
                         <div className="flex flex-col">
                             <div className="flex flex-row">
-                                <div
-                                    className="cursor-pointer"
-                                    role="button"
-                                    tabIndex={0}
+                                <button
+                                    type="button"
+                                    className="cursor-pointer text-left focus:outline-hidden"
                                     onClick={() => push('/profile/' + user.id)}
-                                    onKeyDown={(e) => {
-                                        if (
-                                            e.key === 'Enter' ||
-                                            e.key === ' '
-                                        ) {
-                                            e.preventDefault();
-                                            push('/profile/' + user.id);
-                                        }
-                                    }}
                                 >
                                     {getUserDisplayName(
                                         user,
                                         isMdOrSmaller,
                                         isSmOrSmaller
                                     )}
-                                </div>
+                                </button>
                                 {user.verified && (
                                     <VerificationBadge className="mt-1 ml-1" />
                                 )}
@@ -280,21 +270,11 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                         </h3>
                         <div className="flex flex-wrap gap-2">
                             {coCooks.map((cook) => (
-                                <div
+                                <button
                                     key={cook.id}
-                                    role="button"
-                                    tabIndex={0}
-                                    className="flex cursor-pointer items-center gap-2 rounded-full bg-neutral-100 px-2 py-1 dark:bg-neutral-900"
+                                    type="button"
+                                    className="flex cursor-pointer items-center gap-2 rounded-full bg-neutral-100 px-2 py-1 text-left focus:outline-hidden dark:bg-neutral-900"
                                     onClick={() => push(`/profile/${cook.id}`)}
-                                    onKeyDown={(e) => {
-                                        if (
-                                            e.key === 'Enter' ||
-                                            e.key === ' '
-                                        ) {
-                                            e.preventDefault();
-                                            push(`/profile/${cook.id}`);
-                                        }
-                                    }}
                                 >
                                     <Avatar
                                         src={cook.image}
@@ -309,7 +289,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                                             size={16}
                                         />
                                     )}
-                                </div>
+                                </button>
                             ))}
                         </div>
                     </div>

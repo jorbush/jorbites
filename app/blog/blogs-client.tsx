@@ -200,23 +200,13 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                     </p>
                                 ) : (
                                     sidebarReleases.map((blog) => (
-                                        <div
+                                        <button
                                             key={blog.id}
-                                            role="button"
-                                            tabIndex={0}
+                                            type="button"
                                             onClick={() =>
                                                 push(`/blog/${blog.id}`)
                                             }
-                                            onKeyDown={(e) => {
-                                                if (
-                                                    e.key === 'Enter' ||
-                                                    e.key === ' '
-                                                ) {
-                                                    e.preventDefault();
-                                                    push(`/blog/${blog.id}`);
-                                                }
-                                            }}
-                                            className="group hover:border-primary-500 dark:hover:border-primary-500 cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-800"
+                                            className="group hover:border-primary-500 dark:hover:border-primary-500 w-full cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 text-left transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-800"
                                         >
                                             <div className="mb-2 flex items-center justify-between">
                                                 <span className="bg-primary-100 text-primary-700 dark:bg-primary-900/30 rounded-full px-2 py-0.5 text-xs font-semibold dark:text-white">
@@ -232,7 +222,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                             <h4 className="group-hover:text-primary-600 dark:group-hover:text-primary-400 line-clamp-2 font-semibold text-neutral-800 dark:text-neutral-200">
                                                 {blog.frontmatter.title}
                                             </h4>
-                                        </div>
+                                        </button>
                                     ))
                                 )}
                             </div>

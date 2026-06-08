@@ -18,27 +18,23 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
         push(`/blog/${blog.id}`);
     };
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            navigateToBlog();
-        }
-    };
-
     return (
-        <div
-            className="group hover:border-green-450/50 cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800"
-            role="button"
-            onClick={navigateToBlog}
-            tabIndex={0}
-            onKeyDown={handleKeyDown}
-        >
+        <div className="group hover:border-green-450/50 relative rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800">
             <div className="flex h-full flex-col">
                 <div className="mb-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">
                     {formatDate(blog.frontmatter.date, i18n.language)}
                 </div>
                 <h3 className="group-hover:text-green-450 mb-2 text-lg leading-tight font-semibold text-neutral-800 transition-colors dark:text-neutral-100">
-                    {blog.frontmatter.title}
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigateToBlog();
+                        }}
+                        className="cursor-pointer text-left after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
+                    >
+                        {blog.frontmatter.title}
+                    </button>
                 </h3>
                 <p className="line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
                     {blog.frontmatter.description}

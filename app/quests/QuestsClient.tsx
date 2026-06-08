@@ -216,25 +216,17 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                     quest.status}
                                             </span>
                                         </div>
-                                        <h2
-                                            role="button"
-                                            tabIndex={0}
-                                            className="mb-2 cursor-pointer text-xl font-semibold text-neutral-900 hover:text-rose-500 dark:text-white dark:hover:text-rose-400"
-                                            onClick={() =>
-                                                push(`/quests/${quest.id}`)
-                                            }
-                                            onKeyDown={(e) => {
-                                                if (
-                                                    e.key === 'Enter' ||
-                                                    e.key === ' '
-                                                ) {
-                                                    e.preventDefault();
-                                                    push(`/quests/${quest.id}`);
+                                        <h2 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-white">
+                                            <button
+                                                type="button"
+                                                className="cursor-pointer border-0 bg-transparent p-0 text-left text-xl font-semibold text-neutral-900 hover:text-rose-500 focus:outline-hidden dark:text-white dark:hover:text-rose-400"
+                                                onClick={() =>
+                                                    push(`/quests/${quest.id}`)
                                                 }
-                                            }}
-                                            data-cy="quest-card-title"
-                                        >
-                                            {quest.title}
+                                                data-cy="quest-card-title"
+                                            >
+                                                {quest.title}
+                                            </button>
                                         </h2>
                                         <p
                                             className="text-neutral-600 dark:text-neutral-400"

@@ -163,21 +163,21 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                     return (
                         <div
                             key={plan.id}
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => push(`/plannings/${plan.id}`)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault();
-                                    push(`/plannings/${plan.id}`);
-                                }
-                            }}
-                            className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/60 bg-white/50 p-5 shadow-xs backdrop-blur-xs transition duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-xl dark:border-neutral-800/60 dark:bg-[#121212]/50 dark:hover:bg-[#181818]"
+                            className="group relative flex w-full flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/60 bg-white/50 p-5 shadow-xs backdrop-blur-xs transition duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-xl dark:border-neutral-800/60 dark:bg-[#121212]/50 dark:hover:bg-[#181818]"
                         >
-                            <div className="flex flex-col gap-2">
+                            <div className="flex w-full flex-col gap-2">
                                 <div className="flex flex-row items-center justify-between gap-2">
                                     <div className="truncate text-xl font-semibold text-neutral-900 group-hover:text-black dark:text-neutral-100 dark:group-hover:text-white">
-                                        {plan.name}
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                push(`/plannings/${plan.id}`);
+                                            }}
+                                            className="cursor-pointer text-left font-semibold after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:underline focus:outline-hidden"
+                                        >
+                                            {plan.name}
+                                        </button>
                                     </div>
                                     {showDelete && (
                                         <button
@@ -194,7 +194,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                                                     setDeletePlanId(plan.id);
                                                 }
                                             }}
-                                            className="rounded-full p-2 text-neutral-400 hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-950/40"
+                                            className="cursor-pointer rounded-full border-0 bg-transparent p-2 text-neutral-400 hover:bg-rose-50 hover:text-rose-500 focus:outline-hidden dark:hover:bg-rose-950/40"
                                             title={t('delete') || 'Delete'}
                                         >
                                             <AiOutlineDelete size={18} />
@@ -208,7 +208,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                                 </p>
                             </div>
 
-                            <div className="mt-5 flex flex-col gap-4">
+                            <div className="mt-5 flex w-full flex-col gap-4">
                                 <div className="flex flex-col gap-1">
                                     <span className="text-xs font-semibold tracking-wider text-neutral-400 uppercase dark:text-neutral-500">
                                         {t('PREVIEW_RECIPES') ||
@@ -232,7 +232,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                                     </div>
                                 </div>
 
-                                <div className="border-t border-neutral-100 pt-3 dark:border-neutral-800/80">
+                                <div className="w-full border-t border-neutral-100 pt-3 dark:border-neutral-800/80">
                                     <div className="flex flex-row items-center justify-between">
                                         <div className="flex flex-row items-center gap-1.5">
                                             {plan.isPrivate ? (

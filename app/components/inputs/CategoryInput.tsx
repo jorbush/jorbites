@@ -22,22 +22,15 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     const { t } = useTranslation();
 
     return (
-        <div
-            role="button"
-            tabIndex={0}
+        <button
+            type="button"
             onClick={() => onClick(label)}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onClick(label);
-                }
-            }}
-            className={`flex cursor-pointer flex-col gap-3 rounded-xl border-2 p-4 transition hover:border-black ${selected ? 'selected border-black dark:border-neutral-200' : 'border-neutral-200 dark:border-black'} `}
+            className={`flex cursor-pointer flex-col gap-3 rounded-xl border-2 bg-transparent p-4 text-left transition hover:border-black focus:outline-hidden ${selected ? 'selected border-black dark:border-neutral-200' : 'border-neutral-200 dark:border-black'} `}
             data-cy={dataCy}
         >
             <Icon size={30} />
             <div className="font-semibold">{t(label.toLocaleLowerCase())}</div>
-        </div>
+        </button>
     );
 };
 

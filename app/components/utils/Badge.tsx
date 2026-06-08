@@ -31,17 +31,10 @@ const Badge: React.FC<BadgeProps> = ({
     };
 
     return (
-        <div
-            role="button"
-            tabIndex={0}
-            className={`relative flex-shrink-0 cursor-pointer ${className}`}
+        <button
+            type="button"
+            className={`relative flex-shrink-0 cursor-pointer border-0 bg-transparent p-0 focus:outline-hidden ${className}`}
             onClick={onClick}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onClick?.();
-                }
-            }}
             style={{ width: size, height: size }}
         >
             {/* Skeleton placeholder */}
@@ -76,7 +69,7 @@ const Badge: React.FC<BadgeProps> = ({
                     <span className="text-xs">?</span>
                 </div>
             )}
-        </div>
+        </button>
     );
 };
 

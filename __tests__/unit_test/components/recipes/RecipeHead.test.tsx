@@ -58,7 +58,7 @@ describe('<RecipeHead />', () => {
         render(<RecipeHead {...mockProps} />);
         const nextButtonContainer = screen.getByTestId('next-button');
         const nextButton = nextButtonContainer.querySelector(
-            'div[style*="pointer-events: auto"]'
+            'button[style*="pointer-events: auto"]'
         );
 
         fireEvent.click(nextButton!);
@@ -81,7 +81,7 @@ describe('<RecipeHead />', () => {
         render(<RecipeHead {...mockProps} />);
         const prevButtonContainer = screen.getByTestId('prev-button');
         const prevButton = prevButtonContainer.querySelector(
-            'div[style*="pointer-events: auto"]'
+            'button[style*="pointer-events: auto"]'
         );
         fireEvent.click(prevButton!);
         // Wait for the animation and state update
@@ -229,7 +229,7 @@ describe('<RecipeHead />', () => {
         const container = screen.getByTestId('next-button').parentElement;
         const nextButtonContainer = screen.getByTestId('next-button');
         const nextButton = nextButtonContainer.querySelector(
-            'div[style*="pointer-events: auto"]'
+            'button[style*="pointer-events: auto"]'
         );
 
         // Start a transition

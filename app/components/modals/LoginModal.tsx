@@ -98,21 +98,14 @@ const LoginModal = () => {
                 dataCy="login-password"
             />
             <div className="text-right">
-                <span
-                    role="button"
-                    tabIndex={0}
+                <button
+                    type="button"
                     onClick={onForgotPassword}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            onForgotPassword();
-                        }
-                    }}
-                    className="cursor-pointer text-sm text-neutral-600 hover:underline"
+                    className="cursor-pointer border-0 bg-transparent p-0 text-sm text-neutral-600 hover:underline focus:outline-hidden"
                 >
                     {t('forgot_password') ||
                         'Have you forgotten your password?'}
-                </span>
+                </button>
             </div>
         </div>
     );
@@ -134,22 +127,14 @@ const LoginModal = () => {
             />
             <div className="mt-4 text-center font-light text-neutral-500">
                 <p>
-                    {t('first_jorbites')}
-                    <span
-                        role="button"
-                        tabIndex={0}
+                    {t('first_jorbites')}{' '}
+                    <button
+                        type="button"
                         onClick={onToggle}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                onToggle();
-                            }
-                        }}
-                        className="cursor-pointer text-neutral-800 hover:underline"
+                        className="cursor-pointer border-0 bg-transparent p-0 text-neutral-800 hover:underline focus:outline-hidden"
                     >
-                        {' '}
                         {t('create_account')}
-                    </span>
+                    </button>
                 </p>
             </div>
         </div>
