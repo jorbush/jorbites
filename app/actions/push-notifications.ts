@@ -4,21 +4,34 @@ import webpush from 'web-push';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser, { auth } from '@/app/actions/getCurrentUser';
 import { unauthorized } from 'next/navigation';
+import { after } from 'next/server';
 
-if (
-    !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
-    !process.env.VAPID_PRIVATE_KEY
-) {
-    console.warn('VAPID keys are missing. Push notifications will not work.');
-} else {
-    webpush.setVapidDetails(
-        'mailto:jorbites.app@gmail.com',
-        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-        process.env.VAPID_PRIVATE_KEY
-    );
+let isInitialized = false;
+
+function ensureWebPushInitialized() {
+    if (isInitialized) return;
+
+    if (
+        !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
+        !process.env.VAPID_PRIVATE_KEY
+    ) {
+        after(() => {
+            console.warn(
+                'VAPID keys are missing. Push notifications will not work.'
+            );
+        });
+    } else {
+        webpush.setVapidDetails(
+            'mailto:jorbites.app@gmail.com',
+            process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+            process.env.VAPID_PRIVATE_KEY
+        );
+    }
+    isInitialized = true;
 }
 
 export async function subscribeUser(sub: webpush.PushSubscription) {
+    ensureWebPushInitialized();
     const session = await auth();
     if (!session) {
         unauthorized();
@@ -54,6 +67,7 @@ export async function subscribeUser(sub: webpush.PushSubscription) {
 }
 
 export async function unsubscribeUser(sub?: webpush.PushSubscription | null) {
+    ensureWebPushInitialized();
     const session = await auth();
     if (!session) {
         unauthorized();
