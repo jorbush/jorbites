@@ -153,7 +153,7 @@ const QuestModal = () => {
                     className="w-full rounded-lg border border-neutral-300 p-3 text-neutral-900 transition focus:border-rose-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
                     placeholder={
                         t('quest_description_placeholder') ||
-                        'Describe the recipe you would like someone to create...'
+                        'Describe the recipe you would like someone to create…'
                     }
                     data-cy="quest-description"
                 />

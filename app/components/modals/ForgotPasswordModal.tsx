@@ -98,7 +98,7 @@ const ForgotPasswordModal = () => {
                 emailSent
                     ? t('ok')
                     : isLoading
-                      ? t('sending') || 'Sending...'
+                      ? t('sending') || 'Sending…'
                       : t('send_reset_link')
             }
             onClose={forgotPasswordModal.onClose}

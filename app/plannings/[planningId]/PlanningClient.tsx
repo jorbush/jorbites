@@ -665,7 +665,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                 title={t('edit_plan') || 'Edit Plan'}
                 actionLabel={
                     isSaving
-                        ? t('saving') || 'Saving...'
+                        ? t('saving') || 'Saving…'
                         : t('save_plan') || 'Save Plan'
                 }
                 initialValues={{

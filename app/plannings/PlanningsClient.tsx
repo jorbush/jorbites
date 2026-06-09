@@ -366,7 +366,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                 title={t('create_meal_plan') || 'Create Meal Plan'}
                 actionLabel={
                     isCreating
-                        ? t('creating') || 'Creating...'
+                        ? t('creating') || 'Creating…'
                         : t('create') || 'Create'
                 }
                 isLoading={isCreating}

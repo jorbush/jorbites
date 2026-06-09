@@ -73,7 +73,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                         onChange={handleInputChange}
                         placeholder={
                             mounted
-                                ? (t('write_comment') ?? 'Write a comment...')
+                                ? (t('write_comment') ?? 'Write a comment…')
                                 : 'write_comment'
                         }
                         className="h-12 w-full resize-none rounded-md border border-neutral-100 bg-neutral-100 p-2 font-light text-neutral-900 focus:ring-0 focus:outline-hidden dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100"

@@ -69,7 +69,7 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                     }}
                     placeholder={
                         t('search_recipes_placeholder') ||
-                        'Search recipes by title...'
+                        'Search recipes by title…'
                     }
                     aria-label={
                         t('search_recipes_placeholder') || 'Search recipes'
@@ -83,7 +83,7 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
             <div className="max-h-[300px] overflow-y-auto pr-1">
                 {isLoading ? (
                     <div className="py-6 text-center text-sm font-light text-neutral-400">
-                        {t('loading') || 'Loading...'}
+                        {t('loading') || 'Loading…'}
                     </div>
                 ) : results.length > 0 ? (
                     <div className="flex flex-col gap-2">

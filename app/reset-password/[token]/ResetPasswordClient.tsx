@@ -154,7 +154,7 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
                         <Button
                             label={
                                 isLoading
-                                    ? t('updating') || 'Updating...'
+                                    ? t('updating') || 'Updating…'
                                     : t('update_password') || 'Update Password'
                             }
                             onClick={handleSubmit(onSubmit)}

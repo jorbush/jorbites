@@ -15,7 +15,7 @@ describe('<Loader />', () => {
 
     it('renders the loader component', () => {
         render(<Loader />);
-        const image = screen.getByAltText('Loading...');
+        const image = screen.getByAltText('Loading…');
         expect(image).toBeDefined();
     });
 
@@ -33,7 +33,7 @@ describe('<Loader />', () => {
 
     it('renders the avocado image with correct dimensions', () => {
         render(<Loader />);
-        const image = screen.getByAltText('Loading...') as HTMLImageElement;
+        const image = screen.getByAltText('Loading…') as HTMLImageElement;
         expect(image).toBeDefined();
         // Next.js Image component sets width and height as attributes
         expect(image.getAttribute('width')).toBe('80');

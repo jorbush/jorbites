@@ -201,7 +201,7 @@ const Search: React.FC<SearchProps> = ({
                             <input
                                 ref={inputRef}
                                 type="text"
-                                placeholder={t('search_recipes') + '...'}
+                                placeholder={t('search_recipes') + '…'}
                                 aria-label={
                                     t('search_recipes') || 'Search recipes'
                                 }
@@ -288,7 +288,7 @@ const Search: React.FC<SearchProps> = ({
                             <input
                                 ref={inputRef}
                                 type="text"
-                                placeholder={t('search_recipes') + '...'}
+                                placeholder={t('search_recipes') + '…'}
                                 aria-label={
                                     t('search_recipes') || 'Search recipes'
                                 }

@@ -268,7 +268,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                             ? selectedQuest.description.substring(
                                                   0,
                                                   100
-                                              ) + '...'
+                                              ) + '…'
                                             : selectedQuest.description}
                                     </p>
                                 </div>
@@ -357,7 +357,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                 validateYouTubeUrl(
                                     value,
                                     t('invalid_youtube_url') ||
-                                        'Please enter a valid YouTube URL (e.g., https://youtube.com/watch?v=... or https://youtu.be/...)'
+                                        'Please enter a valid YouTube URL (e.g., https://youtube.com/watch?v=… or https://youtu.be/…)'
                                 ),
                         }}
                     />

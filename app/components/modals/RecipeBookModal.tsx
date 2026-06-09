@@ -53,7 +53,7 @@ const RecipeBookModal = () => {
 
         setIsLoading(true);
         const loadingToast = toast.loading(
-            t('recipe_book_generating') || 'Generating recipe book...'
+            t('recipe_book_generating') || 'Generating recipe book…'
         );
 
         try {

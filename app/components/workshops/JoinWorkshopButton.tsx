@@ -103,7 +103,7 @@ const JoinWorkshopButton: React.FC<JoinWorkshopButtonProps> = ({
         <Button
             label={
                 loading
-                    ? '...'
+                    ? '…'
                     : isParticipant
                       ? t('leave_workshop')
                       : t('join_workshop')

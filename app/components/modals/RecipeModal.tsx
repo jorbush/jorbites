@@ -672,8 +672,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         if (step === STEPS.IMAGES) {
             if (isLoading) {
                 return recipeModal.isEditMode
-                    ? t('updating_recipe') || 'Updating...'
-                    : t('creating_recipe') || 'Creating...';
+                    ? t('updating_recipe') || 'Updating…'
+                    : t('creating_recipe') || 'Creating…';
             }
             return recipeModal.isEditMode ? t('update') : t('create');
         }

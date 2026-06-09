@@ -299,7 +299,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                             >
                                 <FaRegSave className="size-4" />
                                 {isLoading
-                                    ? t('saving') || 'Saving...'
+                                    ? t('saving') || 'Saving…'
                                     : t('save_password') || 'Save Password'}
                             </button>
                         </div>

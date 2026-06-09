@@ -73,7 +73,7 @@ const DeleteAccount: React.FC<DeleteAccountProps> = ({ currentUser }) => {
                     >
                         <FiTrash2 className="size-4" />
                         {isLoading
-                            ? t('deleting') || 'Deleting...'
+                            ? t('deleting') || 'Deleting…'
                             : t('delete') || 'Delete'}
                     </button>
                 </div>

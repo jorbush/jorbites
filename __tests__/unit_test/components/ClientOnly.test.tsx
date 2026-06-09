@@ -50,7 +50,7 @@ describe('<ClientOnly />', () => {
 
         // Use a custom fallback to verify initial rendering
         const { rerender } = render(
-            <ClientOnly fallback={<div data-testid="fallback">Loading...</div>}>
+            <ClientOnly fallback={<div data-testid="fallback">Loading…</div>}>
                 <div data-testid="child-component">Child Component</div>
             </ClientOnly>
         );
@@ -68,7 +68,7 @@ describe('<ClientOnly />', () => {
         });
 
         rerender(
-            <ClientOnly fallback={<div data-testid="fallback">Loading...</div>}>
+            <ClientOnly fallback={<div data-testid="fallback">Loading…</div>}>
                 <div data-testid="child-component">Child Component</div>
             </ClientOnly>
         );

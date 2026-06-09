@@ -16,7 +16,7 @@ const Loader: React.FC<LoaderProps> = ({ height = '70vh' }) => {
             <div className="animate-pulse-scale">
                 <Image
                     src={avocadoLogo}
-                    alt="Loading..."
+                    alt="Loading…"
                     width={80}
                     height={80}
                 />
