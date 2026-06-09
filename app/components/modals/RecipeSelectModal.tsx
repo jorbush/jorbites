@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { FiSearch } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,16 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (isOpen) {
+            const timeout = setTimeout(() => {
+                inputRef.current?.focus();
+            }, 100);
+            return () => clearTimeout(timeout);
+        }
+    }, [isOpen]);
 
     const debouncedSearch = useRef(
         debounce(async (searchQuery: string) => {
@@ -60,6 +70,7 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                     size={18}
                 />
                 <input
+                    ref={inputRef}
                     type="text"
                     value={query}
                     onChange={(e) => {
@@ -75,7 +86,6 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                         t('search_recipes_placeholder') || 'Search recipes'
                     }
                     className="focus:border-neutral-450 w-full rounded-xl border border-neutral-200 bg-neutral-50 py-3 pr-4 pl-10 text-sm font-light text-neutral-900 outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-neutral-700"
-                    autoFocus
                 />
             </div>
 
