@@ -17,7 +17,6 @@ export default async function getListById(
 > {
     try {
         const { listId } = params;
-        const currentUser = await getCurrentUser();
 
         if (!listId) {
             return null;
@@ -36,11 +35,12 @@ export default async function getListById(
             return null;
         }
 
-        if (
-            list.isPrivate &&
-            (!currentUser || list.userId !== currentUser.id)
-        ) {
-            throw new Error('Unauthorized');
+        if (list.isPrivate) {
+            const currentUser = await getCurrentUser();
+
+            if (!currentUser || list.userId !== currentUser.id) {
+                throw new Error('Unauthorized');
+            }
         }
 
         const safeList = {
