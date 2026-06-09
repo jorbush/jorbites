@@ -1,5 +1,8 @@
 packages: []
 
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
+
 allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
