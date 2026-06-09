@@ -59,16 +59,24 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
         }
     }, []);
 
+    const handlerRef = useRef(handleClickOutside);
+
     useEffect(() => {
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        } else {
-            document.removeEventListener('mousedown', handleClickOutside);
-        }
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+        handlerRef.current = handleClickOutside;
+    }, [handleClickOutside]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const listener = (event: MouseEvent) => {
+            handlerRef.current(event);
         };
-    }, [isOpen, handleClickOutside]);
+
+        document.addEventListener('mousedown', listener);
+        return () => {
+            document.removeEventListener('mousedown', listener);
+        };
+    }, [isOpen]);
 
     return (
         <div
