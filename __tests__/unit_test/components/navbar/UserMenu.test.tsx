@@ -128,4 +128,17 @@ describe('<UserMenu />', () => {
             'dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]'
         );
     });
+
+    it('closes the menu when clicking outside', () => {
+        render(<UserMenu currentUser={mockCurrentUser} />);
+
+        // Open menu
+        fireEvent.click(screen.getByTestId('mock-avatar').parentElement!);
+        expect(screen.queryByText('my_profile')).not.toBeNull();
+
+        // Click outside
+        fireEvent.mouseDown(document.body);
+
+        expect(screen.queryByText('my_profile')).toBeNull();
+    });
 });
