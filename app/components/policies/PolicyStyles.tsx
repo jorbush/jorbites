@@ -19,11 +19,13 @@ export const PolicyStyles: Components = {
             {...props}
         />
     ),
-    a: ({ node: _node, ...props }) => (
+    a: ({ node: _node, children, ...props }) => (
         <a
             className="text-blue-600 hover:underline"
             {...props}
-        />
+        >
+            {children}
+        </a>
     ),
     ul: ({ node: _node, ...props }) => (
         <ul
