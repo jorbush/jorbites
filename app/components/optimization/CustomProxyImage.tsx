@@ -108,6 +108,13 @@ export default function CustomProxyImage({
         }
     }, [priority]);
 
+    // Check if the image is already complete (e.g. cached or loaded before hydration)
+    useEffect(() => {
+        if (imgRef.current?.complete) {
+            setIsLoaded(true);
+        }
+    }, [optimizedSrc]);
+
     const baseStyle = fill
         ? ({
               position: 'absolute',
