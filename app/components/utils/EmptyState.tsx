@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import Button from '@/app/components/buttons/Button';
 import Heading from '@/app/components/navigation/Heading';
@@ -24,7 +24,6 @@ const EmptyStateContent: React.FC<EmptyStateProps> = ({
     const get = searchParamsVal
         ? searchParamsVal.get.bind(searchParamsVal)
         : () => null;
-    const pathname = usePathname();
     const { t } = useTranslation();
 
     const searchQuery = get('search');
@@ -55,9 +54,9 @@ const EmptyStateContent: React.FC<EmptyStateProps> = ({
     }
 
     const handleReset = () => {
-        // Use pathname from usePathname hook instead of window.location
+        // Use window.location.pathname to avoid re-rendering on every URL change
         // Navigate to the base path without any query parameters
-        push(pathname || '/');
+        push(window.location.pathname || '/');
     };
 
     return (
