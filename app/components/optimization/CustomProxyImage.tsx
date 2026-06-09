@@ -35,76 +35,69 @@ export default function CustomProxyImage({
 }: CustomProxyImageProps) {
     const [isLoaded, setIsLoaded] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
-    const [optimizedSrc, setOptimizedSrc] = useState<string | null>(null);
-    const [placeholderSrc, setPlaceholderSrc] = useState<string | null>(null);
-
     const useMaxQuality = maxQuality || quality === 'auto:best';
 
     const actualWidth = width;
     const actualHeight = height;
 
-    useEffect(() => {
-        const fallbackImage = '/avocado.webp';
+    const fallbackImage = '/avocado.webp';
+    let optimizedSrc = fallbackImage;
+    let placeholderSrc = fallbackImage;
 
-        if (!src || src === '') {
-            setOptimizedSrc(fallbackImage);
-            setPlaceholderSrc(fallbackImage);
-            return;
-        }
-
-        if (src.startsWith('/')) {
-            setOptimizedSrc(src);
-            setPlaceholderSrc(src);
-            return;
-        }
-
-        if (
-            src.includes('cloudinary.com') ||
-            src.includes('googleusercontent.com') ||
-            src.includes('githubusercontent.com')
-        ) {
-            try {
-                let proxyUrl;
-                if (useMaxQuality) {
-                    proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&q=auto:best`;
-                } else {
-                    proxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${actualWidth}&h=${actualHeight}&q=${quality}`;
-                }
-
-                const placeholderUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
-
-                setOptimizedSrc(proxyUrl);
-
-                setPlaceholderSrc(placeholderUrl);
-
-                if (preloadViaProxy && typeof window !== 'undefined') {
-                    const link = document.createElement('link');
-                    link.rel = 'preload';
-                    link.href = proxyUrl;
-                    link.as = 'image';
-                    link.fetchPriority = 'high';
-                    document.head.appendChild(link);
-                }
-
-                return;
-            } catch (e) {
-                console.error('Error creating proxy URL:', e);
-                setOptimizedSrc(fallbackImage);
-                setPlaceholderSrc(fallbackImage);
+    if (!src || src === '') {
+        optimizedSrc = fallbackImage;
+        placeholderSrc = fallbackImage;
+    } else if (src.startsWith('/')) {
+        optimizedSrc = src;
+        placeholderSrc = src;
+    } else if (
+        src.includes('cloudinary.com') ||
+        src.includes('googleusercontent.com') ||
+        src.includes('githubusercontent.com')
+    ) {
+        try {
+            if (useMaxQuality) {
+                optimizedSrc = `/api/image-proxy?url=${encodeURIComponent(src)}&q=auto:best`;
+            } else {
+                optimizedSrc = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${actualWidth}&h=${actualHeight}&q=${quality}`;
             }
+            placeholderSrc = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
+        } catch (e) {
+            console.error('Error creating proxy URL:', e);
+            optimizedSrc = fallbackImage;
+            placeholderSrc = fallbackImage;
         }
+    } else {
+        optimizedSrc = src;
+        placeholderSrc = src;
+    }
 
-        setOptimizedSrc(src);
-        setPlaceholderSrc(src);
-    }, [
-        src,
-        actualWidth,
-        actualHeight,
-        preloadViaProxy,
-        sizes,
-        quality,
-        useMaxQuality,
-    ]);
+    // Reset isLoaded when source changes during render
+    const prevOptimizedSrcRef = useRef(optimizedSrc);
+    if (optimizedSrc !== prevOptimizedSrcRef.current) {
+        prevOptimizedSrcRef.current = optimizedSrc;
+        setIsLoaded(false);
+    }
+
+    // Handle preload link injection as a side effect
+    const isPreloadingRef = useRef(preloadViaProxy);
+    isPreloadingRef.current = preloadViaProxy;
+
+    useEffect(() => {
+        if (
+            isPreloadingRef.current &&
+            optimizedSrc &&
+            optimizedSrc !== fallbackImage &&
+            typeof window !== 'undefined'
+        ) {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.href = optimizedSrc;
+            link.as = 'image';
+            link.fetchPriority = 'high';
+            document.head.appendChild(link);
+        }
+    }, [optimizedSrc]);
 
     useEffect(() => {
         if (imgRef.current && priority) {
@@ -114,6 +107,13 @@ export default function CustomProxyImage({
             imgRef.current.id = 'lcp-image';
         }
     }, [priority]);
+
+    // Check if the image is already complete (e.g. cached or loaded before hydration)
+    useEffect(() => {
+        if (imgRef.current?.complete) {
+            setIsLoaded(true);
+        }
+    }, [optimizedSrc]);
 
     const baseStyle = fill
         ? ({

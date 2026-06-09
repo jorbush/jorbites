@@ -53,27 +53,23 @@ function Dropdown<T extends string>({
                 !dropdownRef.current.contains(event.target as Node)
             ) {
                 setIsOpen(false);
+                setFocusedIndex(-1);
             }
         };
 
         if (isOpen) {
-            const currentIndex = options.findIndex(
-                (opt) => opt.value === value
-            );
-            setFocusedIndex(currentIndex >= 0 ? currentIndex : 0);
             document.addEventListener('mousedown', handleClickOutside);
-        } else {
-            setFocusedIndex(-1);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isOpen, options, value]);
+    }, [isOpen]);
 
     const handleOptionClick = (optionValue: T) => {
         onChange(optionValue);
         setIsOpen(false);
+        setFocusedIndex(-1);
         buttonRef.current?.focus();
     };
 
@@ -82,6 +78,10 @@ function Dropdown<T extends string>({
             event.preventDefault();
             if (!isOpen) {
                 setIsOpen(true);
+                const currentIndex = options.findIndex(
+                    (opt) => opt.value === value
+                );
+                setFocusedIndex(currentIndex >= 0 ? currentIndex : 0);
             } else {
                 setFocusedIndex((prev) =>
                     prev < options.length - 1 ? prev + 1 : prev
@@ -97,11 +97,21 @@ function Dropdown<T extends string>({
             if (isOpen && focusedIndex >= 0) {
                 handleOptionClick(options[focusedIndex].value);
             } else {
-                setIsOpen(!isOpen);
+                const nextOpen = !isOpen;
+                setIsOpen(nextOpen);
+                if (nextOpen) {
+                    const currentIndex = options.findIndex(
+                        (opt) => opt.value === value
+                    );
+                    setFocusedIndex(currentIndex >= 0 ? currentIndex : 0);
+                } else {
+                    setFocusedIndex(-1);
+                }
             }
         } else if (event.key === 'Escape') {
             event.preventDefault();
             setIsOpen(false);
+            setFocusedIndex(-1);
             buttonRef.current?.focus();
         } else if (event.key === 'Home') {
             event.preventDefault();
@@ -141,7 +151,18 @@ function Dropdown<T extends string>({
             <button
                 ref={buttonRef}
                 type="button"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => {
+                    const nextOpen = !isOpen;
+                    setIsOpen(nextOpen);
+                    if (nextOpen) {
+                        const currentIndex = options.findIndex(
+                            (opt) => opt.value === value
+                        );
+                        setFocusedIndex(currentIndex >= 0 ? currentIndex : 0);
+                    } else {
+                        setFocusedIndex(-1);
+                    }
+                }}
                 onKeyDown={handleKeyDown}
                 className={
                     className ||

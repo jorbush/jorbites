@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import axios from 'axios';
 import { FiSearch } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
@@ -44,12 +44,6 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
         }, 300)
     ).current;
 
-    useEffect(() => {
-        if (isOpen) {
-            debouncedSearch(query);
-        }
-    }, [query, isOpen, debouncedSearch]);
-
     // Reset state on close
     const handleClose = () => {
         setQuery('');
@@ -68,7 +62,11 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                 <input
                     type="text"
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={(e) => {
+                        const val = e.target.value;
+                        setQuery(val);
+                        debouncedSearch(val);
+                    }}
                     placeholder={
                         t('search_recipes_placeholder') ||
                         'Search recipes by title...'

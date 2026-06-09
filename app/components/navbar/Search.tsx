@@ -27,8 +27,9 @@ const Search: React.FC<SearchProps> = ({
     const searchParams = useSearchParams();
     const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
     const pathname = usePathname();
-    const [isSearchMode, setIsSearchMode] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
+    const currentSearch = get('search') || '';
+    const [isSearchMode, setIsSearchMode] = useState(Boolean(currentSearch));
+    const [searchQuery, setSearchQuery] = useState(currentSearch);
     const [isExplicitlyExiting, setIsExplicitlyExiting] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -36,7 +37,6 @@ const Search: React.FC<SearchProps> = ({
     const isMainPage = pathname === '/';
     const isFavoritesPage = pathname === '/favorites';
     const isFilterablePage = isMainPage || isFavoritesPage;
-    const currentSearch = get('search') || '';
     const isFiltering = get('category') || '';
 
     const currentStartDate = get('startDate') || '';
@@ -45,28 +45,53 @@ const Search: React.FC<SearchProps> = ({
     const hasActiveFilters =
         isFiltering || currentStartDate || currentEndDate || currentOrderBy;
 
-    const debouncedUrlUpdate = useRef<ReturnType<typeof debounce> | null>(null);
+    const replaceRef = useRef(replace);
+    replaceRef.current = replace;
+
+    const debouncedUrlUpdateRef = useRef<any>(null);
+    if (debouncedUrlUpdateRef.current === null) {
+        debouncedUrlUpdateRef.current = debounce(
+            (
+                value: string,
+                searchParamsStr: string,
+                isFilterable: boolean,
+                isMain: boolean,
+                path: string
+            ) => {
+                if (!isFilterable) return;
+                const params = new URLSearchParams(searchParamsStr);
+                if (value.trim()) {
+                    params.set('search', value.trim());
+                } else {
+                    params.delete('search');
+                }
+                params.delete('page');
+                const newUrl = isMain
+                    ? params.toString()
+                        ? `/?${params.toString()}`
+                        : '/'
+                    : params.toString()
+                      ? `${path}?${params.toString()}`
+                      : path;
+                replaceRef.current(newUrl);
+            },
+            1000
+        );
+    }
+    const debouncedUrlUpdate = debouncedUrlUpdateRef.current;
 
     useEffect(() => {
-        debouncedUrlUpdate.current = debounce((value: string) => {
-            if (!isFilterablePage) return;
-            const params = new URLSearchParams(searchParams?.toString() || '');
-            if (value.trim()) {
-                params.set('search', value.trim());
-            } else {
-                params.delete('search');
+        return () => {
+            if (typeof debouncedUrlUpdate.cancel === 'function') {
+                debouncedUrlUpdate.cancel();
             }
-            params.delete('page');
-            const newUrl = isMainPage
-                ? params.toString()
-                    ? `/?${params.toString()}`
-                    : '/'
-                : params.toString()
-                  ? `${pathname}?${params.toString()}`
-                  : pathname;
-            replace(newUrl);
-        }, 1000); // 1 second debounce on URL update in order to avoid request and typing conflicts
+        };
+    }, [debouncedUrlUpdate]);
 
+    const prevCurrentSearchRef = useRef(currentSearch);
+
+    if (currentSearch !== prevCurrentSearchRef.current) {
+        prevCurrentSearchRef.current = currentSearch;
         if (currentSearch) {
             setSearchQuery(currentSearch);
             if (!isSearchMode && !isExplicitlyExiting) {
@@ -81,18 +106,17 @@ const Search: React.FC<SearchProps> = ({
                 setIsExplicitlyExiting(false);
             }
         }
-    }, [
-        searchParams,
-        isFilterablePage,
-        isMainPage,
-        pathname,
-        push,
-        replace,
-        currentSearch,
-        isSearchMode,
-        onSearchModeChange,
-        isExplicitlyExiting,
-    ]);
+    }
+
+    const hasFiredInitialRef = useRef(false);
+    useEffect(() => {
+        if (!hasFiredInitialRef.current) {
+            hasFiredInitialRef.current = true;
+            if (currentSearch) {
+                onSearchModeChange?.(true);
+            }
+        }
+    }, [currentSearch, onSearchModeChange]);
 
     const handleSearchToggle = () => {
         if (isSearchMode) {
@@ -129,7 +153,13 @@ const Search: React.FC<SearchProps> = ({
 
     const handleSearchChange = (value: string) => {
         setSearchQuery(value);
-        debouncedUrlUpdate.current?.(value);
+        debouncedUrlUpdate(
+            value,
+            searchParams?.toString() || '',
+            isFilterablePage,
+            isMainPage,
+            pathname || ''
+        );
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {

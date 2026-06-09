@@ -1,10 +1,18 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, {
+    useState,
+    useEffect,
+    useMemo,
+    useRef,
+    useSyncExternalStore,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiGlobe } from 'react-icons/fi';
 import i18n from '@/app/i18n';
 import { toast } from 'react-hot-toast';
+
+const subscribe = () => () => {};
 
 interface TranslateableRecipeContentProps {
     description: React.ReactNode;
@@ -30,8 +38,19 @@ export function TranslateableRecipeContent({
     renderSteps,
 }: TranslateableRecipeContentProps) {
     const { t } = useTranslation();
-    const [mounted, setMounted] = useState(false);
-    const [isAvailable, setIsAvailable] = useState(false);
+    const isMounted = useSyncExternalStore(
+        subscribe,
+        () => true,
+        () => false
+    );
+    const isAvailable = useSyncExternalStore(
+        subscribe,
+        () =>
+            typeof window !== 'undefined' &&
+            'Translator' in window &&
+            'LanguageDetector' in window,
+        () => false
+    );
     const [detectedLanguage, setDetectedLanguage] = useState<string | null>(
         null
     );
@@ -83,36 +102,21 @@ export function TranslateableRecipeContent({
         return `${descriptionText}|${ingredientsTextJoined}|${stepsTextJoined}|${currentLang}`;
     }, [descriptionText, ingredientsTextJoined, stepsTextJoined]);
 
-    const prevContentKeyRef = useRef('');
+    // Reset translation state during render when contentKey changes
+    const prevContentKeyRef = useRef(contentKey);
+    if (contentKey !== prevContentKeyRef.current) {
+        prevContentKeyRef.current = contentKey;
+        setTranslatedDescription(null);
+        setTranslatedIngredients(null);
+        setTranslatedSteps(null);
+        setIsTranslated(false);
+        setDetectedLanguage(null);
+    }
 
+    // Scoped language detection effect
     useEffect(() => {
-        if (!mounted) {
-            setMounted(true);
-            const apiAvailable =
-                typeof window !== 'undefined' &&
-                'Translator' in window &&
-                'LanguageDetector' in window;
-            setIsAvailable(apiAvailable);
-        }
-
-        const contentChanged = prevContentKeyRef.current !== contentKey;
-        const needsInitialDetection =
-            detectedLanguage === null &&
-            sampleTextForDetection.trim().length >= 10;
-
-        if (!contentChanged && !needsInitialDetection) {
+        if (!isAvailable) {
             return;
-        }
-
-        if (contentChanged) {
-            prevContentKeyRef.current = contentKey;
-
-            setTranslatedDescription(null);
-            setTranslatedIngredients(null);
-            setTranslatedSteps(null);
-            setIsTranslated(false);
-            setDetectedLanguage(null);
-        } else {
         }
 
         if (
@@ -122,12 +126,8 @@ export function TranslateableRecipeContent({
             return;
         }
 
-        const apiAvailable =
-            typeof window !== 'undefined' &&
-            'Translator' in window &&
-            'LanguageDetector' in window;
-
-        if (!apiAvailable) {
+        // Only run if we don't have a detected language yet
+        if (detectedLanguage !== null) {
             return;
         }
 
@@ -144,15 +144,12 @@ export function TranslateableRecipeContent({
 
                 if (results && results.length > 0) {
                     const topResult = results[0];
-                    // Only use detection if confidence is high enough
                     if (topResult.confidence > 0.5) {
-                        if (cancelled) return; // Check again before state update
+                        if (cancelled) return;
                         const lang = topResult.detectedLanguage;
-                        // Map to supported languages (en, ca, es)
                         if (['en', 'ca', 'es'].includes(lang)) {
                             setDetectedLanguage(lang);
                         } else {
-                            // Try to map common language codes
                             const langMap: Record<string, string> = {
                                 'en-US': 'en',
                                 'en-GB': 'en',
@@ -176,7 +173,7 @@ export function TranslateableRecipeContent({
         return () => {
             cancelled = true;
         };
-    }, [mounted, contentKey, sampleTextForDetection, detectedLanguage]);
+    }, [sampleTextForDetection, detectedLanguage, isAvailable]);
 
     const hasContent = Boolean(
         descriptionText ||
@@ -340,7 +337,7 @@ export function TranslateableRecipeContent({
     const needsTranslation =
         detectedLanguage && detectedLanguage !== targetLanguage;
     const showTranslateButton =
-        mounted && hasContent && isAvailable && needsTranslation;
+        isMounted && hasContent && isAvailable && needsTranslation;
 
     return (
         <>

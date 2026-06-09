@@ -1,13 +1,42 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useSyncExternalStore } from 'react';
 import { SafeComment, SafeUser } from '@/app/types';
 import CommentBox from '@/app/components/comments/CommentBox';
 import Comment from '@/app/components/comments/Comment';
 import { useTranslation } from 'react-i18next';
 import ButtonSelector from '@/app/components/comments/ButtonSelector';
 
-/* eslint-disable unused-imports/no-unused-vars */
+const subscribe = () => () => {};
+
+const sortOrderStore = {
+    subscribe(listener: () => void) {
+        if (typeof window !== 'undefined') {
+            window.addEventListener('storage', listener);
+            return () => window.removeEventListener('storage', listener);
+        }
+        return () => {};
+    },
+    getSnapshot() {
+        if (typeof window === 'undefined') return 'asc';
+        return (
+            (localStorage.getItem('commentSortOrder') as 'asc' | 'desc') ||
+            'asc'
+        );
+    },
+    getServerSnapshot() {
+        return 'asc' as const;
+    },
+};
+
+const handleSortChange = (order: 'asc' | 'desc') => {
+    localStorage.setItem('commentSortOrder', order);
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('storage'));
+    }
+    console.log('order', order);
+};
+
 interface CommentsProps {
     currentUser?: SafeUser | null;
     onCreateComment: (comment: string, rating: number | null) => void;
@@ -22,45 +51,22 @@ const Comments: React.FC<CommentsProps> = ({
     isLoading = false,
 }) => {
     const { t } = useTranslation();
-    const [mounted, setMounted] = useState(false);
-    const [sortedComments, setSortedComments] =
-        useState<SafeComment[]>(comments);
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    const sortComments = useCallback(
-        (order: 'asc' | 'desc') => {
-            const sorted = [...comments].sort((a, b) => {
-                const dateA = new Date(a.createdAt).getTime();
-                const dateB = new Date(b.createdAt).getTime();
-                return order === 'asc' ? dateA - dateB : dateB - dateA;
-            });
-            setSortedComments(sorted);
-        },
-        [comments]
+    const isMounted = useSyncExternalStore(
+        subscribe,
+        () => true,
+        () => false
+    );
+    const sortOrder = useSyncExternalStore(
+        sortOrderStore.subscribe,
+        sortOrderStore.getSnapshot,
+        sortOrderStore.getServerSnapshot
     );
 
-    useEffect(() => {
-        const storedOrder = localStorage.getItem('commentSortOrder') as
-            | 'asc'
-            | 'desc';
-        if (storedOrder) {
-            setSortOrder(storedOrder);
-            sortComments(storedOrder);
-        } else {
-            setSortedComments(comments);
-        }
-    }, [comments, sortComments]);
-
-    const handleSortChange = (order: 'asc' | 'desc') => {
-        setSortOrder(order);
-        console.log('order', order);
-        localStorage.setItem('commentSortOrder', order);
-        sortComments(order);
-    };
+    const sortedComments = comments.toSorted((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
 
     return (
         <div className="flex flex-col pr-2 pl-2">
@@ -68,7 +74,7 @@ const Comments: React.FC<CommentsProps> = ({
             <div className="mt-8 mb-4 flex flex-row items-center justify-between">
                 <div className="flex flex-row items-center">
                     <div className="text-xl font-semibold dark:text-neutral-100">
-                        {mounted ? t('comments') : 'comments'}
+                        {isMounted ? t('comments') : 'comments'}
                     </div>
                     <div className="text-md ml-2 text-neutral-500">
                         {comments.length}

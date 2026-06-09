@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useSyncExternalStore, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiGlobe } from 'react-icons/fi';
 import i18n from '@/app/i18n';
+
+const subscribe = () => () => {};
 
 declare global {
     interface Window {
@@ -47,62 +49,82 @@ export function TranslateButton({
     size = 18,
 }: TranslateButtonProps) {
     const { t } = useTranslation();
-    const [mounted, setMounted] = useState(false);
-    const [isAvailable, setIsAvailable] = useState(false);
+    const isMounted = useSyncExternalStore(
+        subscribe,
+        () => true,
+        () => false
+    );
+    const isAvailable = useSyncExternalStore(
+        subscribe,
+        () =>
+            typeof window !== 'undefined' &&
+            'Translator' in window &&
+            'LanguageDetector' in window,
+        () => false
+    );
     const [isTranslating, setIsTranslating] = useState(false);
     const [detectedLanguage, setDetectedLanguage] = useState<string | null>(
         null
     );
 
-    const detectLanguage = useCallback(async () => {
-        if (!text || text.trim().length === 0) return;
+    // Reset detectedLanguage during render when text changes
+    const prevTextRef = useRef(text);
+    if (text !== prevTextRef.current) {
+        prevTextRef.current = text;
+        setDetectedLanguage(null);
+    }
+
+    useEffect(() => {
+        if (
+            !isAvailable ||
+            !text ||
+            text.trim().length < 10 ||
+            detectedLanguage !== null
+        ) {
+            return;
+        }
 
         let cancelled = false;
 
-        try {
-            const detector = await window.LanguageDetector.create();
-            const results = await detector.detect(text);
+        const detect = async () => {
+            try {
+                const detector = await window.LanguageDetector.create();
+                const results = await detector.detect(text);
 
-            if (cancelled) return;
+                if (cancelled) return;
 
-            if (results && results.length > 0) {
-                const topResult = results[0];
-                if (topResult.confidence > 0.5) {
-                    if (cancelled) return; // Check again before state update
-                    const lang = topResult.detectedLanguage;
-                    if (['en', 'ca', 'es'].includes(lang)) {
-                        setDetectedLanguage(lang);
-                    } else {
-                        const langMap: Record<string, string> = {
-                            'en-US': 'en',
-                            'en-GB': 'en',
-                            'es-ES': 'es',
-                            'es-MX': 'es',
-                            'ca-ES': 'ca',
-                        };
-                        setDetectedLanguage(langMap[lang] || null);
+                if (results && results.length > 0) {
+                    const topResult = results[0];
+                    if (topResult.confidence > 0.5) {
+                        if (cancelled) return; // Check again before state update
+                        const lang = topResult.detectedLanguage;
+                        if (['en', 'ca', 'es'].includes(lang)) {
+                            setDetectedLanguage(lang);
+                        } else {
+                            const langMap: Record<string, string> = {
+                                'en-US': 'en',
+                                'en-GB': 'en',
+                                'es-ES': 'es',
+                                'es-MX': 'es',
+                                'ca-ES': 'ca',
+                            };
+                            setDetectedLanguage(langMap[lang] || null);
+                        }
                     }
                 }
+            } catch (error) {
+                if (!cancelled) {
+                    console.error('Language detection failed:', error);
+                }
             }
-        } catch (error) {
-            if (!cancelled) {
-                console.error('Language detection failed:', error);
-            }
-        }
+        };
+
+        detect();
 
         return () => {
             cancelled = true;
         };
-    }, [text]);
-
-    useEffect(() => {
-        setMounted(true);
-
-        if ('Translator' in window && 'LanguageDetector' in window) {
-            setIsAvailable(true);
-            detectLanguage();
-        }
-    }, [text, detectLanguage]);
+    }, [text, isAvailable, detectedLanguage]);
 
     const handleTranslate = async () => {
         if (!text || isTranslating) return;
@@ -148,7 +170,7 @@ export function TranslateButton({
         }
     };
 
-    if (!mounted) {
+    if (!isMounted) {
         return null;
     }
 

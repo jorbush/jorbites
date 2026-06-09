@@ -50,15 +50,34 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
         });
     };
 
-    // Set up window resize event listener on mount
-    React.useEffect(() => {
-        window.addEventListener('resize', checkScrollPosition);
-        return () => window.removeEventListener('resize', checkScrollPosition);
-    }, [checkScrollPosition]);
+    // Set up ResizeObserver to check scroll position on container size or content size changes
+    const checkScrollPositionRef = useRef(checkScrollPosition);
+    checkScrollPositionRef.current = checkScrollPosition;
 
     useEffect(() => {
-        checkScrollPosition();
-    }, [children, checkScrollPosition]);
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const handler = () => {
+            checkScrollPositionRef.current();
+        };
+
+        if (typeof ResizeObserver === 'undefined') {
+            handler();
+            window.addEventListener('resize', handler);
+            return () => window.removeEventListener('resize', handler);
+        }
+
+        const resizeObserver = new ResizeObserver(handler);
+        resizeObserver.observe(container);
+
+        // Initial check
+        handler();
+
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, []);
 
     return (
         <div className="mb-10">
