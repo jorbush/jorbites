@@ -88,7 +88,7 @@ vi.mock('@/app/components/inputs/SearchInput', () => ({
 // Mock the Input component
 vi.mock('@/app/components/inputs/Input', () => ({
     default: ({ id, label, register, errors, dataCy, ...props }: any) => {
-        const registeredField = register(id);
+        const { value, ...registeredField } = register(id);
         return (
             <div data-testid={`input-${id}`}>
                 <label htmlFor={id}>{label}</label>
@@ -96,7 +96,9 @@ vi.mock('@/app/components/inputs/Input', () => ({
                     id={id}
                     data-testid={`input-field-${id}`}
                     data-cy={dataCy}
-                    value={registeredField.value || ''}
+                    value={value || ''}
+                    readOnly
+                    {...registeredField}
                     {...props}
                 />
                 {errors[id] && (
@@ -152,6 +154,7 @@ describe('<RelatedContentStep />', () => {
     beforeEach(() => {
         // Clear all mocks before each test
         vi.clearAllMocks();
+        vi.useFakeTimers({ shouldAdvanceTime: true });
 
         // Setup default axios mock responses
         mockedAxios.get.mockResolvedValue({
@@ -188,6 +191,7 @@ describe('<RelatedContentStep />', () => {
 
     afterEach(() => {
         cleanup(); // Clean up after each test to prevent memory leaks
+        vi.useRealTimers();
     });
 
     it('renders correctly with default props', () => {
@@ -218,18 +222,18 @@ describe('<RelatedContentStep />', () => {
         expect(screen.getByText('search_users')).toBeDefined();
 
         // Switch to recipes tab using the new tab component
-        fireEvent.click(screen.getByTestId('tab-recipes'));
-
-        await waitFor(() => {
-            expect(screen.getByText('search_recipes')).toBeDefined();
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('tab-recipes'));
         });
+
+        expect(screen.getByText('search_recipes')).toBeDefined();
 
         // Switch back to users tab
-        fireEvent.click(screen.getByTestId('tab-users'));
-
-        await waitFor(() => {
-            expect(screen.getByText('search_users')).toBeDefined();
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('tab-users'));
         });
+
+        expect(screen.getByText('search_users')).toBeDefined();
     });
 
     it('shows users tab as active by default', () => {
@@ -242,7 +246,7 @@ describe('<RelatedContentStep />', () => {
         expect(recipesTab.className).not.toContain('active');
     });
 
-    it('updates active tab styling when switching tabs', () => {
+    it('updates active tab styling when switching tabs', async () => {
         render(<RelatedContentStep {...mockProps} />);
 
         const usersTab = screen.getByTestId('tab-users');
@@ -253,7 +257,9 @@ describe('<RelatedContentStep />', () => {
         expect(recipesTab.className).not.toContain('active');
 
         // Click recipes tab
-        fireEvent.click(recipesTab);
+        await act(async () => {
+            fireEvent.click(recipesTab);
+        });
 
         // Now recipes tab should be active
         expect(recipesTab.className).toContain('active');
@@ -264,7 +270,9 @@ describe('<RelatedContentStep />', () => {
         render(<RelatedContentStep {...mockProps} />);
 
         // Select a user from search results
-        fireEvent.click(screen.getByTestId('mock-select-user'));
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('mock-select-user'));
+        });
 
         // Verify that onAddCoCook callback was called with correct user data
         expect(mockProps.onAddCoCook).toHaveBeenCalledWith({
@@ -277,17 +285,19 @@ describe('<RelatedContentStep />', () => {
         render(<RelatedContentStep {...mockProps} />);
 
         // Switch to recipes tab
-        fireEvent.click(screen.getByTestId('tab-recipes'));
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('tab-recipes'));
+        });
 
-        await waitFor(() => {
-            // Select a recipe from search results
+        // Select a recipe from search results
+        await act(async () => {
             fireEvent.click(screen.getByTestId('mock-select-user'));
-            // Verify that onAddLinkedRecipe callback was called with correct recipe data
-            expect(mockProps.onAddLinkedRecipe).toHaveBeenCalledWith({
-                id: 'recipe1',
-                title: 'Test Recipe',
-                user: { name: 'Chef' },
-            });
+        });
+        // Verify that onAddLinkedRecipe callback was called with correct recipe data
+        expect(mockProps.onAddLinkedRecipe).toHaveBeenCalledWith({
+            id: 'recipe1',
+            title: 'Test Recipe',
+            user: { name: 'Chef' },
         });
     });
 
@@ -324,14 +334,14 @@ describe('<RelatedContentStep />', () => {
         render(<RelatedContentStep {...propsWithSelectedRecipes} />);
 
         // Switch to recipes tab
-        fireEvent.click(screen.getByTestId('tab-recipes'));
-
-        await waitFor(() => {
-            // Should display the selected linked recipes section
-            expect(screen.getByText('selected_linked_recipes')).toBeDefined();
-            expect(screen.getByText('Test Recipe')).toBeDefined();
-            expect(screen.getByText('Chef Test')).toBeDefined();
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('tab-recipes'));
         });
+
+        // Should display the selected linked recipes section
+        expect(screen.getByText('selected_linked_recipes')).toBeDefined();
+        expect(screen.getByText('Test Recipe')).toBeDefined();
+        expect(screen.getByText('Chef Test')).toBeDefined();
     });
 
     it('removes a co-cook when clicking remove button', async () => {
@@ -350,7 +360,9 @@ describe('<RelatedContentStep />', () => {
         // The remove button should be present
         expect(removeButtons.length).toBeGreaterThan(0);
 
-        fireEvent.click(removeButtons[removeButtons.length - 1]);
+        await act(async () => {
+            fireEvent.click(removeButtons[removeButtons.length - 1]);
+        });
 
         // Verify that onRemoveCoCook callback was called with correct user ID
         expect(mockProps.onRemoveCoCook).toHaveBeenCalledWith('user1');
@@ -373,21 +385,21 @@ describe('<RelatedContentStep />', () => {
         render(<RelatedContentStep {...propsWithSelectedRecipes} />);
 
         // Switch to recipes tab
-        fireEvent.click(screen.getByTestId('tab-recipes'));
-
-        await waitFor(() => {
-            // Find and click the remove button
-            const removeButtons = screen.getAllByRole('button');
-            // The remove button should be present
-            expect(removeButtons.length).toBeGreaterThan(0);
-
-            fireEvent.click(removeButtons[removeButtons.length - 1]);
-
-            // Verify that onRemoveLinkedRecipe callback was called with correct recipe ID
-            expect(mockProps.onRemoveLinkedRecipe).toHaveBeenCalledWith(
-                'recipe1'
-            );
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('tab-recipes'));
         });
+
+        // Find and click the remove button
+        const removeButtons = screen.getAllByRole('button');
+        // The remove button should be present
+        expect(removeButtons.length).toBeGreaterThan(0);
+
+        await act(async () => {
+            fireEvent.click(removeButtons[removeButtons.length - 1]);
+        });
+
+        // Verify that onRemoveLinkedRecipe callback was called with correct recipe ID
+        expect(mockProps.onRemoveLinkedRecipe).toHaveBeenCalledWith('recipe1');
     });
 
     it('filters search results when typing in search input', async () => {
@@ -395,18 +407,22 @@ describe('<RelatedContentStep />', () => {
 
         const searchInput = screen.getByTestId('search-input-field');
 
-        act(() => {
+        await act(async () => {
             // Simulate typing in the search input
             fireEvent.change(searchInput, { target: { value: 'test query' } });
         });
 
         // Wait for debounce timer to complete
-        await new Promise((r) => setTimeout(r, 400));
+        await act(async () => {
+            vi.advanceTimersByTime(300);
+        });
 
         // Verify that axios.get was called with the properly encoded search query
-        expect(axios.get).toHaveBeenCalledWith(
-            expect.stringContaining('test%20query')
-        );
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith(
+                expect.stringContaining('test%20query')
+            );
+        });
     });
 
     it('clears search query when switching tabs', async () => {
@@ -417,27 +433,27 @@ describe('<RelatedContentStep />', () => {
         ) as HTMLInputElement;
 
         // Type something in search
-        act(() => {
+        await act(async () => {
             fireEvent.change(searchInput, { target: { value: 'test query' } });
         });
 
         expect(searchInput.value).toBe('test query');
 
         // Switch to recipes tab
-        fireEvent.click(screen.getByTestId('tab-recipes'));
-
-        await waitFor(() => {
-            // Search input should be cleared
-            expect(searchInput.value).toBe('');
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('tab-recipes'));
         });
+
+        // Search input should be cleared
+        expect(searchInput.value).toBe('');
 
         // Switch back to users tab
-        fireEvent.click(screen.getByTestId('tab-users'));
-
-        await waitFor(() => {
-            // Search input should still be cleared
-            expect(searchInput.value).toBe('');
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('tab-users'));
         });
+
+        // Search input should still be cleared
+        expect(searchInput.value).toBe('');
     });
 
     it('renders tabs component with correct props', () => {
@@ -460,18 +476,16 @@ describe('<RelatedContentStep />', () => {
         expect(screen.getByTestId('tab-users').className).toContain('active');
 
         // Switch to videos tab
-        fireEvent.click(screen.getByTestId('tab-videos'));
-
-        await waitFor(() => {
-            // Videos tab should now be active
-            expect(screen.getByTestId('tab-videos').className).toContain(
-                'active'
-            );
-            // YouTube input should be visible
-            expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
-            // Search input should not be visible
-            expect(screen.queryByTestId('search-input')).toBeNull();
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('tab-videos'));
         });
+
+        // Videos tab should now be active
+        expect(screen.getByTestId('tab-videos').className).toContain('active');
+        // YouTube input should be visible
+        expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
+        // Search input should not be visible
+        expect(screen.queryByTestId('search-input')).toBeNull();
     });
 
     describe('YouTube URL input', () => {
@@ -486,25 +500,23 @@ describe('<RelatedContentStep />', () => {
             render(<RelatedContentStep {...mockProps} />);
 
             // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
-                expect(
-                    screen.getByTestId('input-field-youtubeUrl')
-                ).toBeDefined();
+            await act(async () => {
+                fireEvent.click(screen.getByTestId('tab-videos'));
             });
+
+            expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
+            expect(screen.getByTestId('input-field-youtubeUrl')).toBeDefined();
         });
 
         it('passes register function to YouTube input on videos tab', async () => {
             render(<RelatedContentStep {...mockProps} />);
 
             // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                expect(mockProps.register).toHaveBeenCalledWith('youtubeUrl');
+            await act(async () => {
+                fireEvent.click(screen.getByTestId('tab-videos'));
             });
+
+            expect(mockProps.register).toHaveBeenCalledWith('youtubeUrl');
         });
 
         it('passes errors to YouTube input on videos tab', async () => {
@@ -521,12 +533,12 @@ describe('<RelatedContentStep />', () => {
             render(<RelatedContentStep {...propsWithError} />);
 
             // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                expect(screen.getByTestId('error-youtubeUrl')).toBeDefined();
-                expect(screen.getByText('Invalid YouTube URL')).toBeDefined();
+            await act(async () => {
+                fireEvent.click(screen.getByTestId('tab-videos'));
             });
+
+            expect(screen.getByTestId('error-youtubeUrl')).toBeDefined();
+            expect(screen.getByText('Invalid YouTube URL')).toBeDefined();
         });
 
         it('disables YouTube input when loading on videos tab', async () => {
@@ -538,44 +550,42 @@ describe('<RelatedContentStep />', () => {
             render(<RelatedContentStep {...loadingProps} />);
 
             // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                const youtubeInput = screen.getByTestId(
-                    'input-field-youtubeUrl'
-                ) as HTMLInputElement;
-                expect(youtubeInput.disabled).toBe(true);
+            await act(async () => {
+                fireEvent.click(screen.getByTestId('tab-videos'));
             });
+
+            const youtubeInput = screen.getByTestId(
+                'input-field-youtubeUrl'
+            ) as HTMLInputElement;
+            expect(youtubeInput.disabled).toBe(true);
         });
 
         it('sets correct input type for YouTube URL on videos tab', async () => {
             render(<RelatedContentStep {...mockProps} />);
 
             // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                const youtubeInput = screen.getByTestId(
-                    'input-field-youtubeUrl'
-                ) as HTMLInputElement;
-                expect(youtubeInput.type).toBe('url');
+            await act(async () => {
+                fireEvent.click(screen.getByTestId('tab-videos'));
             });
+
+            const youtubeInput = screen.getByTestId(
+                'input-field-youtubeUrl'
+            ) as HTMLInputElement;
+            expect(youtubeInput.type).toBe('url');
         });
 
         it('has correct data-cy attribute for testing on videos tab', async () => {
             render(<RelatedContentStep {...mockProps} />);
 
             // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                const youtubeInput = screen.getByTestId(
-                    'input-field-youtubeUrl'
-                );
-                expect(youtubeInput.getAttribute('data-cy')).toBe(
-                    'youtube-url-input'
-                );
+            await act(async () => {
+                fireEvent.click(screen.getByTestId('tab-videos'));
             });
+
+            const youtubeInput = screen.getByTestId('input-field-youtubeUrl');
+            expect(youtubeInput.getAttribute('data-cy')).toBe(
+                'youtube-url-input'
+            );
         });
     });
 
@@ -599,14 +609,14 @@ describe('<RelatedContentStep />', () => {
                 render(<RelatedContentStep {...propsWithUrl} />);
 
                 // Switch to videos tab
-                fireEvent.click(screen.getByTestId('tab-videos'));
-
-                await waitFor(() => {
-                    const youtubeInput = screen.getByTestId(
-                        'input-field-youtubeUrl'
-                    ) as HTMLInputElement;
-                    expect(youtubeInput.value).toBe(url);
+                await act(async () => {
+                    fireEvent.click(screen.getByTestId('tab-videos'));
                 });
+
+                const youtubeInput = screen.getByTestId(
+                    'input-field-youtubeUrl'
+                ) as HTMLInputElement;
+                expect(youtubeInput.value).toBe(url);
 
                 cleanup();
             }
@@ -635,16 +645,14 @@ describe('<RelatedContentStep />', () => {
                 render(<RelatedContentStep {...propsWithError} />);
 
                 // Switch to videos tab
-                fireEvent.click(screen.getByTestId('tab-videos'));
-
-                await waitFor(() => {
-                    expect(
-                        screen.getByTestId('error-youtubeUrl')
-                    ).toBeDefined();
-                    expect(
-                        screen.getByText('Invalid YouTube URL format')
-                    ).toBeDefined();
+                await act(async () => {
+                    fireEvent.click(screen.getByTestId('tab-videos'));
                 });
+
+                expect(screen.getByTestId('error-youtubeUrl')).toBeDefined();
+                expect(
+                    screen.getByText('Invalid YouTube URL format')
+                ).toBeDefined();
 
                 cleanup();
             }
@@ -663,11 +671,11 @@ describe('<RelatedContentStep />', () => {
             render(<RelatedContentStep {...mockProps} />);
 
             // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
+            await act(async () => {
+                fireEvent.click(screen.getByTestId('tab-videos'));
             });
+
+            expect(screen.getByTestId('input-youtubeUrl')).toBeDefined();
         });
 
         it('hides search input when on videos tab', async () => {
@@ -677,12 +685,12 @@ describe('<RelatedContentStep />', () => {
             expect(screen.getByTestId('search-input')).toBeDefined();
 
             // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                // Search input should not be visible on videos tab
-                expect(screen.queryByTestId('search-input')).toBeNull();
+            await act(async () => {
+                fireEvent.click(screen.getByTestId('tab-videos'));
             });
+
+            // Search input should not be visible on videos tab
+            expect(screen.queryByTestId('search-input')).toBeNull();
         });
     });
 
@@ -697,11 +705,11 @@ describe('<RelatedContentStep />', () => {
             render(<RelatedContentStep {...propsWithMockRegister} />);
 
             // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                expect(mockRegister).toHaveBeenCalledWith('youtubeUrl');
+            await act(async () => {
+                fireEvent.click(screen.getByTestId('tab-videos'));
             });
+
+            expect(mockRegister).toHaveBeenCalledWith('youtubeUrl');
         });
 
         it('receives and displays current YouTube URL value on videos tab', async () => {
@@ -715,14 +723,14 @@ describe('<RelatedContentStep />', () => {
             render(<RelatedContentStep {...propsWithUrl} />);
 
             // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                const youtubeInput = screen.getByTestId(
-                    'input-field-youtubeUrl'
-                ) as HTMLInputElement;
-                expect(youtubeInput.value).toBe(testUrl);
+            await act(async () => {
+                fireEvent.click(screen.getByTestId('tab-videos'));
             });
+
+            const youtubeInput = screen.getByTestId(
+                'input-field-youtubeUrl'
+            ) as HTMLInputElement;
+            expect(youtubeInput.value).toBe(testUrl);
         });
 
         it('handles empty YouTube URL gracefully on videos tab', async () => {
@@ -735,14 +743,14 @@ describe('<RelatedContentStep />', () => {
             render(<RelatedContentStep {...propsWithEmptyUrl} />);
 
             // Switch to videos tab
-            fireEvent.click(screen.getByTestId('tab-videos'));
-
-            await waitFor(() => {
-                const youtubeInput = screen.getByTestId(
-                    'input-field-youtubeUrl'
-                ) as HTMLInputElement;
-                expect(youtubeInput.value).toBe('');
+            await act(async () => {
+                fireEvent.click(screen.getByTestId('tab-videos'));
             });
+
+            const youtubeInput = screen.getByTestId(
+                'input-field-youtubeUrl'
+            ) as HTMLInputElement;
+            expect(youtubeInput.value).toBe('');
         });
     });
 });
