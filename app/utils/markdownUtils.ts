@@ -137,7 +137,7 @@ export function sortEventsByDate(
     events: Event[],
     ascending: boolean = false
 ): Event[] {
-    return [...events].sort((a, b) => {
+    return events.toSorted((a, b) => {
         const dateA = new Date(a.frontmatter.date).getTime();
         const dateB = new Date(b.frontmatter.date).getTime();
 
