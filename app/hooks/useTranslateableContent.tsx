@@ -6,11 +6,14 @@ import React, {
     useMemo,
     useRef,
     useCallback,
+    useSyncExternalStore,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TranslateButton } from '@/app/components/translation/TranslateButton';
 import { FiGlobe } from 'react-icons/fi';
 import i18n from '@/app/i18n';
+
+const subscribe = () => () => {};
 
 // Extract text content from React node
 const getTextContent = (node: string | React.ReactNode): string => {
@@ -45,8 +48,19 @@ export function useTranslateableContent({
     showButton = true,
 }: UseTranslateableContentProps) {
     const { t } = useTranslation();
-    const [mounted, setMounted] = useState(false);
-    const [isAvailable, setIsAvailable] = useState(false);
+    const isMounted = useSyncExternalStore(
+        subscribe,
+        () => true,
+        () => false
+    );
+    const isAvailable = useSyncExternalStore(
+        subscribe,
+        () =>
+            typeof window !== 'undefined' &&
+            'Translator' in window &&
+            'LanguageDetector' in window,
+        () => false
+    );
     const [detectedLanguage, setDetectedLanguage] = useState<string | null>(
         null
     );
@@ -67,38 +81,27 @@ export function useTranslateableContent({
         [textContent, currentLanguage]
     );
 
-    const prevContentKeyRef = useRef('');
-
-    useEffect(() => {
-        if (!mounted) {
-            setMounted(true);
-            const apiAvailable =
-                typeof window !== 'undefined' &&
-                'Translator' in window &&
-                'LanguageDetector' in window;
-            setIsAvailable(apiAvailable);
-        }
-
-        if (prevContentKeyRef.current === contentKey) {
-            return;
-        }
-
+    // Reset translation state during render when contentKey changes
+    const prevContentKeyRef = useRef(contentKey);
+    if (contentKey !== prevContentKeyRef.current) {
         prevContentKeyRef.current = contentKey;
-
         setTranslatedContent(null);
         setIsTranslated(false);
         setDetectedLanguage(null);
+    }
+
+    // Scoped language detection effect
+    useEffect(() => {
+        if (!isAvailable) {
+            return;
+        }
 
         if (!textContent || textContent.trim().length < 10) {
             return;
         }
 
-        const apiAvailable =
-            typeof window !== 'undefined' &&
-            'Translator' in window &&
-            'LanguageDetector' in window;
-
-        if (!apiAvailable) {
+        // Only run if we don't have a detected language yet
+        if (detectedLanguage !== null) {
             return;
         }
 
@@ -142,7 +145,7 @@ export function useTranslateableContent({
         return () => {
             cancelled = true;
         };
-    }, [mounted, contentKey, textContent]);
+    }, [textContent, detectedLanguage, isAvailable]);
 
     const handleTranslate = useCallback((translated: string) => {
         setTranslatedContent(translated);
@@ -160,7 +163,7 @@ export function useTranslateableContent({
     const needsTranslation =
         detectedLanguage && detectedLanguage !== targetLanguage;
     const showTranslateButton =
-        mounted &&
+        isMounted &&
         showButton &&
         textContent &&
         isAvailable &&

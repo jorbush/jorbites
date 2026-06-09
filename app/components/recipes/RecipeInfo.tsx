@@ -11,13 +11,21 @@ import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import getUserDisplayName from '@/app/utils/responsive';
 import VerificationBadge from '@/app/components/VerificationBadge';
-import { useEffect, useState, useMemo, useRef } from 'react';
+import {
+    useEffect,
+    useState,
+    useMemo,
+    useRef,
+    useSyncExternalStore,
+} from 'react';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import YouTubePreview from '@/app/components/utils/YouTubePreview';
 import { TranslateableRecipeContent } from '@/app/components/translation/TranslateableRecipeContent';
 import { formatText } from '@/app/utils/textFormatting';
 import axios from 'axios';
 import StarRating from '@/app/components/utils/StarRating';
+
+const subscribe = () => () => {};
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -71,7 +79,11 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     const { push } = useRouter() || {};
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
-    const [mounted, setMounted] = useState(false);
+    const mounted = useSyncExternalStore(
+        subscribe,
+        () => true,
+        () => false
+    );
     const [coCooks, setCoCooks] = useState<any[]>([]);
     const [linkedRecipes, setLinkedRecipes] = useState<any[]>([]);
     const [isLoadingRelatedData, setIsLoadingRelatedData] = useState(true);
@@ -83,58 +95,53 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
         [linkedRecipeIds]
     );
 
-    // Track previous values to prevent unnecessary fetches
-    const prevIdsRef = useRef({
-        coCooks: '',
-        linkedRecipes: '',
-    });
+    // Adjust isLoadingRelatedData during render when props change
+    const prevCoCooksIdsRef = useRef(coCooksIdsStr);
+    const prevLinkedRecipeIdsRef = useRef(linkedRecipeIdsStr);
 
-    // Single useEffect to handle mounting and fetching related data
-    useEffect(() => {
-        // First mount setup
-        if (!mounted) {
-            setMounted(true);
-        }
-
-        // Check if IDs actually changed (value comparison, not reference)
-        const idsChanged =
-            prevIdsRef.current.coCooks !== coCooksIdsStr ||
-            prevIdsRef.current.linkedRecipes !== linkedRecipeIdsStr;
-
-        if (!idsChanged && mounted) {
-            return; // Skip if IDs haven't actually changed
-        }
-
-        // Update ref with new values
-        prevIdsRef.current = {
-            coCooks: coCooksIdsStr,
-            linkedRecipes: linkedRecipeIdsStr,
-        };
-
+    if (
+        coCooksIdsStr !== prevCoCooksIdsRef.current ||
+        linkedRecipeIdsStr !== prevLinkedRecipeIdsRef.current
+    ) {
+        prevCoCooksIdsRef.current = coCooksIdsStr;
+        prevLinkedRecipeIdsRef.current = linkedRecipeIdsStr;
         setIsLoadingRelatedData(true);
+    }
 
+    // Single useEffect to handle fetching related data
+    useEffect(() => {
         const fetchRelatedData = async () => {
-            if (coCooksIds.length > 0) {
-                try {
-                    const { data } = await axios.get(
-                        `/api/users/multiple?ids=${coCooksIds.join(',')}`
-                    );
-                    setCoCooks(data);
-                } catch (error) {
-                    console.error('Failed to load co-cooks', error);
+            if (coCooksIdsStr) {
+                const ids = coCooksIdsStr.split(',').filter(Boolean);
+                if (ids.length > 0) {
+                    try {
+                        const { data } = await axios.get(
+                            `/api/users/multiple?ids=${ids.join(',')}`
+                        );
+                        setCoCooks(data);
+                    } catch (error) {
+                        console.error('Failed to load co-cooks', error);
+                    }
+                } else {
+                    setCoCooks([]);
                 }
             } else {
                 setCoCooks([]);
             }
 
-            if (linkedRecipeIds.length > 0) {
-                try {
-                    const { data } = await axios.get(
-                        `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
-                    );
-                    setLinkedRecipes(data);
-                } catch (error) {
-                    console.error('Failed to load linked recipes', error);
+            if (linkedRecipeIdsStr) {
+                const ids = linkedRecipeIdsStr.split(',').filter(Boolean);
+                if (ids.length > 0) {
+                    try {
+                        const { data } = await axios.get(
+                            `/api/recipes/multiple?ids=${ids.join(',')}`
+                        );
+                        setLinkedRecipes(data);
+                    } catch (error) {
+                        console.error('Failed to load linked recipes', error);
+                    }
+                } else {
+                    setLinkedRecipes([]);
                 }
             } else {
                 setLinkedRecipes([]);
@@ -143,14 +150,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
         };
 
         fetchRelatedData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        mounted,
-        coCooksIdsStr,
-        linkedRecipeIdsStr,
-        // Note: coCooksIds and linkedRecipeIds are intentionally NOT in deps
-        // We use their joined string representations to avoid infinite loops from array reference changes
-    ]);
+    }, [coCooksIdsStr, linkedRecipeIdsStr]);
 
     return (
         <div className="col-span-4 flex flex-col gap-8 pr-2 pl-2">

@@ -1,6 +1,6 @@
 'use client';
 
-import useRecipeModal, { EditRecipeData } from '@/app/hooks/useRecipeModal';
+import useRecipeModal from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
@@ -314,76 +314,47 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
     };
 
-    const loadEditData = useCallback(
-        async (editData: EditRecipeData) => {
-            setIsLoading(true);
-            setIsLoadingDraft(true);
-            try {
-                reset({
-                    categories: Array.isArray(editData.categories)
-                        ? editData.categories
-                        : [],
-                    method: editData.method,
-                    imageSrc: editData.imageSrc,
-                    imageSrc1: editData.imageSrc1 || '',
-                    imageSrc2: editData.imageSrc2 || '',
-                    imageSrc3: editData.imageSrc3 || '',
-                    title: editData.title,
-                    description: editData.description,
-                    ingredients: editData.ingredients,
-                    steps: editData.steps,
-                    minutes: editData.minutes,
-                    coCooksIds: editData.coCooksIds || [],
-                    linkedRecipeIds: editData.linkedRecipeIds || [],
-                    youtubeUrl: editData.youtubeUrl || '',
-                    questId: editData.questId || '',
-                });
+    // Synchronous state adjustments during render when isOpen or editRecipeData changes
+    const prevIsOpenRef = useRef(recipeModal.isOpen);
+    const prevIsEditModeRef = useRef(recipeModal.isEditMode);
+    const prevEditRecipeDataIdRef = useRef(recipeModal.editRecipeData?.id);
 
-                setNumIngredients(editData.ingredients.length || 1);
-                setNumSteps(editData.steps.length || 1);
+    if (
+        recipeModal.isOpen !== prevIsOpenRef.current ||
+        recipeModal.isEditMode !== prevIsEditModeRef.current ||
+        recipeModal.editRecipeData?.id !== prevEditRecipeDataIdRef.current
+    ) {
+        prevIsOpenRef.current = recipeModal.isOpen;
+        prevIsEditModeRef.current = recipeModal.isEditMode;
+        prevEditRecipeDataIdRef.current = recipeModal.editRecipeData?.id;
 
-                // Pre-populate ingredient and step fields
-                editData.ingredients.forEach(
-                    (ingredient: string, index: number) => {
-                        setValue(`ingredient-${index}`, ingredient);
-                    }
-                );
-                editData.steps.forEach((step: string, index: number) => {
-                    setValue(`step-${index}`, step);
-                });
-
-                // Set co-cooks and linked recipes if available
+        if (!recipeModal.isOpen) {
+            setStep(STEPS.CATEGORY);
+            setNumIngredients(1);
+            setNumSteps(1);
+            setSelectedCoCooks([]);
+            setSelectedLinkedRecipes([]);
+            setSelectedQuest(null);
+            setIngredientsInputMode('list');
+            setStepsInputMode('list');
+            hasLoadedDraft.current = false;
+            hasLoadedEditData.current = false;
+        } else {
+            if (recipeModal.isEditMode && recipeModal.editRecipeData) {
+                const editData = recipeModal.editRecipeData;
+                setStep(STEPS.CATEGORY);
+                setNumIngredients(editData.ingredients?.length || 1);
+                setNumSteps(editData.steps?.length || 1);
                 if (editData.coCooks) {
                     setSelectedCoCooks(editData.coCooks);
                 }
                 if (editData.linkedRecipes) {
                     setSelectedLinkedRecipes(editData.linkedRecipes);
                 }
-                if (editData.questId) {
-                    try {
-                        const questResponse = await axios.get(
-                            `/api/quest/${editData.questId}`
-                        );
-                        setSelectedQuest(questResponse.data);
-                    } catch (error) {
-                        console.error('Failed to load quest', error);
-                    }
-                }
-
-                setStep(STEPS.CATEGORY);
-            } catch (error) {
-                console.error('Failed to load edit data', error);
-                toast.error(
-                    t('error_loading_edit_data') ??
-                        'Failed to load recipe data.'
-                );
-            } finally {
-                setIsLoading(false);
-                setIsLoadingDraft(false);
+                hasLoadedEditData.current = false;
             }
-        },
-        [reset, setValue, t]
-    );
+        }
+    }
 
     useEffect(() => {
         if (!recipeModal.isOpen) {
@@ -405,16 +376,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 youtubeUrl: '',
                 questId: '',
             });
-            setStep(STEPS.CATEGORY);
-            setNumIngredients(1);
-            setNumSteps(1);
-            setSelectedCoCooks([]);
-            setSelectedLinkedRecipes([]);
-            setSelectedQuest(null);
-            setIngredientsInputMode('list');
-            setStepsInputMode('list');
-            hasLoadedDraft.current = false;
-            hasLoadedEditData.current = false;
         } else {
             if (recipeModal.questId) {
                 axios
@@ -433,15 +394,53 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 recipeModal.editRecipeData &&
                 !hasLoadedEditData.current
             ) {
-                // Load edit data when opening in edit mode
                 hasLoadedEditData.current = true;
-                loadEditData(recipeModal.editRecipeData);
+                const editData = recipeModal.editRecipeData;
+                reset({
+                    categories: Array.isArray(editData.categories)
+                        ? editData.categories
+                        : [],
+                    method: editData.method,
+                    imageSrc: editData.imageSrc,
+                    imageSrc1: editData.imageSrc1 || '',
+                    imageSrc2: editData.imageSrc2 || '',
+                    imageSrc3: editData.imageSrc3 || '',
+                    title: editData.title,
+                    description: editData.description,
+                    ingredients: editData.ingredients,
+                    steps: editData.steps,
+                    minutes: editData.minutes,
+                    coCooksIds: editData.coCooksIds || [],
+                    linkedRecipeIds: editData.linkedRecipeIds || [],
+                    youtubeUrl: editData.youtubeUrl || '',
+                    questId: editData.questId || '',
+                });
+
+                // Pre-populate fields
+                editData.ingredients.forEach(
+                    (ingredient: string, index: number) => {
+                        setValue(`ingredient-${index}`, ingredient);
+                    }
+                );
+                editData.steps.forEach((step: string, index: number) => {
+                    setValue(`step-${index}`, step);
+                });
+
+                if (editData.questId) {
+                    axios
+                        .get(`/api/quest/${editData.questId}`)
+                        .then((questResponse) => {
+                            setSelectedQuest(questResponse.data);
+                        })
+                        .catch((error) => {
+                            console.error('Failed to load quest', error);
+                        });
+                }
             } else if (
                 !recipeModal.isEditMode &&
                 currentUser &&
                 !hasLoadedDraft.current
             ) {
-                // Load draft when opening in create mode
                 hasLoadedDraft.current = true;
                 loadDraft().then(() => {
                     console.log('Draft loaded');
@@ -455,7 +454,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         recipeModal.questId,
         currentUser,
         loadDraft,
-        loadEditData,
         reset,
         setValue,
     ]);
