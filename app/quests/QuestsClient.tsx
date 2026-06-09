@@ -121,6 +121,14 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
         push(`/quests?${params.toString()}`);
     };
 
+    const navigateToRecipe = (recipeId: string) => {
+        push(`/recipes/${recipeId}`);
+    };
+
+    const navigateToQuest = (questId: string) => {
+        push(`/quests/${questId}`);
+    };
+
     return (
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             {/* Header */}
@@ -221,7 +229,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                 type="button"
                                                 className="cursor-pointer border-0 bg-transparent p-0 text-left text-xl font-semibold text-neutral-900 hover:text-rose-500 focus:outline-hidden dark:text-white dark:hover:text-rose-400"
                                                 onClick={() =>
-                                                    push(`/quests/${quest.id}`)
+                                                    navigateToQuest(quest.id)
                                                 }
                                                 data-cy="quest-card-title"
                                             >
@@ -276,13 +284,17 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                             {quest.recipes
                                                 .slice(0, 4)
                                                 .map((recipe) => (
-                                                    <div
+                                                    <button
                                                         key={recipe.id}
-                                                        className="group relative size-20 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg"
+                                                        type="button"
+                                                        className="group relative size-20 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg border-0 p-0"
                                                         onClick={() =>
-                                                            push(
-                                                                `/recipes/${recipe.id}`
+                                                            navigateToRecipe(
+                                                                recipe.id
                                                             )
+                                                        }
+                                                        aria-label={
+                                                            recipe.title
                                                         }
                                                     >
                                                         <CustomProxyImage
@@ -297,7 +309,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                                             width={80}
                                                             height={80}
                                                         />
-                                                    </div>
+                                                    </button>
                                                 ))}
                                             {quest.recipes.length > 4 && (
                                                 <div className="flex size-20 flex-shrink-0 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800">
