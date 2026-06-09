@@ -57,12 +57,14 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                 {...props}
             />
         ),
-        a: ({ href, ...props }) => (
+        a: ({ href, children, ...props }) => (
             <Link
                 href={href || '#'}
                 className="text-green-450 hover:underline"
                 {...props}
-            />
+            >
+                {children}
+            </Link>
         ),
         ul: (props) => (
             <ul

@@ -58,12 +58,14 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                 {...props}
             />
         ),
-        a: ({ href, ...props }) => (
+        a: ({ href, children, ...props }) => (
             <Link
                 href={href || '#'}
                 className="text-green-450 hover:underline"
                 {...props}
-            />
+            >
+                {children}
+            </Link>
         ),
         ul: (props) => (
             <ul
