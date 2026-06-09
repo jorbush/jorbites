@@ -133,7 +133,11 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
 
     useEffect(() => {
         handleSearch(searchQuery);
-    }, [searchQuery, handleSearch]);
+
+        return () => {
+            debouncedSearch.cancel();
+        };
+    }, [searchQuery, handleSearch, debouncedSearch]);
 
     return (
         <div className="flex flex-col gap-8">
