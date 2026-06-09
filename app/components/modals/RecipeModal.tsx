@@ -41,6 +41,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const [isLoadingDraft, setIsLoadingDraft] = useState(false);
     const hasLoadedDraft = useRef(false);
     const hasLoadedEditData = useRef(false);
+    const currentUserRef = useRef(currentUser);
+    currentUserRef.current = currentUser;
     const [selectedCoCooks, setSelectedCoCooks] = useState<any[]>([]);
     const [selectedLinkedRecipes, setSelectedLinkedRecipes] = useState<any[]>(
         []
@@ -438,7 +440,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 }
             } else if (
                 !recipeModal.isEditMode &&
-                currentUser &&
+                currentUserRef.current &&
                 !hasLoadedDraft.current
             ) {
                 hasLoadedDraft.current = true;
@@ -452,7 +454,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         recipeModal.isEditMode,
         recipeModal.editRecipeData,
         recipeModal.questId,
-        currentUser,
         loadDraft,
         reset,
         setValue,
