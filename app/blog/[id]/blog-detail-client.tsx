@@ -2,7 +2,7 @@
 
 import Container from '@/app/components/utils/Container';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { Blog } from '@/app/utils/markdownUtils';
 import BlogDetail, {
     BlogDetailSkeleton,
@@ -10,7 +10,8 @@ import BlogDetail, {
 import { useRouter } from 'next/navigation';
 import useTheme from '@/app/hooks/useTheme';
 import { SafeUser } from '@/app/types';
-import axios from 'axios';
+import useSWR from 'swr';
+import { fetcher, axiosFetcher } from '@/app/utils/fetcher';
 
 interface BlogDetailClientProps {
     id: string;
@@ -19,82 +20,47 @@ interface BlogDetailClientProps {
 const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
-    const [blog, setBlog] = useState<Blog | null>(null);
-    const [author, setAuthor] = useState<SafeUser | null>(null);
-    const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
     useTheme();
 
-    useEffect(() => {
-        const loadBlogAndAuthor = async () => {
-            setLoading(true);
-            setError(null);
+    const {
+        data: blog,
+        error: blogError,
+        isLoading: blogLoading,
+    } = useSWR<Blog>(`/api/blogs/${id}?lang=${i18n.language || 'en'}`, fetcher);
 
-            try {
-                // Fetch blog data based on current language
-                const blogResponse = await fetch(
-                    `/api/blogs/${id}?lang=${i18n.language || 'en'}`
-                );
+    const { data: authorData } = useSWR<SafeUser>(
+        blog?.frontmatter?.user_id
+            ? `/api/user/${blog.frontmatter.user_id}`
+            : null,
+        axiosFetcher
+    );
 
-                if (!blogResponse.ok) {
-                    if (blogResponse.status === 404) {
-                        setError('Blog not found');
-                    } else {
-                        throw new Error('Failed to fetch blog');
-                    }
-                    return;
-                }
+    const author = authorData || null;
 
-                const blogData = await blogResponse.json();
-                setBlog(blogData);
+    const relatedCategory =
+        blog?.category === 'releases' ? 'releases' : 'general';
+    const { data: relatedBlogsData } = useSWR(
+        blog
+            ? `/api/blogs?lang=${i18n.language || 'en'}&pageSize=4&category=${relatedCategory}`
+            : null,
+        fetcher
+    );
 
-                // Fetch author data if user_id is available
-                if (blogData.frontmatter.user_id) {
-                    try {
-                        const { data } = await axios.get(
-                            `/api/user/${blogData.frontmatter.user_id}`
-                        );
-                        setAuthor(data);
-                    } catch (error) {
-                        console.error('Failed to load author', error);
-                        // Don't set error, just leave author as null
-                    }
-                }
+    const relatedBlogs = useMemo(() => {
+        if (!relatedBlogsData?.blogs) return [];
+        return relatedBlogsData.blogs
+            .filter((b: Blog) => b.id !== id)
+            .slice(0, 3);
+    }, [relatedBlogsData, id]);
 
-                // Fetch other blogs for "See more" section
-                // If current blog is a release, show only release blogs
-                try {
-                    const category =
-                        blogData.category === 'releases'
-                            ? 'releases'
-                            : 'general';
-                    const blogsResponse = await fetch(
-                        `/api/blogs?lang=${i18n.language || 'en'}&pageSize=4&category=${category}`
-                    );
-                    if (blogsResponse.ok) {
-                        const blogsData = await blogsResponse.json();
-                        // Filter out the current blog and limit to 3
-                        const otherBlogs = blogsData.blogs
-                            .filter((b: Blog) => b.id !== id)
-                            .slice(0, 3);
-                        setRelatedBlogs(otherBlogs);
-                    }
-                } catch (error) {
-                    console.error('Failed to load related blogs', error);
-                    // Don't set error, just leave relatedBlogs as empty
-                }
-            } catch (error) {
-                console.error('Error loading blog:', error);
-                setError('Failed to load blog');
-            } finally {
-                setLoading(false);
-            }
-        };
+    const loading = blogLoading;
 
-        loadBlogAndAuthor();
-    }, [id, i18n.language]);
+    const error = useMemo(() => {
+        if (!blogError) return null;
+        if ((blogError as any).status === 404) return 'Blog not found';
+        return 'Failed to load blog';
+    }, [blogError]);
 
     return (
         <Container>
