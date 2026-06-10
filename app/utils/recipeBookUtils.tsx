@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from '@react-pdf/renderer';
+import type { Text as TextType } from '@react-pdf/renderer';
 import { SafeRecipe } from '@/app/types';
 
 /**
@@ -7,6 +7,7 @@ import { SafeRecipe } from '@/app/types';
  */
 export const parseFormattedText = (
     text: string,
+    Text: typeof TextType | any,
     baseStyle: any = {}
 ): (string | React.ReactNode)[] | string => {
     if (!text) return '';

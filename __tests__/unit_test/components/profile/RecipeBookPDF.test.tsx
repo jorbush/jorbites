@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { RecipeBookPDF } from '@/app/components/profile/RecipeBookPDF';
+import * as ReactPDF from '@react-pdf/renderer';
 
 // Helper to flatten arrays of styles (common in @react-pdf/renderer but not supported natively in react-dom styles)
 const flattenStyle = (style: any): any => {
@@ -128,6 +129,7 @@ describe('RecipeBookPDF Component', () => {
     it('renders the cover page with title, subtitle, author, logo, and avatar', () => {
         render(
             <RecipeBookPDF
+                pdfRenderer={ReactPDF}
                 recipes={mockRecipes}
                 userName="Alice"
                 userImage="https://example.com/avatar.png"
@@ -155,6 +157,7 @@ describe('RecipeBookPDF Component', () => {
     it('renders the table of contents', () => {
         render(
             <RecipeBookPDF
+                pdfRenderer={ReactPDF}
                 recipes={mockRecipes}
                 userName="Alice"
                 logoUrl="https://example.com/logo.png"
@@ -174,6 +177,7 @@ describe('RecipeBookPDF Component', () => {
     it('renders recipe sheets with ingredients, steps, and metadata', () => {
         render(
             <RecipeBookPDF
+                pdfRenderer={ReactPDF}
                 recipes={mockRecipes}
                 userName="Alice"
                 logoUrl="https://example.com/logo.png"
@@ -229,6 +233,7 @@ describe('RecipeBookPDF Component', () => {
     it('renders page footers correctly', () => {
         render(
             <RecipeBookPDF
+                pdfRenderer={ReactPDF}
                 recipes={mockRecipes}
                 userName="Alice"
                 logoUrl="https://example.com/logo.png"
@@ -266,6 +271,7 @@ describe('RecipeBookPDF Component', () => {
 
         render(
             <RecipeBookPDF
+                pdfRenderer={ReactPDF}
                 recipes={recipesWithMarkdown}
                 userName="Alice"
                 logoUrl="https://example.com/logo.png"
@@ -340,6 +346,7 @@ describe('RecipeBookPDF Component', () => {
 
         const { container } = render(
             <RecipeBookPDF
+                pdfRenderer={ReactPDF}
                 recipes={[recipeLongIngredients]}
                 userName="Alice"
                 logoUrl="https://example.com/logo.png"
@@ -406,6 +413,7 @@ describe('RecipeBookPDF Component', () => {
 
         const { container } = render(
             <RecipeBookPDF
+                pdfRenderer={ReactPDF}
                 recipes={[recipeConstrained]}
                 userName="Alice"
                 logoUrl="https://example.com/logo.png"

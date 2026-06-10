@@ -1,13 +1,13 @@
 import React from 'react';
-import { Page, View, Image, Text } from '@react-pdf/renderer';
 import { SafeRecipe } from '@/app/types';
-import { styles } from './recipeBookStyles';
+import { getStyles } from './recipeBookStyles';
 import {
     calculateLayoutParameters,
     chunkArray,
     parseFormattedText,
     RecipeBookConfig,
 } from '@/app/utils/recipeBookUtils';
+import { usePDFLib } from './PDFLibContext';
 
 interface RecipePageProps {
     recipe: SafeRecipe;
@@ -29,6 +29,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     labels,
     config,
 }) => {
+    const { Page, View, Image, Text, StyleSheet } = usePDFLib();
+    const styles = getStyles(StyleSheet);
+
     // Construct secure proxied image URL.
     let proxiedImageSrc = null;
     if (recipe.imageSrc) {
@@ -141,7 +144,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             <Text style={styles.recipeTitle}>{recipe.title}</Text>
             {recipe.description && (
                 <Text style={styles.recipeDesc}>
-                    {parseFormattedText(recipe.description)}
+                    {parseFormattedText(recipe.description, Text)}
                 </Text>
             )}
 
@@ -185,7 +188,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             >
                                 <Text style={styles.bulletPoint}>•</Text>
                                 <Text style={styles.ingredientText}>
-                                    {parseFormattedText(ing)}
+                                    {parseFormattedText(ing, Text)}
                                 </Text>
                             </View>
                         ))}
@@ -219,7 +222,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             >
                                 <Text style={styles.stepNum}>{i + 1}.</Text>
                                 <Text style={styles.stepText}>
-                                    {parseFormattedText(step)}
+                                    {parseFormattedText(step, Text)}
                                 </Text>
                             </View>
                         ))}

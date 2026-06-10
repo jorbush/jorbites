@@ -1,7 +1,7 @@
 import React from 'react';
-import { Page, View, Image, Text } from '@react-pdf/renderer';
-import { styles } from './recipeBookStyles';
+import { getStyles } from './recipeBookStyles';
 import { RecipeBookConfig } from '@/app/utils/recipeBookUtils';
+import { usePDFLib } from './PDFLibContext';
 
 interface RecipeBookCoverProps {
     userName: string;
@@ -25,6 +25,9 @@ export const RecipeBookCover: React.FC<RecipeBookCoverProps> = ({
     labels,
     config,
 }) => {
+    const { Page, View, Image, Text, StyleSheet } = usePDFLib();
+    const styles = getStyles(StyleSheet);
+
     const showUserImage = config ? config.displayUserImage : true;
 
     // Construct secure proxied user image URL if available

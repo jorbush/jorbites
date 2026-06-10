@@ -1,63 +1,14 @@
-import { Document, Font } from '@react-pdf/renderer';
+import React, { useMemo } from 'react';
+import type * as ReactPDF from '@react-pdf/renderer';
 import { SafeRecipe } from '@/app/types';
 import { RecipeBookCover } from './RecipeBookCover';
 import { RecipeBookTOC } from './RecipeBookTOC';
 import { RecipePage } from './RecipePage';
 import { RecipeBookConfig } from '@/app/utils/recipeBookUtils';
-
-// Register Montserrat and Playfair Display Font weights from Google Fonts gstatic CDN
-Font.register({
-    family: 'Montserrat',
-    fonts: [
-        {
-            src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aX8.ttf',
-            fontWeight: 400,
-        },
-        {
-            src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCu173w5aX8.ttf',
-            fontWeight: 600,
-        },
-        {
-            src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM73w5aX8.ttf',
-            fontWeight: 700,
-        },
-        {
-            src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCvr73w5aX8.ttf',
-            fontWeight: 800,
-        },
-        {
-            src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUFjIg1_i6t8kCHKm459Wx7xQYXK0vOoz6jq6R9aX8.ttf',
-            fontWeight: 400,
-            fontStyle: 'italic',
-        },
-        {
-            src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUFjIg1_i6t8kCHKm459Wx7xQYXK0vOoz6jq0N6aX8.ttf',
-            fontWeight: 700,
-            fontStyle: 'italic',
-        },
-    ],
-});
-
-Font.register({
-    family: 'Playfair Display',
-    fonts: [
-        {
-            src: 'https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvXDXbtY.ttf',
-            fontWeight: 400,
-        },
-        {
-            src: 'https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKeiunDXbtY.ttf',
-            fontWeight: 700,
-        },
-    ],
-});
-
-Font.registerEmojiSource({
-    format: 'png',
-    url: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/72x72/',
-});
+import { PDFLibProvider } from './PDFLibContext';
 
 interface RecipeBookPDFProps {
+    pdfRenderer: typeof ReactPDF;
     recipes: SafeRecipe[];
     userName: string;
     userImage?: string | null;
@@ -81,6 +32,7 @@ interface RecipeBookPDFProps {
 }
 
 export const RecipeBookPDF: React.FC<RecipeBookPDFProps> = ({
+    pdfRenderer,
     recipes,
     userName,
     userImage,
@@ -88,37 +40,95 @@ export const RecipeBookPDF: React.FC<RecipeBookPDFProps> = ({
     labels,
     config,
 }) => {
+    const { Document, Font } = pdfRenderer;
+
+    useMemo(() => {
+        // Register Montserrat and Playfair Display Font weights from Google Fonts gstatic CDN
+        Font.register({
+            family: 'Montserrat',
+            fonts: [
+                {
+                    src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aX8.ttf',
+                    fontWeight: 400,
+                },
+                {
+                    src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCu173w5aX8.ttf',
+                    fontWeight: 600,
+                },
+                {
+                    src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM73w5aX8.ttf',
+                    fontWeight: 700,
+                },
+                {
+                    src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCvr73w5aX8.ttf',
+                    fontWeight: 800,
+                },
+                {
+                    src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUFjIg1_i6t8kCHKm459Wx7xQYXK0vOoz6jq6R9aX8.ttf',
+                    fontWeight: 400,
+                    fontStyle: 'italic',
+                },
+                {
+                    src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUFjIg1_i6t8kCHKm459Wx7xQYXK0vOoz6jq0N6aX8.ttf',
+                    fontWeight: 700,
+                    fontStyle: 'italic',
+                },
+            ],
+        });
+
+        Font.register({
+            family: 'Playfair Display',
+            fonts: [
+                {
+                    src: 'https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvXDXbtY.ttf',
+                    fontWeight: 400,
+                },
+                {
+                    src: 'https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKeiunDXbtY.ttf',
+                    fontWeight: 700,
+                },
+            ],
+        });
+
+        Font.registerEmojiSource({
+            format: 'png',
+            url: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/72x72/',
+        });
+    }, [Font]);
+
     return (
-        <Document>
-            {/* Page 1: Cover Page */}
-            <RecipeBookCover
-                userName={userName}
-                userImage={userImage}
-                logoUrl={logoUrl}
-                recipesCount={recipes.length}
-                labels={labels}
-                config={config}
-            />
-
-            {/* Page 2: Table of Contents */}
-            {recipes.length > 0 && (
-                <RecipeBookTOC
-                    recipes={recipes}
-                    labels={labels}
-                />
-            )}
-
-            {/* Recipe Pages (Page 3+) */}
-            {recipes.map((recipe, idx) => (
-                <RecipePage
-                    key={recipe.id}
-                    recipe={recipe}
-                    idx={idx}
+        <PDFLibProvider lib={pdfRenderer}>
+            <Document>
+                {/* Page 1: Cover Page */}
+                <RecipeBookCover
+                    userName={userName}
+                    userImage={userImage}
+                    logoUrl={logoUrl}
+                    recipesCount={recipes.length}
                     labels={labels}
                     config={config}
                 />
-            ))}
-        </Document>
+
+                {/* Page 2: Table of Contents */}
+                {recipes.length > 0 && (
+                    <RecipeBookTOC
+                        recipes={recipes}
+                        labels={labels}
+                    />
+                )}
+
+                {/* Recipe Pages (Page 3+) */}
+                {recipes.map((recipe, idx) => (
+                    <RecipePage
+                        key={recipe.id}
+                        recipe={recipe}
+                        idx={idx}
+                        labels={labels}
+                        config={config}
+                    />
+                ))}
+            </Document>
+        </PDFLibProvider>
     );
 };
 export default RecipeBookPDF;
