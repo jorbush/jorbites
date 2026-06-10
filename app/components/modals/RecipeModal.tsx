@@ -2,9 +2,11 @@
 
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
-import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import axios from 'axios';
+import useSWR from 'swr';
+import { axiosFetcher } from '@/app/utils/fetcher';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -38,11 +40,15 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const [numIngredients, setNumIngredients] = useState(1);
     const [numSteps, setNumSteps] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
-    const [isLoadingDraft, setIsLoadingDraft] = useState(false);
     const hasLoadedDraft = useRef(false);
     const hasLoadedEditData = useRef(false);
-    const currentUserRef = useRef(currentUser);
-    currentUserRef.current = currentUser;
+    const currentUserRef = useRef<SafeUser | null>(null);
+    currentUserRef.current = currentUser || null;
+    const prevQuestDataRef = useRef<any>(null);
+    const prevCoCooksDataRef = useRef<any>(null);
+    const prevLinkedRecipesDataRef = useRef<any>(null);
+    const prevDraftDataRef = useRef<any>(null);
+    const hasLoadedDraftReset = useRef(false);
     const [selectedCoCooks, setSelectedCoCooks] = useState<any[]>([]);
     const [selectedLinkedRecipes, setSelectedLinkedRecipes] = useState<any[]>(
         []
@@ -239,74 +245,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
     };
 
-    const loadDraft = useCallback(async () => {
-        setIsLoading(true);
-        setIsLoadingDraft(true);
-        try {
-            const { data } = await axios.get(
-                `${window.location.origin}/api/draft`
-            );
-            if (!data) {
-                return;
-            }
-            const { currentStep, ...formData } = data;
-            reset(formData);
-            if (currentStep !== undefined) {
-                // Validate and clamp the currentStep to valid range
-                setStep(Math.max(0, Math.min(currentStep, STEPS_LENGTH - 1)));
-            }
-            setNumIngredients(data.ingredients?.length || 1);
-            setNumSteps(data.steps?.length || 1);
-            const ingredients = formData.ingredients || [];
-            ingredients.forEach((ingredient: string, index: number) => {
-                setValue(`ingredient-${index}`, ingredient);
-            });
-            const steps = formData.steps || [];
-            steps.forEach((step: string, index: number) => {
-                setValue(`step-${index}`, step);
-            });
-
-            if (formData.coCooksIds?.length > 0) {
-                try {
-                    const cooksResponse = await axios.get(
-                        `/api/users/multiple?ids=${formData.coCooksIds.join(',')}`
-                    );
-                    setSelectedCoCooks(cooksResponse.data);
-                } catch (error) {
-                    console.error('Failed to load co-cooks', error);
-                }
-            }
-
-            if (formData.linkedRecipeIds?.length > 0) {
-                try {
-                    const recipesResponse = await axios.get(
-                        `/api/recipes/multiple?ids=${formData.linkedRecipeIds.join(',')}`
-                    );
-                    setSelectedLinkedRecipes(recipesResponse.data);
-                } catch (error) {
-                    console.error('Failed to load linked recipes', error);
-                }
-            }
-
-            if (formData.questId) {
-                try {
-                    const questResponse = await axios.get(
-                        `/api/quest/${formData.questId}`
-                    );
-                    setSelectedQuest(questResponse.data);
-                } catch (error) {
-                    console.error('Failed to load quest', error);
-                }
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error(t('error_loading_draft') ?? 'Failed to load draft.');
-        } finally {
-            setIsLoading(false);
-            setIsLoadingDraft(false);
-        }
-    }, [reset, setNumIngredients, setNumSteps, setValue, t]);
-
     const deleteDraft = async () => {
         try {
             await axios.delete(`${window.location.origin}/api/draft`);
@@ -315,6 +253,95 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             toast.error(t('error_deleting_draft') ?? 'Failed to delete draft.');
         }
     };
+
+    const questId = watch('questId');
+    const coCooksIds = watch('coCooksIds') || [];
+    const linkedRecipeIds = watch('linkedRecipeIds') || [];
+
+    const { data: questData } = useSWR(
+        recipeModal.isOpen && questId ? `/api/quest/${questId}` : null,
+        axiosFetcher
+    );
+
+    const { data: coCooksData } = useSWR(
+        recipeModal.isOpen && coCooksIds.length > 0
+            ? `/api/users/multiple?ids=${coCooksIds.join(',')}`
+            : null,
+        axiosFetcher
+    );
+
+    const { data: linkedRecipesData } = useSWR(
+        recipeModal.isOpen && linkedRecipeIds.length > 0
+            ? `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
+            : null,
+        axiosFetcher
+    );
+
+    const { data: draftData, isLoading: isDraftLoading } = useSWR(
+        recipeModal.isOpen && !recipeModal.isEditMode && currentUserRef.current
+            ? `/api/draft`
+            : null,
+        axiosFetcher,
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+            shouldRetryOnError: false,
+        }
+    );
+
+    const isLoadingDraft = isDraftLoading;
+
+    if (questData && questData !== prevQuestDataRef.current) {
+        prevQuestDataRef.current = questData;
+        setSelectedQuest(questData);
+    }
+
+    if (coCooksData && coCooksData !== prevCoCooksDataRef.current) {
+        prevCoCooksDataRef.current = coCooksData;
+        setSelectedCoCooks(coCooksData);
+    }
+
+    if (
+        linkedRecipesData &&
+        linkedRecipesData !== prevLinkedRecipesDataRef.current
+    ) {
+        prevLinkedRecipesDataRef.current = linkedRecipesData;
+        setSelectedLinkedRecipes(linkedRecipesData);
+    }
+
+    if (
+        draftData &&
+        draftData !== prevDraftDataRef.current &&
+        !recipeModal.isEditMode &&
+        !hasLoadedDraft.current
+    ) {
+        prevDraftDataRef.current = draftData;
+        hasLoadedDraft.current = true;
+        const { currentStep } = draftData;
+        if (currentStep !== undefined) {
+            setStep(Math.max(0, Math.min(currentStep, STEPS_LENGTH - 1)));
+        }
+        setNumIngredients(draftData.ingredients?.length || 1);
+        setNumSteps(draftData.steps?.length || 1);
+    }
+
+    useEffect(() => {
+        if (draftData && !recipeModal.isEditMode && hasLoadedDraft.current) {
+            if (!hasLoadedDraftReset.current) {
+                hasLoadedDraftReset.current = true;
+                const { currentStep: _, ...formData } = draftData;
+                reset(formData);
+                const ingredients = formData.ingredients || [];
+                ingredients.forEach((ingredient: string, index: number) => {
+                    setValue(`ingredient-${index}`, ingredient);
+                });
+                const steps = formData.steps || [];
+                steps.forEach((step: string, index: number) => {
+                    setValue(`step-${index}`, step);
+                });
+            }
+        }
+    }, [draftData, recipeModal.isEditMode, reset, setValue]);
 
     // Synchronous state adjustments during render when isOpen or editRecipeData changes
     const prevIsOpenRef = useRef(recipeModal.isOpen);
@@ -341,6 +368,11 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             setStepsInputMode('list');
             hasLoadedDraft.current = false;
             hasLoadedEditData.current = false;
+            hasLoadedDraftReset.current = false;
+            prevQuestDataRef.current = null;
+            prevCoCooksDataRef.current = null;
+            prevLinkedRecipesDataRef.current = null;
+            prevDraftDataRef.current = null;
         } else {
             if (recipeModal.isEditMode && recipeModal.editRecipeData) {
                 const editData = recipeModal.editRecipeData;
@@ -380,15 +412,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             });
         } else {
             if (recipeModal.questId) {
-                axios
-                    .get(`/api/quest/${recipeModal.questId}`)
-                    .then((response) => {
-                        setSelectedQuest(response.data);
-                        setValue('questId', response.data.id);
-                    })
-                    .catch((error) => {
-                        console.error('Failed to load pending quest', error);
-                    });
+                setValue('questId', recipeModal.questId);
             }
 
             if (
@@ -427,26 +451,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 editData.steps.forEach((step: string, index: number) => {
                     setValue(`step-${index}`, step);
                 });
-
-                if (editData.questId) {
-                    axios
-                        .get(`/api/quest/${editData.questId}`)
-                        .then((questResponse) => {
-                            setSelectedQuest(questResponse.data);
-                        })
-                        .catch((error) => {
-                            console.error('Failed to load quest', error);
-                        });
-                }
-            } else if (
-                !recipeModal.isEditMode &&
-                currentUserRef.current &&
-                !hasLoadedDraft.current
-            ) {
-                hasLoadedDraft.current = true;
-                loadDraft().then(() => {
-                    console.log('Draft loaded');
-                });
             }
         }
     }, [
@@ -454,7 +458,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         recipeModal.isEditMode,
         recipeModal.editRecipeData,
         recipeModal.questId,
-        loadDraft,
         reset,
         setValue,
     ]);

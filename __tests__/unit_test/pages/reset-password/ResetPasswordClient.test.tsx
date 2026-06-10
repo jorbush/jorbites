@@ -3,6 +3,15 @@ import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ResetPasswordClient from '@/app/reset-password/[token]/ResetPasswordClient';
 import axios from 'axios';
+import { SWRConfig } from 'swr';
+
+const renderWithSWR = (ui: React.ReactElement) => {
+    return render(
+        <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+            {ui}
+        </SWRConfig>
+    );
+};
 
 vi.mock('axios');
 vi.mock('react-hot-toast', () => ({
@@ -39,7 +48,7 @@ describe('ResetPasswordClient', () => {
     });
 
     it('renders reset password form correctly', async () => {
-        const { getByText, getByLabelText } = render(
+        const { getByText, getByLabelText } = renderWithSWR(
             <ResetPasswordClient token={mockToken} />
         );
 
@@ -52,7 +61,7 @@ describe('ResetPasswordClient', () => {
     });
 
     it('validates token on mount', async () => {
-        render(<ResetPasswordClient token={mockToken} />);
+        renderWithSWR(<ResetPasswordClient token={mockToken} />);
 
         await waitFor(() => {
             expect(axios.get).toHaveBeenCalledWith(
@@ -65,7 +74,7 @@ describe('ResetPasswordClient', () => {
         // Mock invalid token response
         vi.mocked(axios.get).mockResolvedValue({ data: { valid: false } });
 
-        const { getByText } = render(
+        const { getByText } = renderWithSWR(
             <ResetPasswordClient token="invalid-token" />
         );
 
@@ -81,7 +90,7 @@ describe('ResetPasswordClient', () => {
         vi.mocked(axios.get).mockRejectedValue(new Error('API Error'));
         const toast = await import('react-hot-toast');
 
-        render(<ResetPasswordClient token="error-token" />);
+        renderWithSWR(<ResetPasswordClient token="error-token" />);
 
         await waitFor(() => {
             expect(toast.toast.error).toHaveBeenCalledWith(
@@ -96,7 +105,7 @@ describe('ResetPasswordClient', () => {
         });
         const toast = await import('react-hot-toast');
 
-        const { getByText, getByLabelText } = render(
+        const { getByText, getByLabelText } = renderWithSWR(
             <ResetPasswordClient token={mockToken} />
         );
 
@@ -126,7 +135,7 @@ describe('ResetPasswordClient', () => {
             () => new Promise((resolve) => setTimeout(() => resolve({}), 100))
         );
 
-        const { getByText, getByLabelText } = render(
+        const { getByText, getByLabelText } = renderWithSWR(
             <ResetPasswordClient token={mockToken} />
         );
 

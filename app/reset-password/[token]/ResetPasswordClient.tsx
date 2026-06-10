@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
@@ -10,6 +10,8 @@ import Heading from '@/app/components/navigation/Heading';
 import Input from '@/app/components/inputs/Input';
 import Button from '@/app/components/buttons/Button';
 import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
+import { axiosFetcher } from '@/app/utils/fetcher';
 
 interface ResetPasswordClientProps {
     token: string;
@@ -19,8 +21,7 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
     const { push } = useRouter() || {};
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
-    const [isValid, setIsValid] = useState(true);
-    const effectRan = useRef(false);
+    const toastShownRef = useRef(false);
 
     const {
         register,
@@ -33,34 +34,36 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
         },
     });
 
-    useEffect(() => {
-        if (effectRan.current) return;
-
-        const handleInvalidToken = () => {
-            setIsValid(false);
-            toast.error(
-                t('invalid_or_expired_link') || 'Invalid or expired link'
-            );
-        };
-
-        const validateToken = async () => {
-            try {
-                const response = await axios.get(
-                    `/api/password-reset/validate/${token}`
-                );
-                if (!response.data.valid) {
-                    handleInvalidToken();
+    const { data: validationData, error: validationError } = useSWR(
+        token ? `/api/password-reset/validate/${token}` : null,
+        axiosFetcher,
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+            shouldRetryOnError: false,
+            onSuccess: (data) => {
+                if (!data.valid && !toastShownRef.current) {
+                    toast.error(
+                        t('invalid_or_expired_link') ||
+                            'Invalid or expired link'
+                    );
+                    toastShownRef.current = true;
                 }
-            } catch (error) {
-                handleInvalidToken();
-                console.error(error);
-            }
-        };
+            },
+            onError: () => {
+                if (!toastShownRef.current) {
+                    toast.error(
+                        t('invalid_or_expired_link') ||
+                            'Invalid or expired link'
+                    );
+                    toastShownRef.current = true;
+                }
+            },
+        }
+    );
 
-        validateToken();
-
-        effectRan.current = true;
-    }, [token, t]);
+    const isValid =
+        !validationError && !(validationData && !validationData.valid);
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
         if (data.password !== data.confirmPassword) {

@@ -2,12 +2,10 @@
 
 import Container from '@/app/components/utils/Container';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
-import {
-    Event,
-    categorizeEvents,
-    sortEventsByDate,
-} from '@/app/utils/markdownUtils';
+import { useMemo } from 'react';
+import useSWR from 'swr';
+import { fetcher } from '@/app/utils/fetcher';
+import { categorizeEvents, sortEventsByDate } from '@/app/utils/markdownUtils';
 import EventsList from '@/app/components/events/EventsList';
 import { EventCardSkeleton } from '@/app/components/events/EventCard';
 import useTheme from '@/app/hooks/useTheme';
@@ -23,52 +21,33 @@ interface EventsClientProps {
 
 const EventsClient: React.FC<EventsClientProps> = ({ weeklyChallenge }) => {
     const { t, i18n } = useTranslation();
-    const [events, setEvents] = useState<{
-        current: Event[];
-        upcoming: Event[];
-        past: Event[];
-        permanent: Event[];
-    }>({
-        current: [],
-        upcoming: [],
-        past: [],
-        permanent: [],
-    });
-    const [loading, setLoading] = useState(true);
 
     useTheme();
 
-    useEffect(() => {
-        const loadEvents = async () => {
-            setLoading(true);
+    const { data: eventsData, isLoading } = useSWR(
+        `/api/events?lang=${i18n.language || 'en'}`,
+        fetcher
+    );
 
-            try {
-                // In a client component, we need to fetch the events data
-                const response = await fetch(
-                    `/api/events?lang=${i18n.language || 'en'}`
-                );
-                if (!response.ok) throw new Error('Failed to fetch events');
-
-                const eventsData = await response.json();
-
-                // Categorize and sort events
-                const categorized = categorizeEvents(eventsData);
-
-                setEvents({
-                    current: sortEventsByDate(categorized.current),
-                    upcoming: sortEventsByDate(categorized.upcoming, true), // true for ascending (soonest first)
-                    past: sortEventsByDate(categorized.past),
-                    permanent: categorized.permanent,
-                });
-            } catch (error) {
-                console.error('Error loading events:', error);
-            } finally {
-                setLoading(false);
-            }
+    const events = useMemo(() => {
+        if (!eventsData) {
+            return {
+                current: [],
+                upcoming: [],
+                past: [],
+                permanent: [],
+            };
+        }
+        const categorized = categorizeEvents(eventsData);
+        return {
+            current: sortEventsByDate(categorized.current),
+            upcoming: sortEventsByDate(categorized.upcoming, true), // true for ascending (soonest first)
+            past: sortEventsByDate(categorized.past),
+            permanent: categorized.permanent,
         };
+    }, [eventsData]);
 
-        loadEvents();
-    }, [i18n.language]);
+    const loading = isLoading;
 
     return (
         <Container>

@@ -15,8 +15,8 @@ import {
     MdLock,
 } from 'react-icons/md';
 import { FaMoneyBillWave } from 'react-icons/fa';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import useSWR from 'swr';
+import { axiosFetcher } from '@/app/utils/fetcher';
 
 interface WorkshopInfoProps {
     host: SafeUser;
@@ -35,6 +35,8 @@ interface WorkshopInfoProps {
     whitelistedUserIds: string[];
 }
 
+const EMPTY_ARRAY: any[] = [];
+
 const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
     host,
     description,
@@ -48,7 +50,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
     previousSteps,
     currentUser,
     id: _id,
-    participants = [],
+    participants = EMPTY_ARRAY,
     whitelistedUserIds,
 }) => {
     const { t, i18n } = useTranslation();
@@ -56,24 +58,14 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
 
-    const [whitelistedUsers, setWhitelistedUsers] = useState<any[]>([]);
+    const { data: whitelistedUsersData } = useSWR<any[]>(
+        whitelistedUserIds.length > 0
+            ? `/api/users/multiple?ids=${whitelistedUserIds.join(',')}`
+            : null,
+        axiosFetcher
+    );
 
-    useEffect(() => {
-        const fetchWhitelistedUsers = async () => {
-            if (whitelistedUserIds.length > 0) {
-                try {
-                    const { data } = await axios.get(
-                        `/api/users/multiple?ids=${whitelistedUserIds.join(',')}`
-                    );
-                    setWhitelistedUsers(data);
-                } catch (error) {
-                    console.error('Failed to load whitelisted users', error);
-                }
-            }
-        };
-
-        fetchWhitelistedUsers();
-    }, [whitelistedUserIds]);
+    const whitelistedUsers = whitelistedUsersData || [];
 
     const workshopDate = new Date(date);
     const formatDate = (date: Date) => {

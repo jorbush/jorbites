@@ -2,7 +2,9 @@
 
 import Container from '@/app/components/utils/Container';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
+import useSWR from 'swr';
+import { fetcher } from '@/app/utils/fetcher';
 import { Event } from '@/app/utils/markdownUtils';
 import EventDetail, {
     EventDetailSkeleton,
@@ -17,44 +19,24 @@ interface EventDetailClientProps {
 const EventDetailClient: React.FC<EventDetailClientProps> = ({ slug }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
-    const [event, setEvent] = useState<Event | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
     // Initialize theme
     useTheme();
 
-    useEffect(() => {
-        const loadEvent = async () => {
-            setLoading(true);
-            setError(null);
+    const {
+        data: event,
+        error: eventError,
+        isLoading: loading,
+    } = useSWR<Event>(
+        `/api/events/${slug}?lang=${i18n.language || 'en'}`,
+        fetcher
+    );
 
-            try {
-                // In a client component, we need to fetch the event data
-                const response = await fetch(
-                    `/api/events/${slug}?lang=${i18n.language || 'en'}`
-                );
-
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        setError('Event not found');
-                    } else {
-                        throw new Error('Failed to fetch event');
-                    }
-                } else {
-                    const eventData = await response.json();
-                    setEvent(eventData);
-                }
-            } catch (error) {
-                console.error('Error loading event:', error);
-                setError('Failed to load event');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadEvent();
-    }, [slug, i18n.language]);
+    const error = useMemo(() => {
+        if (!eventError) return null;
+        if ((eventError as any).status === 404) return 'Event not found';
+        return 'Failed to load event';
+    }, [eventError]);
 
     return (
         <Container>

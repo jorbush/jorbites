@@ -2,7 +2,6 @@
 
 import Container from '@/app/components/utils/Container';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Blog } from '@/app/utils/markdownUtils';
 import { formatDate } from '@/app/utils/date-utils';
@@ -12,6 +11,12 @@ import ActionCard from '@/app/components/shared/ActionCard';
 import Pagination from '@/app/components/navigation/Pagination';
 import { CONTACT_EMAIL } from '@/app/utils/constants';
 import { SafeUser } from '@/app/types';
+import useSWR from 'swr';
+import { fetcher } from '@/app/utils/fetcher';
+
+const handleContactEmail = () => {
+    window.location.href = `mailto:${CONTACT_EMAIL}`;
+};
 
 interface BlogsClientProps {
     currentUser?: SafeUser | null;
@@ -34,52 +39,27 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
         categoryParam === 'releases' ? 'releases' : 'general';
     const currentPage = pageParam ? parseInt(pageParam) : initialPage;
 
-    const [mainBlogs, setMainBlogs] = useState<Blog[]>([]);
-    const [sidebarReleases, setSidebarReleases] = useState<Blog[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [totalPages, setTotalPages] = useState(1);
-
     useTheme();
 
-    useEffect(() => {
-        const loadBlogs = async () => {
-            setLoading(true);
+    const { data: mainData, isLoading: mainLoading } = useSWR<{
+        blogs: Blog[];
+        totalPages: number;
+    }>(
+        `/api/blogs?lang=${i18n.language || 'en'}&page=${currentPage}&pageSize=12&category=${currentCategory}`,
+        fetcher
+    );
 
-            try {
-                // 1. Fetch Main Content (based on currentCategory)
-                const mainResponse = await fetch(
-                    `/api/blogs?lang=${i18n.language || 'en'}&page=${currentPage}&pageSize=12&category=${currentCategory}`
-                );
+    const { data: sidebarData, isLoading: sidebarLoading } = useSWR<{
+        blogs: Blog[];
+    }>(
+        `/api/blogs?lang=${i18n.language || 'en'}&page=1&pageSize=5&category=releases`,
+        fetcher
+    );
 
-                // 2. Fetch Sidebar Releases (always 'releases', limited to 5)
-                // We always show the "What's New" sidebar regardless of main view,
-                // effectively acting as a "Recent News" feed.
-                const sidebarResponse = await fetch(
-                    `/api/blogs?lang=${i18n.language || 'en'}&page=1&pageSize=5&category=releases`
-                );
-
-                if (!mainResponse.ok || !sidebarResponse.ok)
-                    throw new Error('Failed to fetch blogs');
-
-                const mainData = await mainResponse.json();
-                const sidebarData = await sidebarResponse.json();
-
-                setMainBlogs(mainData.blogs);
-                setTotalPages(mainData.totalPages);
-                setSidebarReleases(sidebarData.blogs);
-            } catch (error) {
-                console.error('Error loading blogs:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadBlogs();
-    }, [i18n.language, currentPage, currentCategory]);
-
-    const handleContactEmail = () => {
-        window.location.href = `mailto:${CONTACT_EMAIL}`;
-    };
+    const mainBlogs = mainData?.blogs || [];
+    const totalPages = mainData?.totalPages || 1;
+    const sidebarReleases = sidebarData?.blogs || [];
+    const loading = mainLoading || sidebarLoading;
 
     const handleViewAllReleases = () => {
         push('/blog?category=releases');

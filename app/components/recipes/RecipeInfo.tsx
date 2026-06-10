@@ -11,18 +11,13 @@ import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import getUserDisplayName from '@/app/utils/responsive';
 import VerificationBadge from '@/app/components/VerificationBadge';
-import {
-    useEffect,
-    useState,
-    useMemo,
-    useRef,
-    useSyncExternalStore,
-} from 'react';
+import { useSyncExternalStore } from 'react';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import YouTubePreview from '@/app/components/utils/YouTubePreview';
 import { TranslateableRecipeContent } from '@/app/components/translation/TranslateableRecipeContent';
 import { formatText } from '@/app/utils/textFormatting';
-import axios from 'axios';
+import useSWR from 'swr';
+import { axiosFetcher } from '@/app/utils/fetcher';
 import StarRating from '@/app/components/utils/StarRating';
 
 const subscribe = () => () => {};
@@ -56,6 +51,8 @@ interface RecipeInfoProps {
     ratingCount?: number;
 }
 
+const EMPTY_ARRAY: any[] = [];
+
 const RecipeInfo: React.FC<RecipeInfoProps> = ({
     user,
     description,
@@ -69,8 +66,8 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     likes,
     id,
     currentUser,
-    coCooksIds = [],
-    linkedRecipeIds = [],
+    coCooksIds = EMPTY_ARRAY,
+    linkedRecipeIds = EMPTY_ARRAY,
     youtubeUrl,
     averageRating = 0,
     ratingCount = 0,
@@ -84,73 +81,25 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
         () => true,
         () => false
     );
-    const [coCooks, setCoCooks] = useState<any[]>([]);
-    const [linkedRecipes, setLinkedRecipes] = useState<any[]>([]);
-    const [isLoadingRelatedData, setIsLoadingRelatedData] = useState(true);
 
-    // Use stable string representations - memoized to prevent recalculation
-    const coCooksIdsStr = useMemo(() => coCooksIds.join(','), [coCooksIds]);
-    const linkedRecipeIdsStr = useMemo(
-        () => linkedRecipeIds.join(','),
-        [linkedRecipeIds]
+    const { data: coCooksData, isLoading: isCoCooksLoading } = useSWR<any[]>(
+        coCooksIds.length > 0
+            ? `/api/users/multiple?ids=${coCooksIds.join(',')}`
+            : null,
+        axiosFetcher
     );
 
-    // Adjust isLoadingRelatedData during render when props change
-    const prevCoCooksIdsRef = useRef(coCooksIdsStr);
-    const prevLinkedRecipeIdsRef = useRef(linkedRecipeIdsStr);
+    const { data: linkedRecipesData, isLoading: isLinkedRecipesLoading } =
+        useSWR<any[]>(
+            linkedRecipeIds.length > 0
+                ? `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
+                : null,
+            axiosFetcher
+        );
 
-    if (
-        coCooksIdsStr !== prevCoCooksIdsRef.current ||
-        linkedRecipeIdsStr !== prevLinkedRecipeIdsRef.current
-    ) {
-        prevCoCooksIdsRef.current = coCooksIdsStr;
-        prevLinkedRecipeIdsRef.current = linkedRecipeIdsStr;
-        setIsLoadingRelatedData(true);
-    }
-
-    // Single useEffect to handle fetching related data
-    useEffect(() => {
-        const fetchRelatedData = async () => {
-            if (coCooksIdsStr) {
-                const ids = coCooksIdsStr.split(',').filter(Boolean);
-                if (ids.length > 0) {
-                    try {
-                        const { data } = await axios.get(
-                            `/api/users/multiple?ids=${ids.join(',')}`
-                        );
-                        setCoCooks(data);
-                    } catch (error) {
-                        console.error('Failed to load co-cooks', error);
-                    }
-                } else {
-                    setCoCooks([]);
-                }
-            } else {
-                setCoCooks([]);
-            }
-
-            if (linkedRecipeIdsStr) {
-                const ids = linkedRecipeIdsStr.split(',').filter(Boolean);
-                if (ids.length > 0) {
-                    try {
-                        const { data } = await axios.get(
-                            `/api/recipes/multiple?ids=${ids.join(',')}`
-                        );
-                        setLinkedRecipes(data);
-                    } catch (error) {
-                        console.error('Failed to load linked recipes', error);
-                    }
-                } else {
-                    setLinkedRecipes([]);
-                }
-            } else {
-                setLinkedRecipes([]);
-            }
-            setIsLoadingRelatedData(false);
-        };
-
-        fetchRelatedData();
-    }, [coCooksIdsStr, linkedRecipeIdsStr]);
+    const coCooks = coCooksData || [];
+    const linkedRecipes = linkedRecipesData || [];
+    const isLoadingRelatedData = isCoCooksLoading || isLinkedRecipesLoading;
 
     return (
         <div className="col-span-4 flex flex-col gap-8 pr-2 pl-2">

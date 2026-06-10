@@ -2,9 +2,11 @@
 
 import useWorkshopModal from '@/app/hooks/useWorkshopModal';
 import Modal from '@/app/components/modals/Modal';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import axios from 'axios';
+import useSWR from 'swr';
+import { axiosFetcher } from '@/app/utils/fetcher';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -72,6 +74,38 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
     const isPrivate = watch('isPrivate');
     const isRecurrent = watch('isRecurrent');
     const imageSrc = watch('imageSrc');
+    const whitelistedUserIds = watch('whitelistedUserIds') || [];
+
+    const { data: whitelistedUsersData } = useSWR(
+        workshopModal.isOpen && isPrivate && whitelistedUserIds.length > 0
+            ? `/api/users/multiple?ids=${whitelistedUserIds.join(',')}`
+            : null,
+        axiosFetcher
+    );
+
+    const prevWhitelistedUsersDataRef = useRef<any>(null);
+    const prevIsPrivateRef = useRef<boolean>(isPrivate);
+    const currentLength = whitelistedUserIds?.length || 0;
+    const prevWhitelistedUserIdsLengthRef = useRef<number>(currentLength);
+
+    if (
+        whitelistedUsersData &&
+        whitelistedUsersData !== prevWhitelistedUsersDataRef.current
+    ) {
+        prevWhitelistedUsersDataRef.current = whitelistedUsersData;
+        setSelectedUsers(whitelistedUsersData);
+    }
+
+    if (
+        isPrivate !== prevIsPrivateRef.current ||
+        currentLength !== prevWhitelistedUserIdsLengthRef.current
+    ) {
+        prevIsPrivateRef.current = isPrivate;
+        prevWhitelistedUserIdsLengthRef.current = currentLength;
+        if (!isPrivate || currentLength === 0) {
+            setSelectedUsers([]);
+        }
+    }
 
     useEffect(() => {
         const loadEditData = async () => {
@@ -101,21 +135,6 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 data.previousSteps.forEach((step: string, index: number) => {
                     setValue(`previousStep-${index}`, step);
                 });
-
-                // Load whitelisted users if private workshop
-                if (data.isPrivate && data.whitelistedUserIds.length > 0) {
-                    try {
-                        const response = await axios.get(
-                            `/api/users/multiple?ids=${data.whitelistedUserIds.join(',')}`
-                        );
-                        setSelectedUsers(response.data);
-                    } catch (error) {
-                        console.error(
-                            'Failed to load whitelisted users',
-                            error
-                        );
-                    }
-                }
             }
         };
 
@@ -215,7 +234,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             toast.error(t('max_ingredients_reached'));
             return;
         }
-        setNumIngredients(numIngredients + 1);
+        setNumIngredients((prev) => prev + 1);
     };
 
     const addPreviousStep = () => {
@@ -223,7 +242,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             toast.error(t('max_previous_steps_reached'));
             return;
         }
-        setNumPreviousSteps(numPreviousSteps + 1);
+        setNumPreviousSteps((prev) => prev + 1);
     };
 
     const addWhitelistedUser = (user: any) => {
