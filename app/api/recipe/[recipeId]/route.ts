@@ -315,9 +315,9 @@ export async function PATCH(
             imagesToDelete.push(recipe.imageSrc);
         }
         const oldExtraImages = recipe.extraImages || [];
-        const newExtraImages = extraImages;
+        const newExtraImagesSet = new Set(extraImages);
         for (const oldImage of oldExtraImages) {
-            if (!newExtraImages.includes(oldImage)) {
+            if (!newExtraImagesSet.has(oldImage)) {
                 imagesToDelete.push(oldImage);
             }
         }
