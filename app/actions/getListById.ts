@@ -15,6 +15,11 @@ interface IParams {
     listId?: string;
 }
 
+/**
+ * Validates if a string is a valid MongoDB ObjectId (24-character hex string)
+ */
+const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
+
 export default async function getListById(
     params: IParams
 ): Promise<
@@ -22,13 +27,17 @@ export default async function getListById(
     | NextResponse
     | null
 > {
+    const { listId } = params;
+
+    if (!listId) {
+        return null;
+    }
+
+    if (!isValidObjectId(listId)) {
+        return badRequest('Invalid ID format');
+    }
+
     try {
-        const { listId } = params;
-
-        if (!listId) {
-            return badRequest('Invalid ID');
-        }
-
         const list = await prisma.list.findUnique({
             where: { id: listId },
             include: {
@@ -90,7 +99,7 @@ export default async function getListById(
     } catch (error: any) {
         logger.error('getListById - error', {
             error: error.message,
-            listId: params.listId,
+            listId,
         });
         return internalServerError('Internal Error');
     }

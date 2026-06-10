@@ -40,19 +40,18 @@ const ListPage = async (props: { params: Promise<IParams> }) => {
     }
 
     if (listData instanceof NextResponse) {
-        const errorData = await listData.json();
-        const { code } = errorData;
+        const { status } = listData;
 
         let title = 'Error';
         let subtitle = 'An unexpected error occurred';
 
-        if (code === 'UNAUTHORIZED') {
+        if (status === 401) {
             title = 'Unauthorized';
             subtitle = 'This list is private';
-        } else if (code === 'NOT_FOUND') {
+        } else if (status === 404) {
             title = 'List not found';
             subtitle = 'It may have been deleted';
-        } else if (code === 'BAD_REQUEST') {
+        } else if (status === 400) {
             title = 'List not found';
             subtitle = 'Invalid ID';
         }
