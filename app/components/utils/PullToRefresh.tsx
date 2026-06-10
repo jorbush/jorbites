@@ -112,7 +112,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
                         opacity: Math.min(displayPullDistance / threshold, 1),
                     }}
                 >
-                    <div className="text-green-450 border-green-450 flex items-center justify-center rounded-full border bg-white p-3 shadow-lg dark:bg-black">
+                    <div className="text-green-450 border-green-450 flex items-center justify-center rounded-full border bg-white p-3 shadow-lg dark:bg-neutral-950">
                         <FiRefreshCw
                             size={24}
                             className={`text-green-450 ${refreshing ? 'animate-spin' : ''}`}

@@ -177,7 +177,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                                                     fill
                                                     className="object-cover"
                                                 />
-                                                <div className="absolute inset-0 bg-black opacity-0 transition-opacity group-hover:opacity-20" />
+                                                <div className="absolute inset-0 bg-neutral-950 opacity-0 transition-opacity group-hover:opacity-20" />
                                             </div>
                                         </Link>
                                     </Tooltip>
