@@ -42,8 +42,13 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const [isLoading, setIsLoading] = useState(false);
     const hasLoadedDraft = useRef(false);
     const hasLoadedEditData = useRef(false);
-    const currentUserRef = useRef(currentUser);
-    currentUserRef.current = currentUser;
+    const currentUserRef = useRef<SafeUser | null>(null);
+    currentUserRef.current = currentUser || null;
+    const prevQuestDataRef = useRef<any>(null);
+    const prevCoCooksDataRef = useRef<any>(null);
+    const prevLinkedRecipesDataRef = useRef<any>(null);
+    const prevDraftDataRef = useRef<any>(null);
+    const hasLoadedDraftReset = useRef(false);
     const [selectedCoCooks, setSelectedCoCooks] = useState<any[]>([]);
     const [selectedLinkedRecipes, setSelectedLinkedRecipes] = useState<any[]>(
         []
@@ -273,7 +278,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     );
 
     const { data: draftData, isLoading: isDraftLoading } = useSWR(
-        recipeModal.isOpen && !recipeModal.isEditMode && currentUser
+        recipeModal.isOpen && !recipeModal.isEditMode && currentUserRef.current
             ? `/api/draft`
             : null,
         axiosFetcher,
@@ -286,42 +291,55 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
 
     const isLoadingDraft = isDraftLoading;
 
-    useEffect(() => {
-        if (questData) {
-            setSelectedQuest(questData);
+    if (questData && questData !== prevQuestDataRef.current) {
+        prevQuestDataRef.current = questData;
+        setSelectedQuest(questData);
+    }
+
+    if (coCooksData && coCooksData !== prevCoCooksDataRef.current) {
+        prevCoCooksDataRef.current = coCooksData;
+        setSelectedCoCooks(coCooksData);
+    }
+
+    if (
+        linkedRecipesData &&
+        linkedRecipesData !== prevLinkedRecipesDataRef.current
+    ) {
+        prevLinkedRecipesDataRef.current = linkedRecipesData;
+        setSelectedLinkedRecipes(linkedRecipesData);
+    }
+
+    if (
+        draftData &&
+        draftData !== prevDraftDataRef.current &&
+        !recipeModal.isEditMode &&
+        !hasLoadedDraft.current
+    ) {
+        prevDraftDataRef.current = draftData;
+        hasLoadedDraft.current = true;
+        const { currentStep } = draftData;
+        if (currentStep !== undefined) {
+            setStep(Math.max(0, Math.min(currentStep, STEPS_LENGTH - 1)));
         }
-    }, [questData]);
+        setNumIngredients(draftData.ingredients?.length || 1);
+        setNumSteps(draftData.steps?.length || 1);
+    }
 
     useEffect(() => {
-        if (coCooksData) {
-            setSelectedCoCooks(coCooksData);
-        }
-    }, [coCooksData]);
-
-    useEffect(() => {
-        if (linkedRecipesData) {
-            setSelectedLinkedRecipes(linkedRecipesData);
-        }
-    }, [linkedRecipesData]);
-
-    useEffect(() => {
-        if (draftData && !recipeModal.isEditMode && !hasLoadedDraft.current) {
-            hasLoadedDraft.current = true;
-            const { currentStep, ...formData } = draftData;
-            reset(formData);
-            if (currentStep !== undefined) {
-                setStep(Math.max(0, Math.min(currentStep, STEPS_LENGTH - 1)));
+        if (draftData && !recipeModal.isEditMode && hasLoadedDraft.current) {
+            if (!hasLoadedDraftReset.current) {
+                hasLoadedDraftReset.current = true;
+                const { currentStep: _, ...formData } = draftData;
+                reset(formData);
+                const ingredients = formData.ingredients || [];
+                ingredients.forEach((ingredient: string, index: number) => {
+                    setValue(`ingredient-${index}`, ingredient);
+                });
+                const steps = formData.steps || [];
+                steps.forEach((step: string, index: number) => {
+                    setValue(`step-${index}`, step);
+                });
             }
-            setNumIngredients(draftData.ingredients?.length || 1);
-            setNumSteps(draftData.steps?.length || 1);
-            const ingredients = formData.ingredients || [];
-            ingredients.forEach((ingredient: string, index: number) => {
-                setValue(`ingredient-${index}`, ingredient);
-            });
-            const steps = formData.steps || [];
-            steps.forEach((step: string, index: number) => {
-                setValue(`step-${index}`, step);
-            });
         }
     }, [draftData, recipeModal.isEditMode, reset, setValue]);
 
@@ -350,6 +368,11 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             setStepsInputMode('list');
             hasLoadedDraft.current = false;
             hasLoadedEditData.current = false;
+            hasLoadedDraftReset.current = false;
+            prevQuestDataRef.current = null;
+            prevCoCooksDataRef.current = null;
+            prevLinkedRecipesDataRef.current = null;
+            prevDraftDataRef.current = null;
         } else {
             if (recipeModal.isEditMode && recipeModal.editRecipeData) {
                 const editData = recipeModal.editRecipeData;

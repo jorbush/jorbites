@@ -51,6 +51,8 @@ interface RecipeInfoProps {
     ratingCount?: number;
 }
 
+const EMPTY_ARRAY: any[] = [];
+
 const RecipeInfo: React.FC<RecipeInfoProps> = ({
     user,
     description,
@@ -64,8 +66,8 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     likes,
     id,
     currentUser,
-    coCooksIds = [],
-    linkedRecipeIds = [],
+    coCooksIds = EMPTY_ARRAY,
+    linkedRecipeIds = EMPTY_ARRAY,
     youtubeUrl,
     averageRating = 0,
     ratingCount = 0,

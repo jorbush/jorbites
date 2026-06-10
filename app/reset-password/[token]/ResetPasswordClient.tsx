@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
@@ -21,7 +21,6 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
     const { push } = useRouter() || {};
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
-    const [isValid, setIsValid] = useState(true);
     const toastShownRef = useRef(false);
 
     const {
@@ -42,20 +41,29 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
             shouldRetryOnError: false,
+            onSuccess: (data) => {
+                if (!data.valid && !toastShownRef.current) {
+                    toast.error(
+                        t('invalid_or_expired_link') ||
+                            'Invalid or expired link'
+                    );
+                    toastShownRef.current = true;
+                }
+            },
+            onError: () => {
+                if (!toastShownRef.current) {
+                    toast.error(
+                        t('invalid_or_expired_link') ||
+                            'Invalid or expired link'
+                    );
+                    toastShownRef.current = true;
+                }
+            },
         }
     );
 
-    useEffect(() => {
-        if (validationError || (validationData && !validationData.valid)) {
-            setIsValid(false);
-            if (!toastShownRef.current) {
-                toast.error(
-                    t('invalid_or_expired_link') || 'Invalid or expired link'
-                );
-                toastShownRef.current = true;
-            }
-        }
-    }, [validationData, validationError, t]);
+    const isValid =
+        !validationError && !(validationData && !validationData.valid);
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
         if (data.password !== data.confirmPassword) {

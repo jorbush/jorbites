@@ -35,6 +35,8 @@ interface WorkshopInfoProps {
     whitelistedUserIds: string[];
 }
 
+const EMPTY_ARRAY: any[] = [];
+
 const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
     host,
     description,
@@ -48,7 +50,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
     previousSteps,
     currentUser,
     id: _id,
-    participants = [],
+    participants = EMPTY_ARRAY,
     whitelistedUserIds,
 }) => {
     const { t, i18n } = useTranslation();

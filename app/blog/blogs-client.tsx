@@ -14,6 +14,10 @@ import { SafeUser } from '@/app/types';
 import useSWR from 'swr';
 import { fetcher } from '@/app/utils/fetcher';
 
+const handleContactEmail = () => {
+    window.location.href = `mailto:${CONTACT_EMAIL}`;
+};
+
 interface BlogsClientProps {
     currentUser?: SafeUser | null;
     initialPage: number;
@@ -56,10 +60,6 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
     const totalPages = mainData?.totalPages || 1;
     const sidebarReleases = sidebarData?.blogs || [];
     const loading = mainLoading || sidebarLoading;
-
-    const handleContactEmail = () => {
-        window.location.href = `mailto:${CONTACT_EMAIL}`;
-    };
 
     const handleViewAllReleases = () => {
         push('/blog?category=releases');
