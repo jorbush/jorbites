@@ -1,17 +1,21 @@
 import { Components } from 'react-markdown';
 
 export const PolicyStyles: Components = {
-    h2: ({ node: _node, ...props }) => (
+    h2: ({ node: _node, children, ...props }) => (
         <h2
             className="mt-4 mb-2 text-2xl font-semibold"
             {...props}
-        />
+        >
+            {children}
+        </h2>
     ),
-    h3: ({ node: _node, ...props }) => (
+    h3: ({ node: _node, children, ...props }) => (
         <h3
             className="mt-4 mb-2 text-xl font-semibold"
             {...props}
-        />
+        >
+            {children}
+        </h3>
     ),
     p: ({ node: _node, ...props }) => (
         <p

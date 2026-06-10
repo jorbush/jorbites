@@ -33,23 +33,29 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
     const dateDisplay = formatDate(blog.frontmatter.date, i18n.language);
 
     const markdownComponents: Components = {
-        h1: (props) => (
+        h1: ({ children, ...props }) => (
             <h1
                 className="mt-6 mb-4 text-3xl font-semibold"
                 {...props}
-            />
+            >
+                {children}
+            </h1>
         ),
-        h2: (props) => (
+        h2: ({ children, ...props }) => (
             <h2
                 className="mt-5 mb-3 text-2xl font-semibold"
                 {...props}
-            />
+            >
+                {children}
+            </h2>
         ),
-        h3: (props) => (
+        h3: ({ children, ...props }) => (
             <h3
                 className="mt-4 mb-2 text-xl font-semibold"
                 {...props}
-            />
+            >
+                {children}
+            </h3>
         ),
         p: (props) => (
             <p
