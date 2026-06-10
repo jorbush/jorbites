@@ -1,8 +1,15 @@
+import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from './getCurrentUser';
 import { SafeList, SafeRecipe, SafeUser } from '@/app/types';
 import { logger } from '@/app/lib/axiom/server';
 import { USER_SELECT_FIELDS } from '../utils/constants';
+import {
+    unauthorizedResponse,
+    internalServerError,
+    notFoundResponse,
+    badRequest,
+} from '@/app/utils/apiErrors';
 
 interface IParams {
     listId?: string;
@@ -12,14 +19,14 @@ export default async function getListById(
     params: IParams
 ): Promise<
     | { list: SafeList; recipes: (SafeRecipe & { user: SafeUser })[] }
-    | { error: string }
+    | NextResponse
     | null
 > {
     try {
         const { listId } = params;
 
         if (!listId) {
-            return null;
+            return badRequest('Invalid ID');
         }
 
         const list = await prisma.list.findUnique({
@@ -32,14 +39,14 @@ export default async function getListById(
         });
 
         if (!list) {
-            return null;
+            return notFoundResponse('List not found');
         }
 
         if (list.isPrivate) {
             const currentUser = await getCurrentUser();
 
             if (!currentUser || list.userId !== currentUser.id) {
-                throw new Error('Unauthorized');
+                return unauthorizedResponse('Unauthorized');
             }
         }
 
@@ -81,13 +88,10 @@ export default async function getListById(
 
         return { list: safeList, recipes: safeRecipes };
     } catch (error: any) {
-        if (error.message === 'Unauthorized') {
-            return { error: 'Unauthorized' };
-        }
         logger.error('getListById - error', {
             error: error.message,
             listId: params.listId,
         });
-        return null;
+        return internalServerError('Internal Error');
     }
 }

@@ -3,6 +3,7 @@ import EmptyState from '@/app/components/utils/EmptyState';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getListById from '@/app/actions/getListById';
 import ListClient from './ListClient';
+import { NextResponse } from 'next/server';
 
 interface IParams {
     listId?: string;
@@ -38,12 +39,29 @@ const ListPage = async (props: { params: Promise<IParams> }) => {
         );
     }
 
-    if ('error' in listData) {
+    if (listData instanceof NextResponse) {
+        const errorData = await listData.json();
+        const { code } = errorData;
+
+        let title = 'Error';
+        let subtitle = 'An unexpected error occurred';
+
+        if (code === 'UNAUTHORIZED') {
+            title = 'Unauthorized';
+            subtitle = 'This list is private';
+        } else if (code === 'NOT_FOUND') {
+            title = 'List not found';
+            subtitle = 'It may have been deleted';
+        } else if (code === 'BAD_REQUEST') {
+            title = 'List not found';
+            subtitle = 'Invalid ID';
+        }
+
         return (
             <ClientOnly>
                 <EmptyState
-                    title="Unauthorized"
-                    subtitle="This list is private"
+                    title={title}
+                    subtitle={subtitle}
                 />
             </ClientOnly>
         );
