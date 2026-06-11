@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { validateEmail } from '@/app/utils/validation';
 import useForgotPasswordModal from '@/app/hooks/useForgotPasswordModal';
 
-const LoginModal = () => {
+const LoginModalContent = () => {
     const { refresh } = useRouter() || {};
     const loginModal = useLoginModal();
     const registerModal = useRegisterModal();
@@ -143,7 +143,7 @@ const LoginModal = () => {
     return (
         <Modal
             disabled={isLoading}
-            isOpen={loginModal.isOpen}
+            isOpen={true}
             title={t('login') ?? ''}
             actionLabel={
                 isLoading ? t('logging_in') || 'Logging in...' : t('continue')
@@ -154,6 +154,16 @@ const LoginModal = () => {
             footer={footerContent}
         />
     );
+};
+
+const LoginModal = () => {
+    const loginModal = useLoginModal();
+
+    if (!loginModal.isOpen) {
+        return null;
+    }
+
+    return <LoginModalContent />;
 };
 
 export default LoginModal;

@@ -1,6 +1,6 @@
 'use client';
 
-import useWorkshopModal from '@/app/hooks/useWorkshopModal';
+import useWorkshopModal, { WorkshopModalStore } from '@/app/hooks/useWorkshopModal';
 import Modal from '@/app/components/modals/Modal';
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
@@ -34,12 +34,11 @@ enum WORKSHOP_STEPS {
     IMAGE = 3,
 }
 
-const WorkshopModal: React.FC<WorkshopModalProps> = ({
-    currentUser: _currentUser,
-}) => {
+const WorkshopModalContent: React.FC<{
+    workshopModal: WorkshopModalStore;
+}> = ({ workshopModal }) => {
     const { push, refresh } = useRouter() || {};
     const { t } = useTranslation();
-    const workshopModal = useWorkshopModal();
     const [step, setStep] = useState(WORKSHOP_STEPS.INFO);
     const [isLoading, setIsLoading] = useState(false);
     const [numIngredients, setNumIngredients] = useState(0);
@@ -77,7 +76,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
     const whitelistedUserIds = watch('whitelistedUserIds') || [];
 
     const { data: whitelistedUsersData } = useSWR(
-        workshopModal.isOpen && isPrivate && whitelistedUserIds.length > 0
+        isPrivate && whitelistedUserIds.length > 0
             ? `/api/users/multiple?ids=${whitelistedUserIds.join(',')}`
             : null,
         axiosFetcher
@@ -206,8 +205,6 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             }
 
             refresh();
-            reset();
-            setStep(WORKSHOP_STEPS.INFO);
             workshopModal.onClose();
         } catch (error: any) {
             toast.error(
@@ -457,7 +454,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
 
     return (
         <Modal
-            isOpen={workshopModal.isOpen}
+            isOpen={true}
             title={
                 workshopModal.isEditMode
                     ? String(t('edit_workshop'))
@@ -467,16 +464,30 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             onSubmit={handleSubmit(onSubmit)}
             secondaryActionLabel={secondaryActionLabel}
             secondaryAction={step === WORKSHOP_STEPS.INFO ? undefined : onBack}
-            onClose={() => {
-                workshopModal.onClose();
-                reset();
-                setStep(WORKSHOP_STEPS.INFO);
-                setNumIngredients(0);
-                setNumPreviousSteps(0);
-                setSelectedUsers([]);
-            }}
+            onClose={workshopModal.onClose}
             body={bodyContent}
             disabled={isLoading}
+        />
+    );
+};
+
+const WorkshopModal: React.FC<WorkshopModalProps> = ({
+    currentUser: _currentUser,
+}) => {
+    const workshopModal = useWorkshopModal();
+
+    if (!workshopModal.isOpen) {
+        return null;
+    }
+
+    const key = workshopModal.isEditMode
+        ? `edit-${workshopModal.editWorkshopData?.id}`
+        : 'create';
+
+    return (
+        <WorkshopModalContent
+            key={key}
+            workshopModal={workshopModal}
         />
     );
 };

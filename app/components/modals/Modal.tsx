@@ -24,7 +24,7 @@ interface ModalProps {
     insideModal?: boolean;
 }
 
-const Modal: React.FC<ModalProps> = ({
+const ModalContent: React.FC<ModalProps> = ({
     isOpen,
     onClose,
     onSubmit,
@@ -40,11 +40,11 @@ const Modal: React.FC<ModalProps> = ({
     icon: Icon,
     insideModal,
 }) => {
-    const [showModal, setShowModal] = useState(isOpen);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
-        setShowModal(isOpen);
-    }, [isOpen]);
+        setShowModal(true);
+    }, []);
 
     useTheme();
 
@@ -95,72 +95,74 @@ const Modal: React.FC<ModalProps> = ({
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [disabled, isOpen, handleSubmit]);
 
-    if (!isOpen) {
-        return null;
-    }
-
     return (
-        <>
-            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-neutral-800/70 outline-hidden focus:outline-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-neutral-800/70 outline-hidden focus:outline-hidden">
+            <div
+                className={`relative mx-auto h-full max-h-[100vh] w-full md:h-auto md:max-h-[calc(100vh-6rem)] lg:h-auto ${insideModal ? 'md:w-5/6' : 'md:w-4/6 lg:w-3/6 xl:w-2/5'}`}
+            >
                 <div
-                    className={`relative mx-auto h-full max-h-[100vh] w-full md:h-auto md:max-h-[calc(100vh-6rem)] lg:h-auto ${insideModal ? 'md:w-5/6' : 'md:w-4/6 lg:w-3/6 xl:w-2/5'}`}
+                    className={`translate h-full duration-300 ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'} `}
                 >
-                    <div
-                        className={`translate h-full duration-300 ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'} `}
-                    >
-                        <div className="translate dark:bg-dark relative flex size-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto">
-                            <div className="relative flex flex-shrink-0 items-center justify-center rounded-t border-b-[1px] px-6 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-6 md:pt-6">
-                                <button
-                                    type="button"
-                                    className="absolute left-9 cursor-pointer border-0 p-1 text-black transition hover:opacity-70 dark:text-neutral-100"
-                                    onClick={handleClose}
-                                    data-testid="close-modal-button"
-                                >
-                                    <IoMdClose size={18} />
-                                </button>
-                                <div
-                                    data-testid="modal-title"
-                                    className="flex items-center justify-center text-lg font-semibold text-black dark:text-neutral-100"
-                                >
-                                    {Icon && <Icon className="mr-2 text-xl" />}
-                                    {title}
-                                </div>
-                                <div className="absolute right-9 p-1">
-                                    {topButton}
-                                </div>
+                    <div className="translate dark:bg-dark relative flex size-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto">
+                        <div className="relative flex flex-shrink-0 items-center justify-center rounded-t border-b-[1px] px-6 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-6 md:pt-6">
+                            <button
+                                type="button"
+                                className="absolute left-9 cursor-pointer border-0 p-1 text-black transition hover:opacity-70 dark:text-neutral-100"
+                                onClick={handleClose}
+                                data-testid="close-modal-button"
+                            >
+                                <IoMdClose size={18} />
+                            </button>
+                            <div
+                                data-testid="modal-title"
+                                className="flex items-center justify-center text-lg font-semibold text-black dark:text-neutral-100"
+                            >
+                                {Icon && <Icon className="mr-2 text-xl" />}
+                                {title}
                             </div>
-                            <div className="relative min-h-0 flex-auto overflow-y-auto p-6 text-black dark:text-neutral-100">
-                                {body}
+                            <div className="absolute right-9 p-1">
+                                {topButton}
                             </div>
-                            <div className="flex flex-shrink-0 flex-col gap-2 border-t border-neutral-200 px-6 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6 dark:border-neutral-600">
-                                <div className="flex w-full flex-row items-center gap-4">
-                                    {secondaryAction &&
-                                        secondaryActionLabel && (
-                                            <Button
-                                                data-testid="secondary-action-button"
-                                                disabled={disabled || isLoading}
-                                                label={secondaryActionLabel}
-                                                onClick={handleSecondaryAction}
-                                                outline
-                                            />
-                                        )}
-                                    <Button
-                                        data-testid="action-button"
-                                        disabled={disabled || isLoading}
-                                        label={actionLabel}
-                                        onClick={handleSubmit}
-                                        withDelay
-                                        dataCy="modal-action-button"
-                                    />
-                                </div>
-                                {footer}
+                        </div>
+                        <div className="relative min-h-0 flex-auto overflow-y-auto p-6 text-black dark:text-neutral-100">
+                            {body}
+                        </div>
+                        <div className="flex flex-shrink-0 flex-col gap-2 border-t border-neutral-200 px-6 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6 dark:border-neutral-600">
+                            <div className="flex w-full flex-row items-center gap-4">
+                                {secondaryAction &&
+                                    secondaryActionLabel && (
+                                        <Button
+                                            data-testid="secondary-action-button"
+                                            disabled={disabled || isLoading}
+                                            label={secondaryActionLabel}
+                                            onClick={handleSecondaryAction}
+                                            outline
+                                        />
+                                    )}
+                                <Button
+                                    data-testid="action-button"
+                                    disabled={disabled || isLoading}
+                                    label={actionLabel}
+                                    onClick={handleSubmit}
+                                    withDelay
+                                    dataCy="modal-action-button"
+                                />
                             </div>
+                            {footer}
                         </div>
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
+};
+
+const Modal: React.FC<ModalProps> = (props) => {
+    if (!props.isOpen) {
+        return null;
+    }
+
+    return <ModalContent {...props} />;
 };
 
 export default Modal;

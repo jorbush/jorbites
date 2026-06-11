@@ -17,7 +17,7 @@ import useLoginModal from '@/app/hooks/useLoginModal';
 import { useTranslation } from 'react-i18next';
 import { validateEmail } from '@/app/utils/validation';
 
-const RegisterModal = () => {
+const RegisterModalContent = () => {
     const { refresh } = useRouter() || {};
     const registerModal = useRegisterModal();
     const loginModal = useLoginModal();
@@ -151,7 +151,7 @@ const RegisterModal = () => {
     return (
         <Modal
             disabled={isLoading}
-            isOpen={registerModal.isOpen}
+            isOpen={true}
             title={t('register') ?? ''}
             actionLabel={
                 isLoading ? t('registering') || 'Registering...' : t('continue')
@@ -162,6 +162,16 @@ const RegisterModal = () => {
             footer={footerContent}
         />
     );
+};
+
+const RegisterModal = () => {
+    const registerModal = useRegisterModal();
+
+    if (!registerModal.isOpen) {
+        return null;
+    }
+
+    return <RegisterModalContent />;
 };
 
 export default RegisterModal;

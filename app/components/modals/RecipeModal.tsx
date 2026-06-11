@@ -1,6 +1,6 @@
 'use client';
 
-import useRecipeModal from '@/app/hooks/useRecipeModal';
+import useRecipeModal, { RecipeModalStore } from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
@@ -32,10 +32,12 @@ interface RecipeModalProps {
     currentUser?: SafeUser | null;
 }
 
-const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
+const RecipeModalContent: React.FC<{
+    currentUser?: SafeUser | null;
+    recipeModal: RecipeModalStore;
+}> = ({ currentUser, recipeModal }) => {
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
-    const recipeModal = useRecipeModal();
     const [step, setStep] = useState(STEPS.CATEGORY);
     const [numIngredients, setNumIngredients] = useState(1);
     const [numSteps, setNumSteps] = useState(1);
@@ -259,28 +261,26 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const linkedRecipeIds = watch('linkedRecipeIds') || [];
 
     const { data: questData } = useSWR(
-        recipeModal.isOpen && questId ? `/api/quest/${questId}` : null,
+        questId ? `/api/quest/${questId}` : null,
         axiosFetcher
     );
 
     const { data: coCooksData } = useSWR(
-        recipeModal.isOpen && coCooksIds.length > 0
+        coCooksIds.length > 0
             ? `/api/users/multiple?ids=${coCooksIds.join(',')}`
             : null,
         axiosFetcher
     );
 
     const { data: linkedRecipesData } = useSWR(
-        recipeModal.isOpen && linkedRecipeIds.length > 0
+        linkedRecipeIds.length > 0
             ? `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
             : null,
         axiosFetcher
     );
 
     const { data: draftData, isLoading: isDraftLoading } = useSWR(
-        recipeModal.isOpen && !recipeModal.isEditMode && currentUserRef.current
-            ? `/api/draft`
-            : null,
+        !recipeModal.isEditMode && currentUserRef.current ? `/api/draft` : null,
         axiosFetcher,
         {
             revalidateOnFocus: false,
@@ -343,85 +343,21 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
     }, [draftData, recipeModal.isEditMode, reset, setValue]);
 
-    // Synchronous state adjustments during render when isOpen or editRecipeData changes
-    const prevIsOpenRef = useRef(recipeModal.isOpen);
-    const prevIsEditModeRef = useRef(recipeModal.isEditMode);
-    const prevEditRecipeDataIdRef = useRef(recipeModal.editRecipeData?.id);
-
-    if (
-        recipeModal.isOpen !== prevIsOpenRef.current ||
-        recipeModal.isEditMode !== prevIsEditModeRef.current ||
-        recipeModal.editRecipeData?.id !== prevEditRecipeDataIdRef.current
-    ) {
-        prevIsOpenRef.current = recipeModal.isOpen;
-        prevIsEditModeRef.current = recipeModal.isEditMode;
-        prevEditRecipeDataIdRef.current = recipeModal.editRecipeData?.id;
-
-        if (!recipeModal.isOpen) {
-            setStep(STEPS.CATEGORY);
-            setNumIngredients(1);
-            setNumSteps(1);
-            setSelectedCoCooks([]);
-            setSelectedLinkedRecipes([]);
-            setSelectedQuest(null);
-            setIngredientsInputMode('list');
-            setStepsInputMode('list');
-            hasLoadedDraft.current = false;
-            hasLoadedEditData.current = false;
-            hasLoadedDraftReset.current = false;
-            prevQuestDataRef.current = null;
-            prevCoCooksDataRef.current = null;
-            prevLinkedRecipesDataRef.current = null;
-            prevDraftDataRef.current = null;
-        } else {
-            if (recipeModal.isEditMode && recipeModal.editRecipeData) {
-                const editData = recipeModal.editRecipeData;
-                setStep(STEPS.CATEGORY);
-                setNumIngredients(editData.ingredients?.length || 1);
-                setNumSteps(editData.steps?.length || 1);
-                if (editData.coCooks) {
-                    setSelectedCoCooks(editData.coCooks);
-                }
-                if (editData.linkedRecipes) {
-                    setSelectedLinkedRecipes(editData.linkedRecipes);
-                }
-                hasLoadedEditData.current = false;
-            }
-        }
-    }
-
+    // Initial setup for edit mode
     useEffect(() => {
-        if (!recipeModal.isOpen) {
-            // Reset form when modal closes to ensure clean state on next open
-            reset({
-                categories: [],
-                method: '',
-                imageSrc: '',
-                imageSrc1: '',
-                imageSrc2: '',
-                imageSrc3: '',
-                title: '',
-                description: '',
-                ingredients: [],
-                steps: [],
-                minutes: 30,
-                coCooksIds: [],
-                linkedRecipeIds: [],
-                youtubeUrl: '',
-                questId: '',
-            });
-        } else {
-            if (recipeModal.questId) {
-                setValue('questId', recipeModal.questId);
+        if (recipeModal.isEditMode && recipeModal.editRecipeData) {
+            const editData = recipeModal.editRecipeData;
+            setNumIngredients(editData.ingredients?.length || 1);
+            setNumSteps(editData.steps?.length || 1);
+            if (editData.coCooks) {
+                setSelectedCoCooks(editData.coCooks);
+            }
+            if (editData.linkedRecipes) {
+                setSelectedLinkedRecipes(editData.linkedRecipes);
             }
 
-            if (
-                recipeModal.isEditMode &&
-                recipeModal.editRecipeData &&
-                !hasLoadedEditData.current
-            ) {
+            if (!hasLoadedEditData.current) {
                 hasLoadedEditData.current = true;
-                const editData = recipeModal.editRecipeData;
                 reset({
                     categories: Array.isArray(editData.categories)
                         ? editData.categories
@@ -452,9 +388,10 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     setValue(`step-${index}`, step);
                 });
             }
+        } else if (recipeModal.questId) {
+            setValue('questId', recipeModal.questId);
         }
     }, [
-        recipeModal.isOpen,
         recipeModal.isEditMode,
         recipeModal.editRecipeData,
         recipeModal.questId,
@@ -578,29 +515,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 toast.success(t('recipe_posted'));
             }
 
-            reset({
-                categories: [],
-                method: '',
-                imageSrc: '',
-                imageSrc1: '',
-                imageSrc2: '',
-                imageSrc3: '',
-                title: '',
-                description: '',
-                ingredients: [],
-                steps: [],
-                minutes: 10,
-                coCooksIds: [],
-                linkedRecipeIds: [],
-                youtubeUrl: '',
-                questId: '',
-            });
-            setStep(STEPS.CATEGORY);
-            setNumIngredients(1);
-            setNumSteps(1);
-            setSelectedCoCooks([]);
-            setSelectedLinkedRecipes([]);
-            setSelectedQuest(null);
             recipeModal.onClose();
             refresh();
         } catch (error) {
@@ -820,6 +734,26 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     />
                 ) : undefined
             }
+        />
+    );
+};
+
+const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
+    const recipeModal = useRecipeModal();
+
+    if (!recipeModal.isOpen) {
+        return null;
+    }
+
+    const key = recipeModal.isEditMode
+        ? `edit-${recipeModal.editRecipeData?.id}`
+        : 'create';
+
+    return (
+        <RecipeModalContent
+            key={key}
+            currentUser={currentUser}
+            recipeModal={recipeModal}
         />
     );
 };

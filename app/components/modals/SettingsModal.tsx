@@ -21,8 +21,9 @@ interface SettingsProps {
     currentUser?: SafeUser | null;
 }
 
-const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
-    const settingsModal = useSettingsModal();
+const SettingsModalContent: React.FC<
+    SettingsProps & { onClose: () => void }
+> = ({ currentUser, onClose }) => {
     const { t } = useTranslation();
     const [saveImage, setSaveImage] = useState(false);
     const [saveUserName, setSaveUserName] = useState(false);
@@ -104,7 +105,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
 
     const handleSaveClick = useCallback(() => {
         if (!currentUser) {
-            settingsModal.onClose();
+            onClose();
             return;
         }
         setSaveImage(true);
@@ -113,20 +114,35 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
 
         // Close modal after a short delay to allow components to save
         setTimeout(() => {
-            settingsModal.onClose();
+            onClose();
         }, 100);
-    }, [settingsModal, currentUser]);
+    }, [onClose, currentUser]);
 
     return (
         <Modal
-            isOpen={settingsModal.isOpen}
+            isOpen={true}
             title={t('settings') ?? 'Settings'}
             actionLabel={t('save')}
-            onClose={settingsModal.onClose}
+            onClose={onClose}
             onSubmit={handleSaveClick}
             body={bodyContent}
             footer={<div></div>}
             icon={FcSettings}
+        />
+    );
+};
+
+const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
+    const settingsModal = useSettingsModal();
+
+    if (!settingsModal.isOpen) {
+        return null;
+    }
+
+    return (
+        <SettingsModalContent
+            currentUser={currentUser}
+            onClose={settingsModal.onClose}
         />
     );
 };
