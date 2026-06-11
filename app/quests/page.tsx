@@ -14,7 +14,7 @@ interface QuestsPageProps {
 }
 
 const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
-    const [currentUser, response, resolvedParams] = await Promise.all([
+    const [currentUser, response] = await Promise.all([
         getCurrentUser(),
         searchParams.then((resolved) =>
             getQuests({
@@ -23,11 +23,7 @@ const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
                 limit: 10,
             })
         ),
-        searchParams,
     ]);
-
-    const page = parseInt(resolvedParams.page || '1');
-    const status = resolvedParams.status;
 
     return (
         <ClientOnly fallback={<QuestsClientSkeleton />}>

@@ -13,10 +13,9 @@ interface QuestDetailPageProps {
 }
 
 const QuestDetailPage = async ({ params }: QuestDetailPageProps) => {
-    const [currentUser, quest, { questId }] = await Promise.all([
+    const [currentUser, quest] = await Promise.all([
         getCurrentUser(),
         params.then(({ questId }) => getQuestById({ questId })),
-        params,
     ]);
 
     if (!quest) {
