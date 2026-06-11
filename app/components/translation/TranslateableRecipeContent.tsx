@@ -265,9 +265,16 @@ export function TranslateableRecipeContent({
                 Array.isArray(translatedIngArray) &&
                 translatedIngArray.length > 0
             ) {
-                const translatedIngredientItems = translatedIngArray
-                    .map((item) => item.trim())
-                    .filter((item) => item.length > 0);
+                const translatedIngredientItems = translatedIngArray.reduce(
+                    (acc: string[], item) => {
+                        const trimmed = item.trim();
+                        if (trimmed.length > 0) {
+                            acc.push(trimmed);
+                        }
+                        return acc;
+                    },
+                    []
+                );
 
                 console.log(
                     'Translated ingredients array:',
@@ -283,9 +290,16 @@ export function TranslateableRecipeContent({
                 Array.isArray(translatedStpsArray) &&
                 translatedStpsArray.length > 0
             ) {
-                const translatedStepItems = translatedStpsArray
-                    .map((item) => item.trim())
-                    .filter((item) => item.length > 0);
+                const translatedStepItems = translatedStpsArray.reduce(
+                    (acc: string[], item) => {
+                        const trimmed = item.trim();
+                        if (trimmed.length > 0) {
+                            acc.push(trimmed);
+                        }
+                        return acc;
+                    },
+                    []
+                );
 
                 console.log('Translated steps array:', translatedStepItems);
 

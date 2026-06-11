@@ -13,9 +13,12 @@ export async function GET() {
         const badgesDir = path.join(process.cwd(), 'public', 'badges');
         const files = await fs.readdir(badgesDir);
 
-        const badges = files
-            .filter((file) => file.endsWith('.webp'))
-            .map((file) => path.parse(file).name);
+        const badges = files.reduce((acc: string[], file) => {
+            if (file.endsWith('.webp')) {
+                acc.push(path.parse(file).name);
+            }
+            return acc;
+        }, []);
 
         logger.info(`api/badges GET - success, found ${badges.length} badges`);
         return NextResponse.json(badges);

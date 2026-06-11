@@ -46,26 +46,27 @@ const CategoryStep: React.FC<CategoryStepProps> = ({
                 subtitle={`${(t('subtitle_categories_recipe') || '').trim()} (${selectedCategories.length}/${RECIPE_MAX_CATEGORIES})`}
             />
             <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-y-auto">
-                {categories
-                    .filter(
-                        (item) => item.label.toLowerCase() !== 'award-winning'
-                    )
-                    .map((item) => (
-                        <div
-                            key={item.label}
-                            className="col-span-1"
-                        >
-                            <CategoryInput
-                                onClick={handleCategoryClick}
-                                selected={selectedCategories.includes(
-                                    item.label
-                                )}
-                                label={item.label}
-                                icon={item.icon}
-                                dataCy={`category-box-${item.label}`}
-                            />
-                        </div>
-                    ))}
+                {categories.reduce((acc: React.ReactNode[], item) => {
+                    if (item.label.toLowerCase() !== 'award-winning') {
+                        acc.push(
+                            <div
+                                key={item.label}
+                                className="col-span-1"
+                            >
+                                <CategoryInput
+                                    onClick={handleCategoryClick}
+                                    selected={selectedCategories.includes(
+                                        item.label
+                                    )}
+                                    label={item.label}
+                                    icon={item.icon}
+                                    dataCy={`category-box-${item.label}`}
+                                />
+                            </div>
+                        );
+                    }
+                    return acc;
+                }, [])}
             </div>
         </div>
     );
