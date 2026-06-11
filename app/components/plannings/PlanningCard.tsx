@@ -105,6 +105,7 @@ export const PlanningCard: React.FC<PlanningCardProps> = ({
                                 className="-ml-3 inline-block size-8 rounded-full object-cover ring-2 ring-white transition-all group-hover:scale-105 first:ml-0 dark:ring-neutral-900"
                                 width={32}
                                 height={32}
+                                circular={true}
                             />
                         ))}
                         {previews.length === 0 && (

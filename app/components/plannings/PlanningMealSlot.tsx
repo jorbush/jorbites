@@ -52,13 +52,16 @@ export const PlanningMealSlot: React.FC<PlanningMealSlotProps> = ({
                             key={meal.id}
                             className="group/recipe dark:border-neutral-850 relative flex flex-row items-center gap-2 rounded-xl border border-neutral-200 bg-white p-2 transition hover:bg-neutral-50 dark:bg-[#151515] dark:hover:bg-neutral-900"
                         >
-                            <CustomProxyImage
-                                src={recipe.imageSrc}
-                                alt={recipe.title}
-                                className="size-10 shrink-0 rounded-lg object-cover"
-                                width={40}
-                                height={40}
-                            />
+                            <div className="relative size-10 shrink-0 overflow-hidden rounded-lg">
+                                <CustomProxyImage
+                                    src={recipe.imageSrc}
+                                    alt={recipe.title}
+                                    fill
+                                    className="object-cover"
+                                    width={40}
+                                    height={40}
+                                />
+                            </div>
                             <button
                                 type="button"
                                 onClick={() => push(`/recipes/${recipe.id}`)}
