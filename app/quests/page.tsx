@@ -14,18 +14,20 @@ interface QuestsPageProps {
 }
 
 const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
-    const [resolvedParams, currentUser] = await Promise.all([
-        searchParams,
+    const [currentUser, response, resolvedParams] = await Promise.all([
         getCurrentUser(),
+        searchParams.then((resolved) =>
+            getQuests({
+                status: resolved.status,
+                page: parseInt(resolved.page || '1'),
+                limit: 10,
+            })
+        ),
+        searchParams,
     ]);
+
     const page = parseInt(resolvedParams.page || '1');
     const status = resolvedParams.status;
-
-    const response = await getQuests({
-        status,
-        page,
-        limit: 10,
-    });
 
     return (
         <ClientOnly fallback={<QuestsClientSkeleton />}>
