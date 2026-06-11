@@ -99,16 +99,16 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
     const gallery = extraImageRows.length > 0 && (
         <View>
-            {extraImageRows.map((row, rowIdx) => {
+            {extraImageRows.map((row) => {
                 const imageWidth = `${(100 - (colsPerRow - 1) * 4) / colsPerRow}%`;
                 return (
                     <View
-                        key={`row-${rowIdx}`}
+                        key={row.join('|')}
                         style={styles.galleryRow}
                     >
-                        {row.map((src, colIdx) => (
+                        {row.map((src) => (
                             <Image
-                                key={`extra-img-${colIdx}`}
+                                key={src}
                                 src={src}
                                 style={[
                                     styles.galleryImage,

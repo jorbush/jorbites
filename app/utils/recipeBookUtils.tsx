@@ -16,9 +16,13 @@ export const parseFormattedText = (
     const regex =
         /(\*\*\*[\s\S]+?\*\*\*|\*\*_(?:[\s\S]+?)_\*\*|__\*(?:[\s\S]+?)\*__|\*\*[\s\S]+?\*\*|__[\s\S]+?__|\*[\s\S]+?\*|_[\s\S]+?_)/g;
     const parts = text.split(regex);
+    let currentOffset = 0;
 
-    return parts.map((part, index) => {
+    return parts.map((part) => {
         if (!part) return '';
+
+        const key = `text-part-${currentOffset}`;
+        currentOffset += part.length;
 
         // Bold-italic
         if (
@@ -29,7 +33,7 @@ export const parseFormattedText = (
             const cleanText = part.slice(3, -3);
             return (
                 <Text
-                    key={`text-part-${index}`}
+                    key={key}
                     style={[
                         baseStyle,
                         { fontWeight: 700, fontStyle: 'italic' },
@@ -48,7 +52,7 @@ export const parseFormattedText = (
             const cleanText = part.slice(2, -2);
             return (
                 <Text
-                    key={`text-part-${index}`}
+                    key={key}
                     style={[baseStyle, { fontWeight: 700 }]}
                 >
                     {cleanText}
@@ -64,7 +68,7 @@ export const parseFormattedText = (
             const cleanText = part.slice(1, -1);
             return (
                 <Text
-                    key={`text-part-${index}`}
+                    key={key}
                     style={[baseStyle, { fontStyle: 'italic' }]}
                 >
                     {cleanText}

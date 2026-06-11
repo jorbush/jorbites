@@ -154,9 +154,9 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                             </span>
 
                             <div className="mt-1 flex flex-wrap gap-1">
-                                {dayEvents.map((event, eventIdx) => (
+                                {dayEvents.map((event) => (
                                     <Tooltip
-                                        key={eventIdx}
+                                        key={event.slug}
                                         text={event.frontmatter.title}
                                     >
                                         <Link

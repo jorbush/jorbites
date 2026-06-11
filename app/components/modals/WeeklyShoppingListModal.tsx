@@ -53,7 +53,12 @@ const WeeklyShoppingListModal: React.FC<WeeklyShoppingListModalProps> = ({
         });
 
         return {
-            byRecipe: Object.values(ingredientsByRecipe),
+            byRecipe: Object.entries(ingredientsByRecipe).map(
+                ([recipeId, data]) => ({
+                    recipeId,
+                    ...data,
+                })
+            ),
             consolidated: Array.from(consolidatedSet),
         };
     }, [meals]);
@@ -94,21 +99,21 @@ const WeeklyShoppingListModal: React.FC<WeeklyShoppingListModalProps> = ({
                         className="flex max-h-[60vh] flex-col gap-4 overflow-y-auto pr-1 md:max-h-[350px]"
                         data-testid="ingredients-scroll-container"
                     >
-                        {allIngredients.byRecipe.map((recipe, rIdx) => (
+                        {allIngredients.byRecipe.map((recipe) => (
                             <div
-                                key={rIdx}
+                                key={recipe.recipeId}
                                 className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-neutral-50/30 p-3 dark:border-neutral-800 dark:bg-neutral-950/20"
                             >
                                 <div className="border-b border-neutral-100 pb-1.5 text-sm font-bold dark:border-neutral-900">
                                     {recipe.recipeTitle}
                                 </div>
                                 <div className="flex flex-col gap-1.5">
-                                    {recipe.items.map((ing, iIdx) => {
+                                    {recipe.items.map((ing) => {
                                         const isChecked =
                                             !!checkedIngredients[ing];
                                         return (
                                             <button
-                                                key={iIdx}
+                                                key={ing}
                                                 type="button"
                                                 onClick={() =>
                                                     toggleIngredient(ing)
