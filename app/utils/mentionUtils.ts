@@ -9,17 +9,17 @@
  */
 export const extractMentionedUserIds = (comment: string): string[] => {
     const mentionRegex = /@[^[\]]+\[([^\]]+)\]/g;
-    const userIds: string[] = [];
+    const userIds = new Set<string>();
     let match;
 
     while ((match = mentionRegex.exec(comment)) !== null) {
         const userId = match[1];
-        if (userId && !userIds.includes(userId)) {
-            userIds.push(userId);
+        if (userId) {
+            userIds.add(userId);
         }
     }
 
-    return userIds;
+    return Array.from(userIds);
 };
 
 /**
@@ -29,17 +29,17 @@ export const extractMentionedUserIds = (comment: string): string[] => {
  */
 export const extractMentionedUsernames = (comment: string): string[] => {
     const mentionRegex = /@([^[\]]+)\[[^\]]+\]/g;
-    const usernames: string[] = [];
+    const usernames = new Set<string>();
     let match;
 
     while ((match = mentionRegex.exec(comment)) !== null) {
         const username = match[1];
-        if (username && !usernames.includes(username)) {
-            usernames.push(username);
+        if (username) {
+            usernames.add(username);
         }
     }
 
-    return usernames;
+    return Array.from(usernames);
 };
 
 /**
