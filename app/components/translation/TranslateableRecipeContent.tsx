@@ -8,7 +8,7 @@ import React, {
     useSyncExternalStore,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiGlobe } from 'react-icons/fi';
+import TranslationControls from './TranslationControls';
 import i18n from '@/app/i18n';
 import { toast } from 'react-hot-toast';
 
@@ -349,7 +349,7 @@ export function TranslateableRecipeContent({
             ? i18n.language
             : i18n.resolvedLanguage) || 'es';
     const needsTranslation =
-        detectedLanguage && detectedLanguage !== targetLanguage;
+        !!detectedLanguage && detectedLanguage !== targetLanguage;
     const showTranslateButton =
         isMounted && hasContent && isAvailable && needsTranslation;
 
@@ -358,43 +358,14 @@ export function TranslateableRecipeContent({
             <div className="mb-2">
                 <hr className="mb-2" />
                 <div className="mb-2 flex min-h-[28px] items-center justify-end">
-                    {showTranslateButton && (
-                        <>
-                            {!isTranslated ? (
-                                <button
-                                    type="button"
-                                    onClick={handleTranslate}
-                                    disabled={isTranslating}
-                                    className="inline-flex cursor-pointer items-center gap-1 text-sm text-neutral-600 hover:text-neutral-800 disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-400 dark:hover:text-neutral-200"
-                                    title={t('translate') || 'Translate'}
-                                    aria-label={t('translate') || 'Translate'}
-                                >
-                                    <FiGlobe
-                                        size={18}
-                                        className={
-                                            isTranslating ? 'animate-spin' : ''
-                                        }
-                                    />
-                                    <span className="text-xs">
-                                        {isTranslating
-                                            ? t('translating')
-                                            : t('translate')}
-                                    </span>
-                                </button>
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={handleShowOriginal}
-                                    className="inline-flex cursor-pointer items-center gap-1 text-sm text-neutral-600 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
-                                >
-                                    <FiGlobe size={18} />
-                                    <span className="text-xs">
-                                        {t('show_original')}
-                                    </span>
-                                </button>
-                            )}
-                        </>
-                    )}
+                    <TranslationControls
+                        showTranslateButton={showTranslateButton}
+                        isTranslated={isTranslated}
+                        isTranslating={isTranslating}
+                        onTranslate={handleTranslate}
+                        onShowOriginal={handleShowOriginal}
+                        t={t}
+                    />
                 </div>
                 {renderDescription(displayDescription)}
             </div>

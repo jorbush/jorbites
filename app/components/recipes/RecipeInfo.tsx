@@ -2,23 +2,19 @@
 
 import { IconType } from 'react-icons';
 import { SafeUser } from '@/app/types';
-import Avatar from '@/app/components/utils/Avatar';
 import RecipeCategoryAndMethod from '@/app/components/recipes/RecipeCategoryAndMethod';
-import HeartButton from '@/app/components/buttons/HeartButton';
-import AddToListButton from '@/app/components/buttons/AddToListButton';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
-import getUserDisplayName from '@/app/utils/responsive';
-import VerificationBadge from '@/app/components/VerificationBadge';
 import { useSyncExternalStore } from 'react';
-import RecipeCard from '@/app/components/recipes/RecipeCard';
 import YouTubePreview from '@/app/components/utils/YouTubePreview';
 import { TranslateableRecipeContent } from '@/app/components/translation/TranslateableRecipeContent';
 import { formatText } from '@/app/utils/textFormatting';
 import useSWR from 'swr';
 import { axiosFetcher } from '@/app/utils/fetcher';
-import StarRating from '@/app/components/utils/StarRating';
+import { RecipeInfoHeader } from './RecipeInfoHeader';
+import { RecipeCoCooks } from './RecipeCoCooks';
+import { RecipeLinkedRecipes } from './RecipeLinkedRecipes';
 
 const subscribe = () => () => {};
 
@@ -103,147 +99,29 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
 
     return (
         <div className="col-span-4 flex flex-col gap-8 pr-2 pl-2">
-            <div className="flex flex-col gap-2">
-                <div className="grid grid-cols-3 gap-1">
-                    <div className="col-span-2 flex flex-row items-center gap-2 text-xl font-semibold dark:text-neutral-100">
-                        <Avatar
-                            src={user?.image}
-                            size={40}
-                            onClick={() => push('/profile/' + user.id)}
-                            quality="auto:eco"
-                        />
-                        <div className="flex flex-col">
-                            <div className="flex flex-row">
-                                <button
-                                    type="button"
-                                    className="cursor-pointer text-left focus:outline-hidden"
-                                    onClick={() => push('/profile/' + user.id)}
-                                >
-                                    {getUserDisplayName(
-                                        user,
-                                        isMdOrSmaller,
-                                        isSmOrSmaller
-                                    )}
-                                </button>
-                                {user.verified && (
-                                    <VerificationBadge className="mt-1 ml-1" />
-                                )}
-                            </div>
-                            <div className="text-sm text-neutral-400">
-                                {mounted
-                                    ? `${t('level')} ${user?.level}`
-                                    : `level ${user?.level}`}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="mr-4 mb-5 ml-auto flex flex-row items-end gap-2 text-xl">
-                        <AddToListButton
-                            recipeId={id}
-                            currentUser={currentUser}
-                        />
-                        <HeartButton
-                            recipeId={id}
-                            currentUser={currentUser}
-                        />
-                        <div
-                            className="dark:text-neutral-100"
-                            data-cy="recipe-num-likes"
-                        >
-                            {likes}
-                        </div>
-                    </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-4 font-light text-neutral-500">
-                    <div>
-                        {steps.length}{' '}
-                        {mounted ? t('steps').toLowerCase() : 'steps'}
-                    </div>
-                    <div>
-                        {ingredients.length}{' '}
-                        {mounted
-                            ? t('ingredients').toLowerCase()
-                            : 'ingredients'}
-                    </div>
-                    {averageRating > 0 && (
-                        <div
-                            className="flex items-center gap-1.5 border-l border-neutral-300 pl-4 dark:border-neutral-700"
-                            data-testid="recipe-average-rating"
-                        >
-                            <span className="font-semibold text-neutral-800 dark:text-neutral-200">
-                                {averageRating.toFixed(1)}
-                            </span>
-                            <StarRating
-                                rating={averageRating}
-                                size={14}
-                            />
-                            <button
-                                onClick={() => {
-                                    document
-                                        .getElementById('comments-section')
-                                        ?.scrollIntoView({
-                                            behavior: 'smooth',
-                                        });
-                                }}
-                                className="cursor-pointer text-sm text-neutral-500 transition-colors hover:text-neutral-700 hover:underline focus:outline-hidden dark:hover:text-neutral-300"
-                                type="button"
-                            >
-                                ({ratingCount}
-                                <span className="hidden md:inline">
-                                    {' '}
-                                    {mounted ? t('reviews') : 'reviews'}
-                                </span>
-                                )
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </div>
+            <RecipeInfoHeader
+                user={user}
+                currentUser={currentUser}
+                id={id}
+                likes={likes}
+                stepsCount={steps.length}
+                ingredientsCount={ingredients.length}
+                averageRating={averageRating}
+                ratingCount={ratingCount}
+                mounted={mounted}
+                t={t}
+                push={push}
+                isMdOrSmaller={isMdOrSmaller}
+                isSmOrSmaller={isSmOrSmaller}
+            />
 
-            {/* Co-cooks section */}
-            {isLoadingRelatedData ? (
-                <div className="flex flex-col gap-2">
-                    <h3 className="text-md font-semibold dark:text-neutral-100">
-                        {mounted ? t('co_cooks') || 'Co-Cooks' : 'co_cooks'}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                        {/* Loading skeleton */}
-                        <div className="h-8 w-32 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
-                        <div className="h-8 w-28 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
-                    </div>
-                </div>
-            ) : (
-                coCooks.length > 0 && (
-                    <div className="flex flex-col gap-2">
-                        <h3 className="text-md font-semibold dark:text-neutral-100">
-                            {mounted ? t('co_cooks') || 'Co-Cooks' : 'co_cooks'}
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                            {coCooks.map((cook) => (
-                                <button
-                                    key={cook.id}
-                                    type="button"
-                                    className="flex cursor-pointer items-center gap-2 rounded-full bg-neutral-100 px-2 py-1 text-left focus:outline-hidden dark:bg-neutral-900"
-                                    onClick={() => push(`/profile/${cook.id}`)}
-                                >
-                                    <Avatar
-                                        src={cook.image}
-                                        size={24}
-                                    />
-                                    <span className="text-sm dark:text-neutral-100">
-                                        {cook.name}
-                                    </span>
-                                    {cook.verified && (
-                                        <VerificationBadge
-                                            className="ml-1"
-                                            size={16}
-                                        />
-                                    )}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )
-            )}
+            <RecipeCoCooks
+                isLoadingRelatedData={isLoadingRelatedData}
+                coCooks={coCooks}
+                mounted={mounted}
+                t={t}
+                push={push}
+            />
 
             <RecipeCategoryAndMethod
                 categories={categories}
@@ -340,46 +218,13 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
             )}
 
             {/* Linked recipes section */}
-            {isLoadingRelatedData ? (
-                <>
-                    <hr />
-                    <div className="dark:text-neutral-100">
-                        <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                            {mounted
-                                ? t('linked_recipes') || 'Linked Recipes'
-                                : 'linked_recipes'}
-                        </div>
-                        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {/* Loading skeletons */}
-                            <div className="h-64 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-800" />
-                            <div className="hidden h-64 animate-pulse rounded-lg bg-neutral-200 sm:block dark:bg-neutral-800" />
-                        </div>
-                    </div>
-                </>
-            ) : (
-                linkedRecipes.length > 0 && (
-                    <>
-                        <hr />
-                        <div className="dark:text-neutral-100">
-                            <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                                {mounted
-                                    ? t('linked_recipes') || 'Linked Recipes'
-                                    : 'linked_recipes'}
-                            </div>
-                            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                {linkedRecipes.map((recipe) => (
-                                    <RecipeCard
-                                        key={recipe.id}
-                                        data={recipe}
-                                        currentUser={currentUser}
-                                        user={recipe.user}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    </>
-                )
-            )}
+            <RecipeLinkedRecipes
+                isLoadingRelatedData={isLoadingRelatedData}
+                linkedRecipes={linkedRecipes}
+                currentUser={currentUser}
+                mounted={mounted}
+                t={t}
+            />
         </div>
     );
 };

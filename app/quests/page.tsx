@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getQuests from '@/app/actions/getQuests';
 import QuestsClient from '@/app/quests/QuestsClient';
@@ -43,12 +44,14 @@ const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
                         />
                     </div>
                 ) : (
-                    <QuestsClient
-                        currentUser={currentUser}
-                        quests={response.data?.quests || []}
-                        totalPages={response.data?.totalPages || 1}
-                        currentPage={response.data?.currentPage || 1}
-                    />
+                    <Suspense fallback={<QuestsClientSkeleton />}>
+                        <QuestsClient
+                            currentUser={currentUser}
+                            quests={response.data?.quests || []}
+                            totalPages={response.data?.totalPages || 1}
+                            currentPage={response.data?.currentPage || 1}
+                        />
+                    </Suspense>
                 )}
             </Container>
         </ClientOnly>
