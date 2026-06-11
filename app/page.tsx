@@ -27,15 +27,19 @@ interface HomeProps {
 }
 
 const Home = async ({ searchParams }: HomeProps) => {
-    const resolvedParams = await searchParams;
-    const response = await getRecipes({
-        ...resolvedParams,
-        limit: isMobile((await headers()).get('user-agent') || '')
-            ? MOBILE_RECIPES_LIMIT
-            : DESKTOP_RECIPES_LIMIT,
-    });
+    const [currentUser, response, resolvedParams] = await Promise.all([
+        getCurrentUser(),
+        Promise.all([searchParams, headers()]).then(([params, userHeaders]) =>
+            getRecipes({
+                ...params,
+                limit: isMobile(userHeaders.get('user-agent') || '')
+                    ? MOBILE_RECIPES_LIMIT
+                    : DESKTOP_RECIPES_LIMIT,
+            })
+        ),
+        searchParams,
+    ]);
     const firstImageUrl = getFirstRecipeImageUrl(response.data?.recipes);
-    const currentUser = await getCurrentUser();
     return (
         <>
             <Container>

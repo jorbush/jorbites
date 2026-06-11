@@ -32,11 +32,10 @@ export async function generateMetadata({
 }
 
 const QuestDetailPage = async ({ params }: QuestDetailPageProps) => {
-    const [{ questId }, currentUser] = await Promise.all([
-        params,
+    const [currentUser, quest] = await Promise.all([
         getCurrentUser(),
+        params.then(({ questId }) => getQuestById({ questId })),
     ]);
-    const quest = await getQuestById({ questId });
 
     if (!quest) {
         return (
