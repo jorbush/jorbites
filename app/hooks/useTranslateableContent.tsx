@@ -76,10 +76,7 @@ export function useTranslateableContent({
 
     const currentLanguage = i18n.language;
 
-    const contentKey = useMemo(
-        () => `${textContent}|${currentLanguage}`,
-        [textContent, currentLanguage]
-    );
+    const contentKey = `${textContent}|${currentLanguage}`;
 
     // Reset translation state during render when contentKey changes
     const prevContentKeyRef = useRef(contentKey);
