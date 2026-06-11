@@ -6,10 +6,12 @@ import getCurrentUser, { auth } from '@/app/actions/getCurrentUser';
 import { unauthorized } from 'next/navigation';
 import { after } from 'next/server';
 
-let isInitialized = false;
+declare global {
+    var isPushInitialized: boolean | undefined;
+}
 
 function ensureWebPushInitialized() {
-    if (isInitialized) return;
+    if (globalThis.isPushInitialized) return;
 
     if (
         !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
@@ -27,7 +29,7 @@ function ensureWebPushInitialized() {
             process.env.VAPID_PRIVATE_KEY
         );
     }
-    isInitialized = true;
+    globalThis.isPushInitialized = true;
 }
 
 export async function subscribeUser(sub: webpush.PushSubscription) {
