@@ -66,23 +66,32 @@ const Comment: React.FC<CommentProps> = ({
             .finally(() => {});
     };
 
+    const navigateToProfile = () => {
+        push('/profile/' + userId);
+    };
+
+    const openDeleteModal = () => {
+        setConfirmModalOpen(true);
+    };
+
     return (
         <div className="relative mt-2 mr-1 mb-2 ml-1 flex items-start">
             <div className="mt-2 shrink-0">
                 <Avatar
                     src={userImage}
-                    onClick={() => push('/profile/' + userId)}
+                    onClick={navigateToProfile}
                     quality="auto:eco"
                 />
             </div>
             <div className="mt-2 ml-4 grow">
                 <div className="mb-1 flex flex-row">
-                    <p
-                        className="cursor-pointer truncate text-justify font-bold whitespace-normal text-neutral-800 dark:text-neutral-100"
-                        onClick={() => push('/profile/' + userId)}
+                    <button
+                        type="button"
+                        className="cursor-pointer truncate border-0 bg-transparent p-0 text-justify text-left font-bold whitespace-normal text-neutral-800 dark:text-neutral-100"
+                        onClick={navigateToProfile}
                     >
                         {userName}
-                    </p>
+                    </button>
                     {verified && <VerificationBadge className="mt-1 ml-1" />}
                     <div className="mt-0.5 ml-1.5 text-sm text-neutral-400">
                         {mounted
@@ -116,12 +125,14 @@ const Comment: React.FC<CommentProps> = ({
                     <div className="ml-auto">{formattedDate}</div>
                 </div>
                 {canDelete && (
-                    <MdDelete
-                        size={20}
-                        className="absolute top-2 right-1 text-rose-500"
-                        onClick={() => setConfirmModalOpen(true)}
+                    <button
+                        type="button"
+                        className="absolute top-2 right-1 border-0 bg-transparent p-0 text-rose-500"
+                        onClick={openDeleteModal}
                         data-testid="MdDelete"
-                    />
+                    >
+                        <MdDelete size={20} />
+                    </button>
                 )}
                 <ConfirmModal
                     open={confirmModalOpen}
