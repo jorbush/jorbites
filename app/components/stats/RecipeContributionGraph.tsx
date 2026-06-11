@@ -175,7 +175,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                     <div className="w-6 shrink-0 sm:w-7" />
                                     {/* Month labels matching grid columns */}
                                     <div className="flex gap-0.5 sm:gap-1">
-                                        {weeks.map((_, weekIndex) => {
+                                        {weeks.map((week, weekIndex) => {
                                             const monthLabel = monthLabels.find(
                                                 (label) =>
                                                     label.weekIndex ===
@@ -183,7 +183,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
                                             );
                                             return (
                                                 <div
-                                                    key={weekIndex}
+                                                    key={week[0].date.toISOString()}
                                                     className="flex w-2.5 items-start justify-start sm:w-3"
                                                 >
                                                     {monthLabel && (
@@ -217,14 +217,14 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
 
                                     {/* Calendar grid */}
                                     <div className="flex gap-0.5 sm:gap-1">
-                                        {weeks.map((week, weekIndex) => (
+                                        {weeks.map((week) => (
                                             <div
-                                                key={weekIndex}
+                                                key={week[0].date.toISOString()}
                                                 className="flex flex-col gap-0.5 sm:gap-1"
                                             >
-                                                {week.map((day, dayIndex) => (
+                                                {week.map((day) => (
                                                     <div
-                                                        key={`${weekIndex}-${dayIndex}`}
+                                                        key={day.date.toISOString()}
                                                         className={`size-2.5 rounded-sm transition-colors sm:size-3 ${getDayColor(
                                                             day.level
                                                         )} ${day.count > 0 ? 'hover:ring-green-450/50 cursor-pointer hover:ring-2' : ''}`}
