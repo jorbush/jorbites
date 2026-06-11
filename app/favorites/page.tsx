@@ -1,5 +1,6 @@
 import EmptyState from '@/app/components/utils/EmptyState';
 import ClientOnly from '@/app/components/utils/ClientOnly';
+import { Metadata } from 'next';
 import { isMobile } from '@/app/utils/deviceDetector';
 import { headers } from 'next/headers';
 import {
@@ -13,6 +14,11 @@ import getFavoriteRecipes, {
 } from '@/app/actions/getFavoriteRecipes';
 
 import FavoritesClient from './FavoritesClient';
+
+export const metadata: Metadata = {
+    title: 'Mis Favoritos | Jorbites',
+    description: 'Todas tus recetas favoritas guardadas en un solo lugar.',
+};
 
 interface FavoritesPageProps {
     searchParams: Promise<IFavoriteRecipesParams>;
