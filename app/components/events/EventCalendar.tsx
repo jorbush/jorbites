@@ -30,7 +30,23 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
     upcomingEvents,
 }) => {
     const { t } = useTranslation();
-    const [currentMonth, setCurrentMonth] = React.useState(new Date());
+
+    const [isMounted, setIsMounted] = React.useState(false);
+    React.useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    const [currentMonth, setCurrentMonth] = React.useState(
+        () => new Date(2026, 5, 11)
+    );
+
+    React.useEffect(() => {
+        if (isMounted) {
+            setCurrentMonth(new Date());
+        }
+    }, [isMounted]);
+
+    const now = isMounted ? new Date() : new Date(2026, 5, 11);
 
     const allEvents = [...currentEvents, ...upcomingEvents];
 
@@ -132,7 +148,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                         startOfMonth(day),
                         monthStart
                     );
-                    const isToday = isSameDay(day, new Date());
+                    const isToday = isSameDay(day, now);
 
                     return (
                         <div
