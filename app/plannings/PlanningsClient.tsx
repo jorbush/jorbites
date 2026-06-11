@@ -74,7 +74,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                 toast.error(t('something_went_wrong'));
             }
         },
-        [push, refresh, t]
+        [refresh, t]
     );
 
     const handleCreateClick = useCallback(() => {
@@ -126,7 +126,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
         } finally {
             setDeletePlanId(null);
         }
-    }, [deletePlanId, push, refresh, t]);
+    }, [deletePlanId, refresh, t]);
 
     // Unique recipes extraction for card preview
     const getPreviewRecipes = (plan: SafePlanning) => {

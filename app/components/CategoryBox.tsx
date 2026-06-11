@@ -52,7 +52,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
         );
 
         push(url);
-    }, [label, push, params, pathname]);
+    }, [label, push, params, pathname, get]);
 
     return (
         <button

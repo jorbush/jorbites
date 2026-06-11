@@ -57,7 +57,7 @@ const ListClient: React.FC<ListClientProps> = ({
         } finally {
             setIsLoading(false);
         }
-    }, [isOwner, isPrivate, list.id, push, refresh, t]);
+    }, [isOwner, isPrivate, list.id, refresh, t]);
 
     const onDelete = useCallback(async () => {
         if (!isOwner) return;
@@ -91,7 +91,7 @@ const ListClient: React.FC<ListClientProps> = ({
                 setDeletingId('');
             }
         },
-        [isOwner, list.id, push, refresh, t]
+        [isOwner, list.id, refresh, t]
     );
 
     return (

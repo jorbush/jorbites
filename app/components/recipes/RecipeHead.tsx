@@ -27,9 +27,10 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
+        const timeoutRef = transitionTimeoutRef.current;
         return () => {
-            if (transitionTimeoutRef.current) {
-                clearTimeout(transitionTimeoutRef.current);
+            if (timeoutRef) {
+                clearTimeout(timeoutRef);
             }
         };
     }, []);

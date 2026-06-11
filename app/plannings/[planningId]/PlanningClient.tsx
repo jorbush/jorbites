@@ -225,7 +225,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
         } finally {
             setIsSaving(false);
         }
-    }, [currentUser, isSaved, planning.id, loginModal, push, refresh, t]);
+    }, [currentUser, isSaved, planning.id, loginModal, refresh, t]);
 
     // Toggle privacy setting
     const togglePrivacy = useCallback(async () => {
@@ -259,7 +259,6 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
         editedDesc,
         meals,
         planning.id,
-        push,
         refresh,
         t,
     ]);
