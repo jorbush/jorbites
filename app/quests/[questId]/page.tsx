@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getQuestById from '@/app/actions/getQuestById';
 import QuestDetailClient from '@/app/quests/[questId]/QuestDetailClient';
@@ -10,6 +11,24 @@ interface QuestDetailPageProps {
     params: Promise<{
         questId: string;
     }>;
+}
+
+export async function generateMetadata({
+    params,
+}: QuestDetailPageProps): Promise<Metadata> {
+    const { questId } = await params;
+    const quest = await getQuestById({ questId });
+
+    if (!quest) {
+        return {
+            title: 'Reto no encontrado | Jorbites',
+        };
+    }
+
+    return {
+        title: `${quest.title} | Jorbites`,
+        description: `Participa en el reto: ${quest.title}. ${quest.description}`,
+    };
 }
 
 const QuestDetailPage = async ({ params }: QuestDetailPageProps) => {

@@ -5,6 +5,13 @@ import QuestsClientSkeleton from '@/app/components/quests/QuestsClientSkeleton';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import Container from '@/app/components/utils/Container';
 import ErrorDisplay from '@/app/components/utils/ErrorDisplay';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Retos | Jorbites',
+    description:
+        'Participa en retos culinarios y demuestra tus habilidades en la cocina.',
+};
 
 interface QuestsPageProps {
     searchParams: Promise<{

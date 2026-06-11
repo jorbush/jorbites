@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import getCurrentUser from '@/app/actions/getCurrentUser';
@@ -6,6 +7,26 @@ import ListClient from './ListClient';
 
 interface IParams {
     listId?: string;
+}
+
+export async function generateMetadata(props: {
+    params: Promise<IParams>;
+}): Promise<Metadata> {
+    const params = await props.params;
+    const listData = await getListById(params);
+
+    if (!listData || 'error' in listData) {
+        return {
+            title: 'Lista no encontrada | Jorbites',
+        };
+    }
+
+    const { list } = listData;
+
+    return {
+        title: `${list.name} | Jorbites`,
+        description: `Lista de recetas: ${list.name}.`,
+    };
 }
 
 const ListPage = async (props: { params: Promise<IParams> }) => {
