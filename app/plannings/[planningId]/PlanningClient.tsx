@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 import { SafePlanning, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
@@ -71,7 +71,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
 
     // Modal active states
     const [isRecipeSelectOpen, setIsRecipeSelectOpen] = useState(false);
-    const [activeSlot, setActiveSlot] = useState<{
+    const activeSlot = useRef<{
         day: string;
         mealType: string;
     } | null>(null);
@@ -152,17 +152,18 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
 
     // Add recipe to slot
     const handleAddRecipeClick = (day: string, mealType: string) => {
-        setActiveSlot({ day, mealType });
+        activeSlot.current = { day, mealType };
         setIsRecipeSelectOpen(true);
     };
 
     const handleRecipeSelect = async (recipe: any) => {
-        if (!activeSlot) return;
+        if (!activeSlot.current) return;
 
         const currentSlotMeals = meals.filter(
             (m) =>
-                m.day.toLowerCase() === activeSlot.day.toLowerCase() &&
-                m.mealType.toLowerCase() === activeSlot.mealType.toLowerCase()
+                m.day.toLowerCase() === activeSlot.current!.day.toLowerCase() &&
+                m.mealType.toLowerCase() ===
+                    activeSlot.current!.mealType.toLowerCase()
         );
 
         if (currentSlotMeals.length >= MAX_RECIPES_PER_MEAL) {
@@ -172,8 +173,8 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
 
         const newMeal = {
             id: `temp-${Date.now()}-${Math.random()}`,
-            day: activeSlot.day,
-            mealType: activeSlot.mealType,
+            day: activeSlot.current.day,
+            mealType: activeSlot.current.mealType,
             recipeId: recipe.id,
             recipe: {
                 id: recipe.id,
@@ -188,7 +189,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
         const updatedMeals = [...meals, newMeal];
         setMeals(updatedMeals);
         setIsRecipeSelectOpen(false);
-        setActiveSlot(null);
+        activeSlot.current = null;
 
         await saveMeals(updatedMeals);
     };
@@ -651,7 +652,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                 isOpen={isRecipeSelectOpen}
                 onClose={() => {
                     setIsRecipeSelectOpen(false);
-                    setActiveSlot(null);
+                    activeSlot.current = null;
                 }}
                 onSelect={handleRecipeSelect}
             />

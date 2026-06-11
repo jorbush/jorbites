@@ -16,42 +16,44 @@ const Counter: React.FC<CounterProps> = ({
     value,
     onChange,
 }) => {
-    const [isIncrementing, setIsIncrementing] = useState(false);
-    const [isDecrementing, setIsDecrementing] = useState(false);
+    const isIncrementing = useRef(false);
+    const isDecrementing = useRef(false);
     const lastUpdateTime = useRef<number>(0);
     const animationFrameId = useRef<number | undefined>(undefined);
+    const valueRef = useRef(value);
+    valueRef.current = value;
 
     const updateCounter = useCallback(() => {
+        if (!isIncrementing.current && !isDecrementing.current) {
+            animationFrameId.current = undefined;
+            return;
+        }
+
         const currentTime = Date.now();
 
         if (currentTime - lastUpdateTime.current >= 100) {
-            if (isIncrementing) {
-                onChange(value + 1);
-            } else if (isDecrementing && value > 1) {
-                onChange(value - 1);
+            if (isIncrementing.current) {
+                onChange(valueRef.current + 1);
+            } else if (isDecrementing.current && valueRef.current > 1) {
+                onChange(valueRef.current - 1);
             }
             lastUpdateTime.current = currentTime;
         }
 
         animationFrameId.current = requestAnimationFrame(updateCounter);
-    }, [isIncrementing, isDecrementing, onChange, value]);
+    }, [onChange]);
 
     useEffect(() => {
-        if (isIncrementing || isDecrementing) {
-            lastUpdateTime.current = Date.now();
-            animationFrameId.current = requestAnimationFrame(updateCounter);
-        }
-
         return () => {
             if (animationFrameId.current) {
                 cancelAnimationFrame(animationFrameId.current);
             }
         };
-    }, [isIncrementing, isDecrementing, updateCounter]);
+    }, []);
 
     const handleStop = useCallback(() => {
-        setIsIncrementing(false);
-        setIsDecrementing(false);
+        isIncrementing.current = false;
+        isDecrementing.current = false;
     }, []);
 
     const handleIncrement = useCallback(() => {
@@ -65,16 +67,24 @@ const Counter: React.FC<CounterProps> = ({
     }, [onChange, value]);
 
     const handleIncrementStart = useCallback(() => {
-        setIsIncrementing(true);
-        setIsDecrementing(false);
-    }, []);
+        isIncrementing.current = true;
+        isDecrementing.current = false;
+        if (animationFrameId.current === undefined) {
+            lastUpdateTime.current = Date.now();
+            animationFrameId.current = requestAnimationFrame(updateCounter);
+        }
+    }, [updateCounter]);
 
     const handleDecrementStart = useCallback(() => {
         if (value > 1) {
-            setIsDecrementing(true);
-            setIsIncrementing(false);
+            isDecrementing.current = true;
+            isIncrementing.current = false;
+            if (animationFrameId.current === undefined) {
+                lastUpdateTime.current = Date.now();
+                animationFrameId.current = requestAnimationFrame(updateCounter);
+            }
         }
-    }, [value]);
+    }, [value, updateCounter]);
 
     return (
         <div className="flex flex-row items-center justify-between">

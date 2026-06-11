@@ -30,7 +30,7 @@ const Search: React.FC<SearchProps> = ({
     const currentSearch = get('search') || '';
     const [isSearchMode, setIsSearchMode] = useState(Boolean(currentSearch));
     const [searchQuery, setSearchQuery] = useState(currentSearch);
-    const [isExplicitlyExiting, setIsExplicitlyExiting] = useState(false);
+    const isExplicitlyExiting = useRef(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const isMobile = useMediaQuery('(max-width: 768px)');
 
@@ -90,23 +90,31 @@ const Search: React.FC<SearchProps> = ({
 
     const prevCurrentSearchRef = useRef(currentSearch);
 
-    if (currentSearch !== prevCurrentSearchRef.current) {
-        prevCurrentSearchRef.current = currentSearch;
-        if (currentSearch) {
-            setSearchQuery(currentSearch);
-            if (!isSearchMode && !isExplicitlyExiting) {
-                setIsSearchMode(true);
-                onSearchModeChange?.(true);
-            }
-        } else {
-            setSearchQuery('');
-            if (isExplicitlyExiting) {
-                setIsSearchMode(false);
-                onSearchModeChange?.(false);
-                setIsExplicitlyExiting(false);
+    useEffect(() => {
+        if (currentSearch !== prevCurrentSearchRef.current) {
+            prevCurrentSearchRef.current = currentSearch;
+            if (currentSearch) {
+                setSearchQuery(currentSearch);
+                if (!isSearchMode && !isExplicitlyExiting.current) {
+                    setIsSearchMode(true);
+                    onSearchModeChange?.(true);
+                }
+            } else {
+                setSearchQuery('');
+                if (isExplicitlyExiting.current) {
+                    setIsSearchMode(false);
+                    onSearchModeChange?.(false);
+                    isExplicitlyExiting.current = false;
+                }
             }
         }
-    }
+    }, [
+        currentSearch,
+        isSearchMode,
+        onSearchModeChange,
+        setSearchQuery,
+        setIsSearchMode,
+    ]);
 
     const hasFiredInitialRef = useRef(false);
     useEffect(() => {
@@ -120,7 +128,7 @@ const Search: React.FC<SearchProps> = ({
 
     const handleSearchToggle = () => {
         if (isSearchMode) {
-            setIsExplicitlyExiting(true);
+            isExplicitlyExiting.current = true;
             setSearchQuery('');
             if (isFilterablePage && searchQuery.trim()) {
                 const params = new URLSearchParams(
@@ -138,7 +146,7 @@ const Search: React.FC<SearchProps> = ({
             } else {
                 setIsSearchMode(false);
                 onSearchModeChange?.(false);
-                setIsExplicitlyExiting(false);
+                isExplicitlyExiting.current = false;
             }
         } else {
             setIsSearchMode(true);
