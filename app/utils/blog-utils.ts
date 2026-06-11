@@ -40,7 +40,7 @@ export async function getBlogById(
     id: string,
     language: string = 'en'
 ): Promise<Blog | null> {
-    const languages = [...new Set([language, 'en', 'es', 'ca'])];
+    const languages = Array.from(new Set([language, 'en', 'es', 'ca']));
 
     const subdirs = ['', 'releases']; // Check root and releases folder
 
