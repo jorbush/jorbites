@@ -6,16 +6,16 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import Heading from '@/app/components/navigation/Heading';
 import SearchInput from '@/app/components/inputs/SearchInput';
-import Avatar from '@/app/components/utils/Avatar';
 import Tabs, { Tab } from '@/app/components/utils/Tabs';
 import { FiSearch, FiUsers, FiTarget, FiYoutube } from 'react-icons/fi';
-import { AiFillDelete } from 'react-icons/ai';
 import { IoRestaurantOutline } from 'react-icons/io5';
-import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import debounce from 'lodash/debounce';
 import Input from '@/app/components/inputs/Input';
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 import { validateYouTubeUrl } from '@/app/utils/validation';
+import { SelectedCoCooksList } from './SelectedCoCooksList';
+import { SelectedQuestDisplay } from './SelectedQuestDisplay';
+import { SelectedLinkedRecipesList } from './SelectedLinkedRecipesList';
 
 interface RelatedContentStepProps {
     isLoading: boolean;
@@ -216,129 +216,29 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
 
             {/* Display of selected items */}
             <div className="space-y-4">
-                {/* Selected co-cooks */}
-                {searchType === 'users' && selectedCoCooks.length > 0 && (
-                    <div>
-                        <h3 className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                            {t('selected_co_cooks') || 'Selected Co-Cooks'}
-                            <span className="ml-1 text-xs text-neutral-400 dark:text-neutral-500">
-                                ({selectedCoCooks.length}/4)
-                            </span>
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                            {selectedCoCooks.map((user) => (
-                                <div
-                                    key={user.id}
-                                    className="flex items-center gap-2 rounded-full bg-neutral-100 py-1 pr-2 pl-1 dark:bg-neutral-900"
-                                >
-                                    <Avatar
-                                        src={user.image}
-                                        size={24}
-                                    />
-                                    <span className="text-sm text-neutral-900 dark:text-neutral-100">
-                                        {user.name}
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() => onRemoveCoCook(user.id)}
-                                        className="ml-1 text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
-                                    >
-                                        <AiFillDelete size={16} />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                {searchType === 'users' && (
+                    <SelectedCoCooksList
+                        selectedCoCooks={selectedCoCooks}
+                        onRemoveCoCook={onRemoveCoCook}
+                        t={t}
+                    />
                 )}
 
-                {/* Selected quest */}
-                {searchType === 'quests' && selectedQuest && (
-                    <div>
-                        <h3 className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                            {t('selected_quest') || 'Selected Quest'}
-                        </h3>
-                        <div className="rounded-lg border border-neutral-300 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900">
-                            <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                    <p className="font-medium text-neutral-900 dark:text-neutral-100">
-                                        {selectedQuest.title}
-                                    </p>
-                                    <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                                        {selectedQuest.description.length > 100
-                                            ? selectedQuest.description.substring(
-                                                  0,
-                                                  100
-                                              ) + '...'
-                                            : selectedQuest.description}
-                                    </p>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={onRemoveQuest}
-                                    className="ml-2 text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
-                                >
-                                    <AiFillDelete size={20} />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                {searchType === 'quests' && (
+                    <SelectedQuestDisplay
+                        selectedQuest={selectedQuest}
+                        onRemoveQuest={onRemoveQuest}
+                        t={t}
+                    />
                 )}
 
-                {/* Selected linked recipes */}
-                {searchType === 'recipes' &&
-                    selectedLinkedRecipes.length > 0 && (
-                        <div>
-                            <h3 className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                                {t('selected_linked_recipes') ||
-                                    'Selected Linked Recipes'}
-                                <span className="ml-1 text-xs text-neutral-400 dark:text-neutral-500">
-                                    ({selectedLinkedRecipes.length}/2)
-                                </span>
-                            </h3>
-                            <div className="flex flex-col gap-2">
-                                {selectedLinkedRecipes.map((recipe) => (
-                                    <div
-                                        key={recipe.id}
-                                        className="flex items-center justify-between rounded-lg border border-neutral-300 bg-white p-2 dark:border-neutral-800 dark:bg-neutral-900"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <div className="relative size-10 overflow-hidden rounded-md">
-                                                <CustomProxyImage
-                                                    src={
-                                                        recipe.imageSrc ||
-                                                        '/avocado.webp'
-                                                    }
-                                                    fill
-                                                    className="object-cover"
-                                                    alt={recipe.title}
-                                                    quality="auto:eco"
-                                                    width={40}
-                                                    height={40}
-                                                />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                                                    {recipe.title}
-                                                </p>
-                                                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                                                    {recipe.user.name}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                onRemoveLinkedRecipe(recipe.id)
-                                            }
-                                            className="text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
-                                        >
-                                            <AiFillDelete size={20} />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                {searchType === 'recipes' && (
+                    <SelectedLinkedRecipesList
+                        selectedLinkedRecipes={selectedLinkedRecipes}
+                        onRemoveLinkedRecipe={onRemoveLinkedRecipe}
+                        t={t}
+                    />
+                )}
             </div>
 
             {/* YouTube URL Input - only show in Videos tab */}

@@ -1,0 +1,334 @@
+'use client';
+
+import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { FaGithub, FaEnvelope, FaHeart } from 'react-icons/fa';
+import { RiGitRepositoryLine } from 'react-icons/ri';
+import { CONTACT_EMAIL } from '@/app/utils/constants';
+import { SafeUser } from '@/app/types';
+
+interface SectionProps {
+    t: (key: string) => string;
+}
+
+export const WhatIsJorbitesSection: React.FC<SectionProps> = ({ t }) => (
+    <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
+        <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
+            {t('what_is_jorbites')}
+        </h2>
+        <p className="mb-4 text-neutral-600 dark:text-neutral-400">
+            {t('jorbites_description')}
+        </p>
+        <p className="text-neutral-600 dark:text-neutral-400">
+            {t('jorbites_mission')}
+        </p>
+    </section>
+);
+
+export const WhyJorbitesSection: React.FC<SectionProps> = ({ t }) => (
+    <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
+        <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
+            {t('why_jorbites')}
+        </h2>
+        <p className="mb-4 text-neutral-600 dark:text-neutral-400">
+            {t('why_jorbites_description')}
+        </p>
+        <Link
+            href="/recipes/68b194a84e84cb9eabfb4350"
+            className="text-green-450 dark:text-green-450 inline-flex items-center hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+            prefetch={false}
+        >
+            🥑 {t('why_jorbites_recipe')}
+        </Link>
+    </section>
+);
+
+export const FeaturesSection: React.FC<SectionProps> = ({ t }) => (
+    <section>
+        <h2 className="mb-6 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
+            {t('features')}
+        </h2>
+        <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-700">
+                <h3 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t('share_recipes')}
+                </h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                    {t('share_recipes_description')}
+                </p>
+            </div>
+            <div className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-700">
+                <h3 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t('discover_recipes')}
+                </h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                    {t('discover_recipes_description')}
+                </p>
+            </div>
+            <div className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-700">
+                <h3 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t('level_system')}
+                </h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                    {t('level_system_description')}
+                </p>
+            </div>
+            <div className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-700">
+                <h3 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t('community')}
+                </h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                    {t('community_description')}
+                </p>
+            </div>
+        </div>
+    </section>
+);
+
+export const ArchitectureSection: React.FC<SectionProps> = ({ t }) => (
+    <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
+        <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
+            {t('architecture')}
+        </h2>
+        <p className="mb-4 text-neutral-600 dark:text-neutral-400">
+            {t('architecture_description')}
+        </p>
+        <div className="flex flex-col gap-3">
+            <div>
+                <h3 className="mb-2 font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t('core_platform')}
+                </h3>
+                <ul className="flex list-inside list-disc flex-col gap-1 text-sm text-neutral-600 dark:text-neutral-400">
+                    <li>{t('core_platform_nextjs')}</li>
+                    <li>{t('core_platform_mongodb')}</li>
+                    <li>{t('core_platform_nextauth')}</li>
+                    <li>{t('core_platform_cloudinary')}</li>
+                    <li>{t('core_platform_redis')}</li>
+                </ul>
+            </div>
+            <div>
+                <h3 className="mb-2 font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t('microservices')}
+                </h3>
+                <ul className="flex list-inside list-disc flex-col gap-1 text-sm text-neutral-600 dark:text-neutral-400">
+                    <li>
+                        <a
+                            href="https://github.com/jorbush/jorbites-notifier"
+                            className="text-green-450 dark:text-green-450 hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Jorbites Notifier
+                        </a>{' '}
+                        {t('microservices_notifier')}
+                    </li>
+                    <li>
+                        <a
+                            href="https://github.com/jorbush/badge_forge"
+                            className="text-green-450 dark:text-green-450 hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Badge Forge
+                        </a>{' '}
+                        {t('microservices_badge')}
+                    </li>
+                    <li>
+                        <a
+                            href="https://github.com/jorbush/pantry_keeper"
+                            className="text-green-450 dark:text-green-450 hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Pantry Keeper
+                        </a>{' '}
+                        {t('microservices_pantry')}
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <h3 className="mb-2 font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t('videogames')}
+                </h3>
+                <ul className="flex list-inside list-disc flex-col gap-1 text-sm text-neutral-600 dark:text-neutral-400">
+                    <li>
+                        <a
+                            href="https://paltin-dash.vercel.app/"
+                            className="text-green-450 dark:text-green-450 hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Paltín Dash
+                        </a>{' '}
+                        {t('videogames_paltin_dash')}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+);
+
+export const DocumentationSection: React.FC<SectionProps> = ({ t }) => (
+    <section>
+        <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
+            {t('documentation')}
+        </h2>
+        <div className="grid gap-3 md:grid-cols-2">
+            <a
+                href="https://github.com/jorbush/jorbites/blob/main/docs/development.md"
+                className="rounded-lg border border-neutral-200 p-4 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <h3 className="mb-1 font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t('doc_development_setup')}
+                </h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                    {t('doc_development_setup_desc')}
+                </p>
+            </a>
+            <a
+                href="https://github.com/jorbush/jorbites/blob/main/docs/architecture.md"
+                className="rounded-lg border border-neutral-200 p-4 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <h3 className="mb-1 font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t('doc_architecture_details')}
+                </h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                    {t('doc_architecture_details_desc')}
+                </p>
+            </a>
+            <a
+                href="https://github.com/jorbush/jorbites/blob/main/docs/api-error-handling.md"
+                className="rounded-lg border border-neutral-200 p-4 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <h3 className="mb-1 font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t('doc_api_documentation')}
+                </h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                    {t('doc_api_documentation_desc')}
+                </p>
+            </a>
+            <a
+                href="https://github.com/jorbush/jorbites/blob/main/docs/image_optimization.md"
+                className="rounded-lg border border-neutral-200 p-4 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <h3 className="mb-1 font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t('doc_image_optimization')}
+                </h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                    {t('doc_image_optimization_desc')}
+                </p>
+            </a>
+        </div>
+    </section>
+);
+
+export const DeveloperSection: React.FC<SectionProps> = ({ t }) => (
+    <section className="rounded-lg bg-neutral-50 p-6 dark:bg-neutral-900">
+        <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
+            {t('the_project')}
+        </h2>
+        <div className="flex flex-col items-center gap-4 md:flex-row md:items-start md:gap-6">
+            <div className="flex-shrink-0">
+                <Image
+                    src="/avocado.webp"
+                    alt="Jorbites Logo"
+                    width={80}
+                    height={80}
+                    className="h-20 w-22"
+                />
+            </div>
+            <div className="flex-1 text-center md:text-left">
+                <p className="mb-4 text-neutral-600 dark:text-neutral-400">
+                    {t('developer_description')}
+                </p>
+                <div className="flex flex-col items-center gap-3 md:items-start">
+                    <div className="flex flex-wrap justify-center gap-4 md:justify-start">
+                        <a
+                            href="https://github.com/jorbush"
+                            className="flex items-center gap-2 text-neutral-600 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <FaGithub className="size-5" />
+                            <span>{t('github')}</span>
+                        </a>
+                        <a
+                            href={`mailto:${CONTACT_EMAIL}`}
+                            className="flex items-center gap-2 text-neutral-600 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+                        >
+                            <FaEnvelope className="size-5" />
+                            <span>{t('contact')}</span>
+                        </a>
+                        <a
+                            href="https://github.com/jorbush/jorbites"
+                            className="flex items-center gap-2 text-neutral-600 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <RiGitRepositoryLine className="size-5" />
+                            <span>{t('repository')}</span>
+                        </a>
+                        <a
+                            href="https://github.com/sponsors/jorbush"
+                            className="inline-flex items-center gap-2 rounded-lg bg-pink-600 px-4 py-2 text-white transition-colors hover:bg-pink-700"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <FaHeart className="size-4" />
+                            <span>{t('sponsor_on_github')}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+);
+
+interface GetStartedSectionProps extends SectionProps {
+    currentUser?: SafeUser | null;
+    onRegisterOpen: () => void;
+}
+
+export const GetStartedSection: React.FC<GetStartedSectionProps> = ({
+    t,
+    currentUser,
+    onRegisterOpen,
+}) => (
+    <section className="text-center">
+        <h2 className="mb-4 text-2xl font-semibold text-neutral-800 dark:text-neutral-200">
+            {t('get_started')}
+        </h2>
+        <p className="mb-6 text-neutral-600 dark:text-neutral-400">
+            {t('get_started_description')}
+        </p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
+            <Link
+                href="/"
+                prefetch={false}
+                className="rounded-lg bg-neutral-800 px-6 py-3 text-white transition-colors hover:bg-neutral-700 dark:bg-neutral-200 dark:text-neutral-800 dark:hover:bg-neutral-300"
+            >
+                {t('explore_recipes')}
+            </Link>
+            {!currentUser && (
+                <button
+                    type="button"
+                    onClick={onRegisterOpen}
+                    className="rounded-lg border border-neutral-300 px-6 py-3 text-neutral-800 transition-colors hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                >
+                    {t('sign_up')}
+                </button>
+            )}
+        </div>
+    </section>
+);

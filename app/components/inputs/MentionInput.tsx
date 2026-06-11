@@ -3,8 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import debounce from 'lodash/debounce';
-import Avatar from '@/app/components/utils/Avatar';
-import VerificationBadge from '@/app/components/VerificationBadge';
+import MentionDropdown from './MentionDropdown';
 
 interface User {
     id: string;
@@ -23,6 +22,137 @@ interface MentionInputProps {
     maxLength?: number;
     dataCy?: string;
 }
+
+const isMobileDevice = () => {
+    if (typeof navigator === 'undefined') return false;
+    return (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent
+        ) ||
+        'ontouchstart' in window ||
+        navigator.maxTouchPoints > 0
+    );
+};
+
+const getCursorCoordinates = (
+    textarea: HTMLTextAreaElement | null,
+    mentionStartIndex: number,
+    value: string
+) => {
+    if (!textarea || mentionStartIndex === -1) return { x: 0, y: 0 };
+
+    const rect = textarea.getBoundingClientRect();
+
+    if (isMobileDevice()) {
+        return {
+            x: rect.left,
+            y: rect.bottom + 10, // Position below textarea
+        };
+    }
+
+    const mirrorDiv = document.createElement('div');
+    const computedStyle = window.getComputedStyle(textarea);
+
+    mirrorDiv.style.position = 'absolute';
+    mirrorDiv.style.visibility = 'hidden';
+    mirrorDiv.style.left = '-9999px';
+    mirrorDiv.style.top = '-9999px';
+    mirrorDiv.style.width = textarea.clientWidth + 'px';
+    mirrorDiv.style.height = textarea.clientHeight + 'px';
+    mirrorDiv.style.font = computedStyle.font;
+    mirrorDiv.style.fontSize = computedStyle.fontSize;
+    mirrorDiv.style.fontFamily = computedStyle.fontFamily;
+    mirrorDiv.style.fontWeight = computedStyle.fontWeight;
+    mirrorDiv.style.lineHeight = computedStyle.lineHeight;
+    mirrorDiv.style.letterSpacing = computedStyle.letterSpacing;
+    mirrorDiv.style.padding = computedStyle.padding;
+    mirrorDiv.style.border = computedStyle.border;
+    mirrorDiv.style.margin = computedStyle.margin;
+    mirrorDiv.style.whiteSpace = 'pre-wrap';
+    mirrorDiv.style.wordWrap = 'break-word';
+    mirrorDiv.style.overflow = 'hidden';
+    mirrorDiv.style.boxSizing = computedStyle.boxSizing;
+
+    document.body.appendChild(mirrorDiv);
+
+    // Add text before the @ symbol
+    const textBeforeMention = value.substring(0, mentionStartIndex);
+    mirrorDiv.textContent = textBeforeMention;
+
+    // Create a span to mark the cursor position (where @ is)
+    const cursorMarker = document.createElement('span');
+    cursorMarker.textContent = '@';
+    cursorMarker.style.position = 'relative';
+    mirrorDiv.appendChild(cursorMarker);
+
+    // Get the position of the cursor marker
+    const markerRect = cursorMarker.getBoundingClientRect();
+    const mirrorRect = mirrorDiv.getBoundingClientRect();
+
+    // Calculate relative position within the textarea
+    const relativeX = markerRect.left - mirrorRect.left;
+    const relativeY = markerRect.top - mirrorRect.top;
+
+    document.body.removeChild(mirrorDiv);
+
+    // Convert to screen coordinates
+    return {
+        x: rect.left + relativeX,
+        y: rect.top + relativeY + 20, // Add 20px below the cursor
+    };
+};
+
+const getDropdownPosition = (
+    textarea: HTMLTextAreaElement | null,
+    mentionStartIndex: number,
+    cursorPos: { x: number; y: number }
+) => {
+    if (!textarea || mentionStartIndex === -1) return {};
+
+    const mobile = isMobileDevice();
+
+    // Different sizing for mobile vs desktop
+    const dropdownWidth = mobile ? Math.min(320, window.innerWidth - 20) : 320;
+    const dropdownHeight = 200;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let left = cursorPos.x;
+    let top = cursorPos.y;
+
+    if (mobile) {
+        // On mobile, center the dropdown horizontally and position below textarea
+        left = Math.max(10, (viewportWidth - dropdownWidth) / 2);
+
+        // Ensure dropdown doesn't get hidden by mobile keyboard
+        const maxTop = viewportHeight * 0.6; // Use only top 60% of screen
+        if (top > maxTop) {
+            top = maxTop;
+        }
+    } else {
+        // Desktop positioning logic
+        if (left + dropdownWidth > viewportWidth) {
+            left = viewportWidth - dropdownWidth - 10;
+        }
+
+        if (top + dropdownHeight > viewportHeight) {
+            // Show above cursor instead
+            top = cursorPos.y - dropdownHeight - 25;
+        }
+    }
+
+    // Ensure minimum distance from screen edges
+    left = Math.max(10, left);
+    top = Math.max(10, top);
+
+    return {
+        position: 'fixed' as const,
+        top: top,
+        left: left,
+        zIndex: 9999,
+        width: mobile ? dropdownWidth : undefined,
+    };
+};
 
 const MentionInput: React.FC<MentionInputProps> = ({
     value,
@@ -175,132 +305,17 @@ const MentionInput: React.FC<MentionInputProps> = ({
             document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const isMobile = () => {
-        return (
-            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-                navigator.userAgent
-            ) ||
-            'ontouchstart' in window ||
-            navigator.maxTouchPoints > 0
-        );
-    };
-
-    const getCursorCoordinates = () => {
-        if (!textareaRef.current || mentionStartIndex === -1)
-            return { x: 0, y: 0 };
-
-        const textarea = textareaRef.current;
-        const rect = textarea.getBoundingClientRect();
-
-        if (isMobile()) {
-            return {
-                x: rect.left,
-                y: rect.bottom + 10, // Position below textarea
-            };
-        }
-
-        const mirrorDiv = document.createElement('div');
-        const computedStyle = window.getComputedStyle(textarea);
-
-        mirrorDiv.style.position = 'absolute';
-        mirrorDiv.style.visibility = 'hidden';
-        mirrorDiv.style.left = '-9999px';
-        mirrorDiv.style.top = '-9999px';
-        mirrorDiv.style.width = textarea.clientWidth + 'px';
-        mirrorDiv.style.height = textarea.clientHeight + 'px';
-        mirrorDiv.style.font = computedStyle.font;
-        mirrorDiv.style.fontSize = computedStyle.fontSize;
-        mirrorDiv.style.fontFamily = computedStyle.fontFamily;
-        mirrorDiv.style.fontWeight = computedStyle.fontWeight;
-        mirrorDiv.style.lineHeight = computedStyle.lineHeight;
-        mirrorDiv.style.letterSpacing = computedStyle.letterSpacing;
-        mirrorDiv.style.padding = computedStyle.padding;
-        mirrorDiv.style.border = computedStyle.border;
-        mirrorDiv.style.margin = computedStyle.margin;
-        mirrorDiv.style.whiteSpace = 'pre-wrap';
-        mirrorDiv.style.wordWrap = 'break-word';
-        mirrorDiv.style.overflow = 'hidden';
-        mirrorDiv.style.boxSizing = computedStyle.boxSizing;
-
-        document.body.appendChild(mirrorDiv);
-
-        // Add text before the @ symbol
-        const textBeforeMention = value.substring(0, mentionStartIndex);
-        mirrorDiv.textContent = textBeforeMention;
-
-        // Create a span to mark the cursor position (where @ is)
-        const cursorMarker = document.createElement('span');
-        cursorMarker.textContent = '@';
-        cursorMarker.style.position = 'relative';
-        mirrorDiv.appendChild(cursorMarker);
-
-        // Get the position of the cursor marker
-        const markerRect = cursorMarker.getBoundingClientRect();
-        const mirrorRect = mirrorDiv.getBoundingClientRect();
-
-        // Calculate relative position within the textarea
-        const relativeX = markerRect.left - mirrorRect.left;
-        const relativeY = markerRect.top - mirrorRect.top;
-
-        document.body.removeChild(mirrorDiv);
-
-        // Convert to screen coordinates
-        return {
-            x: rect.left + relativeX,
-            y: rect.top + relativeY + 20, // Add 20px below the cursor
-        };
-    };
-
-    const getDropdownPosition = () => {
-        if (!textareaRef.current || mentionStartIndex === -1) return {};
-
-        const cursorPos = getCursorCoordinates();
-        const mobile = isMobile();
-
-        // Different sizing for mobile vs desktop
-        const dropdownWidth = mobile
-            ? Math.min(320, window.innerWidth - 20)
-            : 320;
-        const dropdownHeight = 200;
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-
-        let left = cursorPos.x;
-        let top = cursorPos.y;
-
-        if (mobile) {
-            // On mobile, center the dropdown horizontally and position below textarea
-            left = Math.max(10, (viewportWidth - dropdownWidth) / 2);
-
-            // Ensure dropdown doesn't get hidden by mobile keyboard
-            const maxTop = viewportHeight * 0.6; // Use only top 60% of screen
-            if (top > maxTop) {
-                top = maxTop;
-            }
-        } else {
-            // Desktop positioning logic
-            if (left + dropdownWidth > viewportWidth) {
-                left = viewportWidth - dropdownWidth - 10;
-            }
-
-            if (top + dropdownHeight > viewportHeight) {
-                // Show above cursor instead
-                top = cursorPos.y - dropdownHeight - 25;
-            }
-        }
-
-        // Ensure minimum distance from screen edges
-        left = Math.max(10, left);
-        top = Math.max(10, top);
-
-        return {
-            position: 'fixed' as const,
-            top: top,
-            left: left,
-            zIndex: 9999,
-            width: mobile ? dropdownWidth : undefined,
-        };
-    };
+    const cursorPos = getCursorCoordinates(
+        textareaRef.current,
+        mentionStartIndex,
+        value
+    );
+    const dropdownStyle = getDropdownPosition(
+        textareaRef.current,
+        mentionStartIndex,
+        cursorPos
+    );
+    const mobile = isMobileDevice();
 
     return (
         <div className="relative">
@@ -317,47 +332,15 @@ const MentionInput: React.FC<MentionInputProps> = ({
                 data-cy={dataCy}
             />
 
-            {showDropdown && users.length > 0 && (
-                <div
-                    ref={dropdownRef}
-                    className={`rounded-md border border-neutral-200 bg-white shadow-lg dark:border-neutral-600 dark:bg-neutral-800 ${
-                        isMobile() ? 'w-full max-w-none' : 'w-auto max-w-sm'
-                    }`}
-                    style={getDropdownPosition()}
-                >
-                    <div className="max-h-48 overflow-y-auto">
-                        {users.map((user, index) => (
-                            <button
-                                key={user.id}
-                                type="button"
-                                className={`flex w-full cursor-pointer items-center gap-2 pr-5 text-left hover:bg-neutral-50 dark:hover:bg-neutral-700 ${
-                                    isMobile() ? 'p-4' : 'p-3'
-                                } ${
-                                    index === selectedIndex
-                                        ? 'bg-neutral-50 dark:bg-neutral-700'
-                                        : ''
-                                }`}
-                                onClick={() => selectUser(user)}
-                                style={{
-                                    minHeight: isMobile() ? '48px' : 'auto',
-                                }}
-                            >
-                                <Avatar
-                                    src={user.image}
-                                    size={32}
-                                />
-                                <div className="flex items-center gap-1">
-                                    <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                                        {user.name}
-                                    </span>
-                                    {user.verified && (
-                                        <VerificationBadge className="ml-1" />
-                                    )}
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                </div>
+            {showDropdown && (
+                <MentionDropdown
+                    dropdownRef={dropdownRef}
+                    users={users}
+                    selectedIndex={selectedIndex}
+                    onSelectUser={selectUser}
+                    isMobile={mobile}
+                    dropdownStyle={dropdownStyle}
+                />
             )}
         </div>
     );

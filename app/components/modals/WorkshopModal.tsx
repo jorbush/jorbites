@@ -15,12 +15,9 @@ import {
     WORKSHOP_MAX_INGREDIENTS,
     WORKSHOP_MAX_STEPS,
 } from '@/app/utils/constants';
-import Input from '../inputs/Input';
-import WorkshopIngredientsStep from './workshop-steps/WorkshopIngredientsStep';
-import WorkshopPreviousStepsStep from './workshop-steps/WorkshopPreviousStepsStep';
-import WhitelistUsersStep from './workshop-steps/WhitelistUsersStep';
-import CollapsibleSection from '@/app/components/utils/CollapsibleSection';
-import CurrencySelect from '@/app/components/inputs/CurrencySelect';
+import WorkshopInfoStep from './workshop-steps/WorkshopInfoStep';
+import WorkshopRequirementsStep from './workshop-steps/WorkshopRequirementsStep';
+import WorkshopPrivacyStep from './workshop-steps/WorkshopPrivacyStep';
 import { SafeUser } from '@/app/types';
 
 interface WorkshopModalProps {
@@ -292,157 +289,43 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
     }, [step, t]);
 
     let bodyContent = (
-        <div className="flex flex-col gap-4">
-            <Input
-                id="title"
-                label={t('title')}
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required
-                dataCy="workshop-title"
-            />
-            <Input
-                id="description"
-                label={t('description')}
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required
-                dataCy="workshop-description"
-            />
-            <Input
-                id="date"
-                label={t('date')}
-                type="datetime-local"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required
-                dataCy="workshop-date"
-            />
-            <Input
-                id="location"
-                label={t('location')}
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required
-                dataCy="workshop-location"
-            />
-            <div className="flex items-center gap-2">
-                <input
-                    id="isRecurrent"
-                    type="checkbox"
-                    {...register('isRecurrent')}
-                    disabled={isLoading}
-                    className="accent-green-450 size-5"
-                />
-                <label
-                    htmlFor="isRecurrent"
-                    className="text-md font-semibold"
-                >
-                    {t('is_recurrent')}
-                </label>
-            </div>
-            {isRecurrent && (
-                <select
-                    {...register('recurrencePattern')}
-                    disabled={isLoading}
-                    className="w-full appearance-none rounded-lg border-2 p-4 transition outline-none disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800 dark:text-white"
-                >
-                    <option value="">{t('recurrence_pattern')}</option>
-                    <option value="weekly">{t('weekly')}</option>
-                    <option value="monthly">{t('monthly')}</option>
-                </select>
-            )}
-        </div>
+        <WorkshopInfoStep
+            register={register}
+            errors={errors}
+            isLoading={isLoading}
+            isRecurrent={isRecurrent}
+            t={t}
+        />
     );
 
     if (step === WORKSHOP_STEPS.REQUIREMENTS) {
         bodyContent = (
-            <div className="flex flex-col gap-4">
-                <CollapsibleSection
-                    title={t('price_per_person')}
-                    description={t('price_description')}
-                >
-                    <div className="flex items-start gap-3">
-                        <div className="flex-1">
-                            <Input
-                                id="price"
-                                label={t('price_per_person')}
-                                type="number"
-                                disabled={isLoading}
-                                register={register}
-                                errors={errors}
-                                formatPrice
-                            />
-                        </div>
-                        <CurrencySelect
-                            id="currency"
-                            disabled={isLoading}
-                            register={register}
-                            errors={errors}
-                        />
-                    </div>
-                </CollapsibleSection>
-                <CollapsibleSection
-                    title={t('ingredients')}
-                    description={t('ingredients_description')}
-                    dataCy="ingredients-section"
-                >
-                    <WorkshopIngredientsStep
-                        numIngredients={numIngredients}
-                        register={register}
-                        errors={errors}
-                        onAddIngredient={addIngredient}
-                        onRemoveIngredient={removeIngredient}
-                    />
-                </CollapsibleSection>
-                <CollapsibleSection
-                    title={t('previous_steps')}
-                    description={t('previous_steps_description')}
-                    dataCy="previous-steps-section"
-                >
-                    <WorkshopPreviousStepsStep
-                        numPreviousSteps={numPreviousSteps}
-                        register={register}
-                        errors={errors}
-                        onAddPreviousStep={addPreviousStep}
-                        onRemovePreviousStep={removePreviousStep}
-                    />
-                </CollapsibleSection>
-            </div>
+            <WorkshopRequirementsStep
+                register={register}
+                errors={errors}
+                isLoading={isLoading}
+                numIngredients={numIngredients}
+                numPreviousSteps={numPreviousSteps}
+                onAddIngredient={addIngredient}
+                onRemoveIngredient={removeIngredient}
+                onAddPreviousStep={addPreviousStep}
+                onRemovePreviousStep={removePreviousStep}
+                t={t}
+            />
         );
     }
 
     if (step === WORKSHOP_STEPS.PRIVACY) {
         bodyContent = (
-            <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-2">
-                    <input
-                        id="isPrivate"
-                        type="checkbox"
-                        {...register('isPrivate')}
-                        disabled={isLoading}
-                        className="accent-green-450 size-5"
-                    />
-                    <label
-                        htmlFor="isPrivate"
-                        className="text-md font-semibold"
-                    >
-                        {t('private_workshop')}
-                    </label>
-                </div>
-                {isPrivate && (
-                    <WhitelistUsersStep
-                        isLoading={isLoading}
-                        selectedUsers={selectedUsers}
-                        onAddUser={addWhitelistedUser}
-                        onRemoveUser={removeWhitelistedUser}
-                    />
-                )}
-            </div>
+            <WorkshopPrivacyStep
+                register={register}
+                isLoading={isLoading}
+                isPrivate={isPrivate}
+                selectedUsers={selectedUsers}
+                onAddUser={addWhitelistedUser}
+                onRemoveUser={removeWhitelistedUser}
+                t={t}
+            />
         );
     }
 

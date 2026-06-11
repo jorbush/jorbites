@@ -50,3 +50,15 @@ export const USER_SELECT_FIELDS = {
     updatedAt: true,
     emailVerified: true,
 } as const;
+
+export const MAX_RECIPES_PER_MEAL = 4;
+export const MEAL_TYPES = ['breakfast', 'lunch', 'snack', 'dinner'];
+export const DAYS_OF_WEEK = [
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+    'sunday',
+];
