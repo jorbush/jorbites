@@ -7,7 +7,7 @@ import { Blog } from '@/app/utils/markdownUtils';
 import BlogDetail, {
     BlogDetailSkeleton,
 } from '@/app/components/blog/BlogDetail';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import useTheme from '@/app/hooks/useTheme';
 import { SafeUser } from '@/app/types';
 import useSWR from 'swr';
@@ -20,14 +20,18 @@ interface BlogDetailClientProps {
 const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
+    const searchParams = useSearchParams();
+    const langParam = searchParams?.get('lang');
 
     useTheme();
+
+    const currentLang = langParam || i18n.language || 'en';
 
     const {
         data: blog,
         error: blogError,
         isLoading: blogLoading,
-    } = useSWR<Blog>(`/api/blogs/${id}?lang=${i18n.language || 'en'}`, fetcher);
+    } = useSWR<Blog>(`/api/blogs/${id}?lang=${currentLang}`, fetcher);
 
     const { data: authorData } = useSWR<SafeUser>(
         blog?.frontmatter?.user_id
@@ -42,7 +46,7 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
         blog?.category === 'releases' ? 'releases' : 'general';
     const { data: relatedBlogsData } = useSWR(
         blog
-            ? `/api/blogs?lang=${i18n.language || 'en'}&pageSize=4&category=${relatedCategory}`
+            ? `/api/blogs?lang=${currentLang}&pageSize=4&category=${relatedCategory}`
             : null,
         fetcher
     );
