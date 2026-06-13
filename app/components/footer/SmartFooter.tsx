@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import dynamic from 'next/dynamic';
 import FooterSkeleton from '@/app/components/footer/FooterSkeleton';
 
@@ -9,12 +9,14 @@ const ClientFooter = dynamic(() => import('@/app/components/footer/Footer'), {
     loading: () => <FooterSkeleton />,
 });
 
-export default function SmartFooter() {
-    const [mounted, setMounted] = useState(false);
+const subscribe = () => () => {};
 
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+export default function SmartFooter() {
+    const mounted = useSyncExternalStore(
+        subscribe,
+        () => true,
+        () => false
+    );
 
     return mounted ? <ClientFooter /> : <FooterSkeleton />;
 }

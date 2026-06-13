@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useSyncExternalStore } from 'react';
 import { format } from 'date-fns';
 import Avatar from '@/app/components/utils/Avatar';
 import { MdDelete } from 'react-icons/md';
@@ -23,9 +23,11 @@ interface CommentProps {
     canDelete?: boolean;
     verified?: boolean;
     commentId: string;
-    userLevel: number;
-    rating?: number | null;
+    userLevel?: number;
+    rating: number | null;
 }
+
+const subscribe = () => () => {};
 
 const Comment: React.FC<CommentProps> = ({
     userId,
@@ -41,17 +43,17 @@ const Comment: React.FC<CommentProps> = ({
 }) => {
     const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
+    const mounted = useSyncExternalStore(
+        subscribe,
+        () => true,
+        () => false
+    );
     const { push, refresh } = useRouter() || {};
     const { t } = useTranslation();
 
     const { displayContent, translateButtonElement } = useTranslateableContent({
         content: comment,
     });
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     const deleteComment = () => {
         axios

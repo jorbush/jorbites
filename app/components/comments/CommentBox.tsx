@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import { FiTrash } from 'react-icons/fi';
@@ -19,6 +19,8 @@ interface CommentBoxProps {
     isLoading?: boolean;
 }
 
+const subscribe = () => () => {};
+
 const CommentBox: React.FC<CommentBoxProps> = ({
     userImage,
     onCreateComment,
@@ -27,12 +29,12 @@ const CommentBox: React.FC<CommentBoxProps> = ({
     const [comment, setComment] = useState('');
     const [rating, setRating] = useState<number | null>(null);
     const [isButtonDisabled, setButtonDisabled] = useState(false);
-    const [mounted, setMounted] = useState(false);
+    const mounted = useSyncExternalStore(
+        subscribe,
+        () => true,
+        () => false
+    );
     const { t } = useTranslation();
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     const handleInputChange = (value: string) => {
         setComment(value);

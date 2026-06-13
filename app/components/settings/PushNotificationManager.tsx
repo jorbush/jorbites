@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
 import {
@@ -24,24 +24,39 @@ function urlBase64ToUint8Array(base64String: string) {
     return outputArray;
 }
 
-const PushNotificationManager: React.FC = () => {
-    const { t } = useTranslation();
-    const [isSupported, setIsSupported] = useState(false);
-    const [subscription, setSubscription] = useState<PushSubscription | null>(
-        null
-    );
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        if (
+const isSupportedStore = {
+    subscribe() {
+        return () => {};
+    },
+    getSnapshot() {
+        return (
             typeof window !== 'undefined' &&
             'serviceWorker' in navigator &&
             'PushManager' in window
-        ) {
-            setIsSupported(true);
+        );
+    },
+    getServerSnapshot() {
+        return false;
+    },
+};
+
+const PushNotificationManager: React.FC = () => {
+    const { t } = useTranslation();
+    const isSupported = useSyncExternalStore(
+        isSupportedStore.subscribe,
+        isSupportedStore.getSnapshot,
+        isSupportedStore.getServerSnapshot
+    );
+    const [subscription, setSubscription] = useState<
+        PushSubscription | undefined
+    >(undefined);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (isSupported) {
             registerServiceWorker();
         }
-    }, []);
+    }, [isSupported]);
 
     async function registerServiceWorker() {
         try {
@@ -53,7 +68,7 @@ const PushNotificationManager: React.FC = () => {
                 }
             );
             const sub = await registration.pushManager.getSubscription();
-            setSubscription(sub);
+            setSubscription(sub || undefined);
         } catch (error) {
             console.error('Service Worker registration failed:', error);
         }
@@ -97,7 +112,7 @@ const PushNotificationManager: React.FC = () => {
                 const serializedSub = JSON.parse(JSON.stringify(subscription));
                 await unsubscribeUser(serializedSub); // Call server action first
                 await subscription.unsubscribe(); // Then unsubscribe locally
-                setSubscription(null);
+                setSubscription(undefined);
                 toast.success(t('push_notifications_unsubscribed_success'));
             }
         } catch (error) {
