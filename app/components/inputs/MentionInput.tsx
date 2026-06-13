@@ -29,7 +29,7 @@ const isMobileDevice = () => {
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
             navigator.userAgent
         ) ||
-        'ontouchstart' in window ||
+        (typeof window !== 'undefined' && 'ontouchstart' in window) ||
         navigator.maxTouchPoints > 0
     );
 };
