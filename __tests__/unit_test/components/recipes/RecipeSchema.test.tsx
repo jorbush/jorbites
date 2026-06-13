@@ -259,4 +259,26 @@ describe('RecipeSchema', () => {
             },
         });
     });
+
+    it('escapes < and > characters to prevent XSS script breakout', () => {
+        const props = {
+            ...mockProps,
+            title: 'Test </script><script>alert(1)</script> Recipe',
+        };
+        const { container } = render(<RecipeSchema {...props} />);
+
+        const scriptTag = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+
+        // The raw closing/opening script tags should NOT be present in innerHTML/textContent
+        expect(scriptTag?.innerHTML).not.toContain('</script>');
+        expect(scriptTag?.innerHTML).not.toContain('<script>');
+
+        // But the JSON should still parse correctly and decode the escaped characters
+        const data = JSON.parse(scriptTag?.innerHTML || '{}');
+        expect(data.name).toBe(
+            'Test </script><script>alert(1)</script> Recipe'
+        );
+    });
 });
