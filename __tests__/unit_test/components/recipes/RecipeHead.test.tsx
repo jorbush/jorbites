@@ -139,6 +139,19 @@ describe('<RecipeHead />', () => {
         expect(dotIndicator1).toBeDefined();
     });
 
+    it('has accessible dot indicators with sufficient touch target classes and labels', () => {
+        render(<RecipeHead {...mockProps} />);
+        const dotIndicator0 = screen.getByTestId('dot-indicator-0');
+
+        // Should have an accessible label
+        expect(dotIndicator0.getAttribute('aria-label')).toBe('Go to image 1');
+
+        // Should have classes that provide a large enough touch target (48px / h-12)
+        expect(dotIndicator0.className).toContain('h-12');
+        expect(dotIndicator0.className).toContain('items-center');
+        expect(dotIndicator0.className).toContain('justify-center');
+    });
+
     it('changes image when clicking on dot indicator', async () => {
         render(<RecipeHead {...mockProps} />);
         const dotIndicator1 = screen.getByTestId('dot-indicator-1');
