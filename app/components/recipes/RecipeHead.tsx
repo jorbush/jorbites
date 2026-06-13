@@ -179,7 +179,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                             </button>
                         </div>
                         {/* Dot Indicators */}
-                        <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 transform gap-2">
+                        <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 transform">
                             {imagesSrc.map((imageSrc, index) => (
                                 <button
                                     key={`dot-${imageSrc}`}
@@ -188,14 +188,18 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                         if (isTransitioning) return;
                                         startTransition(index);
                                     }}
-                                    className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${
-                                        index === currentImageIndex
-                                            ? 'w-8 bg-white'
-                                            : 'w-2 bg-white/60 hover:bg-white/80'
-                                    }`}
+                                    className="group flex h-12 cursor-pointer items-center justify-center p-2 focus:outline-hidden"
                                     aria-label={`Go to image ${index + 1}`}
                                     data-testid={`dot-indicator-${index}`}
-                                />
+                                >
+                                    <span
+                                        className={`h-2 rounded-full transition-all duration-300 ${
+                                            index === currentImageIndex
+                                                ? 'w-8 bg-white'
+                                                : 'w-2 bg-white/60 group-hover:bg-white/80'
+                                        }`}
+                                    />
+                                </button>
                             ))}
                         </div>
                     </>
