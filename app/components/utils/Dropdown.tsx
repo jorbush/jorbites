@@ -197,7 +197,7 @@ function Dropdown<T extends string>({
                 >
                     <div
                         ref={listboxRef}
-                        role="listbox"
+                        role="listbox" // eslint-disable-line jsx-a11y/prefer-tag-over-role
                         aria-label={ariaLabel}
                         className="w-max"
                     >
@@ -205,7 +205,7 @@ function Dropdown<T extends string>({
                             <button
                                 key={option.value}
                                 type="button"
-                                role="option"
+                                role="option" // eslint-disable-line jsx-a11y/prefer-tag-over-role
                                 aria-selected={option.value === value}
                                 onClick={() => handleOptionClick(option.value)}
                                 className={getOptionClassName(option, index)}
