@@ -1,4 +1,7 @@
-import { GET as BadgesGET } from '@/app/api/badges/route';
+import {
+    GET as BadgesGET,
+    _resetBadgesPromise,
+} from '@/app/api/badges/route';
 import fs from 'fs/promises';
 import { logger } from '@/app/lib/axiom/server';
 
@@ -15,6 +18,7 @@ describe('Badges API', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        _resetBadgesPromise();
         readdirSpy = jest.spyOn(fs, 'readdir');
     });
 
