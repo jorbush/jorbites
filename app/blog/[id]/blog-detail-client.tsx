@@ -20,7 +20,7 @@ interface BlogDetailClientProps {
 const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
-    const { get } = useSearchParams() || {};
+    const { get } = useSearchParams() || {}; // Do not undo the descructuring of useSearchParams here
     const langParam = get?.('lang');
 
     useTheme();
