@@ -123,7 +123,7 @@ const Input: React.FC<InputProps> = ({
                 </div>
             )}
 
-            {maxLength && (
+            {Boolean(maxLength) && (
                 <div
                     className={`absolute top-2 right-2 text-xs transition-opacity duration-200 ${
                         charCount >= maxLength * CHAR_COUNT_WARNING_THRESHOLD
