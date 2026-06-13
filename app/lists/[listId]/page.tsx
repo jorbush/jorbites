@@ -4,6 +4,7 @@ import EmptyState from '@/app/components/utils/EmptyState';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getListById from '@/app/actions/getListById';
 import ListClient from './ListClient';
+import { NextResponse } from 'next/server';
 
 interface IParams {
     listId?: string;
@@ -15,7 +16,7 @@ export async function generateMetadata(props: {
     const params = await props.params;
     const listData = await getListById(params);
 
-    if (!listData || 'error' in listData) {
+    if (!listData || listData instanceof NextResponse) {
         return {
             title: 'Lista no encontrada | Jorbites',
         };
@@ -59,12 +60,23 @@ const ListPage = async (props: { params: Promise<IParams> }) => {
         );
     }
 
-    if ('error' in listData) {
+    if (listData instanceof NextResponse) {
+        if (listData.status === 401) {
+            return (
+                <ClientOnly>
+                    <EmptyState
+                        title="Unauthorized"
+                        subtitle="This list is private"
+                    />
+                </ClientOnly>
+            );
+        }
+
         return (
             <ClientOnly>
                 <EmptyState
-                    title="Unauthorized"
-                    subtitle="This list is private"
+                    title="List not found"
+                    subtitle="It may have been deleted"
                 />
             </ClientOnly>
         );

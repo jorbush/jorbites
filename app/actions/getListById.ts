@@ -3,6 +3,13 @@ import getCurrentUser from './getCurrentUser';
 import { SafeList, SafeRecipe, SafeUser } from '@/app/types';
 import { logger } from '@/app/lib/axiom/server';
 import { USER_SELECT_FIELDS } from '../utils/constants';
+import { NextResponse } from 'next/server';
+import {
+    badRequest,
+    internalServerError,
+    notFoundResponse,
+    unauthorizedResponse,
+} from '@/app/utils/apiErrors';
 
 interface IParams {
     listId?: string;
@@ -12,14 +19,13 @@ export default async function getListById(
     params: IParams
 ): Promise<
     | { list: SafeList; recipes: (SafeRecipe & { user: SafeUser })[] }
-    | { error: string }
-    | null
+    | NextResponse
 > {
     try {
         const { listId } = params;
 
         if (!listId) {
-            return null;
+            return badRequest('List ID is required');
         }
 
         const list = await prisma.list.findUnique({
@@ -32,14 +38,14 @@ export default async function getListById(
         });
 
         if (!list) {
-            return null;
+            return notFoundResponse('List not found');
         }
 
         if (list.isPrivate) {
             const currentUser = await getCurrentUser();
 
             if (!currentUser || list.userId !== currentUser.id) {
-                throw new Error('Unauthorized');
+                return unauthorizedResponse('Unauthorized');
             }
         }
 
@@ -81,13 +87,10 @@ export default async function getListById(
 
         return { list: safeList, recipes: safeRecipes };
     } catch (error: any) {
-        if (error.message === 'Unauthorized') {
-            return { error: 'Unauthorized' };
-        }
         logger.error('getListById - error', {
             error: error.message,
             listId: params.listId,
         });
-        return null;
+        return internalServerError('Failed to fetch list');
     }
 }
