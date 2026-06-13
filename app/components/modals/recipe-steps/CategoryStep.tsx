@@ -12,8 +12,10 @@ interface CategoryStepProps {
     onCategorySelect: (categories: string[]) => void;
 }
 
+const EMPTY_CATEGORIES: string[] = [];
+
 const CategoryStep: React.FC<CategoryStepProps> = ({
-    selectedCategories = [],
+    selectedCategories = EMPTY_CATEGORIES,
     onCategorySelect,
 }) => {
     const { t } = useTranslation();

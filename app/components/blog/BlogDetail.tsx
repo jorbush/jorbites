@@ -21,10 +21,12 @@ interface BlogDetailProps {
     relatedBlogs?: Blog[];
 }
 
+const EMPTY_BLOGS: Blog[] = [];
+
 const BlogDetail: React.FC<BlogDetailProps> = ({
     blog,
     author,
-    relatedBlogs = [],
+    relatedBlogs = EMPTY_BLOGS,
 }) => {
     const { t, i18n } = useTranslation();
     const { back, push } = useRouter() || {};

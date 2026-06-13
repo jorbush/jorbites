@@ -24,9 +24,11 @@ interface ProfileClientProps {
     profileUserId: string;
 }
 
+const EMPTY_RECIPES: SafeRecipe[] = [];
+
 const ProfileClient: React.FC<ProfileClientProps> = ({
     recipes,
-    pinnedRecipes = [],
+    pinnedRecipes = EMPTY_RECIPES,
     currentUser,
     totalPages,
     currentPage,
