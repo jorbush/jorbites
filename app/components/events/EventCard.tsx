@@ -37,7 +37,9 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     let dateDisplay;
     if (!isPermanent) {
         if (isRecurrent && event.frontmatter.dayOfMonth) {
-            dateDisplay = t('each_month', { day: event.frontmatter.dayOfMonth });
+            dateDisplay = t('each_month', {
+                day: event.frontmatter.dayOfMonth,
+            });
         } else {
             dateDisplay = formatDateRange(
                 event.frontmatter.date,
