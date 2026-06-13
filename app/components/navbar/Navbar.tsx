@@ -3,7 +3,9 @@
 import { useCallback, useState, Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import Container from '@/app/components/utils/Container';
-import Categories, { CategoriesSkeleton } from '@/app/components/navbar/Categories';
+import Categories, {
+    CategoriesSkeleton,
+} from '@/app/components/navbar/Categories';
 import Search, { SearchFallback } from '@/app/components/navbar/Search';
 import UserMenu from '@/app/components/navbar/UserMenu';
 import { SafeUser } from '@/app/types';

@@ -13,7 +13,7 @@ export const SearchFallback = () => {
     return (
         <div className="flex flex-row items-center gap-1 md:gap-3">
             <Logo />
-            <div className="relative flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full p-2 bg-green-450/10 dark:bg-green-450/20" />
+            <div className="bg-green-450/10 dark:bg-green-450/20 relative flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full p-2" />
         </div>
     );
 };

@@ -19,7 +19,9 @@ vi.mock('@/app/components/utils/Container', () => ({
 
 vi.mock('@/app/components/navbar/Categories', () => ({
     default: () => <div data-testid="categories">Categories</div>,
-    CategoriesSkeleton: () => <div data-testid="categories-skeleton">Categories Skeleton</div>,
+    CategoriesSkeleton: () => (
+        <div data-testid="categories-skeleton">Categories Skeleton</div>
+    ),
 }));
 
 vi.mock('@/app/components/navbar/Search', () => ({
@@ -46,7 +48,9 @@ vi.mock('@/app/components/navbar/Search', () => ({
             </button>
         </div>
     ),
-    SearchFallback: () => <div data-testid="search-fallback">Search Fallback</div>,
+    SearchFallback: () => (
+        <div data-testid="search-fallback">Search Fallback</div>
+    ),
 }));
 
 vi.mock('@/app/components/navbar/UserMenu', () => ({
