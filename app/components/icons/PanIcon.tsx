@@ -17,6 +17,7 @@ export const PanIcon = ({
         focusable={focusable}
         {...props}
     >
+        <title>Frying pan</title>
         <g>
             <path
                 fill={fill}
