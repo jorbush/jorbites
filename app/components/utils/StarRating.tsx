@@ -54,7 +54,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
                     onClick={() => handleClick(starValue)}
                     onMouseEnter={() => handleMouseEnter(starValue)}
                     onMouseLeave={handleMouseLeave}
-                    className={`transform transition-all duration-150 hover:scale-115 focus:outline-hidden ${
+                    className={`flex transform items-center justify-center p-2 transition-all duration-150 hover:scale-115 focus:outline-hidden ${
                         isFilled
                             ? 'scale-105 text-amber-500'
                             : 'text-neutral-300 dark:text-neutral-600'
@@ -107,7 +107,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
 
     return (
         <div
-            className={`flex items-center gap-1 ${className}`}
+            className={`flex items-center ${interactive ? 'gap-0' : 'gap-1'} ${className}`}
             onMouseLeave={handleMouseLeave}
         >
             {Array.from({ length: 5 }).map((_, index) => renderStar(index))}

@@ -129,7 +129,7 @@ export function useTranslateableContent({
                 }
             } catch (error) {
                 if (!cancelled) {
-                    console.error('Language detection failed:', error);
+                    console.warn('Language detection failed:', error);
                 }
             }
         };
