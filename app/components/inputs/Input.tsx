@@ -128,7 +128,8 @@ const Input: React.FC<InputProps> = ({
             {typeof maxLength === 'number' && maxLength > 0 && (
                 <div
                     className={`absolute top-2 right-2 text-xs transition-opacity duration-200 ${
-                        charCount >= (maxLength as number) * CHAR_COUNT_WARNING_THRESHOLD
+                        charCount >=
+                        (maxLength as number) * CHAR_COUNT_WARNING_THRESHOLD
                             ? 'text-neutral-500 opacity-100 dark:text-neutral-400'
                             : 'opacity-0'
                     }`}
