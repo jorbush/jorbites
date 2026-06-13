@@ -40,9 +40,11 @@ const Comment: React.FC<CommentProps> = ({
     userLevel,
     rating,
 }) => {
-    const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
     const mounted = useIsMounted();
+    const formattedDate = mounted
+        ? format(new Date(createdAt), 'dd/MM/yyyy HH:mm')
+        : '';
     const { push, refresh } = useRouter() || {};
     const { t } = useTranslation();
 

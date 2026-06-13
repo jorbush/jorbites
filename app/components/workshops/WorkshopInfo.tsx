@@ -5,6 +5,7 @@ import Avatar from '@/app/components/utils/Avatar';
 import { useTranslation } from 'react-i18next';
 import { formatDateLanguage } from '@/app/utils/date-utils';
 import { useRouter } from 'next/navigation';
+import useIsMounted from '@/app/hooks/useIsMounted';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import getUserDisplayName from '@/app/utils/responsive';
 import VerificationBadge from '@/app/components/VerificationBadge';
@@ -55,6 +56,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
 }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
+    const mounted = useIsMounted();
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
 
@@ -69,6 +71,7 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
 
     const workshopDate = new Date(date);
     const formatDate = (date: Date) => {
+        if (!mounted) return '';
         return formatDateLanguage(
             date,
             'eeee, d MMMM yyyy, HH:mm',
@@ -259,9 +262,11 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                                     <div className="size-2 rounded-full bg-green-500" />
                                     <span>
                                         {t('joined_at')}:{' '}
-                                        {new Date(
-                                            participant.joinedAt
-                                        ).toLocaleDateString()}
+                                        {mounted
+                                            ? new Date(
+                                                  participant.joinedAt
+                                              ).toLocaleDateString()
+                                            : ''}
                                     </span>
                                 </div>
                             ))}
