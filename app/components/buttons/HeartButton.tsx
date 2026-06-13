@@ -41,6 +41,9 @@ const HeartButton: React.FC<HeartButtonProps> = ({ recipeId, currentUser }) => {
             onClick={handleButtonClick}
             className="relative cursor-pointer border-0 bg-transparent p-0 transition hover:opacity-80 focus:outline-hidden"
             data-cy="heart-button"
+            aria-label={
+                hasFavorited ? 'Remove from favorites' : 'Add to favorites'
+            }
         >
             <AiOutlineHeart
                 size={28}

@@ -95,6 +95,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                     type="button"
                     className="mr-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
                     onClick={() => back()}
+                    aria-label="Go back"
                 >
                     <FiChevronLeft className="text-xl" />
                 </button>
@@ -156,10 +157,12 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                 className="absolute top-1/2 left-3 -translate-y-1/2 transform rounded-full border-0 bg-white/90 p-2 shadow-lg transition-colors hover:bg-white focus:outline-hidden"
                                 style={{ pointerEvents: 'auto' }}
                                 onClick={goToPreviousImage}
+                                aria-label="Previous image"
                             >
                                 <FiChevronLeft className="cursor-pointer text-2xl text-neutral-800" />
                             </button>
                         </div>
+
                         <div
                             className="absolute top-0 right-0 bottom-0 z-[2] flex w-1/4 items-center justify-center transition-colors hover:bg-gradient-to-l hover:from-black/10 hover:to-transparent"
                             style={{ pointerEvents: 'none' }}
@@ -170,6 +173,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                 className="absolute top-1/2 right-3 -translate-y-1/2 transform rounded-full border-0 bg-white/90 p-2 shadow-lg transition-colors hover:bg-white focus:outline-hidden"
                                 style={{ pointerEvents: 'auto' }}
                                 onClick={goToNextImage}
+                                aria-label="Next image"
                             >
                                 <FiChevronRight className="cursor-pointer text-2xl text-neutral-800" />
                             </button>

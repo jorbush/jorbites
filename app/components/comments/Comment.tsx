@@ -90,7 +90,7 @@ const Comment: React.FC<CommentProps> = ({
                         {userName}
                     </button>
                     {verified && <VerificationBadge className="mt-1 ml-1" />}
-                    <div className="mt-0.5 ml-1.5 text-sm text-neutral-400">
+                    <div className="mt-0.5 ml-1.5 text-sm text-neutral-500 dark:text-neutral-400">
                         {mounted
                             ? `${t('level')} ${userLevel}`
                             : `level ${userLevel}`}
@@ -117,7 +117,7 @@ const Comment: React.FC<CommentProps> = ({
                             : displayContent}
                     </p>
                 </div>
-                <div className="mt-2 flex min-h-[24px] items-center justify-between text-sm text-neutral-400">
+                <div className="mt-2 flex min-h-[24px] items-center justify-between text-sm text-neutral-500 dark:text-neutral-400">
                     <div className="shrink-0">{translateButtonElement}</div>
                     <div className="ml-auto">{formattedDate}</div>
                 </div>

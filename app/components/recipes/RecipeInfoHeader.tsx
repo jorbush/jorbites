@@ -67,7 +67,7 @@ export const RecipeInfoHeader: React.FC<RecipeInfoHeaderProps> = ({
                                 <VerificationBadge className="mt-1 ml-1" />
                             )}
                         </div>
-                        <div className="text-sm text-neutral-400">
+                        <div className="text-sm text-neutral-500 dark:text-neutral-400">
                             {mounted
                                 ? `${t('level')} ${user?.level}`
                                 : `level ${user?.level}`}
