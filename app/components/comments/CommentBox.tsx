@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useSyncExternalStore } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import { FiTrash } from 'react-icons/fi';
