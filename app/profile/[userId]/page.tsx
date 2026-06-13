@@ -15,6 +15,7 @@ import UserStatsSkeleton from '@/app/components/stats/UserStatsSkeleton';
 import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
 import { Metadata } from 'next';
 import { OrderByType } from '@/app/utils/filter';
+import { Suspense } from 'react';
 
 interface IParams {
     userId?: string;
@@ -129,17 +130,19 @@ const ProfilePage = async (props: {
             )}
 
             {recipesResponse.recipes.length > 0 && (
-                <ClientOnly fallback={<ProfileClientSkeleton />}>
-                    <ProfileClient
-                        recipes={recipesResponse.recipes}
-                        pinnedRecipes={pinnedRecipes}
-                        currentUser={currentUser}
-                        totalPages={recipesResponse.totalPages}
-                        currentPage={recipesResponse.currentPage}
-                        searchParams={searchParams}
-                        profileUserId={params.userId || ''}
-                    />
-                </ClientOnly>
+                <Suspense fallback={<ProfileClientSkeleton />}>
+                    <ClientOnly fallback={<ProfileClientSkeleton />}>
+                        <ProfileClient
+                            recipes={recipesResponse.recipes}
+                            pinnedRecipes={pinnedRecipes}
+                            currentUser={currentUser}
+                            totalPages={recipesResponse.totalPages}
+                            currentPage={recipesResponse.currentPage}
+                            searchParams={searchParams}
+                            profileUserId={params.userId || ''}
+                        />
+                    </ClientOnly>
+                </Suspense>
             )}
 
             {recipesResponse.recipes.length === 0 && (

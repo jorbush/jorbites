@@ -147,4 +147,22 @@ const Categories = () => {
     );
 };
 
+export const CategoriesSkeleton = () => {
+    return (
+        <Container>
+            <div className="flex flex-row items-center justify-between overflow-x-auto pt-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                    <div
+                        key={i}
+                        className="flex min-w-[60px] flex-col items-center gap-2 p-3"
+                    >
+                        <div className="size-6 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
+                        <div className="h-3 w-12 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
+                    </div>
+                ))}
+            </div>
+        </Container>
+    );
+};
+
 export default Categories;

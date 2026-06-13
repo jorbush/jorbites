@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import ChefsClient from './ChefsClient';
 import getChefs, { ChefOrderByType } from '@/app/actions/getChefs';
 import ClientOnly from '@/app/components/utils/ClientOnly';
@@ -33,7 +34,7 @@ const ChefsPage = async ({ searchParams }: ChefsPageProps) => {
     });
 
     return (
-        <ClientOnly
+        <Suspense
             fallback={
                 <Container>
                     <div className="min-h-[60vh]">
@@ -42,23 +43,33 @@ const ChefsPage = async ({ searchParams }: ChefsPageProps) => {
                 </Container>
             }
         >
-            {response.error ? (
-                <Container>
-                    <div className="min-h-[60vh]">
-                        <ErrorDisplay
-                            code={response.error.code}
-                            message={response.error.message}
-                        />
-                    </div>
-                </Container>
-            ) : (
-                <ChefsClient
-                    chefs={response.data?.chefs || []}
-                    totalPages={response.data?.totalPages || 1}
-                    currentPage={response.data?.currentPage || 1}
-                />
-            )}
-        </ClientOnly>
+            <ClientOnly
+                fallback={
+                    <Container>
+                        <div className="min-h-[60vh]">
+                            <ChefsListSkeleton />
+                        </div>
+                    </Container>
+                }
+            >
+                {response.error ? (
+                    <Container>
+                        <div className="min-h-[60vh]">
+                            <ErrorDisplay
+                                code={response.error.code}
+                                message={response.error.message}
+                            />
+                        </div>
+                    </Container>
+                ) : (
+                    <ChefsClient
+                        chefs={response.data?.chefs || []}
+                        totalPages={response.data?.totalPages || 1}
+                        currentPage={response.data?.currentPage || 1}
+                    />
+                )}
+            </ClientOnly>
+        </Suspense>
     );
 };
 

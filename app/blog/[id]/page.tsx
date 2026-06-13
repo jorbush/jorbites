@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import BlogDetailClient from './blog-detail-client';
 import { getBlogById } from '@/app/utils/blog-utils';
+import { BlogDetailSkeleton } from '@/app/components/blog/BlogDetail';
 
 interface IParams {
     id: string;
@@ -59,9 +61,11 @@ export async function generateMetadata(props: {
 const BlogPage = async (props: PageProps) => {
     const params = await props.params;
     return (
-        <ClientOnly>
-            <BlogDetailClient id={params.id} />
-        </ClientOnly>
+        <Suspense fallback={<BlogDetailSkeleton />}>
+            <ClientOnly>
+                <BlogDetailClient id={params.id} />
+            </ClientOnly>
+        </Suspense>
     );
 };
 
