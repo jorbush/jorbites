@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useSyncExternalStore } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import { FiTrash } from 'react-icons/fi';
@@ -12,14 +12,13 @@ import {
     COMMENT_MAX_LENGTH,
     CHAR_COUNT_WARNING_THRESHOLD,
 } from '@/app/utils/constants';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface CommentBoxProps {
     userImage: string | undefined | null;
     onCreateComment: (comment: string, rating: number | null) => void;
     isLoading?: boolean;
 }
-
-const subscribe = () => () => {};
 
 const CommentBox: React.FC<CommentBoxProps> = ({
     userImage,
@@ -29,11 +28,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
     const [comment, setComment] = useState('');
     const [rating, setRating] = useState<number | null>(null);
     const [isButtonDisabled, setButtonDisabled] = useState(false);
-    const mounted = useSyncExternalStore(
-        subscribe,
-        () => true,
-        () => false
-    );
+    const mounted = useIsMounted();
     const { t } = useTranslation();
 
     const handleInputChange = (value: string) => {

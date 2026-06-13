@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useSyncExternalStore } from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import Avatar from '@/app/components/utils/Avatar';
 import { MdDelete } from 'react-icons/md';
@@ -13,6 +13,7 @@ import VerificationBadge from '@/app/components/VerificationBadge';
 import { formatText } from '@/app/utils/textFormatting';
 import StarRating from '@/app/components/utils/StarRating';
 import { useTranslateableContent } from '@/app/hooks/useTranslateableContent';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface CommentProps {
     userId: string;
@@ -26,8 +27,6 @@ interface CommentProps {
     userLevel?: number;
     rating: number | null;
 }
-
-const subscribe = () => () => {};
 
 const Comment: React.FC<CommentProps> = ({
     userId,
@@ -43,11 +42,7 @@ const Comment: React.FC<CommentProps> = ({
 }) => {
     const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy HH:mm');
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-    const mounted = useSyncExternalStore(
-        subscribe,
-        () => true,
-        () => false
-    );
+    const mounted = useIsMounted();
     const { push, refresh } = useRouter() || {};
     const { t } = useTranslation();
 

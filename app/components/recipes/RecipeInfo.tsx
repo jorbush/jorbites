@@ -6,7 +6,6 @@ import RecipeCategoryAndMethod from '@/app/components/recipes/RecipeCategoryAndM
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
-import { useSyncExternalStore } from 'react';
 import YouTubePreview from '@/app/components/utils/YouTubePreview';
 import { TranslateableRecipeContent } from '@/app/components/translation/TranslateableRecipeContent';
 import { formatText } from '@/app/utils/textFormatting';
@@ -15,8 +14,7 @@ import { axiosFetcher } from '@/app/utils/fetcher';
 import { RecipeInfoHeader } from './RecipeInfoHeader';
 import { RecipeCoCooks } from './RecipeCoCooks';
 import { RecipeLinkedRecipes } from './RecipeLinkedRecipes';
-
-const subscribe = () => () => {};
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -72,11 +70,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     const { push } = useRouter() || {};
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
-    const mounted = useSyncExternalStore(
-        subscribe,
-        () => true,
-        () => false
-    );
+    const mounted = useIsMounted();
 
     const { data: coCooksData, isLoading: isCoCooksLoading } = useSWR<any[]>(
         coCooksIds.length > 0

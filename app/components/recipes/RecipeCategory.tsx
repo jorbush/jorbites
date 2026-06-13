@@ -2,7 +2,7 @@
 
 import { IconType } from 'react-icons';
 import { useTranslation } from 'react-i18next';
-import { useSyncExternalStore } from 'react';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface CategoryViewProps {
     icon: IconType;
@@ -10,19 +10,13 @@ interface CategoryViewProps {
     description: string;
 }
 
-const subscribe = () => () => {};
-
 const RecipeCategoryView: React.FC<CategoryViewProps> = ({
     icon: Icon,
     label,
     description,
 }) => {
     const { t } = useTranslation();
-    const mounted = useSyncExternalStore(
-        subscribe,
-        () => true,
-        () => false
-    );
+    const mounted = useIsMounted();
 
     const translationKey = label.toLowerCase();
     const displayLabel = mounted ? t(translationKey) : translationKey;

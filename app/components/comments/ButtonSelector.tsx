@@ -1,25 +1,20 @@
 'use client';
 
-import React, { useSyncExternalStore } from 'react';
+import React from 'react';
 import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface ButtonSelectorProps {
     sortOrder: 'asc' | 'desc';
     onSortChange: (_sortOrder: 'asc' | 'desc') => void;
 }
 
-const subscribe = () => () => {};
-
 const ButtonSelector: React.FC<ButtonSelectorProps> = ({
     sortOrder,
     onSortChange,
 }) => {
-    const mounted = useSyncExternalStore(
-        subscribe,
-        () => true,
-        () => false
-    );
+    const mounted = useIsMounted();
     const { t } = useTranslation();
 
     const toggleSortOrder = () => {
