@@ -23,6 +23,8 @@ interface TextareaProps {
     placeholder?: string;
 }
 
+const EMPTY_VALIDATION: RegisterOptions = {};
+
 const Textarea: React.FC<TextareaProps> = ({
     id,
     label,
@@ -32,7 +34,7 @@ const Textarea: React.FC<TextareaProps> = ({
     errors,
     dataCy,
     maxLength,
-    validation = {},
+    validation = EMPTY_VALIDATION,
     rows = 6,
     placeholder = ' ',
 }) => {
@@ -107,10 +109,11 @@ const Textarea: React.FC<TextareaProps> = ({
                 </div>
             )}
 
-            {maxLength && (
+            {typeof maxLength === 'number' && maxLength > 0 && (
                 <div
                     className={`absolute top-2 right-2 text-xs transition-opacity duration-200 ${
-                        charCount >= maxLength * CHAR_COUNT_WARNING_THRESHOLD
+                        charCount >=
+                        (maxLength as number) * CHAR_COUNT_WARNING_THRESHOLD
                             ? 'text-neutral-500 opacity-100 dark:text-neutral-400'
                             : 'opacity-0'
                     }`}
