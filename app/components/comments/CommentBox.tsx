@@ -128,6 +128,9 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 }
                 className={`text-green-450 mt-4 mb-4 ml-4 ${isLoading || isButtonDisabled || comment.trim() === '' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                 data-cy="submit-comment"
+                aria-label={
+                    mounted ? `${t('submit_comment')}` : 'Submit comment'
+                }
             >
                 <HiOutlinePaperAirplane size={20} />
             </button>
