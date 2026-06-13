@@ -28,18 +28,25 @@ export const EventCardSkeleton = () => {
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
     const { push } = useRouter() || {};
-    const { i18n } = useTranslation();
+    const { i18n, t } = useTranslation();
 
     // Don't process dates for permanent events
     const isPermanent = event.frontmatter.permanent === true;
+    const isRecurrent = event.frontmatter.recurrent === true;
 
     let dateDisplay;
     if (!isPermanent) {
-        dateDisplay = formatDateRange(
-            event.frontmatter.date,
-            event.frontmatter.endDate,
-            i18n.language
-        );
+        if (isRecurrent && event.frontmatter.dayOfMonth) {
+            dateDisplay = t('each_month', {
+                day: event.frontmatter.dayOfMonth,
+            });
+        } else {
+            dateDisplay = formatDateRange(
+                event.frontmatter.date,
+                event.frontmatter.endDate,
+                i18n.language
+            );
+        }
     }
 
     const navigateToEvent = () => {

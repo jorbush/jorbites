@@ -92,6 +92,15 @@ describe('EventDetail', () => {
         language: 'en',
     };
 
+    const recurrentEvent: Event = {
+        ...mockEvent,
+        frontmatter: {
+            ...mockEvent.frontmatter,
+            recurrent: true,
+            dayOfMonth: 29,
+        },
+    };
+
     afterEach(() => {
         cleanup();
     });
@@ -145,5 +154,12 @@ describe('EventDetail', () => {
             'className',
             expect.stringContaining('cursor-pointer')
         );
+    });
+
+    it('formats recurrent event date correctly', () => {
+        render(<EventDetail event={recurrentEvent} />);
+
+        // Check if "each_month" is displayed (mocked t returns the key)
+        expect(screen.getByText('each_month')).toBeDefined();
     });
 });

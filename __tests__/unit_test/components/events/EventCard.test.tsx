@@ -83,6 +83,15 @@ describe('EventCard', () => {
         },
     };
 
+    const recurrentEvent: Event = {
+        ...mockEvent,
+        frontmatter: {
+            ...mockEvent.frontmatter,
+            recurrent: true,
+            dayOfMonth: 29,
+        },
+    };
+
     afterEach(() => {
         cleanup();
     });
@@ -113,5 +122,12 @@ describe('EventCard', () => {
         const dateElement =
             screen.getByText(/May/i) || screen.getByText(/2024/i);
         expect(dateElement).toBeDefined();
+    });
+
+    it('formats recurrent event date correctly', () => {
+        render(<EventCard event={recurrentEvent} />);
+
+        // Check if "each_month" is displayed (mocked t returns the key)
+        expect(screen.getByText('each_month')).toBeDefined();
     });
 });
