@@ -11,6 +11,10 @@ const subscribe = () => () => {};
 declare global {
     interface Window {
         LanguageDetector: {
+            capabilities?(): Promise<{
+                available: 'readily' | 'after-download' | 'no';
+            }>;
+            availability?(): Promise<'readily' | 'after-download' | 'no'>;
             create(options?: { monitor?: (monitor: any) => void }): Promise<{
                 detect(
                     text: string
@@ -85,6 +89,25 @@ export function TranslateButton({
 
         const detect = async () => {
             try {
+                // Guard: Check availability before trying to create LanguageDetector in the background
+                let isReadily = false;
+                if (
+                    typeof window.LanguageDetector.capabilities === 'function'
+                ) {
+                    const capabilities =
+                        await window.LanguageDetector.capabilities();
+                    isReadily = capabilities.available === 'readily';
+                } else if (
+                    typeof window.LanguageDetector.availability === 'function'
+                ) {
+                    const availability =
+                        await window.LanguageDetector.availability();
+                    isReadily = availability === 'readily';
+                }
+                if (!isReadily) {
+                    return;
+                }
+
                 const detector = await window.LanguageDetector.create();
                 const results = await detector.detect(text);
 
@@ -133,7 +156,45 @@ export function TranslateButton({
                 (typeof i18n.language === 'string'
                     ? i18n.language
                     : i18n.resolvedLanguage) || 'es';
-            let sourceLanguage = detectedLanguage || 'en';
+            let sourceLanguage = detectedLanguage;
+
+            // If language wasn't detected readily in the background, detect it now under user gesture
+            if (!sourceLanguage) {
+                try {
+                    const detector = await window.LanguageDetector.create();
+                    const results = await detector.detect(text);
+                    if (results && results.length > 0) {
+                        const topResult = results[0];
+                        if (topResult.confidence > 0.5) {
+                            const lang = topResult.detectedLanguage;
+                            if (['en', 'ca', 'es'].includes(lang)) {
+                                sourceLanguage = lang;
+                                setDetectedLanguage(lang);
+                            } else {
+                                const langMap: Record<string, string> = {
+                                    'en-US': 'en',
+                                    'en-GB': 'en',
+                                    'es-ES': 'es',
+                                    'es-MX': 'es',
+                                    'ca-ES': 'ca',
+                                };
+                                const mapped = langMap[lang] || null;
+                                sourceLanguage = mapped;
+                                setDetectedLanguage(mapped);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn(
+                        'Language detection during translation failed:',
+                        e
+                    );
+                }
+            }
+
+            if (!sourceLanguage) {
+                sourceLanguage = 'en';
+            }
 
             if (sourceLanguage === targetLanguage) {
                 sourceLanguage = targetLanguage === 'en' ? 'es' : 'en';

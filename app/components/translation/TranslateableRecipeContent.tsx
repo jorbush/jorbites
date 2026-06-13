@@ -132,6 +132,25 @@ export function TranslateableRecipeContent({
 
         const detectLanguage = async () => {
             try {
+                // Guard: Check availability before trying to create LanguageDetector in the background
+                let isReadily = false;
+                if (
+                    typeof window.LanguageDetector.capabilities === 'function'
+                ) {
+                    const capabilities =
+                        await window.LanguageDetector.capabilities();
+                    isReadily = capabilities.available === 'readily';
+                } else if (
+                    typeof window.LanguageDetector.availability === 'function'
+                ) {
+                    const availability =
+                        await window.LanguageDetector.availability();
+                    isReadily = availability === 'readily';
+                }
+                if (!isReadily) {
+                    return;
+                }
+
                 const detector = await window.LanguageDetector.create();
                 const results = await detector.detect(sampleTextForDetection);
 
@@ -198,8 +217,47 @@ export function TranslateableRecipeContent({
                     ? i18n.language
                     : i18n.resolvedLanguage) || 'es';
 
-            // Reuse the already detected language from state
-            let sourceLanguage = detectedLanguage || 'es';
+            // Reuse the already detected language from state, or try to detect it now under user gesture
+            let sourceLanguage = detectedLanguage;
+
+            if (!sourceLanguage && sampleTextForDetection) {
+                try {
+                    const detector = await window.LanguageDetector.create();
+                    const results = await detector.detect(
+                        sampleTextForDetection
+                    );
+                    if (results && results.length > 0) {
+                        const topResult = results[0];
+                        if (topResult.confidence > 0.5) {
+                            const lang = topResult.detectedLanguage;
+                            if (['en', 'ca', 'es'].includes(lang)) {
+                                sourceLanguage = lang;
+                                setDetectedLanguage(lang);
+                            } else {
+                                const langMap: Record<string, string> = {
+                                    'en-US': 'en',
+                                    'en-GB': 'en',
+                                    'es-ES': 'es',
+                                    'es-MX': 'es',
+                                    'ca-ES': 'ca',
+                                };
+                                const mapped = langMap[lang] || null;
+                                sourceLanguage = mapped;
+                                setDetectedLanguage(mapped);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn(
+                        'Language detection during translation failed:',
+                        e
+                    );
+                }
+            }
+
+            if (!sourceLanguage) {
+                sourceLanguage = 'es';
+            }
 
             // If source matches target, use fallback
             if (sourceLanguage === targetLanguage) {
