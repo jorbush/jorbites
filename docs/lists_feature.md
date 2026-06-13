@@ -62,5 +62,5 @@ Important localization keys used in the feature include:
 
 ## Security & Privacy Considerations
 
-1. **Visibility Controls**: Lists with `isPrivate: true` have hard blocks inside the `getListById` server action, throwing `Unauthorized` errors if accessed by anyone other than the owner.
+1. **Visibility Controls**: Lists with `isPrivate: true` have hard blocks inside the `getListById` server action. If accessed by anyone other than the owner, the action returns a standardized `NextResponse` with an `UNAUTHORIZED` (401) error.
 2. **Data Leaks**: The API explicitly uses the `select` projection operator within Prisma when returning `user` owner data (for the list owner and recipe authors). Sensitive credentials like password hashes and reset tokens are safely excluded.
