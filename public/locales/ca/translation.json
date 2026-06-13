@@ -200,6 +200,7 @@
     "no_permanent_events": "No hi ha esdeveniments permanents",
     "event_not_found_message": "L'esdeveniment que estàs cercant no s'ha trobat.",
     "back_to_events": "Tornar a Esdeveniments",
+    "each_month": "{{day}} de cada mes",
     "date": "Data",
     "location": "Ubicació",
     "weekly_challenge": "Repte de la Setmana",
