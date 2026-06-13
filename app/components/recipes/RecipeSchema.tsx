@@ -131,9 +131,10 @@ export default function RecipeSchema({
     }
 
     return (
-        <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
-        />
+        <script type="application/ld+json">
+            {JSON.stringify(schemaData)
+                .replace(/</g, '\\u003c')
+                .replace(/>/g, '\\u003e')}
+        </script>
     );
 }
