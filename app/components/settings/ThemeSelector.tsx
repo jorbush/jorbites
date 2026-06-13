@@ -1,36 +1,49 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
 
+let listeners: (() => void)[] = [];
+const themeStore = {
+    subscribe(callback: () => void) {
+        listeners.push(callback);
+        return () => {
+            listeners = listeners.filter((l) => l !== callback);
+        };
+    },
+    getSnapshot() {
+        if (typeof window === 'undefined') return 'light';
+        return localStorage.getItem('theme') || 'light';
+    },
+    getServerSnapshot() {
+        return 'light';
+    },
+    setTheme(newTheme: string) {
+        localStorage.setItem('theme', newTheme);
+        listeners.forEach((l) => l());
+    },
+};
+
 const ThemeSelector: React.FC = () => {
-    const [theme, setTheme] = useState<string>('light');
+    const theme = useSyncExternalStore(
+        themeStore.subscribe,
+        themeStore.getSnapshot,
+        themeStore.getServerSnapshot
+    );
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
 
     const toggleTheme = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-        document.documentElement.classList.toggle('dark', newTheme === 'dark');
+        themeStore.setTheme(newTheme);
         refresh();
     };
 
     useEffect(() => {
-        const cachedTheme = localStorage.getItem('theme');
-        if (cachedTheme) {
-            setTheme(cachedTheme);
-            document.documentElement.classList.toggle(
-                'dark',
-                cachedTheme === 'dark'
-            );
-        } else {
-            // Ensure the default 'light' theme is applied
-            document.documentElement.classList.remove('dark');
-        }
-    }, []);
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+    }, [theme]);
 
     return (
         <div className="flex items-center">

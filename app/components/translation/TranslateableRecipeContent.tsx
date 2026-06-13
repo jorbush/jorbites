@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import TranslationControls from './TranslationControls';
 import i18n from '@/app/i18n';
 import { toast } from 'react-hot-toast';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 const subscribe = () => () => {};
 
@@ -38,11 +39,7 @@ export function TranslateableRecipeContent({
     renderSteps,
 }: TranslateableRecipeContentProps) {
     const { t } = useTranslation();
-    const isMounted = useSyncExternalStore(
-        subscribe,
-        () => true,
-        () => false
-    );
+    const isMounted = useIsMounted();
     const isAvailable = useSyncExternalStore(
         subscribe,
         () =>

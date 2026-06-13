@@ -20,17 +20,19 @@ vi.mock('@/app/components/footer/FooterSkeleton', () => ({
     },
 }));
 
-// Create mock functions for useState and useEffect
-const mockSetState = vi.fn();
+// Create mock state for mounting
 let mockIsMounted = false;
 
-// Mock React's useState and useEffect
+// Mock React's useSyncExternalStore
 vi.mock('react', async () => {
     const actual = await vi.importActual('react');
     return {
         ...actual,
-        useState: vi.fn(() => [mockIsMounted, mockSetState]),
-        useEffect: vi.fn((callback) => callback()),
+        useSyncExternalStore: vi.fn(
+            (subscribe, getSnapshot, getServerSnapshot) => {
+                return mockIsMounted ? getSnapshot() : getServerSnapshot();
+            }
+        ),
     };
 });
 
@@ -41,7 +43,6 @@ describe('SmartFooter', () => {
     beforeEach(() => {
         // Reset all mocks
         vi.clearAllMocks();
-        mockSetState.mockClear();
         mockIsMounted = false;
     });
 
@@ -50,7 +51,7 @@ describe('SmartFooter', () => {
     });
 
     it('renders FooterSkeleton initially when not mounted', () => {
-        // Ensure useState returns false for mounted
+        // Ensure useSyncExternalStore returns false (simulating server / initial state)
         mockIsMounted = false;
 
         render(<SmartFooter />);
@@ -58,26 +59,10 @@ describe('SmartFooter', () => {
     });
 
     it('renders ClientFooter when mounted', () => {
-        // Mock useState to return true for mounted
+        // Ensure useSyncExternalStore returns true (simulating client-mounted state)
         mockIsMounted = true;
 
         render(<SmartFooter />);
         expect(screen.getByTestId('client-footer')).toBeDefined();
-    });
-
-    it('calls useEffect which updates the mounted state', () => {
-        // Verify effect behavior by checking if setState was called
-        render(<SmartFooter />);
-
-        // Since we mocked useEffect to immediately run its callback,
-        // setMounted should have been called with true
-        expect(mockSetState).toHaveBeenCalledWith(true);
-    });
-
-    it('sets mounted state to true after mounting', () => {
-        render(<SmartFooter />);
-
-        // Check that setMounted was called with true
-        expect(mockSetState).toHaveBeenCalledWith(true);
     });
 });

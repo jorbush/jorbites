@@ -6,8 +6,7 @@ import CommentBox from '@/app/components/comments/CommentBox';
 import Comment from '@/app/components/comments/Comment';
 import { useTranslation } from 'react-i18next';
 import ButtonSelector from '@/app/components/comments/ButtonSelector';
-
-const subscribe = () => () => {};
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 const sortOrderStore = {
     subscribe(listener: () => void) {
@@ -51,11 +50,7 @@ const Comments: React.FC<CommentsProps> = ({
     isLoading = false,
 }) => {
     const { t } = useTranslation();
-    const isMounted = useSyncExternalStore(
-        subscribe,
-        () => true,
-        () => false
-    );
+    const isMounted = useIsMounted();
     const sortOrder = useSyncExternalStore(
         sortOrderStore.subscribe,
         sortOrderStore.getSnapshot,

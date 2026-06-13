@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import FooterSkeleton from '@/app/components/footer/FooterSkeleton';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 const ClientFooter = dynamic(() => import('@/app/components/footer/Footer'), {
     ssr: false,
@@ -10,11 +10,7 @@ const ClientFooter = dynamic(() => import('@/app/components/footer/Footer'), {
 });
 
 export default function SmartFooter() {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const mounted = useIsMounted();
 
     return mounted ? <ClientFooter /> : <FooterSkeleton />;
 }

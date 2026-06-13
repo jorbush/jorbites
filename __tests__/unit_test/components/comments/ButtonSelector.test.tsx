@@ -67,7 +67,7 @@ describe('<ButtonSelector />', () => {
     });
 
     it('toggles sort order when button is clicked', () => {
-        render(
+        const { rerender } = render(
             <ButtonSelector
                 sortOrder="asc"
                 onSortChange={mockOnSortChange}
@@ -83,11 +83,19 @@ describe('<ButtonSelector />', () => {
         // Verify onSortChange was called with descending order
         expect(mockOnSortChange).toHaveBeenCalledWith('desc');
 
+        // Simulate parent updating the prop and rerendering
+        rerender(
+            <ButtonSelector
+                sortOrder="desc"
+                onSortChange={mockOnSortChange}
+            />
+        );
+
         // Verify the button now shows 'Newest First'
         expect(screen.getByText('Newest First')).toBeDefined();
     });
 
-    it('updates internal state when sortOrder prop changes', () => {
+    it('updates display when sortOrder prop changes', () => {
         const { rerender } = render(
             <ButtonSelector
                 sortOrder="asc"

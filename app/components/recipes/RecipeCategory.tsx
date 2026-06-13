@@ -2,7 +2,7 @@
 
 import { IconType } from 'react-icons';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface CategoryViewProps {
     icon: IconType;
@@ -16,11 +16,7 @@ const RecipeCategoryView: React.FC<CategoryViewProps> = ({
     description,
 }) => {
     const { t } = useTranslation();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const mounted = useIsMounted();
 
     const translationKey = label.toLowerCase();
     const displayLabel = mounted ? t(translationKey) : translationKey;

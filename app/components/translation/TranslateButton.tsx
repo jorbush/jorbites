@@ -4,6 +4,7 @@ import { useState, useEffect, useSyncExternalStore, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiGlobe } from 'react-icons/fi';
 import i18n from '@/app/i18n';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 const subscribe = () => () => {};
 
@@ -49,11 +50,7 @@ export function TranslateButton({
     size = 18,
 }: TranslateButtonProps) {
     const { t } = useTranslation();
-    const isMounted = useSyncExternalStore(
-        subscribe,
-        () => true,
-        () => false
-    );
+    const isMounted = useIsMounted();
     const isAvailable = useSyncExternalStore(
         subscribe,
         () =>
