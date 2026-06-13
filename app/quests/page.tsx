@@ -34,27 +34,29 @@ const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
     ]);
 
     return (
-        <ClientOnly fallback={<QuestsClientSkeleton />}>
-            <Container>
-                {response.error ? (
-                    <div className="min-h-[60vh]">
-                        <ErrorDisplay
-                            code={response.error.code}
-                            message={response.error.message}
-                        />
-                    </div>
-                ) : (
-                    <Suspense fallback={<QuestsClientSkeleton />}>
-                        <QuestsClient
-                            currentUser={currentUser}
-                            quests={response.data?.quests || []}
-                            totalPages={response.data?.totalPages || 1}
-                            currentPage={response.data?.currentPage || 1}
-                        />
-                    </Suspense>
-                )}
-            </Container>
-        </ClientOnly>
+        <Suspense fallback={<QuestsClientSkeleton />}>
+            <ClientOnly fallback={<QuestsClientSkeleton />}>
+                <Container>
+                    {response.error ? (
+                        <div className="min-h-[60vh]">
+                            <ErrorDisplay
+                                code={response.error.code}
+                                message={response.error.message}
+                            />
+                        </div>
+                    ) : (
+                        <Suspense fallback={<QuestsClientSkeleton />}>
+                            <QuestsClient
+                                currentUser={currentUser}
+                                quests={response.data?.quests || []}
+                                totalPages={response.data?.totalPages || 1}
+                                currentPage={response.data?.currentPage || 1}
+                            />
+                        </Suspense>
+                    )}
+                </Container>
+            </ClientOnly>
+        </Suspense>
     );
 };
 

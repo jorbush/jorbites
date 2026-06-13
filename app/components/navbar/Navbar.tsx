@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import Container from '@/app/components/utils/Container';
-import Categories from '@/app/components/navbar/Categories';
-import Search from '@/app/components/navbar/Search';
+import Categories, { CategoriesSkeleton } from '@/app/components/navbar/Categories';
+import Search, { SearchFallback } from '@/app/components/navbar/Search';
 import UserMenu from '@/app/components/navbar/UserMenu';
 import { SafeUser } from '@/app/types';
 import useTheme from '@/app/hooks/useTheme';
@@ -56,11 +56,13 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                 >
                     <Container>
                         <div className="flex min-h-[48px] flex-row items-center justify-between gap-3 md:gap-0">
-                            <Search
-                                onSearchModeChange={handleSearchModeChange}
-                                onFilterToggle={toggleFilter}
-                                isFilterOpen={isFilterOpen}
-                            />
+                            <Suspense fallback={<SearchFallback />}>
+                                <Search
+                                    onSearchModeChange={handleSearchModeChange}
+                                    onFilterToggle={toggleFilter}
+                                    isFilterOpen={isFilterOpen}
+                                />
+                            </Suspense>
                             {!isMobile ||
                             !isFilterablePage ||
                             (isMobile && !isMobileSearchActive) ? (
@@ -80,7 +82,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                         aria-hidden={!isFilterOpen}
                         onAnimationEnd={handleAnimationEnd}
                     >
-                        <Categories />
+                        <Suspense fallback={<CategoriesSkeleton />}>
+                            <Categories />
+                        </Suspense>
                     </section>
                 )}
             </nav>
