@@ -22,6 +22,7 @@ export default async function updateUserLevel(params: IParams) {
                     'X-API-Key': process.env.BADGE_FORGE_API_KEY || '',
                 },
                 body: JSON.stringify(badgeForgePayload),
+                cache: 'no-store',
             }
         );
 

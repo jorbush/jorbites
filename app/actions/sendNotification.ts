@@ -61,6 +61,7 @@ const sendNotification = async ({
                     'X-API-Key': process.env.JORBITES_NOTIFIER_API_KEY || '',
                 },
                 body: JSON.stringify(notificationPayload),
+                cache: 'no-store',
             }
         );
 
