@@ -24,6 +24,8 @@ interface InputProps {
     validation?: RegisterOptions;
 }
 
+const EMPTY_VALIDATION: RegisterOptions = {};
+
 const Input: React.FC<InputProps> = ({
     id,
     label,
@@ -35,7 +37,7 @@ const Input: React.FC<InputProps> = ({
     errors,
     dataCy,
     maxLength,
-    validation = {},
+    validation = EMPTY_VALIDATION,
 }) => {
     const [charCount, setCharCount] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -123,10 +125,10 @@ const Input: React.FC<InputProps> = ({
                 </div>
             )}
 
-            {Boolean(maxLength) && (
+            {typeof maxLength === 'number' && maxLength > 0 && (
                 <div
                     className={`absolute top-2 right-2 text-xs transition-opacity duration-200 ${
-                        charCount >= maxLength * CHAR_COUNT_WARNING_THRESHOLD
+                        charCount >= (maxLength as number) * CHAR_COUNT_WARNING_THRESHOLD
                             ? 'text-neutral-500 opacity-100 dark:text-neutral-400'
                             : 'opacity-0'
                     }`}
