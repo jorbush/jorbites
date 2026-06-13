@@ -103,6 +103,25 @@ export function useTranslateableContent({
 
         const detectLanguage = async () => {
             try {
+                // Guard: Check availability before trying to create LanguageDetector in the background
+                let isReadily = false;
+                if (
+                    typeof window.LanguageDetector.capabilities === 'function'
+                ) {
+                    const capabilities =
+                        await window.LanguageDetector.capabilities();
+                    isReadily = capabilities.available === 'readily';
+                } else if (
+                    typeof window.LanguageDetector.availability === 'function'
+                ) {
+                    const availability =
+                        await window.LanguageDetector.availability();
+                    isReadily = availability === 'readily';
+                }
+                if (!isReadily) {
+                    return;
+                }
+
                 const detector = await window.LanguageDetector.create();
                 const results = await detector.detect(textContent);
 
