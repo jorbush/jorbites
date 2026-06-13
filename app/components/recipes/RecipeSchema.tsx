@@ -22,11 +22,13 @@ interface RecipeSchemaProps {
     comments?: SafeComment[];
 }
 
+const EMPTY_IMAGES: string[] = [];
+
 export default function RecipeSchema({
     title,
     description,
     imageSrc,
-    extraImages = [],
+    extraImages = EMPTY_IMAGES,
     createdAt,
     userName,
     minutes,

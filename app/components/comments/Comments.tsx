@@ -43,10 +43,12 @@ interface CommentsProps {
     isLoading?: boolean;
 }
 
+const EMPTY_COMMENTS: SafeComment[] = [];
+
 const Comments: React.FC<CommentsProps> = ({
     currentUser,
     onCreateComment,
-    comments = [],
+    comments = EMPTY_COMMENTS,
     isLoading = false,
 }) => {
     const { t } = useTranslation();
