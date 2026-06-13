@@ -33,6 +33,7 @@ export async function POST(request: Request) {
                 keyLocation: INDEXNOW_KEY_LOCATION,
                 urlList: urls,
             }),
+            cache: 'no-store',
         });
 
         if (!response.ok) {
