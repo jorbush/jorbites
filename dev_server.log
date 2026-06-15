@@ -1,0 +1,231 @@
+
+> jorbites@2.3.5 dev
+> next dev --turbopack
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 507ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+
+Missing Axiom token
+Missing Axiom token
+Missing Axiom token
+Error: Forbidden
+    at ignore-listed frames
+○ Compiling /events ...
+Missing Axiom token
+Missing Axiom token
+Missing Axiom token
+[next-auth][warn][NEXTAUTH_URL]
+https://next-auth.js.org/warnings#nextauth_url
+[next-auth][warn][NO_SECRET]
+https://next-auth.js.org/warnings#no_secret
+[next-auth][warn][DEBUG_ENABLED]
+https://next-auth.js.org/warnings#debug_enabled
+Error: Forbidden
+    at ignore-listed frames
+⨯ Error [PrismaClientInitializationError]:
+Invalid `{imported module ./app/lib/prismadb.ts}["default"].weeklyChallenge.findFirst()` invocation in
+/app/.next/dev/server/chunks/ssr/[root-of-the-server]__0aqbcgx._.js:388:182
+
+  385 {imported module ./app/lib/axiom/server.ts}["logger"].info('lib/weekly-challenge getCurrentChallenge - start');
+  386 const now = new Date();
+  387 // Get the current challenge
+→ 388 const currentChallenge = await {imported module ./app/lib/prismadb.ts}["default"].weeklyChallenge.findFirst(
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:10
+   |
+ 9 |   provider = "mongodb"
+10 |   url      = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (app/lib/weekly-challenge.ts:51:59)
+    at <unknown> (-->  schema.prisma:10)
+    at async getCurrentChallenge (app/lib/weekly-challenge.ts:51:30)
+    at async getCurrentChallenge (app/actions/weekly-challenge.ts:8:23)
+    at async EventsPage (app/events/page.tsx:23:23)
+  49 |
+  50 |     // Get the current challenge
+> 51 |     const currentChallenge = await prisma.weeklyChallenge.findFirst({
+     |                                                           ^
+  52 |         where: {
+  53 |             startDate: { lte: now },
+  54 |             endDate: { gt: now }, {
+  clientVersion: '6.9.0',
+  errorCode: undefined,
+  retryable: undefined,
+  digest: '454717404'
+}
+Error: Forbidden
+    at ignore-listed frames
+ GET /events 500 in 21.2s (next.js: 17.0s, proxy.ts: 276ms, application-code: 3.9s)
+[browser] Uncaught PrismaClientInitializationError:
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$prismadb$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].weeklyChallenge.findFirst()` invocation in
+/app/.next/dev/server/chunks/ssr/[root-of-the-server]__0aqbcgx._.js:388:182
+
+  385 __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$axiom$2f$server$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["logger"].info('lib/weekly-challenge getCurrentChallenge - start');
+  386 const now = new Date();
+  387 // Get the current challenge
+→ 388 const currentChallenge = await __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$prismadb$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].weeklyChallenge.findFirst(
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:10
+   |
+ 9 |   provider = "mongodb"
+10 |   url      = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (app/lib/weekly-challenge.ts:51:59)
+    at <unknown> (-->  schema.prisma:10)
+    at  getCurrentChallenge (app/lib/weekly-challenge.ts:51:30)
+    at  getCurrentChallenge (app/actions/weekly-challenge.ts:8:23)
+    at  EventsPage (app/events/page.tsx:23:23)
+  49 |
+  50 |     // Get the current challenge
+> 51 |     const currentChallenge = await prisma.weeklyChallenge.findFirst({
+     |                                                           ^
+  52 |         where: {
+  53 |             startDate: { lte: now },
+  54 |             endDate: { gt: now },
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+ GET / 200 in 2.9s (next.js: 2.3s, proxy.ts: 18ms, application-code: 547ms)
+Error: Forbidden
+    at ignore-listed frames
+[browser] Uncaught Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+      <LoadingBoundary name="/" loading={null}>
+        <HTTPAccessFallbackBoundary notFound={<SegmentViewNode>} forbidden={undefined} unauthorized={undefined}>
+          <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<SegmentViewNode>} forbidden={undefined} ...>
+            <RedirectBoundary>
+              <RedirectErrorBoundary router={{...}}>
+                <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+                  <SegmentViewNode type="page" pagePath="page.tsx">
+                    <SegmentTrieNode>
+                    <Home>
+                      <Container>
+                        <div className="mx-auto ma...">
+                          <h1>
+                          <div className="min-h-[60vh]">
+                            <ErrorDisplay code="FETCH_ERROR" message="Failed to ...">
+                              <div className="flex h-[60...">
+                                <h2 className="mb-4 text-center text-2xl font-semibold dark:text-neutral-100">
++                                 Something went wrong
+-                                 something_went_wrong
+                                ...
+                  ...
+                ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at h2 (<anonymous>)
+    at ErrorDisplay (app/components/utils/ErrorDisplay.tsx:40:13)
+    at Home (app/page.tsx:52:25)
+  38 |     return (
+  39 |         <div className="flex h-[60vh] flex-col items-center justify-center">
+> 40 |             <h2 className="mb-4 text-center text-2xl font-semibold dark:text-neutral-100">
+     |             ^
+  41 |                 {t('something_went_wrong')}
+  42 |             </h2>
+  43 |             <p className="mb-4 text-center dark:text-neutral-100">
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+ GET / 200 in 367ms (next.js: 6ms, proxy.ts: 9ms, application-code: 352ms)
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+[browser] Uncaught Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+      <LoadingBoundary name="/" loading={null}>
+        <HTTPAccessFallbackBoundary notFound={<SegmentViewNode>} forbidden={undefined} unauthorized={undefined}>
+          <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<SegmentViewNode>} forbidden={undefined} ...>
+            <RedirectBoundary>
+              <RedirectErrorBoundary router={{...}}>
+                <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+                  <SegmentViewNode type="page" pagePath="page.tsx">
+                    <SegmentTrieNode>
+                    <Home>
+                      <Container>
+                        <div className="mx-auto ma...">
+                          <h1>
+                          <div className="min-h-[60vh]">
+                            <ErrorDisplay code="FETCH_ERROR" message="Failed to ...">
+                              <div className="flex h-[60...">
+                                <h2 className="mb-4 text-center text-2xl font-semibold dark:text-neutral-100">
++                                 Something went wrong
+-                                 something_went_wrong
+                                ...
+                  ...
+                ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at h2 (<anonymous>)
+    at ErrorDisplay (app/components/utils/ErrorDisplay.tsx:40:13)
+    at Home (app/page.tsx:52:25)
+  38 |     return (
+  39 |         <div className="flex h-[60vh] flex-col items-center justify-center">
+> 40 |             <h2 className="mb-4 text-center text-2xl font-semibold dark:text-neutral-100">
+     |             ^
+  41 |                 {t('something_went_wrong')}
+  42 |             </h2>
+  43 |             <p className="mb-4 text-center dark:text-neutral-100">
+[browser] Image with src "/avocado.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+Missing Axiom token
+Missing Axiom token
+Missing Axiom token
+SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)

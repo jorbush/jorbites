@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Container from '@/app/components/utils/Container';
 import { formatDateLanguage } from '@/app/utils/date-utils';
 
@@ -19,7 +19,12 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
     recipes,
 }) => {
     const { t, i18n } = useTranslation();
+    const [isMounted, setIsMounted] = useState(false);
     const [hoveredDay, setHoveredDay] = useState<DayData | null>(null);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
     const [tooltipPosition, setTooltipPosition] = useState<{
         x: number;
         y: number;
@@ -154,7 +159,7 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
         return formatDateLanguage(date, 'MMM d, yyyy', i18n.language);
     };
 
-    if (recipes.length === 0) {
+    if (!isMounted || recipes.length === 0) {
         return null;
     }
 

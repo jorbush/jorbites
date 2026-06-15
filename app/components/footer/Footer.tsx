@@ -104,7 +104,10 @@ const Footer = () => {
                             Jorbites
                         </span>
                     </Link>
-                    <div className="text-sm text-neutral-500 dark:text-neutral-400">
+                    <div
+                        className="text-sm text-neutral-500 dark:text-neutral-400"
+                        suppressHydrationWarning
+                    >
                         © {currentYear} Jorbites. {t('rights_reserved')}.
                     </div>
                 </div>

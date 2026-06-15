@@ -10,7 +10,7 @@ import EditWorkshopButton from '@/app/components/workshops/EditWorkshopButton';
 import DeleteWorkshopModal from '@/app/components/modals/DeleteWorkshopModal';
 import Button from '@/app/components/buttons/Button';
 import { MdDelete } from 'react-icons/md';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface WorkshopClientProps {
     workshop: SafeWorkshop & {
@@ -25,12 +25,18 @@ const WorkshopClient: React.FC<WorkshopClientProps> = ({
     currentUser,
 }) => {
     const { t } = useTranslation();
+    const [isMounted, setIsMounted] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     const isHost = currentUser?.id === workshop.hostId;
     const isParticipant =
         workshop.participants?.some((p) => p.userId === currentUser?.id) ||
         false;
-    const isPast = new Date(workshop.date) < new Date();
+    const isPast = isMounted && new Date(workshop.date) < new Date();
     const canAccessPrivate =
         !workshop.isPrivate ||
         isHost ||

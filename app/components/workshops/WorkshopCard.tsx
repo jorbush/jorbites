@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { formatDateLanguage } from '@/app/utils/date-utils';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import Avatar from '../utils/Avatar';
 import {
     MdLocationOn,
@@ -27,9 +27,14 @@ const WorkshopCard = memo(function WorkshopCard({
 }: WorkshopCardProps) {
     const { push } = useRouter() || {};
     const { t, i18n } = useTranslation();
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const workshopDate = new Date(data.date);
-    const isPast = workshopDate < new Date();
+    const isPast = isMounted && workshopDate < new Date();
     const participantCount = data.participants?.length || 0;
 
     const formatDate = (date: Date) => {

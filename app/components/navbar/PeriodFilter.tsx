@@ -19,6 +19,7 @@ const PeriodFilter: React.FC = () => {
     const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const [tempStartDate, setTempStartDate] = useState('');
     const [tempEndDate, setTempEndDate] = useState('');
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -31,6 +32,7 @@ const PeriodFilter: React.FC = () => {
     const hasDateFilter = currentStartDate || currentEndDate;
 
     useEffect(() => {
+        setIsMounted(true);
         setTempStartDate(currentStartDate);
         setTempEndDate(currentEndDate);
 
@@ -94,7 +96,7 @@ const PeriodFilter: React.FC = () => {
     };
 
     const formatDateRange = () => {
-        if (!currentStartDate && !currentEndDate) return null;
+        if (!isMounted || (!currentStartDate && !currentEndDate)) return null;
 
         const formatDate = (dateStr: string) => {
             if (!dateStr) return '';
@@ -115,7 +117,7 @@ const PeriodFilter: React.FC = () => {
         }
     };
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = isMounted ? new Date().toISOString().split('T')[0] : '';
 
     return (
         <div

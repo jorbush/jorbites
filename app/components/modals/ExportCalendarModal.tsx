@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
 import Modal from '@/app/components/modals/Modal';
@@ -21,14 +21,18 @@ const ExportCalendarModal: React.FC<ExportCalendarModalProps> = ({
     meals,
 }) => {
     const { t } = useTranslation();
-    const [calendarStartDate, setCalendarStartDate] = useState(() => {
+    const [calendarStartDate, setCalendarStartDate] = useState(
+        '2024-01-01' // Stable initial date
+    );
+
+    useEffect(() => {
         // Default to next Monday
         const d = new Date();
         const day = d.getDay();
         const diff = d.getDate() - day + (day === 0 ? -6 : 1) + 7; // Next Monday date
         d.setDate(diff);
-        return d.toISOString().split('T')[0];
-    });
+        setCalendarStartDate(d.toISOString().split('T')[0]);
+    }, []);
 
     const handleCalendarDownload = () => {
         const startMonday = new Date(calendarStartDate);
