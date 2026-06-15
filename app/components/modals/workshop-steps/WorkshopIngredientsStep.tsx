@@ -14,6 +14,7 @@ import {
 
 interface WorkshopIngredientsStepProps {
     numIngredients: number;
+    ingredientIds?: string[];
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
     onAddIngredient: () => void;
@@ -22,6 +23,7 @@ interface WorkshopIngredientsStepProps {
 
 const WorkshopIngredientsStep: React.FC<WorkshopIngredientsStepProps> = ({
     numIngredients,
+    ingredientIds,
     register,
     errors,
     onAddIngredient,
@@ -43,9 +45,13 @@ const WorkshopIngredientsStep: React.FC<WorkshopIngredientsStepProps> = ({
     const renderIngredientInputs = () => {
         const components = [];
         for (let i = 0; i < numIngredients; i++) {
+            const key =
+                ingredientIds && ingredientIds[i]
+                    ? ingredientIds[i]
+                    : `workshop-ingredient-input-${i}`;
             components.push(
                 <div
-                    key={`workshop-ingredient-input-${i}`}
+                    key={key}
                     className="relative flex w-full items-center gap-3 px-2"
                 >
                     <div className="grow">

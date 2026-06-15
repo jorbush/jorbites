@@ -13,7 +13,9 @@ interface WorkshopRequirementsStepProps {
     errors: FieldErrors;
     isLoading: boolean;
     numIngredients: number;
+    ingredientIds?: string[];
     numPreviousSteps: number;
+    previousStepIds?: string[];
     onAddIngredient: () => void;
     onRemoveIngredient: (index: number) => void;
     onAddPreviousStep: () => void;
@@ -28,7 +30,9 @@ export const WorkshopRequirementsStep: React.FC<
     errors,
     isLoading,
     numIngredients,
+    ingredientIds,
     numPreviousSteps,
+    previousStepIds,
     onAddIngredient,
     onRemoveIngredient,
     onAddPreviousStep,
@@ -67,6 +71,7 @@ export const WorkshopRequirementsStep: React.FC<
         >
             <WorkshopIngredientsStep
                 numIngredients={numIngredients}
+                ingredientIds={ingredientIds}
                 register={register}
                 errors={errors}
                 onAddIngredient={onAddIngredient}
@@ -80,6 +85,7 @@ export const WorkshopRequirementsStep: React.FC<
         >
             <WorkshopPreviousStepsStep
                 numPreviousSteps={numPreviousSteps}
+                previousStepIds={previousStepIds}
                 register={register}
                 errors={errors}
                 onAddPreviousStep={onAddPreviousStep}

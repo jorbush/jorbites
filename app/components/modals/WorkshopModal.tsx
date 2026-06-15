@@ -31,6 +31,8 @@ enum WORKSHOP_STEPS {
     IMAGE = 3,
 }
 
+const generateId = () => Math.random().toString(36).substring(2, 11);
+
 const WorkshopModal: React.FC<WorkshopModalProps> = ({
     currentUser: _currentUser,
 }) => {
@@ -39,8 +41,10 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
     const workshopModal = useWorkshopModal();
     const [step, setStep] = useState(WORKSHOP_STEPS.INFO);
     const [isLoading, setIsLoading] = useState(false);
-    const [numIngredients, setNumIngredients] = useState(0);
-    const [numPreviousSteps, setNumPreviousSteps] = useState(0);
+    const [ingredientIds, setIngredientIds] = useState<string[]>([]);
+    const [previousStepIds, setPreviousStepIds] = useState<string[]>([]);
+    const numIngredients = ingredientIds.length;
+    const numPreviousSteps = previousStepIds.length;
     const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
 
     const {
@@ -120,8 +124,12 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 setValue('price', data.price);
                 setValue('ingredients', data.ingredients);
                 setValue('previousSteps', data.previousSteps);
-                setNumIngredients(data.ingredients.length);
-                setNumPreviousSteps(data.previousSteps.length);
+                setIngredientIds(
+                    data.ingredients?.map(() => generateId()) || []
+                );
+                setPreviousStepIds(
+                    data.previousSteps?.map(() => generateId()) || []
+                );
 
                 data.ingredients.forEach(
                     (ingredient: string, index: number) => {
@@ -205,6 +213,8 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             refresh();
             reset();
             setStep(WORKSHOP_STEPS.INFO);
+            setIngredientIds([]);
+            setPreviousStepIds([]);
             workshopModal.onClose();
         } catch (error: any) {
             toast.error(
@@ -231,7 +241,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             toast.error(t('max_ingredients_reached'));
             return;
         }
-        setNumIngredients((prev) => prev + 1);
+        setIngredientIds((prev) => [...prev, generateId()]);
     };
 
     const addPreviousStep = () => {
@@ -239,7 +249,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             toast.error(t('max_previous_steps_reached'));
             return;
         }
-        setNumPreviousSteps((prev) => prev + 1);
+        setPreviousStepIds((prev) => [...prev, generateId()]);
     };
 
     const addWhitelistedUser = (user: any) => {
@@ -265,12 +275,12 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
     };
 
     const removeIngredient = (index: number) => {
-        setNumIngredients((value) => value - 1);
+        setIngredientIds((prev) => prev.filter((_, i) => i !== index));
         setValue(`ingredient-${index}`, '');
     };
 
     const removePreviousStep = (index: number) => {
-        setNumPreviousSteps((value) => value - 1);
+        setPreviousStepIds((prev) => prev.filter((_, i) => i !== index));
         setValue(`previousStep-${index}`, '');
     };
 
@@ -305,7 +315,9 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 errors={errors}
                 isLoading={isLoading}
                 numIngredients={numIngredients}
+                ingredientIds={ingredientIds}
                 numPreviousSteps={numPreviousSteps}
+                previousStepIds={previousStepIds}
                 onAddIngredient={addIngredient}
                 onRemoveIngredient={removeIngredient}
                 onAddPreviousStep={addPreviousStep}
@@ -354,8 +366,8 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 workshopModal.onClose();
                 reset();
                 setStep(WORKSHOP_STEPS.INFO);
-                setNumIngredients(0);
-                setNumPreviousSteps(0);
+                setIngredientIds([]);
+                setPreviousStepIds([]);
                 setSelectedUsers([]);
             }}
             body={bodyContent}

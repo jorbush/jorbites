@@ -17,6 +17,8 @@ import {
 } from '@/app/utils/constants';
 import { parseTextToList } from '@/app/utils/textParser';
 
+const generateId = () => Math.random().toString(36).substring(2, 11);
+
 interface UseRecipeFormStateProps {
     recipeModal: any;
     currentUser?: SafeUser | null;
@@ -29,8 +31,10 @@ export function useRecipeFormState({
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
     const [step, setStep] = useState(STEPS.CATEGORY);
-    const [numIngredients, setNumIngredients] = useState(1);
-    const [numSteps, setNumSteps] = useState(1);
+    const [ingredientIds, setIngredientIds] = useState<string[]>(['initial-0']);
+    const [stepIds, setStepIds] = useState<string[]>(['initial-0']);
+    const numIngredients = ingredientIds.length;
+    const numSteps = stepIds.length;
     const [isLoading, setIsLoading] = useState(false);
     const hasLoadedDraft = useRef(false);
     const hasLoadedEditData = useRef(false);
@@ -314,8 +318,10 @@ export function useRecipeFormState({
         if (currentStep !== undefined) {
             setStep(Math.max(0, Math.min(currentStep, STEPS_LENGTH - 1)));
         }
-        setNumIngredients(draftData.ingredients?.length || 1);
-        setNumSteps(draftData.steps?.length || 1);
+        setIngredientIds(
+            draftData.ingredients?.map(() => generateId()) || ['initial-0']
+        );
+        setStepIds(draftData.steps?.map(() => generateId()) || ['initial-0']);
     }
 
     useEffect(() => {
@@ -351,8 +357,8 @@ export function useRecipeFormState({
 
         if (!recipeModal.isOpen) {
             setStep(STEPS.CATEGORY);
-            setNumIngredients(1);
-            setNumSteps(1);
+            setIngredientIds(['initial-0']);
+            setStepIds(['initial-0']);
             setSelectedCoCooks([]);
             setSelectedLinkedRecipes([]);
             setSelectedQuest(null);
@@ -369,8 +375,14 @@ export function useRecipeFormState({
             if (recipeModal.isEditMode && recipeModal.editRecipeData) {
                 const editData = recipeModal.editRecipeData;
                 setStep(STEPS.CATEGORY);
-                setNumIngredients(editData.ingredients?.length || 1);
-                setNumSteps(editData.steps?.length || 1);
+                setIngredientIds(
+                    editData.ingredients?.map(() => generateId()) || [
+                        'initial-0',
+                    ]
+                );
+                setStepIds(
+                    editData.steps?.map(() => generateId()) || ['initial-0']
+                );
                 if (editData.coCooks) {
                     setSelectedCoCooks(editData.coCooks);
                 }
@@ -575,8 +587,8 @@ export function useRecipeFormState({
                 questId: '',
             });
             setStep(STEPS.CATEGORY);
-            setNumIngredients(1);
-            setNumSteps(1);
+            setIngredientIds(['initial-0']);
+            setStepIds(['initial-0']);
             setSelectedCoCooks([]);
             setSelectedLinkedRecipes([]);
             setSelectedQuest(null);
@@ -598,11 +610,11 @@ export function useRecipeFormState({
             );
             return;
         }
-        setNumIngredients((value) => value + 1);
+        setIngredientIds((prev) => [...prev, generateId()]);
     };
 
     const removeIngredientInput = (index: number) => {
-        setNumIngredients((value) => value - 1);
+        setIngredientIds((prev) => prev.filter((_, i) => i !== index));
         setCustomValue(`ingredient-${index}`, '');
     };
 
@@ -611,7 +623,7 @@ export function useRecipeFormState({
         for (let i = 0; i < maxCount; i++) {
             setCustomValue(`ingredient-${i}`, '');
         }
-        setNumIngredients(ingredients.length);
+        setIngredientIds(ingredients.map(() => generateId()));
         ingredients.forEach((ingredient, index) => {
             setCustomValue(`ingredient-${index}`, ingredient);
         });
@@ -626,11 +638,11 @@ export function useRecipeFormState({
             );
             return;
         }
-        setNumSteps((value) => value + 1);
+        setStepIds((prev) => [...prev, generateId()]);
     };
 
     const removeStepInput = (index: number) => {
-        setNumSteps((value) => value - 1);
+        setStepIds((prev) => prev.filter((_, i) => i !== index));
         setCustomValue(`step-${index}`, '');
     };
 
@@ -639,7 +651,7 @@ export function useRecipeFormState({
         for (let i = 0; i < maxCount; i++) {
             setCustomValue(`step-${i}`, '');
         }
-        setNumSteps(steps.length);
+        setStepIds(steps.map(() => generateId()));
         steps.forEach((step, index) => {
             setCustomValue(`step-${index}`, step);
         });
@@ -669,7 +681,9 @@ export function useRecipeFormState({
         step,
         setStep,
         numIngredients,
+        ingredientIds,
         numSteps,
+        stepIds,
         isLoading,
         selectedCoCooks,
         selectedLinkedRecipes,

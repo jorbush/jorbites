@@ -26,7 +26,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const {
         step,
         numIngredients,
+        ingredientIds,
         numSteps,
+        stepIds,
         isLoading,
         selectedCoCooks,
         selectedLinkedRecipes,
@@ -83,6 +85,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             bodyContent = (
                 <IngredientsStep
                     numIngredients={numIngredients}
+                    ingredientIds={ingredientIds}
                     register={register}
                     errors={errors}
                     onAddIngredient={addIngredientInput}
@@ -100,6 +103,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             bodyContent = (
                 <RecipeStepsStep
                     numSteps={numSteps}
+                    stepIds={stepIds}
                     register={register}
                     errors={errors}
                     onAddStep={addStepInput}

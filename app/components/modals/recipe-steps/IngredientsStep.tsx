@@ -18,6 +18,7 @@ import {
 
 interface IngredientsStepProps {
     numIngredients: number;
+    ingredientIds?: string[];
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
     onAddIngredient: () => void;
@@ -31,6 +32,7 @@ interface IngredientsStepProps {
 
 const IngredientsStep: React.FC<IngredientsStepProps> = ({
     numIngredients,
+    ingredientIds,
     register,
     errors,
     onAddIngredient,
@@ -93,9 +95,13 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
     const renderIngredientInputs = () => {
         const components = [];
         for (let i = 0; i < numIngredients; i++) {
+            const key =
+                ingredientIds && ingredientIds[i]
+                    ? ingredientIds[i]
+                    : `ingredient-input-${i}`;
             components.push(
                 <div
-                    key={`ingredient-input-${i}`}
+                    key={key}
                     className="relative flex w-full items-center gap-3 px-2"
                 >
                     <div className="grow">

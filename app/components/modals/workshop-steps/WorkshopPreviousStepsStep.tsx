@@ -14,6 +14,7 @@ import {
 
 interface WorkshopPreviousStepsStepProps {
     numPreviousSteps: number;
+    previousStepIds?: string[];
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
     onAddPreviousStep: () => void;
@@ -22,6 +23,7 @@ interface WorkshopPreviousStepsStepProps {
 
 const WorkshopPreviousStepsStep: React.FC<WorkshopPreviousStepsStepProps> = ({
     numPreviousSteps,
+    previousStepIds,
     register,
     errors,
     onAddPreviousStep,
@@ -43,9 +45,13 @@ const WorkshopPreviousStepsStep: React.FC<WorkshopPreviousStepsStepProps> = ({
     const renderPreviousStepInputs = () => {
         const components = [];
         for (let i = 0; i < numPreviousSteps; i++) {
+            const key =
+                previousStepIds && previousStepIds[i]
+                    ? previousStepIds[i]
+                    : `workshop-previous-step-input-${i}`;
             components.push(
                 <div
-                    key={`workshop-previous-step-input-${i}`}
+                    key={key}
                     className="relative flex w-full items-center gap-3 px-2"
                 >
                     <div className="grow">

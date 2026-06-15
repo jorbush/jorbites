@@ -18,6 +18,7 @@ import {
 
 interface RecipeStepsStepProps {
     numSteps: number;
+    stepIds?: string[];
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
     onAddStep: () => void;
@@ -31,6 +32,7 @@ interface RecipeStepsStepProps {
 
 const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
     numSteps,
+    stepIds,
     register,
     errors,
     onAddStep,
@@ -93,9 +95,10 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
     const renderStepsInputs = () => {
         const components = [];
         for (let i = 0; i < numSteps; i++) {
+            const key = stepIds && stepIds[i] ? stepIds[i] : `step-input-${i}`;
             components.push(
                 <div
-                    key={`step-input-${i}`}
+                    key={key}
                     className="relative flex w-full items-center gap-3 px-2"
                 >
                     <div className="shrink-0 text-base">{`${i + 1}.`}</div>
