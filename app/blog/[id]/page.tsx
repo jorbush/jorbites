@@ -11,11 +11,10 @@ interface IParams {
 
 interface PageProps {
     params: Promise<IParams>;
+    searchParams: Promise<{ lang?: string }>;
 }
 
-export async function generateMetadata(props: {
-    params: Promise<IParams>;
-}): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
     const blog = await getBlogById(params.id);
 
@@ -59,11 +58,17 @@ export async function generateMetadata(props: {
 }
 
 const BlogPage = async (props: PageProps) => {
-    const params = await props.params;
+    const [params, searchParams] = await Promise.all([
+        props.params,
+        props.searchParams,
+    ]);
     return (
         <Suspense fallback={<BlogDetailSkeleton />}>
             <ClientOnly>
-                <BlogDetailClient id={params.id} />
+                <BlogDetailClient
+                    id={params.id}
+                    lang={searchParams.lang}
+                />
             </ClientOnly>
         </Suspense>
     );

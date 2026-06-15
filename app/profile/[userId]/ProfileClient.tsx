@@ -1,6 +1,7 @@
 'use client';
 
 import { SafeRecipe, SafeUser } from '@/app/types';
+import { Suspense } from 'react';
 import Container from '@/app/components/utils/Container';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
@@ -71,7 +72,13 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
             )}
 
             <div className="mb-4 flex justify-end">
-                <OrderByDropdown />
+                <Suspense
+                    fallback={
+                        <div className="h-10 w-24 animate-pulse rounded-full bg-neutral-200/20" />
+                    }
+                >
+                    <OrderByDropdown />
+                </Suspense>
             </div>
             <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                 {recipes.map((recipe: any) => (

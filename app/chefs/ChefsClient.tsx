@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { SafeUser } from '@/app/types';
 import { useTranslation } from 'react-i18next';
 import Container from '@/app/components/utils/Container';
@@ -16,6 +16,8 @@ interface ChefsClientProps {
     chefs: SafeUser[];
     totalPages: number;
     currentPage: number;
+    search?: string;
+    orderBy?: ChefOrderByType;
 }
 
 const ORDER_BY_LABELS = {
@@ -33,16 +35,13 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
     chefs,
     totalPages,
     currentPage,
+    search = '',
+    orderBy = ChefOrderByType.TRENDING,
 }) => {
     const { t } = useTranslation();
     const { push } = useRouter() || {};
-    const searchParams = useSearchParams();
-    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
 
-    const [searchQuery, setSearchQuery] = useState(get('search') || '');
-    const [orderBy, setOrderBy] = useState<ChefOrderByType>(
-        (get('orderBy') as ChefOrderByType) || ChefOrderByType.TRENDING
-    );
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const updateURL = useCallback(
         (newSearch: string, newOrderBy: ChefOrderByType) => {
@@ -64,13 +63,9 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
         [push]
     );
 
-    const handleSearchChange = useCallback((value: string) => {
-        setSearchQuery(value);
-    }, []);
-
     const handleSearchSubmit = useCallback(() => {
-        updateURL(searchQuery, orderBy);
-    }, [searchQuery, orderBy, updateURL]);
+        updateURL(inputRef.current?.value || '', orderBy);
+    }, [orderBy, updateURL]);
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -83,10 +78,9 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
 
     const handleOrderByChange = useCallback(
         (newOrderBy: ChefOrderByType) => {
-            setOrderBy(newOrderBy);
-            updateURL(searchQuery, newOrderBy);
+            updateURL(inputRef.current?.value || '', newOrderBy);
         },
-        [searchQuery, updateURL]
+        [updateURL]
     );
 
     const getOrderLabel = (order: ChefOrderByType) => {
@@ -135,29 +129,28 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                                 id="chef-search-input"
                                 type="text"
                                 placeholder={t('search_chefs') ?? ''}
-                                value={searchQuery}
-                                onChange={(e) =>
-                                    handleSearchChange(e.target.value)
-                                }
+                                defaultValue={search}
+                                key={search}
+                                ref={inputRef}
                                 onKeyDown={handleKeyDown}
-                                className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-full border border-neutral-300 bg-white py-3 pr-10 pl-11 text-sm transition-all outline-none focus:ring-2 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+                                className="peer focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-full border border-neutral-300 bg-white py-3 pr-10 pl-11 text-sm transition-all outline-none focus:ring-2 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                                 data-cy="chef-search-input"
                                 data-testid="chef-search-input"
                                 aria-label={t('search_chefs') ?? ''}
                             />
-                            {searchQuery && (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        handleSearchChange('');
-                                        updateURL('', orderBy);
-                                    }}
-                                    className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
-                                    aria-label="Clear search"
-                                >
-                                    <BiX size={20} />
-                                </button>
-                            )}
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (inputRef.current) {
+                                        inputRef.current.value = '';
+                                    }
+                                    updateURL('', orderBy);
+                                }}
+                                className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-neutral-400 peer-placeholder-shown:invisible hover:text-neutral-600 dark:hover:text-neutral-200"
+                                aria-label="Clear search"
+                            >
+                                <BiX size={20} />
+                            </button>
                         </div>
                         <button
                             type="button"
@@ -203,7 +196,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                             totalPages={totalPages}
                             currentPage={currentPage}
                             searchParams={{
-                                search: searchQuery || undefined,
+                                search: search || undefined,
                                 orderBy:
                                     orderBy !== ChefOrderByType.TRENDING
                                         ? orderBy

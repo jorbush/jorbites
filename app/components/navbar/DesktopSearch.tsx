@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BiSearch, BiX } from 'react-icons/bi';
 import { FiChevronLeft, FiFilter } from 'react-icons/fi';
 import Logo from '@/app/components/navbar/Logo';
@@ -94,9 +94,21 @@ export const DesktopSearch: React.FC<DesktopSearchProps> = ({
                         )}
                     </div>
 
-                    <OrderByDropdown />
+                    <Suspense
+                        fallback={
+                            <div className="h-10 w-24 animate-pulse rounded-full bg-neutral-200/20" />
+                        }
+                    >
+                        <OrderByDropdown />
+                    </Suspense>
 
-                    <PeriodFilter />
+                    <Suspense
+                        fallback={
+                            <div className="h-10 w-28 animate-pulse rounded-full bg-neutral-200/20" />
+                        }
+                    >
+                        <PeriodFilter />
+                    </Suspense>
 
                     <button
                         type="button"

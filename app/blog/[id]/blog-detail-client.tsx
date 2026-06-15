@@ -7,7 +7,7 @@ import { Blog } from '@/app/utils/markdownUtils';
 import BlogDetail, {
     BlogDetailSkeleton,
 } from '@/app/components/blog/BlogDetail';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import useTheme from '@/app/hooks/useTheme';
 import { SafeUser } from '@/app/types';
 import useSWR from 'swr';
@@ -15,17 +15,16 @@ import { fetcher, axiosFetcher } from '@/app/utils/fetcher';
 
 interface BlogDetailClientProps {
     id: string;
+    lang?: string;
 }
 
-const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
+const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id, lang }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
-    const { get } = useSearchParams() || {}; // Do not undo the descructuring of useSearchParams here
-    const langParam = get?.('lang');
 
     useTheme();
 
-    const currentLang = langParam || i18n.language || 'en';
+    const currentLang = lang || i18n.language || 'en';
 
     const {
         data: blog,
@@ -44,44 +43,40 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
 
     const relatedCategory =
         blog?.category === 'releases' ? 'releases' : 'general';
-    const { data: relatedBlogsData } = useSWR(
+
+    const { data: relatedBlogsData } = useSWR<{ blogs: Blog[] }>(
         blog
-            ? `/api/blogs?lang=${currentLang}&pageSize=4&category=${relatedCategory}`
+            ? `/api/blogs?lang=${currentLang}&page=1&pageSize=4&category=${relatedCategory}&exclude=${id}`
             : null,
         fetcher
     );
 
     const relatedBlogs = useMemo(() => {
-        if (!relatedBlogsData?.blogs) return [];
-        return relatedBlogsData.blogs
-            .filter((b: Blog) => b.id !== id)
-            .slice(0, 3);
-    }, [relatedBlogsData, id]);
+        return (relatedBlogsData?.blogs || []).slice(0, 3);
+    }, [relatedBlogsData]);
 
-    const loading = blogLoading;
+    const handleBack = () => {
+        push?.('/blog');
+    };
 
-    const error = useMemo(() => {
-        if (!blogError) return null;
-        if ((blogError as any).status === 404) return 'Blog not found';
-        return 'Failed to load blog';
-    }, [blogError]);
+    if (blogLoading) {
+        return <BlogDetailSkeleton />;
+    }
 
     return (
         <Container>
-            {loading ? (
-                <BlogDetailSkeleton />
-            ) : error ? (
-                <div className="py-10 text-center">
-                    <h2 className="mb-4 text-2xl font-semibold text-red-500 dark:text-red-400">
-                        {error}
-                    </h2>
-                    <p className="mb-6 text-neutral-600 dark:text-neutral-400">
-                        {t('blog_not_found_message') ||
-                            "The blog post you're looking for could not be found."}
+            {blogError ? (
+                <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
+                    <h1 className="text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+                        {t('blog_not_found') || 'Blog post not found'}
+                    </h1>
+                    <p className="max-w-md text-neutral-500">
+                        {t('blog_not_found_desc') ||
+                            'The blog post you are looking for might have been removed or is temporarily unavailable.'}
                     </p>
                     <button
                         type="button"
-                        onClick={() => push('/blog')}
+                        onClick={handleBack}
                         className="bg-green-450 cursor-pointer rounded-lg px-4 py-2 text-black"
                     >
                         {t('back_to_blog') || 'Back to Blog'}

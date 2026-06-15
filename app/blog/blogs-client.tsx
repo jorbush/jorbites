@@ -2,7 +2,7 @@
 
 import Container from '@/app/components/utils/Container';
 import { useTranslation } from 'react-i18next';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Blog } from '@/app/utils/markdownUtils';
 import { formatDate } from '@/app/utils/date-utils';
 import useTheme from '@/app/hooks/useTheme';
@@ -21,23 +21,21 @@ const handleContactEmail = () => {
 interface BlogsClientProps {
     currentUser?: SafeUser | null;
     initialPage: number;
+    category?: string;
+    page?: number;
 }
 
 const BlogsClient: React.FC<BlogsClientProps> = ({
     currentUser,
     initialPage,
+    category,
+    page,
 }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
-    const searchParams = useSearchParams();
-    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
 
-    const categoryParam = get('category');
-    const pageParam = get('page');
-
-    const currentCategory =
-        categoryParam === 'releases' ? 'releases' : 'general';
-    const currentPage = pageParam ? parseInt(pageParam) : initialPage;
+    const currentCategory = category === 'releases' ? 'releases' : 'general';
+    const currentPage = page || initialPage;
 
     useTheme();
 
@@ -58,67 +56,72 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
 
     const mainBlogs = mainData?.blogs || [];
     const totalPages = mainData?.totalPages || 1;
-    const sidebarReleases = sidebarData?.blogs || [];
-    const loading = mainLoading || sidebarLoading;
+    const sidebarBlogs = sidebarData?.blogs || [];
 
-    const handleViewAllReleases = () => {
-        push('/blog?category=releases');
-    };
-
-    const handleBackToStories = () => {
-        push('/blog?category=general');
+    const handleCategoryChange = (newCategory: 'general' | 'releases') => {
+        if (newCategory === 'general') {
+            push('/blog');
+        } else {
+            push(`/blog?category=${newCategory}`);
+        }
     };
 
     return (
         <Container>
-            <div className="px-4 py-12 md:px-8">
-                <div className="mb-12 text-center">
-                    <h1 className="mb-4 text-4xl font-semibold tracking-tight text-neutral-900 md:text-5xl dark:text-white">
-                        {t('blog')}
+            <div className="py-8">
+                {/* Hero / Header */}
+                <div className="mb-10 text-center">
+                    <h1 className="text-4xl font-bold text-neutral-800 sm:text-5xl dark:text-neutral-100">
+                        {t('blog_title')}
                     </h1>
-                    <p className="mx-auto max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
-                        {t('blog_description')}
+                    <p className="mx-auto mt-3 max-w-2xl text-neutral-500 dark:text-neutral-400">
+                        {t('blog_subtitle')}
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-                    {/* Main Content */}
-                    <div className="lg:col-span-2">
-                        <div className="mb-8 flex items-center justify-between">
-                            <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">
-                                {currentCategory === 'releases'
-                                    ? t(
-                                          'jorbites_releases',
-                                          'Jorbites Releases'
-                                      )
-                                    : t('latest_stories', 'Latest Stories')}
-                            </h2>
-                            {currentCategory === 'releases' && (
-                                <button
-                                    type="button"
-                                    onClick={handleBackToStories}
-                                    className="text-primary-600 hover:text-primary-700 cursor-pointer text-sm font-medium dark:text-white"
-                                >
-                                    &larr;{' '}
-                                    {t('back_to_stories', 'Back to stories')}
-                                </button>
-                            )}
-                        </div>
+                {/* Tabs */}
+                <div className="mb-8 border-b border-neutral-200 dark:border-neutral-800">
+                    <div className="flex gap-6">
+                        <button
+                            type="button"
+                            onClick={() => handleCategoryChange('general')}
+                            className={`pb-4 text-sm font-semibold transition ${
+                                currentCategory === 'general'
+                                    ? 'border-b-2 border-green-500 text-green-600 dark:text-green-400'
+                                    : 'text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
+                            }`}
+                        >
+                            {t('blog_category_general')}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleCategoryChange('releases')}
+                            className={`pb-4 text-sm font-semibold transition ${
+                                currentCategory === 'releases'
+                                    ? 'border-b-2 border-green-500 text-green-600 dark:text-green-400'
+                                    : 'text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
+                            }`}
+                        >
+                            {t('blog_category_releases')}
+                        </button>
+                    </div>
+                </div>
 
-                        {loading ? (
+                <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+                    {/* Main Content (Blogs Grid) */}
+                    <div className="lg:col-span-2">
+                        {mainLoading ? (
                             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                                 {[...Array(4)].map((_, index) => (
                                     <BlogCardSkeleton key={index} />
                                 ))}
                             </div>
                         ) : mainBlogs.length === 0 ? (
-                            <div className="rounded-2xl border border-dashed border-neutral-300 py-20 text-center dark:border-neutral-700">
-                                <p className="text-lg text-neutral-500">
-                                    {t('no_blogs_found')}
-                                </p>
+                            <div className="py-12 text-center text-neutral-500">
+                                {t('no_blogs_found')}
                             </div>
                         ) : (
-                            <>
+                            <div>
                                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                                     {mainBlogs.map((blog) => (
                                         <BlogCard
@@ -128,85 +131,81 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                     ))}
                                 </div>
 
+                                {/* Pagination */}
                                 {totalPages > 1 && (
-                                    <div className="mt-12">
+                                    <div className="mt-10">
                                         <Pagination
                                             totalPages={totalPages}
                                             currentPage={currentPage}
                                             searchParams={{
-                                                page: currentPage,
-                                                category: currentCategory,
+                                                category:
+                                                    currentCategory ===
+                                                    'releases'
+                                                        ? 'releases'
+                                                        : undefined,
                                             }}
                                         />
                                     </div>
                                 )}
-                            </>
+                            </div>
                         )}
                     </div>
 
-                    {/* Sidebar - Releases & Actions */}
-                    <div className="space-y-12 lg:col-span-1">
-                        {/* Releases Section */}
-                        <div>
-                            <div className="mb-6 flex items-center justify-between">
-                                <h3 className="flex items-center text-xl font-semibold text-neutral-900 dark:text-white">
-                                    <span className="text-primary-500 mr-2">
-                                        ⚡
-                                    </span>
-                                    {t('whats_new', "What's New")}
+                    {/* Sidebar */}
+                    <div className="space-y-8">
+                        {/* Releases list */}
+                        {currentCategory !== 'releases' && (
+                            <div className="rounded-2xl border border-neutral-200 p-6 dark:border-neutral-800">
+                                <h3 className="mb-4 text-lg font-bold text-neutral-800 dark:text-neutral-100">
+                                    {t('latest_releases')}
                                 </h3>
-                                {currentCategory !== 'releases' && (
-                                    <button
-                                        type="button"
-                                        onClick={handleViewAllReleases}
-                                        className="text-primary-600 hover:text-primary-700 cursor-pointer text-sm font-semibold dark:text-white"
-                                    >
-                                        {t('view_all', 'View All')}
-                                    </button>
-                                )}
-                            </div>
 
-                            <div className="space-y-4">
-                                {loading ? (
-                                    [...Array(3)].map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className="h-24 animate-pulse rounded-xl bg-neutral-100 dark:bg-neutral-800"
-                                        ></div>
-                                    ))
-                                ) : sidebarReleases.length === 0 ? (
-                                    <p className="text-neutral-500">
-                                        {t('no_releases', 'No updates yet.')}
+                                {sidebarLoading ? (
+                                    <div className="space-y-4">
+                                        {[...Array(3)].map((_, index) => (
+                                            <div
+                                                key={index}
+                                                className="animate-pulse space-y-2"
+                                            >
+                                                <div className="h-4 w-3/4 rounded bg-neutral-200 dark:bg-neutral-800" />
+                                                <div className="h-3 w-1/2 rounded bg-neutral-200 dark:bg-neutral-800" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : sidebarBlogs.length === 0 ? (
+                                    <p className="text-sm text-neutral-500">
+                                        {t('no_releases_found') ||
+                                            'No releases yet.'}
                                     </p>
                                 ) : (
-                                    sidebarReleases.map((blog) => (
-                                        <button
-                                            key={blog.id}
-                                            type="button"
-                                            onClick={() =>
-                                                push(`/blog/${blog.id}`)
-                                            }
-                                            className="group hover:border-primary-500 dark:hover:border-primary-500 w-full cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 text-left transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-800"
-                                        >
-                                            <div className="mb-2 flex items-center justify-between">
-                                                <span className="bg-primary-100 text-primary-700 dark:bg-primary-900/30 rounded-full px-2 py-0.5 text-xs font-semibold dark:text-white">
-                                                    {t('release', 'Release')}
-                                                </span>
-                                                <span className="text-xs text-neutral-500">
-                                                    {formatDate(
-                                                        blog.frontmatter.date,
-                                                        i18n.language
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <h4 className="group-hover:text-primary-600 dark:group-hover:text-primary-400 line-clamp-2 font-semibold text-neutral-800 dark:text-neutral-200">
-                                                {blog.frontmatter.title}
-                                            </h4>
-                                        </button>
-                                    ))
+                                    <div className="space-y-4">
+                                        {sidebarBlogs
+                                            .slice(0, 3)
+                                            .map((blog) => (
+                                                <button
+                                                    type="button"
+                                                    key={blog.id}
+                                                    className="group w-full cursor-pointer border-b border-neutral-100 pb-3 text-left last:border-0 last:pb-0 dark:border-neutral-800/50"
+                                                    onClick={() =>
+                                                        push(`/blog/${blog.id}`)
+                                                    }
+                                                >
+                                                    <h4 className="line-clamp-2 text-sm font-semibold text-neutral-700 transition group-hover:text-green-600 dark:text-neutral-300 dark:group-hover:text-green-400">
+                                                        {blog.frontmatter.title}
+                                                    </h4>
+                                                    <p className="mt-1 text-xs text-neutral-400">
+                                                        {formatDate(
+                                                            blog.frontmatter
+                                                                .date,
+                                                            i18n.language
+                                                        )}
+                                                    </p>
+                                                </button>
+                                            ))}
+                                    </div>
                                 )}
                             </div>
-                        </div>
+                        )}
 
                         {/* Contribute / Contact */}
                         {currentUser && (

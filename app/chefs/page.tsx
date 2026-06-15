@@ -66,6 +66,8 @@ const ChefsPage = async ({ searchParams }: ChefsPageProps) => {
                         chefs={response.data?.chefs || []}
                         totalPages={response.data?.totalPages || 1}
                         currentPage={response.data?.currentPage || 1}
+                        search={resolvedParams.search}
+                        orderBy={resolvedParams.orderBy as ChefOrderByType}
                     />
                 )}
             </ClientOnly>
