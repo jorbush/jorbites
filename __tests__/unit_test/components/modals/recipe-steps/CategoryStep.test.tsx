@@ -43,7 +43,7 @@ vi.mock('@/app/components/inputs/CategoryInput', () => ({
 }));
 
 // Mock categories from navbar
-vi.mock('@/app/components/navbar/Categories', () => ({
+vi.mock('@/app/components/navbar/categoriesData', () => ({
     categories: [
         { label: 'breakfast', icon: 'BreakfastIcon' },
         { label: 'lunch', icon: 'LunchIcon' },

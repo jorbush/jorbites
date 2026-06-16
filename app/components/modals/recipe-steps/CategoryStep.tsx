@@ -3,7 +3,7 @@
 import { useTranslation } from 'react-i18next';
 import Heading from '@/app/components/navigation/Heading';
 import CategoryInput from '@/app/components/inputs/CategoryInput';
-import { categories } from '@/app/components/navbar/Categories';
+import { categories } from '@/app/components/navbar/categoriesData';
 import { RECIPE_MAX_CATEGORIES } from '@/app/utils/constants';
 import { toast } from 'react-hot-toast';
 
