@@ -19,7 +19,6 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
 }) => {
     const { push } = useRouter() || {};
     const params = useSearchParams();
-    const get = params ? params.get.bind(params) : () => null;
     const pathname = usePathname();
     const { t } = useTranslation();
 
@@ -39,7 +38,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
             delete updatedQuery.page;
         }
 
-        if (get('category') === label) {
+        if (params?.get('category') === label) {
             delete updatedQuery.category;
         }
 
