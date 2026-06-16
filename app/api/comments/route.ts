@@ -79,72 +79,74 @@ export async function POST(request: Request) {
             }
         }
 
-        const currentRecipe = await prisma.recipe.findUnique({
-            where: {
-                id: recipeId,
-            },
-            include: {
-                user: true,
-            },
-        });
+        const [currentRecipe, stats] = await Promise.all([
+            prisma.recipe.findUnique({
+                where: {
+                    id: recipeId,
+                },
+                include: {
+                    user: true,
+                },
+            }),
+            prisma.comment.aggregate({
+                where: {
+                    recipeId: recipeId,
+                    rating: { not: null },
+                },
+                _avg: {
+                    rating: true,
+                },
+                _count: {
+                    rating: true,
+                },
+            }),
+        ]);
 
         if (!currentRecipe) {
             return badRequest('Recipe not found');
         }
 
-        await sendNotification({
-            type: NotificationType.NEW_COMMENT,
-            userEmail: currentRecipe?.user.email,
-            params: {
-                userName: currentUser.name,
-                recipeId: recipeId,
-            },
-        });
+        const oldAvg = stats._avg.rating || 0;
+        const oldCount = stats._count.rating || 0;
+        let newAvg = oldAvg;
+        let newCount = oldCount;
+        if (rating !== undefined && rating !== null) {
+            newCount = oldCount + 1;
+            newAvg = (oldAvg * oldCount + Number(rating)) / newCount;
+        }
 
-        const recipeAndComment = await prisma.recipe.update({
-            where: {
-                id: recipeId,
-            },
-            data: {
-                comments: {
-                    create: {
-                        userId: currentUser.id,
-                        comment: comment,
-                        rating:
-                            rating !== undefined && rating !== null
-                                ? Number(rating)
-                                : null,
-                    },
+        const [recipeAndComment] = await Promise.all([
+            prisma.recipe.update({
+                where: {
+                    id: recipeId,
                 },
-            },
-            include: {
-                comments: true,
-            },
-        });
-
-        // Recalculate average rating and review count
-        const stats = await prisma.comment.aggregate({
-            where: {
-                recipeId: recipeId,
-                rating: { not: null },
-            },
-            _avg: {
-                rating: true,
-            },
-            _count: {
-                rating: true,
-            },
-        });
-
-        await prisma.recipe.update({
-            where: {
-                id: recipeId,
-            },
-            data: {
-                averageRating: stats._avg.rating || 0,
-                ratingCount: stats._count.rating || 0,
-            },
-        });
+                data: {
+                    comments: {
+                        create: {
+                            userId: currentUser.id,
+                            comment: comment,
+                            rating:
+                                rating !== undefined && rating !== null
+                                    ? Number(rating)
+                                    : null,
+                        },
+                    },
+                    averageRating: newAvg,
+                    ratingCount: newCount,
+                },
+                include: {
+                    comments: true,
+                },
+            }),
+            sendNotification({
+                type: NotificationType.NEW_COMMENT,
+                userEmail: currentRecipe?.user.email,
+                params: {
+                    userName: currentUser.name,
+                    recipeId: recipeId,
+                },
+            }),
+        ]);
 
         const mentionedUserIds = extractMentionedUserIds(comment);
         if (mentionedUserIds.length > 0) {
@@ -168,8 +170,10 @@ export async function POST(request: Request) {
 
         // Invalidate comments cache and recipe cache for this recipe
         try {
-            await redisCache.del(`recipe:comments:${recipeId}`);
-            await redisCache.del(`recipe:${recipeId}`);
+            await Promise.all([
+                redisCache.del(`recipe:comments:${recipeId}`),
+                redisCache.del(`recipe:${recipeId}`),
+            ]);
         } catch (cacheError: any) {
             logger.error('POST /api/comments - cache invalidation error', {
                 error: cacheError.message,

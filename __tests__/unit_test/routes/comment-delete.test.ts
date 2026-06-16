@@ -161,6 +161,7 @@ describe('Comment Delete API Error Handling', () => {
                 where: {
                     recipeId: 'recipe-id',
                     rating: { not: null },
+                    id: { not: 'comment-id' },
                 },
                 _avg: { rating: true },
                 _count: { rating: true },
