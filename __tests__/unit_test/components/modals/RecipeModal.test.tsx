@@ -7,8 +7,8 @@ import {
 } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RecipeModal from '@/app/components/modals/RecipeModal';
-import { categories } from '@/app/components/navbar/Categories';
-import { preparationMethods } from '@/app/components/modals/recipe-steps/MethodsStep';
+import { categories } from '@/app/components/navbar/categoriesData';
+import { preparationMethods } from '@/app/components/modals/recipe-steps/preparationMethodsData';
 import {
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,

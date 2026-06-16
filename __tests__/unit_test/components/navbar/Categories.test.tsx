@@ -1,7 +1,8 @@
 import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import Categories, { categories } from '@/app/components/navbar/Categories';
+import Categories from '@/app/components/navbar/Categories';
+import { categories } from '@/app/components/navbar/categoriesData';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 // Mock the next/navigation module
