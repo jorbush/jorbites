@@ -24,27 +24,19 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     const { share } = useShare();
     const touchStartX = useRef(0);
     const touchEndX = useRef(0);
-    const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        return () => {
-            if (transitionTimeoutRef.current) {
-                clearTimeout(transitionTimeoutRef.current);
-            }
-        };
-    }, []);
+        if (isTransitioning) {
+            const timeout = setTimeout(() => {
+                setIsTransitioning(false);
+            }, 300);
+            return () => clearTimeout(timeout);
+        }
+    }, [isTransitioning, currentImageIndex]);
 
     const startTransition = (newIndex: number) => {
         setIsTransitioning(true);
         setCurrentImageIndex(newIndex);
-
-        if (transitionTimeoutRef.current) {
-            clearTimeout(transitionTimeoutRef.current);
-        }
-        transitionTimeoutRef.current = setTimeout(() => {
-            setIsTransitioning(false);
-            transitionTimeoutRef.current = null;
-        }, 300);
     };
 
     const goToPreviousImage = () => {

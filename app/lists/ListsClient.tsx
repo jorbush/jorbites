@@ -42,7 +42,7 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
         } finally {
             setDeleteListId(null);
         }
-    }, [deleteListId, push, refresh, t]);
+    }, [deleteListId, refresh, t]);
 
     return (
         <Container>
