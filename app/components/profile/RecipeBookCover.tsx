@@ -1,9 +1,9 @@
 import React from 'react';
-import { Page, View, Image, Text } from '@react-pdf/renderer';
 import { styles } from './recipeBookStyles';
 import { RecipeBookConfig } from '@/app/utils/recipeBookUtils';
 
 interface RecipeBookCoverProps {
+    pdfRenderer: any;
     userName: string;
     userImage?: string | null;
     logoUrl: string;
@@ -18,6 +18,7 @@ interface RecipeBookCoverProps {
 }
 
 export const RecipeBookCover: React.FC<RecipeBookCoverProps> = ({
+    pdfRenderer,
     userName,
     userImage,
     logoUrl,
@@ -25,6 +26,7 @@ export const RecipeBookCover: React.FC<RecipeBookCoverProps> = ({
     labels,
     config,
 }) => {
+    const { Page, View, Image, Text } = pdfRenderer;
     const showUserImage = config ? config.displayUserImage : true;
 
     // Construct secure proxied user image URL if available

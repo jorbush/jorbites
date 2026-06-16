@@ -36,19 +36,24 @@ describe('recipeBookUtils', () => {
     });
 
     describe('parseFormattedText', () => {
+        const MockText = ({ children, style }: any) => (
+            <span style={style}>{children}</span>
+        );
+
         it('returns empty string if input is empty or null', () => {
-            expect(parseFormattedText('')).toBe('');
-            expect(parseFormattedText(null as any)).toBe('');
+            expect(parseFormattedText('', MockText)).toBe('');
+            expect(parseFormattedText(null as any, MockText)).toBe('');
         });
 
         it('returns raw text if no markdown formatting is present', () => {
-            const result = parseFormattedText('Just plain text');
+            const result = parseFormattedText('Just plain text', MockText);
             expect(result).toEqual(['Just plain text']);
         });
 
         it('correctly parses bold markdown **bold** or __bold__', () => {
             const result = parseFormattedText(
-                'text **bold** and __bold2__'
+                'text **bold** and __bold2__',
+                MockText
             ) as any[];
             expect(result.length).toBe(5);
             expect(result[0]).toBe('text ');
@@ -62,7 +67,8 @@ describe('recipeBookUtils', () => {
 
         it('correctly parses italic markdown *italic* or _italic_', () => {
             const result = parseFormattedText(
-                'text *italic* and _italic2_'
+                'text *italic* and _italic2_',
+                MockText
             ) as any[];
             expect(result.length).toBe(5);
             expect(result[0]).toBe('text ');
@@ -82,7 +88,8 @@ describe('recipeBookUtils', () => {
 
         it('correctly parses bold-italic markdown ***bold-italic*** or **_bold-italic_**', () => {
             const result = parseFormattedText(
-                'text ***bi1*** and **_bi2_**'
+                'text ***bi1*** and **_bi2_**',
+                MockText
             ) as any[];
             expect(result.length).toBe(5);
             expect(result[0]).toBe('text ');
