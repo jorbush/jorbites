@@ -48,15 +48,19 @@ export async function GET(request: NextRequest) {
                         qualityParam = `q_${quality}`;
                     }
 
-                    // For maximum quality without dimensions, only apply format and quality transformations
-                    if (quality === 'auto:best' && !width && !height) {
-                        imageUrl = `${baseUrl}/image/upload/f_${format},${qualityParam}/${imagePath}`;
-                    } else {
-                        // Use provided dimensions or defaults
-                        const w = width || '400';
-                        const h = height || '400';
-                        imageUrl = `${baseUrl}/image/upload/f_${format},${qualityParam},w_${w},h_${h},c_fill/${imagePath}`;
+                    const transformParams = [`f_${format}`, qualityParam];
+                    if (width && height) {
+                        transformParams.push(
+                            `w_${width}`,
+                            `h_${height}`,
+                            'c_fill'
+                        );
+                    } else if (width) {
+                        transformParams.push(`w_${width}`, 'c_scale');
+                    } else if (height) {
+                        transformParams.push(`h_${height}`, 'c_scale');
                     }
+                    imageUrl = `${baseUrl}/image/upload/${transformParams.join(',')}/${imagePath}`;
                 } else {
                     console.error(
                         '[Image Proxy] Invalid Cloudinary URL format:',
