@@ -5,6 +5,7 @@ import prisma from '@/app/lib/prismadb';
 import getCurrentUser, { auth } from '@/app/actions/getCurrentUser';
 import { unauthorized } from 'next/navigation';
 import { after } from 'next/server';
+import { logger } from '@/app/lib/axiom/server';
 
 declare global {
     var isPushInitialized: boolean | undefined;
@@ -18,7 +19,7 @@ function ensureWebPushInitialized() {
         !process.env.VAPID_PRIVATE_KEY
     ) {
         after(() => {
-            console.warn(
+            logger.warn(
                 'VAPID keys are missing. Push notifications will not work.'
             );
         });
@@ -63,7 +64,9 @@ export async function subscribeUser(sub: webpush.PushSubscription) {
         if (error.code === 'P2002') {
             return { success: true };
         }
-        console.error('Error saving subscription:', error);
+        after(() => {
+            logger.error('Error saving subscription:', { error });
+        });
         return { success: false, error: 'Failed to save subscription' };
     }
 }
@@ -93,7 +96,9 @@ export async function unsubscribeUser(sub?: webpush.PushSubscription | null) {
         });
         return { success: true };
     } catch (error) {
-        console.error('Error deleting subscription:', error);
+        after(() => {
+            logger.error('Error deleting subscription:', { error });
+        });
         return { success: false, error: 'Failed to delete subscription' };
     }
 }
