@@ -67,6 +67,32 @@ interface Quest {
     }>;
 }
 
+const getStatusIcon = (status: string) => {
+    switch (status) {
+        case 'open':
+            return <FiCircle className="text-blue-500" />;
+        case 'in_progress':
+            return <FiClock className="text-yellow-500" />;
+        case 'completed':
+            return <FiCheckCircle className="text-green-500" />;
+        default:
+            return <FiCircle />;
+    }
+};
+
+const getStatusColor = (status: string) => {
+    switch (status) {
+        case 'open':
+            return 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200';
+        case 'in_progress':
+            return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200';
+        case 'completed':
+            return 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200';
+        default:
+            return 'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200';
+    }
+};
+
 interface QuestDetailClientProps {
     currentUser?: SafeUser | null;
     quest: Quest;
@@ -85,32 +111,6 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
     const { share } = useShare();
 
     const isOwner = currentUser?.id === quest.user.id;
-
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'open':
-                return <FiCircle className="text-blue-500" />;
-            case 'in_progress':
-                return <FiClock className="text-yellow-500" />;
-            case 'completed':
-                return <FiCheckCircle className="text-green-500" />;
-            default:
-                return <FiCircle />;
-        }
-    };
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'open':
-                return 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200';
-            case 'in_progress':
-                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200';
-            case 'completed':
-                return 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200';
-            default:
-                return 'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200';
-        }
-    };
 
     const handleEdit = () => {
         questModal.onOpenEdit({

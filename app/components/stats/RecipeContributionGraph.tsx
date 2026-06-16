@@ -15,6 +15,23 @@ interface DayData {
     level: number; // 0-4 for intensity levels
 }
 
+const getDayColor = (level: number) => {
+    switch (level) {
+        case 0:
+            return 'bg-neutral-100 dark:bg-neutral-800';
+        case 1:
+            return 'bg-green-450/30 dark:bg-green-450/20';
+        case 2:
+            return 'bg-green-450/50 dark:bg-green-450/40';
+        case 3:
+            return 'bg-green-450/70 dark:bg-green-450/60';
+        case 4:
+            return 'bg-green-450 dark:bg-green-450';
+        default:
+            return 'bg-neutral-100 dark:bg-neutral-800';
+    }
+};
+
 const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
     recipes,
 }) => {
@@ -115,23 +132,6 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
         t('day_fri'),
         t('day_sat'),
     ];
-
-    const getDayColor = (level: number) => {
-        switch (level) {
-            case 0:
-                return 'bg-neutral-100 dark:bg-neutral-800';
-            case 1:
-                return 'bg-green-450/30 dark:bg-green-450/20';
-            case 2:
-                return 'bg-green-450/50 dark:bg-green-450/40';
-            case 3:
-                return 'bg-green-450/70 dark:bg-green-450/60';
-            case 4:
-                return 'bg-green-450 dark:bg-green-450';
-            default:
-                return 'bg-neutral-100 dark:bg-neutral-800';
-        }
-    };
 
     const handleDayHover = (
         day: DayData,
