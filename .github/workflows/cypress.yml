@@ -11,19 +11,8 @@ on:
     branches: main
 
 jobs:
-  cypress:
+  build:
     runs-on: ubuntu-latest
-    environment: testing
-    services:
-      redis:
-        image: redis
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,17 +31,81 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build application
+        run: pnpm run build
+        env:
+          NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
+          SKIP_ENV_VALIDATION: 'true'
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            .next
+            node_modules
+
+      - name: Upload Cypress binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-binary
+          path: ~/.cache/Cypress
+
+  cypress:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: testing
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build output
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: .
+
+      - name: Download Cypress binary
+        uses: actions/download-artifact@v4
+        with:
+          name: cypress-binary
+          path: ~/.cache/Cypress
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 11
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
       - name: Create cypress.env.json
+        env:
+          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
         run: |
           echo "{
-            \"userTestEmail\": \"${{ secrets.CYPRESS_USER_EMAIL }}\",
-            \"userTestPassword\": \"${{ secrets.CYPRESS_USER_PASSWORD }}\"
+            \"userTestEmail\": \"$CYPRESS_USER_EMAIL\",
+            \"userTestPassword\": \"$CYPRESS_USER_PASSWORD\"
           }" > cypress.env.json
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          build: pnpm run build
+          install: false
           start: pnpm start
           wait-on: 'http://localhost:3000'
           config-file: cypress.config.ts
