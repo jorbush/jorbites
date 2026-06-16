@@ -37,15 +37,11 @@ vi.mock('@/app/components/modals/Modal', () => ({
             data-testid="write-to-delete-modal"
             style={{ display: isOpen ? 'block' : 'none' }}
         >
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    onSubmit();
-                }}
-            >
+            <div>
                 {body}
                 <button
-                    type="submit"
+                    type="button"
+                    onClick={() => onSubmit()}
                     data-testid="modal-submit"
                 >
                     Submit
@@ -64,7 +60,7 @@ vi.mock('@/app/components/modals/Modal', () => ({
                 >
                     Close
                 </button>
-            </form>
+            </div>
         </div>
     ),
 }));

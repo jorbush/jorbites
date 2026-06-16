@@ -120,8 +120,7 @@ vi.mock('react-hook-form', () => {
                     ref: vi.fn(),
                 };
             },
-            handleSubmit: (callback: any) => (e?: any) => {
-                if (e?.preventDefault) e.preventDefault();
+            handleSubmit: (callback: any) => () => {
                 return callback(formValues);
             },
             formState: { errors: {} },
