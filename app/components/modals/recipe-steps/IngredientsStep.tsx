@@ -91,41 +91,41 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
     };
 
     const renderIngredientInputs = () => {
-        const components = [];
-        for (let i = 0; i < numIngredients; i++) {
-            components.push(
-                <div
-                    key={`ingredient-input-${i}`}
-                    className="relative flex w-full items-center gap-3 px-2"
-                >
-                    <div className="grow">
-                        <Input
-                            id={`ingredient-${i}`}
-                            label=""
-                            register={register}
-                            errors={errors}
-                            required={numIngredients === 1}
-                            maxLength={RECIPE_INGREDIENT_MAX_LENGTH}
-                            dataCy={`recipe-ingredient-${i}`}
+        const ingredientKeys = Array.from(
+            { length: numIngredients },
+            (_, idx) => `ingredient-input-${idx}`
+        );
+        return ingredientKeys.map((ingredientKey, i) => (
+            <div
+                key={ingredientKey}
+                className="relative flex w-full items-center gap-3 px-2"
+            >
+                <div className="grow">
+                    <Input
+                        id={`ingredient-${i}`}
+                        label=""
+                        register={register}
+                        errors={errors}
+                        required={numIngredients === 1}
+                        maxLength={RECIPE_INGREDIENT_MAX_LENGTH}
+                        dataCy={`recipe-ingredient-${i}`}
+                    />
+                </div>
+                {numIngredients > 1 && i === numIngredients - 1 ? (
+                    <div className="shrink-0">
+                        <AiFillDelete
+                            data-testid="remove-ingredient-button"
+                            color="#F43F5F"
+                            onClick={() => onRemoveIngredient(i)}
+                            size={24}
+                            className="cursor-pointer"
                         />
                     </div>
-                    {numIngredients > 1 && i === numIngredients - 1 ? (
-                        <div className="shrink-0">
-                            <AiFillDelete
-                                data-testid="remove-ingredient-button"
-                                color="#F43F5F"
-                                onClick={() => onRemoveIngredient(i)}
-                                size={24}
-                                className="cursor-pointer"
-                            />
-                        </div>
-                    ) : (
-                        <div className="w-6 shrink-0" />
-                    )}
-                </div>
-            );
-        }
-        return components;
+                ) : (
+                    <div className="w-6 shrink-0" />
+                )}
+            </div>
+        ));
     };
 
     return (
