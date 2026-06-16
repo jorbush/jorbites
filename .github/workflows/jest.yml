@@ -10,8 +10,6 @@ jobs:
   jest:
     runs-on: ubuntu-latest
     environment: testing
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -27,8 +25,13 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: Install dependencies with scripts disabled
+        run: pnpm install --ignore-scripts
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
 
       - name: Run unit tests (excluding draft tests)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: pnpm run jest -- __tests__/unit_test/routes --testPathIgnorePatterns=".*draft.*"

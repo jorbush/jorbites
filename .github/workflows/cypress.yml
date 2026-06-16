@@ -39,19 +39,31 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: Install dependencies with scripts disabled
+        run: pnpm install --ignore-scripts
+
+      - name: Install Cypress binary
+        run: npx cypress install
+
+      - name: Generate Prisma Client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma generate
 
       - name: Create cypress.env.json
+        env:
+          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
         run: |
           echo "{
-            \"userTestEmail\": \"${{ secrets.CYPRESS_USER_EMAIL }}\",
-            \"userTestPassword\": \"${{ secrets.CYPRESS_USER_PASSWORD }}\"
+            \"userTestEmail\": \"$CYPRESS_USER_EMAIL\",
+            \"userTestPassword\": \"$CYPRESS_USER_PASSWORD\"
           }" > cypress.env.json
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
+          install: false
           build: pnpm run build
           start: pnpm start
           wait-on: 'http://localhost:3000'
