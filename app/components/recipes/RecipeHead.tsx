@@ -19,28 +19,28 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     imagesSrc,
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [isTransitioning, setIsTransitioning] = useState(false);
+    const isTransitioning = useRef(false);
     const { back } = useRouter() || {};
     const { share } = useShare();
     const touchStartX = useRef(0);
     const touchEndX = useRef(0);
 
     useEffect(() => {
-        if (isTransitioning) {
+        if (isTransitioning.current) {
             const timeout = setTimeout(() => {
-                setIsTransitioning(false);
+                isTransitioning.current = false;
             }, 300);
             return () => clearTimeout(timeout);
         }
-    }, [isTransitioning, currentImageIndex]);
+    }, [currentImageIndex]);
 
     const startTransition = (newIndex: number) => {
-        setIsTransitioning(true);
+        isTransitioning.current = true;
         setCurrentImageIndex(newIndex);
     };
 
     const goToPreviousImage = () => {
-        if (isTransitioning) return;
+        if (isTransitioning.current) return;
         const newIndex =
             currentImageIndex === 0
                 ? imagesSrc.length - 1
@@ -49,7 +49,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     };
 
     const goToNextImage = () => {
-        if (isTransitioning) return;
+        if (isTransitioning.current) return;
         const newIndex =
             currentImageIndex === imagesSrc.length - 1
                 ? 0
@@ -69,7 +69,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     };
 
     const handleTouchEnd = () => {
-        if (imagesSrc.length <= 1 || isTransitioning) return;
+        if (imagesSrc.length <= 1 || isTransitioning.current) return;
         const swipeDistance = touchStartX.current - touchEndX.current;
         const minSwipeDistance = 50;
 
@@ -177,7 +177,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                     key={`dot-${imageSrc}`}
                                     type="button"
                                     onClick={() => {
-                                        if (isTransitioning) return;
+                                        if (isTransitioning.current) return;
                                         startTransition(index);
                                     }}
                                     className="group flex h-12 cursor-pointer items-center justify-center p-2 focus:outline-hidden"

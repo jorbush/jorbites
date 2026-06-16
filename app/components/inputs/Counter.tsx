@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 
 interface CounterProps {
@@ -16,65 +16,84 @@ const Counter: React.FC<CounterProps> = ({
     value,
     onChange,
 }) => {
-    const [isIncrementing, setIsIncrementing] = useState(false);
-    const [isDecrementing, setIsDecrementing] = useState(false);
+    const isIncrementing = useRef(false);
+    const isDecrementing = useRef(false);
     const lastUpdateTime = useRef<number>(0);
     const animationFrameId = useRef<number | undefined>(undefined);
+
+    const valueRef = useRef(value);
+    valueRef.current = value;
+    const onChangeRef = useRef(onChange);
+    onChangeRef.current = onChange;
 
     const updateCounter = useCallback(() => {
         const currentTime = Date.now();
 
         if (currentTime - lastUpdateTime.current >= 100) {
-            if (isIncrementing) {
-                onChange(value + 1);
-            } else if (isDecrementing && value > 1) {
-                onChange(value - 1);
+            if (isIncrementing.current) {
+                onChangeRef.current(valueRef.current + 1);
+            } else if (isDecrementing.current && valueRef.current > 1) {
+                onChangeRef.current(valueRef.current - 1);
             }
             lastUpdateTime.current = currentTime;
         }
 
         animationFrameId.current = requestAnimationFrame(updateCounter);
-    }, [isIncrementing, isDecrementing, onChange, value]);
+    }, []);
+
+    const startUpdateLoop = useCallback(() => {
+        if (animationFrameId.current) {
+            cancelAnimationFrame(animationFrameId.current);
+        }
+        lastUpdateTime.current = Date.now();
+        animationFrameId.current = requestAnimationFrame(updateCounter);
+    }, [updateCounter]);
+
+    const stopUpdateLoop = useCallback(() => {
+        if (animationFrameId.current) {
+            cancelAnimationFrame(animationFrameId.current);
+            animationFrameId.current = undefined;
+        }
+    }, []);
 
     useEffect(() => {
-        if (isIncrementing || isDecrementing) {
-            lastUpdateTime.current = Date.now();
-            animationFrameId.current = requestAnimationFrame(updateCounter);
-        }
-
+        const id = animationFrameId;
         return () => {
-            if (animationFrameId.current) {
-                cancelAnimationFrame(animationFrameId.current);
+            if (id.current) {
+                cancelAnimationFrame(id.current);
             }
         };
-    }, [isIncrementing, isDecrementing, updateCounter]);
+    }, []);
 
     const handleStop = useCallback(() => {
-        setIsIncrementing(false);
-        setIsDecrementing(false);
-    }, []);
+        isIncrementing.current = false;
+        isDecrementing.current = false;
+        stopUpdateLoop();
+    }, [stopUpdateLoop]);
 
     const handleIncrement = useCallback(() => {
-        onChange(value + 1);
-    }, [onChange, value]);
-
-    const handleDecrement = useCallback(() => {
-        if (value > 1) {
-            onChange(value - 1);
-        }
-    }, [onChange, value]);
-
-    const handleIncrementStart = useCallback(() => {
-        setIsIncrementing(true);
-        setIsDecrementing(false);
+        onChangeRef.current(valueRef.current + 1);
     }, []);
 
-    const handleDecrementStart = useCallback(() => {
-        if (value > 1) {
-            setIsDecrementing(true);
-            setIsIncrementing(false);
+    const handleDecrement = useCallback(() => {
+        if (valueRef.current > 1) {
+            onChangeRef.current(valueRef.current - 1);
         }
-    }, [value]);
+    }, []);
+
+    const handleIncrementStart = useCallback(() => {
+        isIncrementing.current = true;
+        isDecrementing.current = false;
+        startUpdateLoop();
+    }, [startUpdateLoop]);
+
+    const handleDecrementStart = useCallback(() => {
+        if (valueRef.current > 1) {
+            isDecrementing.current = true;
+            isIncrementing.current = false;
+            startUpdateLoop();
+        }
+    }, [startUpdateLoop]);
 
     return (
         <div className="flex flex-row items-center justify-between">

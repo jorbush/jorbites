@@ -18,6 +18,10 @@ export const SearchFallback = () => {
     );
 };
 
+const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+};
+
 interface SearchProps {
     onFilterToggle?: () => void;
     isFilterOpen?: boolean;
@@ -37,8 +41,10 @@ const Search: React.FC<SearchProps> = ({
     const currentSearch = get('search') || '';
     const [isSearchMode, setIsSearchMode] = useState(Boolean(currentSearch));
     const [searchQuery, setSearchQuery] = useState(currentSearch);
-    const [isExplicitlyExiting, setIsExplicitlyExiting] = useState(false);
+    const isExplicitlyExiting = useRef(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const onSearchModeChangeRef = useRef(onSearchModeChange);
+    onSearchModeChangeRef.current = onSearchModeChange;
     const isMobile = useMediaQuery('(max-width: 768px)');
 
     const isMainPage = pathname === '/';
@@ -101,16 +107,16 @@ const Search: React.FC<SearchProps> = ({
         prevCurrentSearchRef.current = currentSearch;
         if (currentSearch) {
             setSearchQuery(currentSearch);
-            if (!isSearchMode && !isExplicitlyExiting) {
+            if (!isSearchMode && !isExplicitlyExiting.current) {
                 setIsSearchMode(true);
-                onSearchModeChange?.(true);
+                onSearchModeChangeRef.current?.(true);
             }
         } else {
             setSearchQuery('');
-            if (isExplicitlyExiting) {
+            if (isExplicitlyExiting.current) {
                 setIsSearchMode(false);
-                onSearchModeChange?.(false);
-                setIsExplicitlyExiting(false);
+                onSearchModeChangeRef.current?.(false);
+                isExplicitlyExiting.current = false;
             }
         }
     }
@@ -120,14 +126,14 @@ const Search: React.FC<SearchProps> = ({
         if (!hasFiredInitialRef.current) {
             hasFiredInitialRef.current = true;
             if (currentSearch) {
-                onSearchModeChange?.(true);
+                onSearchModeChangeRef.current?.(true);
             }
         }
-    }, [currentSearch, onSearchModeChange]);
+    }, [currentSearch]);
 
     const handleSearchToggle = () => {
         if (isSearchMode) {
-            setIsExplicitlyExiting(true);
+            isExplicitlyExiting.current = true;
             setSearchQuery('');
             if (isFilterablePage && searchQuery.trim()) {
                 const params = new URLSearchParams(
@@ -145,17 +151,13 @@ const Search: React.FC<SearchProps> = ({
             } else {
                 setIsSearchMode(false);
                 onSearchModeChange?.(false);
-                setIsExplicitlyExiting(false);
+                isExplicitlyExiting.current = false;
             }
         } else {
             setIsSearchMode(true);
             setTimeout(() => inputRef.current?.focus(), 200);
             onSearchModeChange?.(true);
         }
-    };
-
-    const handleSearchSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
     };
 
     const handleSearchChange = (value: string) => {
