@@ -56,4 +56,31 @@ describe('<MenuItem />', () => {
         fireEvent.click(menuItem);
         expect(customOnClick).toHaveBeenCalledTimes(1);
     });
+
+    it('renders isNew icon when isNew prop is true', () => {
+        render(
+            <MenuItem
+                {...defaultProps}
+                isNew
+            />
+        );
+        // The MdFiberNew icon doesn't have a simple text label, but we can look for it via a selector if needed
+        // or just check that something extra is rendered.
+        // In MenuItem.tsx: {isNew && (<MdFiberNew ... />)}
+        // We can check if it renders the icon by its class or just see if the container has it.
+        // Since we are using vitest and react-icons, it might render as an svg.
+        const svg = document.querySelector('svg');
+        expect(svg).not.toBeNull();
+    });
+
+    it('does not render isNew icon when isNew prop is false', () => {
+        render(
+            <MenuItem
+                {...defaultProps}
+                isNew={false}
+            />
+        );
+        const svg = document.querySelector('svg');
+        expect(svg).toBeNull();
+    });
 });
