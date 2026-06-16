@@ -22,8 +22,10 @@ export async function DELETE(
     props: { params: Promise<IParams> }
 ) {
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+        const [params, currentUser] = await Promise.all([
+            props.params,
+            getCurrentUser(),
+        ]);
 
         if (!currentUser) {
             return unauthorizedResponse(
@@ -54,25 +56,26 @@ export async function DELETE(
             return forbiddenResponse('You can only delete your own comments');
         }
 
-        const deletedComment = await prisma.comment.delete({
-            where: {
-                id: commentId,
-            },
-        });
-
-        // Recalculate average rating and review count
-        const stats = await prisma.comment.aggregate({
-            where: {
-                recipeId: comment.recipeId,
-                rating: { not: null },
-            },
-            _avg: {
-                rating: true,
-            },
-            _count: {
-                rating: true,
-            },
-        });
+        const [deletedComment, stats] = await Promise.all([
+            prisma.comment.delete({
+                where: {
+                    id: commentId,
+                },
+            }),
+            prisma.comment.aggregate({
+                where: {
+                    recipeId: comment.recipeId,
+                    rating: { not: null },
+                    id: { not: commentId },
+                },
+                _avg: {
+                    rating: true,
+                },
+                _count: {
+                    rating: true,
+                },
+            }),
+        ]);
 
         await prisma.recipe.update({
             where: {
@@ -90,8 +93,10 @@ export async function DELETE(
 
         // Invalidate comments cache and recipe cache for the recipe this comment belonged to
         try {
-            await redisCache.del(`recipe:comments:${comment.recipeId}`);
-            await redisCache.del(`recipe:${comment.recipeId}`);
+            await Promise.all([
+                redisCache.del(`recipe:comments:${comment.recipeId}`),
+                redisCache.del(`recipe:${comment.recipeId}`),
+            ]);
         } catch (cacheError: any) {
             logger.error(
                 'DELETE /api/comments/[commentId] - cache invalidation error',

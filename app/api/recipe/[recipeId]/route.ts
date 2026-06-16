@@ -397,8 +397,10 @@ export async function DELETE(
     props: { params: Promise<IParams> }
 ) {
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+        const [params, currentUser] = await Promise.all([
+            props.params,
+            getCurrentUser(),
+        ]);
 
         if (!currentUser) {
             return unauthorizedResponse(
@@ -472,9 +474,11 @@ export async function DELETE(
 
         // Invalidate cache
         try {
-            await redisCache.del(`recipe:${recipeId}`);
-            await redisCache.del(`recipes:graph:${currentUser.id}`);
-            await redisCache.incr('recipes:global:version');
+            await Promise.all([
+                redisCache.del(`recipe:${recipeId}`),
+                redisCache.del(`recipes:graph:${currentUser.id}`),
+                redisCache.incr('recipes:global:version'),
+            ]);
         } catch (error: any) {
             logger.error(
                 'DELETE /api/recipe/[recipeId] - cache invalidation error',

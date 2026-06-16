@@ -306,7 +306,6 @@ describe('Comments API Error Handling', () => {
             (prisma.comment.aggregate as jest.Mock).mockResolvedValueOnce(
                 mockStats
             );
-            (prisma.recipe.update as jest.Mock).mockResolvedValueOnce({});
 
             const mockRequest = {
                 json: jest.fn().mockResolvedValue({
@@ -322,8 +321,8 @@ describe('Comments API Error Handling', () => {
             expect(response.status).toBe(200);
             expect(data).toEqual(mockRecipeAndComment);
 
-            // Assert comment creation payload
-            expect(prisma.recipe.update).toHaveBeenNthCalledWith(1, {
+            // Assert comment creation payload and recipe metadata update
+            expect(prisma.recipe.update).toHaveBeenCalledWith({
                 where: { id: 'test-recipe-id' },
                 data: {
                     comments: {
@@ -333,6 +332,8 @@ describe('Comments API Error Handling', () => {
                             rating: 5,
                         },
                     },
+                    averageRating: 5.0,
+                    ratingCount: 2,
                 },
                 include: {
                     comments: true,
@@ -347,15 +348,6 @@ describe('Comments API Error Handling', () => {
                 },
                 _avg: { rating: true },
                 _count: { rating: true },
-            });
-
-            // Assert recipe update metadata payload
-            expect(prisma.recipe.update).toHaveBeenNthCalledWith(2, {
-                where: { id: 'test-recipe-id' },
-                data: {
-                    averageRating: 5.0,
-                    ratingCount: 1,
-                },
             });
         });
     });
