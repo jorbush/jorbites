@@ -1,9 +1,9 @@
 import React from 'react';
-import { Page, View, Text } from '@react-pdf/renderer';
 import { SafeRecipe } from '@/app/types';
 import { styles } from './recipeBookStyles';
 
 interface RecipeBookTOCProps {
+    pdfRenderer: any;
     recipes: SafeRecipe[];
     labels: {
         tableOfContents: string;
@@ -13,9 +13,11 @@ interface RecipeBookTOCProps {
 }
 
 export const RecipeBookTOC: React.FC<RecipeBookTOCProps> = ({
+    pdfRenderer,
     recipes,
     labels,
 }) => {
+    const { Page, View, Text } = pdfRenderer;
     // Generate Table of Contents mappings.
     // Cover is Page 1, TOC is Page 2. Recipes start at Page 3.
     const tocItems = recipes.map((recipe, index) => ({
@@ -50,9 +52,13 @@ export const RecipeBookTOC: React.FC<RecipeBookTOCProps> = ({
             </View>
             <Text
                 style={styles.footer}
-                render={({ pageNumber, totalPages }) =>
-                    `${labels.page} ${pageNumber} ${labels.of} ${totalPages}`
-                }
+                render={({
+                    pageNumber,
+                    totalPages,
+                }: {
+                    pageNumber: number;
+                    totalPages: number;
+                }) => `${labels.page} ${pageNumber} ${labels.of} ${totalPages}`}
                 fixed
             />
         </Page>

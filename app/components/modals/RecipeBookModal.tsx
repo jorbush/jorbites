@@ -76,7 +76,7 @@ const RecipeBookModal = () => {
             }
 
             // 2. Load PDF Renderer dynamically
-            const [{ pdf }, { RecipeBookPDF }] = await Promise.all([
+            const [pdfRenderer, { RecipeBookPDF }] = await Promise.all([
                 import('@react-pdf/renderer'),
                 import('@/app/components/profile/RecipeBookPDF'),
             ]);
@@ -127,6 +127,7 @@ const RecipeBookModal = () => {
 
             const doc = (
                 <RecipeBookPDF
+                    pdfRenderer={pdfRenderer}
                     recipes={translatedRecipes}
                     userName={recipeBookModal.userName}
                     userImage={recipeBookModal.userImage}
@@ -136,7 +137,7 @@ const RecipeBookModal = () => {
                 />
             );
 
-            const blob = await pdf(doc).toBlob();
+            const blob = await pdfRenderer.pdf(doc).toBlob();
 
             // 5. Download the PDF
             const url = URL.createObjectURL(blob);

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Text } from '@react-pdf/renderer';
 import { SafeRecipe } from '@/app/types';
 
 /**
@@ -7,6 +6,7 @@ import { SafeRecipe } from '@/app/types';
  */
 export const parseFormattedText = (
     text: string,
+    TextComponent: React.ComponentType<any>,
     baseStyle: any = {}
 ): (string | React.ReactNode)[] | string => {
     if (!text) return '';
@@ -32,7 +32,7 @@ export const parseFormattedText = (
         ) {
             const cleanText = part.slice(3, -3);
             return (
-                <Text
+                <TextComponent
                     key={key}
                     style={[
                         baseStyle,
@@ -40,7 +40,7 @@ export const parseFormattedText = (
                     ]}
                 >
                     {cleanText}
-                </Text>
+                </TextComponent>
             );
         }
 
@@ -51,12 +51,12 @@ export const parseFormattedText = (
         ) {
             const cleanText = part.slice(2, -2);
             return (
-                <Text
+                <TextComponent
                     key={key}
                     style={[baseStyle, { fontWeight: 700 }]}
                 >
                     {cleanText}
-                </Text>
+                </TextComponent>
             );
         }
 
@@ -67,12 +67,12 @@ export const parseFormattedText = (
         ) {
             const cleanText = part.slice(1, -1);
             return (
-                <Text
+                <TextComponent
                     key={key}
                     style={[baseStyle, { fontStyle: 'italic' }]}
                 >
                     {cleanText}
-                </Text>
+                </TextComponent>
             );
         }
 

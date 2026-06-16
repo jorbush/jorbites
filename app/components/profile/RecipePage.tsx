@@ -1,5 +1,4 @@
 import React from 'react';
-import { Page, View, Image, Text } from '@react-pdf/renderer';
 import { SafeRecipe } from '@/app/types';
 import { styles } from './recipeBookStyles';
 import {
@@ -10,6 +9,7 @@ import {
 } from '@/app/utils/recipeBookUtils';
 
 interface RecipePageProps {
+    pdfRenderer: any;
     recipe: SafeRecipe;
     idx: number;
     labels: {
@@ -24,11 +24,13 @@ interface RecipePageProps {
 }
 
 export const RecipePage: React.FC<RecipePageProps> = ({
+    pdfRenderer,
     recipe,
     idx,
     labels,
     config,
 }) => {
+    const { Page, View, Image, Text } = pdfRenderer;
     // Construct secure proxied image URL.
     let proxiedImageSrc = null;
     if (recipe.imageSrc) {
@@ -141,7 +143,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             <Text style={styles.recipeTitle}>{recipe.title}</Text>
             {recipe.description && (
                 <Text style={styles.recipeDesc}>
-                    {parseFormattedText(recipe.description)}
+                    {parseFormattedText(recipe.description, Text)}
                 </Text>
             )}
 
@@ -185,7 +187,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             >
                                 <Text style={styles.bulletPoint}>•</Text>
                                 <Text style={styles.ingredientText}>
-                                    {parseFormattedText(ing)}
+                                    {parseFormattedText(ing, Text)}
                                 </Text>
                             </View>
                         ))}
@@ -219,7 +221,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             >
                                 <Text style={styles.stepNum}>{i + 1}.</Text>
                                 <Text style={styles.stepText}>
-                                    {parseFormattedText(step)}
+                                    {parseFormattedText(step, Text)}
                                 </Text>
                             </View>
                         ))}
@@ -241,9 +243,13 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             {/* Page Footer */}
             <Text
                 style={styles.footer}
-                render={({ pageNumber, totalPages }) =>
-                    `${labels.page} ${pageNumber} ${labels.of} ${totalPages}`
-                }
+                render={({
+                    pageNumber,
+                    totalPages,
+                }: {
+                    pageNumber: number;
+                    totalPages: number;
+                }) => `${labels.page} ${pageNumber} ${labels.of} ${totalPages}`}
                 fixed
             />
         </Page>

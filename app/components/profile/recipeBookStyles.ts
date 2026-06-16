@@ -1,6 +1,4 @@
-import { StyleSheet } from '@react-pdf/renderer';
-
-export const styles = StyleSheet.create({
+export const styles = {
     page: {
         fontFamily: 'Montserrat',
         padding: 40,
@@ -243,4 +241,4 @@ export const styles = StyleSheet.create({
         flex: 1,
         color: '#334155',
     },
-});
+};
