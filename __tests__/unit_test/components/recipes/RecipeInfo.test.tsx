@@ -32,13 +32,18 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('../Avatar', () => ({
     default: ({ src, size, onClick }: any) => (
-        <img
-            src={src}
-            width={size}
-            height={size}
+        <button
+            type="button"
             onClick={onClick}
-            alt="Avatar"
-        />
+            disabled={!onClick}
+        >
+            <img
+                src={src}
+                width={size}
+                height={size}
+                alt="Avatar"
+            />
+        </button>
     ),
 }));
 

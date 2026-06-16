@@ -81,12 +81,17 @@ vi.mock('@/app/components/utils/Avatar', () => ({
         src: string | null;
         onClick?: () => void;
     }) => (
-        <img
-            src={src || '/placeholder.jpg'}
-            alt="avatar"
-            data-testid="avatar"
+        <button
+            type="button"
             onClick={onClick}
-        />
+            disabled={!onClick}
+        >
+            <img
+                src={src || '/placeholder.jpg'}
+                alt="avatar"
+                data-testid="avatar"
+            />
+        </button>
     ),
 }));
 
