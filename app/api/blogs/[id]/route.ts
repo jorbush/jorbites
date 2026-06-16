@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getBlogById } from '@/app/utils/blog-utils';
 import { notFoundResponse, internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { ALLOWED_LANGUAGES } from '@/app/utils/constants';
 
 interface IParams {
     id: string;
@@ -18,8 +19,9 @@ export async function GET(
         const lang = searchParams.get('lang') || 'en';
 
         logger.info('GET /api/blogs/[id] - start', { id, lang });
-        const validLanguages = ['en', 'es', 'ca'];
-        const language = validLanguages.includes(lang) ? lang : 'en';
+        const language = (ALLOWED_LANGUAGES as readonly string[]).includes(lang)
+            ? lang
+            : 'en';
         const blog = await getBlogById(id, language);
         if (!blog) {
             logger.info('GET /api/blogs/[id] - blog not found', {

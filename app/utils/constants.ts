@@ -62,3 +62,5 @@ export const DAYS_OF_WEEK = [
     'saturday',
     'sunday',
 ];
+
+export const ALLOWED_LANGUAGES = ['en', 'es', 'ca'] as const;

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAllEvents } from '@/app/utils/event-utils';
 import { internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { ALLOWED_LANGUAGES } from '@/app/utils/constants';
 
 export async function GET(request: NextRequest) {
     try {
@@ -9,8 +10,9 @@ export async function GET(request: NextRequest) {
         const lang = searchParams.get('lang') || 'en';
 
         logger.info('GET /api/events - start', { lang });
-        const validLanguages = ['en', 'es', 'ca'];
-        const language = validLanguages.includes(lang) ? lang : 'en';
+        const language = (ALLOWED_LANGUAGES as readonly string[]).includes(lang)
+            ? lang
+            : 'en';
         const events = await getAllEvents(language);
         logger.info('GET /api/events - success', {
             language,

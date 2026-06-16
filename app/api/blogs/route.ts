@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getPaginatedBlogs } from '@/app/utils/blog-utils';
 import { internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { ALLOWED_LANGUAGES } from '@/app/utils/constants';
 
 export async function GET(request: NextRequest) {
     try {
@@ -22,8 +23,9 @@ export async function GET(request: NextRequest) {
             pageSize,
             category,
         });
-        const validLanguages = ['en', 'es', 'ca'];
-        const language = validLanguages.includes(lang) ? lang : 'en';
+        const language = (ALLOWED_LANGUAGES as readonly string[]).includes(lang)
+            ? lang
+            : 'en';
         const result = await getPaginatedBlogs(
             language,
             page,
