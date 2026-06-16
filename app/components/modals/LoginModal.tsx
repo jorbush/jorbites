@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useTransition } from 'react';
 import { toast } from 'react-hot-toast';
 import { signIn } from 'next-auth/react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
@@ -24,7 +24,7 @@ const LoginModal = () => {
     const loginModal = useLoginModal();
     const registerModal = useRegisterModal();
     const forgotPasswordModal = useForgotPasswordModal();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const { t } = useTranslation();
 
     const {
@@ -43,12 +43,11 @@ const LoginModal = () => {
             toast.error(t('error_validate_email'));
             return;
         }
-        setIsLoading(true);
-        signIn('credentials', {
-            ...data,
-            redirect: false,
-        }).then((callback) => {
-            setIsLoading(false);
+        startTransition(async () => {
+            const callback = await signIn('credentials', {
+                ...data,
+                redirect: false,
+            });
 
             if (callback?.ok) {
                 toast.success(t('logged_in'));
@@ -81,7 +80,7 @@ const LoginModal = () => {
             <Input
                 id="email"
                 label={t('email')}
-                disabled={isLoading}
+                disabled={isPending}
                 register={register}
                 errors={errors}
                 required
@@ -91,7 +90,7 @@ const LoginModal = () => {
                 id="password"
                 label={t('password')}
                 type="password"
-                disabled={isLoading}
+                disabled={isPending}
                 register={register}
                 errors={errors}
                 required
@@ -142,11 +141,11 @@ const LoginModal = () => {
 
     return (
         <Modal
-            disabled={isLoading}
+            disabled={isPending}
             isOpen={loginModal.isOpen}
             title={t('login') ?? ''}
             actionLabel={
-                isLoading ? t('logging_in') || 'Logging in...' : t('continue')
+                isPending ? t('logging_in') || 'Logging in...' : t('continue')
             }
             onClose={loginModal.onClose}
             onSubmit={handleSubmit(onSubmit)}

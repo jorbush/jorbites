@@ -7,6 +7,7 @@ import React, {
     useCallback,
     useEffect,
     useState,
+    useTransition,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
@@ -32,41 +33,38 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
     const [newUserName, setNewUserName] = useState(currentUser?.name || '');
     const [canSave, setCanSave] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
 
     const updateUserName = useCallback(() => {
-        if (isLoading) return;
+        if (isPending) return;
 
-        setIsLoading(true);
-        axios
-            .patch(`/api/userName/${currentUser?.id}`, {
-                userName: newUserName,
-            })
-            .then(() => {
+        startTransition(async () => {
+            try {
+                await axios.patch(`/api/userName/${currentUser?.id}`, {
+                    userName: newUserName,
+                });
                 toast.success(
                     t('username_updated') || 'Username updated successfully'
                 );
                 setIsEditing(false);
-            })
-            .catch((error) => {
+            } catch (error: any) {
                 const errorMessage =
                     error.response?.data?.error || t('something_went_wrong');
                 toast.error(errorMessage);
                 // Reset to original name on error
                 setNewUserName(currentUser?.name || '');
-            })
-            .finally(() => {
+            } finally {
                 setCanSave(false);
-                setIsLoading(false);
                 refresh();
-            });
+            }
+        });
     }, [
         currentUser?.id,
         currentUser?.name,
         newUserName,
         refresh,
         t,
-        isLoading,
+        isPending,
     ]);
 
     const handleUserNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,7 +121,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                             className="focus:ring-green-450 w-24 rounded border border-neutral-300 px-2 py-1 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                             placeholder={t('username') || 'Username'}
                             aria-label={t('username') || 'Username'}
-                            disabled={isLoading}
+                            disabled={isPending}
                             maxLength={USERNAME_MAX_LENGTH}
                             data-testid="username-input"
                         />
@@ -141,7 +139,7 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
                             type="button"
                             onClick={handleCancelEdit}
                             className="text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
-                            disabled={isLoading}
+                            disabled={isPending}
                             data-testid="cancel-edit-button"
                         >
                             {t('cancel') || 'Cancel'}

@@ -7,6 +7,7 @@ import React, {
     useCallback,
     useEffect,
     useState,
+    useTransition,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
@@ -30,7 +31,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -55,33 +56,30 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 
     const updatePassword: SubmitHandler<FieldValues> = useCallback(
         (data) => {
-            if (isLoading) return;
+            if (isPending) return;
 
-            setIsLoading(true);
-            axios
-                .patch(`/api/password/${currentUser?.id}`, {
-                    currentPassword: data.currentPassword,
-                    newPassword: data.newPassword,
-                })
-                .then(() => {
+            startTransition(async () => {
+                try {
+                    await axios.patch(`/api/password/${currentUser?.id}`, {
+                        currentPassword: data.currentPassword,
+                        newPassword: data.newPassword,
+                    });
                     toast.success(
                         t('password_updated') || 'Password updated successfully'
                     );
                     setIsEditing(false);
                     reset();
-                })
-                .catch((error) => {
+                } catch (error: any) {
                     const errorMessage =
                         error.response?.data?.error ||
                         t('something_went_wrong');
                     toast.error(errorMessage);
-                })
-                .finally(() => {
-                    setIsLoading(false);
+                } finally {
                     refresh();
-                });
+                }
+            });
         },
-        [currentUser?.id, refresh, t, isLoading, reset]
+        [currentUser?.id, refresh, t, isPending, reset]
     );
 
     // Check if form is valid and has actual changes
@@ -138,7 +136,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                             type="button"
                             onClick={handleCancelEdit}
                             className="text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
-                            disabled={isLoading}
+                            disabled={isPending}
                             data-testid="cancel-edit-button"
                         >
                             {t('cancel') || 'Cancel'}
@@ -166,7 +164,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                                     t('enter_current_password') ||
                                     'Enter current password'
                                 }
-                                disabled={isLoading}
+                                disabled={isPending}
                                 data-testid="current-password-input"
                             />
                             <button
@@ -207,7 +205,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                                     t('enter_new_password') ||
                                     'Enter new password'
                                 }
-                                disabled={isLoading}
+                                disabled={isPending}
                                 data-testid="new-password-input"
                             />
                             <button
@@ -253,7 +251,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                                     t('confirm_new_password') ||
                                     'Confirm new password'
                                 }
-                                disabled={isLoading}
+                                disabled={isPending}
                                 data-testid="confirm-password-input"
                             />
                             <button
@@ -293,12 +291,12 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                             <button
                                 type="button"
                                 onClick={handleSubmit(updatePassword)}
-                                disabled={isLoading}
+                                disabled={isPending}
                                 className="bg-green-450 flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white transition-colors hover:opacity-80 disabled:opacity-50 dark:text-black dark:hover:opacity-100"
                                 data-testid="save-password-button"
                             >
                                 <FaRegSave className="size-4" />
-                                {isLoading
+                                {isPending
                                     ? t('saving') || 'Saving...'
                                     : t('save_password') || 'Save Password'}
                             </button>
