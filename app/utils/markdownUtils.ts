@@ -1,5 +1,3 @@
-import matter from 'gray-matter';
-
 export interface EventFrontmatter {
     title: string;
     description: string;
@@ -33,36 +31,6 @@ export interface Blog {
     content: string;
     language: string;
     category?: 'general' | 'releases';
-}
-
-/**
- * Parse markdown content with frontmatter
- */
-export function parseMarkdown(markdown: string): {
-    frontmatter: EventFrontmatter;
-    content: string;
-} {
-    try {
-        const { data, content } = matter(markdown);
-
-        return {
-            frontmatter: data as EventFrontmatter,
-            content,
-        };
-    } catch (error) {
-        console.error(`Error parsing markdown content:`, error);
-        return {
-            frontmatter: {
-                title: 'Error',
-                description: 'Error loading event',
-                date: new Date().toISOString(),
-                endDate: new Date().toISOString(),
-                image: '/images/events/default.jpg',
-                badge: '/images/events/default.jpg',
-            },
-            content: 'Error loading event content.',
-        };
-    }
 }
 
 /**
