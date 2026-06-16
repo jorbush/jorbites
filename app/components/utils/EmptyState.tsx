@@ -88,7 +88,7 @@ const EmptyState: React.FC<EmptyStateProps> = (props) => {
                 <div
                     className={`flex ${props.height || 'h-[60vh]'} flex-col items-center justify-center gap-2`}
                 >
-                    Loading...
+                    Loading…
                 </div>
             }
         >
