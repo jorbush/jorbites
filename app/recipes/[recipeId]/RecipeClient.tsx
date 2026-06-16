@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useTransition } from 'react';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useLoginModal from '@/app/hooks/useLoginModal';
@@ -37,7 +37,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const loginModal = useLoginModal();
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
 
     const recipeCategories = useMemo(() => {
         return recipe.categories || [];
@@ -70,24 +70,20 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 return loginModal.onOpen();
             }
 
-            setIsLoading(true);
-
-            axios
-                .post('/api/comments', {
-                    comment: comment,
-                    recipeId: recipe?.id,
-                    rating: rating,
-                })
-                .then(() => {
+            startTransition(async () => {
+                try {
+                    await axios.post('/api/comments', {
+                        comment: comment,
+                        recipeId: recipe?.id,
+                        rating: rating,
+                    });
                     toast.success(t('comment_created'));
-                })
-                .catch(() => {
+                } catch {
                     toast.error(t('something_went_wrong'));
-                })
-                .finally(() => {
-                    setIsLoading(false);
+                } finally {
                     refresh();
-                });
+                }
+            });
         },
         [recipe?.id, refresh, currentUser, loginModal, t]
     );
@@ -156,7 +152,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             currentUser={currentUser}
                             onCreateComment={onCreateComment}
                             comments={comments}
-                            isLoading={isLoading}
+                            isLoading={isPending}
                         />
                     </div>
                     {currentUser?.id === recipe.userId && (

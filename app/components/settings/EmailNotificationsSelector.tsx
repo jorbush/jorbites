@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
@@ -16,7 +16,7 @@ const EmailNotificationsSelector: React.FC<EmailNotificationProps> = ({
 }) => {
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [isDisabled, setIsDisabled] = useState(false);
 
     const handleButtonClick = () => {
@@ -37,19 +37,16 @@ const EmailNotificationsSelector: React.FC<EmailNotificationProps> = ({
     }, [isDisabled]);
 
     const toggleEmailNotifications = () => {
-        setIsLoading(true);
-        axios
-            .put(`/api/emailNotifications/${currentUser?.id}`)
-            .then(() => {
+        startTransition(async () => {
+            try {
+                await axios.put(`/api/emailNotifications/${currentUser?.id}`);
                 toast.success(t('email_notifications_updated'));
-            })
-            .catch(() => {
+            } catch {
                 toast.error(t('something_went_wrong'));
-            })
-            .finally(() => {
-                setIsLoading(false);
+            } finally {
                 refresh();
-            });
+            }
+        });
     };
 
     return (
@@ -62,7 +59,7 @@ const EmailNotificationsSelector: React.FC<EmailNotificationProps> = ({
                 onChange={handleButtonClick}
                 label=""
                 dataCy="email-notifications-toggle"
-                disabled={isLoading || isDisabled}
+                disabled={isPending || isDisabled}
             />
         </div>
     );

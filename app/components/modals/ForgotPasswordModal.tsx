@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { toast } from 'react-hot-toast';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import axios from 'axios';
@@ -15,7 +15,7 @@ import { validateEmail } from '@/app/utils/validation';
 const ForgotPasswordModal = () => {
     const forgotPasswordModal = useForgotPasswordModal();
     const loginModal = useLoginModal();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [emailSent, setEmailSent] = useState(false);
     const { t } = useTranslation();
 
@@ -35,20 +35,15 @@ const ForgotPasswordModal = () => {
             return;
         }
 
-        setIsLoading(true);
-
-        axios
-            .post('/api/password-reset/request', { email: data.email })
-            .then(() => {
+        startTransition(async () => {
+            try {
+                await axios.post('/api/password-reset/request', { email: data.email });
                 setEmailSent(true);
                 toast.success(t('reset_link_sent'));
-            })
-            .catch(() => {
+            } catch {
                 toast.error(t('error_sending_email'));
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+            }
+        });
     };
 
     const onBackToLogin = () => {
@@ -81,7 +76,7 @@ const ForgotPasswordModal = () => {
             <Input
                 id="email"
                 label={t('email')}
-                disabled={isLoading}
+                disabled={isPending}
                 register={register}
                 errors={errors}
                 required
@@ -91,13 +86,13 @@ const ForgotPasswordModal = () => {
 
     return (
         <Modal
-            disabled={isLoading}
+            disabled={isPending}
             isOpen={forgotPasswordModal.isOpen}
             title={t('reset_password') ?? 'Reset Password'}
             actionLabel={
                 emailSent
                     ? t('ok')
-                    : isLoading
+                    : isPending
                       ? t('sending') || 'Sending...'
                       : t('send_reset_link')
             }

@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { AiFillGithub } from 'react-icons/ai';
 import { FcGoogle } from 'react-icons/fc';
-import { useCallback, useState } from 'react';
+import { useCallback, useTransition } from 'react';
 import { toast } from 'react-hot-toast';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
@@ -23,7 +23,7 @@ const RegisterModal = () => {
     const loginModal = useLoginModal();
     const { t } = useTranslation();
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
 
     const {
         register,
@@ -42,28 +42,25 @@ const RegisterModal = () => {
             toast.error(t('error_validate_email'));
             return;
         }
-        setIsLoading(true);
-        axios
-            .post('/api/register', data)
-            .then(() => {
+        startTransition(async () => {
+            try {
+                await axios.post('/api/register', data);
                 toast.success(t('registered'));
                 registerModal.onClose();
                 // Login user after registration
-                signIn('credentials', {
+                const callback = await signIn('credentials', {
                     email: data.email,
                     password: data.password,
                     redirect: false,
-                }).then((callback) => {
-                    if (callback?.ok) {
-                        toast.success(t('logged_in'));
-                        refresh();
-                    }
-                    if (callback?.error) {
-                        toast.error(callback.error);
-                    }
                 });
-            })
-            .catch((error) => {
+                if (callback?.ok) {
+                    toast.success(t('logged_in'));
+                    refresh();
+                }
+                if (callback?.error) {
+                    toast.error(callback.error);
+                }
+            } catch (error: any) {
                 if (error.response?.data?.error === 'Email already exists') {
                     toast.error(
                         t('email_already_exists') || 'Email already exists'
@@ -73,10 +70,8 @@ const RegisterModal = () => {
                         t('something_went_wrong') || 'Something went wrong'
                     );
                 }
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+            }
+        });
     };
 
     const onToggle = useCallback(() => {
@@ -93,7 +88,7 @@ const RegisterModal = () => {
             <Input
                 id="email"
                 label={t('email')}
-                disabled={isLoading}
+                disabled={isPending}
                 register={register}
                 errors={errors}
                 required
@@ -101,7 +96,7 @@ const RegisterModal = () => {
             <Input
                 id="name"
                 label={t('name')}
-                disabled={isLoading}
+                disabled={isPending}
                 register={register}
                 errors={errors}
                 required
@@ -110,7 +105,7 @@ const RegisterModal = () => {
                 id="password"
                 label={t('password')}
                 type="password"
-                disabled={isLoading}
+                disabled={isPending}
                 register={register}
                 errors={errors}
                 required
@@ -150,11 +145,11 @@ const RegisterModal = () => {
 
     return (
         <Modal
-            disabled={isLoading}
+            disabled={isPending}
             isOpen={registerModal.isOpen}
             title={t('register') ?? ''}
             actionLabel={
-                isLoading ? t('registering') || 'Registering...' : t('continue')
+                isPending ? t('registering') || 'Registering...' : t('continue')
             }
             onClose={registerModal.onClose}
             onSubmit={handleSubmit(onSubmit)}
