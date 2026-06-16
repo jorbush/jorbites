@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { Blog, BlogFrontmatter } from '@/app/utils/markdownUtils';
+import { ALLOWED_LANGUAGES } from '@/app/utils/constants';
 
 /**
  * Read a single markdown file and extract frontmatter and content
@@ -40,7 +41,7 @@ export async function getBlogById(
     id: string,
     language: string = 'en'
 ): Promise<Blog | null> {
-    const languages = [language, 'en', 'es', 'ca'].filter(
+    const languages = [language, ...ALLOWED_LANGUAGES].filter(
         (lang, index, self) => self.indexOf(lang) === index
     );
 

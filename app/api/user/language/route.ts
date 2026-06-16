@@ -7,6 +7,7 @@ import {
     internalServerError,
     badRequest,
 } from '@/app/utils/apiErrors';
+import { ALLOWED_LANGUAGES } from '@/app/utils/constants';
 
 export async function PATCH(request: Request) {
     try {
@@ -19,8 +20,10 @@ export async function PATCH(request: Request) {
         const body = await request.json();
         const { language } = body;
 
-        const ALLOWED_LANGUAGES = ['es', 'en', 'ca'];
-        if (!language || !ALLOWED_LANGUAGES.includes(language)) {
+        if (
+            !language ||
+            !(ALLOWED_LANGUAGES as readonly string[]).includes(language)
+        ) {
             return badRequest('Invalid language');
         }
 
