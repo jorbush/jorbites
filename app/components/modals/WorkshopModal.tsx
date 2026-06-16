@@ -2,7 +2,7 @@
 
 import useWorkshopModal from '@/app/hooks/useWorkshopModal';
 import Modal from '@/app/components/modals/Modal';
-import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import { useMemo, useEffect, useCallback, useRef, useReducer } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import axios from 'axios';
 import useSWR from 'swr';
@@ -19,16 +19,10 @@ import WorkshopInfoStep from './workshop-steps/WorkshopInfoStep';
 import WorkshopRequirementsStep from './workshop-steps/WorkshopRequirementsStep';
 import WorkshopPrivacyStep from './workshop-steps/WorkshopPrivacyStep';
 import { SafeUser } from '@/app/types';
+import { WORKSHOP_STEPS, workshopReducer } from './workshopReducer';
 
 interface WorkshopModalProps {
     currentUser?: SafeUser | null;
-}
-
-enum WORKSHOP_STEPS {
-    INFO = 0,
-    REQUIREMENTS = 1,
-    PRIVACY = 2,
-    IMAGE = 3,
 }
 
 const WorkshopModal: React.FC<WorkshopModalProps> = ({
@@ -37,11 +31,16 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
     const { push, refresh } = useRouter() || {};
     const { t } = useTranslation();
     const workshopModal = useWorkshopModal();
-    const [step, setStep] = useState(WORKSHOP_STEPS.INFO);
-    const [isLoading, setIsLoading] = useState(false);
-    const [numIngredients, setNumIngredients] = useState(0);
-    const [numPreviousSteps, setNumPreviousSteps] = useState(0);
-    const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
+
+    const [state, dispatch] = useReducer(workshopReducer, {
+        step: WORKSHOP_STEPS.INFO,
+        isLoading: false,
+        numIngredients: 0,
+        numPreviousSteps: 0,
+        selectedUsers: [],
+    });
+    const { step, isLoading, numIngredients, numPreviousSteps, selectedUsers } =
+        state;
 
     const {
         register,
@@ -90,7 +89,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
         whitelistedUsersData !== prevWhitelistedUsersDataRef.current
     ) {
         prevWhitelistedUsersDataRef.current = whitelistedUsersData;
-        setSelectedUsers(whitelistedUsersData);
+        dispatch({ type: 'SET_SELECTED_USERS', payload: whitelistedUsersData });
     }
 
     if (
@@ -100,7 +99,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
         prevIsPrivateRef.current = isPrivate;
         prevWhitelistedUserIdsLengthRef.current = currentLength;
         if (!isPrivate || currentLength === 0) {
-            setSelectedUsers([]);
+            dispatch({ type: 'SET_SELECTED_USERS', payload: [] });
         }
     }
 
@@ -120,8 +119,14 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 setValue('price', data.price);
                 setValue('ingredients', data.ingredients);
                 setValue('previousSteps', data.previousSteps);
-                setNumIngredients(data.ingredients.length);
-                setNumPreviousSteps(data.previousSteps.length);
+                dispatch({
+                    type: 'SET_NUM_INGREDIENTS',
+                    payload: data.ingredients.length,
+                });
+                dispatch({
+                    type: 'SET_NUM_PREVIOUS_STEPS',
+                    payload: data.previousSteps.length,
+                });
 
                 data.ingredients.forEach(
                     (ingredient: string, index: number) => {
@@ -139,18 +144,18 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
     }, [workshopModal.isEditMode, workshopModal.editWorkshopData, setValue]);
 
     const onBack = () => {
-        setStep((value) => value - 1);
+        dispatch({ type: 'SET_STEP', payload: step - 1 });
     };
 
     const onNext = () => {
-        setStep((value) => value + 1);
+        dispatch({ type: 'SET_STEP', payload: step + 1 });
     };
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         if (step !== WORKSHOP_STEPS.IMAGE) {
             return onNext();
         }
-        setIsLoading(true);
+        dispatch({ type: 'SET_LOADING', payload: true });
 
         try {
             const ingredients = [];
@@ -204,14 +209,14 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
 
             refresh();
             reset();
-            setStep(WORKSHOP_STEPS.INFO);
+            dispatch({ type: 'RESET_MODAL' });
             workshopModal.onClose();
         } catch (error: any) {
             toast.error(
                 error?.response?.data?.error || t('something_went_wrong')
             );
         } finally {
-            setIsLoading(false);
+            dispatch({ type: 'SET_LOADING', payload: false });
         }
     };
 
@@ -231,7 +236,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             toast.error(t('max_ingredients_reached'));
             return;
         }
-        setNumIngredients((prev) => prev + 1);
+        dispatch({ type: 'SET_NUM_INGREDIENTS', payload: numIngredients + 1 });
     };
 
     const addPreviousStep = () => {
@@ -239,7 +244,10 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             toast.error(t('max_previous_steps_reached'));
             return;
         }
-        setNumPreviousSteps((prev) => prev + 1);
+        dispatch({
+            type: 'SET_NUM_PREVIOUS_STEPS',
+            payload: numPreviousSteps + 1,
+        });
     };
 
     const addWhitelistedUser = (user: any) => {
@@ -248,7 +256,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             return;
         }
         const newSelectedUsers = [...selectedUsers, user];
-        setSelectedUsers(newSelectedUsers);
+        dispatch({ type: 'SET_SELECTED_USERS', payload: newSelectedUsers });
         setValue(
             'whitelistedUserIds',
             newSelectedUsers.map((u) => u.id)
@@ -257,7 +265,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
 
     const removeWhitelistedUser = (userId: string) => {
         const newSelectedUsers = selectedUsers.filter((u) => u.id !== userId);
-        setSelectedUsers(newSelectedUsers);
+        dispatch({ type: 'SET_SELECTED_USERS', payload: newSelectedUsers });
         setValue(
             'whitelistedUserIds',
             newSelectedUsers.map((u) => u.id)
@@ -265,12 +273,15 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
     };
 
     const removeIngredient = (index: number) => {
-        setNumIngredients((value) => value - 1);
+        dispatch({ type: 'SET_NUM_INGREDIENTS', payload: numIngredients - 1 });
         setValue(`ingredient-${index}`, '');
     };
 
     const removePreviousStep = (index: number) => {
-        setNumPreviousSteps((value) => value - 1);
+        dispatch({
+            type: 'SET_NUM_PREVIOUS_STEPS',
+            payload: numPreviousSteps - 1,
+        });
         setValue(`previousStep-${index}`, '');
     };
 
@@ -353,10 +364,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
             onClose={() => {
                 workshopModal.onClose();
                 reset();
-                setStep(WORKSHOP_STEPS.INFO);
-                setNumIngredients(0);
-                setNumPreviousSteps(0);
-                setSelectedUsers([]);
+                dispatch({ type: 'RESET_MODAL' });
             }}
             body={bodyContent}
             disabled={isLoading}

@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useReducer } from 'react';
 import { toast } from 'react-hot-toast';
 import { SafePlanning, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
@@ -13,6 +13,7 @@ import ConfirmModal from '@/app/components/modals/ConfirmModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import PlanningModal from '@/app/components/modals/PlanningModal';
 import { PlanningCard } from '@/app/components/plannings/PlanningCard';
+import { planningsReducer } from './planningsReducer';
 
 interface PlanningsClientProps {
     initialMyPlannings: SafePlanning[];
@@ -31,14 +32,16 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
     const { t, i18n } = useTranslation();
     const loginModal = useLoginModal();
 
-    const [myPlannings, setMyPlannings] =
-        useState<SafePlanning[]>(initialMyPlannings);
-    const [communityPlannings, setCommunityPlannings] = useState<
-        SafePlanning[]
-    >(initialCommunityPlannings);
-    const [savedPlannings, setSavedPlannings] = useState<SafePlanning[]>(
-        initialSavedPlannings || []
-    );
+    const [state, dispatch] = useReducer(planningsReducer, {
+        my: initialMyPlannings,
+        community: initialCommunityPlannings,
+        saved: initialSavedPlannings || [],
+    });
+    const {
+        my: myPlannings,
+        community: communityPlannings,
+        saved: savedPlannings,
+    } = state;
 
     // Create plan form state
     const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -53,9 +56,14 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
     );
 
     useEffect(() => {
-        setMyPlannings(initialMyPlannings);
-        setCommunityPlannings(initialCommunityPlannings);
-        setSavedPlannings(initialSavedPlannings || []);
+        dispatch({
+            type: 'SYNC',
+            payload: {
+                my: initialMyPlannings,
+                community: initialCommunityPlannings,
+                saved: initialSavedPlannings || [],
+            },
+        });
     }, [initialMyPlannings, initialCommunityPlannings, initialSavedPlannings]);
 
     const onUnsave = useCallback(
@@ -63,9 +71,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
             try {
                 await axios.delete(`/api/saves/${planId}`);
                 toast.success(t('meal_plan_updated'));
-                setSavedPlannings((current) =>
-                    current.filter((p) => p.id !== planId)
-                );
+                dispatch({ type: 'UNSAVE', payload: planId });
                 refresh();
             } catch {
                 toast.error(t('something_went_wrong'));
@@ -111,12 +117,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
         try {
             await axios.delete(`/api/plannings/${deletePlanId}`);
             toast.success(t('meal_plan_deleted'));
-            setMyPlannings((current) =>
-                current.filter((p) => p.id !== deletePlanId)
-            );
-            setCommunityPlannings((current) =>
-                current.filter((p) => p.id !== deletePlanId)
-            );
+            dispatch({ type: 'DELETE', payload: deletePlanId });
             refresh();
         } catch {
             toast.error(t('something_went_wrong'));

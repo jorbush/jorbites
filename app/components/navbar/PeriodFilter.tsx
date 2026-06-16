@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect, useReducer } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { FiCalendar, FiX } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import Button from '../buttons/Button';
 import { formatDateLanguage } from '@/app/utils/date-utils';
+import { periodFilterReducer } from './periodFilterReducer';
 
 export interface DateRange {
     startDate: string;
@@ -18,9 +19,6 @@ const PeriodFilter: React.FC = () => {
     const searchParams = useSearchParams();
     const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
     const pathname = usePathname();
-    const [isOpen, setIsOpen] = useState(false);
-    const [tempStartDate, setTempStartDate] = useState('');
-    const [tempEndDate, setTempEndDate] = useState('');
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const isMainPage = pathname === '/';
@@ -30,16 +28,28 @@ const PeriodFilter: React.FC = () => {
     const currentEndDate = get('endDate') || '';
     const hasDateFilter = currentStartDate || currentEndDate;
 
-    useEffect(() => {
-        setTempStartDate(currentStartDate);
-        setTempEndDate(currentEndDate);
+    const [state, dispatch] = useReducer(periodFilterReducer, {
+        isOpen: false,
+        tempStartDate: currentStartDate,
+        tempEndDate: currentEndDate,
+    });
 
+    const { isOpen, tempStartDate, tempEndDate } = state;
+
+    useEffect(() => {
+        dispatch({
+            type: 'SYNC_DATES',
+            payload: { startDate: currentStartDate, endDate: currentEndDate },
+        });
+    }, [isOpen, currentStartDate, currentEndDate]);
+
+    useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
                 dropdownRef.current &&
                 !dropdownRef.current.contains(event.target as Node)
             ) {
-                setIsOpen(false);
+                dispatch({ type: 'SET_OPEN', payload: false });
             }
         };
 
@@ -50,7 +60,7 @@ const PeriodFilter: React.FC = () => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isOpen, currentStartDate, currentEndDate]);
+    }, [isOpen]);
 
     const updateUrlWithDates = (startDate: string, endDate: string) => {
         if (!isFilterablePage) return;
@@ -81,16 +91,14 @@ const PeriodFilter: React.FC = () => {
 
     const handleApply = () => {
         updateUrlWithDates(tempStartDate, tempEndDate);
-        setIsOpen(false);
+        dispatch({ type: 'SET_OPEN', payload: false });
     };
 
     const handleClear = () => {
-        setTempStartDate('');
-        setTempEndDate('');
+        dispatch({ type: 'CLEAR_DATES' });
         if (isFilterablePage) {
             updateUrlWithDates('', '');
         }
-        setIsOpen(false);
     };
 
     const formatDateRange = () => {
@@ -125,7 +133,7 @@ const PeriodFilter: React.FC = () => {
         >
             <button
                 type="button"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => dispatch({ type: 'SET_OPEN', payload: !isOpen })}
                 className={`relative cursor-pointer rounded-full p-2 shadow-xs transition hover:shadow-md ${
                     hasDateFilter
                         ? 'bg-green-450 dark:text-dark text-white'
@@ -193,7 +201,10 @@ const PeriodFilter: React.FC = () => {
                                     value={tempStartDate}
                                     max={tempEndDate || today}
                                     onChange={(e) =>
-                                        setTempStartDate(e.target.value)
+                                        dispatch({
+                                            type: 'SET_START_DATE',
+                                            payload: e.target.value,
+                                        })
                                     }
                                     className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 flex-shrink rounded-md border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
                                     data-testid="start-date-input"
@@ -214,7 +225,10 @@ const PeriodFilter: React.FC = () => {
                                     min={tempStartDate}
                                     max={today}
                                     onChange={(e) =>
-                                        setTempEndDate(e.target.value)
+                                        dispatch({
+                                            type: 'SET_END_DATE',
+                                            payload: e.target.value,
+                                        })
                                     }
                                     className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 flex-shrink rounded-md border border-neutral-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
                                     data-testid="end-date-input"
@@ -226,7 +240,12 @@ const PeriodFilter: React.FC = () => {
                             <div className="flex-1">
                                 <Button
                                     label={t('cancel') || 'Cancel'}
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={() =>
+                                        dispatch({
+                                            type: 'SET_OPEN',
+                                            payload: false,
+                                        })
+                                    }
                                     outline
                                     small
                                     dataCy="cancel-button"

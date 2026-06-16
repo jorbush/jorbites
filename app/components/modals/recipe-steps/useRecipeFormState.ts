@@ -323,18 +323,24 @@ export function useRecipeFormState({
             if (!hasLoadedDraftReset.current) {
                 hasLoadedDraftReset.current = true;
                 const { currentStep: _, ...formData } = draftData;
-                reset(formData);
                 const ingredients = formData.ingredients || [];
+                const ingredientsObject: Record<string, string> = {};
                 ingredients.forEach((ingredient: string, index: number) => {
-                    setValue(`ingredient-${index}`, ingredient);
+                    ingredientsObject[`ingredient-${index}`] = ingredient;
                 });
                 const steps = formData.steps || [];
+                const stepsObject: Record<string, string> = {};
                 steps.forEach((step: string, index: number) => {
-                    setValue(`step-${index}`, step);
+                    stepsObject[`step-${index}`] = step;
+                });
+                reset({
+                    ...formData,
+                    ...ingredientsObject,
+                    ...stepsObject,
                 });
             }
         }
-    }, [draftData, recipeModal.isEditMode, reset, setValue]);
+    }, [draftData, recipeModal.isEditMode, reset]);
 
     const prevIsOpenRef = useRef(recipeModal.isOpen);
     const prevIsEditModeRef = useRef(recipeModal.isEditMode);
@@ -402,9 +408,6 @@ export function useRecipeFormState({
                 questId: '',
             });
         } else {
-            if (recipeModal.questId) {
-                setValue('questId', recipeModal.questId);
-            }
             if (
                 recipeModal.isEditMode &&
                 recipeModal.editRecipeData &&
@@ -412,6 +415,17 @@ export function useRecipeFormState({
             ) {
                 hasLoadedEditData.current = true;
                 const editData = recipeModal.editRecipeData;
+                const ingredientsObject: Record<string, string> = {};
+                editData.ingredients.forEach(
+                    (ingredient: string, index: number) => {
+                        ingredientsObject[`ingredient-${index}`] = ingredient;
+                    }
+                );
+                const stepsObject: Record<string, string> = {};
+                editData.steps.forEach((step: string, index: number) => {
+                    stepsObject[`step-${index}`] = step;
+                });
+
                 reset({
                     categories: Array.isArray(editData.categories)
                         ? editData.categories
@@ -429,17 +443,12 @@ export function useRecipeFormState({
                     coCooksIds: editData.coCooksIds || [],
                     linkedRecipeIds: editData.linkedRecipeIds || [],
                     youtubeUrl: editData.youtubeUrl || '',
-                    questId: editData.questId || '',
+                    questId: editData.questId || recipeModal.questId || '',
+                    ...ingredientsObject,
+                    ...stepsObject,
                 });
-
-                editData.ingredients.forEach(
-                    (ingredient: string, index: number) => {
-                        setValue(`ingredient-${index}`, ingredient);
-                    }
-                );
-                editData.steps.forEach((step: string, index: number) => {
-                    setValue(`step-${index}`, step);
-                });
+            } else if (recipeModal.questId) {
+                setValue('questId', recipeModal.questId);
             }
         }
     }, [

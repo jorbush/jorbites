@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useReducer } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiRefreshCw } from 'react-icons/fi';
+import { pullToRefreshReducer } from './pullToRefreshReducer';
 
 interface PullToRefreshProps {
     threshold?: number;
@@ -15,9 +16,13 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
 }) => {
     const startYRef = useRef<number | null>(null);
     const pullDistanceRef = useRef<number>(0);
-    const [refreshing, setRefreshing] = useState(false);
-    const [displayPullDistance, setDisplayPullDistance] = useState(0);
     const { refresh } = useRouter() || {};
+
+    const [state, dispatch] = useReducer(pullToRefreshReducer, {
+        refreshing: false,
+        displayPullDistance: 0,
+    });
+    const { refreshing, displayPullDistance } = state;
 
     // Helper function to check if the touch event is inside a modal
     const isInsideModal = useCallback((target: Node): boolean => {
@@ -61,7 +66,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
 
                 if (distance > 0) {
                     pullDistanceRef.current = distance;
-                    setDisplayPullDistance(distance);
+                    dispatch({ type: 'SET_PULL_DISTANCE', payload: distance });
                     if (distance > 10) {
                         e.preventDefault();
                     }
@@ -72,17 +77,18 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
         const handleTouchEnd = () => {
             if (startYRef.current !== null) {
                 if (pullDistanceRef.current > threshold) {
-                    setRefreshing(true);
+                    dispatch({ type: 'START_REFRESHING' });
                     setTimeout(() => {
                         refresh();
                         setTimeout(() => {
-                            setRefreshing(false);
+                            dispatch({ type: 'STOP_REFRESHING' });
                         }, 500);
                     }, 800);
+                } else {
+                    dispatch({ type: 'RESET' });
                 }
                 startYRef.current = null;
                 pullDistanceRef.current = 0;
-                setDisplayPullDistance(0);
             }
         };
 
