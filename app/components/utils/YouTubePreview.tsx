@@ -10,19 +10,19 @@ interface YouTubePreviewProps {
     className?: string;
 }
 
+const getVideoId = (url: string): string | null => {
+    const regex =
+        /(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([^&\n?#]+)/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+};
+
 const YouTubePreview: React.FC<YouTubePreviewProps> = ({
     url,
     title = 'YouTube Video',
     className = '',
 }) => {
     const [imageError, setImageError] = useState(false);
-
-    const getVideoId = (url: string): string | null => {
-        const regex =
-            /(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([^&\n?#]+)/;
-        const match = url.match(regex);
-        return match ? match[1] : null;
-    };
 
     const videoId = getVideoId(url);
 

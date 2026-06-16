@@ -21,24 +21,24 @@ interface ProfileHeaderProps {
     currentUser?: SafeUser | null;
 }
 
+const handleBadgeClick = () => {
+    confetti({
+        particleCount: 100,
+        spread: 160,
+        origin: { y: 0.6 },
+    });
+};
+
+const formatMemberSince = (createdAt: string) => {
+    return formatDateLanguage(new Date(createdAt), 'yyyy');
+};
+
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
     const { push } = useRouter() || {};
     const { t } = useTranslation();
     const isMdOrSmaller = useMediaQuery('(max-width: 415px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
     const { share } = useShare();
-
-    const handleBadgeClick = () => {
-        confetti({
-            particleCount: 100,
-            spread: 160,
-            origin: { y: 0.6 },
-        });
-    };
-
-    const formatMemberSince = (createdAt: string) => {
-        return formatDateLanguage(new Date(createdAt), 'yyyy');
-    };
 
     return (
         <Container>

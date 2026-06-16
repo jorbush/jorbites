@@ -9,6 +9,10 @@ import { useTranslation } from 'react-i18next';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import Logo from './Logo';
 
+const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+};
+
 export const SearchFallback = () => {
     return (
         <div className="flex flex-row items-center gap-1 md:gap-3">
@@ -16,10 +20,6 @@ export const SearchFallback = () => {
             <div className="bg-green-450/10 dark:bg-green-450/20 relative flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full p-2" />
         </div>
     );
-};
-
-const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
 };
 
 interface SearchProps {

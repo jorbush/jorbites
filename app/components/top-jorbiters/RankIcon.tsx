@@ -7,20 +7,20 @@ interface RankIconProps {
     rank: number;
 }
 
-const RankIcon: React.FC<RankIconProps> = ({ rank }) => {
-    const getMedalColor = (index: number) => {
-        switch (index) {
-            case 0:
-                return 'text-yellow-400';
-            case 1:
-                return 'text-neutral-400';
-            case 2:
-                return 'text-amber-600';
-            default:
-                return 'text-neutral-300';
-        }
-    };
+const getMedalColor = (index: number) => {
+    switch (index) {
+        case 0:
+            return 'text-yellow-400';
+        case 1:
+            return 'text-neutral-400';
+        case 2:
+            return 'text-amber-600';
+        default:
+            return 'text-neutral-300';
+    }
+};
 
+const RankIcon: React.FC<RankIconProps> = ({ rank }) => {
     if (rank === 0) {
         return <FaTrophy className={`${getMedalColor(rank)} text-2xl`} />;
     }

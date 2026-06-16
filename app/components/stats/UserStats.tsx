@@ -14,6 +14,13 @@ import Container from '@/app/components/utils/Container';
 import StatCard from '@/app/components/stats/StatCard';
 import PreferenceCard from '@/app/components/stats/PreferenceCard';
 
+const formatNumber = (num: number) => {
+    if (num >= 1000) {
+        return Math.round(num / 100) / 10 + 'k';
+    }
+    return num;
+};
+
 const UserStats = ({ user }: { user?: SafeUser | null }) => {
     const { t } = useTranslation();
 
@@ -26,13 +33,6 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
     const cookingTimeInHours = user?.totalCookingTime
         ? Math.round((user.totalCookingTime / 60) * 10) / 10
         : 0;
-
-    const formatNumber = (num: number) => {
-        if (num >= 1000) {
-            return Math.round(num / 100) / 10 + 'k';
-        }
-        return num;
-    };
 
     // Footer elements
     const recipesTrendFooter =
