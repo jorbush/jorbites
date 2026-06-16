@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export enum ApiErrorType {
+enum ApiErrorType {
     UNAUTHORIZED = 'UNAUTHORIZED',
     BAD_REQUEST = 'BAD_REQUEST',
     NOT_FOUND = 'NOT_FOUND',
@@ -18,7 +18,7 @@ export interface ApiErrorResponse {
     timestamp: string;
 }
 
-export function createApiError(
+function createApiError(
     type: ApiErrorType,
     message?: string,
     details?: any
@@ -70,7 +70,6 @@ export function createApiError(
         timestamp: new Date().toISOString(),
     };
 
-    // Add details if provided
     if (details) {
         (errorResponse as any).details = details;
     }
@@ -78,7 +77,6 @@ export function createApiError(
     return NextResponse.json(errorResponse, { status });
 }
 
-// Convenience functions for common errors
 export const unauthorizedResponse = (message?: string) =>
     createApiError(ApiErrorType.UNAUTHORIZED, message);
 

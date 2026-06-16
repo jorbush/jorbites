@@ -115,12 +115,6 @@ export interface RecipeBookConfig {
     displayUserImage: boolean;
 }
 
-export const DEFAULT_RECIPE_BOOK_CONFIG: RecipeBookConfig = {
-    imageDisplay: 'random',
-    displayExtraImages: true,
-    displayUserImage: true,
-};
-
 export interface LayoutParameters {
     layout: 'left-top' | 'left-bottom' | 'right-top' | 'right-bottom';
     leftImageHeight: number;
