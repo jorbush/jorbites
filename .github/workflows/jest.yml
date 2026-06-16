@@ -7,37 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  install:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 11
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-      - name: Cache dependencies
-        id: cache-deps
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-jest-deps-${{ hashFiles('pnpm-lock.yaml') }}
-
-      - name: Install dependencies
-        if: steps.cache-deps.outputs.cache-hit != 'true'
-        run: pnpm install
-
   jest:
-    needs: install
     runs-on: ubuntu-latest
     environment: testing
     steps:
@@ -55,13 +25,11 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
 
-      - name: Restore dependencies
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-jest-deps-${{ hashFiles('pnpm-lock.yaml') }}
-          fail-on-cache-miss: true
+      - name: Install dependencies with scripts disabled
+        run: pnpm install --ignore-scripts
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
 
       - name: Run unit tests (excluding draft tests)
         env:
