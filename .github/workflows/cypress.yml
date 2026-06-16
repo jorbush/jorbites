@@ -11,7 +11,7 @@ on:
     branches: main
 
 jobs:
-  build:
+  install:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,28 +28,66 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
 
+      - name: Cache dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.cache/Cypress
+          key: ${{ runner.os }}-deps-${{ hashFiles('pnpm-lock.yaml') }}
+
       - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         run: pnpm install
+
+  build:
+    needs: install
+    runs-on: ubuntu-latest
+    environment: testing
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 11
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Restore dependencies
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            ~/.cache/Cypress
+          key: ${{ runner.os }}-deps-${{ hashFiles('pnpm-lock.yaml') }}
+          fail-on-cache-miss: true
 
       - name: Build application
         run: pnpm run build
         env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
+          REDIS_URL: redis://localhost:6379
+          REDIS_URL_CACHING: redis://localhost:6379
           SKIP_ENV_VALIDATION: 'true'
 
       - name: Upload build output
         uses: actions/upload-artifact@v4
         with:
-          name: build-output
-          path: |
-            .next
-            node_modules
-
-      - name: Upload Cypress binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: cypress-binary
-          path: ~/.cache/Cypress
+          name: next-build
+          path: .next
 
   cypress:
     needs: build
@@ -69,17 +107,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Restore dependencies
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            ~/.cache/Cypress
+          key: ${{ runner.os }}-deps-${{ hashFiles('pnpm-lock.yaml') }}
+          fail-on-cache-miss: true
+
       - name: Download build output
         uses: actions/download-artifact@v4
         with:
-          name: build-output
-          path: .
-
-      - name: Download Cypress binary
-        uses: actions/download-artifact@v4
-        with:
-          name: cypress-binary
-          path: ~/.cache/Cypress
+          name: next-build
+          path: .next
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
