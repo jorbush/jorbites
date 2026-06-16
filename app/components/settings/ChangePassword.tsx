@@ -177,7 +177,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                             >
                                 {showCurrentPassword ? (
                                     <FiEyeOff size={16} />
-                               ) : (
+                                ) : (
                                     <FiEye size={16} />
                                 )}
                             </button>

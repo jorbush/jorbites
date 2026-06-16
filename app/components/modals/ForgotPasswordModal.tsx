@@ -37,7 +37,9 @@ const ForgotPasswordModal = () => {
 
         startTransition(async () => {
             try {
-                await axios.post('/api/password-reset/request', { email: data.email });
+                await axios.post('/api/password-reset/request', {
+                    email: data.email,
+                });
                 setEmailSent(true);
                 toast.success(t('reset_link_sent'));
             } catch {
