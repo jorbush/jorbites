@@ -1,17 +1,18 @@
 'use client';
 
 import React, {
-    useState,
     useEffect,
     useMemo,
     useRef,
     useSyncExternalStore,
+    useReducer,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import TranslationControls from './TranslationControls';
 import i18n from '@/app/i18n';
 import { toast } from 'react-hot-toast';
 import useIsMounted from '@/app/hooks/useIsMounted';
+import { translateableRecipeContentReducer } from './translateableRecipeContentReducer';
 
 const subscribe = () => () => {};
 
@@ -48,20 +49,23 @@ export function TranslateableRecipeContent({
             'LanguageDetector' in window,
         () => false
     );
-    const [detectedLanguage, setDetectedLanguage] = useState<string | null>(
-        null
-    );
-    const [isTranslated, setIsTranslated] = useState(false);
-    const [isTranslating, setIsTranslating] = useState(false);
-    const [translatedDescription, setTranslatedDescription] = useState<
-        string | null
-    >(null);
-    const [translatedIngredients, setTranslatedIngredients] = useState<
-        string[] | null
-    >(null);
-    const [translatedSteps, setTranslatedSteps] = useState<string[] | null>(
-        null
-    );
+    const [state, dispatch] = useReducer(translateableRecipeContentReducer, {
+        detectedLanguage: null,
+        isTranslated: false,
+        isTranslating: false,
+        translatedDescription: null,
+        translatedIngredients: null,
+        translatedSteps: null,
+    });
+
+    const {
+        detectedLanguage,
+        isTranslated,
+        isTranslating,
+        translatedDescription,
+        translatedIngredients,
+        translatedSteps,
+    } = state;
 
     const ingredientsTextJoined = useMemo(
         () => ingredientsText?.join('\n') || '',
@@ -103,11 +107,7 @@ export function TranslateableRecipeContent({
     const prevContentKeyRef = useRef(contentKey);
     if (contentKey !== prevContentKeyRef.current) {
         prevContentKeyRef.current = contentKey;
-        setTranslatedDescription(null);
-        setTranslatedIngredients(null);
-        setTranslatedSteps(null);
-        setIsTranslated(false);
-        setDetectedLanguage(null);
+        dispatch({ type: 'RESET_TRANSLATION' });
     }
 
     // Scoped language detection effect
@@ -145,7 +145,10 @@ export function TranslateableRecipeContent({
                         if (cancelled) return;
                         const lang = topResult.detectedLanguage;
                         if (['en', 'ca', 'es'].includes(lang)) {
-                            setDetectedLanguage(lang);
+                            dispatch({
+                                type: 'SET_DETECTED_LANGUAGE',
+                                payload: lang,
+                            });
                         } else {
                             const langMap: Record<string, string> = {
                                 'en-US': 'en',
@@ -154,7 +157,10 @@ export function TranslateableRecipeContent({
                                 'es-MX': 'es',
                                 'ca-ES': 'ca',
                             };
-                            setDetectedLanguage(langMap[lang] || null);
+                            dispatch({
+                                type: 'SET_DETECTED_LANGUAGE',
+                                payload: langMap[lang] || null,
+                            });
                         }
                     }
                 }
@@ -190,7 +196,7 @@ export function TranslateableRecipeContent({
             return;
         }
 
-        setIsTranslating(true);
+        dispatch({ type: 'START_TRANSLATING' });
 
         try {
             const targetLanguage =
@@ -218,7 +224,7 @@ export function TranslateableRecipeContent({
                 console.warn(
                     'Translation not available for this language pair'
                 );
-                setIsTranslating(false);
+                dispatch({ type: 'STOP_TRANSLATING' });
                 toast.error('Not available for this language');
                 return;
             }
@@ -255,9 +261,12 @@ export function TranslateableRecipeContent({
                     stepsPromise,
                 ]);
 
+            let finalDesc = null;
             if (descriptionText && translatedDesc) {
-                setTranslatedDescription(translatedDesc.trim());
+                finalDesc = translatedDesc.trim();
             }
+
+            let finalIng = null;
             if (
                 Array.isArray(translatedIngArray) &&
                 translatedIngArray.length > 0
@@ -279,10 +288,11 @@ export function TranslateableRecipeContent({
                 );
 
                 if (translatedIngredientItems.length > 0) {
-                    setTranslatedIngredients(translatedIngredientItems);
+                    finalIng = translatedIngredientItems;
                 }
             }
 
+            let finalSteps = null;
             if (
                 Array.isArray(translatedStpsArray) &&
                 translatedStpsArray.length > 0
@@ -301,27 +311,30 @@ export function TranslateableRecipeContent({
                 console.log('Translated steps array:', translatedStepItems);
 
                 if (translatedStepItems.length > 0) {
-                    setTranslatedSteps(translatedStepItems);
+                    finalSteps = translatedStepItems;
                 }
             }
 
-            setIsTranslated(true);
+            dispatch({
+                type: 'SET_TRANSLATED_CONTENT',
+                payload: {
+                    description: finalDesc,
+                    ingredients: finalIng,
+                    steps: finalSteps,
+                },
+            });
         } catch (error) {
             console.error('Translation failed:', error);
             toast.error(
                 t('translation_failed') ||
                     'Translation failed. Please try again.'
             );
-        } finally {
-            setIsTranslating(false);
+            dispatch({ type: 'STOP_TRANSLATING' });
         }
     };
 
     const handleShowOriginal = () => {
-        setIsTranslated(false);
-        setTranslatedDescription(null);
-        setTranslatedIngredients(null);
-        setTranslatedSteps(null);
+        dispatch({ type: 'SHOW_ORIGINAL' });
     };
 
     const displayDescription =

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
@@ -11,22 +11,23 @@ import Modal from '@/app/components/modals/Modal';
 import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
 import Dropdown from '@/app/components/utils/Dropdown';
 import useRecipeBookModal from '@/app/hooks/useRecipeBookModal';
+import { recipeBookReducer } from './recipeBookReducer';
 
 const RecipeBookModal = () => {
     const recipeBookModal = useRecipeBookModal();
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
 
-    const [imageDisplay, setImageDisplay] =
-        useState<RecipeBookConfig['imageDisplay']>('random');
-    const [displayExtraImages, setDisplayExtraImages] = useState(true);
-    const [displayUserImage, setDisplayUserImage] = useState(true);
+    const [config, dispatch] = useReducer(recipeBookReducer, {
+        imageDisplay: 'random',
+        displayExtraImages: true,
+        displayUserImage: true,
+    });
+    const { imageDisplay, displayExtraImages, displayUserImage } = config;
 
     useEffect(() => {
         if (recipeBookModal.isOpen) {
-            setImageDisplay('random');
-            setDisplayExtraImages(true);
-            setDisplayUserImage(true);
+            dispatch({ type: 'RESET' });
         }
     }, [recipeBookModal.isOpen]);
 
@@ -188,7 +189,9 @@ const RecipeBookModal = () => {
                 <Dropdown
                     options={imageDisplayOptions}
                     value={imageDisplay}
-                    onChange={(val) => setImageDisplay(val)}
+                    onChange={(val) =>
+                        dispatch({ type: 'SET_IMAGE_DISPLAY', payload: val })
+                    }
                     buttonContent={dropdownButton}
                     ariaLabel={
                         t('recipe_image_display') || 'Recipe image display'
@@ -204,7 +207,7 @@ const RecipeBookModal = () => {
                 </span>
                 <ToggleSwitch
                     checked={displayExtraImages}
-                    onChange={() => setDisplayExtraImages(!displayExtraImages)}
+                    onChange={() => dispatch({ type: 'TOGGLE_EXTRA_IMAGES' })}
                     dataCy="extra-images-toggle"
                 />
             </div>
@@ -217,7 +220,7 @@ const RecipeBookModal = () => {
                 </span>
                 <ToggleSwitch
                     checked={displayUserImage}
-                    onChange={() => setDisplayUserImage(!displayUserImage)}
+                    onChange={() => dispatch({ type: 'TOGGLE_USER_IMAGE' })}
                     dataCy="user-image-toggle"
                 />
             </div>
