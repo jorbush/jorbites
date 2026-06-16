@@ -90,13 +90,6 @@ jobs:
           path: .next
           include-hidden-files: true
 
-      - name: Upload Prisma Client
-        uses: actions/upload-artifact@v4
-        with:
-          name: prisma-client
-          path: node_modules/.prisma
-          include-hidden-files: true
-
   cypress:
     needs: build
     runs-on: ubuntu-latest
@@ -115,6 +108,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 11
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
       - name: Restore dependencies
         uses: actions/cache/restore@v4
         with:
@@ -130,22 +134,10 @@ jobs:
           name: next-build
           path: .next
 
-      - name: Download Prisma Client
-        uses: actions/download-artifact@v4
-        with:
-          name: prisma-client
-          path: node_modules/.prisma
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 11
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22'
-          cache: 'pnpm'
+      - name: Generate Prisma Client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma generate
 
       - name: Create cypress.env.json
         env:
