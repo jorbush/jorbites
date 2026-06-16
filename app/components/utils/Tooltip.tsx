@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, ReactNode } from 'react';
+import React, { useState, useRef, useEffect, ReactNode } from 'react';
 
 interface TooltipProps {
     text: string;
@@ -10,6 +10,13 @@ interface TooltipProps {
     className?: string;
 }
 
+const positionClasses = {
+    top: 'bottom-full left-1/2 -translate-x-1/2 mb-1',
+    right: 'left-full top-1/2 -translate-y-1/2 ml-1',
+    bottom: 'top-full left-1/2 -translate-x-1/2 mt-1',
+    left: 'right-full top-1/2 -translate-y-1/2 mr-1',
+};
+
 const Tooltip: React.FC<TooltipProps> = ({
     text,
     children,
@@ -18,24 +25,24 @@ const Tooltip: React.FC<TooltipProps> = ({
     className = '',
 }) => {
     const [isVisible, setIsVisible] = useState(false);
-    const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleMouseEnter = () => {
-        const id = setTimeout(() => setIsVisible(true), delay);
-        setTimeoutId(id);
+        timeoutRef.current = setTimeout(() => setIsVisible(true), delay);
     };
 
     const handleMouseLeave = () => {
-        if (timeoutId) clearTimeout(timeoutId);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
         setIsVisible(false);
     };
 
-    const positionClasses = {
-        top: 'bottom-full left-1/2 -translate-x-1/2 mb-1',
-        right: 'left-full top-1/2 -translate-y-1/2 ml-1',
-        bottom: 'top-full left-1/2 -translate-x-1/2 mt-1',
-        left: 'right-full top-1/2 -translate-y-1/2 mr-1',
-    };
+    useEffect(() => {
+        const currentTimeoutRef = timeoutRef;
+        return () => {
+            if (currentTimeoutRef.current)
+                clearTimeout(currentTimeoutRef.current);
+        };
+    }, []);
 
     return (
         <div
