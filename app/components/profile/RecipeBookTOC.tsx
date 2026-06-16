@@ -52,9 +52,13 @@ export const RecipeBookTOC: React.FC<RecipeBookTOCProps> = ({
             </View>
             <Text
                 style={styles.footer}
-                render={({ pageNumber, totalPages }) =>
-                    `${labels.page} ${pageNumber} ${labels.of} ${totalPages}`
-                }
+                render={({
+                    pageNumber,
+                    totalPages,
+                }: {
+                    pageNumber: number;
+                    totalPages: number;
+                }) => `${labels.page} ${pageNumber} ${labels.of} ${totalPages}`}
                 fixed
             />
         </Page>
