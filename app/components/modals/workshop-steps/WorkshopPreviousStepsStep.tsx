@@ -41,41 +41,41 @@ const WorkshopPreviousStepsStep: React.FC<WorkshopPreviousStepsStepProps> = ({
     };
 
     const renderPreviousStepInputs = () => {
-        const components = [];
-        for (let i = 0; i < numPreviousSteps; i++) {
-            components.push(
-                <div
-                    key={`workshop-previous-step-input-${i}`}
-                    className="relative flex w-full items-center gap-3 px-2"
-                >
-                    <div className="grow">
-                        <Input
-                            id={`previousStep-${i}`}
-                            label=""
-                            register={register}
-                            errors={errors}
-                            required={numPreviousSteps === 1}
-                            maxLength={WORKSHOP_STEP_MAX_LENGTH}
-                            dataCy={`workshop-previous-step-${i}`}
+        const stepKeys = Array.from(
+            { length: numPreviousSteps },
+            (_, idx) => `workshop-previous-step-input-${idx}`
+        );
+        return stepKeys.map((stepKey, i) => (
+            <div
+                key={stepKey}
+                className="relative flex w-full items-center gap-3 px-2"
+            >
+                <div className="grow">
+                    <Input
+                        id={`previousStep-${i}`}
+                        label=""
+                        register={register}
+                        errors={errors}
+                        required={numPreviousSteps === 1}
+                        maxLength={WORKSHOP_STEP_MAX_LENGTH}
+                        dataCy={`workshop-previous-step-${i}`}
+                    />
+                </div>
+                {i === numPreviousSteps - 1 ? (
+                    <div className="shrink-0">
+                        <AiFillDelete
+                            data-testid="remove-previous-step-button"
+                            color="#F43F5F"
+                            onClick={() => onRemovePreviousStep(i)}
+                            size={24}
+                            className="cursor-pointer"
                         />
                     </div>
-                    {i === numPreviousSteps - 1 ? (
-                        <div className="shrink-0">
-                            <AiFillDelete
-                                data-testid="remove-previous-step-button"
-                                color="#F43F5F"
-                                onClick={() => onRemovePreviousStep(i)}
-                                size={24}
-                                className="cursor-pointer"
-                            />
-                        </div>
-                    ) : (
-                        <div className="w-6 shrink-0" />
-                    )}
-                </div>
-            );
-        }
-        return components;
+                ) : (
+                    <div className="w-6 shrink-0" />
+                )}
+            </div>
+        ));
     };
 
     return (

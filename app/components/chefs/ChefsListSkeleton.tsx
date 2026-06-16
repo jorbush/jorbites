@@ -7,6 +7,15 @@ interface ChefsListSkeletonProps {
 const ChefsListSkeleton: React.FC<ChefsListSkeletonProps> = ({
     count = 12,
 }) => {
+    const filterPills = Array.from(
+        { length: 7 },
+        (_, i) => `filter-pill-skeleton-${i}`
+    );
+    const chefCards = Array.from(
+        { length: count },
+        (_, i) => `chef-card-skeleton-${i}`
+    );
+
     return (
         <div className="py-8">
             {/* Header */}
@@ -31,9 +40,9 @@ const ChefsListSkeleton: React.FC<ChefsListSkeletonProps> = ({
                 {/* Order By Filter Pills */}
                 <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
                     <div className="flex min-w-max gap-2 pb-2">
-                        {[...Array(7)].map((_, i) => (
+                        {filterPills.map((pillKey) => (
                             <div
-                                key={`filter-pill-skeleton-${i}`}
+                                key={pillKey}
                                 className="h-10 w-24 rounded-full bg-neutral-200 dark:bg-neutral-700"
                             />
                         ))}
@@ -47,8 +56,8 @@ const ChefsListSkeleton: React.FC<ChefsListSkeletonProps> = ({
                 data-cy="chefs-list-skeleton"
                 data-testid="chefs-list-skeleton"
             >
-                {[...Array(count)].map((_, i) => (
-                    <ChefCardSkeleton key={`chef-card-skeleton-${i}`} />
+                {chefCards.map((cardKey) => (
+                    <ChefCardSkeleton key={cardKey} />
                 ))}
             </div>
         </div>
