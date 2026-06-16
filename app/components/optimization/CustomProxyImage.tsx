@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { getProxyImageSrcAndSrcSet } from '@/app/utils/imageOptimizer';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface CustomProxyImageProps {
     src: string;
@@ -33,50 +35,53 @@ export default function CustomProxyImage({
     circular = false,
     maxQuality = false,
 }: CustomProxyImageProps) {
-    const [isLoaded, setIsLoaded] = useState(false);
+    const isMounted = useIsMounted();
+    const [isLoadedState, setIsLoadedState] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
     const useMaxQuality = maxQuality || quality === 'auto:best';
+
+    const isLoaded = isLoadedState || (isMounted && !!imgRef.current?.complete);
 
     const actualWidth = width;
     const actualHeight = height;
 
+    const { src: optimizedSrc, srcSet } = getProxyImageSrcAndSrcSet({
+        src,
+        width: actualWidth,
+        height: actualHeight,
+        quality,
+        fill,
+        maxQuality,
+    });
+
     const fallbackImage = '/avocado.webp';
-    let optimizedSrc = fallbackImage;
     let placeholderSrc = fallbackImage;
 
-    if (!src || src === '') {
-        optimizedSrc = fallbackImage;
-        placeholderSrc = fallbackImage;
-    } else if (src.startsWith('/')) {
-        optimizedSrc = src;
+    if (src && src.startsWith('/')) {
         placeholderSrc = src;
     } else if (
-        src.includes('cloudinary.com') ||
-        src.includes('googleusercontent.com') ||
-        src.includes('githubusercontent.com')
+        src &&
+        (src.includes('cloudinary.com') ||
+            src.includes('googleusercontent.com') ||
+            src.includes('githubusercontent.com'))
     ) {
-        try {
-            if (useMaxQuality) {
-                optimizedSrc = `/api/image-proxy?url=${encodeURIComponent(src)}&q=auto:best`;
-            } else {
-                optimizedSrc = `/api/image-proxy?url=${encodeURIComponent(src)}&w=${actualWidth}&h=${actualHeight}&q=${quality}`;
-            }
-            placeholderSrc = `/api/image-proxy?url=${encodeURIComponent(src)}&w=20&h=20&q=auto:eco`;
-        } catch (e) {
-            console.error('Error creating proxy URL:', e);
-            optimizedSrc = fallbackImage;
-            placeholderSrc = fallbackImage;
+        const ratio =
+            actualWidth && actualHeight ? actualHeight / actualWidth : null;
+        const placeholderParams = new URLSearchParams();
+        placeholderParams.set('url', src);
+        placeholderParams.set('w', '20');
+        if (ratio) {
+            placeholderParams.set('h', Math.round(20 * ratio).toString());
         }
-    } else {
-        optimizedSrc = src;
-        placeholderSrc = src;
+        placeholderParams.set('q', 'auto:eco');
+        placeholderSrc = `/api/image-proxy?${placeholderParams.toString()}`;
     }
 
     // Reset isLoaded when source changes during render
     const prevOptimizedSrcRef = useRef(optimizedSrc);
     if (optimizedSrc !== prevOptimizedSrcRef.current) {
         prevOptimizedSrcRef.current = optimizedSrc;
-        setIsLoaded(false);
+        setIsLoadedState(false);
     }
 
     // Handle preload link injection as a side effect
@@ -92,12 +97,17 @@ export default function CustomProxyImage({
         ) {
             const link = document.createElement('link');
             link.rel = 'preload';
-            link.href = optimizedSrc;
             link.as = 'image';
             link.fetchPriority = 'high';
+            if (srcSet) {
+                link.setAttribute('imagesrcset', srcSet);
+                link.setAttribute('imagesizes', sizes);
+            } else {
+                link.href = optimizedSrc;
+            }
             document.head.appendChild(link);
         }
-    }, [optimizedSrc]);
+    }, [optimizedSrc, srcSet, sizes]);
 
     useEffect(() => {
         if (imgRef.current && priority) {
@@ -107,13 +117,6 @@ export default function CustomProxyImage({
             imgRef.current.id = 'lcp-image';
         }
     }, [priority]);
-
-    // Check if the image is already complete (e.g. cached or loaded before hydration)
-    useEffect(() => {
-        if (imgRef.current?.complete) {
-            setIsLoaded(true);
-        }
-    }, [optimizedSrc]);
 
     const baseStyle = fill
         ? ({
@@ -172,10 +175,11 @@ export default function CustomProxyImage({
             <img
                 ref={imgRef}
                 src={optimizedSrc}
+                srcSet={srcSet || undefined}
                 alt={alt}
-                width={actualWidth}
-                height={actualHeight}
-                onLoad={() => setIsLoaded(true)}
+                width={!fill ? actualWidth : undefined}
+                height={!fill ? actualHeight : undefined}
+                onLoad={() => setIsLoadedState(true)}
                 style={baseStyle}
                 sizes={sizes}
                 className={`${className} ${fill ? 'object-cover' : ''} transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}

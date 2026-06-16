@@ -144,7 +144,7 @@ describe('LcpPreloader', () => {
 
     it('no render visible elements', () => {
         const { container } = render(
-            <LcpPreloader imageUrl="https://example.com/image.jpg" />
+            <LcpPreloader imageUrl="https://res.cloudinary.com/dzv3dzkbx/image/upload/v1721469287/recipe.jpg" />
         );
         expect(container.firstChild).toBeNull();
     });
@@ -161,7 +161,9 @@ describe('LcpPreloader', () => {
     });
 
     it('creates preload link with correct attributes', () => {
-        render(<LcpPreloader imageUrl="https://example.com/image.jpg" />);
+        render(
+            <LcpPreloader imageUrl="https://res.cloudinary.com/dzv3dzkbx/image/upload/v1721469287/recipe.jpg" />
+        );
 
         expect(createdLinks.length).toBeGreaterThan(0);
 
@@ -170,7 +172,7 @@ describe('LcpPreloader', () => {
         expect(link.as).toBe('image');
         expect(link.href).toContain('/api/image-proxy');
         expect(link.href).toContain(
-            'url=https%3A%2F%2Fexample.com%2Fimage.jpg'
+            'url=https%3A%2F%2Fres.cloudinary.com%2Fdzv3dzkbx%2Fimage%2Fupload%2Fv1721469287%2Frecipe.jpg'
         );
         expect(link.setAttribute).toHaveBeenCalledWith('fetchpriority', 'high');
 
@@ -178,7 +180,9 @@ describe('LcpPreloader', () => {
     });
 
     it('removes existing preload links', () => {
-        render(<LcpPreloader imageUrl="https://example.com/image.jpg" />);
+        render(
+            <LcpPreloader imageUrl="https://res.cloudinary.com/dzv3dzkbx/image/upload/v1721469287/recipe.jpg" />
+        );
 
         expect(document.querySelectorAll).toHaveBeenCalledWith(
             'link[rel="preload"][as="image"][href*="api/image-proxy"]'
@@ -192,7 +196,9 @@ describe('LcpPreloader', () => {
         createdLinks = [];
         document.querySelector = vi.fn().mockReturnValue({ exists: true });
 
-        render(<LcpPreloader imageUrl="https://example.com/image.jpg" />);
+        render(
+            <LcpPreloader imageUrl="https://res.cloudinary.com/dzv3dzkbx/image/upload/v1721469287/recipe.jpg" />
+        );
 
         // Should only create one link (preload)
         expect(createdLinks.length).toBe(1);
@@ -205,7 +211,9 @@ describe('LcpPreloader', () => {
             throw new Error('Test error');
         });
 
-        render(<LcpPreloader imageUrl="https://example.com/image.jpg" />);
+        render(
+            <LcpPreloader imageUrl="https://res.cloudinary.com/dzv3dzkbx/image/upload/v1721469287/recipe.jpg" />
+        );
 
         expect(console.error).toHaveBeenCalledWith(
             'Error injecting preload:',
