@@ -12,7 +12,7 @@ import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
 import ChangeUserNameSelector from '@/app/components/settings/ChangeUserName';
 import ChangePassword from '@/app/components/settings/ChangePassword';
 import DeleteAccount from '@/app/components/settings/DeleteAccount';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FcSettings } from 'react-icons/fc';
 import Tabs, { Tab } from '@/app/components/utils/Tabs';
 import { FiSettings, FiUser } from 'react-icons/fi';
@@ -28,6 +28,14 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
     const [saveUserName, setSaveUserName] = useState(false);
     const [savePassword, setSavePassword] = useState(false);
     const [activeTab, setActiveTab] = useState('preferences');
+
+    useEffect(() => {
+        if (!settingsModal.isOpen) {
+            setSaveImage(false);
+            setSaveUserName(false);
+            setSavePassword(false);
+        }
+    }, [settingsModal.isOpen]);
 
     const tabs: Tab[] = [
         {
@@ -66,17 +74,14 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
                         <ChangeUserImageSelector
                             currentUser={currentUser}
                             saveImage={saveImage}
-                            setSaveImage={setSaveImage}
                         />
                         <ChangeUserNameSelector
                             currentUser={currentUser}
                             saveUserName={saveUserName}
-                            setSaveUserName={setSaveUserName}
                         />
                         <ChangePassword
                             currentUser={currentUser}
                             savePassword={savePassword}
-                            setSavePassword={setSavePassword}
                         />
                         <DeleteAccount currentUser={currentUser} />
                     </div>

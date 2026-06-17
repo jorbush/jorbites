@@ -58,13 +58,12 @@ describe('<ChangeUserImageSelector />', () => {
         emailNotifications: true,
         level: 1,
         verified: true,
-    };
+    } as unknown as SafeUser;
 
     const mockProps = {
         currentUser: mockCurrentUser,
         saveImage: false,
         setSaveImage: vi.fn(),
-        onSave: vi.fn(),
     };
 
     beforeEach(() => {

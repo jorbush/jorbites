@@ -55,7 +55,7 @@ describe('ChangeUserNameSelector', () => {
         badges: [],
         resetToken: null,
         resetTokenExpiry: null,
-    };
+    } as unknown as SafeUser;
 
     const defaultProps = {
         currentUser: mockUser,
@@ -298,8 +298,6 @@ describe('ChangeUserNameSelector', () => {
                 userName: 'NewUser',
             });
         });
-
-        expect(mockSetSaveUserName).toHaveBeenCalledWith(false);
     });
 
     it('handles save trigger when no changes made', () => {
@@ -316,7 +314,6 @@ describe('ChangeUserNameSelector', () => {
         );
 
         expect(mockedAxios.patch).not.toHaveBeenCalled();
-        expect(mockSetSaveUserName).toHaveBeenCalledWith(false);
     });
 
     it('disables input and buttons during loading', async () => {

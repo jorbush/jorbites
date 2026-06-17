@@ -55,7 +55,7 @@ describe('ChangePassword', () => {
         badges: [],
         resetToken: null,
         resetTokenExpiry: null,
-    };
+    } as unknown as SafeUser;
 
     const defaultProps = {
         currentUser: mockUser,
@@ -268,7 +268,6 @@ describe('ChangePassword', () => {
         await waitFor(() => {
             expect(mockedAxios.patch).toHaveBeenCalled();
         });
-        expect(mockSetSavePassword).toHaveBeenCalledWith(false);
     });
 
     it('does not trigger save when savePassword prop becomes true but validation fails', async () => {
@@ -287,7 +286,6 @@ describe('ChangePassword', () => {
             />
         );
         expect(mockedAxios.patch).not.toHaveBeenCalled();
-        expect(mockSetSavePassword).toHaveBeenCalledWith(false);
     });
 
     it('clears form when password is successfully updated', async () => {
