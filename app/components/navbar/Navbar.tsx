@@ -24,8 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     const pathname = usePathname();
     useTheme();
     const isMainPage = pathname === '/';
-    const isFavoritesPage = pathname === '/favorites';
-    const isFilterablePage = isMainPage || isFavoritesPage;
+    const isFilterablePage = isMainPage;
     const isMobileSearchActive =
         isMobile && isFilterablePage && isSearchModeActive;
 

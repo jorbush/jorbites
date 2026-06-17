@@ -48,8 +48,7 @@ const Search: React.FC<SearchProps> = ({
     const isMobile = useMediaQuery('(max-width: 768px)');
 
     const isMainPage = pathname === '/';
-    const isFavoritesPage = pathname === '/favorites';
-    const isFilterablePage = isMainPage || isFavoritesPage;
+    const isFilterablePage = isMainPage;
     const isFiltering = get('category') || '';
 
     const currentStartDate = get('startDate') || '';
@@ -212,6 +211,7 @@ const Search: React.FC<SearchProps> = ({
             inputRef={inputRef}
             onFilterToggle={onFilterToggle}
             filtersState={filtersState}
+            isFilterablePage={isFilterablePage}
             t={t}
         />
     );
