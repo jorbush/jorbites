@@ -2,7 +2,7 @@
 
 import Container from '@/app/components/utils/Container';
 import { useTranslation } from 'react-i18next';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Blog } from '@/app/utils/markdownUtils';
 import { formatDate } from '@/app/utils/date-utils';
 import useTheme from '@/app/hooks/useTheme';
@@ -21,23 +21,20 @@ const handleContactEmail = () => {
 interface BlogsClientProps {
     currentUser?: SafeUser | null;
     initialPage: number;
+    initialCategory?: string;
 }
 
 const BlogsClient: React.FC<BlogsClientProps> = ({
     currentUser,
     initialPage,
+    initialCategory = 'general',
 }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
-    const searchParams = useSearchParams();
-    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
-
-    const categoryParam = get('category');
-    const pageParam = get('page');
 
     const currentCategory =
-        categoryParam === 'releases' ? 'releases' : 'general';
-    const currentPage = pageParam ? parseInt(pageParam) : initialPage;
+        initialCategory === 'releases' ? 'releases' : 'general';
+    const currentPage = initialPage;
 
     useTheme();
 

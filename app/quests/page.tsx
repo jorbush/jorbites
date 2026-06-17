@@ -22,15 +22,17 @@ interface QuestsPageProps {
 }
 
 const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
+    const resolvedParams = await searchParams;
+    const page = parseInt(resolvedParams.page || '1');
+    const status = resolvedParams.status || 'all';
+
     const [currentUser, response] = await Promise.all([
         getCurrentUser(),
-        searchParams.then((resolved) =>
-            getQuests({
-                status: resolved.status,
-                page: parseInt(resolved.page || '1'),
-                limit: 10,
-            })
-        ),
+        getQuests({
+            status: resolvedParams.status,
+            page: page,
+            limit: 10,
+        }),
     ]);
 
     return (
@@ -50,7 +52,8 @@ const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
                                 currentUser={currentUser}
                                 quests={response.data?.quests || []}
                                 totalPages={response.data?.totalPages || 1}
-                                currentPage={response.data?.currentPage || 1}
+                                currentPage={page}
+                                initialStatus={status}
                             />
                         </Suspense>
                     )}
