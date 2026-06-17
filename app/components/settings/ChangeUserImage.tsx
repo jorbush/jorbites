@@ -19,7 +19,7 @@ import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 interface ChangeUserImageProps {
     currentUser?: SafeUser | null;
     saveImage: boolean;
-    setSaveImage: Dispatch<SetStateAction<boolean>>;
+    setSaveImage?: Dispatch<SetStateAction<boolean>>;
 }
 
 const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
@@ -57,11 +57,8 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
     useEffect(() => {
         if (saveImage && canSave) {
             updateUserProfile();
-            setSaveImage(false);
-        } else if (saveImage) {
-            setSaveImage(false);
         }
-    }, [saveImage, canSave, setSaveImage, updateUserProfile]);
+    }, [saveImage, canSave, updateUserProfile]);
 
     return (
         <div className="flex items-center">

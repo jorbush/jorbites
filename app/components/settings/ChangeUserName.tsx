@@ -20,7 +20,7 @@ import { FiEdit3 } from 'react-icons/fi';
 interface ChangeUserNameProps {
     currentUser?: SafeUser | null;
     saveUserName: boolean;
-    setSaveUserName: Dispatch<SetStateAction<boolean>>;
+    setSaveUserName?: Dispatch<SetStateAction<boolean>>;
 }
 
 const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
@@ -97,11 +97,8 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
     useEffect(() => {
         if (saveUserName && canSave) {
             updateUserName();
-            setSaveUserName(false);
-        } else if (saveUserName) {
-            setSaveUserName(false);
         }
-    }, [saveUserName, canSave, setSaveUserName, updateUserName]);
+    }, [saveUserName, canSave, updateUserName]);
 
     return (
         <div className="flex items-center">

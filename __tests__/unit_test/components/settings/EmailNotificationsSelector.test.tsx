@@ -10,6 +10,7 @@ import EmailNotificationsSelector from '@/app/components/settings/EmailNotificat
 import axios from 'axios';
 import { act } from 'react';
 import { toast } from 'react-hot-toast';
+import { SafeUser } from '@/app/types';
 
 // Mock dependencies
 vi.mock('next/navigation', () => ({
@@ -41,7 +42,7 @@ describe('<EmailNotificationsSelector />', () => {
         favoriteIds: [],
         level: 0,
         verified: false,
-    };
+    } as unknown as SafeUser;
 
     beforeEach(() => {
         vi.clearAllMocks();

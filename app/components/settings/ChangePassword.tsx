@@ -20,7 +20,7 @@ import { FiEdit3, FiEye, FiEyeOff } from 'react-icons/fi';
 interface ChangePasswordProps {
     currentUser?: SafeUser | null;
     savePassword: boolean;
-    setSavePassword: Dispatch<SetStateAction<boolean>>;
+    setSavePassword?: Dispatch<SetStateAction<boolean>>;
 }
 
 const ChangePassword: React.FC<ChangePasswordProps> = ({
@@ -103,11 +103,8 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
     useEffect(() => {
         if (savePassword && canSave) {
             handleSubmit(updatePassword)();
-            setSavePassword(false);
-        } else if (savePassword) {
-            setSavePassword(false);
         }
-    }, [savePassword, canSave, setSavePassword, handleSubmit, updatePassword]);
+    }, [savePassword, canSave, handleSubmit, updatePassword]);
 
     return (
         <div
