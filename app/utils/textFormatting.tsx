@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 /**
  * Formats text by detecting and rendering links, bold and italic formatting
@@ -32,16 +33,12 @@ export const formatText = (
             render: (_match: string, ...args: string[]) => {
                 const [username, userId] = args;
                 return (
-                    <a
+                    <Link
                         href={`/profile/${userId}`}
                         className="text-green-450 cursor-pointer hover:underline"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            window.location.href = `/profile/${userId}`;
-                        }}
                     >
                         @{username}
-                    </a>
+                    </Link>
                 );
             },
         },
