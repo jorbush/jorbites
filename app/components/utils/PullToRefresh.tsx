@@ -67,9 +67,6 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
                 if (distance > 0) {
                     pullDistanceRef.current = distance;
                     dispatch({ type: 'SET_PULL_DISTANCE', payload: distance });
-                    if (distance > 10) {
-                        e.preventDefault();
-                    }
                 }
             }
         };
@@ -93,12 +90,14 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
         };
 
         document.addEventListener('touchstart', handleTouchStart, {
-            passive: false,
+            passive: true,
         });
         document.addEventListener('touchmove', handleTouchMove, {
-            passive: false,
+            passive: true,
         });
-        document.addEventListener('touchend', handleTouchEnd);
+        document.addEventListener('touchend', handleTouchEnd, {
+            passive: true,
+        });
 
         return () => {
             document.removeEventListener('touchstart', handleTouchStart);
