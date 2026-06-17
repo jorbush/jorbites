@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
 import { IconType } from 'react-icons';
 
@@ -40,11 +40,15 @@ const Modal: React.FC<ModalProps> = ({
     icon: Icon,
     insideModal,
 }) => {
-    const [showModal, setShowModal] = useState(isOpen);
+    const [isClosing, setIsClosing] = useState(false);
+    const prevIsOpenRef = useRef(isOpen);
 
-    useEffect(() => {
-        setShowModal(isOpen);
-    }, [isOpen]);
+    if (isOpen !== prevIsOpenRef.current) {
+        prevIsOpenRef.current = isOpen;
+        setIsClosing(false);
+    }
+
+    const showAnimation = isOpen && !isClosing;
 
     useTheme();
 
@@ -53,7 +57,7 @@ const Modal: React.FC<ModalProps> = ({
             return;
         }
 
-        setShowModal(false);
+        setIsClosing(true);
         setTimeout(() => {
             onClose();
         }, 300);
@@ -75,7 +79,19 @@ const Modal: React.FC<ModalProps> = ({
         secondaryAction();
     }, [secondaryAction, disabled]);
 
+    const handleSubmitRef = useRef(handleSubmit);
+    const disabledRef = useRef(disabled);
+
     useEffect(() => {
+        handleSubmitRef.current = handleSubmit;
+        disabledRef.current = disabled;
+    });
+
+    useEffect(() => {
+        if (!isOpen) {
+            return;
+        }
+
         const handleKeyDown = (event: KeyboardEvent) => {
             // Don't submit if user is typing in a textarea (e.g., plain text mode)
             const target = event.target as HTMLElement;
@@ -84,16 +100,15 @@ const Modal: React.FC<ModalProps> = ({
             if (
                 event.key === 'Enter' &&
                 !event.shiftKey &&
-                !disabled &&
-                isOpen &&
+                !disabledRef.current &&
                 !isTextarea
             ) {
-                handleSubmit();
+                handleSubmitRef.current();
             }
         };
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [disabled, isOpen, handleSubmit]);
+    }, [isOpen]);
 
     if (!isOpen) {
         return null;
@@ -106,7 +121,7 @@ const Modal: React.FC<ModalProps> = ({
                     className={`relative mx-auto h-full max-h-[100vh] w-full md:h-auto md:max-h-[calc(100vh-6rem)] lg:h-auto ${insideModal ? 'md:w-5/6' : 'md:w-4/6 lg:w-3/6 xl:w-2/5'}`}
                 >
                     <div
-                        className={`translate h-full duration-300 ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'} `}
+                        className={`translate h-full duration-300 ${showAnimation ? 'translate-y-0' : 'translate-y-full'} ${showAnimation ? 'opacity-100' : 'opacity-0'} `}
                     >
                         <div className="translate dark:bg-dark relative flex size-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto">
                             <div className="relative flex flex-shrink-0 items-center justify-center rounded-t border-b-[1px] px-6 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-6 md:pt-6">
