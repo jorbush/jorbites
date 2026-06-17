@@ -6,6 +6,8 @@ import React, {
     useRef,
     useSyncExternalStore,
     useReducer,
+    createContext,
+    useContext,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import TranslationControls from './TranslationControls';
@@ -13,31 +15,47 @@ import i18n from '@/app/i18n';
 import { toast } from 'react-hot-toast';
 import useIsMounted from '@/app/hooks/useIsMounted';
 import { translateableRecipeContentReducer } from './translateableRecipeContentReducer';
+import { formatText } from '@/app/utils/textFormatting';
 
 const subscribe = () => () => {};
+
+interface TranslateableRecipeContentContextType {
+    isTranslated: boolean;
+    isTranslating: boolean;
+    displayDescription: string | React.ReactNode;
+    displayIngredients: string[];
+    displaySteps: string[];
+    isMounted: boolean;
+    t: any;
+}
+
+const TranslateableRecipeContentContext =
+    createContext<TranslateableRecipeContentContextType | null>(null);
+
+function useTranslateableRecipeContentContext() {
+    const context = useContext(TranslateableRecipeContentContext);
+    if (!context) {
+        throw new Error(
+            'TranslateableRecipeContent subcomponents must be used within a TranslateableRecipeContent'
+        );
+    }
+    return context;
+}
 
 interface TranslateableRecipeContentProps {
     description: React.ReactNode;
     descriptionText?: string;
-    ingredients: React.ReactNode[];
     ingredientsText?: string[];
-    steps: React.ReactNode[];
     stepsText?: string[];
-    renderDescription: (content: string | React.ReactNode) => React.ReactNode;
-    renderIngredients: (items: string[]) => React.ReactNode;
-    renderSteps: (items: string[]) => React.ReactNode;
+    children: React.ReactNode;
 }
 
 export function TranslateableRecipeContent({
     description,
     descriptionText,
-    ingredients: _ingredients,
     ingredientsText,
-    steps: _steps,
     stepsText,
-    renderDescription,
-    renderIngredients,
-    renderSteps,
+    children,
 }: TranslateableRecipeContentProps) {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
@@ -363,8 +381,29 @@ export function TranslateableRecipeContent({
     const showTranslateButton =
         isMounted && hasContent && isAvailable && needsTranslation;
 
+    const contextValue = useMemo(
+        () => ({
+            isTranslated,
+            isTranslating,
+            displayDescription,
+            displayIngredients,
+            displaySteps,
+            isMounted,
+            t,
+        }),
+        [
+            isTranslated,
+            isTranslating,
+            displayDescription,
+            displayIngredients,
+            displaySteps,
+            isMounted,
+            t,
+        ]
+    );
+
     return (
-        <>
+        <TranslateableRecipeContentContext.Provider value={contextValue}>
             <div className="mb-2">
                 <hr className="mb-2" />
                 <div className="mb-2 flex min-h-[28px] items-center justify-end">
@@ -377,10 +416,88 @@ export function TranslateableRecipeContent({
                         t={t}
                     />
                 </div>
-                {renderDescription(displayDescription)}
             </div>
-            {renderIngredients(displayIngredients)}
-            {renderSteps(displaySteps)}
-        </>
+            {children}
+        </TranslateableRecipeContentContext.Provider>
     );
 }
+
+TranslateableRecipeContent.Description = function TranslateableDescription() {
+    const { displayDescription } = useTranslateableRecipeContentContext();
+
+    return (
+        <div className="mb-2">
+            <div
+                className="text-justify text-lg font-light text-neutral-500 dark:text-neutral-100"
+                data-cy="recipe-description-display"
+            >
+                {typeof displayDescription === 'string'
+                    ? formatText(displayDescription)
+                    : displayDescription}
+            </div>
+        </div>
+    );
+};
+
+TranslateableRecipeContent.Ingredients = function TranslateableIngredients() {
+    const { displayIngredients, isMounted, t } =
+        useTranslateableRecipeContentContext();
+
+    if (displayIngredients.length === 0) return null;
+
+    return (
+        <>
+            <hr />
+            <div
+                className="dark:text-neutral-100"
+                data-cy="ingredients-section"
+            >
+                <div className="flex flex-row items-center gap-2 text-xl font-semibold">
+                    {isMounted ? t('ingredients') : 'ingredients'}
+                </div>
+                <ul className="list-disc pt-4 pl-9">
+                    {displayIngredients.map((item, i) => (
+                        <li
+                            key={`ing-${i}-${item}`}
+                            className="mb-2"
+                        >
+                            {formatText(item)}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </>
+    );
+};
+
+TranslateableRecipeContent.Steps = function TranslateableSteps() {
+    const { displaySteps, isMounted, t } =
+        useTranslateableRecipeContentContext();
+
+    if (displaySteps.length === 0) return null;
+
+    return (
+        <>
+            <hr />
+            <div
+                className="dark:text-neutral-100"
+                data-cy="steps-section"
+            >
+                <div className="flex flex-row items-center gap-2 text-xl font-semibold">
+                    {isMounted ? t('steps') : 'steps'}
+                </div>
+                <ol className="list-decimal pt-4 pl-9">
+                    {displaySteps.map((item, index) => (
+                        <li
+                            key={`step-${index}-${item}`}
+                            className="overflow-wrap-anywhere mb-2 break-words"
+                            data-cy={`step-${index}`}
+                        >
+                            {formatText(item)}
+                        </li>
+                    ))}
+                </ol>
+            </div>
+        </>
+    );
+};
