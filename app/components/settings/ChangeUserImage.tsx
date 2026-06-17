@@ -1,13 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, {
-    Dispatch,
-    SetStateAction,
-    useCallback,
-    useEffect,
-    useState,
-} from 'react';
+import React, { useCallback, useState, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
@@ -18,15 +12,17 @@ import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 
 interface ChangeUserImageProps {
     currentUser?: SafeUser | null;
-    saveImage: boolean;
-    setSaveImage?: Dispatch<SetStateAction<boolean>>;
+    ref?: React.Ref<ChangeUserImageRef>;
 }
 
-const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
+export interface ChangeUserImageRef {
+    save: () => void;
+}
+
+const ChangeUserImageSelector = ({
     currentUser,
-    saveImage,
-    setSaveImage,
-}) => {
+    ref,
+}: ChangeUserImageProps) => {
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
     const [newImage, setNewImage] = useState(currentUser?.image);
@@ -54,11 +50,17 @@ const ChangeUserImageSelector: React.FC<ChangeUserImageProps> = ({
         setCanSave(true);
     }, []);
 
-    useEffect(() => {
-        if (saveImage && canSave) {
-            updateUserProfile();
-        }
-    }, [saveImage, canSave, updateUserProfile]);
+    useImperativeHandle(
+        ref,
+        () => ({
+            save: () => {
+                if (canSave) {
+                    updateUserProfile();
+                }
+            },
+        }),
+        [canSave, updateUserProfile]
+    );
 
     return (
         <div className="flex items-center">

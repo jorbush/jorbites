@@ -2,12 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import React, {
-    Dispatch,
-    SetStateAction,
     useCallback,
-    useEffect,
     useState,
     useTransition,
+    useImperativeHandle,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
@@ -19,15 +17,14 @@ import { FiEdit3 } from 'react-icons/fi';
 
 interface ChangeUserNameProps {
     currentUser?: SafeUser | null;
-    saveUserName: boolean;
-    setSaveUserName?: Dispatch<SetStateAction<boolean>>;
+    ref?: React.Ref<ChangeUserNameRef>;
 }
 
-const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
-    currentUser,
-    saveUserName,
-    setSaveUserName,
-}) => {
+export interface ChangeUserNameRef {
+    save: () => void;
+}
+
+const ChangeUserNameSelector = ({ currentUser, ref }: ChangeUserNameProps) => {
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
     const [newUserName, setNewUserName] = useState(currentUser?.name || '');
@@ -94,11 +91,17 @@ const ChangeUserNameSelector: React.FC<ChangeUserNameProps> = ({
         setCanSave(false);
     };
 
-    useEffect(() => {
-        if (saveUserName && canSave) {
-            updateUserName();
-        }
-    }, [saveUserName, canSave, updateUserName]);
+    useImperativeHandle(
+        ref,
+        () => ({
+            save: () => {
+                if (canSave) {
+                    updateUserName();
+                }
+            },
+        }),
+        [canSave, updateUserName]
+    );
 
     return (
         <div className="flex items-center">

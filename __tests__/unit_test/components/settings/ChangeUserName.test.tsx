@@ -7,7 +7,9 @@ import {
     waitFor,
 } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import ChangeUserNameSelector from '@/app/components/settings/ChangeUserName';
+import ChangeUserNameSelector, {
+    ChangeUserNameRef,
+} from '@/app/components/settings/ChangeUserName';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
 
@@ -37,8 +39,6 @@ vi.mock('next/navigation', () => ({
 }));
 
 describe('ChangeUserNameSelector', () => {
-    const mockSetSaveUserName = vi.fn();
-
     const mockUser: SafeUser = {
         id: '1',
         name: 'TestUser',
@@ -59,8 +59,6 @@ describe('ChangeUserNameSelector', () => {
 
     const defaultProps = {
         currentUser: mockUser,
-        saveUserName: false,
-        setSaveUserName: mockSetSaveUserName,
     };
 
     beforeEach(() => {
@@ -275,9 +273,13 @@ describe('ChangeUserNameSelector', () => {
         });
     });
 
-    it('triggers save when saveUserName prop changes', async () => {
-        const { rerender } = render(
-            <ChangeUserNameSelector {...defaultProps} />
+    it('triggers save when ref save method is called', async () => {
+        const ref = React.createRef<ChangeUserNameRef>();
+        render(
+            <ChangeUserNameSelector
+                ref={ref}
+                {...defaultProps}
+            />
         );
 
         fireEvent.click(screen.getByTestId('edit-username-icon'));
@@ -285,13 +287,8 @@ describe('ChangeUserNameSelector', () => {
             target: { value: 'NewUser' },
         });
 
-        // Trigger save via prop change
-        rerender(
-            <ChangeUserNameSelector
-                {...defaultProps}
-                saveUserName={true}
-            />
-        );
+        // Trigger save via ref method
+        ref.current?.save();
 
         await waitFor(() => {
             expect(mockedAxios.patch).toHaveBeenCalledWith('/api/userName/1', {
@@ -301,17 +298,16 @@ describe('ChangeUserNameSelector', () => {
     });
 
     it('handles save trigger when no changes made', () => {
-        const { rerender } = render(
-            <ChangeUserNameSelector {...defaultProps} />
-        );
-
-        // Trigger save without making changes
-        rerender(
+        const ref = React.createRef<ChangeUserNameRef>();
+        render(
             <ChangeUserNameSelector
+                ref={ref}
                 {...defaultProps}
-                saveUserName={true}
             />
         );
+
+        // Trigger save via ref method without making changes
+        ref.current?.save();
 
         expect(mockedAxios.patch).not.toHaveBeenCalled();
     });

@@ -2,12 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import React, {
-    Dispatch,
-    SetStateAction,
     useCallback,
-    useEffect,
     useState,
     useTransition,
+    useImperativeHandle,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
@@ -19,15 +17,14 @@ import { FiEdit3, FiEye, FiEyeOff } from 'react-icons/fi';
 
 interface ChangePasswordProps {
     currentUser?: SafeUser | null;
-    savePassword: boolean;
-    setSavePassword?: Dispatch<SetStateAction<boolean>>;
+    ref?: React.Ref<ChangePasswordRef>;
 }
 
-const ChangePassword: React.FC<ChangePasswordProps> = ({
-    currentUser,
-    savePassword,
-    setSavePassword,
-}) => {
+export interface ChangePasswordRef {
+    save: () => void;
+}
+
+const ChangePassword = ({ currentUser, ref }: ChangePasswordProps) => {
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
@@ -100,11 +97,17 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
         reset();
     };
 
-    useEffect(() => {
-        if (savePassword && canSave) {
-            handleSubmit(updatePassword)();
-        }
-    }, [savePassword, canSave, handleSubmit, updatePassword]);
+    useImperativeHandle(
+        ref,
+        () => ({
+            save: () => {
+                if (isEditing) {
+                    handleSubmit(updatePassword)();
+                }
+            },
+        }),
+        [isEditing, handleSubmit, updatePassword]
+    );
 
     return (
         <div
