@@ -1,5 +1,6 @@
 import '@/app/globals.css';
 import { Nunito } from 'next/font/google';
+import { Suspense } from 'react';
 import Navbar from '@/app/components/navbar/Navbar';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import ToasterProvider from '@/app/providers/ToasterProvider';
@@ -126,7 +127,9 @@ export default async function RootLayout({
                     <QuestModal />
                     <AddToListModal />
                     <RecipeBookModal />
-                    <Navbar currentUser={currentUser} />
+                    <Suspense fallback={null}>
+                        <Navbar currentUser={currentUser} />
+                    </Suspense>
                     <PullToRefresh
                         threshold={150}
                         indicator={true}

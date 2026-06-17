@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { SafeUser } from '@/app/types';
 import { useTranslation } from 'react-i18next';
 import Container from '@/app/components/utils/Container';
@@ -16,6 +16,8 @@ interface ChefsClientProps {
     chefs: SafeUser[];
     totalPages: number;
     currentPage: number;
+    initialSearch?: string;
+    initialOrderBy?: ChefOrderByType;
 }
 
 const ORDER_BY_LABELS = {
@@ -33,16 +35,14 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
     chefs,
     totalPages,
     currentPage,
+    initialSearch = '',
+    initialOrderBy = ChefOrderByType.TRENDING,
 }) => {
     const { t } = useTranslation();
     const { push } = useRouter() || {};
-    const searchParams = useSearchParams();
-    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
 
-    const [searchQuery, setSearchQuery] = useState(get('search') || '');
-    const [orderBy, setOrderBy] = useState<ChefOrderByType>(
-        (get('orderBy') as ChefOrderByType) || ChefOrderByType.TRENDING
-    );
+    const [searchQuery, setSearchQuery] = useState(initialSearch);
+    const [orderBy, setOrderBy] = useState<ChefOrderByType>(initialOrderBy);
 
     const updateURL = useCallback(
         (newSearch: string, newOrderBy: ChefOrderByType) => {

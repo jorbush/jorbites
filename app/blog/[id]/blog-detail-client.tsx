@@ -7,7 +7,7 @@ import { Blog } from '@/app/utils/markdownUtils';
 import BlogDetail, {
     BlogDetailSkeleton,
 } from '@/app/components/blog/BlogDetail';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import useTheme from '@/app/hooks/useTheme';
 import { SafeUser } from '@/app/types';
 import useSWR from 'swr';
@@ -15,17 +15,16 @@ import { fetcher, axiosFetcher } from '@/app/utils/fetcher';
 
 interface BlogDetailClientProps {
     id: string;
+    lang?: string;
 }
 
-const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id }) => {
+const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id, lang }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
-    const searchParams = useSearchParams();
-    const langParam = searchParams?.get('lang');
 
     useTheme();
 
-    const currentLang = langParam || i18n.language || 'en';
+    const currentLang = lang || i18n.language || 'en';
 
     const {
         data: blog,

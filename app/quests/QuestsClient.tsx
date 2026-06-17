@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { SafeUser } from '@/app/types';
 import { useTranslation } from 'react-i18next';
 import useQuestModal from '@/app/hooks/useQuestModal';
@@ -70,6 +70,7 @@ interface QuestsClientProps {
     quests: Quest[];
     totalPages: number;
     currentPage: number;
+    initialStatus?: string;
 }
 
 const QuestsClient: React.FC<QuestsClientProps> = ({
@@ -77,22 +78,20 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
     quests,
     totalPages,
     currentPage,
+    initialStatus = 'all',
 }) => {
     const { t } = useTranslation();
     const { push } = useRouter() || {};
-    const searchParams = useSearchParams();
-    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
     const questModal = useQuestModal();
     const loginModal = useLoginModal();
 
     const getInitialFilter = () => {
-        const status = get('status') || 'all';
         if (
-            status === 'open' ||
-            status === 'in_progress' ||
-            status === 'completed'
+            initialStatus === 'open' ||
+            initialStatus === 'in_progress' ||
+            initialStatus === 'completed'
         ) {
-            return status;
+            return initialStatus;
         }
         return 'all';
     };

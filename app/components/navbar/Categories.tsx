@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import Container from '@/app/components/utils/Container';
 import CategoryBox from '@/app/components/CategoryBox';
 import { categories } from './categoriesData';
@@ -24,12 +25,16 @@ const Categories = () => {
         <Container>
             <div className="flex flex-row items-center justify-between overflow-x-auto pt-4">
                 {categories.map((item) => (
-                    <CategoryBox
+                    <Suspense
                         key={item.label}
-                        label={item.label}
-                        icon={item.icon}
-                        selected={category === item.label}
-                    />
+                        fallback={null}
+                    >
+                        <CategoryBox
+                            label={item.label}
+                            icon={item.icon}
+                            selected={category === item.label}
+                        />
+                    </Suspense>
                 ))}
             </div>
         </Container>
