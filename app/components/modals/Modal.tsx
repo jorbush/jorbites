@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
 import { IconType } from 'react-icons';
 
@@ -41,10 +41,10 @@ const Modal: React.FC<ModalProps> = ({
     insideModal,
 }) => {
     const [isClosing, setIsClosing] = useState(false);
-    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+    const prevIsOpenRef = useRef(isOpen);
 
-    if (isOpen !== prevIsOpen) {
-        setPrevIsOpen(isOpen);
+    if (isOpen !== prevIsOpenRef.current) {
+        prevIsOpenRef.current = isOpen;
         setIsClosing(false);
     }
 
@@ -79,7 +79,19 @@ const Modal: React.FC<ModalProps> = ({
         secondaryAction();
     }, [secondaryAction, disabled]);
 
+    const handleSubmitRef = useRef(handleSubmit);
+    const disabledRef = useRef(disabled);
+
     useEffect(() => {
+        handleSubmitRef.current = handleSubmit;
+        disabledRef.current = disabled;
+    });
+
+    useEffect(() => {
+        if (!isOpen) {
+            return;
+        }
+
         const handleKeyDown = (event: KeyboardEvent) => {
             // Don't submit if user is typing in a textarea (e.g., plain text mode)
             const target = event.target as HTMLElement;
@@ -88,16 +100,15 @@ const Modal: React.FC<ModalProps> = ({
             if (
                 event.key === 'Enter' &&
                 !event.shiftKey &&
-                !disabled &&
-                isOpen &&
+                !disabledRef.current &&
                 !isTextarea
             ) {
-                handleSubmit();
+                handleSubmitRef.current();
             }
         };
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [disabled, isOpen, handleSubmit]);
+    }, [isOpen]);
 
     if (!isOpen) {
         return null;
