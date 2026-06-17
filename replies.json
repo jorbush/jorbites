@@ -1,6 +1,0 @@
-[
-    {
-        "comment_id": "4733124904",
-        "reply": "I've addressed the feedback in app/components/modals/Modal.tsx:\n1. Replaced the `prevIsOpen` state with `prevIsOpenRef` (useRef) to avoid unnecessary re-renders when adjusting state during render, which satisfies both `rerender-state-only-in-handlers` and `no-derived-useState` warnings.\n2. Refactored the keydown event listener useEffect to use refs (`handleSubmitRef`, `disabledRef`) for callbacks and props. This prevents the effect from re-subscribing every time these values change, addressing the `prefer-use-effect-event` warning.\n3. Added a check to only register the keydown listener when the modal is open."
-    }
-]
