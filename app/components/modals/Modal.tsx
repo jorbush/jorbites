@@ -40,11 +40,15 @@ const Modal: React.FC<ModalProps> = ({
     icon: Icon,
     insideModal,
 }) => {
-    const [showModal, setShowModal] = useState(isOpen);
+    const [isClosing, setIsClosing] = useState(false);
+    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
 
-    useEffect(() => {
-        setShowModal(isOpen);
-    }, [isOpen]);
+    if (isOpen !== prevIsOpen) {
+        setPrevIsOpen(isOpen);
+        setIsClosing(false);
+    }
+
+    const showAnimation = isOpen && !isClosing;
 
     useTheme();
 
@@ -53,7 +57,7 @@ const Modal: React.FC<ModalProps> = ({
             return;
         }
 
-        setShowModal(false);
+        setIsClosing(true);
         setTimeout(() => {
             onClose();
         }, 300);
@@ -106,7 +110,7 @@ const Modal: React.FC<ModalProps> = ({
                     className={`relative mx-auto h-full max-h-[100vh] w-full md:h-auto md:max-h-[calc(100vh-6rem)] lg:h-auto ${insideModal ? 'md:w-5/6' : 'md:w-4/6 lg:w-3/6 xl:w-2/5'}`}
                 >
                     <div
-                        className={`translate h-full duration-300 ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'} `}
+                        className={`translate h-full duration-300 ${showAnimation ? 'translate-y-0' : 'translate-y-full'} ${showAnimation ? 'opacity-100' : 'opacity-0'} `}
                     >
                         <div className="translate dark:bg-dark relative flex size-full flex-col rounded-lg border-0 bg-white shadow-lg outline-hidden focus:outline-hidden md:h-auto lg:h-auto">
                             <div className="relative flex flex-shrink-0 items-center justify-center rounded-t border-b-[1px] px-6 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-6 md:pt-6">
