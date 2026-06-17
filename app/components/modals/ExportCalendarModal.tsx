@@ -70,6 +70,10 @@ const ExportCalendarModal: React.FC<ExportCalendarModalProps> = ({
                 </label>
                 <input
                     id="export-calendar-start-date"
+                    aria-label={
+                        t('select_week_start') ||
+                        'Select week start date (Monday):'
+                    }
                     type="date"
                     value={calendarStartDate}
                     onChange={(e) => setCalendarStartDate(e.target.value)}

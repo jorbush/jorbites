@@ -197,6 +197,7 @@ const PeriodFilter: React.FC = () => {
                                 </label>
                                 <input
                                     id="period-filter-start-date"
+                                    aria-label={t('from_date') || 'From date'}
                                     type="date"
                                     value={tempStartDate}
                                     max={tempEndDate || today}
@@ -220,6 +221,7 @@ const PeriodFilter: React.FC = () => {
                                 </label>
                                 <input
                                     id="period-filter-end-date"
+                                    aria-label={t('to_date') || 'To date'}
                                     type="date"
                                     value={tempEndDate}
                                     min={tempStartDate}
