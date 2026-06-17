@@ -8,11 +8,17 @@ import { useTranslation } from 'react-i18next';
 import EmailNotificationsSelector from '@/app/components/settings/EmailNotificationsSelector';
 import PushNotificationManager from '@/app/components/settings/PushNotificationManager';
 import { SafeUser } from '@/app/types';
-import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
-import ChangeUserNameSelector from '@/app/components/settings/ChangeUserName';
-import ChangePassword from '@/app/components/settings/ChangePassword';
+import ChangeUserImageSelector, {
+    ChangeUserImageRef,
+} from '@/app/components/settings/ChangeUserImage';
+import ChangeUserNameSelector, {
+    ChangeUserNameRef,
+} from '@/app/components/settings/ChangeUserName';
+import ChangePassword, {
+    ChangePasswordRef,
+} from '@/app/components/settings/ChangePassword';
 import DeleteAccount from '@/app/components/settings/DeleteAccount';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { FcSettings } from 'react-icons/fc';
 import Tabs, { Tab } from '@/app/components/utils/Tabs';
 import { FiSettings, FiUser } from 'react-icons/fi';
@@ -24,18 +30,10 @@ interface SettingsProps {
 const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
     const settingsModal = useSettingsModal();
     const { t } = useTranslation();
-    const [saveImage, setSaveImage] = useState(false);
-    const [saveUserName, setSaveUserName] = useState(false);
-    const [savePassword, setSavePassword] = useState(false);
+    const userImageRef = useRef<ChangeUserImageRef>(null);
+    const userNameRef = useRef<ChangeUserNameRef>(null);
+    const passwordRef = useRef<ChangePasswordRef>(null);
     const [activeTab, setActiveTab] = useState('preferences');
-
-    useEffect(() => {
-        if (!settingsModal.isOpen) {
-            setSaveImage(false);
-            setSaveUserName(false);
-            setSavePassword(false);
-        }
-    }, [settingsModal.isOpen]);
 
     const tabs: Tab[] = [
         {
@@ -72,16 +70,16 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
                         <EmailNotificationsSelector currentUser={currentUser} />
                         <PushNotificationManager />
                         <ChangeUserImageSelector
+                            ref={userImageRef}
                             currentUser={currentUser}
-                            saveImage={saveImage}
                         />
                         <ChangeUserNameSelector
+                            ref={userNameRef}
                             currentUser={currentUser}
-                            saveUserName={saveUserName}
                         />
                         <ChangePassword
+                            ref={passwordRef}
                             currentUser={currentUser}
-                            savePassword={savePassword}
                         />
                         <DeleteAccount currentUser={currentUser} />
                     </div>
@@ -112,9 +110,9 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
             settingsModal.onClose();
             return;
         }
-        setSaveImage(true);
-        setSaveUserName(true);
-        setSavePassword(true);
+        userImageRef.current?.save();
+        userNameRef.current?.save();
+        passwordRef.current?.save();
 
         // Close modal after a short delay to allow components to save
         setTimeout(() => {

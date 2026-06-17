@@ -6,7 +6,10 @@ import {
     cleanup,
 } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import ChangeUserImageSelector from '@/app/components/settings/ChangeUserImage';
+import ChangeUserImageSelector, {
+    ChangeUserImageRef,
+} from '@/app/components/settings/ChangeUserImage';
+import React from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
@@ -62,8 +65,6 @@ describe('<ChangeUserImageSelector />', () => {
 
     const mockProps = {
         currentUser: mockCurrentUser,
-        saveImage: false,
-        setSaveImage: vi.fn(),
     };
 
     beforeEach(() => {
@@ -123,6 +124,35 @@ describe('<ChangeUserImageSelector />', () => {
         await waitFor(() => {
             const saveIcon = screen.getByTestId('save-icon');
             fireEvent.click(saveIcon);
+        });
+
+        await waitFor(() => {
+            expect(axios.put).toHaveBeenCalledWith(
+                `/api/userImage/${mockCurrentUser.id}`,
+                {
+                    userImage: 'https://example.com/new-image.jpg',
+                }
+            );
+            expect(toast.success).toHaveBeenCalledWith('image_updated');
+        });
+    });
+
+    it('updates user profile when ref save method is called', async () => {
+        (axios.put as any).mockResolvedValue({});
+        const ref = React.createRef<ChangeUserImageRef>();
+
+        render(
+            <ChangeUserImageSelector
+                ref={ref}
+                {...mockProps}
+            />
+        );
+        const uploadWidget = screen.getByAltText('Upload');
+
+        fireEvent.click(uploadWidget);
+
+        await waitFor(() => {
+            ref.current?.save();
         });
 
         await waitFor(() => {

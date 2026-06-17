@@ -7,7 +7,9 @@ import {
     waitFor,
 } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import ChangePassword from '@/app/components/settings/ChangePassword';
+import ChangePassword, {
+    ChangePasswordRef,
+} from '@/app/components/settings/ChangePassword';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
 
@@ -37,8 +39,6 @@ vi.mock('next/navigation', () => ({
 }));
 
 describe('ChangePassword', () => {
-    const mockSetSavePassword = vi.fn();
-
     const mockUser: SafeUser = {
         id: '1',
         name: 'TestUser',
@@ -59,8 +59,6 @@ describe('ChangePassword', () => {
 
     const defaultProps = {
         currentUser: mockUser,
-        savePassword: false,
-        setSavePassword: mockSetSavePassword,
     };
 
     beforeEach(() => {
@@ -247,8 +245,14 @@ describe('ChangePassword', () => {
         });
     });
 
-    it('triggers save when savePassword prop becomes true and validation passes', async () => {
-        const { rerender } = render(<ChangePassword {...defaultProps} />);
+    it('triggers save when ref save method is called and validation passes', async () => {
+        const ref = React.createRef<ChangePasswordRef>();
+        render(
+            <ChangePassword
+                ref={ref}
+                {...defaultProps}
+            />
+        );
         fireEvent.click(screen.getByTestId('edit-password-icon'));
         fireEvent.change(screen.getByTestId('current-password-input'), {
             target: { value: 'currentpass' },
@@ -259,19 +263,20 @@ describe('ChangePassword', () => {
         fireEvent.change(screen.getByTestId('confirm-password-input'), {
             target: { value: 'newpassword123' },
         });
-        rerender(
-            <ChangePassword
-                {...defaultProps}
-                savePassword={true}
-            />
-        );
+        ref.current?.save();
         await waitFor(() => {
             expect(mockedAxios.patch).toHaveBeenCalled();
         });
     });
 
-    it('does not trigger save when savePassword prop becomes true but validation fails', async () => {
-        const { rerender } = render(<ChangePassword {...defaultProps} />);
+    it('does not trigger save when ref save method is called but validation fails', async () => {
+        const ref = React.createRef<ChangePasswordRef>();
+        render(
+            <ChangePassword
+                ref={ref}
+                {...defaultProps}
+            />
+        );
         fireEvent.click(screen.getByTestId('edit-password-icon'));
         fireEvent.change(screen.getByTestId('current-password-input'), {
             target: { value: 'currentpass' },
@@ -279,12 +284,7 @@ describe('ChangePassword', () => {
         fireEvent.change(screen.getByTestId('new-password-input'), {
             target: { value: '123' }, // Too short
         });
-        rerender(
-            <ChangePassword
-                {...defaultProps}
-                savePassword={true}
-            />
-        );
+        ref.current?.save();
         expect(mockedAxios.patch).not.toHaveBeenCalled();
     });
 
