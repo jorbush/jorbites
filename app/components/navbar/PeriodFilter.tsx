@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useReducer } from 'react';
+import { useRef, useEffect, useReducer, Suspense } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { FiCalendar, FiX } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ export interface DateRange {
     endDate: string;
 }
 
-const PeriodFilter: React.FC = () => {
+const PeriodFilterComponent: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { replace } = useRouter() || {};
     const searchParams = useSearchParams();
@@ -269,5 +269,11 @@ const PeriodFilter: React.FC = () => {
         </div>
     );
 };
+
+const PeriodFilter: React.FC = () => (
+    <Suspense fallback={null}>
+        <PeriodFilterComponent />
+    </Suspense>
+);
 
 export default PeriodFilter;
