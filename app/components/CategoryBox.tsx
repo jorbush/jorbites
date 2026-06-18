@@ -2,7 +2,7 @@
 
 import qs from 'query-string';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { IconType } from 'react-icons';
 import { useTranslation } from 'react-i18next';
 
@@ -19,15 +19,19 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
 }) => {
     const { push } = useRouter() || {};
     const params = useSearchParams();
+
+    const { get, toString } = useMemo(() => {
+        return {
+            get: params ? params.get.bind(params) : () => null,
+            toString: params ? params.toString.bind(params) : () => '',
+        };
+    }, [params]);
+
     const pathname = usePathname();
     const { t } = useTranslation();
 
     const handleCategorySelection = useCallback(() => {
-        let currentQuery = {};
-
-        if (params) {
-            currentQuery = qs.parse(params.toString());
-        }
+        const currentQuery = qs.parse(toString());
 
         let updatedQuery: any = {
             ...currentQuery,
@@ -38,7 +42,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
             delete updatedQuery.page;
         }
 
-        if (params?.get('category') === label) {
+        if (get('category') === label) {
             delete updatedQuery.category;
         }
 
@@ -51,7 +55,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
         );
 
         push(url);
-    }, [label, push, params, pathname]);
+    }, [label, push, pathname, get, toString]);
 
     return (
         <button
