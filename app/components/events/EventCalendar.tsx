@@ -175,6 +175,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                                                         event.frontmatter.title
                                                     }
                                                     fill
+                                                    sizes="(max-width: 768px) 24px, 32px"
                                                     className="object-cover"
                                                 />
                                                 <div className="absolute inset-0 bg-neutral-950 opacity-0 transition-opacity group-hover:opacity-20" />
