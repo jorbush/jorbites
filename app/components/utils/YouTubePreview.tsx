@@ -61,6 +61,7 @@ const YouTubePreview: React.FC<YouTubePreviewProps> = ({
                     src={thumbnailUrl}
                     alt={title}
                     fill
+                    sizes="(max-width: 800px) 100vw, 800px"
                     className="object-cover transition-opacity duration-200 hover:opacity-80"
                     onError={handleImageError}
                     data-testid="youtube-thumbnail"
