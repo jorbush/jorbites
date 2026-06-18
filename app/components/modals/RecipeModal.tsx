@@ -20,9 +20,11 @@ interface RecipeModalProps {
     currentUser?: SafeUser | null;
 }
 
-const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
+const RecipeModalContent: React.FC<{
+    currentUser?: SafeUser | null;
+    recipeModal: any;
+}> = ({ currentUser, recipeModal }) => {
     const { t } = useTranslation();
-    const recipeModal = useRecipeModal();
     const {
         step,
         numIngredients,
@@ -196,6 +198,21 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
                     />
                 ) : undefined
             }
+        />
+    );
+};
+
+const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
+    const recipeModal = useRecipeModal();
+
+    if (!recipeModal.isOpen) {
+        return null;
+    }
+
+    return (
+        <RecipeModalContent
+            currentUser={currentUser}
+            recipeModal={recipeModal}
         />
     );
 };
