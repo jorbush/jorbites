@@ -29,12 +29,12 @@ export function useRecipeFormState({
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
     const [step, setStep] = useState(STEPS.CATEGORY);
-    const [numIngredients, setNumIngredients] = useState(() =>
+    const [numIngredients, setNumIngredients] = useState<number>(() =>
         recipeModal.isEditMode && recipeModal.editRecipeData
             ? recipeModal.editRecipeData.ingredients?.length || 1
             : 1
     );
-    const [numSteps, setNumSteps] = useState(() =>
+    const [numSteps, setNumSteps] = useState<number>(() =>
         recipeModal.isEditMode && recipeModal.editRecipeData
             ? recipeModal.editRecipeData.steps?.length || 1
             : 1
@@ -46,7 +46,6 @@ export function useRecipeFormState({
     const prevQuestDataRef = useRef<any>(null);
     const prevCoCooksDataRef = useRef<any>(null);
     const prevLinkedRecipesDataRef = useRef<any>(null);
-    const prevDraftDataRef = useRef<any>(null);
     const [selectedCoCooks, setSelectedCoCooks] = useState<any[]>(() =>
         recipeModal.isEditMode && recipeModal.editRecipeData?.coCooks
             ? recipeModal.editRecipeData.coCooks
