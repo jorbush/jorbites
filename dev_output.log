@@ -1,0 +1,47 @@
+
+> jorbites@2.3.8 dev
+> next dev --turbopack
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 598ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+
+Missing Axiom token
+Missing Axiom token
+Missing Axiom token
+Error: Forbidden
+    at ignore-listed frames
+○ Compiling /lists ...
+Missing Axiom token
+Missing Axiom token
+Missing Axiom token
+[next-auth][warn][NEXTAUTH_URL]
+https://next-auth.js.org/warnings#nextauth_url
+[next-auth][warn][NO_SECRET]
+https://next-auth.js.org/warnings#no_secret
+[next-auth][warn][DEBUG_ENABLED]
+https://next-auth.js.org/warnings#debug_enabled
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+Error: Forbidden
+    at ignore-listed frames
+ GET /lists 200 in 23.4s (next.js: 18.9s, proxy.ts: 430ms, application-code: 4.1s)
+Error: Forbidden
+    at ignore-listed frames
+[browser] Image with src "/avocado.webp" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+Missing Axiom token
+Missing Axiom token
+Missing Axiom token
+Error: Forbidden
+    at ignore-listed frames
+ POST /api/axiom 200 in 1966ms (next.js: 1591ms, application-code: 375ms)

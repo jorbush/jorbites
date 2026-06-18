@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { SafeList } from '@/app/types';
 import Container from '@/app/components/utils/Container';
@@ -20,11 +20,6 @@ interface ListsClientProps {
 const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
     const { push, refresh } = useRouter() || {};
     const { t, i18n } = useTranslation();
-    const [lists, setLists] = useState<SafeList[]>(initialLists);
-
-    useEffect(() => {
-        setLists(initialLists);
-    }, [initialLists]);
 
     const [deleteListId, setDeleteListId] = useState<string | null>(null);
 
@@ -34,9 +29,6 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
             await axios.delete(`/api/lists/${deleteListId}`);
             toast.success(t('list_deleted') || 'List deleted');
             refresh();
-            setLists((current) =>
-                current.filter((list) => list.id !== deleteListId)
-            );
         } catch (error: any) {
             toast.error(error?.response?.data || t('something_went_wrong'));
         } finally {
@@ -52,7 +44,7 @@ const ListsClient: React.FC<ListsClientProps> = ({ initialLists }) => {
                     <div className="text-3xl font-bold">{t('my_lists')}</div>
                 </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
-                    {lists.map((list) => (
+                    {initialLists.map((list) => (
                         <div
                             key={list.id}
                             className="group relative flex w-full flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 transition hover:shadow-lg dark:border-neutral-700"
