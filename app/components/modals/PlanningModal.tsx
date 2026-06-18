@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import Modal from '@/app/components/modals/Modal';
 import Input from '@/app/components/inputs/Input';
@@ -39,26 +38,13 @@ const PlanningModal: React.FC<PlanningModalProps> = ({
         setValue,
         watch,
         formState: { errors },
-        reset,
     } = useForm<FieldValues>({
-        defaultValues: {
+        defaultValues: initialValues || {
             name: '',
             description: '',
             isPrivate: true,
         },
     });
-
-    useEffect(() => {
-        if (isOpen) {
-            reset(
-                initialValues || {
-                    name: '',
-                    description: '',
-                    isPrivate: true,
-                }
-            );
-        }
-    }, [isOpen, initialValues, reset]);
 
     const handleFormSubmit: SubmitHandler<FieldValues> = (data) => {
         onSubmit({

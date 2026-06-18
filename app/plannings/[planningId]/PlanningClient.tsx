@@ -113,6 +113,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
             {/* Shopping List Modal */}
             {/* Planning Modal (for editing metadata) */}
             <PlanningModal
+                key={isPlanningModalOpen ? 'open' : 'closed'}
                 isOpen={isPlanningModalOpen}
                 onClose={() => setIsPlanningModalOpen(false)}
                 onSubmit={handleUpdatePlanning}

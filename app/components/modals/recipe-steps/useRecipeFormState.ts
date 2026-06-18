@@ -29,21 +29,33 @@ export function useRecipeFormState({
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
     const [step, setStep] = useState(STEPS.CATEGORY);
-    const [numIngredients, setNumIngredients] = useState(1);
-    const [numSteps, setNumSteps] = useState(1);
+    const [numIngredients, setNumIngredients] = useState<number>(() =>
+        recipeModal.isEditMode && recipeModal.editRecipeData
+            ? recipeModal.editRecipeData.ingredients?.length || 1
+            : 1
+    );
+    const [numSteps, setNumSteps] = useState<number>(() =>
+        recipeModal.isEditMode && recipeModal.editRecipeData
+            ? recipeModal.editRecipeData.steps?.length || 1
+            : 1
+    );
     const [isLoading, setIsLoading] = useState(false);
     const hasLoadedDraft = useRef(false);
-    const hasLoadedEditData = useRef(false);
     const currentUserRef = useRef<SafeUser | null>(null);
     currentUserRef.current = currentUser || null;
     const prevQuestDataRef = useRef<any>(null);
     const prevCoCooksDataRef = useRef<any>(null);
     const prevLinkedRecipesDataRef = useRef<any>(null);
-    const prevDraftDataRef = useRef<any>(null);
-    const hasLoadedDraftReset = useRef(false);
-    const [selectedCoCooks, setSelectedCoCooks] = useState<any[]>([]);
+    const [selectedCoCooks, setSelectedCoCooks] = useState<any[]>(() =>
+        recipeModal.isEditMode && recipeModal.editRecipeData?.coCooks
+            ? recipeModal.editRecipeData.coCooks
+            : []
+    );
     const [selectedLinkedRecipes, setSelectedLinkedRecipes] = useState<any[]>(
-        []
+        () =>
+            recipeModal.isEditMode && recipeModal.editRecipeData?.linkedRecipes
+                ? recipeModal.editRecipeData.linkedRecipes
+                : []
     );
     const [selectedQuest, setSelectedQuest] = useState<any | null>(null);
     const [ingredientsInputMode, setIngredientsInputMode] = useState<
@@ -53,16 +65,42 @@ export function useRecipeFormState({
         'list'
     );
 
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        watch,
-        getValues,
-        formState: { errors },
-        reset,
-    } = useForm<FieldValues>({
-        defaultValues: {
+    const initialDefaultValues = useMemo(() => {
+        if (recipeModal.isEditMode && recipeModal.editRecipeData) {
+            const editData = recipeModal.editRecipeData;
+            const ingredientsObject: Record<string, string> = {};
+            editData.ingredients.forEach(
+                (ingredient: string, index: number) => {
+                    ingredientsObject[`ingredient-${index}`] = ingredient;
+                }
+            );
+            const stepsObject: Record<string, string> = {};
+            editData.steps.forEach((step: string, index: number) => {
+                stepsObject[`step-${index}`] = step;
+            });
+            return {
+                categories: Array.isArray(editData.categories)
+                    ? editData.categories
+                    : [],
+                method: editData.method,
+                imageSrc: editData.imageSrc,
+                imageSrc1: editData.imageSrc1 || '',
+                imageSrc2: editData.imageSrc2 || '',
+                imageSrc3: editData.imageSrc3 || '',
+                title: editData.title,
+                description: editData.description,
+                ingredients: editData.ingredients,
+                steps: editData.steps,
+                minutes: editData.minutes,
+                coCooksIds: editData.coCooksIds || [],
+                linkedRecipeIds: editData.linkedRecipeIds || [],
+                youtubeUrl: editData.youtubeUrl || '',
+                questId: editData.questId || recipeModal.questId || '',
+                ...ingredientsObject,
+                ...stepsObject,
+            };
+        }
+        return {
             categories: [],
             method: '',
             imageSrc: '',
@@ -77,8 +115,24 @@ export function useRecipeFormState({
             coCooksIds: [],
             linkedRecipeIds: [],
             youtubeUrl: '',
-            questId: '',
-        },
+            questId: recipeModal.questId || '',
+        };
+    }, [
+        recipeModal.isEditMode,
+        recipeModal.editRecipeData,
+        recipeModal.questId,
+    ]);
+
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        watch,
+        getValues,
+        formState: { errors },
+        reset,
+    } = useForm<FieldValues>({
+        defaultValues: initialDefaultValues,
     });
 
     const categories = watch('categories');
@@ -252,28 +306,26 @@ export function useRecipeFormState({
     const linkedRecipeIds = watch('linkedRecipeIds') || [];
 
     const { data: questData } = useSWR(
-        recipeModal.isOpen && questId ? `/api/quest/${questId}` : null,
+        questId ? `/api/quest/${questId}` : null,
         axiosFetcher
     );
 
     const { data: coCooksData } = useSWR(
-        recipeModal.isOpen && coCooksIds.length > 0
+        coCooksIds.length > 0
             ? `/api/users/multiple?ids=${coCooksIds.join(',')}`
             : null,
         axiosFetcher
     );
 
     const { data: linkedRecipesData } = useSWR(
-        recipeModal.isOpen && linkedRecipeIds.length > 0
+        linkedRecipeIds.length > 0
             ? `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
             : null,
         axiosFetcher
     );
 
     const { data: draftData, isLoading: isDraftLoading } = useSWR(
-        recipeModal.isOpen && !recipeModal.isEditMode && currentUserRef.current
-            ? `/api/draft`
-            : null,
+        !recipeModal.isEditMode && currentUserRef.current ? `/api/draft` : null,
         axiosFetcher,
         {
             revalidateOnFocus: false,
@@ -302,163 +354,34 @@ export function useRecipeFormState({
         setSelectedLinkedRecipes(linkedRecipesData);
     }
 
-    if (
-        draftData &&
-        draftData !== prevDraftDataRef.current &&
-        !recipeModal.isEditMode &&
-        !hasLoadedDraft.current
-    ) {
-        prevDraftDataRef.current = draftData;
-        hasLoadedDraft.current = true;
-        const { currentStep } = draftData;
-        if (currentStep !== undefined) {
-            setStep(Math.max(0, Math.min(currentStep, STEPS_LENGTH - 1)));
-        }
-        setNumIngredients(draftData.ingredients?.length || 1);
-        setNumSteps(draftData.steps?.length || 1);
-    }
-
     useEffect(() => {
-        if (draftData && !recipeModal.isEditMode && hasLoadedDraft.current) {
-            if (!hasLoadedDraftReset.current) {
-                hasLoadedDraftReset.current = true;
-                const { currentStep: _, ...formData } = draftData;
-                const ingredients = formData.ingredients || [];
-                const ingredientsObject: Record<string, string> = {};
-                ingredients.forEach((ingredient: string, index: number) => {
-                    ingredientsObject[`ingredient-${index}`] = ingredient;
-                });
-                const steps = formData.steps || [];
-                const stepsObject: Record<string, string> = {};
-                steps.forEach((step: string, index: number) => {
-                    stepsObject[`step-${index}`] = step;
-                });
-                reset({
-                    ...formData,
-                    ...ingredientsObject,
-                    ...stepsObject,
-                });
+        if (draftData && !recipeModal.isEditMode && !hasLoadedDraft.current) {
+            hasLoadedDraft.current = true;
+            const { currentStep } = draftData;
+            if (currentStep !== undefined) {
+                setStep(Math.max(0, Math.min(currentStep, STEPS_LENGTH - 1)));
             }
+            setNumIngredients(draftData.ingredients?.length || 1);
+            setNumSteps(draftData.steps?.length || 1);
+
+            const { currentStep: _, ...formData } = draftData;
+            const ingredients = formData.ingredients || [];
+            const ingredientsObject: Record<string, string> = {};
+            ingredients.forEach((ingredient: string, index: number) => {
+                ingredientsObject[`ingredient-${index}`] = ingredient;
+            });
+            const steps = formData.steps || [];
+            const stepsObject: Record<string, string> = {};
+            steps.forEach((step: string, index: number) => {
+                stepsObject[`step-${index}`] = step;
+            });
+            reset({
+                ...formData,
+                ...ingredientsObject,
+                ...stepsObject,
+            });
         }
     }, [draftData, recipeModal.isEditMode, reset]);
-
-    const prevIsOpenRef = useRef(recipeModal.isOpen);
-    const prevIsEditModeRef = useRef(recipeModal.isEditMode);
-    const prevEditRecipeDataIdRef = useRef(recipeModal.editRecipeData?.id);
-
-    if (
-        recipeModal.isOpen !== prevIsOpenRef.current ||
-        recipeModal.isEditMode !== prevIsEditModeRef.current ||
-        recipeModal.editRecipeData?.id !== prevEditRecipeDataIdRef.current
-    ) {
-        prevIsOpenRef.current = recipeModal.isOpen;
-        prevIsEditModeRef.current = recipeModal.isEditMode;
-        prevEditRecipeDataIdRef.current = recipeModal.editRecipeData?.id;
-
-        if (!recipeModal.isOpen) {
-            setStep(STEPS.CATEGORY);
-            setNumIngredients(1);
-            setNumSteps(1);
-            setSelectedCoCooks([]);
-            setSelectedLinkedRecipes([]);
-            setSelectedQuest(null);
-            setIngredientsInputMode('list');
-            setStepsInputMode('list');
-            hasLoadedDraft.current = false;
-            hasLoadedEditData.current = false;
-            hasLoadedDraftReset.current = false;
-            prevQuestDataRef.current = null;
-            prevCoCooksDataRef.current = null;
-            prevLinkedRecipesDataRef.current = null;
-            prevDraftDataRef.current = null;
-        } else {
-            if (recipeModal.isEditMode && recipeModal.editRecipeData) {
-                const editData = recipeModal.editRecipeData;
-                setStep(STEPS.CATEGORY);
-                setNumIngredients(editData.ingredients?.length || 1);
-                setNumSteps(editData.steps?.length || 1);
-                if (editData.coCooks) {
-                    setSelectedCoCooks(editData.coCooks);
-                }
-                if (editData.linkedRecipes) {
-                    setSelectedLinkedRecipes(editData.linkedRecipes);
-                }
-                hasLoadedEditData.current = false;
-            }
-        }
-    }
-
-    useEffect(() => {
-        if (!recipeModal.isOpen) {
-            reset({
-                categories: [],
-                method: '',
-                imageSrc: '',
-                imageSrc1: '',
-                imageSrc2: '',
-                imageSrc3: '',
-                title: '',
-                description: '',
-                ingredients: [],
-                steps: [],
-                minutes: 30,
-                coCooksIds: [],
-                linkedRecipeIds: [],
-                youtubeUrl: '',
-                questId: '',
-            });
-        } else {
-            if (
-                recipeModal.isEditMode &&
-                recipeModal.editRecipeData &&
-                !hasLoadedEditData.current
-            ) {
-                hasLoadedEditData.current = true;
-                const editData = recipeModal.editRecipeData;
-                const ingredientsObject: Record<string, string> = {};
-                editData.ingredients.forEach(
-                    (ingredient: string, index: number) => {
-                        ingredientsObject[`ingredient-${index}`] = ingredient;
-                    }
-                );
-                const stepsObject: Record<string, string> = {};
-                editData.steps.forEach((step: string, index: number) => {
-                    stepsObject[`step-${index}`] = step;
-                });
-
-                reset({
-                    categories: Array.isArray(editData.categories)
-                        ? editData.categories
-                        : [],
-                    method: editData.method,
-                    imageSrc: editData.imageSrc,
-                    imageSrc1: editData.imageSrc1 || '',
-                    imageSrc2: editData.imageSrc2 || '',
-                    imageSrc3: editData.imageSrc3 || '',
-                    title: editData.title,
-                    description: editData.description,
-                    ingredients: editData.ingredients,
-                    steps: editData.steps,
-                    minutes: editData.minutes,
-                    coCooksIds: editData.coCooksIds || [],
-                    linkedRecipeIds: editData.linkedRecipeIds || [],
-                    youtubeUrl: editData.youtubeUrl || '',
-                    questId: editData.questId || recipeModal.questId || '',
-                    ...ingredientsObject,
-                    ...stepsObject,
-                });
-            } else if (recipeModal.questId) {
-                setValue('questId', recipeModal.questId);
-            }
-        }
-    }, [
-        recipeModal.isOpen,
-        recipeModal.isEditMode,
-        recipeModal.editRecipeData,
-        recipeModal.questId,
-        reset,
-        setValue,
-    ]);
 
     const onBack = () => {
         setStep((value) => Math.max(value - 1, 0));

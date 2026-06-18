@@ -242,6 +242,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
 
             {/* Create Planning Modal */}
             <PlanningModal
+                key={isCreateOpen ? 'open' : 'closed'}
                 isOpen={isCreateOpen}
                 onClose={() => setIsCreateOpen(false)}
                 onSubmit={onCreateSubmit}
