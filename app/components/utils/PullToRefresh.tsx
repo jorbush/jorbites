@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback, useReducer } from 'react';
+import { useEffect, useRef, useReducer, useEffectEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiRefreshCw } from 'react-icons/fi';
 import { pullToRefreshReducer } from './pullToRefreshReducer';
@@ -25,7 +25,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
     const { refreshing, displayPullDistance } = state;
 
     // Helper function to check if the touch event is inside a modal
-    const isInsideModal = useCallback((target: Node): boolean => {
+    const isInsideModal = useEffectEvent((target: Node): boolean => {
         const modalOpen = document.querySelector('.z-50');
         if (!modalOpen) return false;
 
@@ -40,7 +40,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             targetElement = targetElement.parentNode as Node;
         }
         return false;
-    }, []);
+    });
 
     useEffect(() => {
         const handleTouchStart = (e: TouchEvent) => {
@@ -104,7 +104,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             document.removeEventListener('touchmove', handleTouchMove);
             document.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [threshold, refresh, isInsideModal]);
+    }, [threshold, refresh]);
 
     return (
         <>
