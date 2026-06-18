@@ -88,7 +88,7 @@ describe('Search View Components', () => {
     });
 
     describe('MobileSearch', () => {
-        it('renders normal mode (logo + search button) when not in search mode', () => {
+        it('renders only logo if page is not filterable', () => {
             render(
                 <MobileSearch
                     isSearchMode={false}
@@ -99,6 +99,26 @@ describe('Search View Components', () => {
                     onKeyDown={vi.fn()}
                     inputRef={mockRef}
                     filtersState={{ isFiltering: false, hasActive: false }}
+                    isFilterablePage={false}
+                    t={mockT}
+                />
+            );
+            expect(screen.getByTestId('logo')).toBeDefined();
+            expect(screen.queryByRole('button')).toBeNull();
+        });
+
+        it('renders normal mode (logo + search button) when not in search mode and page is filterable', () => {
+            render(
+                <MobileSearch
+                    isSearchMode={false}
+                    searchQuery=""
+                    onSearchToggle={vi.fn()}
+                    onSubmit={vi.fn()}
+                    onChange={vi.fn()}
+                    onKeyDown={vi.fn()}
+                    inputRef={mockRef}
+                    filtersState={{ isFiltering: false, hasActive: false }}
+                    isFilterablePage={true}
                     t={mockT}
                 />
             );
@@ -106,7 +126,7 @@ describe('Search View Components', () => {
             expect(screen.getByRole('button')).toBeDefined();
         });
 
-        it('renders full search header when in search mode', () => {
+        it('renders full search header when in search mode and page is filterable', () => {
             render(
                 <MobileSearch
                     isSearchMode={true}
@@ -117,6 +137,7 @@ describe('Search View Components', () => {
                     onKeyDown={vi.fn()}
                     inputRef={mockRef}
                     filtersState={{ isFiltering: true, hasActive: true }}
+                    isFilterablePage={true}
                     t={mockT}
                 />
             );

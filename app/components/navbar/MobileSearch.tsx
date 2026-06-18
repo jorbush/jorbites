@@ -23,6 +23,7 @@ interface MobileSearchProps {
     inputRef: React.RefObject<HTMLInputElement | null>;
     onFilterToggle?: () => void;
     filtersState?: SearchFiltersState;
+    isFilterablePage: boolean;
     t: (key: string) => string;
 }
 
@@ -38,11 +39,21 @@ export const MobileSearch: React.FC<MobileSearchProps> = ({
     inputRef,
     onFilterToggle,
     filtersState = DEFAULT_FILTERS_STATE,
+    isFilterablePage,
     t,
 }) => {
     const isFilterOpen = filtersState.isOpen;
     const isFiltering = filtersState.isFiltering;
     const hasActiveFilters = filtersState.hasActive;
+
+    if (!isFilterablePage) {
+        return (
+            <div className="flex w-full flex-row items-center gap-1">
+                <Logo />
+            </div>
+        );
+    }
+
     return (
         <div className="flex w-full flex-row items-center gap-1">
             {isSearchMode ? (

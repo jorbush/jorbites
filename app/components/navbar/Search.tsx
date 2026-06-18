@@ -212,6 +212,7 @@ const Search: React.FC<SearchProps> = ({
             inputRef={inputRef}
             onFilterToggle={onFilterToggle}
             filtersState={filtersState}
+            isFilterablePage={isFilterablePage}
             t={t}
         />
     );
