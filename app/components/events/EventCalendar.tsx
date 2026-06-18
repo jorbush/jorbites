@@ -19,6 +19,7 @@ import Image from 'next/image';
 import Tooltip from '@/app/components/utils/Tooltip';
 import { Event } from '@/app/utils/markdownUtils';
 import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface EventCalendarProps {
     currentEvents: Event[];
@@ -30,6 +31,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
     upcomingEvents,
 }) => {
     const { t } = useTranslation();
+    const isMounted = useIsMounted();
     const [currentMonth, setCurrentMonth] = React.useState(new Date());
 
     const allEvents = [...currentEvents, ...upcomingEvents];
@@ -84,6 +86,8 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
         });
     };
 
+    const todayDate = isMounted ? new Date() : null;
+
     return (
         <div className="mb-10 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm md:p-6 dark:border-neutral-700 dark:bg-neutral-900">
             <div className="mb-6 flex items-center justify-between">
@@ -132,11 +136,14 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                         startOfMonth(day),
                         monthStart
                     );
-                    const isToday = isSameDay(day, new Date());
+                    const isToday = todayDate
+                        ? isSameDay(day, todayDate)
+                        : false;
 
                     return (
                         <div
                             key={format(day, 'yyyy-MM-dd')}
+                            suppressHydrationWarning
                             className={`relative min-h-[60px] rounded-lg border p-1 transition-all md:min-h-[100px] md:p-2 ${
                                 isCurrentMonth
                                     ? 'border-neutral-100 bg-white dark:border-neutral-700 dark:bg-neutral-900'
@@ -144,6 +151,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                             } ${isToday ? 'ring-green-450 ring-2' : ''}`}
                         >
                             <span
+                                suppressHydrationWarning
                                 className={`text-xs font-medium md:text-sm ${
                                     isToday
                                         ? 'text-green-600 dark:text-green-400'
