@@ -34,25 +34,25 @@ vi.mock('@/app/components/settings/PushNotificationManager', () => ({
 }));
 
 vi.mock('@/app/components/settings/ChangeUserImage', () => ({
-    default: React.forwardRef((_props: any, _ref: any) => (
+    default: ({ ref: _ref }: any) => (
         <div data-testid="change-user-image-selector">
             ChangeUserImageSelector
         </div>
-    )),
+    ),
 }));
 
 vi.mock('@/app/components/settings/ChangeUserName', () => ({
-    default: React.forwardRef((_props: any, _ref: any) => (
+    default: ({ ref: _ref }: any) => (
         <div data-testid="change-user-name-selector">
             ChangeUserNameSelector
         </div>
-    )),
+    ),
 }));
 
 vi.mock('@/app/components/settings/ChangePassword', () => ({
-    default: React.forwardRef((_props: any, _ref: any) => (
+    default: ({ ref: _ref }: any) => (
         <div data-testid="change-password-selector">ChangePassword</div>
-    )),
+    ),
 }));
 
 vi.mock('@/app/components/settings/DeleteAccount', () => ({
