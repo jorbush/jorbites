@@ -56,7 +56,7 @@ export function extractPublicId(cloudinaryUrl: string): string | null {
             while (pathIndex < segments.length - 1) {
                 const segment = segments[pathIndex];
                 // If segment contains transformation parameters or is a version
-                if (segment.includes('_') || /^v\d+$/.test(segment)) {
+                if (/_/.test(segment) || /^v\d+$/.test(segment)) {
                     pathIndex++;
                 } else {
                     break;
