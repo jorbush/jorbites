@@ -30,7 +30,6 @@ const ListClient: React.FC<ListClientProps> = ({
     const { push, refresh } = useRouter() || {};
     const { t, i18n } = useTranslation();
     const { share } = useShare();
-    const [isPrivate, setIsPrivate] = useState(list.isPrivate);
     const [isLoading, setIsLoading] = useState(false);
     const [deletingId, setDeletingId] = useState('');
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -44,11 +43,12 @@ const ListClient: React.FC<ListClientProps> = ({
         setIsLoading(true);
         try {
             await axios.patch(`/api/lists/${list.id}`, {
-                isPrivate: !isPrivate,
+                isPrivate: !list.isPrivate,
             });
-            setIsPrivate(!isPrivate);
             toast.success(
-                isPrivate ? t('list_is_now_public') : t('list_is_now_private')
+                list.isPrivate
+                    ? t('list_is_now_public')
+                    : t('list_is_now_private')
             );
             refresh();
         } catch (error) {
@@ -57,7 +57,7 @@ const ListClient: React.FC<ListClientProps> = ({
         } finally {
             setIsLoading(false);
         }
-    }, [isOwner, isPrivate, list.id, refresh, t]);
+    }, [isOwner, list.id, list.isPrivate, refresh, t]);
 
     const onDelete = useCallback(async () => {
         if (!isOwner) return;
@@ -104,7 +104,7 @@ const ListClient: React.FC<ListClientProps> = ({
                         </div>
                         {isOwner && (
                             <div className="flex shrink-0 flex-row items-center gap-4">
-                                {!isPrivate && (
+                                {!list.isPrivate && (
                                     <button
                                         type="button"
                                         onClick={() =>
@@ -128,12 +128,12 @@ const ListClient: React.FC<ListClientProps> = ({
                                     disabled={isLoading}
                                     className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
                                     title={
-                                        (isPrivate
+                                        (list.isPrivate
                                             ? t('private')
                                             : t('public')) || ''
                                     }
                                 >
-                                    {isPrivate ? (
+                                    {list.isPrivate ? (
                                         <GiPadlock
                                             size={20}
                                             className="text-neutral-700 dark:text-neutral-300"
