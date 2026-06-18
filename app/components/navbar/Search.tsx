@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
 import debounce from 'lodash/debounce';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import DesktopSearch from './DesktopSearch';
@@ -28,7 +28,7 @@ interface SearchProps {
     onSearchModeChange?: (isSearchMode: boolean) => void;
 }
 
-const Search: React.FC<SearchProps> = ({
+const SearchComponent: React.FC<SearchProps> = ({
     onSearchModeChange,
     onFilterToggle,
     isFilterOpen,
@@ -217,5 +217,11 @@ const Search: React.FC<SearchProps> = ({
         />
     );
 };
+
+const Search: React.FC<SearchProps> = (props) => (
+    <Suspense fallback={<SearchFallback />}>
+        <SearchComponent {...props} />
+    </Suspense>
+);
 
 export default Search;

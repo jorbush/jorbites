@@ -2,7 +2,7 @@
 
 import qs from 'query-string';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, Suspense } from 'react';
 import { IconType } from 'react-icons';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +12,7 @@ interface CategoryBoxProps {
     selected?: boolean;
 }
 
-const CategoryBox: React.FC<CategoryBoxProps> = ({
+const CategoryBoxComponent: React.FC<CategoryBoxProps> = ({
     icon: Icon,
     label,
     selected,
@@ -73,5 +73,11 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
         </button>
     );
 };
+
+const CategoryBox: React.FC<CategoryBoxProps> = (props) => (
+    <Suspense fallback={null}>
+        <CategoryBoxComponent {...props} />
+    </Suspense>
+);
 
 export default CategoryBox;

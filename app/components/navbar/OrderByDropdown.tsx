@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { IoReorderThree } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +12,7 @@ import {
 } from '@/app/utils/filter';
 import Dropdown from '@/app/components/utils/Dropdown';
 
-const OrderByDropdown: React.FC = () => {
+const OrderByDropdownComponent: React.FC = () => {
     const { t } = useTranslation();
     const { replace } = useRouter() || {};
     const searchParams = useSearchParams();
@@ -90,5 +91,11 @@ const OrderByDropdown: React.FC = () => {
         />
     );
 };
+
+const OrderByDropdown: React.FC = () => (
+    <Suspense fallback={null}>
+        <OrderByDropdownComponent />
+    </Suspense>
+);
 
 export default OrderByDropdown;
