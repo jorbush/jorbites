@@ -8,6 +8,8 @@ import {
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import Search from '@/app/components/navbar/Search';
 import React from 'react';
+import useMediaQuery from '@/app/hooks/useMediaQuery';
+import { usePathname } from 'next/navigation';
 
 // Mock the Logo component
 vi.mock('@/app/components/navbar/Logo', () => ({
@@ -101,7 +103,7 @@ vi.mock('next/navigation', () => ({
         replace: mockReplace,
     }),
     useSearchParams: () => mockSearchParams,
-    usePathname: () => '/',
+    usePathname: vi.fn(() => '/'),
 }));
 
 describe('<Search />', () => {
@@ -337,6 +339,24 @@ describe('<Search />', () => {
             // In search mode, the search icon is not visible (back button is shown instead)
             expect(screen.queryByTestId('search-icon')).toBeNull();
             expect(screen.getByTestId('chevron-left-icon')).toBeDefined();
+        });
+    });
+
+    describe('Non-filterable page behavior', () => {
+        beforeEach(() => {
+            vi.mocked(usePathname).mockReturnValue('/recipes/123');
+        });
+
+        it('does not render search input or toggle button on desktop', () => {
+            render(<Search onSearchModeChange={mockOnSearchModeChange} />);
+            expect(screen.queryByTestId('search-icon')).toBeNull();
+        });
+
+        it('does not render search input or toggle button on mobile', () => {
+            vi.mocked(useMediaQuery).mockReturnValue(true);
+            render(<Search onSearchModeChange={mockOnSearchModeChange} />);
+            expect(screen.queryByTestId('search-icon')).toBeNull();
+            expect(screen.queryByRole('button')).toBeNull();
         });
     });
 });
