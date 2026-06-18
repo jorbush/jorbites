@@ -2,19 +2,15 @@
 
 import { useTranslation } from 'react-i18next';
 import { FieldValues, FieldErrors, UseFormRegister } from 'react-hook-form';
-import { AiFillDelete } from 'react-icons/ai';
 import { toast } from 'react-hot-toast';
 import { useState } from 'react';
 import Heading from '@/app/components/navigation/Heading';
-import Input from '@/app/components/inputs/Input';
 import Textarea from '@/app/components/inputs/Textarea';
 import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
 import Button from '@/app/components/buttons/Button';
+import RecipeIngredientsInputs from './RecipeIngredientsInputs';
 import { parseTextToList } from '@/app/utils/textParser';
-import {
-    RECIPE_INGREDIENT_MAX_LENGTH,
-    RECIPE_MAX_INGREDIENTS,
-} from '@/app/utils/constants';
+import { RECIPE_MAX_INGREDIENTS } from '@/app/utils/constants';
 
 interface IngredientsStepProps {
     numIngredients: number;
@@ -90,44 +86,6 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
         setInputMode(nextMode);
     };
 
-    const renderIngredientInputs = () => {
-        const ingredientKeys = Array.from(
-            { length: numIngredients },
-            (_, idx) => `ingredient-input-${idx}`
-        );
-        return ingredientKeys.map((ingredientKey, i) => (
-            <div
-                key={ingredientKey}
-                className="relative flex w-full items-center gap-3 px-2"
-            >
-                <div className="grow">
-                    <Input
-                        id={`ingredient-${i}`}
-                        label=""
-                        register={register}
-                        errors={errors}
-                        required={numIngredients === 1}
-                        maxLength={RECIPE_INGREDIENT_MAX_LENGTH}
-                        dataCy={`recipe-ingredient-${i}`}
-                    />
-                </div>
-                {numIngredients > 1 && i === numIngredients - 1 ? (
-                    <div className="shrink-0">
-                        <AiFillDelete
-                            data-testid="remove-ingredient-button"
-                            color="#F43F5F"
-                            onClick={() => onRemoveIngredient(i)}
-                            size={24}
-                            className="cursor-pointer"
-                        />
-                    </div>
-                ) : (
-                    <div className="w-6 shrink-0" />
-                )}
-            </div>
-        ));
-    };
-
     return (
         <div className="flex flex-col gap-8">
             <div className="relative flex items-center justify-between pl-2">
@@ -145,7 +103,12 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
             {inputMode === 'list' ? (
                 <>
                     <div className="flex max-h-[50vh] flex-col gap-3 overflow-y-auto">
-                        {renderIngredientInputs()}
+                        <RecipeIngredientsInputs
+                            numIngredients={numIngredients}
+                            register={register}
+                            errors={errors}
+                            onRemoveIngredient={onRemoveIngredient}
+                        />
                     </div>
                     <Button
                         outline={true}

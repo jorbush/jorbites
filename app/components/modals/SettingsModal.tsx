@@ -2,26 +2,16 @@
 
 import useSettingsModal from '@/app/hooks/useSettingsModal';
 import Modal from '@/app/components/modals/Modal';
-import ThemeSelector from '@/app/components/settings/ThemeSelector';
-import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import { useTranslation } from 'react-i18next';
-import EmailNotificationsSelector from '@/app/components/settings/EmailNotificationsSelector';
-import PushNotificationManager from '@/app/components/settings/PushNotificationManager';
 import { SafeUser } from '@/app/types';
-import ChangeUserImageSelector, {
-    ChangeUserImageRef,
-} from '@/app/components/settings/ChangeUserImage';
-import ChangeUserNameSelector, {
-    ChangeUserNameRef,
-} from '@/app/components/settings/ChangeUserName';
-import ChangePassword, {
-    ChangePasswordRef,
-} from '@/app/components/settings/ChangePassword';
-import DeleteAccount from '@/app/components/settings/DeleteAccount';
+import { ChangeUserImageRef } from '@/app/components/settings/ChangeUserImage';
+import { ChangeUserNameRef } from '@/app/components/settings/ChangeUserName';
+import { ChangePasswordRef } from '@/app/components/settings/ChangePassword';
 import { useCallback, useRef, useState } from 'react';
 import { FcSettings } from 'react-icons/fc';
 import Tabs, { Tab } from '@/app/components/utils/Tabs';
 import { FiSettings, FiUser } from 'react-icons/fi';
+import SettingsTabContent from './SettingsTabContent';
 
 interface SettingsProps {
     currentUser?: SafeUser | null;
@@ -52,43 +42,6 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
             : []),
     ];
 
-    const renderTabContent = () => {
-        switch (activeTab) {
-            case 'preferences':
-                return (
-                    <div
-                        className="flex flex-col gap-4 pb-32"
-                        data-cy="preferences-content"
-                    >
-                        <ThemeSelector />
-                        <LanguageSelector currentUser={currentUser} />
-                    </div>
-                );
-            case 'account':
-                return currentUser ? (
-                    <div className="flex flex-col gap-4">
-                        <EmailNotificationsSelector currentUser={currentUser} />
-                        <PushNotificationManager />
-                        <ChangeUserImageSelector
-                            ref={userImageRef}
-                            currentUser={currentUser}
-                        />
-                        <ChangeUserNameSelector
-                            ref={userNameRef}
-                            currentUser={currentUser}
-                        />
-                        <ChangePassword
-                            ref={passwordRef}
-                            currentUser={currentUser}
-                        />
-                        <DeleteAccount currentUser={currentUser} />
-                    </div>
-                ) : null;
-            default:
-                return null;
-        }
-    };
-
     const bodyContent = (
         <div
             className="flex flex-col gap-6"
@@ -101,7 +54,15 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
                 data-testid="settings-tabs"
                 data-cy="settings-tabs"
             />
-            <div data-cy="settings-tab-content">{renderTabContent()}</div>
+            <div data-cy="settings-tab-content">
+                <SettingsTabContent
+                    activeTab={activeTab}
+                    currentUser={currentUser}
+                    userImageRef={userImageRef}
+                    userNameRef={userNameRef}
+                    passwordRef={passwordRef}
+                />
+            </div>
         </div>
     );
 

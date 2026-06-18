@@ -2,19 +2,15 @@
 
 import { useTranslation } from 'react-i18next';
 import { FieldValues, FieldErrors, UseFormRegister } from 'react-hook-form';
-import { AiFillDelete } from 'react-icons/ai';
 import { toast } from 'react-hot-toast';
 import { useState } from 'react';
 import Heading from '@/app/components/navigation/Heading';
-import Input from '@/app/components/inputs/Input';
 import Textarea from '@/app/components/inputs/Textarea';
 import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
 import Button from '@/app/components/buttons/Button';
+import RecipeStepsInputs from './RecipeStepsInputs';
 import { parseTextToList } from '@/app/utils/textParser';
-import {
-    RECIPE_STEP_MAX_LENGTH,
-    RECIPE_MAX_STEPS,
-} from '@/app/utils/constants';
+import { RECIPE_MAX_STEPS } from '@/app/utils/constants';
 
 interface RecipeStepsStepProps {
     numSteps: number;
@@ -90,46 +86,6 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
         setInputMode(nextMode);
     };
 
-    const renderStepsInputs = () => {
-        const stepKeys = Array.from(
-            { length: numSteps },
-            (_, idx) => `step-input-${idx}`
-        );
-        return stepKeys.map((stepKey, i) => (
-            <div
-                key={stepKey}
-                className="relative flex w-full items-center gap-3 px-2"
-            >
-                <div className="shrink-0 text-base">{`${i + 1}.`}</div>
-
-                <div className="grow">
-                    <Input
-                        id={`step-${i}`}
-                        label=""
-                        register={register}
-                        errors={errors}
-                        required={numSteps === 1}
-                        maxLength={RECIPE_STEP_MAX_LENGTH}
-                        dataCy={`recipe-step-${i}`}
-                    />
-                </div>
-                {numSteps > 1 && i === numSteps - 1 ? (
-                    <div className="shrink-0">
-                        <AiFillDelete
-                            data-testid="remove-step-button"
-                            color="#F43F5F"
-                            onClick={() => onRemoveStep(i)}
-                            size={24}
-                            className="cursor-pointer"
-                        />
-                    </div>
-                ) : (
-                    <div className="w-6 shrink-0" />
-                )}
-            </div>
-        ));
-    };
-
     return (
         <div className="flex flex-col gap-8">
             <div className="relative flex items-center justify-between pl-2">
@@ -147,7 +103,12 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
             {inputMode === 'list' ? (
                 <>
                     <div className="flex max-h-[50vh] flex-col gap-3 overflow-y-auto">
-                        {renderStepsInputs()}
+                        <RecipeStepsInputs
+                            numSteps={numSteps}
+                            register={register}
+                            errors={errors}
+                            onRemoveStep={onRemoveStep}
+                        />
                     </div>
                     <Button
                         outline={true}
