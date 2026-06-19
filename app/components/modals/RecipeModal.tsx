@@ -1,5 +1,8 @@
 'use client';
 
+import { useRef } from 'react';
+import useSWR from 'swr';
+import { axiosFetcher } from '@/app/utils/fetcher';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +26,8 @@ interface RecipeModalProps {
 const RecipeModalContent: React.FC<{
     currentUser?: SafeUser | null;
     recipeModal: any;
-}> = ({ currentUser, recipeModal }) => {
+    draftData?: any;
+}> = ({ currentUser, recipeModal, draftData }) => {
     const { t } = useTranslation();
     const {
         step,
@@ -62,11 +66,10 @@ const RecipeModalContent: React.FC<{
         setSteps,
         actionLabel,
         secondaryActionLabel,
-        isLoadingDraft,
         onBack,
         onSubmit,
         setCustomValue,
-    } = useRecipeFormState({ recipeModal, currentUser });
+    } = useRecipeFormState({ recipeModal, currentUser, draftData });
 
     let bodyContent = (
         <CategoryStep
@@ -77,101 +80,92 @@ const RecipeModalContent: React.FC<{
         />
     );
 
-    // Show loader while loading draft or edit data
-    if (isLoadingDraft) {
-        bodyContent = <Loader height="400px" />;
-    } else {
-        if (step === STEPS.INGREDIENTS) {
-            bodyContent = (
-                <IngredientsStep
-                    numIngredients={numIngredients}
-                    register={register}
-                    errors={errors}
-                    onAddIngredient={addIngredientInput}
-                    onRemoveIngredient={removeIngredientInput}
-                    onSetIngredients={setIngredients}
-                    getValues={getValues}
-                    setValue={setValue}
-                    inputMode={ingredientsInputMode}
-                    setInputMode={setIngredientsInputMode}
-                />
-            );
-        }
+    if (step === STEPS.INGREDIENTS) {
+        bodyContent = (
+            <IngredientsStep
+                numIngredients={numIngredients}
+                register={register}
+                errors={errors}
+                onAddIngredient={addIngredientInput}
+                onRemoveIngredient={removeIngredientInput}
+                onSetIngredients={setIngredients}
+                getValues={getValues}
+                setValue={setValue}
+                inputMode={ingredientsInputMode}
+                setInputMode={setIngredientsInputMode}
+            />
+        );
+    }
 
-        if (step === STEPS.STEPS) {
-            bodyContent = (
-                <RecipeStepsStep
-                    numSteps={numSteps}
-                    register={register}
-                    errors={errors}
-                    onAddStep={addStepInput}
-                    onRemoveStep={removeStepInput}
-                    onSetSteps={setSteps}
-                    getValues={getValues}
-                    setValue={setValue}
-                    inputMode={stepsInputMode}
-                    setInputMode={setStepsInputMode}
-                />
-            );
-        }
+    if (step === STEPS.STEPS) {
+        bodyContent = (
+            <RecipeStepsStep
+                numSteps={numSteps}
+                register={register}
+                errors={errors}
+                onAddStep={addStepInput}
+                onRemoveStep={removeStepInput}
+                onSetSteps={setSteps}
+                getValues={getValues}
+                setValue={setValue}
+                inputMode={stepsInputMode}
+                setInputMode={setStepsInputMode}
+            />
+        );
+    }
 
-        if (step === STEPS.DESCRIPTION) {
-            bodyContent = (
-                <DescriptionStep
-                    isLoading={isLoading}
-                    register={register}
-                    errors={errors}
-                    minutes={minutes}
-                    onMinutesChange={(value) =>
-                        setCustomValue('minutes', value)
-                    }
-                />
-            );
-        }
+    if (step === STEPS.DESCRIPTION) {
+        bodyContent = (
+            <DescriptionStep
+                isLoading={isLoading}
+                register={register}
+                errors={errors}
+                minutes={minutes}
+                onMinutesChange={(value) => setCustomValue('minutes', value)}
+            />
+        );
+    }
 
-        if (step == STEPS.METHODS) {
-            bodyContent = (
-                <MethodsStep
-                    selectedMethod={method}
-                    onMethodSelect={(selectedMethod) =>
-                        setCustomValue('method', selectedMethod)
-                    }
-                />
-            );
-        }
+    if (step == STEPS.METHODS) {
+        bodyContent = (
+            <MethodsStep
+                selectedMethod={method}
+                onMethodSelect={(selectedMethod) =>
+                    setCustomValue('method', selectedMethod)
+                }
+            />
+        );
+    }
 
-        if (step === STEPS.RELATED_CONTENT) {
-            bodyContent = (
-                <RelatedContentStep
-                    isLoading={isLoading}
-                    selectedCoCooks={selectedCoCooks}
-                    selectedLinkedRecipes={selectedLinkedRecipes}
-                    selectedQuest={selectedQuest}
-                    onAddCoCook={addCoCook}
-                    onRemoveCoCook={removeCoCook}
-                    onAddLinkedRecipe={addLinkedRecipe}
-                    onRemoveLinkedRecipe={removeLinkedRecipe}
-                    onSelectQuest={selectQuest}
-                    onRemoveQuest={removeQuest}
-                    register={register}
-                    errors={errors}
-                />
-            );
-        }
+    if (step === STEPS.RELATED_CONTENT) {
+        bodyContent = (
+            <RelatedContentStep
+                isLoading={isLoading}
+                selectedCoCooks={selectedCoCooks}
+                selectedLinkedRecipes={selectedLinkedRecipes}
+                selectedQuest={selectedQuest}
+                onAddCoCook={addCoCook}
+                onRemoveCoCook={removeCoCook}
+                onAddLinkedRecipe={addLinkedRecipe}
+                onRemoveLinkedRecipe={removeLinkedRecipe}
+                onSelectQuest={selectQuest}
+                onRemoveQuest={removeQuest}
+                register={register}
+                errors={errors}
+            />
+        );
+    }
 
-        if (step === STEPS.IMAGES) {
-            bodyContent = (
-                <ImagesStep
-                    imageSrc={imageSrc}
-                    imageSrc1={watch('imageSrc1')}
-                    imageSrc2={watch('imageSrc2')}
-                    imageSrc3={watch('imageSrc3')}
-                    onImageChange={(field, value) =>
-                        setCustomValue(field, value)
-                    }
-                />
-            );
-        }
+    if (step === STEPS.IMAGES) {
+        bodyContent = (
+            <ImagesStep
+                imageSrc={imageSrc}
+                imageSrc1={watch('imageSrc1')}
+                imageSrc2={watch('imageSrc2')}
+                imageSrc3={watch('imageSrc3')}
+                onImageChange={(field, value) => setCustomValue(field, value)}
+            />
+        );
     }
 
     return (
@@ -204,15 +198,49 @@ const RecipeModalContent: React.FC<{
 
 const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const recipeModal = useRecipeModal();
+    const { t } = useTranslation();
+    const currentUserRef = useRef<SafeUser | null>(null);
+    currentUserRef.current = currentUser || null;
+
+    const { data: draftData, isLoading: isLoadingDraft } = useSWR(
+        recipeModal.isOpen && !recipeModal.isEditMode && currentUserRef.current
+            ? `/api/draft`
+            : null,
+        axiosFetcher,
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+            shouldRetryOnError: false,
+        }
+    );
 
     if (!recipeModal.isOpen) {
         return null;
+    }
+
+    if (isLoadingDraft) {
+        return (
+            <Modal
+                isOpen={recipeModal.isOpen}
+                onClose={recipeModal.onClose}
+                onSubmit={() => {}}
+                actionLabel=""
+                title={
+                    recipeModal.isEditMode
+                        ? (t('edit_recipe') ?? 'Edit recipe')
+                        : (t('post_recipe') ?? 'Post a recipe')
+                }
+                body={<Loader height="400px" />}
+                isLoading={true}
+            />
+        );
     }
 
     return (
         <RecipeModalContent
             currentUser={currentUser}
             recipeModal={recipeModal}
+            draftData={draftData}
         />
     );
 };
