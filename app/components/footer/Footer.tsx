@@ -10,38 +10,38 @@ import { RiGitRepositoryLine } from 'react-icons/ri';
 import { CONTACT_EMAIL } from '@/app/utils/constants';
 import FooterMenu from './FooterMenu';
 
+const SOCIAL_LINKS = [
+    {
+        icon: FaEnvelope,
+        href: `mailto:${CONTACT_EMAIL}`,
+        label: 'Email',
+    },
+    {
+        icon: RiGitRepositoryLine,
+        href: 'https://github.com/jorbush/jorbites',
+        label: 'Repository',
+    },
+    {
+        icon: FaGithub,
+        href: 'https://github.com/jorbush',
+        label: 'GitHub',
+    },
+    {
+        icon: FaInstagram,
+        href: 'https://instagram.com/jorbites',
+        label: 'Instagram',
+    },
+    {
+        icon: FaTwitter,
+        href: 'https://x.com/jorbitesapp',
+        label: 'Twitter',
+    },
+];
+
 const Footer = () => {
     useTheme();
     const { t } = useTranslation();
     const currentYear = new Date().getFullYear();
-
-    const socialLinks = [
-        {
-            icon: FaEnvelope,
-            href: `mailto:${CONTACT_EMAIL}`,
-            label: 'Email',
-        },
-        {
-            icon: RiGitRepositoryLine,
-            href: 'https://github.com/jorbush/jorbites',
-            label: 'Repository',
-        },
-        {
-            icon: FaGithub,
-            href: 'https://github.com/jorbush',
-            label: 'GitHub',
-        },
-        {
-            icon: FaInstagram,
-            href: 'https://instagram.com/jorbites',
-            label: 'Instagram',
-        },
-        {
-            icon: FaTwitter,
-            href: 'https://x.com/jorbitesapp',
-            label: 'Twitter',
-        },
-    ];
 
     return (
         <footer
@@ -60,7 +60,7 @@ const Footer = () => {
                         {`${t('version')} ${packageJson.version}`}
                     </a>
                     <div className="flex gap-6">
-                        {socialLinks.map((link) => (
+                        {SOCIAL_LINKS.map((link) => (
                             <a
                                 key={link.label}
                                 href={link.href}
