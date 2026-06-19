@@ -1,7 +1,26 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { formatText } from '@/app/utils/textFormatting';
+
+vi.mock('next/link', () => ({
+    default: ({
+        href,
+        className,
+        children,
+    }: {
+        href: string;
+        className?: string;
+        children: React.ReactNode;
+    }) => (
+        <a
+            href={href}
+            className={className}
+        >
+            {children}
+        </a>
+    ),
+}));
 
 describe('formatText', () => {
     it('formats @username[userId] mentions as clickable links', () => {
