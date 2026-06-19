@@ -30,8 +30,9 @@ const WhitelistUsersStep: React.FC<WhitelistUsersStepProps> = ({
         recipes: any[];
     }>({ users: [], recipes: [] });
 
-    const debouncedSearch = useRef(
-        debounce(
+    const debouncedSearchRef = useRef<any>(null);
+    if (debouncedSearchRef.current === null) {
+        debouncedSearchRef.current = debounce(
             async (
                 query: string,
                 tFunction: Function,
@@ -53,8 +54,15 @@ const WhitelistUsersStep: React.FC<WhitelistUsersStepProps> = ({
                 }
             },
             300
-        )
-    ).current;
+        );
+    }
+    const debouncedSearch = debouncedSearchRef.current;
+
+    useEffect(() => {
+        return () => {
+            debouncedSearchRef.current?.cancel();
+        };
+    }, []);
 
     const handleSearch = useCallback(
         (query: string) => {

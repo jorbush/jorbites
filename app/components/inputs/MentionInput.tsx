@@ -170,8 +170,9 @@ const MentionInput: React.FC<MentionInputProps> = ({
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const debouncedSearch = useRef(
-        debounce(async (query: string) => {
+    const debouncedSearchRef = useRef<any>(null);
+    if (debouncedSearchRef.current === null) {
+        debouncedSearchRef.current = debounce(async (query: string) => {
             if (query.length < 1) {
                 setUsers([]);
                 return;
@@ -186,8 +187,15 @@ const MentionInput: React.FC<MentionInputProps> = ({
                 console.error('Search failed:', error);
                 setUsers([]);
             }
-        }, 300)
-    ).current;
+        }, 300);
+    }
+    const debouncedSearch = debouncedSearchRef.current;
+
+    useEffect(() => {
+        return () => {
+            debouncedSearchRef.current?.cancel();
+        };
+    }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newValue = e.target.value;

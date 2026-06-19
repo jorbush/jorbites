@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { FiSearch } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
@@ -23,8 +23,9 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
     const [results, setResults] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const debouncedSearch = useRef(
-        debounce(async (searchQuery: string) => {
+    const debouncedSearchRef = useRef<any>(null);
+    if (debouncedSearchRef.current === null) {
+        debouncedSearchRef.current = debounce(async (searchQuery: string) => {
             if (searchQuery.trim().length < 2) {
                 setResults([]);
                 return;
@@ -41,8 +42,15 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
             } finally {
                 setIsLoading(false);
             }
-        }, 300)
-    ).current;
+        }, 300);
+    }
+    const debouncedSearch = debouncedSearchRef.current;
+
+    useEffect(() => {
+        return () => {
+            debouncedSearchRef.current?.cancel();
+        };
+    }, []);
 
     // Reset state on close
     const handleClose = () => {
