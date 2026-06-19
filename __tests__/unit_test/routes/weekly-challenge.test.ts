@@ -56,7 +56,14 @@ describe('Weekly Challenge API', () => {
             const data = await response.json();
 
             expect(response.status).toBe(200);
-            expect(data).toEqual(JSON.parse(JSON.stringify(mockChallenge)));
+            const expected = structuredClone(mockChallenge);
+            expect(data).toEqual({
+                ...expected,
+                startDate: expected.startDate.toISOString(),
+                endDate: expected.endDate.toISOString(),
+                createdAt: expected.createdAt.toISOString(),
+                updatedAt: expected.updatedAt.toISOString(),
+            });
             expect(getCurrentChallenge).toHaveBeenCalledTimes(1);
             expect(logger.info).toHaveBeenCalledWith(
                 'api/weekly-challenge GET - start'
@@ -133,7 +140,14 @@ describe('Weekly Challenge API', () => {
             const data = await response.json();
 
             expect(response.status).toBe(200);
-            expect(data).toEqual(JSON.parse(JSON.stringify(mockChallenge)));
+            const expected = structuredClone(mockChallenge);
+            expect(data).toEqual({
+                ...expected,
+                startDate: expected.startDate.toISOString(),
+                endDate: expected.endDate.toISOString(),
+                createdAt: expected.createdAt.toISOString(),
+                updatedAt: expected.updatedAt.toISOString(),
+            });
             expect(rotateWeeklyChallenge).toHaveBeenCalledTimes(1);
             expect(logger.info).toHaveBeenCalledWith(
                 'api/weekly-challenge POST - success',
