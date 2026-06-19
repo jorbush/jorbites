@@ -56,4 +56,35 @@ describe('useRecipeFormState hook', () => {
         });
         expect(result.current.step).toBe(0); // Cannot go below 0
     });
+
+    it('initializes from draftData correctly', () => {
+        const mockDraftData = {
+            currentStep: 2,
+            ingredients: ['flour', 'water'],
+            steps: ['mix', 'bake'],
+            categories: ['Bread'],
+            title: 'Sourdough',
+            description: 'Yummy bread',
+            coCooks: [{ id: 'user-1', name: 'John' }],
+            linkedRecipes: [{ id: 'recipe-2', title: 'Butter' }],
+        };
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: null,
+                draftData: mockDraftData,
+            })
+        );
+
+        expect(result.current.step).toBe(2);
+        expect(result.current.numIngredients).toBe(2);
+        expect(result.current.numSteps).toBe(2);
+        expect(result.current.selectedCoCooks).toEqual([
+            { id: 'user-1', name: 'John' },
+        ]);
+        expect(result.current.selectedLinkedRecipes).toEqual([
+            { id: 'recipe-2', title: 'Butter' },
+        ]);
+    });
 });
