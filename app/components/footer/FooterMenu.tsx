@@ -16,40 +16,40 @@ interface FooterMenuItem {
     icon: React.ComponentType<any>;
 }
 
+const MENU_ITEMS: FooterMenuItem[] = [
+    {
+        href: '/top-jorbiters',
+        labelKey: 'top_jorbiters',
+        icon: FcPositiveDynamic,
+    },
+    {
+        href: '/chefs',
+        labelKey: 'chefs',
+        icon: FcManager,
+    },
+    {
+        href: '/workshops',
+        labelKey: 'workshops',
+        icon: FcConferenceCall,
+    },
+    {
+        href: '/blog',
+        labelKey: 'blog',
+        icon: FcNews,
+    },
+    {
+        href: '/about',
+        labelKey: 'about',
+        icon: FcAbout,
+    },
+];
+
 const FooterMenu = () => {
     const { t } = useTranslation();
 
-    const menuItems: FooterMenuItem[] = [
-        {
-            href: '/top-jorbiters',
-            labelKey: 'top_jorbiters',
-            icon: FcPositiveDynamic,
-        },
-        {
-            href: '/chefs',
-            labelKey: 'chefs',
-            icon: FcManager,
-        },
-        {
-            href: '/workshops',
-            labelKey: 'workshops',
-            icon: FcConferenceCall,
-        },
-        {
-            href: '/blog',
-            labelKey: 'blog',
-            icon: FcNews,
-        },
-        {
-            href: '/about',
-            labelKey: 'about',
-            icon: FcAbout,
-        },
-    ];
-
     return (
         <div className="flex flex-wrap justify-center gap-4">
-            {menuItems.map((item) => (
+            {MENU_ITEMS.map((item) => (
                 <Link
                     key={item.href}
                     href={item.href}
