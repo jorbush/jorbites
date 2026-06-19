@@ -81,8 +81,9 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
         },
     ];
 
-    const debouncedSearch = useRef(
-        debounce(
+    const debouncedSearchRef = useRef<ReturnType<typeof debounce> | null>(null);
+    if (!debouncedSearchRef.current) {
+        debouncedSearchRef.current = debounce(
             async (
                 query: string,
                 type: string,
@@ -116,8 +117,9 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                 }
             },
             300
-        )
-    ).current;
+        );
+    }
+    const debouncedSearch = debouncedSearchRef.current!;
 
     const handleSearch = useCallback(
         (query: string) => {
