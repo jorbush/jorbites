@@ -65,7 +65,7 @@ const TopRecipeResult: React.FC<TopRecipeResultProps> = ({
                     <span className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800 ring-1 ring-amber-600/20 ring-inset dark:bg-amber-950/40 dark:text-amber-400 dark:ring-amber-500/20">
                         🏆 {t(`recipe_of_the_${category}`)}
                     </span>
-                    <h3 className="mt-2.5 text-2xl font-bold tracking-tight text-neutral-800 dark:text-neutral-100">
+                    <h3 className="mt-2.5 text-2xl font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
                         {t(`recipe_of_the_${category}_winner`)}
                     </h3>
                     <p className="mb-4 text-sm text-neutral-500 dark:text-neutral-400">
