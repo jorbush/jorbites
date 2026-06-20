@@ -40,13 +40,13 @@ const TopRecipeResult: React.FC<TopRecipeResultProps> = ({
     return (
         <div className="relative mb-10 overflow-hidden rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-50/30 via-white to-orange-50/20 p-6 shadow-lg transition-all duration-300 hover:shadow-xl dark:border-amber-500/20 dark:from-neutral-900/40 dark:via-neutral-950 dark:to-orange-950/5">
             {/* Background glowing decorations */}
-            <div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-amber-500/10 blur-3xl dark:bg-amber-500/5" />
-            <div className="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-orange-500/10 blur-3xl dark:bg-orange-500/5" />
+            <div className="absolute -top-16 -right-16 size-40 rounded-full bg-amber-500/10 blur-3xl dark:bg-amber-500/5" />
+            <div className="absolute -bottom-16 -left-16 size-40 rounded-full bg-orange-500/10 blur-3xl dark:bg-orange-500/5" />
 
             <div className="relative flex flex-col gap-6 md:flex-row md:items-center">
                 {/* Winner Badge Image */}
                 <div className="flex flex-shrink-0 justify-center">
-                    <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-amber-100 p-2 shadow-[0_0_20px_rgba(245,158,11,0.2)] dark:bg-amber-950/30 dark:shadow-[0_0_20px_rgba(245,158,11,0.1)]">
+                    <div className="relative flex size-28 items-center justify-center rounded-full bg-amber-100 p-2 shadow-[0_0_20px_rgba(245,158,11,0.2)] dark:bg-amber-950/30 dark:shadow-[0_0_20px_rgba(245,158,11,0.1)]">
                         <Image
                             src={badgePath}
                             alt={t(badgeSlug) || badgeSlug}
@@ -76,7 +76,7 @@ const TopRecipeResult: React.FC<TopRecipeResultProps> = ({
                     <div className="mx-auto flex max-w-sm items-center gap-4 rounded-xl border border-neutral-100 bg-white/60 p-3 backdrop-blur-sm md:mx-0 dark:border-neutral-800 dark:bg-neutral-900/40">
                         <Link
                             href={`/recipe/${winner.id}`}
-                            className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100 transition-opacity hover:opacity-90 dark:bg-neutral-800"
+                            className="relative size-16 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100 transition-opacity hover:opacity-90 dark:bg-neutral-800"
                         >
                             <Image
                                 src={winner.imageSrc || '/avocado.webp'}
