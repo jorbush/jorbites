@@ -264,32 +264,32 @@ export async function closeVoteSession(
         return session;
     }
 
-    // Count votes for each candidate
-    const voteCounts = await prisma.recipeVote.groupBy({
-        by: ['recipeId'],
-        where: {
-            category,
-            periodKey,
-            recipeId: { in: session.candidates },
-        },
-        _count: {
-            recipeId: true,
-        },
-    });
-
-    // Fetch candidate recipes
-    const recipes = await prisma.recipe.findMany({
-        where: {
-            id: { in: session.candidates },
-        },
-        include: {
-            user: {
-                select: {
-                    name: true,
+    // Fetch vote counts and candidate recipes in parallel
+    const [voteCounts, recipes] = await Promise.all([
+        prisma.recipeVote.groupBy({
+            by: ['recipeId'],
+            where: {
+                category,
+                periodKey,
+                recipeId: { in: session.candidates },
+            },
+            _count: {
+                recipeId: true,
+            },
+        }),
+        prisma.recipe.findMany({
+            where: {
+                id: { in: session.candidates },
+            },
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                    },
                 },
             },
-        },
-    });
+        }),
+    ]);
 
     // Create a map for quick vote count lookup
     const votesMap: Record<string, number> = {};
@@ -427,41 +427,11 @@ export async function getActiveSession(category: string) {
 export async function getSessionDetails(session: RecipeVoteSession | null) {
     if (!session) return null;
 
-    const candidates = await prisma.recipe.findMany({
-        where: {
-            id: { in: session.candidates },
-        },
-        include: {
-            user: {
-                select: {
-                    name: true,
-                    image: true,
-                },
+    const [candidates, voteCounts, winner] = await Promise.all([
+        prisma.recipe.findMany({
+            where: {
+                id: { in: session.candidates },
             },
-        },
-    });
-
-    const voteCounts = await prisma.recipeVote.groupBy({
-        by: ['recipeId'],
-        where: {
-            category: session.category,
-            periodKey: session.periodKey,
-            recipeId: { in: session.candidates },
-        },
-        _count: {
-            recipeId: true,
-        },
-    });
-
-    const votesMap: Record<string, number> = {};
-    for (const vc of voteCounts) {
-        votesMap[vc.recipeId] = vc._count.recipeId;
-    }
-
-    let winner = null;
-    if (session.winnerId) {
-        winner = await prisma.recipe.findUnique({
-            where: { id: session.winnerId },
             include: {
                 user: {
                     select: {
@@ -470,7 +440,36 @@ export async function getSessionDetails(session: RecipeVoteSession | null) {
                     },
                 },
             },
-        });
+        }),
+        prisma.recipeVote.groupBy({
+            by: ['recipeId'],
+            where: {
+                category: session.category,
+                periodKey: session.periodKey,
+                recipeId: { in: session.candidates },
+            },
+            _count: {
+                recipeId: true,
+            },
+        }),
+        session.winnerId
+            ? prisma.recipe.findUnique({
+                  where: { id: session.winnerId },
+                  include: {
+                      user: {
+                          select: {
+                              name: true,
+                              image: true,
+                          },
+                      },
+                  },
+              })
+            : Promise.resolve(null),
+    ]);
+
+    const votesMap: Record<string, number> = {};
+    for (const vc of voteCounts) {
+        votesMap[vc.recipeId] = vc._count.recipeId;
     }
 
     return {
