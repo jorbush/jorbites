@@ -7,7 +7,7 @@ description: Insignias de Mejores Recetas
 
 ### 🔥🏅 ¡Insignias de Mejores Recetas en Jorbites! 🏅🔥
 
-En la cuenta oficial de Instagram de [Jorbites](https://www.instagram.com/jorbites/) se votará la mejor receta de la semana, del mes y del año. Las cuatro recetas con más me gusta participarán en la votación.
+¡En Jorbites se votará la mejor receta de la semana, del mes y del año directamente desde la página de Eventos! Participarán en la votación hasta las 10 recetas con más me gusta (con un mínimo de 4 recetas requeridas).
 
 - **Receta de la Semana**
 

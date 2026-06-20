@@ -1,0 +1,71 @@
+name: Close Top Recipe Voting Sessions
+
+on:
+  schedule:
+    - cron: '30 4 * * 2'      # Tuesday 04:30 UTC -> close week vote
+    - cron: '30 4 2 * *'      # 2nd of month 04:30 UTC -> close month vote
+    - cron: '30 4 2 1 *'      # Jan 2nd 04:30 UTC -> close year vote
+  workflow_dispatch:
+    inputs:
+      category:
+        description: 'Category to close (leave empty for automatic detection)'
+        required: false
+        default: ''
+        type: choice
+        options:
+          - ''
+          - 'week'
+          - 'month'
+          - 'year'
+
+jobs:
+  close-vote-sessions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close sessions
+        env:
+          JORBITES_URL: https://jorbites.com
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "CRON_SECRET is missing. Skipping voting session closing."
+            exit 1
+          fi
+
+          CATEGORY="${{ github.event.inputs.category }}"
+          if [ -n "$CATEGORY" ]; then
+            echo "Manually closing vote session for category: $CATEGORY"
+            curl -s -f -X POST "$JORBITES_URL/api/top-recipe-vote" \
+              -H "Authorization: Bearer $CRON_SECRET" \
+              -H "Content-Type: application/json" \
+              -d "{\"action\": \"close\", \"category\": \"$CATEGORY\"}"
+          else
+            echo "Automatically detecting categories to close based on date..."
+            
+            # Check if Tuesday (1 = Monday, 2 = Tuesday, ..., 7 = Sunday)
+            if [ "$(date +%u)" -eq 2 ]; then
+              echo "Today is Tuesday. Closing week category..."
+              curl -s -f -X POST "$JORBITES_URL/api/top-recipe-vote" \
+                -H "Authorization: Bearer $CRON_SECRET" \
+                -H "Content-Type: application/json" \
+                -d '{"action": "close", "category": "week"}'
+            fi
+
+            # Check if 2nd of month
+            if [ "$(date +%d)" -eq "02" ]; then
+              echo "Today is the 2nd of the month. Closing month category..."
+              curl -s -f -X POST "$JORBITES_URL/api/top-recipe-vote" \
+                -H "Authorization: Bearer $CRON_SECRET" \
+                -H "Content-Type: application/json" \
+                -d '{"action": "close", "category": "month"}'
+            fi
+
+            # Check if January 2nd
+            if [ "$(date +%m%d)" -eq "0102" ]; then
+              echo "Today is January 2nd. Closing year category..."
+              curl -s -f -X POST "$JORBITES_URL/api/top-recipe-vote" \
+                -H "Authorization: Bearer $CRON_SECRET" \
+                -H "Content-Type: application/json" \
+                -d '{"action": "close", "category": "year"}'
+            fi
+          fi

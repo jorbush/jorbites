@@ -14,6 +14,8 @@ import { FcIdea } from 'react-icons/fc';
 import SectionHeader from '@/app/components/utils/SectionHeader';
 import EventCalendar from '@/app/components/events/EventCalendar';
 import { SafeWeeklyChallenge } from '@/app/types';
+import TopRecipeVoting from '@/app/components/events/TopRecipeVoting';
+import TopRecipeResult from '@/app/components/events/TopRecipeResult';
 
 interface EventsClientProps {
     weeklyChallenge: SafeWeeklyChallenge | null;
@@ -23,6 +25,19 @@ const EventsClient: React.FC<EventsClientProps> = ({ weeklyChallenge }) => {
     const { t, i18n } = useTranslation();
 
     useTheme();
+
+    const { data: weekVoteData, mutate: mutateWeek } = useSWR(
+        '/api/top-recipe-vote?category=week',
+        fetcher
+    );
+    const { data: monthVoteData, mutate: mutateMonth } = useSWR(
+        '/api/top-recipe-vote?category=month',
+        fetcher
+    );
+    const { data: yearVoteData, mutate: mutateYear } = useSWR(
+        '/api/top-recipe-vote?category=year',
+        fetcher
+    );
 
     const { data: eventsData, isLoading } = useSWR(
         `/api/events?lang=${i18n.language || 'en'}`,
@@ -59,6 +74,54 @@ const EventsClient: React.FC<EventsClientProps> = ({ weeklyChallenge }) => {
                 />
 
                 <WeeklyChallenge challenge={weeklyChallenge} />
+
+                {/* Top Recipe of the Week */}
+                {weekVoteData?.session &&
+                    (weekVoteData.session.status === 'voting' ? (
+                        <TopRecipeVoting
+                            category="week"
+                            session={weekVoteData.session}
+                            userVote={weekVoteData.userVote}
+                            mutate={mutateWeek}
+                        />
+                    ) : (
+                        <TopRecipeResult
+                            category="week"
+                            session={weekVoteData.session}
+                        />
+                    ))}
+
+                {/* Top Recipe of the Month */}
+                {monthVoteData?.session &&
+                    (monthVoteData.session.status === 'voting' ? (
+                        <TopRecipeVoting
+                            category="month"
+                            session={monthVoteData.session}
+                            userVote={monthVoteData.userVote}
+                            mutate={mutateMonth}
+                        />
+                    ) : (
+                        <TopRecipeResult
+                            category="month"
+                            session={monthVoteData.session}
+                        />
+                    ))}
+
+                {/* Top Recipe of the Year */}
+                {yearVoteData?.session &&
+                    (yearVoteData.session.status === 'voting' ? (
+                        <TopRecipeVoting
+                            category="year"
+                            session={yearVoteData.session}
+                            userVote={yearVoteData.userVote}
+                            mutate={mutateYear}
+                        />
+                    ) : (
+                        <TopRecipeResult
+                            category="year"
+                            session={yearVoteData.session}
+                        />
+                    ))}
 
                 <EventCalendar
                     currentEvents={events.current}

@@ -8,7 +8,7 @@ description: Top Recipe Badges
 ### 🔥🏅 Top Recipes Badges in Jorbites! 🏅🔥
 
 
-In the official Instagram account of [Jorbites](https://www.instagram.com/jorbites/) the best recipe of the week, month and year will be voted. The four recipes with more likes will participate in the voting.
+In Jorbites, the best recipes of the week, month and year will be voted directly on the Events page! The top-10 recipes with the most likes (minimum 4 recipes required) will participate in the poll.
 
 - **Recipe of the Week**
 

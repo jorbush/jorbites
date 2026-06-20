@@ -64,3 +64,4 @@ Jorbites follows a modern microservices architecture for scalability and perform
 - **[API Documentation](docs/api-error-handling.md)** - API endpoints and error handling
 - **[Image Optimization](docs/image_optimization.md)** - Image proxy and optimization techniques
 - **[Rate Limiting](docs/rate_limit.md)** - Security and rate limiting implementation
+- **[Top Recipe Voting](docs/top_recipe_voting.md)** - Automated voting system for top recipes
