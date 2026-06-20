@@ -90,7 +90,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
         <div className="mb-10 rounded-2xl border border-neutral-200 bg-gradient-to-br from-neutral-50 via-white to-neutral-50/50 p-6 shadow-md transition-all duration-300 dark:border-neutral-800 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900/50">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-500">
+                    <div className="flex size-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-500">
                         <FiAward className="text-2xl" />
                     </div>
                     <div>
@@ -104,7 +104,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                     </div>
                 </div>
                 <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-600/20 ring-inset dark:bg-emerald-950/30 dark:text-emerald-400 dark:ring-emerald-500/20">
-                    <span className="mr-1.5 h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500"></span>
+                    <span className="mr-1.5 size-1.5 animate-pulse rounded-full bg-emerald-500"></span>
                     {t('live_voting') || 'Live Voting'}
                 </span>
             </div>
@@ -133,7 +133,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                             <div className="flex gap-4">
                                 <Link
                                     href={`/recipe/${candidate.id}`}
-                                    className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100 transition-opacity hover:opacity-90 dark:bg-neutral-800"
+                                    className="relative size-16 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100 transition-opacity hover:opacity-90 dark:bg-neutral-800"
                                 >
                                     <Image
                                         src={
@@ -202,7 +202,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                                     } disabled:opacity-50`}
                                 >
                                     {isVotingThis ? (
-                                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                                        <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                                     ) : isSelected ? (
                                         <>
                                             <FiCheck />
