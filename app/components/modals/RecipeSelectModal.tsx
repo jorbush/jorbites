@@ -6,6 +6,7 @@ import { FiSearch } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import debounce from 'lodash/debounce';
 import Modal from '@/app/components/modals/Modal';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 
 interface RecipeSelectModalProps {
     isOpen: boolean;
@@ -106,9 +107,11 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                                 className="dark:hover:bg-neutral-850 flex w-full cursor-pointer flex-row items-center gap-3 rounded-xl p-2 text-left transition hover:bg-neutral-100 focus:outline-hidden"
                             >
                                 {recipe.imageSrc && (
-                                    <img
+                                    <CustomProxyImage
                                         src={recipe.imageSrc}
                                         alt={recipe.title}
+                                        width={48}
+                                        height={48}
                                         className="size-12 rounded-lg object-cover"
                                     />
                                 )}
