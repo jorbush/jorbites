@@ -13,6 +13,10 @@ interface SendNotificationParams {
         questId?: string;
         submissionId?: string;
         fulfilledByName?: string;
+        category?: string;
+        periodKey?: string;
+        recipeTitle?: string;
+        winnerName?: string;
     };
 }
 
@@ -41,6 +45,11 @@ const sendNotification = async ({
         if (params.submissionId) metadata.submissionId = params.submissionId;
         if (params.fulfilledByName)
             metadata.fulfilledByName = params.fulfilledByName;
+
+        if (params.category) metadata.category = params.category;
+        if (params.periodKey) metadata.periodKey = params.periodKey;
+        if (params.recipeTitle) metadata.recipeTitle = params.recipeTitle;
+        if (params.winnerName) metadata.winnerName = params.winnerName;
 
         if (type === NotificationType.NEW_LIKE && params.userName) {
             metadata.likedBy = params.userName;

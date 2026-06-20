@@ -8,6 +8,8 @@ export enum NotificationType {
     MENTION_IN_COMMENT = 'MENTION_IN_COMMENT',
     NEW_QUEST = 'NEW_QUEST',
     QUEST_FULFILLED = 'QUEST_FULFILLED',
+    NEW_VOTATION = 'NEW_VOTATION',
+    VOTATION_RESULT = 'VOTATION_RESULT',
 }
 
 export interface NotificationTemplateParams {

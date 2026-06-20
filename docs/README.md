@@ -13,6 +13,7 @@ Welcome to the Jorbites documentation! This directory contains comprehensive doc
 - **[API Error Handling](api-error-handling.md)** - API endpoint documentation and error handling patterns
 
 ### Technical Implementation
+- **[Automated Top Recipe Voting](top_recipe_voting.md)** - System design and implementation details for the in-app voting system
 - **[Image Optimization](image_optimization.md)** - Custom image proxy implementation and optimization techniques
 - **[Rate Limiting](rate_limit.md)** - Security implementation with Upstash Redis
 

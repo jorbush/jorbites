@@ -1,0 +1,71 @@
+name: Open Top Recipe Voting Sessions
+
+on:
+  schedule:
+    - cron: '30 4 * * 1'      # Monday 04:30 UTC -> open week vote
+    - cron: '30 4 1 * *'      # 1st of month 04:30 UTC -> open month vote
+    - cron: '30 4 1 1 *'      # Jan 1st 04:30 UTC -> open year vote
+  workflow_dispatch:
+    inputs:
+      category:
+        description: 'Category to open (leave empty for automatic detection)'
+        required: false
+        default: ''
+        type: choice
+        options:
+          - ''
+          - 'week'
+          - 'month'
+          - 'year'
+
+jobs:
+  open-vote-sessions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open sessions
+        env:
+          JORBITES_URL: https://jorbites.com
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "CRON_SECRET is missing. Skipping voting session opening."
+            exit 1
+          fi
+
+          CATEGORY="${{ github.event.inputs.category }}"
+          if [ -n "$CATEGORY" ]; then
+            echo "Manually opening vote session for category: $CATEGORY"
+            curl -s -f -X POST "$JORBITES_URL/api/top-recipe-vote" \
+              -H "Authorization: Bearer $CRON_SECRET" \
+              -H "Content-Type: application/json" \
+              -d "{\"action\": \"open\", \"category\": \"$CATEGORY\"}"
+          else
+            echo "Automatically detecting categories to open based on date..."
+            
+            # Check if Monday (1 = Monday, ..., 7 = Sunday)
+            if [ "$(date +%u)" -eq 1 ]; then
+              echo "Today is Monday. Opening week category..."
+              curl -s -f -X POST "$JORBITES_URL/api/top-recipe-vote" \
+                -H "Authorization: Bearer $CRON_SECRET" \
+                -H "Content-Type: application/json" \
+                -d '{"action": "open", "category": "week"}'
+            fi
+
+            # Check if 1st of month
+            if [ "$(date +%d)" -eq "01" ]; then
+              echo "Today is the 1st of the month. Opening month category..."
+              curl -s -f -X POST "$JORBITES_URL/api/top-recipe-vote" \
+                -H "Authorization: Bearer $CRON_SECRET" \
+                -H "Content-Type: application/json" \
+                -d '{"action": "open", "category": "month"}'
+            fi
+
+            # Check if January 1st
+            if [ "$(date +%m%d)" -eq "0101" ]; then
+              echo "Today is January 1st. Opening year category..."
+              curl -s -f -X POST "$JORBITES_URL/api/top-recipe-vote" \
+                -H "Authorization: Bearer $CRON_SECRET" \
+                -H "Content-Type: application/json" \
+                -d '{"action": "open", "category": "year"}'
+            fi
+          fi

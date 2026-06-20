@@ -213,3 +213,27 @@ model PlanningMeal {
   recipe      Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
+model RecipeVote {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  category   String   // "week" | "month" | "year"
+  periodKey  String   // e.g. "2026-W25", "2026-06", "2026"
+  recipeId   String   @db.ObjectId
+  userId     String   @db.ObjectId   // voter
+  createdAt  DateTime @default(now())
+
+  @@unique([category, periodKey, userId])   // one vote per user per period
+}
+
+model RecipeVoteSession {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  category    String   // "week" | "month" | "year"
+  periodKey   String   // same format as RecipeVote
+  status      String   @default("voting") // "voting" | "closed"
+  winnerId    String?  @db.ObjectId   // filled once closed
+  candidates  String[] @db.ObjectId   // top-10 recipe IDs
+  startedAt   DateTime @default(now())
+  closedAt    DateTime?
+
+  @@unique([category, periodKey])
+}
+
