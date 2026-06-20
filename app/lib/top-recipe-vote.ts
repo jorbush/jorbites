@@ -15,6 +15,7 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import sendNotification from '@/app/actions/sendNotification';
 import { NotificationType } from '@/app/types/notification';
+import { RecipeVoteSession } from '@prisma/client';
 
 function getTargetDate(category: string, referenceDate: Date): Date {
     switch (category) {
@@ -377,7 +378,7 @@ export async function closeVoteSession(
         );
     }
 
-    const winnerName = (winner as any).user?.name || 'Chef';
+    const winnerName = winner.user?.name || 'Chef';
     await sendNotification({
         type: NotificationType.VOTATION_RESULT,
         userEmail: 'all',
@@ -423,7 +424,7 @@ export async function getActiveSession(category: string) {
     return closedSession;
 }
 
-export async function getSessionDetails(session: any) {
+export async function getSessionDetails(session: RecipeVoteSession | null) {
     if (!session) return null;
 
     const candidates = await prisma.recipe.findMany({
