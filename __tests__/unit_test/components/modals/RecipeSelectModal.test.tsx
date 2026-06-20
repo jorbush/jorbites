@@ -12,6 +12,17 @@ import axios from 'axios';
 
 vi.mock('axios');
 
+vi.mock('@/app/components/optimization/CustomProxyImage', () => ({
+    default: ({ src, alt, className }: any) => (
+        <img
+            src={src}
+            alt={alt}
+            className={className}
+            data-testid="recipe-image"
+        />
+    ),
+}));
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 describe('RecipeSelectModal', () => {

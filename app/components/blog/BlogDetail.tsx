@@ -7,6 +7,7 @@ import { FiChevronLeft, FiShare2, FiCalendar } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 import Heading from '@/app/components/navigation/Heading';
 import Link from 'next/link';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { Components } from 'react-markdown';
 import { formatDate } from '@/app/utils/date-utils';
 import { SafeUser } from '@/app/types';
@@ -104,16 +105,23 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                 {...props}
             />
         ),
-        img: (props) => (
-            <span className="my-6 block overflow-hidden rounded-xl">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                    className="w-full object-cover"
-                    {...props}
-                    alt={props.alt || 'Blog Image'}
-                />
-            </span>
-        ),
+        img: ({ src, alt }) => {
+            if (!src || typeof src !== 'string') return null;
+            return (
+                <span className="my-6 block overflow-hidden rounded-xl">
+                    <CustomProxyImage
+                        src={src}
+                        alt={alt || 'Blog Image'}
+                        width={800}
+                        height={450}
+                        maxQuality
+                        className="w-full object-cover"
+                        sizes="(max-width: 800px) 100vw, 800px"
+                        style={{ width: '100%', height: 'auto' }}
+                    />
+                </span>
+            );
+        },
     };
 
     return (
