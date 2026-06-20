@@ -192,6 +192,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                                 </div>
 
                                 <button
+                                    type="button"
                                     onClick={() => handleVote(candidate.id)}
                                     disabled={!!votingId}
                                     className={`flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 ${
