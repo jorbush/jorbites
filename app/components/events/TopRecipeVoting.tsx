@@ -94,7 +94,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                         <FiAward className="text-2xl" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight text-neutral-800 dark:text-neutral-100">
+                        <h2 className="text-2xl font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
                             {t(`recipe_of_the_${category}_voting`)}
                         </h2>
                         <p className="text-sm text-neutral-500 dark:text-neutral-400">
