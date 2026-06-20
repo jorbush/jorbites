@@ -298,7 +298,7 @@ export async function closeVoteSession(
     }
 
     // Sort recipes: votes descending, likes descending, id fallback
-    const sortedRecipes = [...recipes].sort((a, b) => {
+    const sortedRecipes = recipes.toSorted((a, b) => {
         const votesA = votesMap[a.id] || 0;
         const votesB = votesMap[b.id] || 0;
 
