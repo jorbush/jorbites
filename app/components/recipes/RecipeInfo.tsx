@@ -47,6 +47,90 @@ interface RecipeInfoProps {
 
 const EMPTY_ARRAY: any[] = [];
 
+interface RecipeDescriptionProps {
+    content: string | React.ReactNode;
+}
+
+const RecipeDescription: React.FC<RecipeDescriptionProps> = ({ content }) => {
+    return (
+        <div
+            className="text-justify text-lg font-light text-neutral-500 dark:text-neutral-100"
+            data-cy="recipe-description-display"
+        >
+            {typeof content === 'string' ? formatText(content) : content}
+        </div>
+    );
+};
+
+interface RecipeIngredientsProps {
+    items: string[];
+}
+
+const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({ items }) => {
+    const { t } = useTranslation();
+    const mounted = useIsMounted();
+
+    if (items.length === 0) return null;
+    return (
+        <>
+            <hr />
+            <div
+                className="dark:text-neutral-100"
+                data-cy="ingredients-section"
+            >
+                <div className="flex flex-row items-center gap-2 text-xl font-semibold">
+                    {mounted ? t('ingredients') : 'ingredients'}
+                </div>
+                <ul className="list-disc pt-4 pl-9">
+                    {items.map((item, i) => (
+                        <li
+                            key={`ing-${i}-${item}`}
+                            className="mb-2"
+                        >
+                            {formatText(item)}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </>
+    );
+};
+
+interface RecipeStepsProps {
+    items: string[];
+}
+
+const RecipeSteps: React.FC<RecipeStepsProps> = ({ items }) => {
+    const { t } = useTranslation();
+    const mounted = useIsMounted();
+
+    if (items.length === 0) return null;
+    return (
+        <>
+            <hr />
+            <div
+                className="dark:text-neutral-100"
+                data-cy="steps-section"
+            >
+                <div className="flex flex-row items-center gap-2 text-xl font-semibold">
+                    {mounted ? t('steps') : 'steps'}
+                </div>
+                <ol className="list-decimal pt-4 pl-9">
+                    {items.map((item, index) => (
+                        <li
+                            key={`step-${index}-${item}`}
+                            className="overflow-wrap-anywhere mb-2 break-words"
+                            data-cy={`step-${index}`}
+                        >
+                            {formatText(item)}
+                        </li>
+                    ))}
+                </ol>
+            </div>
+        </>
+    );
+};
+
 const RecipeInfo: React.FC<RecipeInfoProps> = ({
     user,
     description,
@@ -128,69 +212,9 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 ingredientsText={ingredientsText}
                 steps={steps}
                 stepsText={stepsText}
-                renderDescription={(content) => (
-                    <div
-                        className="text-justify text-lg font-light text-neutral-500 dark:text-neutral-100"
-                        data-cy="recipe-description-display"
-                    >
-                        {typeof content === 'string'
-                            ? formatText(content)
-                            : content}
-                    </div>
-                )}
-                renderIngredients={(items) => {
-                    if (items.length === 0) return null;
-                    return (
-                        <>
-                            <hr />
-                            <div
-                                className="dark:text-neutral-100"
-                                data-cy="ingredients-section"
-                            >
-                                <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                                    {mounted ? t('ingredients') : 'ingredients'}
-                                </div>
-                                <ul className="list-disc pt-4 pl-9">
-                                    {items.map((item, i) => (
-                                        <li
-                                            key={`ing-${i}-${item}`}
-                                            className="mb-2"
-                                        >
-                                            {formatText(item)}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </>
-                    );
-                }}
-                renderSteps={(items) => {
-                    if (items.length === 0) return null;
-                    return (
-                        <>
-                            <hr />
-                            <div
-                                className="dark:text-neutral-100"
-                                data-cy="steps-section"
-                            >
-                                <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                                    {mounted ? t('steps') : 'steps'}
-                                </div>
-                                <ol className="list-decimal pt-4 pl-9">
-                                    {items.map((item, index) => (
-                                        <li
-                                            key={`step-${index}-${item}`}
-                                            className="overflow-wrap-anywhere mb-2 break-words"
-                                            data-cy={`step-${index}`}
-                                        >
-                                            {formatText(item)}
-                                        </li>
-                                    ))}
-                                </ol>
-                            </div>
-                        </>
-                    );
-                }}
+                RenderDescription={RecipeDescription}
+                RenderIngredients={RecipeIngredients}
+                RenderSteps={RecipeSteps}
             />
 
             {/* YouTube video section */}
