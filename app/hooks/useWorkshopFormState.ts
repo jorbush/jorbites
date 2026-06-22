@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useReducer, useCallback, useRef, useMemo } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import useSWR from 'swr';
@@ -34,18 +34,62 @@ export function useWorkshopFormState({
         numPreviousSteps: 0,
         selectedUsers: [],
     });
+
+    const isEditMode = workshopModal.isEditMode;
+    const editData = workshopModal.editWorkshopData;
+
+    const prevEditWorkshopDataRef = useRef<any>(null);
+    if (editData !== prevEditWorkshopDataRef.current) {
+        prevEditWorkshopDataRef.current = editData;
+        if (isEditMode && editData) {
+            dispatch({
+                type: 'SET_NUM_INGREDIENTS',
+                payload: editData.ingredients.length,
+            });
+            dispatch({
+                type: 'SET_NUM_PREVIOUS_STEPS',
+                payload: editData.previousSteps.length,
+            });
+        } else {
+            dispatch({ type: 'RESET_MODAL' });
+        }
+    }
+
     const { step, isLoading, numIngredients, numPreviousSteps, selectedUsers } =
         state;
 
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        watch,
-        formState: { errors },
-        reset,
-    } = useForm<FieldValues>({
-        defaultValues: {
+    const defaultValues = useMemo(() => {
+        if (isEditMode && editData) {
+            const ingredientsObject: Record<string, string> = {};
+            editData.ingredients.forEach(
+                (ingredient: string, index: number) => {
+                    ingredientsObject[`ingredient-${index}`] = ingredient;
+                }
+            );
+
+            const previousStepsObject: Record<string, string> = {};
+            editData.previousSteps.forEach((step: string, index: number) => {
+                previousStepsObject[`previousStep-${index}`] = step;
+            });
+
+            return {
+                title: editData.title,
+                description: editData.description,
+                date: editData.date.slice(0, 16),
+                location: editData.location,
+                isRecurrent: editData.isRecurrent,
+                recurrencePattern: editData.recurrencePattern || '',
+                isPrivate: editData.isPrivate,
+                whitelistedUserIds: editData.whitelistedUserIds,
+                imageSrc: editData.imageSrc || '',
+                price: editData.price,
+                ingredients: editData.ingredients,
+                previousSteps: editData.previousSteps,
+                ...ingredientsObject,
+                ...previousStepsObject,
+            };
+        }
+        return {
             title: '',
             description: '',
             date: '',
@@ -59,7 +103,19 @@ export function useWorkshopFormState({
             currency: 'EUR',
             ingredients: [],
             previousSteps: [],
-        },
+        };
+    }, [isEditMode, editData]);
+
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        watch,
+        formState: { errors },
+        reset,
+    } = useForm<FieldValues>({
+        defaultValues,
+        values: defaultValues,
     });
 
     const isPrivate = watch('isPrivate');
@@ -97,46 +153,6 @@ export function useWorkshopFormState({
             dispatch({ type: 'SET_SELECTED_USERS', payload: [] });
         }
     }
-
-    useEffect(() => {
-        const loadEditData = async () => {
-            if (workshopModal.isEditMode && workshopModal.editWorkshopData) {
-                const data = workshopModal.editWorkshopData;
-                setValue('title', data.title);
-                setValue('description', data.description);
-                setValue('date', data.date.slice(0, 16));
-                setValue('location', data.location);
-                setValue('isRecurrent', data.isRecurrent);
-                setValue('recurrencePattern', data.recurrencePattern || '');
-                setValue('isPrivate', data.isPrivate);
-                setValue('whitelistedUserIds', data.whitelistedUserIds);
-                setValue('imageSrc', data.imageSrc || '');
-                setValue('price', data.price);
-                setValue('ingredients', data.ingredients);
-                setValue('previousSteps', data.previousSteps);
-                dispatch({
-                    type: 'SET_NUM_INGREDIENTS',
-                    payload: data.ingredients.length,
-                });
-                dispatch({
-                    type: 'SET_NUM_PREVIOUS_STEPS',
-                    payload: data.previousSteps.length,
-                });
-
-                data.ingredients.forEach(
-                    (ingredient: string, index: number) => {
-                        setValue(`ingredient-${index}`, ingredient);
-                    }
-                );
-
-                data.previousSteps.forEach((step: string, index: number) => {
-                    setValue(`previousStep-${index}`, step);
-                });
-            }
-        };
-
-        loadEditData();
-    }, [workshopModal.isEditMode, workshopModal.editWorkshopData, setValue]);
 
     const onBack = () => {
         dispatch({ type: 'SET_STEP', payload: step - 1 });
