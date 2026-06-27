@@ -20,6 +20,8 @@ interface RecipeSchemaProps {
     averageRating?: number;
     ratingCount?: number;
     comments?: SafeComment[];
+    calories?: number | null;
+    recipeCuisine?: string | null;
 }
 
 const EMPTY_IMAGES: string[] = [];
@@ -40,6 +42,8 @@ export default function RecipeSchema({
     averageRating,
     ratingCount,
     comments,
+    calories,
+    recipeCuisine,
 }: RecipeSchemaProps) {
     const recipeCategories = categories || [];
 
@@ -98,6 +102,17 @@ export default function RecipeSchema({
         video: videoSchema,
         keywords: recipeCategories.join(', '),
     };
+
+    if (recipeCuisine) {
+        schemaData.recipeCuisine = recipeCuisine;
+    }
+
+    if (calories) {
+        schemaData.nutrition = {
+            '@type': 'NutritionInformation',
+            calories: `${calories} calories`,
+        };
+    }
 
     if (averageRating && ratingCount && averageRating > 0 && ratingCount > 0) {
         schemaData.aggregateRating = {

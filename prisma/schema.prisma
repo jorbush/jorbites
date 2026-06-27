@@ -80,6 +80,8 @@ model Recipe {
   questId String? @db.ObjectId
   averageRating Float @default(0)
   ratingCount Int @default(0)
+  calories Int?
+  recipeCuisine String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]
