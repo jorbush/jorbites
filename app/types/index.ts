@@ -20,8 +20,29 @@ export type SafeWeeklyChallenge = Omit<
     updatedAt: string;
 };
 
-export type SafeRecipe = Omit<Recipe, 'createdAt'> & {
+export type SafeRecipe = Omit<
+    Recipe,
+    | 'createdAt'
+    | 'coCooksIds'
+    | 'linkedRecipeIds'
+    | 'listIds'
+    | 'youtubeUrl'
+    | 'questId'
+    | 'averageRating'
+    | 'ratingCount'
+    | 'calories'
+    | 'recipeCuisine'
+> & {
     createdAt: string;
+    coCooksIds?: string[];
+    linkedRecipeIds?: string[];
+    listIds?: string[];
+    youtubeUrl?: string | null;
+    questId?: string | null;
+    averageRating?: number;
+    ratingCount?: number;
+    calories?: number | null;
+    recipeCuisine?: string | null;
 };
 
 export type CommentAuthor = Pick<

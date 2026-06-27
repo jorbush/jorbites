@@ -118,6 +118,8 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 averageRating={averageRating}
                 ratingCount={ratingCount}
                 comments={comments}
+                calories={recipe.calories}
+                recipeCuisine={recipe.recipeCuisine}
             />
             <div className="mx-auto max-w-[800px]">
                 <div className="flex flex-col gap-6">
