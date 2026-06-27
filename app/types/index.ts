@@ -32,6 +32,7 @@ export type SafeRecipe = Omit<
     | 'ratingCount'
     | 'calories'
     | 'recipeCuisine'
+    | 'recipeYield'
 > & {
     createdAt: string;
     coCooksIds?: string[];
@@ -43,6 +44,7 @@ export type SafeRecipe = Omit<
     ratingCount?: number;
     calories?: number | null;
     recipeCuisine?: string | null;
+    recipeYield?: number | null;
 };
 
 export type CommentAuthor = Pick<

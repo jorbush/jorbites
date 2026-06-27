@@ -22,6 +22,7 @@ interface RecipeSchemaProps {
     comments?: SafeComment[];
     calories?: number | null;
     recipeCuisine?: string | null;
+    recipeYield?: number | null;
 }
 
 const EMPTY_IMAGES: string[] = [];
@@ -44,6 +45,7 @@ export default function RecipeSchema({
     comments,
     calories,
     recipeCuisine,
+    recipeYield,
 }: RecipeSchemaProps) {
     const recipeCategories = categories || [];
 
@@ -105,6 +107,10 @@ export default function RecipeSchema({
 
     if (recipeCuisine) {
         schemaData.recipeCuisine = recipeCuisine;
+    }
+
+    if (recipeYield) {
+        schemaData.recipeYield = `${recipeYield} servings`;
     }
 
     if (calories) {
