@@ -142,6 +142,7 @@ export const formatPeriodKey = (
         }
     } catch (e) {
         // Fallback to periodKey on parsing error
+        console.error('Error formatting period key:', e);
     }
     return periodKey;
 };
