@@ -203,6 +203,28 @@ export async function castVote(
         throw new Error('Recipe is not a candidate in this session');
     }
 
+    const existingVote = await prisma.recipeVote.findUnique({
+        where: {
+            category_periodKey_userId: {
+                category: session.category,
+                periodKey: session.periodKey,
+                userId,
+            },
+        },
+    });
+
+    if (existingVote && existingVote.recipeId === recipeId) {
+        await prisma.recipeVote.delete({
+            where: {
+                id: existingVote.id,
+            },
+        });
+        logger.info('lib/top-recipe-vote castVote - vote removed/undone', {
+            voteId: existingVote.id,
+        });
+        return null;
+    }
+
     const vote = await prisma.recipeVote.upsert({
         where: {
             category_periodKey_userId: {

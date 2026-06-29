@@ -5,6 +5,7 @@ import {
     getCandidates,
     openVoteSession,
     closeVoteSession,
+    castVote,
 } from '@/app/lib/top-recipe-vote';
 
 // Mock Prisma
@@ -23,6 +24,7 @@ vi.mock('@/app/lib/prismadb', () => {
             findUnique: vi.fn(),
             upsert: vi.fn(),
             groupBy: vi.fn(),
+            delete: vi.fn(),
         },
     };
     return {
@@ -238,6 +240,113 @@ describe('Top Recipe Vote Business Logic', () => {
                         user_id: 'user-b',
                         recipe_id: 'r2',
                     }),
+                })
+            );
+        });
+    });
+
+    describe('castVote', () => {
+        it('should throw an error if session is not found', async () => {
+            vi.mocked(
+                prisma.recipeVoteSession.findUnique
+            ).mockResolvedValueOnce(null);
+
+            await expect(
+                castVote('user-1', 'session-1', 'recipe-1')
+            ).rejects.toThrow('Vote session not found');
+        });
+
+        it('should throw an error if voting is closed', async () => {
+            vi.mocked(
+                prisma.recipeVoteSession.findUnique
+            ).mockResolvedValueOnce({
+                id: 'session-1',
+                status: 'closed',
+            } as any);
+
+            await expect(
+                castVote('user-1', 'session-1', 'recipe-1')
+            ).rejects.toThrow('Voting is closed for this session');
+        });
+
+        it('should throw an error if recipe is not a candidate', async () => {
+            vi.mocked(
+                prisma.recipeVoteSession.findUnique
+            ).mockResolvedValueOnce({
+                id: 'session-1',
+                status: 'voting',
+                candidates: ['recipe-2', 'recipe-3'],
+            } as any);
+
+            await expect(
+                castVote('user-1', 'session-1', 'recipe-1')
+            ).rejects.toThrow('Recipe is not a candidate in this session');
+        });
+
+        it('should delete existing vote (undo) if voting for the same recipe', async () => {
+            const mockSession = {
+                id: 'session-1',
+                status: 'voting',
+                category: 'week',
+                periodKey: '2026-W26',
+                candidates: ['recipe-1'],
+            };
+            const mockExistingVote = {
+                id: 'vote-1',
+                recipeId: 'recipe-1',
+            };
+
+            vi.mocked(
+                prisma.recipeVoteSession.findUnique
+            ).mockResolvedValueOnce(mockSession as any);
+            vi.mocked(prisma.recipeVote.findUnique).mockResolvedValueOnce(
+                mockExistingVote as any
+            );
+            vi.mocked(prisma.recipeVote.delete).mockResolvedValueOnce(
+                mockExistingVote as any
+            );
+
+            const result = await castVote('user-1', 'session-1', 'recipe-1');
+
+            expect(result).toBeNull();
+            expect(prisma.recipeVote.delete).toHaveBeenCalledWith({
+                where: { id: 'vote-1' },
+            });
+        });
+
+        it('should upsert vote if voting for a different recipe', async () => {
+            const mockSession = {
+                id: 'session-1',
+                status: 'voting',
+                category: 'week',
+                periodKey: '2026-W26',
+                candidates: ['recipe-1', 'recipe-2'],
+            };
+            const mockExistingVote = {
+                id: 'vote-1',
+                recipeId: 'recipe-2',
+            };
+            const mockNewVote = {
+                id: 'vote-1',
+                recipeId: 'recipe-1',
+            };
+
+            vi.mocked(
+                prisma.recipeVoteSession.findUnique
+            ).mockResolvedValueOnce(mockSession as any);
+            vi.mocked(prisma.recipeVote.findUnique).mockResolvedValueOnce(
+                mockExistingVote as any
+            );
+            vi.mocked(prisma.recipeVote.upsert).mockResolvedValueOnce(
+                mockNewVote as any
+            );
+
+            const result = await castVote('user-1', 'session-1', 'recipe-1');
+
+            expect(result).toEqual(mockNewVote as any);
+            expect(prisma.recipeVote.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    update: expect.objectContaining({ recipeId: 'recipe-1' }),
                 })
             );
         });
