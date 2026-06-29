@@ -2,10 +2,12 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiAward, FiCheck, FiHeart, FiUser } from 'react-icons/fi';
-import Image from 'next/image';
+import { FiAward, FiCheck, FiHeart } from 'react-icons/fi';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
+import Avatar from '@/app/components/utils/Avatar';
+import { formatPeriodKey } from '@/app/utils/date-utils';
 
 interface Candidate {
     id: string;
@@ -38,7 +40,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
     userVote,
     mutate,
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [votingId, setVotingId] = useState<string | null>(null);
 
     const totalVotes = session.candidates.reduce(
@@ -75,7 +77,14 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                 throw new Error(errData.message || 'Failed to submit vote');
             }
 
-            toast.success(t('vote_success') || 'Vote cast successfully!');
+            const resData = await response.json().catch(() => ({}));
+            if (resData.vote === null) {
+                toast.success(
+                    t('vote_cancelled') || 'Vote cancelled successfully!'
+                );
+            } else {
+                toast.success(t('vote_success') || 'Vote cast successfully!');
+            }
             await mutate();
         } catch (error: any) {
             toast.error(
@@ -90,7 +99,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
         <div className="mb-10 rounded-2xl border border-neutral-200 bg-gradient-to-br from-neutral-50 via-white to-neutral-50/50 p-6 shadow-md transition-all duration-300 dark:border-neutral-800 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900/50">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                    <div className="flex size-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-500">
+                    <div className="bg-green-450/20 dark:bg-green-450/10 dark:text-green-450 flex size-12 items-center justify-center rounded-xl text-green-600">
                         <FiAward className="text-2xl" />
                     </div>
                     <div>
@@ -99,7 +108,11 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                         </h2>
                         <p className="text-sm text-neutral-500 dark:text-neutral-400">
                             {t('voting_period') || 'Voting period'}:{' '}
-                            {session.periodKey}
+                            {formatPeriodKey(
+                                category,
+                                session.periodKey,
+                                i18n.language
+                            )}
                         </p>
                     </div>
                 </div>
@@ -126,16 +139,16 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                             key={candidate.id}
                             className={`group relative flex flex-col justify-between overflow-hidden rounded-xl border p-4 transition-all duration-300 ${
                                 isSelected
-                                    ? 'border-amber-500 bg-amber-50/10 shadow-sm dark:border-amber-500/50 dark:bg-amber-950/10'
+                                    ? 'border-green-450 bg-green-450/5 dark:border-green-450/50 dark:bg-green-450/10 shadow-sm'
                                     : 'border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-neutral-700'
                             }`}
                         >
                             <div className="flex gap-4">
                                 <Link
-                                    href={`/recipe/${candidate.id}`}
+                                    href={`/recipes/${candidate.id}`}
                                     className="relative size-16 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100 transition-opacity hover:opacity-90 dark:bg-neutral-800"
                                 >
-                                    <Image
+                                    <CustomProxyImage
                                         src={
                                             candidate.imageSrc ||
                                             '/avocado.webp'
@@ -148,14 +161,17 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                                 </Link>
                                 <div className="min-w-0 flex-1">
                                     <Link
-                                        href={`/recipe/${candidate.id}`}
-                                        className="block truncate font-semibold text-neutral-800 hover:text-amber-600 dark:text-neutral-100 dark:hover:text-amber-500"
+                                        href={`/recipes/${candidate.id}`}
+                                        className="hover:text-green-450 dark:hover:text-green-450 block truncate font-semibold text-neutral-800 dark:text-neutral-100"
                                     >
                                         {candidate.title}
                                     </Link>
                                     <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
-                                        <span className="flex items-center gap-1">
-                                            <FiUser />
+                                        <span className="flex items-center gap-1.5">
+                                            <Avatar
+                                                src={candidate.user?.image}
+                                                size={20}
+                                            />
                                             {candidate.user?.name ||
                                                 t('anonymous') ||
                                                 'Chef'}
@@ -183,7 +199,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                                         <div
                                             className={`h-full rounded-full transition-all duration-500 ${
                                                 isSelected
-                                                    ? 'bg-gradient-to-r from-amber-500 to-orange-500'
+                                                    ? 'from-green-450 bg-gradient-to-r to-emerald-500'
                                                     : 'bg-neutral-400 dark:bg-neutral-600'
                                             }`}
                                             style={{ width: `${votePercent}%` }}
@@ -197,7 +213,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                                     disabled={!!votingId}
                                     className={`flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 ${
                                         isSelected
-                                            ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/20 hover:bg-amber-600'
+                                            ? 'bg-green-450 shadow-green-450/20 hover:bg-green-450/90 text-white shadow-sm dark:text-black'
                                             : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
                                     } disabled:opacity-50`}
                                 >

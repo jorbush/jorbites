@@ -5,6 +5,7 @@ import {
     formatDate,
     formatDistanceToNowLocale,
     locales,
+    formatPeriodKey,
 } from '@/app/utils/date-utils';
 
 describe('date-utils', () => {
@@ -164,6 +165,40 @@ describe('date-utils', () => {
             vi.stubGlobal('window', undefined);
             const result = formatDistanceToNowLocale(twoDaysAgo.toISOString());
             expect(result).toContain('hace 2 días');
+        });
+    });
+
+    describe('formatPeriodKey', () => {
+        it('should format week period key correctly based on language', () => {
+            const resultEn = formatPeriodKey('week', '2026-W26', 'en');
+            expect(resultEn).toBe('2026/06/22 - 2026/06/28');
+
+            const resultEs = formatPeriodKey('week', '2026-W26', 'es');
+            expect(resultEs).toBe('22/06/2026 - 28/06/2026');
+
+            const resultCa = formatPeriodKey('week', '2026-W26', 'ca');
+            expect(resultCa).toBe('22/06/2026 - 28/06/2026');
+        });
+
+        it('should format month period key correctly based on language', () => {
+            const resultEn = formatPeriodKey('month', '2026-06', 'en');
+            expect(resultEn).toBe('June 2026');
+
+            const resultEs = formatPeriodKey('month', '2026-06', 'es');
+            expect(resultEs).toBe('junio 2026');
+
+            const resultCa = formatPeriodKey('month', '2026-06', 'ca');
+            expect(resultCa).toBe('juny 2026');
+        });
+
+        it('should return year period key as is', () => {
+            const result = formatPeriodKey('year', '2026', 'en');
+            expect(result).toBe('2026');
+        });
+
+        it('should return fallback period key if format is invalid', () => {
+            const result = formatPeriodKey('week', 'invalid-key', 'en');
+            expect(result).toBe('invalid-key');
         });
     });
 });

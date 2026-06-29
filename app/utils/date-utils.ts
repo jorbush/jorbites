@@ -105,6 +105,49 @@ export const formatDate = (date: Date | string, lang?: string): string => {
 };
 
 /**
+ * Formats a period key (e.g. 2026-W26, 2026-06) into a user-friendly format
+ */
+export const formatPeriodKey = (
+    category: 'week' | 'month' | 'year',
+    periodKey: string,
+    lang?: string
+): string => {
+    try {
+        if (category === 'week') {
+            const match = periodKey.match(/^(\d{4})-W(\d{1,2})$/);
+            if (match) {
+                const y = parseInt(match[1], 10);
+                const w = parseInt(match[2], 10);
+
+                // Get a base date representing the week
+                const simple = new Date(y, 0, 1 + (w - 1) * 7);
+                const start = new Date(simple);
+                const day = start.getDay();
+                const diff = start.getDate() - day + (day === 0 ? -6 : 1);
+                start.setDate(diff);
+
+                const end = new Date(start);
+                end.setDate(start.getDate() + 6);
+
+                return formatDateRange(start, end, lang);
+            }
+        } else if (category === 'month') {
+            const match = periodKey.match(/^(\d{4})-(\d{2})$/);
+            if (match) {
+                const y = parseInt(match[1], 10);
+                const m = parseInt(match[2], 10) - 1; // 0-indexed month
+                const date = new Date(y, m, 1);
+                return formatDateLanguage(date, 'LLLL yyyy', lang);
+            }
+        }
+    } catch (e) {
+        // Fallback to periodKey on parsing error
+        console.error('Error formatting period key:', e);
+    }
+    return periodKey;
+};
+
+/**
  * Formats the distance to now with the current locale
  */
 export const formatDistanceToNowLocale = (
