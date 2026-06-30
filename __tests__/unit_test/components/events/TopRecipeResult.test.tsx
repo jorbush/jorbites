@@ -23,6 +23,17 @@ vi.mock('@/app/components/optimization/CustomProxyImage', () => ({
     ),
 }));
 
+// Mock Next/Image
+vi.mock('next/image', () => ({
+    default: ({ src, alt }: { src: string; alt: string }) => (
+        <img
+            src={src}
+            alt={alt}
+            data-testid="mock-next-image"
+        />
+    ),
+}));
+
 // Mock Avatar
 vi.mock('@/app/components/utils/Avatar', () => ({
     default: ({ src }: { src: string | null | undefined }) => (
@@ -93,13 +104,16 @@ describe('TopRecipeResult Component', () => {
             '/avatars/super-chef.webp'
         );
 
-        // Check proxy images (one for badge, one for recipe)
-        const proxyImages = screen.getAllByTestId('mock-proxy-image');
-        expect(proxyImages).toHaveLength(2);
-        expect(proxyImages[0].getAttribute('src')).toBe(
+        // Check next/image (for badge)
+        const badgeImage = screen.getByTestId('mock-next-image');
+        expect(badgeImage.getAttribute('src')).toBe(
             '/badges/recipe_of_the_month.webp'
         );
-        expect(proxyImages[1].getAttribute('src')).toBe('/lasagna.webp');
+
+        // Check proxy image (for recipe)
+        const proxyImages = screen.getAllByTestId('mock-proxy-image');
+        expect(proxyImages).toHaveLength(1);
+        expect(proxyImages[0].getAttribute('src')).toBe('/lasagna.webp');
     });
 
     it('correctly maps navigation links to /recipes/ instead of /recipe/', () => {
