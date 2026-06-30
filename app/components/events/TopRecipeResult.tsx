@@ -4,6 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiAward, FiHeart } from 'react-icons/fi';
 import Link from 'next/link';
+import Image from 'next/image';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import Avatar from '@/app/components/utils/Avatar';
 import { formatPeriodKey } from '@/app/utils/date-utils';
@@ -48,16 +49,16 @@ const TopRecipeResult: React.FC<TopRecipeResultProps> = ({
             <div className="relative flex flex-col gap-6 md:flex-row md:items-center">
                 {/* Winner Badge Image */}
                 <div className="flex flex-shrink-0 justify-center">
-                    <div className="bg-green-450/20 dark:bg-green-450/10 relative flex size-28 items-center justify-center rounded-full p-2 shadow-[0_0_20px_rgba(197,240,164,0.3)] dark:shadow-[0_0_20px_rgba(197,240,164,0.15)]">
-                        <CustomProxyImage
+                    <div className="bg-green-450/20 dark:bg-green-450/10 relative flex size-20 items-center justify-center rounded-full p-1.5 shadow-[0_0_15px_rgba(197,240,164,0.25)] dark:shadow-[0_0_15px_rgba(197,240,164,0.1)]">
+                        <Image
                             src={badgePath}
                             alt={t(badgeSlug) || badgeSlug}
-                            width={90}
-                            height={90}
+                            width={64}
+                            height={64}
                             className="object-contain transition-transform duration-500 hover:rotate-12"
                         />
-                        <div className="bg-green-450 absolute right-1 -bottom-1.5 rounded-full p-1 text-green-950 shadow-md">
-                            <FiAward className="text-sm" />
+                        <div className="bg-green-450 absolute right-0 -bottom-1 rounded-full p-0.5 text-green-950 shadow-md">
+                            <FiAward className="text-xs" />
                         </div>
                     </div>
                 </div>
