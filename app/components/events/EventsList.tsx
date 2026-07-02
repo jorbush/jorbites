@@ -8,12 +8,14 @@ interface EventsListProps {
     events: Event[];
     title: string;
     emptyMessage?: string;
+    priority?: boolean;
 }
 
 const EventsList: React.FC<EventsListProps> = ({
     events,
     title,
     emptyMessage = 'No events found',
+    priority = false,
 }) => {
     return (
         <HorizontalScrollSection
@@ -21,12 +23,15 @@ const EventsList: React.FC<EventsListProps> = ({
             emptyMessage={emptyMessage}
             hasItems={events.length > 0}
         >
-            {events.map((event: Event) => (
+            {events.map((event: Event, index: number) => (
                 <div
                     key={event.slug}
                     className="min-w-[280px] flex-shrink-0 sm:min-w-[320px] md:min-w-[350px]"
                 >
-                    <EventCard event={event} />
+                    <EventCard
+                        event={event}
+                        priority={priority && index < 2}
+                    />
                 </div>
             ))}
         </HorizontalScrollSection>
