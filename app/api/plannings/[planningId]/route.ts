@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
+import { redisCache } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
 import { USER_SELECT_FIELDS } from '@/app/utils/constants';
@@ -247,6 +248,17 @@ export async function PATCH(
             planningId: updatedPlanning.id,
         });
 
+        // Invalidate specific planning cache and global public plannings cache
+        try {
+            await redisCache.del(`planning:${planningId}`);
+            await redisCache.del('plannings:public');
+        } catch (cacheError: any) {
+            logger.error('PATCH /api/plannings/[planningId] - cache error', {
+                error: cacheError.message,
+                planningId,
+            });
+        }
+
         const safePlanning = {
             ...updatedPlanning,
             createdAt: updatedPlanning.createdAt.toISOString(),
@@ -329,6 +341,18 @@ export async function DELETE(
         logger.info('DELETE /api/plannings/[planningId] - success', {
             planningId,
         });
+
+        // Invalidate cache
+        try {
+            await redisCache.del(`planning:${planningId}`);
+            await redisCache.del('plannings:public');
+        } catch (cacheError: any) {
+            logger.error('DELETE /api/plannings/[planningId] - cache error', {
+                error: cacheError.message,
+                planningId,
+            });
+        }
+
         return NextResponse.json({ message: 'Planning deleted' });
     } catch (error: any) {
         logger.error('DELETE /api/plannings/[planningId] - error', {
