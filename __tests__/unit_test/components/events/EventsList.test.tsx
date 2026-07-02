@@ -5,8 +5,13 @@ import { Event } from '@/app/utils/markdownUtils';
 
 // Mock dependencies
 vi.mock('@/app/components/events/EventCard', () => ({
-    default: ({ event }: { event: Event }) => (
-        <div data-testid="event-card">{event.frontmatter.title}</div>
+    default: ({ event, priority }: { event: Event; priority?: boolean }) => (
+        <div
+            data-testid="event-card"
+            data-priority={priority ? 'true' : 'false'}
+        >
+            {event.frontmatter.title}
+        </div>
     ),
 }));
 
@@ -117,5 +122,52 @@ describe('EventsList', () => {
         );
 
         expect(screen.getByText('No events found')).toBeDefined();
+    });
+
+    it('passes priority=true to first two event cards and false to the rest when priority=true', () => {
+        const threeEvents: Event[] = [
+            ...mockEvents,
+            {
+                slug: 'event-3',
+                frontmatter: {
+                    title: 'Event 3',
+                    description: 'Description 3',
+                    date: '2024-07-01',
+                    endDate: '2024-07-02',
+                    location: 'Location 3',
+                },
+                content: 'Content 3',
+                language: 'en',
+            },
+        ];
+
+        render(
+            <EventsList
+                events={threeEvents}
+                title="Test Title"
+                priority={true}
+            />
+        );
+
+        const eventCards = screen.getAllByTestId('event-card');
+        expect(eventCards.length).toBe(3);
+
+        expect(eventCards[0].getAttribute('data-priority')).toBe('true');
+        expect(eventCards[1].getAttribute('data-priority')).toBe('true');
+        expect(eventCards[2].getAttribute('data-priority')).toBe('false');
+    });
+
+    it('passes priority=false to all event cards when priority=false', () => {
+        render(
+            <EventsList
+                events={mockEvents}
+                title="Test Title"
+                priority={false}
+            />
+        );
+
+        const eventCards = screen.getAllByTestId('event-card');
+        expect(eventCards[0].getAttribute('data-priority')).toBe('false');
+        expect(eventCards[1].getAttribute('data-priority')).toBe('false');
     });
 });
