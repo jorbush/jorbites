@@ -118,19 +118,20 @@ const RecipeBookSelectStep: React.FC<RecipeBookSelectStepProps> = ({
                             </span>
 
                             {/* Recipe thumbnail */}
-                            {recipe.imageSrc ? (
-                                <div className="shrink-0 overflow-hidden rounded-lg">
+                            <div className="relative size-10 shrink-0 overflow-hidden rounded-lg">
+                                {recipe.imageSrc ? (
                                     <CustomProxyImage
                                         src={recipe.imageSrc}
                                         alt={recipe.title}
-                                        width={44}
-                                        height={44}
-                                        className="size-11 object-cover"
+                                        fill
+                                        className="object-cover"
+                                        width={40}
+                                        height={40}
                                     />
-                                </div>
-                            ) : (
-                                <div className="size-11 shrink-0 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-                            )}
+                                ) : (
+                                    <div className="size-full bg-neutral-200 dark:bg-neutral-700" />
+                                )}
+                            </div>
 
                             {/* Recipe info */}
                             <div className="flex min-w-0 flex-col">
