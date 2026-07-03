@@ -5,52 +5,101 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { SafeRecipe } from '@/app/types';
-import { RecipeBookConfig } from '@/app/utils/recipeBookUtils';
 
 import Modal from '@/app/components/modals/Modal';
-import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
-import Dropdown from '@/app/components/utils/Dropdown';
 import useRecipeBookModal from '@/app/hooks/useRecipeBookModal';
-import { recipeBookReducer } from './recipeBookReducer';
+import {
+    recipeBookReducer,
+    RecipeBookState,
+} from '@/app/hooks/recipeBookReducer';
+import RecipeBookConfigStep from './recipe-book-steps/RecipeBookConfigStep';
+import RecipeBookSelectStep from './recipe-book-steps/RecipeBookSelectStep';
+
+const RECIPE_BOOK_STEPS = {
+    CONFIG: 0,
+    SELECT_RECIPES: 1,
+} as const;
+
+type RecipeBookStep =
+    (typeof RECIPE_BOOK_STEPS)[keyof typeof RECIPE_BOOK_STEPS];
+
+const INITIAL_STATE: RecipeBookState = {
+    imageDisplay: 'random',
+    displayExtraImages: true,
+    displayUserImage: true,
+    selectedRecipeIds: new Set<string>(),
+    allRecipeIds: [],
+};
 
 const RecipeBookModal = () => {
     const recipeBookModal = useRecipeBookModal();
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
+    const [step, setStep] = useState<RecipeBookStep>(RECIPE_BOOK_STEPS.CONFIG);
+    const [recipes, setRecipes] = useState<SafeRecipe[]>([]);
+    const [isLoadingRecipes, setIsLoadingRecipes] = useState(false);
 
-    const [config, dispatch] = useReducer(recipeBookReducer, {
-        imageDisplay: 'random',
-        displayExtraImages: true,
-        displayUserImage: true,
-    });
-    const { imageDisplay, displayExtraImages, displayUserImage } = config;
+    const [state, dispatch] = useReducer(recipeBookReducer, INITIAL_STATE);
+    const {
+        imageDisplay,
+        displayExtraImages,
+        displayUserImage,
+        selectedRecipeIds,
+    } = state;
 
+    // Reset everything when the modal opens
     useEffect(() => {
         if (recipeBookModal.isOpen) {
             dispatch({ type: 'RESET' });
+            setStep(RECIPE_BOOK_STEPS.CONFIG);
+            setRecipes([]);
         }
     }, [recipeBookModal.isOpen]);
 
-    const imageDisplayOptions: {
-        value: RecipeBookConfig['imageDisplay'];
-        label: string;
-    }[] = [
-        { value: 'random', label: t('random') || 'Random' },
-        { value: 'left-top', label: t('top_left') || 'Top Left' },
-        { value: 'right-top', label: t('top_right') || 'Top Right' },
-        { value: 'left-bottom', label: t('bottom_left') || 'Bottom Left' },
-        { value: 'right-bottom', label: t('bottom_right') || 'Bottom Right' },
-    ];
+    const fetchRecipes = useCallback(async () => {
+        if (isLoadingRecipes || recipes.length > 0) return;
+        setIsLoadingRecipes(true);
+        try {
+            const response = await axios.get<SafeRecipe[]>(
+                `/api/user/${recipeBookModal.userId}/recipes`
+            );
+            const fetchedRecipes = response.data || [];
+            setRecipes(fetchedRecipes);
+            dispatch({
+                type: 'SET_RECIPES',
+                payload: fetchedRecipes.map((r) => r.id),
+            });
+        } catch (error) {
+            console.error('Failed to fetch recipes', error);
+            toast.error(t('something_went_wrong') || 'Failed to load recipes.');
+        } finally {
+            setIsLoadingRecipes(false);
+        }
+    }, [isLoadingRecipes, recipes.length, recipeBookModal.userId, t]);
 
-    const currentOption = imageDisplayOptions.find(
-        (opt) => opt.value === imageDisplay
-    );
-    const dropdownButton = (
-        <span className="text-sm font-medium">{currentOption?.label}</span>
-    );
+    const handleNext = useCallback(() => {
+        setStep(RECIPE_BOOK_STEPS.SELECT_RECIPES);
+        fetchRecipes();
+    }, [fetchRecipes]);
+
+    const handleBack = useCallback(() => {
+        setStep(RECIPE_BOOK_STEPS.CONFIG);
+    }, []);
 
     const handleGenerate = useCallback(async () => {
         if (isLoading) return;
+
+        const selectedRecipes = recipes.filter((r) =>
+            selectedRecipeIds.has(r.id)
+        );
+
+        if (selectedRecipes.length === 0) {
+            toast.error(
+                t('recipe_book_no_recipes') ||
+                    'You have no recipes to generate a book.'
+            );
+            return;
+        }
 
         setIsLoading(true);
         const loadingToast = toast.loading(
@@ -58,37 +107,20 @@ const RecipeBookModal = () => {
         );
 
         try {
-            // 1. Fetch recipes
-            const response = await axios.get<SafeRecipe[]>(
-                `/api/user/${recipeBookModal.userId}/recipes`
-            );
-            const recipes = response.data;
-
-            if (!recipes || recipes.length === 0) {
-                toast.error(
-                    t('recipe_book_no_recipes') ||
-                        'You have no recipes to generate a book.',
-                    {
-                        id: loadingToast,
-                    }
-                );
-                return;
-            }
-
-            // 2. Load PDF Renderer dynamically
+            // 1. Load PDF Renderer dynamically
             const [pdfRenderer, { RecipeBookPDF }] = await Promise.all([
                 import('@react-pdf/renderer'),
                 import('@/app/components/profile/RecipeBookPDF'),
             ]);
 
-            // 3. Prepare translations
+            // 2. Prepare translations
             const labels = {
                 title: t('recipe_book') || 'Recipe Book',
                 createdBy: t('recipe_book_cover_by') || 'Created by',
                 subtitle:
                     t('recipe_book_cover_subtitle', {
-                        count: recipes.length,
-                    }) || `Collection of ${recipes.length} recipes`,
+                        count: selectedRecipes.length,
+                    }) || `Collection of ${selectedRecipes.length} recipes`,
                 ingredients: t('ingredients') || 'Ingredients',
                 steps: t('steps') || 'Steps',
                 minutes: t('minutes') || 'Minutes',
@@ -101,7 +133,7 @@ const RecipeBookModal = () => {
                 recipes: (t('recipes') || 'recipes').toLowerCase(),
             };
 
-            const translatedRecipes = recipes.map((recipe) => ({
+            const translatedRecipes = selectedRecipes.map((recipe) => ({
                 ...recipe,
                 method: recipe.method
                     ? t(recipe.method.toLowerCase()) || recipe.method
@@ -113,7 +145,7 @@ const RecipeBookModal = () => {
                     : recipe.categories,
             }));
 
-            // 4. Generate the PDF
+            // 3. Generate the PDF
             const logoUrl =
                 typeof window !== 'undefined'
                     ? `${window.location.origin}/images/logo-nobg.png`
@@ -139,7 +171,7 @@ const RecipeBookModal = () => {
 
             const blob = await pdfRenderer.pdf(doc).toBlob();
 
-            // 5. Download the PDF
+            // 4. Download the PDF
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
@@ -171,6 +203,8 @@ const RecipeBookModal = () => {
         }
     }, [
         isLoading,
+        recipes,
+        selectedRecipeIds,
         imageDisplay,
         displayExtraImages,
         displayUserImage,
@@ -178,54 +212,20 @@ const RecipeBookModal = () => {
         t,
     ]);
 
-    const bodyContent = (
-        <div className="flex flex-col gap-6">
-            {/* Dropdown field */}
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-4 dark:border-neutral-800">
-                <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
-                        {t('recipe_image_display') || 'Recipe image display'}
-                    </span>
-                </div>
-                <Dropdown
-                    options={imageDisplayOptions}
-                    value={imageDisplay}
-                    onChange={(val) =>
-                        dispatch({ type: 'SET_IMAGE_DISPLAY', payload: val })
-                    }
-                    buttonContent={dropdownButton}
-                    ariaLabel={
-                        t('recipe_image_display') || 'Recipe image display'
-                    }
-                    data-cy="image-display-dropdown"
-                />
-            </div>
+    const isConfigStep = step === RECIPE_BOOK_STEPS.CONFIG;
 
-            {/* Switch: Display extra images */}
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-4 dark:border-neutral-800">
-                <span className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
-                    {t('display_extra_images') || 'Display extra images'}
-                </span>
-                <ToggleSwitch
-                    checked={displayExtraImages}
-                    onChange={() => dispatch({ type: 'TOGGLE_EXTRA_IMAGES' })}
-                    dataCy="extra-images-toggle"
-                />
-            </div>
-
-            {/* Switch: Display user image on cover */}
-            <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
-                    {t('display_user_image_in_cover') ||
-                        'Display user image on cover'}
-                </span>
-                <ToggleSwitch
-                    checked={displayUserImage}
-                    onChange={() => dispatch({ type: 'TOGGLE_USER_IMAGE' })}
-                    dataCy="user-image-toggle"
-                />
-            </div>
-        </div>
+    const bodyContent = isConfigStep ? (
+        <RecipeBookConfigStep
+            config={state}
+            dispatch={dispatch}
+        />
+    ) : (
+        <RecipeBookSelectStep
+            recipes={recipes}
+            isLoadingRecipes={isLoadingRecipes}
+            selectedRecipeIds={selectedRecipeIds}
+            dispatch={dispatch}
+        />
     );
 
     return (
@@ -234,9 +234,17 @@ const RecipeBookModal = () => {
             isLoading={isLoading}
             isOpen={recipeBookModal.isOpen}
             title={t('recipe_book') ?? 'Recipe Book'}
-            actionLabel={t('generate_recipe_book') ?? 'Generate Recipe Book'}
+            actionLabel={
+                isConfigStep
+                    ? (t('next') ?? 'Next')
+                    : (t('generate_recipe_book') ?? 'Generate Recipe Book')
+            }
+            secondaryActionLabel={
+                isConfigStep ? undefined : (t('back') ?? 'Back')
+            }
+            secondaryAction={isConfigStep ? undefined : handleBack}
             onClose={recipeBookModal.onClose}
-            onSubmit={handleGenerate}
+            onSubmit={isConfigStep ? handleNext : handleGenerate}
             body={bodyContent}
         />
     );
