@@ -46,7 +46,8 @@ cypress.env.json
 # Log files
 dev.log
 
-certificates
 
 dump.rdb
 dev_server.log
+localhost.pem
+localhost-key.pem

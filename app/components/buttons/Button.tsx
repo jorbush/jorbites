@@ -4,7 +4,7 @@ import { useState } from 'react';
 /* eslint-disable unused-imports/no-unused-vars */
 interface ButtonProps {
     label: string;
-    onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
     disabled?: boolean;
     outline?: boolean;
     small?: boolean;
@@ -14,11 +14,12 @@ interface ButtonProps {
     rose?: boolean;
     dataCy?: string;
     type?: 'button' | 'submit' | 'reset';
+    className?: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
     label,
-    onClick,
+    onClick = () => {},
     disabled,
     outline,
     small,
@@ -28,6 +29,7 @@ const Button: React.FC<ButtonProps> = ({
     rose,
     dataCy,
     type = 'button',
+    className,
 }) => {
     const [isDisabled, setIsDisabled] = useState(false);
     const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -65,9 +67,10 @@ const Button: React.FC<ButtonProps> = ({
         const textClasses = outline
             ? 'text-black dark:text-neutral-100'
             : 'dark:text-dark text-white';
+        const pyClass = className?.includes('py-') ? '' : 'py-3';
         const sizeClasses = small
             ? 'rounded-md border px-3 py-2 text-sm font-medium'
-            : 'text-md w-full rounded-lg border-2 py-3 font-semibold';
+            : `text-md w-full rounded-lg border-2 ${pyClass} font-semibold`;
         const deleteClasses = deleteButton ? 'border-rose-500' : '';
 
         return `${baseModalClasses} ${colorClasses} ${borderClasses} ${textClasses} ${sizeClasses} ${deleteClasses}`;
@@ -78,7 +81,7 @@ const Button: React.FC<ButtonProps> = ({
             type={type}
             disabled={disabled || isDisabled}
             onClick={handleButtonClick}
-            className={`${getBaseClasses()} ${getRoseButtonClasses()}`}
+            className={`${getBaseClasses()} ${getRoseButtonClasses()} ${className || ''}`}
             data-cy={dataCy}
             data-testid={dataCy || 'button-component'}
             suppressHydrationWarning
