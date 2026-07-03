@@ -3,7 +3,6 @@ import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RecipeBookConfigStep from '@/app/components/modals/recipe-book-steps/RecipeBookConfigStep';
 import { RecipeBookConfig } from '@/app/utils/recipeBookUtils';
-import { RecipeBookAction } from '@/app/hooks/recipeBookReducer';
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
