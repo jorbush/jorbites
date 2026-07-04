@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import CourseTest from '@/app/components/certificates/CourseTest';
-import { Question } from '@/app/certificates/contest-manager/contestManagerQuestions';
+import CourseTest from '@/app/components/courses/CourseTest';
+import { Question } from '@/app/courses/contest-manager/contestManagerQuestions';
 
 afterEach(() => {
     cleanup();

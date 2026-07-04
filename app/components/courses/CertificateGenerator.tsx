@@ -89,7 +89,7 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
     const linkedInUrl = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(
         courseTitle
     )}&organizationName=Jorbites&issueYear=${issueYear}&issueMonth=${issueMonth}&certUrl=${encodeURIComponent(
-        'https://jorbites.com/certificates'
+        'https://jorbites.com/courses'
     )}&certId=${certId}`;
 
     const handleConfirmName = (data: FieldValues) => {

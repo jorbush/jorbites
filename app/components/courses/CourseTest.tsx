@@ -2,7 +2,7 @@
 
 import React, { useReducer, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Question } from '@/app/certificates/contest-manager/contestManagerQuestions';
+import { Question } from '@/app/courses/contest-manager/contestManagerQuestions';
 import { FiCheckCircle, FiXCircle, FiAward } from 'react-icons/fi';
 import Button from '@/app/components/buttons/Button';
 import confetti from 'canvas-confetti';
@@ -166,9 +166,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({
             <div className="flex justify-end">
                 <div className="w-fit">
                     <Button
-                        label={
-                            currentIndex === total - 1 ? 'Finish' : 'Next'
-                        }
+                        label={currentIndex === total - 1 ? 'Finish' : 'Next'}
                         onClick={onNext}
                         disabled={selectedOption === null}
                         small
@@ -363,7 +361,9 @@ const CourseTest: React.FC<CourseTestProps> = ({ questions, onPass }) => {
                 }
             });
 
-            const passingScore = Math.ceil(state.shuffledQuestions.length * 0.8);
+            const passingScore = Math.ceil(
+                state.shuffledQuestions.length * 0.8
+            );
             const isPass = correctCount >= passingScore;
 
             if (isPass) {

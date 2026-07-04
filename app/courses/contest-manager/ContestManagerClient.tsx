@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation';
 import { SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import SectionHeader from '@/app/components/utils/SectionHeader';
-import CourseStepper from '@/app/components/certificates/CourseStepper';
-import CourseTest from '@/app/components/certificates/CourseTest';
-import CertificateGenerator from '@/app/components/certificates/CertificateGenerator';
+import CourseStepper from '@/app/components/courses/CourseStepper';
+import CourseTest from '@/app/components/courses/CourseTest';
+import CertificateGenerator from '@/app/components/courses/CertificateGenerator';
 import { contestManagerQuestions } from './contestManagerQuestions';
 import {
     FcDiploma1,
@@ -33,8 +33,8 @@ import Button from '@/app/components/buttons/Button';
 // ---------------------------------------------------------------------------
 // Storage key constants (versioned to allow future shape changes)
 // ---------------------------------------------------------------------------
-const MODULES_KEY = 'jorbites_cert_contest_manager_modules:v1';
-const PROGRESS_KEY = 'jorbites_cert_contest_manager_progress:v1';
+const MODULES_KEY = 'jorbites_course_contest_manager_modules:v2';
+const PROGRESS_KEY = 'jorbites_course_contest_manager_progress:v2';
 
 type ModulesState = Record<string, boolean>;
 
@@ -74,11 +74,22 @@ function persistModules(updated: ModulesState) {
 // ---------------------------------------------------------------------------
 
 interface RequirementsModuleProps {
-    reqs: { recipes: boolean; theme: boolean; badge: boolean; announcement: boolean };
-    onChange: (key: keyof RequirementsModuleProps['reqs'], value: boolean) => void;
+    reqs: {
+        recipes: boolean;
+        theme: boolean;
+        badge: boolean;
+        announcement: boolean;
+    };
+    onChange: (
+        key: keyof RequirementsModuleProps['reqs'],
+        value: boolean
+    ) => void;
 }
 
-const RequirementsModule: React.FC<RequirementsModuleProps> = ({ reqs, onChange }) => (
+const RequirementsModule: React.FC<RequirementsModuleProps> = ({
+    reqs,
+    onChange,
+}) => (
     <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-6 flex items-center gap-3">
             <FcRules className="size-8" />
@@ -88,30 +99,30 @@ const RequirementsModule: React.FC<RequirementsModuleProps> = ({ reqs, onChange 
         </div>
         <div className="prose prose-neutral dark:prose-invert mb-8 max-w-none text-neutral-600 dark:text-neutral-300">
             <p>
-                To maintain the high quality of events in the Jorbites community,
-                we have established core requirements for organizing contests:
+                To maintain the high quality of events in the Jorbites
+                community, we have established core requirements for organizing
+                contests:
             </p>
             <ul className="list-disc space-y-2 pl-5">
                 <li>
-                    <strong>Recipe Commitment:</strong>{' '}
-                    You must compromise that the participants of the contest will
-                    post at least 5 recipes in total during the event.
+                    <strong>Recipe Commitment:</strong> You must compromise that
+                    the participants of the contest will post at least 5 recipes
+                    in total during the event.
                 </li>
                 <li>
-                    <strong>Contest Theme:</strong>{' '}
-                    Define a clear culinary theme (e.g. &quot;Best Homemade
-                    Pizza&quot; or &quot;Healthy Autumn Soups&quot;) to focus
-                    participants.
+                    <strong>Contest Theme:</strong> Define a clear culinary
+                    theme (e.g. &quot;Best Homemade Pizza&quot; or &quot;Healthy
+                    Autumn Soups&quot;) to focus participants.
                 </li>
                 <li>
                     <strong>Visual Badge:</strong> Every contest needs a unique
-                    badge. You can easily generate it using AI (we teach you this
-                    in Module 4).
+                    badge. You can easily generate it using AI (we teach you
+                    this in Module 4).
                 </li>
                 <li>
-                    <strong>Announcement details:</strong>{' '}
-                    Prep the dates, times, and gathering details so users know
-                    where and when the event is happening.
+                    <strong>Announcement details:</strong> Prep the dates,
+                    times, and gathering details so users know where and when
+                    the event is happening.
                 </li>
             </ul>
         </div>
@@ -219,7 +230,10 @@ const WorkflowModule: React.FC<WorkflowModuleProps> = ({
             {WORKFLOW_STEPS.map((item) => {
                 const isActive = workflowStep >= item.step;
                 return (
-                    <div key={item.step} className="flex gap-4">
+                    <div
+                        key={item.step}
+                        className="flex gap-4"
+                    >
                         <div className="flex flex-col items-center">
                             <div
                                 className={`flex size-6 items-center justify-center rounded-full border-2 text-xs font-bold transition-all duration-300 ${
@@ -528,9 +542,7 @@ const ContactModule: React.FC<ContactModuleProps> = ({ onContactClick }) => (
                 <span className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
                     Instagram Direct Message
                 </span>
-                <span className="mt-1 text-xs text-neutral-500">
-                    @jorbites
-                </span>
+                <span className="mt-1 text-xs text-neutral-500">@jorbites</span>
             </a>
         </div>
     </div>
@@ -552,7 +564,8 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
     const isMounted = useIsMounted();
 
     // Lazy-initialised from localStorage (no mount effect needed)
-    const [completedModules, setCompletedModules] = useState<ModulesState>(loadModules);
+    const [completedModules, setCompletedModules] =
+        useState<ModulesState>(loadModules);
 
     const [activeModuleId, setActiveModuleId] = useState('requirements');
 
@@ -605,7 +618,8 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
 
     const generatedFormUrl = useMemo(() => {
         const userId = participantUserId.trim() || '{participant_user_id}';
-        const recipeUrl = participantRecipeUrl.trim() || '{participant_recipe_url}';
+        const recipeUrl =
+            participantRecipeUrl.trim() || '{participant_recipe_url}';
         return `https://docs.google.com/forms/d/e/1FAIpQLScze8Mi_GjtY6vEMNdtIDEMGKH4SqS0rRmB3UKzwPXKvRjhZQ/viewform?usp=pp_url&entry.342170842=${encodeURIComponent(recipeUrl)}&entry.767643834=${encodeURIComponent(userId)}`;
     }, [participantUserId, participantRecipeUrl]);
 
@@ -628,12 +642,42 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
     if (!isMounted) return null;
 
     const modules = [
-        { id: 'requirements', title: t('requirements'), isCompleted: completedModules.requirements, icon: FcRules },
-        { id: 'workflow', title: t('workflow'), isCompleted: completedModules.workflow, icon: FcProcess },
-        { id: 'voting', title: t('voting'), isCompleted: completedModules.voting, icon: FcSurvey },
-        { id: 'badge', title: t('generate_badge'), isCompleted: completedModules.badge, icon: FcPicture },
-        { id: 'contact', title: t('contact_admin'), isCompleted: completedModules.contact, icon: FcFeedback },
-        { id: 'test', title: t('final_test'), isCompleted: completedModules.test, icon: FcGraduationCap },
+        {
+            id: 'requirements',
+            title: t('requirements'),
+            isCompleted: completedModules.requirements,
+            icon: FcRules,
+        },
+        {
+            id: 'workflow',
+            title: t('workflow'),
+            isCompleted: completedModules.workflow,
+            icon: FcProcess,
+        },
+        {
+            id: 'voting',
+            title: t('voting'),
+            isCompleted: completedModules.voting,
+            icon: FcSurvey,
+        },
+        {
+            id: 'badge',
+            title: t('generate_badge'),
+            isCompleted: completedModules.badge,
+            icon: FcPicture,
+        },
+        {
+            id: 'contact',
+            title: t('contact_admin'),
+            isCompleted: completedModules.contact,
+            icon: FcFeedback,
+        },
+        {
+            id: 'test',
+            title: t('final_test'),
+            isCompleted: completedModules.test,
+            icon: FcGraduationCap,
+        },
     ];
 
     return (
@@ -642,7 +686,7 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
                 {/* Back Button */}
                 <button
                     type="button"
-                    onClick={() => router.push('/certificates')}
+                    onClick={() => router.push('/courses')}
                     className="mb-6 flex items-center gap-2 text-neutral-600 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
                 >
                     <FiChevronLeft className="cursor-pointer text-xl" />
@@ -651,7 +695,7 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
 
                 <SectionHeader
                     icon={FcDiploma1}
-                    title={t('contest_manager_certificate')}
+                    title={t('contest_manager_course')}
                     description="Complete the 5 lessons and pass the final test to receive your official Jorbites certificate."
                 />
 
@@ -684,8 +728,12 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
                         {activeModuleId === 'workflow' && (
                             <WorkflowModule
                                 workflowStep={workflowStep}
-                                onNextStep={() => setWorkflowStep((prev) => prev + 1)}
-                                onComplete={() => markModuleCompleted('workflow')}
+                                onNextStep={() =>
+                                    setWorkflowStep((prev) => prev + 1)
+                                }
+                                onComplete={() =>
+                                    markModuleCompleted('workflow')
+                                }
                             />
                         )}
 
@@ -715,7 +763,9 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
                         {/* 5. Contact Admin */}
                         {activeModuleId === 'contact' && (
                             <ContactModule
-                                onContactClick={() => markModuleCompleted('contact')}
+                                onContactClick={() =>
+                                    markModuleCompleted('contact')
+                                }
                             />
                         )}
 

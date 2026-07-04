@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import CourseModule from '@/app/components/certificates/CourseModule';
+import CourseModule from '@/app/components/courses/CourseModule';
 import { FiBookOpen } from 'react-icons/fi';
 
 afterEach(() => {

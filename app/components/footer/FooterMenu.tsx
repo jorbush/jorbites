@@ -39,8 +39,8 @@ const MENU_ITEMS: FooterMenuItem[] = [
         icon: FcNews,
     },
     {
-        href: '/certificates',
-        labelKey: 'certificates',
+        href: '/courses',
+        labelKey: 'courses',
         icon: FcDiploma1,
     },
     {

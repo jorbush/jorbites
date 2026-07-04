@@ -105,7 +105,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                                               : t('start_course')
                                     }
                                     onClick={() =>
-                                        router.push(`/certificates/${slug}`)
+                                        router.push(`/courses/${slug}`)
                                     }
                                     small
                                     outline={isCompleted}

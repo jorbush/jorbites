@@ -268,11 +268,7 @@ const CertificateDownloadSection: React.FC<CertificateDownloadSectionProps> = ({
                 {({ loading }) => (
                     <>
                         <FiDownload className="size-4" />
-                        <span>
-                            {loading
-                                ? 'Generating...'
-                                : downloadLabel}
-                        </span>
+                        <span>{loading ? 'Generating...' : downloadLabel}</span>
                     </>
                 )}
             </PDFDownloadLink>

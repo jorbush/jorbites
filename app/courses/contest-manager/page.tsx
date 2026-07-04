@@ -3,7 +3,7 @@ import ContestManagerClient from './ContestManagerClient';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Contest Manager Certificate | Jorbites',
+    title: 'Contest Manager Course | Jorbites',
     description: 'Learn how to organize cooking contests and earn your badge.',
 };
 

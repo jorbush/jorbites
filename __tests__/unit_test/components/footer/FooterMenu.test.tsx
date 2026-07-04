@@ -194,7 +194,7 @@ describe('FooterMenu', () => {
         expect(mockT).toHaveBeenCalledWith('chefs');
         expect(mockT).toHaveBeenCalledWith('workshops');
         expect(mockT).toHaveBeenCalledWith('blog');
-        expect(mockT).toHaveBeenCalledWith('certificates');
+        expect(mockT).toHaveBeenCalledWith('courses');
         expect(mockT).toHaveBeenCalledWith('about');
     });
 
@@ -205,7 +205,7 @@ describe('FooterMenu', () => {
         expect(screen.getAllByText('chefs')).toHaveLength(1);
         expect(screen.getAllByText('workshops')).toHaveLength(1);
         expect(screen.getAllByText('blog')).toHaveLength(1);
-        expect(screen.getAllByText('certificates')).toHaveLength(1);
+        expect(screen.getAllByText('courses')).toHaveLength(1);
         expect(screen.getAllByText('about')).toHaveLength(1);
     });
 
@@ -220,7 +220,7 @@ describe('FooterMenu', () => {
         expect(container.textContent).toContain('chefs');
         expect(container.textContent).toContain('workshops');
         expect(container.textContent).toContain('blog');
-        expect(container.textContent).toContain('certificates');
+        expect(container.textContent).toContain('courses');
         expect(container.textContent).toContain('about');
     });
 
@@ -256,8 +256,8 @@ describe('FooterMenu', () => {
         expect(menuLinks[3].textContent).toContain('blog');
 
         // Fifth should be Certificates
-        expect(menuLinks[4].getAttribute('data-href')).toBe('/certificates');
-        expect(menuLinks[4].textContent).toContain('certificates');
+        expect(menuLinks[4].getAttribute('data-href')).toBe('/courses');
+        expect(menuLinks[4].textContent).toContain('courses');
 
         // Sixth should be About
         expect(menuLinks[5].getAttribute('data-href')).toBe('/about');
@@ -276,7 +276,7 @@ describe('FooterMenu', () => {
         expect(spanTexts).toContain('chefs');
         expect(spanTexts).toContain('workshops');
         expect(spanTexts).toContain('blog');
-        expect(spanTexts).toContain('certificates');
+        expect(spanTexts).toContain('courses');
         expect(spanTexts).toContain('about');
     });
 });

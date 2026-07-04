@@ -61,12 +61,12 @@ export async function getSitemapData(): Promise<MetadataRoute.Sitemap> {
             priority: 1.0,
         },
         {
-            url: `${baseUrl}/certificates`,
+            url: `${baseUrl}/courses`,
             lastModified: new Date(),
             priority: 0.8,
         },
         {
-            url: `${baseUrl}/certificates/contest-manager`,
+            url: `${baseUrl}/courses/contest-manager`,
             lastModified: new Date(),
             priority: 0.7,
         },
