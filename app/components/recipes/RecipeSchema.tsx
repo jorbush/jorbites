@@ -66,6 +66,7 @@ export default function RecipeSchema({
                 ],
                 contentUrl: youtubeUrl,
                 embedUrl: `https://www.youtube.com/embed/${videoId}`,
+                uploadDate: createdAt,
             };
         }
     }
