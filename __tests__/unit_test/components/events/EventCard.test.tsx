@@ -51,10 +51,11 @@ vi.mock('@/app/utils/date-utils', () => ({
 }));
 
 vi.mock('next/image', () => ({
-    default: ({ alt }: { alt: string }) => (
+    default: ({ alt, priority }: { alt: string; priority?: boolean }) => (
         <img
             alt={alt}
             data-testid="event-image"
+            data-priority={priority ? 'true' : 'false'}
         />
     ),
 }));
@@ -129,5 +130,30 @@ describe('EventCard', () => {
 
         // Check if "each_month" is displayed (mocked t returns the key)
         expect(screen.getByText('each_month')).toBeDefined();
+    });
+
+    it('passes priority prop to image component', () => {
+        render(
+            <EventCard
+                event={mockEvent}
+                priority={true}
+            />
+        );
+        const img = screen.getByTestId('event-image');
+        expect(img.getAttribute('data-priority')).toBe('true');
+    });
+
+    it('uses default priority false if not specified', () => {
+        render(<EventCard event={mockEvent} />);
+        const img = screen.getByTestId('event-image');
+        expect(img.getAttribute('data-priority')).toBe('false');
+    });
+
+    it('renders the title inside a line-clamp-2 container', () => {
+        const { container } = render(<EventCard event={mockEvent} />);
+        const titleWrapper = container.querySelector(
+            '.line-clamp-2.h-\\[56px\\]'
+        );
+        expect(titleWrapper).not.toBeNull();
     });
 });
