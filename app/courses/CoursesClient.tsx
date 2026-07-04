@@ -41,6 +41,51 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                 />
 
                 <div className="mx-auto max-w-4xl space-y-6">
+                    {/* 1. Jorbites Basics */}
+                    <CertificateCard
+                        id="jorbites-basics"
+                        title={t('course_jorbites_basics')}
+                        description={t('course_jorbites_basics_desc')}
+                        duration="15 mins"
+                        progress={0}
+                        slug="jorbites-basics"
+                        comingSoon
+                    />
+
+                    {/* 2. Recipe Creator */}
+                    <CertificateCard
+                        id="recipe-creator"
+                        title={t('course_recipe_creator')}
+                        description={t('course_recipe_creator_desc')}
+                        duration="30 mins"
+                        progress={0}
+                        slug="recipe-creator"
+                        comingSoon
+                    />
+
+                    {/* 3. Meal Planner */}
+                    <CertificateCard
+                        id="meal-planner"
+                        title={t('course_meal_planner')}
+                        description={t('course_meal_planner_desc')}
+                        duration="45 mins"
+                        progress={0}
+                        slug="meal-planner"
+                        comingSoon
+                    />
+
+                    {/* 4. Recipe Book Builder */}
+                    <CertificateCard
+                        id="recipe-book-builder"
+                        title={t('course_recipe_book_builder')}
+                        description={t('course_recipe_book_builder_desc')}
+                        duration="1 hour"
+                        progress={0}
+                        slug="recipe-book-builder"
+                        comingSoon
+                    />
+
+                    {/* 5. Contest Manager */}
                     <CertificateCard
                         id="contest-manager"
                         title={t('contest_manager_course')}

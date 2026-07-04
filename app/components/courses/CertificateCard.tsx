@@ -15,6 +15,7 @@ interface CertificateCardProps {
     progress: number; // Percentage (e.g. 80)
     slug: string;
     badgeSrc?: string;
+    comingSoon?: boolean;
 }
 
 const CertificateCard: React.FC<CertificateCardProps> = ({
@@ -24,6 +25,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
     progress,
     slug,
     badgeSrc,
+    comingSoon = false,
 }) => {
     const { t } = useTranslation();
     const router = useRouter();
@@ -32,7 +34,13 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
     const hasStarted = progress > 0;
 
     return (
-        <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900">
+        <div
+            className={`overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-all duration-300 dark:border-neutral-800 dark:bg-neutral-900 ${
+                comingSoon
+                    ? 'opacity-85'
+                    : 'hover:-translate-y-1 hover:shadow-md'
+            }`}
+        >
             <div className="flex flex-col md:flex-row">
                 {/* Image/Badge section */}
                 <div className="bg-green-450/10 dark:bg-green-450/5 relative flex min-h-[160px] items-center justify-center p-6 md:w-48 md:flex-shrink-0">
@@ -43,11 +51,15 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                                 alt={title}
                                 width={112}
                                 height={112}
-                                className="object-cover"
+                                className={`object-cover ${comingSoon ? 'opacity-50 grayscale' : ''}`}
                             />
                         ) : (
-                            <div className="bg-green-450 flex size-full items-center justify-center text-neutral-950">
-                                <FiAward className="size-12 animate-pulse" />
+                            <div
+                                className={`bg-green-450 flex size-full items-center justify-center text-neutral-950 ${comingSoon ? 'opacity-50 grayscale' : ''}`}
+                            >
+                                <FiAward
+                                    className={`size-12 ${comingSoon ? '' : 'animate-pulse'}`}
+                                />
                             </div>
                         )}
                     </div>
@@ -61,11 +73,17 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                                 <FiClock className="size-3.5" />
                                 {duration}
                             </span>
-                            {isCompleted && (
-                                <span className="bg-green-450/20 dark:bg-green-450/10 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold text-green-800 dark:text-green-300">
-                                    <FiCheckCircle className="size-3.5" />
-                                    Completed
+                            {comingSoon ? (
+                                <span className="dark:bg-neutral-850 inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-semibold text-neutral-600 dark:text-neutral-400">
+                                    {t('coming_soon')}
                                 </span>
+                            ) : (
+                                isCompleted && (
+                                    <span className="bg-green-450/20 dark:bg-green-450/10 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold text-green-800 dark:text-green-300">
+                                        <FiCheckCircle className="size-3.5" />
+                                        Completed
+                                    </span>
+                                )
                             )}
                         </div>
 
@@ -79,7 +97,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
 
                     {/* Progress & button */}
                     <div className="space-y-4">
-                        {hasStarted && (
+                        {!comingSoon && hasStarted && (
                             <div>
                                 <div className="mb-2 flex items-center justify-between text-xs font-semibold text-neutral-500 dark:text-neutral-400">
                                     <span>Progress</span>
@@ -98,17 +116,22 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                             <div className="w-fit">
                                 <Button
                                     label={
-                                        isCompleted
-                                            ? t('course_completed')
-                                            : hasStarted
-                                              ? t('continue_course')
-                                              : t('start_course')
+                                        comingSoon
+                                            ? t('coming_soon')
+                                            : isCompleted
+                                              ? t('course_completed')
+                                              : hasStarted
+                                                ? t('continue_course')
+                                                : t('start_course')
                                     }
-                                    onClick={() =>
-                                        router.push(`/courses/${slug}`)
-                                    }
+                                    onClick={() => {
+                                        if (!comingSoon) {
+                                            router.push(`/courses/${slug}`);
+                                        }
+                                    }}
+                                    disabled={comingSoon}
                                     small
-                                    outline={isCompleted}
+                                    outline={isCompleted || comingSoon}
                                     dataCy={`start-course-${slug}`}
                                 />
                             </div>
