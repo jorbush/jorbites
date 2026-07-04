@@ -160,6 +160,7 @@ const EventsClient: React.FC<EventsClientProps> = ({ weeklyChallenge }) => {
                                 t('no_current_events') ||
                                 'No current events found'
                             }
+                            priority={true}
                         />
 
                         <EventsList
@@ -169,6 +170,7 @@ const EventsClient: React.FC<EventsClientProps> = ({ weeklyChallenge }) => {
                                 t('no_upcoming_events') ||
                                 'No upcoming events found'
                             }
+                            priority={true}
                         />
 
                         <EventsList

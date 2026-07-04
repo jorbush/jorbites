@@ -144,7 +144,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                         <div
                             key={format(day, 'yyyy-MM-dd')}
                             suppressHydrationWarning
-                            className={`relative min-h-[60px] rounded-lg border p-1 transition-all md:min-h-[100px] md:p-2 ${
+                            className={`relative h-[64px] overflow-hidden rounded-lg border p-1 transition-all md:h-[104px] md:p-2 ${
                                 isCurrentMonth
                                     ? 'border-neutral-100 bg-white dark:border-neutral-700 dark:bg-neutral-900'
                                     : 'border-transparent bg-neutral-50 text-neutral-300 dark:bg-neutral-950 dark:text-neutral-600'
@@ -172,7 +172,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                                             className="cursor-pointer"
                                             prefetch={false}
                                         >
-                                            <div className="group border-green-450 relative size-6 overflow-hidden rounded-full border md:size-8">
+                                            <div className="group border-green-450 relative size-6 overflow-hidden rounded-full border bg-neutral-100 md:size-8 dark:bg-neutral-800">
                                                 <Image
                                                     src={
                                                         event.frontmatter
