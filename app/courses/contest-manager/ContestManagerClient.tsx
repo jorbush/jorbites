@@ -36,26 +36,40 @@ import Button from '@/app/components/buttons/Button';
 const MODULES_KEY = 'jorbites_course_contest_manager_modules:v2';
 const PROGRESS_KEY = 'jorbites_course_contest_manager_progress:v2';
 
-type ModulesState = Record<string, boolean>;
+interface ModulesState {
+    [key: string]: boolean;
+}
 
-const DEFAULT_MODULES: ModulesState = {
-    requirements: false,
-    workflow: false,
-    voting: false,
-    badge: false,
-    contact: false,
-    test: false,
-};
-
+// ---------------------------------------------------------------------------
+// Helper: load progress from localStorage
+// ---------------------------------------------------------------------------
 function loadModules(): ModulesState {
-    if (typeof window === 'undefined') return DEFAULT_MODULES;
-    try {
-        const stored = localStorage.getItem(MODULES_KEY);
-        if (stored) return JSON.parse(stored) as ModulesState;
-    } catch {
-        // ignore corrupt data
+    if (typeof window === 'undefined') {
+        return {
+            requirements: false,
+            workflow: false,
+            voting: false,
+            badge: false,
+            contact: false,
+            test: false,
+        };
     }
-    return DEFAULT_MODULES;
+    const stored = localStorage.getItem(MODULES_KEY);
+    if (stored) {
+        try {
+            return JSON.parse(stored);
+        } catch {
+            // fall through
+        }
+    }
+    return {
+        requirements: false,
+        workflow: false,
+        voting: false,
+        badge: false,
+        contact: false,
+        test: false,
+    };
 }
 
 // ---------------------------------------------------------------------------
@@ -89,94 +103,115 @@ interface RequirementsModuleProps {
 const RequirementsModule: React.FC<RequirementsModuleProps> = ({
     reqs,
     onChange,
-}) => (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="mb-6 flex items-center gap-3">
-            <FcRules className="size-8" />
-            <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
-                Requirements Checklist
-            </h2>
-        </div>
-        <div className="prose prose-neutral dark:prose-invert mb-8 max-w-none text-neutral-600 dark:text-neutral-300">
-            <p>
-                To maintain the high quality of events in the Jorbites
-                community, we have established core requirements for organizing
-                contests:
-            </p>
-            <ul className="list-disc space-y-2 pl-5">
-                <li>
-                    <strong>Recipe Commitment:</strong> You must compromise that
-                    the participants of the contest will post at least 5 recipes
-                    in total during the event.
-                </li>
-                <li>
-                    <strong>Contest Theme:</strong> Define a clear culinary
-                    theme (e.g. &quot;Best Homemade Pizza&quot; or &quot;Healthy
-                    Autumn Soups&quot;) to focus participants.
-                </li>
-                <li>
-                    <strong>Visual Badge:</strong> Every contest needs a unique
-                    badge. You can easily generate it using AI (we teach you
-                    this in Module 4).
-                </li>
-                <li>
-                    <strong>Announcement details:</strong> Prep the dates,
-                    times, and gathering details so users know where and when
-                    the event is happening.
-                </li>
-            </ul>
-        </div>
+}) => {
+    const { t } = useTranslation();
+    return (
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="mb-6 flex items-center gap-3">
+                <FcRules className="size-8" />
+                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                    {t('contest_manager_course_details.requirements_title')}
+                </h2>
+            </div>
+            <div className="prose prose-neutral dark:prose-invert mb-8 max-w-none text-neutral-600 dark:text-neutral-300">
+                <p>{t('contest_manager_course_details.requirements_intro')}</p>
+                <ul className="list-disc space-y-2 pl-5">
+                    <li>
+                        <strong>
+                            {t(
+                                'contest_manager_course_details.req_recipes_label'
+                            )}
+                            :
+                        </strong>{' '}
+                        {t('contest_manager_course_details.req_recipes_desc')}
+                    </li>
+                    <li>
+                        <strong>
+                            {t(
+                                'contest_manager_course_details.req_theme_label'
+                            )}
+                            :
+                        </strong>{' '}
+                        {t('contest_manager_course_details.req_theme_desc')}
+                    </li>
+                    <li>
+                        <strong>
+                            {t(
+                                'contest_manager_course_details.req_badge_label'
+                            )}
+                            :
+                        </strong>{' '}
+                        {t('contest_manager_course_details.req_badge_desc')}
+                    </li>
+                    <li>
+                        <strong>
+                            {t(
+                                'contest_manager_course_details.req_announcement_label'
+                            )}
+                            :
+                        </strong>{' '}
+                        {t(
+                            'contest_manager_course_details.req_announcement_desc'
+                        )}
+                    </li>
+                </ul>
+            </div>
 
-        <div className="border-t border-neutral-100 pt-6 dark:border-neutral-800">
-            <h4 className="mb-4 text-sm font-bold tracking-wider text-neutral-400 uppercase">
-                Action Required: Complete Checklist
-            </h4>
-            <div className="space-y-3">
-                {(
-                    [
-                        {
-                            key: 'recipes' as const,
-                            id: 'req-recipes',
-                            label: 'I compromise that the participants will post at least 5 recipes in total during the contest.',
-                        },
-                        {
-                            key: 'theme' as const,
-                            id: 'req-theme',
-                            label: 'I have defined a clear culinary theme for my contest.',
-                        },
-                        {
-                            key: 'badge' as const,
-                            id: 'req-badge',
-                            label: 'I know how to design/generate a badge for the event.',
-                        },
-                        {
-                            key: 'announcement' as const,
-                            id: 'req-announcement',
-                            label: 'I have drafted the contest dates and location description.',
-                        },
-                    ] as const
-                ).map(({ key, id, label }) => (
-                    <label
-                        key={key}
-                        htmlFor={id}
-                        className="flex cursor-pointer items-start gap-3"
-                    >
-                        <input
-                            id={id}
-                            type="checkbox"
-                            checked={reqs[key]}
-                            onChange={(e) => onChange(key, e.target.checked)}
-                            className="text-green-450 focus:ring-green-450 mt-1 size-4 rounded-sm border-neutral-300 dark:border-neutral-800 dark:bg-neutral-950"
-                        />
-                        <span className="text-sm text-neutral-700 dark:text-neutral-300">
-                            {label}
-                        </span>
-                    </label>
-                ))}
+            <div className="border-t border-neutral-100 pt-6 dark:border-neutral-800">
+                <h4 className="mb-4 text-sm font-bold tracking-wider text-neutral-400 uppercase">
+                    {t('contest_manager_course_details.action_required')}
+                </h4>
+                <div className="space-y-3">
+                    {(
+                        [
+                            {
+                                key: 'recipes' as const,
+                                id: 'req-recipes',
+                                labelKey: 'checklist_recipes' as const,
+                            },
+                            {
+                                key: 'theme' as const,
+                                id: 'req-theme',
+                                labelKey: 'checklist_theme' as const,
+                            },
+                            {
+                                key: 'badge' as const,
+                                id: 'req-badge',
+                                labelKey: 'checklist_badge' as const,
+                            },
+                            {
+                                key: 'announcement' as const,
+                                id: 'req-announcement',
+                                labelKey: 'checklist_announcement' as const,
+                            },
+                        ] as const
+                    ).map(({ key, id, labelKey }) => (
+                        <label
+                            key={key}
+                            htmlFor={id}
+                            className="flex cursor-pointer items-start gap-3"
+                        >
+                            <input
+                                id={id}
+                                type="checkbox"
+                                checked={reqs[key]}
+                                onChange={(e) =>
+                                    onChange(key, e.target.checked)
+                                }
+                                className="text-green-450 focus:ring-green-450 mt-1 size-4 rounded-sm border-neutral-300 dark:border-neutral-800 dark:bg-neutral-950"
+                            />
+                            <span className="text-sm text-neutral-700 dark:text-neutral-300">
+                                {t(
+                                    `contest_manager_course_details.${labelKey}`
+                                )}
+                            </span>
+                        </label>
+                    ))}
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 // ---------------------------------------------------------------------------
 
@@ -186,115 +221,101 @@ interface WorkflowModuleProps {
     onComplete: () => void;
 }
 
-const WORKFLOW_STEPS = [
-    {
-        step: 1,
-        title: 'Step 1: Get Approved',
-        desc: 'Contact administrators (email or instagram) with your planned contest theme and confirm you meet the 5-recipe requirement.',
-    },
-    {
-        step: 2,
-        title: 'Step 2: Announce on Jorbites',
-        desc: 'Once approved, administrators will post your event to the official Jorbites Events calendar so participants can discover it.',
-    },
-    {
-        step: 3,
-        title: 'Step 3: Notify & Invite Participants',
-        desc: 'Share the events page link with your closed circle, friends, and community members.',
-    },
-    {
-        step: 4,
-        title: 'Step 4: Contest Day',
-        desc: 'Everyone gathers, preps their ingredients, posts their cooking recipe on the platform, and eats the delicious results together.',
-    },
-    {
-        step: 5,
-        title: 'Step 5: Votation',
-        desc: 'Once everyone finished eating, participants submit their votes via the Jorbites Google Form template.',
-    },
-];
-
 const WorkflowModule: React.FC<WorkflowModuleProps> = ({
     workflowStep,
     onNextStep,
     onComplete,
-}) => (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="mb-6 flex items-center gap-3">
-            <FcProcess className="size-8" />
-            <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
-                Contest Workflow
-            </h2>
-        </div>
-        <div className="mb-8 space-y-6">
-            {WORKFLOW_STEPS.map((item) => {
-                const isActive = workflowStep >= item.step;
-                return (
-                    <div
-                        key={item.step}
-                        className="flex gap-4"
-                    >
-                        <div className="flex flex-col items-center">
-                            <div
-                                className={`flex size-6 items-center justify-center rounded-full border-2 text-xs font-bold transition-all duration-300 ${
-                                    isActive
-                                        ? 'bg-green-450 border-green-450 text-neutral-950'
-                                        : 'border-neutral-300 bg-neutral-100 text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800'
-                                }`}
-                            >
-                                {item.step}
-                            </div>
-                            {item.step < 5 && (
-                                <div
-                                    className={`w-0.5 grow transition-all duration-300 ${
-                                        workflowStep > item.step
-                                            ? 'bg-green-450'
-                                            : 'bg-neutral-200 dark:bg-neutral-800'
-                                    }`}
-                                />
-                            )}
-                        </div>
+}) => {
+    const { t } = useTranslation();
+    return (
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="mb-6 flex items-center gap-3">
+                <FcProcess className="size-8" />
+                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                    {t('contest_manager_course_details.workflow_title')}
+                </h2>
+            </div>
+            <div className="mb-8 space-y-6">
+                {[1, 2, 3, 4, 5].map((step) => {
+                    const isActive = workflowStep >= step;
+                    return (
                         <div
-                            className={`pb-6 transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-40'}`}
+                            key={step}
+                            className="flex gap-4"
                         >
-                            <h4 className="text-base font-bold text-neutral-900 dark:text-white">
-                                {item.title}
-                            </h4>
-                            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                                {item.desc}
-                            </p>
+                            <div className="flex flex-col items-center">
+                                <div
+                                    className={`flex size-6 items-center justify-center rounded-full border-2 text-xs font-bold transition-all duration-300 ${
+                                        isActive
+                                            ? 'bg-green-450 border-green-450 text-neutral-950'
+                                            : 'border-neutral-300 bg-neutral-100 text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800'
+                                    }`}
+                                >
+                                    {step}
+                                </div>
+                                {step < 5 && (
+                                    <div
+                                        className={`w-0.5 grow transition-all duration-300 ${
+                                            workflowStep > step
+                                                ? 'bg-green-450'
+                                                : 'bg-neutral-200 dark:bg-neutral-800'
+                                        }`}
+                                    />
+                                )}
+                            </div>
+                            <div
+                                className={`pb-6 transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-40'}`}
+                            >
+                                <h4 className="text-base font-bold text-neutral-900 dark:text-white">
+                                    {t(
+                                        `contest_manager_course_details.workflow_step${step}_title`
+                                    )}
+                                </h4>
+                                <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+                                    {t(
+                                        `contest_manager_course_details.workflow_step${step}_desc`
+                                    )}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                );
-            })}
-        </div>
+                    );
+                })}
+            </div>
 
-        <div className="flex items-center justify-between border-t border-neutral-100 pt-6 dark:border-neutral-800">
-            <span className="text-xs font-semibold text-neutral-500 uppercase">
-                Interactive Walkthrough ({workflowStep}/5)
-            </span>
-            <div className="flex gap-2">
-                {workflowStep < 5 ? (
-                    <div className="w-fit">
-                        <Button
-                            label="Next Step"
-                            onClick={onNextStep}
-                            small
-                        />
-                    </div>
-                ) : (
-                    <div className="w-fit">
-                        <Button
-                            label="Mark Completed"
-                            onClick={onComplete}
-                            small
-                        />
-                    </div>
-                )}
+            <div className="flex items-center justify-between border-t border-neutral-100 pt-6 dark:border-neutral-800">
+                <span className="text-xs font-semibold text-neutral-500 uppercase">
+                    {t(
+                        'contest_manager_course_details.interactive_walkthrough'
+                    )}{' '}
+                    ({workflowStep}/5)
+                </span>
+                <div className="flex gap-2">
+                    {workflowStep < 5 ? (
+                        <div className="w-fit">
+                            <Button
+                                label={t(
+                                    'contest_manager_course_details.next_step'
+                                )}
+                                onClick={onNextStep}
+                                small
+                            />
+                        </div>
+                    ) : (
+                        <div className="w-fit">
+                            <Button
+                                label={t(
+                                    'contest_manager_course_details.mark_completed'
+                                )}
+                                onClick={onComplete}
+                                small
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 // ---------------------------------------------------------------------------
 
@@ -314,106 +335,112 @@ const VotingModule: React.FC<VotingModuleProps> = ({
     onRecipeUrlChange,
     generatedFormUrl,
     onCopyFormLink,
-}) => (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="mb-6 flex items-center gap-3">
-            <FcSurvey className="size-8" />
-            <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
-                Voting Integration
-            </h2>
-        </div>
-        <div className="prose prose-neutral dark:prose-invert mb-6 max-w-none space-y-4 text-neutral-600 dark:text-neutral-300">
-            <p>
-                Voting is conducted via a dedicated Google Form which
-                automatically maps votes to specific participants and recipes.
-            </p>
-            <p className="text-sm">
-                The form link accepts two query parameters to prefill the
-                participant details:
-            </p>
-            <ul className="list-disc space-y-1 pl-5 text-sm">
-                <li>
-                    <code>entry.342170842</code>: The URL of the posted recipe
-                    (found by clicking the recipe &quot;Share&quot; button).
-                </li>
-                <li>
-                    <code>entry.767643834</code>: The participant user ID
-                    (extracted from their Jorbites profile URL, e.g.{' '}
-                    <code>/profile/{'{id}'}</code>).
-                </li>
-            </ul>
-        </div>
-
-        {/* URL Prefill Builder Simulator */}
-        <div className="mb-6 rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-800 dark:bg-neutral-950/40">
-            <h4 className="mb-3 text-sm font-bold text-neutral-800 dark:text-neutral-200">
-                Live Voting URL Builder
-            </h4>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                    <label
-                        htmlFor="voting-recipe-url"
-                        className="mb-1 block text-xs font-semibold text-neutral-500 dark:text-neutral-400"
-                    >
-                        Participant Recipe URL
-                    </label>
-                    <input
-                        id="voting-recipe-url"
-                        type="text"
-                        value={participantRecipeUrl}
-                        onChange={(e) => onRecipeUrlChange(e.target.value)}
-                        placeholder="e.g. https://jorbites.com/recipes/clw8s0921"
-                        className="focus:border-green-450 w-full rounded-lg border border-neutral-200 px-3 py-2 text-xs focus:outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-white"
-                    />
-                </div>
-                <div>
-                    <label
-                        htmlFor="voting-user-id"
-                        className="mb-1 block text-xs font-semibold text-neutral-500 dark:text-neutral-400"
-                    >
-                        Participant User ID
-                    </label>
-                    <input
-                        id="voting-user-id"
-                        type="text"
-                        value={participantUserId}
-                        onChange={(e) => onUserIdChange(e.target.value)}
-                        placeholder="e.g. clw8a4128"
-                        className="focus:border-green-450 w-full rounded-lg border border-neutral-200 px-3 py-2 text-xs focus:outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-white"
-                    />
-                </div>
+}) => {
+    const { t } = useTranslation();
+    return (
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="mb-6 flex items-center gap-3">
+                <FcSurvey className="size-8" />
+                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                    {t('contest_manager_course_details.voting_title')}
+                </h2>
+            </div>
+            <div className="prose prose-neutral dark:prose-invert mb-6 max-w-none space-y-4 text-neutral-600 dark:text-neutral-300">
+                <p>{t('contest_manager_course_details.voting_desc1')}</p>
+                <p className="text-sm">
+                    {t('contest_manager_course_details.voting_desc2')}
+                </p>
+                <ul className="list-disc space-y-1 pl-5 text-sm">
+                    <li>
+                        <code>entry.342170842</code>:{' '}
+                        {t(
+                            'contest_manager_course_details.voting_param_recipe'
+                        )}
+                    </li>
+                    <li>
+                        <code>entry.767643834</code>:{' '}
+                        {t('contest_manager_course_details.voting_param_user')}
+                    </li>
+                </ul>
             </div>
 
-            <div className="mt-4 border-t border-neutral-200/55 pt-4 dark:border-neutral-800">
-                <label
-                    htmlFor="voting-generated-url"
-                    className="mb-1 block text-xs font-semibold text-neutral-500 dark:text-neutral-400"
-                >
-                    Generated Google Form Link
-                </label>
-                <div className="flex gap-2">
-                    <input
-                        id="voting-generated-url"
-                        type="text"
-                        readOnly
-                        value={generatedFormUrl}
-                        aria-label="Generated Google Form voting link"
-                        className="flex-1 rounded-lg border border-neutral-200 bg-neutral-100 px-3 py-2 text-[10px] text-neutral-600 focus:outline-hidden dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-400"
-                    />
-                    <button
-                        type="button"
-                        onClick={onCopyFormLink}
-                        aria-label="Copy generated form link and complete module"
-                        className="bg-green-450 inline-flex cursor-pointer items-center justify-center rounded-lg px-3 text-xs font-semibold text-neutral-950 transition hover:opacity-90"
-                        title="Copy & Complete Module"
+            {/* URL Prefill Builder Simulator */}
+            <div className="mb-6 rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-800 dark:bg-neutral-950/40">
+                <h4 className="mb-3 text-sm font-bold text-neutral-800 dark:text-neutral-200">
+                    {t('contest_manager_course_details.voting_builder_title')}
+                </h4>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                        <label
+                            htmlFor="voting-recipe-url"
+                            className="mb-1 block text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+                        >
+                            {t(
+                                'contest_manager_course_details.voting_recipe_label'
+                            )}
+                        </label>
+                        <input
+                            id="voting-recipe-url"
+                            type="text"
+                            value={participantRecipeUrl}
+                            onChange={(e) => onRecipeUrlChange(e.target.value)}
+                            placeholder="e.g. https://jorbites.com/recipes/clw8s0921"
+                            className="focus:border-green-450 w-full rounded-lg border border-neutral-200 px-3 py-2 text-xs focus:outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-white"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            htmlFor="voting-user-id"
+                            className="mb-1 block text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+                        >
+                            {t(
+                                'contest_manager_course_details.voting_user_label'
+                            )}
+                        </label>
+                        <input
+                            id="voting-user-id"
+                            type="text"
+                            value={participantUserId}
+                            onChange={(e) => onUserIdChange(e.target.value)}
+                            placeholder="e.g. clw8a4128"
+                            className="focus:border-green-450 w-full rounded-lg border border-neutral-200 px-3 py-2 text-xs focus:outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-white"
+                        />
+                    </div>
+                </div>
+
+                <div className="mt-4 border-t border-neutral-200/55 pt-4 dark:border-neutral-800">
+                    <label
+                        htmlFor="voting-generated-url"
+                        className="mb-1 block text-xs font-semibold text-neutral-500 dark:text-neutral-400"
                     >
-                        <FiCopy className="size-4" />
-                    </button>
+                        {t(
+                            'contest_manager_course_details.voting_generated_label'
+                        )}
+                    </label>
+                    <div className="flex gap-2">
+                        <input
+                            id="voting-generated-url"
+                            type="text"
+                            readOnly
+                            value={generatedFormUrl}
+                            aria-label="Generated Google Form voting link"
+                            className="flex-1 rounded-lg border border-neutral-200 bg-neutral-100 px-3 py-2 text-[10px] text-neutral-600 focus:outline-hidden dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-400"
+                        />
+                        <button
+                            type="button"
+                            onClick={onCopyFormLink}
+                            aria-label="Copy generated form link and complete module"
+                            className="bg-green-450 inline-flex cursor-pointer items-center justify-center rounded-lg px-3 text-xs font-semibold text-neutral-950 transition hover:opacity-90"
+                            title="Copy & Complete Module"
+                        >
+                            <FiCopy className="size-4" />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 // ---------------------------------------------------------------------------
 
@@ -431,67 +458,66 @@ const BadgeModule: React.FC<BadgeModuleProps> = ({
     copiedBadgePrompt,
     onTopicChange,
     onCopyPrompt,
-}) => (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="mb-6 flex items-center gap-3">
-            <FcPicture className="size-8" />
-            <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
-                Generating Badges with AI
-            </h2>
-        </div>
-        <div className="prose prose-neutral dark:prose-invert mb-6 max-w-none space-y-4 text-neutral-600 dark:text-neutral-300">
-            <p>
-                Contest organizers create stylized badges for winners and
-                participants using AI image generators.
-            </p>
-            <p className="text-sm">
-                By using a consistent vintage cartoon theme, we maintain a
-                beautiful cohesive design language across all events.
-            </p>
-        </div>
-
-        <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-800 dark:bg-neutral-950/40">
-            <h4 className="mb-3 text-sm font-bold text-neutral-800 dark:text-neutral-200">
-                AI Prompt Builder
-            </h4>
-            <div className="mb-4">
-                <label
-                    htmlFor="badge-topic"
-                    className="mb-1 block text-xs font-semibold text-neutral-500 dark:text-neutral-400"
-                >
-                    What recipe/topic is the contest about? (X)
-                </label>
-                <input
-                    id="badge-topic"
-                    type="text"
-                    value={badgeXTopic}
-                    onChange={(e) => onTopicChange(e.target.value)}
-                    placeholder="e.g. Sushi, Burgers, Vegan Soups"
-                    className="focus:border-green-450 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-white"
-                />
+}) => {
+    const { t } = useTranslation();
+    return (
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="mb-6 flex items-center gap-3">
+                <FcPicture className="size-8" />
+                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                    {t('contest_manager_course_details.badge_title')}
+                </h2>
             </div>
-
-            <div className="relative rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950">
-                <p className="pr-8 font-mono text-xs leading-relaxed text-neutral-700 dark:text-neutral-300">
-                    {rawBadgePrompt}
+            <div className="prose prose-neutral dark:prose-invert mb-6 max-w-none space-y-4 text-neutral-600 dark:text-neutral-300">
+                <p>{t('contest_manager_course_details.badge_desc1')}</p>
+                <p className="text-sm">
+                    {t('contest_manager_course_details.badge_desc2')}
                 </p>
-                <button
-                    type="button"
-                    onClick={onCopyPrompt}
-                    aria-label="Copy AI badge prompt"
-                    className="absolute top-3 right-3 text-neutral-500 transition hover:text-neutral-800 dark:hover:text-white"
-                    title="Copy prompt"
-                >
-                    {copiedBadgePrompt ? (
-                        <FiCheck className="text-green-450 size-4" />
-                    ) : (
-                        <FiCopy className="size-4" />
-                    )}
-                </button>
+            </div>
+
+            <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-800 dark:bg-neutral-950/40">
+                <h4 className="mb-3 text-sm font-bold text-neutral-800 dark:text-neutral-200">
+                    {t('contest_manager_course_details.badge_builder_title')}
+                </h4>
+                <div className="mb-4">
+                    <label
+                        htmlFor="badge-topic"
+                        className="mb-1 block text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+                    >
+                        {t('contest_manager_course_details.badge_topic_label')}
+                    </label>
+                    <input
+                        id="badge-topic"
+                        type="text"
+                        value={badgeXTopic}
+                        onChange={(e) => onTopicChange(e.target.value)}
+                        placeholder="e.g. Sushi, Burgers, Vegan Soups"
+                        className="focus:border-green-450 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-white"
+                    />
+                </div>
+
+                <div className="relative rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950">
+                    <p className="pr-8 font-mono text-xs leading-relaxed text-neutral-700 dark:text-neutral-300">
+                        {rawBadgePrompt}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={onCopyPrompt}
+                        aria-label="Copy AI badge prompt"
+                        className="absolute top-3 right-3 text-neutral-500 transition hover:text-neutral-800 dark:hover:text-white"
+                        title="Copy prompt"
+                    >
+                        {copiedBadgePrompt ? (
+                            <FiCheck className="text-green-450 size-4" />
+                        ) : (
+                            <FiCopy className="size-4" />
+                        )}
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 // ---------------------------------------------------------------------------
 
@@ -499,54 +525,54 @@ interface ContactModuleProps {
     onContactClick: () => void;
 }
 
-const ContactModule: React.FC<ContactModuleProps> = ({ onContactClick }) => (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="mb-6 flex items-center gap-3">
-            <FcFeedback className="size-8" />
-            <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
-                Contacting Administrators
-            </h2>
-        </div>
-        <div className="prose prose-neutral dark:prose-invert mb-8 max-w-none space-y-4 text-neutral-600 dark:text-neutral-300">
-            <p>
-                Once you have the badge, details, and requirements ready, reach
-                out to the Jorbites admin team. They will verify your
-                requirements (including checking if you have posted at least 5
-                recipes) and add the contest to the events feed.
-            </p>
-        </div>
+const ContactModule: React.FC<ContactModuleProps> = ({ onContactClick }) => {
+    const { t } = useTranslation();
+    return (
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="mb-6 flex items-center gap-3">
+                <FcFeedback className="size-8" />
+                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                    {t('contest_manager_course_details.contact_title')}
+                </h2>
+            </div>
+            <div className="prose prose-neutral dark:prose-invert mb-8 max-w-none space-y-4 text-neutral-600 dark:text-neutral-300">
+                <p>{t('contest_manager_course_details.contact_desc')}</p>
+            </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <a
-                href="mailto:jbonetv5@gmail.com?subject=Jorbites%20New%20Contest%20Request&body=Hi%20Jorbites%20Team%2C%0A%0AI%20would%20like%20to%20organize%20a%20new%20cooking%20contest%20with%20my%20friends.%0A%0ATheme%3A%20%0ADate%20%26%20Time%3A%20%0AMy%20User%20Profile%20URL%3A%20"
-                onClick={onContactClick}
-                className="flex flex-col items-center justify-center rounded-xl border border-neutral-200 p-6 text-center transition hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800/40"
-            >
-                <FiMail className="text-green-450 mb-3 size-8" />
-                <span className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
-                    Send Email Request
-                </span>
-                <span className="mt-1 text-xs text-neutral-500">
-                    jbonetv5@gmail.com
-                </span>
-            </a>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <a
+                    href="mailto:jbonetv5@gmail.com?subject=Jorbites%20New%20Contest%20Request&body=Hi%20Jorbites%20Team%2C%0A%0AI%20would%20like%20to%20organize%20a%20new%20cooking%20contest%20with%20my%20friends.%0A%0ATheme%3A%20%0ADate%20%26%20Time%3A%20%0AMy%20User%20Profile%20URL%3A%20"
+                    onClick={onContactClick}
+                    className="flex flex-col items-center justify-center rounded-xl border border-neutral-200 p-6 text-center transition hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800/40"
+                >
+                    <FiMail className="text-green-450 mb-3 size-8" />
+                    <span className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                        {t('contest_manager_course_details.send_email')}
+                    </span>
+                    <span className="mt-1 text-xs text-neutral-500">
+                        jbonetv5@gmail.com
+                    </span>
+                </a>
 
-            <a
-                href="https://instagram.com/jorbites"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={onContactClick}
-                className="flex flex-col items-center justify-center rounded-xl border border-neutral-200 p-6 text-center transition hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800/40"
-            >
-                <FiInstagram className="mb-3 size-8 text-[#E1306C]" />
-                <span className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
-                    Instagram Direct Message
-                </span>
-                <span className="mt-1 text-xs text-neutral-500">@jorbites</span>
-            </a>
+                <a
+                    href="https://instagram.com/jorbites"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={onContactClick}
+                    className="flex flex-col items-center justify-center rounded-xl border border-neutral-200 p-6 text-center transition hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800/40"
+                >
+                    <FiInstagram className="mb-3 size-8 text-[#E1306C]" />
+                    <span className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                        {t('contest_manager_course_details.instagram_dm')}
+                    </span>
+                    <span className="mt-1 text-xs text-neutral-500">
+                        @jorbites
+                    </span>
+                </a>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 // ---------------------------------------------------------------------------
 // Main component
@@ -696,7 +722,9 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
                 <SectionHeader
                     icon={FcDiploma1}
                     title={t('contest_manager_course')}
-                    description="Complete the 5 lessons and pass the final test to receive your official Jorbites certificate."
+                    description={t(
+                        'contest_manager_course_details.course_description'
+                    )}
                 />
 
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
@@ -704,7 +732,7 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
                     <div className="md:col-span-4 lg:col-span-3">
                         <div className="sticky top-24 rounded-2xl border border-neutral-200 bg-white p-4 shadow-xs dark:border-neutral-800 dark:bg-neutral-900">
                             <h4 className="mb-4 px-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase dark:text-neutral-500">
-                                Course Steps
+                                {t('course_steps')}
                             </h4>
                             <CourseStepper
                                 modules={modules}

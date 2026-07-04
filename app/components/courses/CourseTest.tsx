@@ -285,7 +285,10 @@ const QuizResults: React.FC<QuizResultsProps> = ({
                                         </p>
                                         <div className="mt-2 space-y-1 text-xs">
                                             <p className="text-neutral-600 dark:text-neutral-400">
-                                                Your answer:{' '}
+                                                {t(
+                                                    'contest_manager_course_details.your_answer'
+                                                )}
+                                                :{' '}
                                                 <span className="font-semibold">
                                                     {q.options[currentLang][
                                                         userAnswers[idx]
@@ -294,7 +297,10 @@ const QuizResults: React.FC<QuizResultsProps> = ({
                                             </p>
                                             {!isCorrect && (
                                                 <p className="font-semibold text-green-600 dark:text-green-400">
-                                                    Correct answer:{' '}
+                                                    {t(
+                                                        'contest_manager_course_details.correct_answer'
+                                                    )}
+                                                    :{' '}
                                                     <span>
                                                         {
                                                             q.options[
@@ -389,9 +395,7 @@ const CourseTest: React.FC<CourseTestProps> = ({ questions, onPass }) => {
                     {t('final_test')}
                 </h3>
                 <p className="mx-auto mb-6 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
-                    Test your knowledge with 10 random multiple-choice
-                    questions. You need at least 80% (8 correct answers) to pass
-                    and receive the Contest Manager Certificate.
+                    {t('contest_manager_course_details.final_test_description')}
                 </p>
                 <div className="mx-auto w-fit">
                     <Button

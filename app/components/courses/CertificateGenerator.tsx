@@ -131,7 +131,7 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
     return (
         <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
             <h3 className="mb-4 text-xl font-bold text-neutral-900 dark:text-white">
-                Download Your Certificate
+                {t('contest_manager_course_details.download_your_certificate')}
             </h3>
 
             {!submitted ? (
@@ -140,14 +140,17 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
                     className="space-y-4"
                 >
                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                        Please enter the name you want to appear on the official
-                        certificate:
+                        {t(
+                            'contest_manager_course_details.enter_certificate_name_desc'
+                        )}
                     </p>
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
                         <div className="grow">
                             <Input
                                 id="certificateName"
-                                label="Your full name"
+                                label={t(
+                                    'contest_manager_course_details.your_full_name'
+                                )}
                                 register={register}
                                 errors={errors}
                                 required
@@ -155,7 +158,9 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
                         </div>
                         <div className="w-40 shrink-0">
                             <Button
-                                label="Confirm"
+                                label={t(
+                                    'contest_manager_course_details.confirm'
+                                )}
                                 type="submit"
                                 disabled={!watchName?.trim()}
                                 className="py-5"
@@ -169,7 +174,10 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
                         <FiCheck className="size-5 flex-shrink-0" />
                         <div>
                             <p className="text-sm font-semibold">
-                                Name confirmed: {name}
+                                {t(
+                                    'contest_manager_course_details.name_confirmed'
+                                )}
+                                : {name}
                             </p>
                             <button
                                 type="button"
@@ -179,7 +187,9 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
                                 }}
                                 className="text-xs text-green-600 underline hover:text-green-700 dark:text-green-400"
                             >
-                                Change Name
+                                {t(
+                                    'contest_manager_course_details.change_name'
+                                )}
                             </button>
                         </div>
                     </div>
