@@ -1,15 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useReducer, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Question } from '@/app/certificates/contest-manager/contestManagerQuestions';
-import {
-    FiCheckCircle,
-    FiXCircle,
-    FiRotateCcw,
-    FiAward,
-    FiArrowRight,
-} from 'react-icons/fi';
+import { FiCheckCircle, FiXCircle, FiAward } from 'react-icons/fi';
 import Button from '@/app/components/buttons/Button';
 import confetti from 'canvas-confetti';
 
@@ -18,193 +12,195 @@ interface CourseTestProps {
     onPass: () => void;
 }
 
-const CourseTest: React.FC<CourseTestProps> = ({ questions, onPass }) => {
-    const { t, i18n } = useTranslation();
-    const currentLang =
-        i18n.language === 'es' || i18n.language === 'ca' ? i18n.language : 'en';
+// ---------------------------------------------------------------------------
+// Reducer
+// ---------------------------------------------------------------------------
 
-    const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [selectedOption, setSelectedOption] = useState<number | null>(null);
-    const [userAnswers, setUserAnswers] = useState<number[]>([]);
-    const [quizStatus, setQuizStatus] = useState<
-        'idle' | 'testing' | 'results'
-    >('idle');
+type QuizStatus = 'idle' | 'testing' | 'results';
 
-    // Shuffle questions logic
-    const startQuiz = () => {
-        const shuffled = [...questions].sort(() => Math.random() - 0.5);
-        setShuffledQuestions(shuffled);
-        setCurrentIndex(0);
-        setSelectedOption(null);
-        setUserAnswers([]);
-        setQuizStatus('testing');
-    };
+interface QuizState {
+    shuffledQuestions: Question[];
+    currentIndex: number;
+    selectedOption: number | null;
+    userAnswers: number[];
+    status: QuizStatus;
+}
 
-    const handleSelectOption = (index: number) => {
-        setSelectedOption(index);
-    };
+type QuizAction =
+    | { type: 'START'; shuffled: Question[] }
+    | { type: 'SELECT'; index: number }
+    | { type: 'NEXT' }
+    | { type: 'RESET'; shuffled: Question[] };
 
-    const handleNext = () => {
-        if (selectedOption === null) return;
+const initialState: QuizState = {
+    shuffledQuestions: [],
+    currentIndex: 0,
+    selectedOption: null,
+    userAnswers: [],
+    status: 'idle',
+};
 
-        const nextAnswers = [...userAnswers, selectedOption];
-        setUserAnswers(nextAnswers);
-        setSelectedOption(null);
+function quizReducer(state: QuizState, action: QuizAction): QuizState {
+    switch (action.type) {
+        case 'START':
+        case 'RESET':
+            return {
+                shuffledQuestions: action.shuffled,
+                currentIndex: 0,
+                selectedOption: null,
+                userAnswers: [],
+                status: 'testing',
+            };
+        case 'SELECT':
+            return { ...state, selectedOption: action.index };
+        case 'NEXT': {
+            if (state.selectedOption === null) return state;
+            const nextAnswers = [...state.userAnswers, state.selectedOption];
+            const isLast =
+                state.currentIndex >= state.shuffledQuestions.length - 1;
 
-        if (currentIndex < shuffledQuestions.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-        } else {
-            // Calculate final score
-            let correctCount = 0;
-            shuffledQuestions.forEach((q, idx) => {
-                if (nextAnswers[idx] === q.correctIndex) {
-                    correctCount++;
-                }
-            });
-
-            const passingScore = Math.ceil(shuffledQuestions.length * 0.8);
-            const isPass = correctCount >= passingScore;
-
-            setQuizStatus('results');
-
-            if (isPass) {
-                // Confetti celebration
-                confetti({
-                    particleCount: 150,
-                    spread: 80,
-                    origin: { y: 0.6 },
-                });
-                onPass();
+            if (!isLast) {
+                return {
+                    ...state,
+                    userAnswers: nextAnswers,
+                    selectedOption: null,
+                    currentIndex: state.currentIndex + 1,
+                };
             }
+
+            return {
+                ...state,
+                userAnswers: nextAnswers,
+                selectedOption: null,
+                status: 'results',
+            };
         }
-    };
+        default:
+            return state;
+    }
+}
 
-    const score = useMemo(() => {
-        if (quizStatus !== 'results') return 0;
-        let correctCount = 0;
-        shuffledQuestions.forEach((q, idx) => {
-            if (userAnswers[idx] === q.correctIndex) {
-                correctCount++;
-            }
-        });
-        return correctCount;
-    }, [quizStatus, shuffledQuestions, userAnswers]);
+// ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
 
-    const isPassed = score >= Math.ceil(shuffledQuestions.length * 0.8);
+interface QuizQuestionProps {
+    question: Question;
+    currentIndex: number;
+    total: number;
+    selectedOption: number | null;
+    currentLang: 'en' | 'es' | 'ca';
+    onSelect: (idx: number) => void;
+    onNext: () => void;
+}
 
-    if (quizStatus === 'idle') {
-        return (
-            <div className="rounded-2xl bg-neutral-50 p-8 text-center dark:bg-neutral-800/30">
-                <div className="bg-green-450/20 dark:bg-green-450/10 mx-auto mb-4 flex size-16 items-center justify-center rounded-full text-green-800 dark:text-green-300">
-                    <FiAward className="size-8" />
+const QuizQuestion: React.FC<QuizQuestionProps> = ({
+    question,
+    currentIndex,
+    total,
+    selectedOption,
+    currentLang,
+    onSelect,
+    onNext,
+}) => {
+    const progressPercent = ((currentIndex + 1) / total) * 100;
+
+    return (
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
+            {/* Progress bar */}
+            <div className="mb-6">
+                <div className="flex items-center justify-between text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                    <span>
+                        Question {currentIndex + 1} of {total}
+                    </span>
+                    <span>{Math.round(progressPercent)}%</span>
                 </div>
-                <h3 className="mb-2 text-xl font-bold text-neutral-900 dark:text-white">
-                    {t('final_test')}
-                </h3>
-                <p className="mx-auto mb-6 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
-                    Test your knowledge with 10 random multiple-choice
-                    questions. You need at least 80% (8 correct answers) to pass
-                    and receive the Contest Manager Certificate.
-                </p>
-                <div className="mx-auto w-fit">
-                    <Button
-                        label={t('start_course')}
-                        onClick={startQuiz}
-                        small
-                        dataCy="start-quiz-button"
+                <div className="mt-2 h-2 w-full rounded-full bg-neutral-100 dark:bg-neutral-800">
+                    <div
+                        className="bg-green-450 h-full rounded-full transition-all duration-300"
+                        style={{ width: `${progressPercent}%` }}
                     />
                 </div>
             </div>
-        );
-    }
 
-    if (quizStatus === 'testing') {
-        const currentQuestion = shuffledQuestions[currentIndex];
-        if (!currentQuestion) return null;
+            {/* Question */}
+            <h3 className="mb-6 text-lg font-semibold text-neutral-900 sm:text-xl dark:text-white">
+                {question.question[currentLang]}
+            </h3>
 
-        const progressPercent =
-            ((currentIndex + 1) / shuffledQuestions.length) * 100;
-
-        return (
-            <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
-                {/* Progress bar */}
-                <div className="mb-6">
-                    <div className="flex items-center justify-between text-xs font-semibold text-neutral-500 dark:text-neutral-400">
-                        <span>
-                            Question {currentIndex + 1} of{' '}
-                            {shuffledQuestions.length}
-                        </span>
-                        <span>{Math.round(progressPercent)}%</span>
-                    </div>
-                    <div className="mt-2 h-2 w-full rounded-full bg-neutral-100 dark:bg-neutral-800">
-                        <div
-                            className="bg-green-450 h-full rounded-full transition-all duration-300"
-                            style={{ width: `${progressPercent}%` }}
-                        />
-                    </div>
-                </div>
-
-                {/* Question */}
-                <h3 className="mb-6 text-lg font-semibold text-neutral-900 sm:text-xl dark:text-white">
-                    {currentQuestion.question[currentLang]}
-                </h3>
-
-                {/* Options list */}
-                <div className="mb-8 space-y-3">
-                    {currentQuestion.options[currentLang].map((option, idx) => {
-                        const isSelected = selectedOption === idx;
-                        return (
-                            <button
-                                key={idx}
-                                type="button"
-                                onClick={() => handleSelectOption(idx)}
-                                className={`flex w-full cursor-pointer items-center justify-between rounded-xl border p-4 text-left font-medium transition focus:outline-hidden ${
+            {/* Options list */}
+            <div className="mb-8 space-y-3">
+                {question.options[currentLang].map((option, idx) => {
+                    const isSelected = selectedOption === idx;
+                    return (
+                        <button
+                            key={option}
+                            type="button"
+                            onClick={() => onSelect(idx)}
+                            className={`flex w-full cursor-pointer items-center justify-between rounded-xl border p-4 text-left font-medium transition focus:outline-hidden ${
+                                isSelected
+                                    ? 'border-green-450 bg-green-450/10 text-neutral-900 dark:text-green-300'
+                                    : 'border-neutral-200 text-neutral-700 hover:bg-neutral-50 dark:border-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-800/40'
+                            }`}
+                        >
+                            <span className="text-sm sm:text-base">
+                                {option}
+                            </span>
+                            <div
+                                className={`flex size-5 items-center justify-center rounded-full border-2 ${
                                     isSelected
-                                        ? 'border-green-450 bg-green-450/10 text-neutral-900 dark:text-green-300'
-                                        : 'border-neutral-200 text-neutral-700 hover:bg-neutral-50 dark:border-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-800/40'
+                                        ? 'border-green-450 bg-green-450 text-neutral-950'
+                                        : 'border-neutral-300 dark:border-neutral-700'
                                 }`}
                             >
-                                <span className="text-sm sm:text-base">
-                                    {option}
-                                </span>
-                                <div
-                                    className={`flex size-5 items-center justify-center rounded-full border-2 ${
-                                        isSelected
-                                            ? 'border-green-450 bg-green-450 text-neutral-950'
-                                            : 'border-neutral-300 dark:border-neutral-700'
-                                    }`}
-                                >
-                                    {isSelected && (
-                                        <div className="size-2 rounded-full bg-white" />
-                                    )}
-                                </div>
-                            </button>
-                        );
-                    })}
-                </div>
+                                {isSelected && (
+                                    <div className="size-2 rounded-full bg-white" />
+                                )}
+                            </div>
+                        </button>
+                    );
+                })}
+            </div>
 
-                {/* Footer buttons */}
-                <div className="flex justify-end">
-                    <div className="w-fit">
-                        <Button
-                            label={
-                                currentIndex === shuffledQuestions.length - 1
-                                    ? 'Finish'
-                                    : 'Next'
-                            }
-                            onClick={handleNext}
-                            disabled={selectedOption === null}
-                            small
-                            dataCy="next-question-button"
-                        />
-                    </div>
+            {/* Footer */}
+            <div className="flex justify-end">
+                <div className="w-fit">
+                    <Button
+                        label={
+                            currentIndex === total - 1 ? 'Finish' : 'Next'
+                        }
+                        onClick={onNext}
+                        disabled={selectedOption === null}
+                        small
+                        dataCy="next-question-button"
+                    />
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
+};
 
-    // Results screen
+// ---------------------------------------------------------------------------
+
+interface QuizResultsProps {
+    shuffledQuestions: Question[];
+    userAnswers: number[];
+    score: number;
+    isPassed: boolean;
+    currentLang: 'en' | 'es' | 'ca';
+    onRetry: () => void;
+}
+
+const QuizResults: React.FC<QuizResultsProps> = ({
+    shuffledQuestions,
+    userAnswers,
+    score,
+    isPassed,
+    currentLang,
+    onRetry,
+}) => {
+    const { t } = useTranslation();
+
     return (
         <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
             <div className="text-center">
@@ -250,7 +246,7 @@ const CourseTest: React.FC<CourseTestProps> = ({ questions, onPass }) => {
                         <div className="mx-auto w-fit">
                             <Button
                                 label={t('retry_test')}
-                                onClick={startQuiz}
+                                onClick={onRetry}
                                 small
                                 outline
                                 dataCy="retry-quiz-button"
@@ -319,6 +315,122 @@ const CourseTest: React.FC<CourseTestProps> = ({ questions, onPass }) => {
                 </div>
             </div>
         </div>
+    );
+};
+
+// ---------------------------------------------------------------------------
+// Main component
+// ---------------------------------------------------------------------------
+
+const CourseTest: React.FC<CourseTestProps> = ({ questions, onPass }) => {
+    const { t, i18n } = useTranslation();
+    const currentLang = (
+        i18n.language === 'es' || i18n.language === 'ca' ? i18n.language : 'en'
+    ) as 'en' | 'es' | 'ca';
+
+    const [state, dispatch] = useReducer(quizReducer, initialState);
+
+    const startQuiz = () => {
+        const shuffled = questions.toSorted(() => Math.random() - 0.5);
+        dispatch({ type: 'START', shuffled });
+    };
+
+    const retryQuiz = () => {
+        const shuffled = questions.toSorted(() => Math.random() - 0.5);
+        dispatch({ type: 'RESET', shuffled });
+    };
+
+    const score = useMemo(() => {
+        if (state.status !== 'results') return 0;
+        return state.shuffledQuestions.reduce((acc, q, idx) => {
+            return acc + (state.userAnswers[idx] === q.correctIndex ? 1 : 0);
+        }, 0);
+    }, [state.status, state.shuffledQuestions, state.userAnswers]);
+
+    const isPassed = score >= Math.ceil(state.shuffledQuestions.length * 0.8);
+
+    const handleNext = () => {
+        if (state.selectedOption === null) return;
+
+        const nextAnswers = [...state.userAnswers, state.selectedOption];
+        const isLast = state.currentIndex >= state.shuffledQuestions.length - 1;
+
+        if (isLast) {
+            let correctCount = 0;
+            state.shuffledQuestions.forEach((q, idx) => {
+                if (nextAnswers[idx] === q.correctIndex) {
+                    correctCount++;
+                }
+            });
+
+            const passingScore = Math.ceil(state.shuffledQuestions.length * 0.8);
+            const isPass = correctCount >= passingScore;
+
+            if (isPass) {
+                confetti({
+                    particleCount: 150,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                });
+                onPass();
+            }
+        }
+
+        dispatch({ type: 'NEXT' });
+    };
+
+    if (state.status === 'idle') {
+        return (
+            <div className="rounded-2xl bg-neutral-50 p-8 text-center dark:bg-neutral-800/30">
+                <div className="bg-green-450/20 dark:bg-green-450/10 mx-auto mb-4 flex size-16 items-center justify-center rounded-full text-green-800 dark:text-green-300">
+                    <FiAward className="size-8" />
+                </div>
+                <h3 className="mb-2 text-xl font-bold text-neutral-900 dark:text-white">
+                    {t('final_test')}
+                </h3>
+                <p className="mx-auto mb-6 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
+                    Test your knowledge with 10 random multiple-choice
+                    questions. You need at least 80% (8 correct answers) to pass
+                    and receive the Contest Manager Certificate.
+                </p>
+                <div className="mx-auto w-fit">
+                    <Button
+                        label={t('start_course')}
+                        onClick={startQuiz}
+                        small
+                        dataCy="start-quiz-button"
+                    />
+                </div>
+            </div>
+        );
+    }
+
+    if (state.status === 'testing') {
+        const currentQuestion = state.shuffledQuestions[state.currentIndex];
+        if (!currentQuestion) return null;
+
+        return (
+            <QuizQuestion
+                question={currentQuestion}
+                currentIndex={state.currentIndex}
+                total={state.shuffledQuestions.length}
+                selectedOption={state.selectedOption}
+                currentLang={currentLang}
+                onSelect={(idx) => dispatch({ type: 'SELECT', index: idx })}
+                onNext={handleNext}
+            />
+        );
+    }
+
+    return (
+        <QuizResults
+            shuffledQuestions={state.shuffledQuestions}
+            userAnswers={state.userAnswers}
+            score={score}
+            isPassed={isPassed}
+            currentLang={currentLang}
+            onRetry={retryQuiz}
+        />
     );
 };
 

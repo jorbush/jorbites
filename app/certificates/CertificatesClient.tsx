@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
@@ -15,21 +15,17 @@ interface CertificatesClientProps {
 }
 
 const CertificatesClient: React.FC<CertificatesClientProps> = ({
-    currentUser,
+    currentUser: _currentUser,
 }) => {
     const { t } = useTranslation();
-    const [progress, setProgress] = useState(0);
-    const isMounted = useIsMounted();
-
-    useEffect(() => {
-        // Load progress from localStorage
+    const [progress] = useState<number>(() => {
+        if (typeof window === 'undefined') return 0;
         const stored = localStorage.getItem(
-            'jorbites_cert_contest_manager_progress'
+            'jorbites_cert_contest_manager_progress:v1'
         );
-        if (stored) {
-            setProgress(parseInt(stored, 10));
-        }
-    }, []);
+        return stored ? parseInt(stored, 10) : 0;
+    });
+    const isMounted = useIsMounted();
 
     if (!isMounted) {
         return null;

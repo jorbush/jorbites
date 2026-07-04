@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { IconType } from 'react-icons';
-import { FiCheck, FiCircle } from 'react-icons/fi';
+import { FiCheck } from 'react-icons/fi';
 
 interface StepperModule {
     id: string;
@@ -28,7 +28,6 @@ const CourseStepper: React.FC<CourseStepperProps> = ({
             <div className="hidden space-y-2 md:block">
                 {modules.map((mod, index) => {
                     const isActive = mod.id === activeModuleId;
-                    const Icon = mod.icon;
 
                     return (
                         <button
