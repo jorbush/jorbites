@@ -18,13 +18,23 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
     currentUser: _currentUser,
 }) => {
     const { t } = useTranslation();
-    const [progress] = useState<number>(() => {
+
+    const [progressContest] = useState<number>(() => {
         if (typeof window === 'undefined') return 0;
         const stored = localStorage.getItem(
             'jorbites_course_contest_manager_progress:v2'
         );
         return stored ? parseInt(stored, 10) : 0;
     });
+
+    const [progressLists] = useState<number>(() => {
+        if (typeof window === 'undefined') return 0;
+        const stored = localStorage.getItem(
+            'jorbites_course_recipe_lists_progress:v2'
+        );
+        return stored ? parseInt(stored, 10) : 0;
+    });
+
     const isMounted = useIsMounted();
 
     if (!isMounted) {
@@ -69,9 +79,9 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_recipe_lists')}
                         description={t('course_recipe_lists_desc')}
                         duration="30 mins"
-                        progress={0}
+                        progress={progressLists}
                         slug="recipe-lists"
-                        comingSoon
+                        badgeSrc="/badges/recipe_lists_badge.jpg"
                     />
 
                     {/* 4. Meal Planner */}
@@ -124,7 +134,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('contest_manager_course')}
                         description={t('contest_manager_description')}
                         duration="2 hours"
-                        progress={progress}
+                        progress={progressContest}
                         slug="contest-manager"
                         badgeSrc="/badges/contest_manager_badge.jpg"
                     />
