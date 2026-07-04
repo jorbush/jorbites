@@ -10,8 +10,8 @@ import {
     FiShare2,
     FiHelpCircle,
     FiChevronLeft,
+    FiCalendar,
 } from 'react-icons/fi';
-import { PiListPlusBold } from 'react-icons/pi';
 import { SafeUser } from '@/app/types';
 import toast from 'react-hot-toast';
 
@@ -21,19 +21,19 @@ import CourseStepper from '@/app/components/courses/CourseStepper';
 import CourseTest from '@/app/components/courses/CourseTest';
 import CertificateGenerator from '@/app/components/courses/CertificateGenerator';
 import Button from '@/app/components/buttons/Button';
-import { recipeListsQuestions } from './recipeListsQuestions';
+import { communityEventsQuestions } from './communityEventsQuestions';
 import useIsMounted from '@/app/hooks/useIsMounted';
 
-interface RecipeListsClientProps {
+interface CommunityEventsClientProps {
     currentUser?: SafeUser | null;
 }
 
-type StepId = 'overview' | 'creation' | 'sharing' | 'test';
+type StepId = 'overview' | 'challenges' | 'voting' | 'test';
 
-const MODULES_KEY = 'jorbites_course_recipe_lists_modules:v2';
-const PROGRESS_KEY = 'jorbites_course_recipe_lists_progress:v2';
+const MODULES_KEY = 'jorbites_course_community_events_modules:v2';
+const PROGRESS_KEY = 'jorbites_course_community_events_progress:v2';
 
-const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
+const CommunityEventsClient: React.FC<CommunityEventsClientProps> = ({
     currentUser,
 }) => {
     const { t } = useTranslation();
@@ -53,8 +53,7 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
 
     const persistModules = useCallback((updated: Record<string, boolean>) => {
         localStorage.setItem(MODULES_KEY, JSON.stringify(updated));
-        // Calculate progress percentage
-        const items = ['overview', 'creation', 'sharing', 'test'];
+        const items = ['overview', 'challenges', 'voting', 'test'];
         const completedCount = items.filter((id) => updated[id]).length;
         const progressPercentage = Math.round(
             (completedCount / items.length) * 100
@@ -79,19 +78,19 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
 
     // 1. Overview Checklist State
     const [overviewChecked, setOverviewChecked] = useState({
-        auto: false,
-        custom: false,
-        privacy: false,
-        multi: false,
+        challenge: false,
+        contest: false,
+        calendar: false,
+        voting: false,
     });
 
     useEffect(() => {
         if (completedModules['overview']) {
             setOverviewChecked({
-                auto: true,
-                custom: true,
-                privacy: true,
-                multi: true,
+                challenge: true,
+                contest: true,
+                calendar: true,
+                voting: true,
             });
         }
     }, [completedModules]);
@@ -107,8 +106,8 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
         });
     };
 
-    // Workflow current step
-    const [creationStep, setCreationStep] = useState(1);
+    // Challenges Walkthrough step
+    const [challengesStep, setChallengesStep] = useState(1);
 
     // Steps list configuration
     const steps = [
@@ -119,16 +118,16 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
             isCompleted: !!completedModules['overview'],
         },
         {
-            id: 'creation',
-            title: t('workflow'),
-            icon: PiListPlusBold,
-            isCompleted: !!completedModules['creation'],
+            id: 'challenges',
+            title: t('weekly_challenge'),
+            icon: FiCalendar,
+            isCompleted: !!completedModules['challenges'],
         },
         {
-            id: 'sharing',
-            title: t('sharing'),
+            id: 'voting',
+            title: t('voting'),
             icon: FiShare2,
-            isCompleted: !!completedModules['sharing'],
+            isCompleted: !!completedModules['voting'],
         },
         {
             id: 'test',
@@ -157,9 +156,9 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
 
                 <SectionHeader
                     icon={FiBookOpen}
-                    title={t('recipe_lists_course')}
+                    title={t('community_events_course')}
                     description={t(
-                        'recipe_lists_course_details.course_description'
+                        'community_events_course_details.course_description'
                     )}
                 />
 
@@ -189,7 +188,7 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                     <FiCheck className="size-8 text-neutral-700 dark:text-neutral-300" />
                                     <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
                                         {t(
-                                            'recipe_lists_course_details.requirements_title'
+                                            'community_events_course_details.overview_title'
                                         )}
                                     </h2>
                                 </div>
@@ -199,48 +198,48 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                         <div className="rounded-xl border border-neutral-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
                                             <h4 className="font-semibold text-neutral-900 dark:text-white">
                                                 {t(
-                                                    'recipe_lists_course_details.req_auto_label'
+                                                    'community_events_course_details.evt_challenge_label'
                                                 )}
                                             </h4>
                                             <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">
                                                 {t(
-                                                    'recipe_lists_course_details.req_auto_desc'
+                                                    'community_events_course_details.evt_challenge_desc'
                                                 )}
                                             </p>
                                         </div>
                                         <div className="rounded-xl border border-neutral-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
                                             <h4 className="font-semibold text-neutral-900 dark:text-white">
                                                 {t(
-                                                    'recipe_lists_course_details.req_custom_label'
+                                                    'community_events_course_details.evt_contest_label'
                                                 )}
                                             </h4>
                                             <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">
                                                 {t(
-                                                    'recipe_lists_course_details.req_custom_desc'
+                                                    'community_events_course_details.evt_contest_desc'
                                                 )}
                                             </p>
                                         </div>
                                         <div className="rounded-xl border border-neutral-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
                                             <h4 className="font-semibold text-neutral-900 dark:text-white">
                                                 {t(
-                                                    'recipe_lists_course_details.req_privacy_label'
+                                                    'community_events_course_details.evt_temp_label'
                                                 )}
                                             </h4>
                                             <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">
                                                 {t(
-                                                    'recipe_lists_course_details.req_privacy_desc'
+                                                    'community_events_course_details.evt_temp_desc'
                                                 )}
                                             </p>
                                         </div>
                                         <div className="rounded-xl border border-neutral-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
                                             <h4 className="font-semibold text-neutral-900 dark:text-white">
                                                 {t(
-                                                    'recipe_lists_course_details.req_multi_label'
+                                                    'community_events_course_details.evt_voting_label'
                                                 )}
                                             </h4>
                                             <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">
                                                 {t(
-                                                    'recipe_lists_course_details.req_multi_desc'
+                                                    'community_events_course_details.evt_voting_desc'
                                                 )}
                                             </p>
                                         </div>
@@ -249,7 +248,7 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                     <div className="rounded-xl bg-neutral-50 p-6 dark:bg-neutral-800/30">
                                         <h4 className="mb-4 text-sm font-bold text-neutral-800 dark:text-neutral-200">
                                             {t(
-                                                'recipe_lists_course_details.action_required'
+                                                'community_events_course_details.action_required'
                                             )}
                                         </h4>
                                         <div className="space-y-3">
@@ -257,18 +256,18 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                                 <input
                                                     type="checkbox"
                                                     checked={
-                                                        overviewChecked.auto
+                                                        overviewChecked.challenge
                                                     }
                                                     onChange={() =>
                                                         handleOverviewCheck(
-                                                            'auto'
+                                                            'challenge'
                                                         )
                                                     }
                                                     className="mt-1 accent-green-600"
                                                 />
                                                 <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                                     {t(
-                                                        'recipe_lists_course_details.checklist_auto'
+                                                        'community_events_course_details.checklist_challenge'
                                                     )}
                                                 </span>
                                             </label>
@@ -276,18 +275,18 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                                 <input
                                                     type="checkbox"
                                                     checked={
-                                                        overviewChecked.custom
+                                                        overviewChecked.contest
                                                     }
                                                     onChange={() =>
                                                         handleOverviewCheck(
-                                                            'custom'
+                                                            'contest'
                                                         )
                                                     }
                                                     className="mt-1 accent-green-600"
                                                 />
                                                 <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                                     {t(
-                                                        'recipe_lists_course_details.checklist_custom'
+                                                        'community_events_course_details.checklist_contest'
                                                     )}
                                                 </span>
                                             </label>
@@ -295,18 +294,18 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                                 <input
                                                     type="checkbox"
                                                     checked={
-                                                        overviewChecked.privacy
+                                                        overviewChecked.calendar
                                                     }
                                                     onChange={() =>
                                                         handleOverviewCheck(
-                                                            'privacy'
+                                                            'calendar'
                                                         )
                                                     }
                                                     className="mt-1 accent-green-600"
                                                 />
                                                 <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                                     {t(
-                                                        'recipe_lists_course_details.checklist_privacy'
+                                                        'community_events_course_details.checklist_temp'
                                                     )}
                                                 </span>
                                             </label>
@@ -314,18 +313,18 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                                 <input
                                                     type="checkbox"
                                                     checked={
-                                                        overviewChecked.multi
+                                                        overviewChecked.voting
                                                     }
                                                     onChange={() =>
                                                         handleOverviewCheck(
-                                                            'multi'
+                                                            'voting'
                                                         )
                                                     }
                                                     className="mt-1 accent-green-600"
                                                 />
                                                 <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                                     {t(
-                                                        'recipe_lists_course_details.checklist_multi'
+                                                        'community_events_course_details.checklist_voting'
                                                     )}
                                                 </span>
                                             </label>
@@ -339,7 +338,7 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                                     'contest_manager_course_details.next_step'
                                                 )}
                                                 onClick={() =>
-                                                    setActiveStep('creation')
+                                                    setActiveStep('challenges')
                                                 }
                                                 disabled={
                                                     !completedModules[
@@ -354,21 +353,21 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                             </div>
                         )}
 
-                        {/* 2. Creation walkthrough panel */}
-                        {activeStep === 'creation' && (
+                        {/* 2. Challenges walkthrough panel */}
+                        {activeStep === 'challenges' && (
                             <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
                                 <div className="mb-6 flex items-center gap-3">
-                                    <PiListPlusBold className="size-8 text-neutral-700 dark:text-neutral-300" />
+                                    <FiCalendar className="size-8 text-neutral-700 dark:text-neutral-300" />
                                     <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
                                         {t(
-                                            'recipe_lists_course_details.workflow_title'
+                                            'community_events_course_details.challenges_title'
                                         )}
                                     </h2>
                                 </div>
 
                                 <div className="mb-8 space-y-6">
-                                    {[1, 2, 3, 4, 5].map((step) => {
-                                        const isActive = creationStep >= step;
+                                    {[1, 2, 3].map((step) => {
+                                        const isActive = challengesStep >= step;
                                         return (
                                             <div
                                                 key={step}
@@ -384,10 +383,10 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                                     >
                                                         {step}
                                                     </div>
-                                                    {step < 5 && (
+                                                    {step < 3 && (
                                                         <div
                                                             className={`w-0.5 grow transition-all duration-300 ${
-                                                                creationStep >
+                                                                challengesStep >
                                                                 step
                                                                     ? 'bg-green-450'
                                                                     : 'bg-neutral-200 dark:bg-neutral-800'
@@ -404,12 +403,12 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                                 >
                                                     <h4 className="text-base font-bold text-neutral-900 dark:text-white">
                                                         {t(
-                                                            `recipe_lists_course_details.workflow_step${step}_title`
+                                                            `community_events_course_details.challenges_step${step}_title`
                                                         )}
                                                     </h4>
                                                     <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
                                                         {t(
-                                                            `recipe_lists_course_details.workflow_step${step}_desc`
+                                                            `community_events_course_details.challenges_step${step}_desc`
                                                         )}
                                                     </p>
                                                 </div>
@@ -423,17 +422,17 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                         {t(
                                             'contest_manager_course_details.interactive_walkthrough'
                                         )}{' '}
-                                        ({creationStep}/5)
+                                        ({challengesStep}/3)
                                     </span>
                                     <div className="flex gap-2">
-                                        {creationStep < 5 ? (
+                                        {challengesStep < 3 ? (
                                             <div className="w-fit">
                                                 <Button
                                                     label={t(
                                                         'contest_manager_course_details.next_step'
                                                     )}
                                                     onClick={() =>
-                                                        setCreationStep(
+                                                        setChallengesStep(
                                                             (prev) => prev + 1
                                                         )
                                                     }
@@ -448,11 +447,9 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                                     )}
                                                     onClick={() => {
                                                         markModuleCompleted(
-                                                            'creation'
+                                                            'challenges'
                                                         );
-                                                        setActiveStep(
-                                                            'sharing'
-                                                        );
+                                                        setActiveStep('voting');
                                                     }}
                                                     small
                                                 />
@@ -463,14 +460,14 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                             </div>
                         )}
 
-                        {/* 3. Sharing panel */}
-                        {activeStep === 'sharing' && (
+                        {/* 3. Voting panel */}
+                        {activeStep === 'voting' && (
                             <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
                                 <div className="mb-6 flex items-center gap-3">
                                     <FiShare2 className="size-8 text-neutral-700 dark:text-neutral-300" />
                                     <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
                                         {t(
-                                            'recipe_lists_course_details.sharing_title'
+                                            'community_events_course_details.voting_title'
                                         )}
                                     </h2>
                                 </div>
@@ -479,12 +476,12 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                     <div className="border-neutral-150 rounded-xl border bg-neutral-50/50 p-6 dark:border-neutral-800 dark:bg-neutral-900/50">
                                         <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
                                             {t(
-                                                'recipe_lists_course_details.sharing_desc1'
+                                                'community_events_course_details.voting_desc1'
                                             )}
                                         </p>
                                         <p className="mt-4 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
                                             {t(
-                                                'recipe_lists_course_details.sharing_desc2'
+                                                'community_events_course_details.voting_desc2'
                                             )}
                                         </p>
                                     </div>
@@ -497,7 +494,7 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                                 )}
                                                 onClick={() => {
                                                     markModuleCompleted(
-                                                        'sharing'
+                                                        'voting'
                                                     );
                                                     setActiveStep('test');
                                                 }}
@@ -515,9 +512,9 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                 {!isTestPassed ? (
                                     <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
                                         <CourseTest
-                                            questions={recipeListsQuestions}
+                                            questions={communityEventsQuestions}
                                             description={t(
-                                                'recipe_lists_course_details.final_test_description'
+                                                'community_events_course_details.final_test_description'
                                             )}
                                             onPass={() =>
                                                 markModuleCompleted('test')
@@ -536,9 +533,9 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                                         </div>
 
                                         <CertificateGenerator
-                                            courseTitle="Recipe Lists Certificate"
+                                            courseTitle="Community Events Certificate"
                                             currentUserNames={currentUser?.name}
-                                            badgePath="/badges/recipe_lists_badge.jpg"
+                                            badgePath="/badges/community_events_badge.jpg"
                                         />
                                     </div>
                                 )}
@@ -551,4 +548,4 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
     );
 };
 
-export default RecipeListsClient;
+export default CommunityEventsClient;

@@ -35,6 +35,14 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
         return stored ? parseInt(stored, 10) : 0;
     });
 
+    const [progressEvents] = useState<number>(() => {
+        if (typeof window === 'undefined') return 0;
+        const stored = localStorage.getItem(
+            'jorbites_course_community_events_progress:v2'
+        );
+        return stored ? parseInt(stored, 10) : 0;
+    });
+
     const isMounted = useIsMounted();
 
     if (!isMounted) {
@@ -101,9 +109,9 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_community_events')}
                         description={t('course_community_events_desc')}
                         duration="45 mins"
-                        progress={0}
+                        progress={progressEvents}
                         slug="community-events"
-                        comingSoon
+                        badgeSrc="/badges/community_events_badge.jpg"
                     />
 
                     {/* 6. Workshops & Classes */}

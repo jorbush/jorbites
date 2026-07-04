@@ -10,6 +10,7 @@ import confetti from 'canvas-confetti';
 interface CourseTestProps {
     questions: Question[];
     onPass: () => void;
+    description?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -326,7 +327,11 @@ const QuizResults: React.FC<QuizResultsProps> = ({
 // Main component
 // ---------------------------------------------------------------------------
 
-const CourseTest: React.FC<CourseTestProps> = ({ questions, onPass }) => {
+const CourseTest: React.FC<CourseTestProps> = ({
+    questions,
+    onPass,
+    description,
+}) => {
     const { t, i18n } = useTranslation();
     const currentLang = (
         i18n.language === 'es' || i18n.language === 'ca' ? i18n.language : 'en'
@@ -395,7 +400,10 @@ const CourseTest: React.FC<CourseTestProps> = ({ questions, onPass }) => {
                     {t('final_test')}
                 </h3>
                 <p className="mx-auto mb-6 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
-                    {t('contest_manager_course_details.final_test_description')}
+                    {description ||
+                        t(
+                            'contest_manager_course_details.final_test_description'
+                        )}
                 </p>
                 <div className="mx-auto w-fit">
                     <Button

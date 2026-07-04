@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import RecipeListsClient from '@/app/courses/recipe-lists/RecipeListsClient';
+import CommunityEventsClient from '@/app/courses/community-events/CommunityEventsClient';
 import React from 'react';
 
 afterEach(() => {
@@ -38,20 +38,20 @@ vi.mock('@/app/components/courses/CertificateGenerator', () => ({
     ),
 }));
 
-describe('RecipeListsClient', () => {
+describe('CommunityEventsClient', () => {
     it('renders the overview checklist screen first', () => {
-        render(<RecipeListsClient currentUser={null} />);
+        render(<CommunityEventsClient currentUser={null} />);
 
         expect(
-            screen.getByText('recipe_lists_course_details.requirements_title')
+            screen.getByText('community_events_course_details.overview_title')
         ).toBeDefined();
         expect(
-            screen.getByText('recipe_lists_course_details.action_required')
+            screen.getByText('community_events_course_details.action_required')
         ).toBeDefined();
     });
 
     it('next step button is disabled initially until checklist is verified', () => {
-        render(<RecipeListsClient currentUser={null} />);
+        render(<CommunityEventsClient currentUser={null} />);
 
         const nextBtn = screen.getByText('Next Step');
         expect(nextBtn).toBeDefined();
@@ -59,7 +59,7 @@ describe('RecipeListsClient', () => {
     });
 
     it('enables the next step button when all checklist items are ticked', () => {
-        render(<RecipeListsClient currentUser={null} />);
+        render(<CommunityEventsClient currentUser={null} />);
 
         const checkboxes = screen.getAllByRole('checkbox');
         expect(checkboxes.length).toBe(4);
@@ -71,12 +71,12 @@ describe('RecipeListsClient', () => {
         const nextBtn = screen.getByText('Next Step');
         expect((nextBtn as HTMLButtonElement).disabled).toBe(false);
 
-        // Click next step to navigate to creation
+        // Click next step to navigate to challenges page
         fireEvent.click(nextBtn);
 
-        // Should now show the Creation Step 1 details
+        // Should now show the Challenges header details
         expect(
-            screen.getByText('recipe_lists_course_details.workflow_step1_title')
+            screen.getByText('community_events_course_details.challenges_title')
         ).toBeDefined();
     });
 });

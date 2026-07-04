@@ -2,6 +2,7 @@ import { Question } from '@/app/courses/contest-manager/contestManagerQuestions'
 
 export const recipeListsQuestions: Question[] = [
     {
+        id: 'rl1',
         question: {
             en: 'What is the default list created automatically for every user in Jorbites?',
             es: '¿Cuál es la lista predeterminada que se crea automáticamente para cada usuario en Jorbites?',
@@ -15,6 +16,7 @@ export const recipeListsQuestions: Question[] = [
         correctIndex: 1, // 'to cook later'
     },
     {
+        id: 'rl2',
         question: {
             en: 'How can you add a recipe to one of your lists?',
             es: '¿Cómo puedes añadir una receta a una de tus listas?',
@@ -43,6 +45,7 @@ export const recipeListsQuestions: Question[] = [
         correctIndex: 0,
     },
     {
+        id: 'rl3',
         question: {
             en: 'Who can view a list marked as "Private"?',
             es: '¿Quién puede ver una lista marcada como "Privada"?',
@@ -71,6 +74,7 @@ export const recipeListsQuestions: Question[] = [
         correctIndex: 2,
     },
     {
+        id: 'rl4',
         question: {
             en: 'How can you share a recipe list with the community?',
             es: '¿Cómo puedes compartir una lista de recetas con la comunidad?',
@@ -99,6 +103,7 @@ export const recipeListsQuestions: Question[] = [
         correctIndex: 0,
     },
     {
+        id: 'rl5',
         question: {
             en: 'Can a recipe belong to multiple lists simultaneously?',
             es: '¿Puede una receta pertenecer a múltiples listas simultáneamente?',
