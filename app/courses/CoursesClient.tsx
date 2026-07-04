@@ -63,7 +63,18 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         comingSoon
                     />
 
-                    {/* 3. Meal Planner */}
+                    {/* 3. Recipe Lists */}
+                    <CertificateCard
+                        id="recipe-lists"
+                        title={t('course_recipe_lists')}
+                        description={t('course_recipe_lists_desc')}
+                        duration="30 mins"
+                        progress={0}
+                        slug="recipe-lists"
+                        comingSoon
+                    />
+
+                    {/* 4. Meal Planner */}
                     <CertificateCard
                         id="meal-planner"
                         title={t('course_meal_planner')}
@@ -74,7 +85,29 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         comingSoon
                     />
 
-                    {/* 4. Recipe Book Builder */}
+                    {/* 5. Community Events */}
+                    <CertificateCard
+                        id="community-events"
+                        title={t('course_community_events')}
+                        description={t('course_community_events_desc')}
+                        duration="45 mins"
+                        progress={0}
+                        slug="community-events"
+                        comingSoon
+                    />
+
+                    {/* 6. Workshops & Classes */}
+                    <CertificateCard
+                        id="workshops"
+                        title={t('course_workshops')}
+                        description={t('course_workshops_desc')}
+                        duration="1 hour"
+                        progress={0}
+                        slug="workshops"
+                        comingSoon
+                    />
+
+                    {/* 7. Recipe Book Builder */}
                     <CertificateCard
                         id="recipe-book-builder"
                         title={t('course_recipe_book_builder')}
@@ -85,7 +118,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         comingSoon
                     />
 
-                    {/* 5. Contest Manager */}
+                    {/* 8. Contest Manager */}
                     <CertificateCard
                         id="contest-manager"
                         title={t('contest_manager_course')}
