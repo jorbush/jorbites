@@ -1,7 +1,7 @@
 ---
 title: "🍔 Burger Championship: Smash Time! 🍔"
-date: 2026-07-04
-endDate: 2026-07-04T21:59:59
+date: 2026-08-08
+endDate: 2026-08-08T21:59:59
 image: /images/events/smash_burger_championship.webp
 description: The ultimate live smash burger showdown. Crisp edges, gooey cheese, and live culinary action!
 ---
@@ -34,4 +34,4 @@ We've updated the reward system for this championship to celebrate everyone's ef
 * **For All Participants**: Every single chef who participates in the live cooking session and uploads their recipe will receive the exclusive **"Smash Master"** digital badge!
 * **For The Champion**: The overall winner, determined by our panel of secret tasters, will receive the "Smash Champion" title and a mysterious, exclusive physical award that will only be revealed on the day of the championship!
 
-**Ready to bring the heat and press to impress? See you on July 4th!**
+**Ready to bring the heat and press to impress? See you on August 8th!**
