@@ -38,7 +38,7 @@ const CourseInfoStep: React.FC<CourseInfoStepProps> = ({
                     <div className="border-neutral-150 rounded-xl border bg-neutral-50/50 p-6 dark:border-neutral-800 dark:bg-neutral-900/50">
                         {paragraphs.map((p, idx) => (
                             <p
-                                key={idx}
+                                key={p}
                                 className={`text-sm leading-relaxed text-neutral-700 dark:text-neutral-300 ${
                                     idx > 0 ? 'mt-4' : ''
                                 }`}

@@ -246,9 +246,11 @@ const CommunityEventsClient: React.FC<CommunityEventsClientProps> = ({
                         <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
                             <CourseTest
                                 questions={communityEventsQuestions}
-                                description={t(
-                                    'community_events_course_details.final_test_description'
-                                )}
+                                description={
+                                    t(
+                                        'community_events_course_details.final_test_description'
+                                    ) as string
+                                }
                                 onPass={() => markModuleCompleted('test')}
                             />
                         </div>
