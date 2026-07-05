@@ -43,6 +43,14 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
         return stored ? parseInt(stored, 10) : 0;
     });
 
+    const [progressWorkshops] = useState<number>(() => {
+        if (typeof window === 'undefined') return 0;
+        const stored = localStorage.getItem(
+            'jorbites_course_workshops_progress:v2'
+        );
+        return stored ? parseInt(stored, 10) : 0;
+    });
+
     const isMounted = useIsMounted();
 
     if (!isMounted) {
@@ -120,9 +128,9 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_workshops')}
                         description={t('course_workshops_desc')}
                         duration="1 hour"
-                        progress={0}
+                        progress={progressWorkshops}
                         slug="workshops"
-                        comingSoon
+                        badgeSrc="/badges/community_events_badge.jpg"
                     />
 
                     {/* 7. Recipe Book Builder */}
