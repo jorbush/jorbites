@@ -27,7 +27,7 @@ const LikesClient: React.FC<LikesClientProps> = ({
     currentUser,
     likedUsers,
 }) => {
-    const { push } = useRouter() || {};
+    const { back } = useRouter() || {};
     const { t } = useTranslation();
     const isMdOrSmaller = useMediaQuery('(max-width: 675px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 530px)');
@@ -38,7 +38,7 @@ const LikesClient: React.FC<LikesClientProps> = ({
                 {/* Back button */}
                 <button
                     type="button"
-                    onClick={() => push(`/recipes/${recipe.id}`)}
+                    onClick={() => back()}
                     className="group mb-6 flex cursor-pointer items-center gap-2 border-0 bg-transparent p-0 text-neutral-600 transition-colors hover:text-neutral-900 focus:outline-hidden dark:text-neutral-300 dark:hover:text-white"
                 >
                     <FiArrowLeft className="text-xl transition-transform group-hover:-translate-x-1" />
