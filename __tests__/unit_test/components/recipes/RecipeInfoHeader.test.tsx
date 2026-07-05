@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { RecipeInfoHeader } from '@/app/components/recipes/RecipeInfoHeader';
 
@@ -73,5 +73,31 @@ describe('RecipeInfoHeader', () => {
         expect(screen.getByText('5 ingredients')).toBeDefined();
         expect(screen.getByTestId('verification-badge')).toBeDefined();
         expect(screen.getByTestId('star-rating')).toBeDefined();
+    });
+
+    it('calls push with correct URL when likes count is clicked', () => {
+        render(
+            <RecipeInfoHeader
+                user={mockUser}
+                id="recipe-1"
+                likes={10}
+                stepsCount={3}
+                ingredientsCount={5}
+                averageRating={4.5}
+                ratingCount={2}
+                mounted={true}
+                t={t}
+                push={push}
+                isMdOrSmaller={false}
+                isSmOrSmaller={false}
+            />
+        );
+
+        const likesButton = screen.getByRole('button', {
+            name: 'View users who liked this recipe',
+        });
+        fireEvent.click(likesButton);
+
+        expect(push).toHaveBeenCalledWith('/recipes/recipe-1/likes');
     });
 });

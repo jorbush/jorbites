@@ -83,12 +83,15 @@ export const RecipeInfoHeader: React.FC<RecipeInfoHeaderProps> = ({
                         recipeId={id}
                         currentUser={currentUser}
                     />
-                    <div
-                        className="dark:text-neutral-100"
+                    <button
+                        type="button"
+                        onClick={() => push('/recipes/' + id + '/likes')}
+                        className="cursor-pointer transition-all hover:underline hover:opacity-80 focus:outline-hidden dark:text-neutral-100"
                         data-cy="recipe-num-likes"
+                        aria-label="View users who liked this recipe"
                     >
                         {likes}
-                    </div>
+                    </button>
                 </div>
             </div>
             <div className="flex flex-wrap items-center gap-4 font-light text-neutral-500">

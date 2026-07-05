@@ -87,52 +87,142 @@ export async function POST(
         }
 
         let numLikes = currentRecipe.numLikes;
+        const favoriteIds = [...(currentUser.favoriteIds || [])];
+        const alreadyFavorited = favoriteIds.includes(recipeId);
 
         if (operation === 'increment') {
-            numLikes++;
-            await sendNotification({
-                type: NotificationType.NEW_LIKE,
-                userEmail: currentRecipe.user.email,
-                params: {
-                    userName: currentUser.name,
-                    recipeId: recipeId,
-                },
-            });
+            if (!alreadyFavorited) {
+                // Add recipe to user's favoriteIds
+                favoriteIds.push(recipeId);
+                await prisma.user.update({
+                    where: {
+                        id: currentUser.id,
+                    },
+                    data: {
+                        favoriteIds,
+                    },
+                });
+
+                // Increment like count
+                numLikes++;
+
+                await sendNotification({
+                    type: NotificationType.NEW_LIKE,
+                    userEmail: currentRecipe.user.email,
+                    params: {
+                        userName: currentUser.name,
+                        recipeId: recipeId,
+                    },
+                });
+
+                const recipe = await prisma.recipe.update({
+                    where: {
+                        id: recipeId,
+                    },
+                    data: {
+                        numLikes: numLikes,
+                    },
+                });
+
+                await updateUserLevel({
+                    userId: currentRecipe.user.id,
+                });
+
+                // Invalidate recipe cache so like count is fresh
+                try {
+                    await redisCache.del(`recipe:${recipeId}`);
+                } catch (cacheError: any) {
+                    logger.error(
+                        'POST /api/recipe/[recipeId] - cache invalidation error',
+                        { error: cacheError.message, recipeId }
+                    );
+                }
+
+                logger.info(
+                    'POST /api/recipe/[recipeId] - success (incremented)',
+                    {
+                        recipeId,
+                        operation,
+                        numLikes: recipe.numLikes,
+                    }
+                );
+                return NextResponse.json(recipe);
+            } else {
+                logger.info(
+                    'POST /api/recipe/[recipeId] - success (already favorited, no-op)',
+                    {
+                        recipeId,
+                        operation,
+                        numLikes: currentRecipe.numLikes,
+                    }
+                );
+                return NextResponse.json(currentRecipe);
+            }
         } else {
-            if (numLikes > 0) {
-                numLikes--;
+            // decrement
+            if (alreadyFavorited) {
+                // Remove recipe from user's favoriteIds
+                const updatedFavoriteIds = favoriteIds.filter(
+                    (id) => id !== recipeId
+                );
+                await prisma.user.update({
+                    where: {
+                        id: currentUser.id,
+                    },
+                    data: {
+                        favoriteIds: updatedFavoriteIds,
+                    },
+                });
+
+                // Decrement like count
+                if (numLikes > 0) {
+                    numLikes--;
+                }
+
+                const recipe = await prisma.recipe.update({
+                    where: {
+                        id: recipeId,
+                    },
+                    data: {
+                        numLikes: numLikes,
+                    },
+                });
+
+                await updateUserLevel({
+                    userId: currentRecipe.user.id,
+                });
+
+                // Invalidate recipe cache so like count is fresh
+                try {
+                    await redisCache.del(`recipe:${recipeId}`);
+                } catch (cacheError: any) {
+                    logger.error(
+                        'POST /api/recipe/[recipeId] - cache invalidation error',
+                        { error: cacheError.message, recipeId }
+                    );
+                }
+
+                logger.info(
+                    'POST /api/recipe/[recipeId] - success (decremented)',
+                    {
+                        recipeId,
+                        operation,
+                        numLikes: recipe.numLikes,
+                    }
+                );
+                return NextResponse.json(recipe);
+            } else {
+                logger.info(
+                    'POST /api/recipe/[recipeId] - success (not favorited, no-op)',
+                    {
+                        recipeId,
+                        operation,
+                        numLikes: currentRecipe.numLikes,
+                    }
+                );
+                return NextResponse.json(currentRecipe);
             }
         }
-
-        const recipe = await prisma.recipe.update({
-            where: {
-                id: recipeId,
-            },
-            data: {
-                numLikes: numLikes,
-            },
-        });
-
-        await updateUserLevel({
-            userId: currentRecipe.user.id,
-        });
-
-        // Invalidate recipe cache so like count is fresh
-        try {
-            await redisCache.del(`recipe:${recipeId}`);
-        } catch (cacheError: any) {
-            logger.error(
-                'POST /api/recipe/[recipeId] - cache invalidation error',
-                { error: cacheError.message, recipeId }
-            );
-        }
-
-        logger.info('POST /api/recipe/[recipeId] - success', {
-            recipeId,
-            operation,
-            numLikes: recipe.numLikes,
-        });
-        return NextResponse.json(recipe);
     } catch (error: any) {
         logger.error('POST /api/recipe/[recipeId] - error', {
             error: error.message,
