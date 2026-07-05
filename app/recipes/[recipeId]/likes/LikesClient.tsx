@@ -52,7 +52,7 @@ const LikesClient: React.FC<LikesClientProps> = ({ recipe, likedUsers }) => {
                         />
                     </div>
                     <div className="min-w-0 flex-1">
-                        <h2 className="truncate text-xl font-bold text-neutral-800 dark:text-white">
+                        <h2 className="truncate text-xl font-semibold text-neutral-800 dark:text-white">
                             {recipe.title}
                         </h2>
                         <p className="text-sm text-neutral-500 dark:text-neutral-400">
