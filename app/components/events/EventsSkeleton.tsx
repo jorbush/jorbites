@@ -73,7 +73,7 @@ export const EventsSkeleton: React.FC<EventsSkeletonProps> = ({
                                 key={i}
                                 className="relative h-[64px] rounded-lg border border-neutral-100 bg-neutral-50/50 p-1 md:h-[104px] md:p-2 dark:border-neutral-800 dark:bg-neutral-950/20"
                             >
-                                <div className="h-4 w-4 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                                <div className="size-4 rounded bg-neutral-200 dark:bg-neutral-700"></div>
                             </div>
                         ))}
                     </div>
