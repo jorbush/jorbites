@@ -37,12 +37,13 @@ export async function POST(
     props: { params: Promise<IParams> }
 ) {
     try {
-        const params = await props.params;
-        const body = await request.json();
+        const [params, body, currentUser] = await Promise.all([
+            props.params,
+            request.json(),
+            getCurrentUser(),
+        ]);
 
         const { operation } = body;
-
-        const currentUser = await getCurrentUser();
 
         if (!currentUser) {
             return unauthorizedResponse(
@@ -106,27 +107,27 @@ export async function POST(
                 // Increment like count
                 numLikes++;
 
-                await sendNotification({
-                    type: NotificationType.NEW_LIKE,
-                    userEmail: currentRecipe.user.email,
-                    params: {
-                        userName: currentUser.name,
-                        recipeId: recipeId,
-                    },
-                });
-
-                const recipe = await prisma.recipe.update({
-                    where: {
-                        id: recipeId,
-                    },
-                    data: {
-                        numLikes: numLikes,
-                    },
-                });
-
-                await updateUserLevel({
-                    userId: currentRecipe.user.id,
-                });
+                const [, recipe] = await Promise.all([
+                    sendNotification({
+                        type: NotificationType.NEW_LIKE,
+                        userEmail: currentRecipe.user.email,
+                        params: {
+                            userName: currentUser.name,
+                            recipeId: recipeId,
+                        },
+                    }),
+                    prisma.recipe.update({
+                        where: {
+                            id: recipeId,
+                        },
+                        data: {
+                            numLikes: numLikes,
+                        },
+                    }),
+                    updateUserLevel({
+                        userId: currentRecipe.user.id,
+                    }),
+                ]);
 
                 // Invalidate recipe cache so like count is fresh
                 try {
@@ -179,18 +180,19 @@ export async function POST(
                     numLikes--;
                 }
 
-                const recipe = await prisma.recipe.update({
-                    where: {
-                        id: recipeId,
-                    },
-                    data: {
-                        numLikes: numLikes,
-                    },
-                });
-
-                await updateUserLevel({
-                    userId: currentRecipe.user.id,
-                });
+                const [recipe] = await Promise.all([
+                    prisma.recipe.update({
+                        where: {
+                            id: recipeId,
+                        },
+                        data: {
+                            numLikes: numLikes,
+                        },
+                    }),
+                    updateUserLevel({
+                        userId: currentRecipe.user.id,
+                    }),
+                ]);
 
                 // Invalidate recipe cache so like count is fresh
                 try {
@@ -236,8 +238,10 @@ export async function PATCH(
     props: { params: Promise<IParams> }
 ) {
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+        const [params, currentUser] = await Promise.all([
+            props.params,
+            getCurrentUser(),
+        ]);
 
         if (!currentUser) {
             return unauthorizedResponse(
@@ -548,15 +552,16 @@ export async function DELETE(
             }
         }
 
-        const deletedRecipe = await prisma.recipe.delete({
-            where: {
-                id: recipeId,
-            },
-        });
-
-        await updateUserLevel({
-            userId: recipe.userId,
-        });
+        const [deletedRecipe] = await Promise.all([
+            prisma.recipe.delete({
+                where: {
+                    id: recipeId,
+                },
+            }),
+            updateUserLevel({
+                userId: recipe.userId,
+            }),
+        ]);
 
         logger.info('DELETE /api/recipe/[recipeId] - success', {
             recipeId,
