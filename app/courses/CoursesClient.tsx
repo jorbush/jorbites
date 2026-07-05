@@ -51,6 +51,14 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
         return stored ? parseInt(stored, 10) : 0;
     });
 
+    const [progressQuests] = useState<number>(() => {
+        if (typeof window === 'undefined') return 0;
+        const stored = localStorage.getItem(
+            'jorbites_course_quests_progress:v2'
+        );
+        return stored ? parseInt(stored, 10) : 0;
+    });
+
     const isMounted = useIsMounted();
 
     if (!isMounted) {
@@ -130,6 +138,17 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         duration="1 hour"
                         progress={progressWorkshops}
                         slug="workshops"
+                        badgeSrc="/badges/community_events_badge.jpg"
+                    />
+
+                    {/* 6b. Recipe Quests */}
+                    <CertificateCard
+                        id="quests"
+                        title={t('course_quests') || 'Recipe Quests'}
+                        description={t('course_quests_desc')}
+                        duration="30 mins"
+                        progress={progressQuests}
+                        slug="quests"
                         badgeSrc="/badges/community_events_badge.jpg"
                     />
 
