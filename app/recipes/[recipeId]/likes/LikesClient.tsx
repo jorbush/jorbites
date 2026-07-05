@@ -27,7 +27,7 @@ const LikesClient: React.FC<LikesClientProps> = ({
     currentUser,
     likedUsers,
 }) => {
-    const { back } = useRouter() || {};
+    const { back, push } = useRouter() || {};
     const { t } = useTranslation();
     const isMdOrSmaller = useMediaQuery('(max-width: 675px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 530px)');
@@ -90,25 +90,35 @@ const LikesClient: React.FC<LikesClientProps> = ({
                         {likedUsers.map((user) => (
                             <div
                                 key={user.id}
-                                onClick={() => push(`/profile/${user.id}`)}
-                                className="flex cursor-pointer items-center justify-between rounded-xl border border-neutral-100 bg-white p-4 shadow-xs transition-all duration-200 hover:border-neutral-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700"
+                                className="relative flex items-center justify-between overflow-hidden rounded-xl border border-neutral-100 bg-white p-4 shadow-xs transition-all duration-200 hover:border-neutral-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700"
                             >
                                 <div className="flex items-center gap-3">
-                                    <Avatar
-                                        src={user.image}
-                                        size={50}
-                                    />
+                                    <div className="relative z-10">
+                                        <Avatar
+                                            src={user.image}
+                                            size={50}
+                                            onClick={() =>
+                                                push(`/profile/${user.id}`)
+                                            }
+                                        />
+                                    </div>
                                     <div className="flex flex-col">
                                         <div className="flex items-center gap-1">
-                                            <span className="font-semibold text-neutral-800 hover:underline dark:text-white">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    push(`/profile/${user.id}`)
+                                                }
+                                                className="cursor-pointer text-left font-semibold text-neutral-800 after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden dark:text-white"
+                                            >
                                                 {getUserDisplayName(
                                                     user,
                                                     isMdOrSmaller,
                                                     isSmOrSmaller
                                                 )}
-                                            </span>
+                                            </button>
                                             {user.verified && (
-                                                <VerificationBadge className="text-md" />
+                                                <VerificationBadge className="text-md relative z-10" />
                                             )}
                                         </div>
                                         <span className="text-xs text-neutral-500 dark:text-neutral-400">
@@ -119,7 +129,7 @@ const LikesClient: React.FC<LikesClientProps> = ({
 
                                 {/* Badges */}
                                 {user.badges && user.badges.length > 0 && (
-                                    <div className="flex max-w-[150px] items-center gap-1 overflow-hidden sm:max-w-[200px]">
+                                    <div className="relative z-10 flex max-w-[150px] items-center gap-1 overflow-hidden sm:max-w-[200px]">
                                         {user.badges
                                             .slice(0, 3)
                                             .map((badge) => (
