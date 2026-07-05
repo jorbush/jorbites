@@ -59,6 +59,14 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
         return stored ? parseInt(stored, 10) : 0;
     });
 
+    const [progressRecipeBook] = useState<number>(() => {
+        if (typeof window === 'undefined') return 0;
+        const stored = localStorage.getItem(
+            'jorbites_course_recipe_book_progress:v2'
+        );
+        return stored ? parseInt(stored, 10) : 0;
+    });
+
     const isMounted = useIsMounted();
 
     if (!isMounted) {
@@ -158,9 +166,9 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_recipe_book_builder')}
                         description={t('course_recipe_book_builder_desc')}
                         duration="1 hour"
-                        progress={0}
+                        progress={progressRecipeBook}
                         slug="recipe-book-builder"
-                        comingSoon
+                        badgeSrc="/badges/recipe_lists_badge_1783155223621.jpg"
                     />
 
                     {/* 8. Contest Manager */}
