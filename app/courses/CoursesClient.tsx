@@ -67,6 +67,14 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
         return stored ? parseInt(stored, 10) : 0;
     });
 
+    const [progressMealPlanner] = useState<number>(() => {
+        if (typeof window === 'undefined') return 0;
+        const stored = localStorage.getItem(
+            'jorbites_course_meal_planner_progress:v2'
+        );
+        return stored ? parseInt(stored, 10) : 0;
+    });
+
     const isMounted = useIsMounted();
 
     if (!isMounted) {
@@ -122,9 +130,9 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_meal_planner')}
                         description={t('course_meal_planner_desc')}
                         duration="45 mins"
-                        progress={0}
+                        progress={progressMealPlanner}
                         slug="meal-planner"
-                        comingSoon
+                        badgeSrc="/badges/recipe_lists_badge_1783155223621.jpg"
                     />
 
                     {/* 5. Community Events */}
