@@ -59,6 +59,14 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
         return stored ? parseInt(stored, 10) : 0;
     });
 
+    const [progressRecipeCreator] = useState<number>(() => {
+        if (typeof window === 'undefined') return 0;
+        const stored = localStorage.getItem(
+            'jorbites_course_recipe_creator_progress:v2'
+        );
+        return stored ? parseInt(stored, 10) : 0;
+    });
+
     const [progressRecipeBook] = useState<number>(() => {
         if (typeof window === 'undefined') return 0;
         const stored = localStorage.getItem(
@@ -108,9 +116,9 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_recipe_creator')}
                         description={t('course_recipe_creator_desc')}
                         duration="30 mins"
-                        progress={0}
+                        progress={progressRecipeCreator}
                         slug="recipe-creator"
-                        comingSoon
+                        badgeSrc="/badges/recipe_lists_badge_1783155223621.jpg"
                     />
 
                     {/* 3. Recipe Lists */}
