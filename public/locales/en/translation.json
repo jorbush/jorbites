@@ -893,6 +893,9 @@
         "change_name": "Change Name"
     },
     "sharing": "Sharing",
+    "calendar_alerts": "Calendar & Alerts",
+    "contest_mechanics": "Mechanics & Support",
+    "benefits": "Benefits",
     "community_events_course": "Community Events Course",
     "community_events_course_details": {
         "course_description": "Explore the events system: contest types, calendar syncing, challenge of the week participation, and voting protocols.",
@@ -921,7 +924,17 @@
         "voting_title": "Recipe of X Voting",
         "voting_desc1": "Jorbites automatically curates the top-10 most liked recipes of the previous week, month, or year (requiring at least 4 candidate recipes to open). Once a session is opened, you can vote directly in-app for your favorite recipe during the 24-hour voting window.",
         "voting_desc2": "When the session closes, the recipe with the highest number of votes is declared the winner (total likes acts as a tie-breaker). The winning author is automatically awarded a corresponding badge on their Jorbites profile.",
-        "final_test_description": "Test your knowledge with 5 multiple-choice questions. You need at least 80% (4 correct answers) to pass and receive the Community Events Certificate.",
+        "notifications_title": "Calendar & Alerts",
+        "notifications_desc1": "The Jorbites Event Calendar provides a unified view of all ongoing, past, and upcoming events so you can plan your kitchen sessions accordingly.",
+        "notifications_desc2": "To keep you updated without overwhelming you, Jorbites sends notifications on: (1) the day a new event begins, (2) when 3 days are left to participate, (3) on Mondays when the new Weekly Challenge theme is announced, and (4) whenever a Recipe of X voting session opens or publishes results.",
+        "benefits_title": "Benefits of Participating",
+        "benefits_desc1": "Skills & Ingredient Discovery: Themed events challenge you to cook outside your comfort zone, try new ingredients, and master foreign cuisines.",
+        "benefits_desc2": "Earning Profiles Badges: Completing challenges awards you digital badges that display on your public profile, recognizing your culinary growth.",
+        "benefits_desc3": "Community Connection: Share your recipes, get inspired by fellow home chefs, participate in public voting, and give/receive peer feedback.",
+        "mechanics_title": "Contest Mechanics & Support",
+        "mechanics_desc1": "Tie-breaker Rules: When voting sessions close and result in a tie, Jorbites uses the total number of likes on the competing recipes as the tie-breaker to determine the final winner.",
+        "mechanics_desc2": "Support & Contact: If you complete a Weekly Challenge and the badge is not assigned automatically to your profile, or if you need any event assistance, contact Jorbites administrators via Instagram Direct Message (DM) or official email.",
+        "final_test_description": "Test your knowledge with 10 multiple-choice questions. You need at least 80% (8 correct answers) to pass and receive the Community Events Certificate.",
         "name_confirmed": "Name confirmed",
         "change_name": "Change Name"
     }

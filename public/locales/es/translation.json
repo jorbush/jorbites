@@ -894,6 +894,9 @@
         "change_name": "Cambiar Nombre"
     },
     "sharing": "Compartir",
+    "calendar_alerts": "Calendario y Alertas",
+    "contest_mechanics": "Mecánica y Soporte",
+    "benefits": "Beneficios",
     "community_events_course": "Curso de Eventos de la Comunidad",
     "community_events_course_details": {
         "course_description": "Explora el sistema de eventos: tipos de concursos, sincronización del calendario, participación en el reto de la semana y protocolos de votación.",
@@ -922,7 +925,17 @@
         "voting_title": "Votación de la Receta de X",
         "voting_desc1": "Jorbites selecciona automáticamente las 10 recetas más populares de la semana, mes o año anterior (requiriendo al menos 4 recetas candidatas para abrir la sesión). Una vez que se abre la sesión, puedes votar directamente en la aplicación por tu receta favorita durante las 24 horas que dura la votación.",
         "voting_desc2": "Cuando se cierra la sesión, la receta con más votos se declara ganadora (los likes totales sirven para desempatar). El autor ganador recibe automáticamente la insignia correspondiente en su perfil de Jorbites.",
-        "final_test_description": "Pon a prueba tus conocimientos con 5 preguntas de opción múltiple. Necesitas al menos un 80% (4 respuestas correctas) para aprobar y recibir el Certificado de Eventos de la Comunidad.",
+        "notifications_title": "Calendario y Alertas",
+        "notifications_desc1": "El Calendario de Eventos de Jorbites proporciona una vista unificada de todos los eventos en curso, pasados y futuros para que puedas planificar tus sesiones de cocina en consecuencia.",
+        "notifications_desc2": "Para mantenerte informado sin abrumarte, Jorbites envía notificaciones: (1) el día que comienza un nuevo evento, (2) cuando quedan 3 días para participar, (3) los lunes cuando se anuncia el nuevo tema del Reto Semanal, y (4) siempre que se abre una sesión de votación de la Receta de X o se publican los resultados.",
+        "benefits_title": "Beneficios de Participar",
+        "benefits_desc1": "Habilidades y Descubrimiento de Ingredientes: Los eventos temáticos te desafían a cocinar fuera de tu zona de confort, probar nuevos ingredientes y dominar cocinas extranjeras.",
+        "benefits_desc2": "Obtención de Insignias de Perfil: Completar los retos te otorga insignias digitales que se muestran en tu perfil público, reconociendo tu crecimiento culinario.",
+        "benefits_desc3": "Conexión con la Comunidad: Comparte tus recetas, inspírate con otros cocineros caseros, participa en las votaciones públicas y da/recibe comentarios de tus compañeros.",
+        "mechanics_title": "Mecánica de Concursos y Soporte",
+        "mechanics_desc1": "Reglas de Desempate: Cuando las sesiones de votación se cierran con un empate, Jorbites utiliza el número total de likes de las recetas en competencia como desempate para determinar el ganador final.",
+        "mechanics_desc2": "Soporte y Contacto: Si completas un Reto de la Semana y la insignia no se asigna automáticamente a tu perfil, o si necesitas ayuda con un evento, contacta a los administradores de Jorbites a través de Mensaje Directo (DM) de Instagram o correo electrónico oficial.",
+        "final_test_description": "Pon a prueba tus conocimientos con 10 preguntas de opción múltiple. Necesitas al menos un 80% (8 respuestas correctas) para aprobar y recibir el Certificado de Eventos de la Comunidad.",
         "name_confirmed": "Nombre confirmado",
         "change_name": "Cambiar Nombre"
     }

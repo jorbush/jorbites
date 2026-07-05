@@ -127,21 +127,166 @@ export const communityEventsQuestions: Question[] = [
         options: {
             en: [
                 'Restaurant dining guides and food delivery promotions',
-                'Cooking contests, weekly challenges, and workshops',
+                'Cooking contests, weekly challenges, and temporary/recurrent events',
                 'Only individual cooking classes for kids',
                 'Recipe database backups and code updates',
             ],
             es: [
                 'Guías de restaurantes y promociones de entrega de comida',
-                'Concursos de cocina, retos semanales y talleres',
+                'Concursos de cocina, retos semanales y eventos temporales o recurrentes',
                 'Solo clases de cocina individuales para niños',
                 'Copias de seguridad de recetas y actualizaciones de código',
             ],
             ca: [
                 'Guies de restaurants i promocions de lliurament de menjar',
-                'Concursos de cuina, reptes setmanals i tallers',
+                'Concursos de cuina, reptes setmanals i esdeveniments temporals o recurrents',
                 'Només classes de cuina individuals per a nens',
                 'Còpies de seguretat de receptes i actualitzacions de codi',
+            ],
+        },
+        correctIndex: 1,
+    },
+    {
+        id: 'ce6',
+        question: {
+            en: 'When does Jorbites send notifications to users regarding community events?',
+            es: '¿Cuándo envía Jorbites notificaciones a los usuarios con respecto a los eventos comunitarios?',
+            ca: 'Quan envia Jorbites notificacions als usuaris pel que fa als esdeveniments comunitaris?',
+        },
+        options: {
+            en: [
+                'Every single hour while any event is actively running',
+                'On event start, with 3 days left, on Mondays for challenges, and during Recipe of X voting',
+                'Only once a year via the global email newsletter',
+                'Only when a user deletes a recipe or changes their name',
+            ],
+            es: [
+                'Cada hora mientras un evento esté activo',
+                'Al inicio del evento, cuando quedan 3 días, los lunes para retos y durante la votación de Receta de X',
+                'Solo una vez al año mediante el boletín global de correo',
+                'Solo cuando un usuario elimina una receta o cambia su nombre',
+            ],
+            ca: [
+                'Cada hora mentre un esdeveniment estigui actiu',
+                "A l'inici de l'esdeveniment, quan queden 3 dies, els dilluns per a reptes i durant la votació de Recepta de X",
+                "Només una vegada a l'any mitjançant el butlletí global de correu",
+                'Només quan un usuari elimina una recepta o canvia el seu nom',
+            ],
+        },
+        correctIndex: 1,
+    },
+    {
+        id: 'ce7',
+        question: {
+            en: 'What is the primary function of the Jorbites Event Calendar?',
+            es: '¿Cuál es la función principal del Calendario de Eventos de Jorbites?',
+            ca: "Quina és la funció principal del Calendari d'Esdeveniments de Jorbites?",
+        },
+        options: {
+            en: [
+                'To reserve tables and book reservations at local partner restaurants',
+                'To visualize and plan participation in active, past, and upcoming events',
+                'To schedule grocery shopping lists and choose delivery windows',
+                'To display the private calendar birthdays of other community members',
+            ],
+            es: [
+                'Reservar mesas en restaurantes asociados locales',
+                'Visualizar y planificar la participación en eventos activos, pasados y futuros',
+                'Programar listas de compras de alimentos y elegir ventanas de entrega',
+                'Mostrar los cumpleaños privados de otros miembros de la comunidad',
+            ],
+            ca: [
+                'Reservar taules en restaurants associats locals',
+                'Visualitzar i planificar la participació en esdeveniments actius, passats i futurs',
+                "Programar llistes de compres d'aliments i triar finestres de lliurament",
+                "Mostrar els aniversaris privats d'altres membres de la comunitat",
+            ],
+        },
+        correctIndex: 1,
+    },
+    {
+        id: 'ce8',
+        question: {
+            en: 'Which of the following is a key benefit of participating in Jorbites community events?',
+            es: '¿Cuál de los siguientes es un beneficio clave de participar en los eventos comunitarios de Jorbites?',
+            ca: 'Quin dels següents és un benefici clau de participar en els esdeveniments comunitaris de Jorbites?',
+        },
+        options: {
+            en: [
+                'Earning profile badges and discovering new recipes, cuisines, and cooking ingredients',
+                'Getting automatic free home delivery on all restaurant orders',
+                'Learning how to use third-party AI writing assistants to write descriptions',
+                'Receiving physical kitchen products shipped directly to your house',
+            ],
+            es: [
+                'Obtener insignias de perfil y descubrir nuevas recetas, cocinas e ingredientes culinarios',
+                'Obtener entrega a domicilio gratuita automática en todos los pedidos de restaurantes',
+                'Aprender a usar asistentes de escritura de IA de terceros para escribir descripciones',
+                'Recibir productos físicos de cocina enviados directamente a tu casa',
+            ],
+            ca: [
+                'Obtenir insígnies de perfil i descobrir noves receptes, cuines i ingredients culinaris',
+                'Obtenir lliurament a domicili gratuït automàtic en tots els comandes de restaurants',
+                "Aprendre a usar assistents d'escriptura d'IA de tercers per escriure descripcions",
+                'Rebre productes físics de cuina enviats directament a casa teva',
+            ],
+        },
+        correctIndex: 0,
+    },
+    {
+        id: 'ce9',
+        question: {
+            en: 'What is used as a tie-breaker if a Recipe of X voting session ends in a tie?',
+            es: '¿Qué se utiliza como desempate si una sesión de votación de Receta de X termina en empate?',
+            ca: "Què s'utilitza com a desempat si una sessió de votació de Recepta de X acaba en empat?",
+        },
+        options: {
+            en: [
+                'The total number of likes on the competing recipes',
+                'A random digital coin toss by the system',
+                'The oldest user account registration date',
+                'Whoever uploaded their recipe last',
+            ],
+            es: [
+                'El número total de likes de las recetas en competencia',
+                'Un lanzamiento de moneda digital aleatorio por el sistema',
+                'La fecha de registro de cuenta de usuario más antigua',
+                'Quien haya subido su receta al último',
+            ],
+            ca: [
+                'El nombre total de likes de les receptes en competència',
+                'Un llançament de moneda digital aleatori pel sistema',
+                "La data de registre de compte d'usuari més antiga",
+                "Qui hagi pujat la seva recepta l'últim",
+            ],
+        },
+        correctIndex: 0,
+    },
+    {
+        id: 'ce10',
+        question: {
+            en: 'How should you contact Jorbites administrators if a Weekly Challenge badge is not automatically assigned?',
+            es: '¿Cómo debes contactar a los administradores de Jorbites si una insignia del Reto de la Semana no se asigna automáticamente?',
+            ca: "Com has de contactar amb els administradors de Jorbites si una insígnia del Repte de la Setmana no s'assigna automàticament?",
+        },
+        options: {
+            en: [
+                'By leaving a comment on a random recipe',
+                'Via Instagram Direct Message (DM) or official email',
+                'By creating a new recipe named "Help"',
+                'There is no way to contact administrators',
+            ],
+            es: [
+                'Dejando un comentario en una receta aleatoria',
+                'A través de Mensaje Directo (DM) de Instagram o correo electrónico oficial',
+                'Creando una nueva receta llamada "Ayuda"',
+                'No hay forma de contactar a los administradores',
+            ],
+            ca: [
+                'Deixant un comentari en una recepta aleatòria',
+                "A través de Missatge Directe (DM) d'Instagram o correu electrònic oficial",
+                'Creant una nova recepta anomenada "Ajuda"',
+                'No hi ha manera de contactar amb els administradors',
             ],
         },
         correctIndex: 1,

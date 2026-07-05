@@ -2,13 +2,13 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'next/navigation';
 import { SafeUser } from '@/app/types';
-import Container from '@/app/components/utils/Container';
-import SectionHeader from '@/app/components/utils/SectionHeader';
-import CourseStepper from '@/app/components/courses/CourseStepper';
 import CourseTest from '@/app/components/courses/CourseTest';
-import CertificateGenerator from '@/app/components/courses/CertificateGenerator';
+import CourseCompleted from '@/app/components/courses/CourseCompleted';
+import CourseLayout from '@/app/components/courses/CourseLayout';
+import CourseWorkflowStep from '@/app/components/courses/CourseWorkflowStep';
+import CourseInfoStep from '@/app/components/courses/CourseInfoStep';
+import { useCourseProgress } from '@/app/hooks/useCourseProgress';
 import { contestManagerQuestions } from './contestManagerQuestions';
 import {
     FcDiploma1,
@@ -19,16 +19,9 @@ import {
     FcFeedback,
     FcGraduationCap,
 } from 'react-icons/fc';
-import {
-    FiCopy,
-    FiCheck,
-    FiMail,
-    FiInstagram,
-    FiChevronLeft,
-} from 'react-icons/fi';
+import { FiCopy, FiCheck, FiMail, FiInstagram } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import useIsMounted from '@/app/hooks/useIsMounted';
-import Button from '@/app/components/buttons/Button';
 
 // ---------------------------------------------------------------------------
 // Storage key constants (versioned to allow future shape changes)
@@ -36,57 +29,7 @@ import Button from '@/app/components/buttons/Button';
 const MODULES_KEY = 'jorbites_course_contest_manager_modules:v2';
 const PROGRESS_KEY = 'jorbites_course_contest_manager_progress:v2';
 
-interface ModulesState {
-    [key: string]: boolean;
-}
-
-// ---------------------------------------------------------------------------
-// Helper: load progress from localStorage
-// ---------------------------------------------------------------------------
-function loadModules(): ModulesState {
-    if (typeof window === 'undefined') {
-        return {
-            requirements: false,
-            workflow: false,
-            voting: false,
-            badge: false,
-            contact: false,
-            test: false,
-        };
-    }
-    const stored = localStorage.getItem(MODULES_KEY);
-    if (stored) {
-        try {
-            return JSON.parse(stored);
-        } catch {
-            // fall through
-        }
-    }
-    return {
-        requirements: false,
-        workflow: false,
-        voting: false,
-        badge: false,
-        contact: false,
-        test: false,
-    };
-}
-
-// ---------------------------------------------------------------------------
-// Helper: compute and persist progress
-// ---------------------------------------------------------------------------
-function persistModules(updated: ModulesState) {
-    localStorage.setItem(MODULES_KEY, JSON.stringify(updated));
-    const keys = Object.keys(updated);
-    const completedCount = keys.filter((k) => updated[k]).length;
-    const percentage = Math.round((completedCount / keys.length) * 100);
-    localStorage.setItem(PROGRESS_KEY, percentage.toString());
-}
-
-// ---------------------------------------------------------------------------
 // Sub-components
-// ---------------------------------------------------------------------------
-
 interface RequirementsModuleProps {
     reqs: {
         recipes: boolean;
@@ -162,155 +105,66 @@ const RequirementsModule: React.FC<RequirementsModuleProps> = ({
                     {t('contest_manager_course_details.action_required')}
                 </h4>
                 <div className="space-y-3">
-                    {(
-                        [
-                            {
-                                key: 'recipes' as const,
-                                id: 'req-recipes',
-                                labelKey: 'checklist_recipes' as const,
-                            },
-                            {
-                                key: 'theme' as const,
-                                id: 'req-theme',
-                                labelKey: 'checklist_theme' as const,
-                            },
-                            {
-                                key: 'badge' as const,
-                                id: 'req-badge',
-                                labelKey: 'checklist_badge' as const,
-                            },
-                            {
-                                key: 'announcement' as const,
-                                id: 'req-announcement',
-                                labelKey: 'checklist_announcement' as const,
-                            },
-                        ] as const
-                    ).map(({ key, id, labelKey }) => (
-                        <label
-                            key={key}
-                            htmlFor={id}
-                            className="flex cursor-pointer items-start gap-3"
-                        >
-                            <input
-                                id={id}
-                                type="checkbox"
-                                checked={reqs[key]}
-                                onChange={(e) =>
-                                    onChange(key, e.target.checked)
-                                }
-                                className="text-green-450 focus:ring-green-450 mt-1 size-4 rounded-sm border-neutral-300 dark:border-neutral-800 dark:bg-neutral-950"
-                            />
-                            <span className="text-sm text-neutral-700 dark:text-neutral-300">
-                                {t(
-                                    `contest_manager_course_details.${labelKey}`
-                                )}
-                            </span>
-                        </label>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// ---------------------------------------------------------------------------
-
-interface WorkflowModuleProps {
-    workflowStep: number;
-    onNextStep: () => void;
-    onComplete: () => void;
-}
-
-const WorkflowModule: React.FC<WorkflowModuleProps> = ({
-    workflowStep,
-    onNextStep,
-    onComplete,
-}) => {
-    const { t } = useTranslation();
-    return (
-        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
-            <div className="mb-6 flex items-center gap-3">
-                <FcProcess className="size-8" />
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
-                    {t('contest_manager_course_details.workflow_title')}
-                </h2>
-            </div>
-            <div className="mb-8 space-y-6">
-                {[1, 2, 3, 4, 5].map((step) => {
-                    const isActive = workflowStep >= step;
-                    return (
-                        <div
-                            key={step}
-                            className="flex gap-4"
-                        >
-                            <div className="flex flex-col items-center">
-                                <div
-                                    className={`flex size-6 items-center justify-center rounded-full border-2 text-xs font-bold transition-all duration-300 ${
-                                        isActive
-                                            ? 'bg-green-450 border-green-450 text-neutral-950'
-                                            : 'border-neutral-300 bg-neutral-100 text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800'
-                                    }`}
-                                >
-                                    {step}
-                                </div>
-                                {step < 5 && (
-                                    <div
-                                        className={`w-0.5 grow transition-all duration-300 ${
-                                            workflowStep > step
-                                                ? 'bg-green-450'
-                                                : 'bg-neutral-200 dark:bg-neutral-800'
-                                        }`}
-                                    />
-                                )}
-                            </div>
-                            <div
-                                className={`pb-6 transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-40'}`}
-                            >
-                                <h4 className="text-base font-bold text-neutral-900 dark:text-white">
-                                    {t(
-                                        `contest_manager_course_details.workflow_step${step}_title`
-                                    )}
-                                </h4>
-                                <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                                    {t(
-                                        `contest_manager_course_details.workflow_step${step}_desc`
-                                    )}
-                                </p>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            <div className="flex items-center justify-between border-t border-neutral-100 pt-6 dark:border-neutral-800">
-                <span className="text-xs font-semibold text-neutral-500 uppercase">
-                    {t(
-                        'contest_manager_course_details.interactive_walkthrough'
-                    )}{' '}
-                    ({workflowStep}/5)
-                </span>
-                <div className="flex gap-2">
-                    {workflowStep < 5 ? (
-                        <div className="w-fit">
-                            <Button
-                                label={t(
-                                    'contest_manager_course_details.next_step'
-                                )}
-                                onClick={onNextStep}
-                                small
-                            />
-                        </div>
-                    ) : (
-                        <div className="w-fit">
-                            <Button
-                                label={t(
-                                    'contest_manager_course_details.mark_completed'
-                                )}
-                                onClick={onComplete}
-                                small
-                            />
-                        </div>
-                    )}
+                    <label className="flex cursor-pointer items-center gap-3">
+                        <input
+                            type="checkbox"
+                            checked={reqs.recipes}
+                            onChange={(e) =>
+                                onChange('recipes', e.target.checked)
+                            }
+                            className="mt-0.5 accent-green-600"
+                        />
+                        <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                            {t(
+                                'contest_manager_course_details.checklist_recipes'
+                            )}
+                        </span>
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-3">
+                        <input
+                            type="checkbox"
+                            checked={reqs.theme}
+                            onChange={(e) =>
+                                onChange('theme', e.target.checked)
+                            }
+                            className="mt-0.5 accent-green-600"
+                        />
+                        <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                            {t(
+                                'contest_manager_course_details.checklist_theme'
+                            )}
+                        </span>
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-3">
+                        <input
+                            type="checkbox"
+                            checked={reqs.badge}
+                            onChange={(e) =>
+                                onChange('badge', e.target.checked)
+                            }
+                            className="mt-0.5 accent-green-600"
+                        />
+                        <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                            {t(
+                                'contest_manager_course_details.checklist_badge'
+                            )}
+                        </span>
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-3">
+                        <input
+                            type="checkbox"
+                            checked={reqs.announcement}
+                            onChange={(e) =>
+                                onChange('announcement', e.target.checked)
+                            }
+                            className="mt-0.5 accent-green-600"
+                        />
+                        <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                            {t(
+                                'contest_manager_course_details.checklist_announcement'
+                            )}
+                        </span>
+                    </label>
                 </div>
             </div>
         </div>
@@ -326,6 +180,7 @@ interface VotingModuleProps {
     onRecipeUrlChange: (v: string) => void;
     generatedFormUrl: string;
     onCopyFormLink: () => void;
+    onComplete: () => void;
 }
 
 const VotingModule: React.FC<VotingModuleProps> = ({
@@ -335,37 +190,32 @@ const VotingModule: React.FC<VotingModuleProps> = ({
     onRecipeUrlChange,
     generatedFormUrl,
     onCopyFormLink,
+    onComplete,
 }) => {
     const { t } = useTranslation();
     return (
-        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
-            <div className="mb-6 flex items-center gap-3">
-                <FcSurvey className="size-8" />
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
-                    {t('contest_manager_course_details.voting_title')}
-                </h2>
-            </div>
-            <div className="prose prose-neutral dark:prose-invert mb-6 max-w-none space-y-4 text-neutral-600 dark:text-neutral-300">
-                <p>{t('contest_manager_course_details.voting_desc1')}</p>
-                <p className="text-sm">
-                    {t('contest_manager_course_details.voting_desc2')}
-                </p>
-                <ul className="list-disc space-y-1 pl-5 text-sm">
-                    <li>
-                        <code>entry.342170842</code>:{' '}
-                        {t(
-                            'contest_manager_course_details.voting_param_recipe'
-                        )}
-                    </li>
-                    <li>
-                        <code>entry.767643834</code>:{' '}
-                        {t('contest_manager_course_details.voting_param_user')}
-                    </li>
-                </ul>
-            </div>
+        <CourseInfoStep
+            title={t('contest_manager_course_details.voting_title')}
+            icon={FcSurvey}
+            paragraphs={[
+                t('contest_manager_course_details.voting_desc1'),
+                t('contest_manager_course_details.voting_desc2'),
+            ]}
+            onComplete={onComplete}
+        >
+            <ul className="list-disc space-y-1 pl-5 text-sm text-neutral-600 dark:text-neutral-300">
+                <li>
+                    <code>entry.342170842</code>:{' '}
+                    {t('contest_manager_course_details.voting_param_recipe')}
+                </li>
+                <li>
+                    <code>entry.767643834</code>:{' '}
+                    {t('contest_manager_course_details.voting_param_user')}
+                </li>
+            </ul>
 
             {/* URL Prefill Builder Simulator */}
-            <div className="mb-6 rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-800 dark:bg-neutral-950/40">
+            <div className="dark:bg-neutral-955/40 mt-4 rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-800">
                 <h4 className="mb-3 text-sm font-bold text-neutral-800 dark:text-neutral-200">
                     {t('contest_manager_course_details.voting_builder_title')}
                 </h4>
@@ -373,7 +223,7 @@ const VotingModule: React.FC<VotingModuleProps> = ({
                     <div>
                         <label
                             htmlFor="voting-recipe-url"
-                            className="mb-1 block text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+                            className="text-neutral-505 mb-1 block text-xs font-semibold dark:text-neutral-400"
                         >
                             {t(
                                 'contest_manager_course_details.voting_recipe_label'
@@ -391,7 +241,7 @@ const VotingModule: React.FC<VotingModuleProps> = ({
                     <div>
                         <label
                             htmlFor="voting-user-id"
-                            className="mb-1 block text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+                            className="text-neutral-505 mb-1 block text-xs font-semibold dark:text-neutral-400"
                         >
                             {t(
                                 'contest_manager_course_details.voting_user_label'
@@ -411,7 +261,7 @@ const VotingModule: React.FC<VotingModuleProps> = ({
                 <div className="mt-4 border-t border-neutral-200/55 pt-4 dark:border-neutral-800">
                     <label
                         htmlFor="voting-generated-url"
-                        className="mb-1 block text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+                        className="text-neutral-505 mb-1 block text-xs font-semibold dark:text-neutral-400"
                     >
                         {t(
                             'contest_manager_course_details.voting_generated_label'
@@ -438,7 +288,7 @@ const VotingModule: React.FC<VotingModuleProps> = ({
                     </div>
                 </div>
             </div>
-        </div>
+        </CourseInfoStep>
     );
 };
 
@@ -450,6 +300,7 @@ interface BadgeModuleProps {
     copiedBadgePrompt: boolean;
     onTopicChange: (v: string) => void;
     onCopyPrompt: () => void;
+    onComplete: () => void;
 }
 
 const BadgeModule: React.FC<BadgeModuleProps> = ({
@@ -458,31 +309,27 @@ const BadgeModule: React.FC<BadgeModuleProps> = ({
     copiedBadgePrompt,
     onTopicChange,
     onCopyPrompt,
+    onComplete,
 }) => {
     const { t } = useTranslation();
     return (
-        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
-            <div className="mb-6 flex items-center gap-3">
-                <FcPicture className="size-8" />
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
-                    {t('contest_manager_course_details.badge_title')}
-                </h2>
-            </div>
-            <div className="prose prose-neutral dark:prose-invert mb-6 max-w-none space-y-4 text-neutral-600 dark:text-neutral-300">
-                <p>{t('contest_manager_course_details.badge_desc1')}</p>
-                <p className="text-sm">
-                    {t('contest_manager_course_details.badge_desc2')}
-                </p>
-            </div>
-
-            <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-800 dark:bg-neutral-950/40">
+        <CourseInfoStep
+            title={t('contest_manager_course_details.badge_title')}
+            icon={FcPicture}
+            paragraphs={[
+                t('contest_manager_course_details.badge_desc1'),
+                t('contest_manager_course_details.badge_desc2'),
+            ]}
+            onComplete={onComplete}
+        >
+            <div className="dark:bg-neutral-955/40 rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-800">
                 <h4 className="mb-3 text-sm font-bold text-neutral-800 dark:text-neutral-200">
                     {t('contest_manager_course_details.badge_builder_title')}
                 </h4>
                 <div className="mb-4">
                     <label
                         htmlFor="badge-topic"
-                        className="mb-1 block text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+                        className="text-neutral-505 mb-1 block text-xs font-semibold dark:text-neutral-400"
                     >
                         {t('contest_manager_course_details.badge_topic_label')}
                     </label>
@@ -515,7 +362,7 @@ const BadgeModule: React.FC<BadgeModuleProps> = ({
                     </button>
                 </div>
             </div>
-        </div>
+        </CourseInfoStep>
     );
 };
 
@@ -523,22 +370,21 @@ const BadgeModule: React.FC<BadgeModuleProps> = ({
 
 interface ContactModuleProps {
     onContactClick: () => void;
+    onComplete: () => void;
 }
 
-const ContactModule: React.FC<ContactModuleProps> = ({ onContactClick }) => {
+const ContactModule: React.FC<ContactModuleProps> = ({
+    onContactClick,
+    onComplete,
+}) => {
     const { t } = useTranslation();
     return (
-        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
-            <div className="mb-6 flex items-center gap-3">
-                <FcFeedback className="size-8" />
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
-                    {t('contest_manager_course_details.contact_title')}
-                </h2>
-            </div>
-            <div className="prose prose-neutral dark:prose-invert mb-8 max-w-none space-y-4 text-neutral-600 dark:text-neutral-300">
-                <p>{t('contest_manager_course_details.contact_desc')}</p>
-            </div>
-
+        <CourseInfoStep
+            title={t('contest_manager_course_details.contact_title')}
+            icon={FcFeedback}
+            paragraphs={[t('contest_manager_course_details.contact_desc')]}
+            onComplete={onComplete}
+        >
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <a
                     href="mailto:jbonetv5@gmail.com?subject=Jorbites%20New%20Contest%20Request&body=Hi%20Jorbites%20Team%2C%0A%0AI%20would%20like%20to%20organize%20a%20new%20cooking%20contest%20with%20my%20friends.%0A%0ATheme%3A%20%0ADate%20%26%20Time%3A%20%0AMy%20User%20Profile%20URL%3A%20"
@@ -570,7 +416,7 @@ const ContactModule: React.FC<ContactModuleProps> = ({ onContactClick }) => {
                     </span>
                 </a>
             </div>
-        </div>
+        </CourseInfoStep>
     );
 };
 
@@ -586,12 +432,22 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
     currentUser,
 }) => {
     const { t } = useTranslation();
-    const router = useRouter();
     const isMounted = useIsMounted();
 
-    // Lazy-initialised from localStorage (no mount effect needed)
-    const [completedModules, setCompletedModules] =
-        useState<ModulesState>(loadModules);
+    const allStepIds = useMemo(
+        () => [
+            'requirements',
+            'workflow',
+            'voting',
+            'badge',
+            'contact',
+            'test',
+        ],
+        []
+    );
+
+    const { completedModules, markModuleCompleted, isTestPassed } =
+        useCourseProgress(MODULES_KEY, PROGRESS_KEY, allStepIds);
 
     const [activeModuleId, setActiveModuleId] = useState('requirements');
 
@@ -602,9 +458,6 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
         badge: false,
         announcement: false,
     });
-
-    // Workflow current step
-    const [workflowStep, setWorkflowStep] = useState(1);
 
     // Voting url pre-fill generator
     const [participantUserId, setParticipantUserId] = useState('');
@@ -617,17 +470,6 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
     // ---------------------------------------------------------------------------
     // Helpers
     // ---------------------------------------------------------------------------
-
-    const markModuleCompleted = useCallback(
-        (id: string) => {
-            if (completedModules[id]) return;
-            const updated = { ...completedModules, [id]: true };
-            setCompletedModules(updated);
-            persistModules(updated);
-            toast.success('Module completed!');
-        },
-        [completedModules]
-    );
 
     // Requirements: called from onChange so no effect needed
     const handleReqChange = useCallback(
@@ -671,153 +513,134 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
         {
             id: 'requirements',
             title: t('requirements'),
-            isCompleted: completedModules.requirements,
+            isCompleted: !!completedModules.requirements,
             icon: FcRules,
         },
         {
             id: 'workflow',
             title: t('workflow'),
-            isCompleted: completedModules.workflow,
+            isCompleted: !!completedModules.workflow,
             icon: FcProcess,
         },
         {
             id: 'voting',
             title: t('voting'),
-            isCompleted: completedModules.voting,
+            isCompleted: !!completedModules.voting,
             icon: FcSurvey,
         },
         {
             id: 'badge',
             title: t('generate_badge'),
-            isCompleted: completedModules.badge,
+            isCompleted: !!completedModules.badge,
             icon: FcPicture,
         },
         {
             id: 'contact',
             title: t('contact_admin'),
-            isCompleted: completedModules.contact,
+            isCompleted: !!completedModules.contact,
             icon: FcFeedback,
         },
         {
             id: 'test',
             title: t('final_test'),
-            isCompleted: completedModules.test,
+            isCompleted: isTestPassed,
             icon: FcGraduationCap,
         },
     ];
 
     return (
-        <Container>
-            <div className="px-4 py-8">
-                {/* Back Button */}
-                <button
-                    type="button"
-                    onClick={() => router.push('/courses')}
-                    className="mb-6 flex items-center gap-2 text-neutral-600 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
-                >
-                    <FiChevronLeft className="cursor-pointer text-xl" />
-                    <span>{t('back') || 'Back'}</span>
-                </button>
-
-                <SectionHeader
-                    icon={FcDiploma1}
-                    title={t('contest_manager_course')}
-                    description={t(
-                        'contest_manager_course_details.course_description'
-                    )}
+        <CourseLayout
+            courseTitle={t('contest_manager_course')}
+            courseDescription={t(
+                'contest_manager_course_details.course_description'
+            )}
+            headerIcon={FcDiploma1}
+            steps={modules}
+            activeStep={activeModuleId}
+            onSelectStep={setActiveModuleId}
+        >
+            {/* 1. Requirements */}
+            {activeModuleId === 'requirements' && (
+                <RequirementsModule
+                    reqs={reqs}
+                    onChange={handleReqChange}
                 />
+            )}
 
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
-                    {/* Stepper Side Navigation */}
-                    <div className="md:col-span-4 lg:col-span-3">
-                        <div className="sticky top-24 rounded-2xl border border-neutral-200 bg-white p-4 shadow-xs dark:border-neutral-800 dark:bg-neutral-900">
-                            <h4 className="mb-4 px-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase dark:text-neutral-500">
-                                {t('course_steps')}
-                            </h4>
-                            <CourseStepper
-                                modules={modules}
-                                activeModuleId={activeModuleId}
-                                onSelectModule={setActiveModuleId}
-                            />
-                        </div>
-                    </div>
+            {/* 2. Workflow */}
+            {activeModuleId === 'workflow' && (
+                <CourseWorkflowStep
+                    title={t('contest_manager_course_details.workflow_title')}
+                    icon={FcProcess}
+                    stepPrefix="contest_manager_course_details.workflow_step"
+                    totalSteps={5}
+                    onComplete={() => {
+                        markModuleCompleted('workflow');
+                        setActiveModuleId('voting');
+                    }}
+                />
+            )}
 
-                    {/* Module content panels */}
-                    <div className="space-y-6 md:col-span-8 lg:col-span-9">
-                        {/* 1. Requirements */}
-                        {activeModuleId === 'requirements' && (
-                            <RequirementsModule
-                                reqs={reqs}
-                                onChange={handleReqChange}
-                            />
-                        )}
+            {/* 3. Voting */}
+            {activeModuleId === 'voting' && (
+                <VotingModule
+                    participantUserId={participantUserId}
+                    participantRecipeUrl={participantRecipeUrl}
+                    onUserIdChange={setParticipantUserId}
+                    onRecipeUrlChange={setParticipantRecipeUrl}
+                    generatedFormUrl={generatedFormUrl}
+                    onCopyFormLink={copyFormLink}
+                    onComplete={() => {
+                        markModuleCompleted('voting');
+                        setActiveModuleId('badge');
+                    }}
+                />
+            )}
 
-                        {/* 2. Workflow */}
-                        {activeModuleId === 'workflow' && (
-                            <WorkflowModule
-                                workflowStep={workflowStep}
-                                onNextStep={() =>
-                                    setWorkflowStep((prev) => prev + 1)
-                                }
-                                onComplete={() =>
-                                    markModuleCompleted('workflow')
-                                }
-                            />
-                        )}
+            {/* 4. AI Badge */}
+            {activeModuleId === 'badge' && (
+                <BadgeModule
+                    badgeXTopic={badgeXTopic}
+                    rawBadgePrompt={rawBadgePrompt}
+                    copiedBadgePrompt={copiedBadgePrompt}
+                    onTopicChange={setBadgeXTopic}
+                    onCopyPrompt={copyBadgePrompt}
+                    onComplete={() => {
+                        markModuleCompleted('badge');
+                        setActiveModuleId('contact');
+                    }}
+                />
+            )}
 
-                        {/* 3. Voting */}
-                        {activeModuleId === 'voting' && (
-                            <VotingModule
-                                participantUserId={participantUserId}
-                                participantRecipeUrl={participantRecipeUrl}
-                                onUserIdChange={setParticipantUserId}
-                                onRecipeUrlChange={setParticipantRecipeUrl}
-                                generatedFormUrl={generatedFormUrl}
-                                onCopyFormLink={copyFormLink}
-                            />
-                        )}
+            {/* 5. Contact Admin */}
+            {activeModuleId === 'contact' && (
+                <ContactModule
+                    onContactClick={() => markModuleCompleted('contact')}
+                    onComplete={() => {
+                        markModuleCompleted('contact');
+                        setActiveModuleId('test');
+                    }}
+                />
+            )}
 
-                        {/* 4. AI Badge */}
-                        {activeModuleId === 'badge' && (
-                            <BadgeModule
-                                badgeXTopic={badgeXTopic}
-                                rawBadgePrompt={rawBadgePrompt}
-                                copiedBadgePrompt={copiedBadgePrompt}
-                                onTopicChange={setBadgeXTopic}
-                                onCopyPrompt={copyBadgePrompt}
-                            />
-                        )}
-
-                        {/* 5. Contact Admin */}
-                        {activeModuleId === 'contact' && (
-                            <ContactModule
-                                onContactClick={() =>
-                                    markModuleCompleted('contact')
-                                }
-                            />
-                        )}
-
-                        {/* 6. Final Test */}
-                        {activeModuleId === 'test' && (
-                            <div className="space-y-6">
-                                <CourseTest
-                                    questions={contestManagerQuestions}
-                                    onPass={() => markModuleCompleted('test')}
-                                />
-
-                                {completedModules.test && (
-                                    <CertificateGenerator
-                                        courseTitle="Contest Manager Certificate"
-                                        currentUserNames={currentUser?.name}
-                                        badgePath="/badges/contest_manager_badge.jpg"
-                                    />
-                                )}
-                            </div>
-                        )}
-                    </div>
+            {/* 6. Final Test */}
+            {activeModuleId === 'test' && (
+                <div className="space-y-6">
+                    {!isTestPassed ? (
+                        <CourseTest
+                            questions={contestManagerQuestions}
+                            onPass={() => markModuleCompleted('test')}
+                        />
+                    ) : (
+                        <CourseCompleted
+                            courseTitle="Contest Manager Certificate"
+                            currentUserNames={currentUser?.name}
+                            badgePath="/badges/contest_manager_badge.jpg"
+                        />
+                    )}
                 </div>
-            </div>
-        </Container>
+            )}
+        </CourseLayout>
     );
 };
 

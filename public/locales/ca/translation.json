@@ -891,6 +891,9 @@
         "change_name": "Canviar Nom"
     },
     "sharing": "Compartir",
+    "calendar_alerts": "Calendari i Alertes",
+    "contest_mechanics": "Mecànica i Suport",
+    "benefits": "Beneficis",
     "community_events_course": "Curs d'Esdeveniments de la Comunitat",
     "community_events_course_details": {
         "course_description": "Explora el sistema d'esdeveniments: tipus de concursos, sincronització del calendari, participació en el repte de la setmana i protocols de votació.",
@@ -919,11 +922,17 @@
         "voting_title": "Votació de la Recepta de X",
         "voting_desc1": "Jorbites selecciona automàticament les 10 receptes més populars de la setmana, mes o any anterior (requerint almenys 4 receptes candidates per obrir la sessió). Una vegada s'obre la sessió, pots votar directament a l'aplicació per la teva recepta preferida durant les 24 hores que dura la votació.",
         "voting_desc2": "Quan es tanca la sessió, la recepta amb més vots es declara guanyadora (els likes totals serveixen per desempatar). L'autor guanyador rep automàticament la insígnia corresponent al seu perfil de Jorbites.",
-        "final_test_description": "Posa a prova els teus coneixements amb 5 preguntes d'opció múltiple. Necessites almenys un 80% (4 respostes correctes) per aprovar i rebre el Certificat d'Esdeveniments de la Comunitat.",
-        "name_confirmed": "Nom confirmat",
-        "change_name": "Canviar Nom"
-    }onsoliden. Els guanyadors reben insígnies digitals i es destaquen al registre d'esdeveniments de la pàgina d'inici de Jorbites.",
-        "final_test_description": "Posa a prova els teus coneixements amb 5 preguntes d'opció múltiple. Necessites almenys un 80% (4 respostes correctes) per aprovar i rebre el Certificat d'Esdeveniments de la Comunitat.",
+        "notifications_title": "Calendari i Alertes",
+        "notifications_desc1": "El Calendari d'Esdeveniments de Jorbites proporciona una vista unificada de tots els esdeveniments en curs, passats i futurs perquè puguis planificar les teves sessions de cuina.",
+        "notifications_desc2": "Per mantenir-te informat sense aclaparar-te, Jorbites envia notificacions: (1) el dia que comença un nou esdeveniment, (2) quan queden 3 dies per participar, (3) els dilluns quan s'anuncia el nou tema del Repte Setmanal, i (4) sempre que s'obre una sessió de votació de la Recepta de X o es publiquen els resultats.",
+        "benefits_title": "Beneficis de Participar",
+        "benefits_desc1": "Habilitats i Descobriment d'Ingredients: Els esdeveniments temàtics et desafien a cuinar fora de la teva zona de confort, provar nous ingredients i dominar cuines estrangeres.",
+        "benefits_desc2": "Obtenció d'Insínies de Perfil: Completar els reptes t'atorga insígnies digitals que es mostren en el teu perfil públic, reconeixent el teu creixement culinari.",
+        "benefits_desc3": "Connexió amb la Comunitat: Comparteix les teves receptes, inspira't amb altres cuiners casolans, participa en les votacions públiques i dóna/rep comentaris dels teus companys.",
+        "mechanics_title": "Mecànica de Concursos i Suport",
+        "mechanics_desc1": "Regles de Desempat: Quan les sessions de votació es tanquen amb un empat, Jorbites utilitza el nombre total de likes de les receptes en competència com a desempat per determinar el guanyador final.",
+        "mechanics_desc2": "Suport i Contacte: Si completes un Repte de la Setmana i la insígnia no s'assigna automàticament al teu perfil, o si necessites ajuda amb un esdeveniment, contacta amb els administradors de Jorbites a través de Missatge Directe (DM) d'Instagram o correu electrònic oficial.",
+        "final_test_description": "Posa a prova els teus coneixements amb 10 preguntes d'opció múltiple. Necessites almenys un 80% (8 respostes correctes) per aprovar i rebre el Certificat d'Esdeveniments de la Comunitat.",
         "name_confirmed": "Nom confirmat",
         "change_name": "Canviar Nom"
     }
