@@ -1,4 +1,3 @@
-import getCurrentUser from '@/app/actions/getCurrentUser';
 import getRecipeById from '@/app/actions/getRecipeById';
 import getUsersWhoLikedRecipe from '@/app/actions/getUsersWhoLikedRecipe';
 import ClientOnly from '@/app/components/utils/ClientOnly';
@@ -31,9 +30,8 @@ export async function generateMetadata(props: {
 const LikesPage = async (props: { params: Promise<IParams> }) => {
     const params = await props.params;
 
-    const [recipe, currentUser, likedUsers] = await Promise.all([
+    const [recipe, likedUsers] = await Promise.all([
         getRecipeById(params),
-        getCurrentUser(),
         getUsersWhoLikedRecipe(params),
     ]);
 
@@ -49,7 +47,6 @@ const LikesPage = async (props: { params: Promise<IParams> }) => {
         <ClientOnly>
             <LikesClient
                 recipe={recipe}
-                currentUser={currentUser}
                 likedUsers={likedUsers}
             />
         </ClientOnly>

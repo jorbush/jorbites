@@ -18,15 +18,10 @@ interface LikesClientProps {
     recipe: SafeRecipe & {
         user: SafeUser;
     };
-    currentUser?: SafeUser | null;
     likedUsers: SafeUser[];
 }
 
-const LikesClient: React.FC<LikesClientProps> = ({
-    recipe,
-    currentUser,
-    likedUsers,
-}) => {
+const LikesClient: React.FC<LikesClientProps> = ({ recipe, likedUsers }) => {
     const { back, push } = useRouter() || {};
     const { t } = useTranslation();
     const isMdOrSmaller = useMediaQuery('(max-width: 675px)');
