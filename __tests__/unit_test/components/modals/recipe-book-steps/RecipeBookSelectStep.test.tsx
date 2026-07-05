@@ -170,7 +170,8 @@ describe('RecipeBookSelectStep', () => {
                     dispatch={mockDispatch}
                 />
             );
-            expect(screen.getByText('Desserts, Baking')).toBeDefined();
+            // Categories are translated (lowercase)
+            expect(screen.getByText('desserts, baking')).toBeDefined();
         });
 
         it('does not render categories section when empty', () => {

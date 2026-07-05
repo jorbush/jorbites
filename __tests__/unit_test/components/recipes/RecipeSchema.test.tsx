@@ -103,6 +103,7 @@ describe('RecipeSchema', () => {
             description: mockProps.description,
             contentUrl: props.youtubeUrl,
             embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            uploadDate: mockProps.createdAt,
         });
         expect(data.video.thumbnailUrl).toContain(
             'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'
