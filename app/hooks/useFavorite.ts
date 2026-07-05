@@ -39,23 +39,13 @@ const useFavorite = ({ recipeId, currentUser }: IUseFavorite) => {
 
             try {
                 let request;
-                let requestLike;
 
                 if (hasFavorited) {
                     request = () => axios.delete(`/api/favorites/${recipeId}`);
-                    requestLike = () =>
-                        axios.post(`/api/recipe/${recipeId}`, {
-                            operation: 'decrement',
-                        });
                 } else {
                     request = () => axios.post(`/api/favorites/${recipeId}`);
-                    requestLike = () =>
-                        axios.post(`/api/recipe/${recipeId}`, {
-                            operation: 'increment',
-                        });
                 }
 
-                await requestLike();
                 await request();
                 refresh();
                 toast.success(t('success'));
