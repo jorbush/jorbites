@@ -42,7 +42,7 @@ const LikesClient: React.FC<LikesClientProps> = ({ recipe, likedUsers }) => {
 
                 {/* Recipe preview header card */}
                 <div className="mb-8 flex flex-col gap-4 overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-50/50 p-4 sm:flex-row sm:items-center dark:border-neutral-800 dark:bg-neutral-900/50">
-                    <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
+                    <div className="relative size-20 flex-shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
                         <Image
                             src={recipe.imageSrc}
                             alt={recipe.title}
