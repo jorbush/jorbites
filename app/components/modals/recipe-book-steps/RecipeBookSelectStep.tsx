@@ -143,6 +143,11 @@ const RecipeBookSelectStep: React.FC<RecipeBookSelectStepProps> = ({
                                         <span className="truncate text-xs font-light text-neutral-400 dark:text-neutral-500">
                                             {recipe.categories
                                                 .slice(0, 2)
+                                                .map(
+                                                    (cat) =>
+                                                        t(cat.toLowerCase()) ||
+                                                        cat
+                                                )
                                                 .join(', ')}
                                         </span>
                                     )}
