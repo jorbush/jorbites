@@ -161,7 +161,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         push('/lists');
                                         toggleOpen();
                                     }}
-                                    label={t('my_lists') || 'My Lists'}
+                                    label={t('lists') || 'Lists'}
                                     icon={FcBookmark}
                                 />
                                 <MenuItem
@@ -213,6 +213,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('quests') || 'Quests'}
                                     icon={FcTodoList}
+                                />
+                                <MenuItem
+                                    onClick={() => {
+                                        push('/lists');
+                                        toggleOpen();
+                                    }}
+                                    label={t('lists') || 'Lists'}
+                                    icon={FcBookmark}
                                 />
                                 <MenuItem
                                     onClick={() => {
