@@ -1,10 +1,4 @@
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-    waitFor,
-} from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import ContestManagerClient from '@/app/courses/contest-manager/ContestManagerClient';
 import React from 'react';
