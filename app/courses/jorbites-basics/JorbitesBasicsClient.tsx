@@ -77,7 +77,9 @@ const JorbitesBasicsClient: React.FC<JorbitesBasicsClientProps> = ({
         },
         {
             id: 'interactions',
-            title: t('like') || 'Interactions',
+            title:
+                t('jorbites_basics_course_details.req_interactions_label') ||
+                'Interactions',
             icon: FiCheckCircle,
             isCompleted: !!completedModules['interactions'],
         },
@@ -89,7 +91,9 @@ const JorbitesBasicsClient: React.FC<JorbitesBasicsClientProps> = ({
         },
         {
             id: 'pwa',
-            title: t('pwa') || 'PWA App & Notifications',
+            title:
+                t('jorbites_basics_course_details.pwa_info_title') ||
+                'PWA App & Notifications',
             icon: FiSmartphone,
             isCompleted: !!completedModules['pwa'],
         },

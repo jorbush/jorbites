@@ -115,7 +115,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         duration="15 mins"
                         progress={progressBasics}
                         slug="jorbites-basics"
-                        badgeSrc="/badges/recipe_lists_badge_1783155223621.jpg"
+                        badgeSrc="/badges/basics_badge.webp"
                     />
 
                     {/* 2. Recipe Creator */}
@@ -126,7 +126,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         duration="30 mins"
                         progress={progressRecipeCreator}
                         slug="recipe-creator"
-                        badgeSrc="/badges/recipe_lists_badge_1783155223621.jpg"
+                        badgeSrc="/badges/recipe_creator_badge.webp"
                     />
 
                     {/* 3. Recipe Lists */}
@@ -137,7 +137,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         duration="30 mins"
                         progress={progressLists}
                         slug="recipe-lists"
-                        badgeSrc="/badges/recipe_lists_badge.jpg"
+                        badgeSrc="/badges/recipe_lists_badge.webp"
                     />
 
                     {/* 4. Meal Planner */}
@@ -148,7 +148,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         duration="45 mins"
                         progress={progressMealPlanner}
                         slug="meal-planner"
-                        badgeSrc="/badges/recipe_lists_badge_1783155223621.jpg"
+                        badgeSrc="/badges/meal_planner_badge.webp"
                     />
 
                     {/* 5. Community Events */}
@@ -159,7 +159,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         duration="45 mins"
                         progress={progressEvents}
                         slug="community-events"
-                        badgeSrc="/badges/community_events_badge.jpg"
+                        badgeSrc="/badges/community_events_badge.webp"
                     />
 
                     {/* 6. Workshops & Classes */}
@@ -170,7 +170,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         duration="1 hour"
                         progress={progressWorkshops}
                         slug="workshops"
-                        badgeSrc="/badges/community_events_badge.jpg"
+                        badgeSrc="/badges/workshops_badge.webp"
                     />
 
                     {/* 6b. Recipe Quests */}
@@ -181,7 +181,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         duration="30 mins"
                         progress={progressQuests}
                         slug="quests"
-                        badgeSrc="/badges/community_events_badge.jpg"
+                        badgeSrc="/badges/quests_badge.webp"
                     />
 
                     {/* 7. Recipe Book Builder */}
@@ -192,7 +192,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         duration="1 hour"
                         progress={progressRecipeBook}
                         slug="recipe-book-builder"
-                        badgeSrc="/badges/recipe_lists_badge_1783155223621.jpg"
+                        badgeSrc="/badges/recipe_book_badge.webp"
                     />
 
                     {/* 8. Contest Manager */}

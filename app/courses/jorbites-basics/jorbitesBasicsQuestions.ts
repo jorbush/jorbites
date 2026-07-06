@@ -81,19 +81,19 @@ export const jorbitesBasicsQuestions: Question[] = [
         },
         options: {
             en: [
-                'Display name, language, visual theme, and email notification alerts',
+                'Display name, language, visual theme (light/dark), and global email notifications toggle',
                 'Only your email address and profile picture',
                 'Your recipe cooking timer duration sounds',
                 'The default search filters for finding workshops',
             ],
             es: [
-                'Nombre de pantalla, idioma, tema visual y alertas de notificaciones por correo',
+                'Nombre de pantalla, idioma, tema visual (claro/oscuro) e interruptor global de notificaciones por correo',
                 'Solo tu dirección de correo electrónico y foto de perfil',
                 'Los sonidos del temporizador de cocina de tus recetas',
                 'Los filtros de búsqueda predeterminados para encontrar talleres',
             ],
             ca: [
-                'Nom de pantalla, idioma, tema visual i alertes de notificacions per correu',
+                'Nom de pantalla, idioma, tema visual (clar/fosc) i interruptor global de notificacions per correu',
                 'Només la teva adreça de correu electrònic i foto de perfil',
                 'Els sons del temporitzador de cuina de les teves receptes',
                 'Els filtres de cerca predeterminats per trobar tallers',
@@ -110,21 +110,21 @@ export const jorbitesBasicsQuestions: Question[] = [
         },
         options: {
             en: [
+                'Light Mode and Dark Mode',
                 'Light Mode, Dark Mode, and System Default',
                 'High Contrast Green and Neon Yellow only',
-                'Only Light Mode is supported',
                 'Custom themes from uploadable images',
             ],
             es: [
+                'Modo claro y Modo oscuro',
                 'Modo claro, Modo oscuro y Predeterminado del sistema',
                 'Solo Verde de alto contraste y Amarillo neón',
-                'Solo se admite el Modo claro',
                 'Temas personalizados a partir de imágenes cargables',
             ],
             ca: [
+                'Mode clar i Mode fosc',
                 'Mode clar, Mode fosc i Predeterminat del sistema',
                 "Només Verd d'alt contrast i Groc neó",
-                "Només s'admet el Mode clar",
                 "Temes personalitzats a partir d'imatges carregables",
             ],
         },
@@ -133,26 +133,26 @@ export const jorbitesBasicsQuestions: Question[] = [
     {
         id: 'q5',
         question: {
-            en: 'What email notification alerts can you configure in your account settings?',
-            es: '¿Qué alertas de notificación por correo electrónico puedes configurar en los ajustes de tu cuenta?',
-            ca: 'Quines alertes de notificació per correu electrònic pots configurar als ajusts del teu compte?',
+            en: 'How do email notification controls work in your account settings?',
+            es: '¿Cómo funcionan los controles de notificación por correo en los ajustes de tu cuenta?',
+            ca: 'Com funcionen els controls de notificació per correu als ajusts del teu compte?',
         },
         options: {
             en: [
-                'Alerts for workshops, comments replies, quest details, digests, and newsletters',
-                'Only alerts when you hit a recipe limit',
+                'A single global toggle switch to enable or disable all Jorbites email notifications at once',
+                'Granular checkboxes to select individual notifications for workshops, comments, and digests',
                 'Daily reminders to log back into the app',
                 'You cannot configure notifications, they are all enabled by default',
             ],
             es: [
-                'Alertas para talleres, respuestas a comentarios, detalles de misiones, resúmenes y boletines',
-                'Solo alertas cuando alcanzas un límite de recetas',
+                'Un único interruptor global para activar o desactivar todas las notificaciones por correo de Jorbites a la vez',
+                'Casillas de verificación detalladas para seleccionar notificaciones individuales para talleres, comentarios y resúmenes',
                 'Recordatorios diarios para volver a iniciar sesión en la aplicación',
                 'No puedes configurar las notificaciones, están todas activadas por defecto',
             ],
             ca: [
-                'Alertes per a tallers, respostes a comentaris, detalls de missions, resums i butlletins',
-                'Només alertes quan arribes a un límit de receptes',
+                'Un únic interruptor global per activar o desactivar totes les notificacions per correu de Jorbites alhora',
+                'Caselles de verificació detallades per seleccionar notificacions individuals per a tallers, comentaris i resums',
                 "Recordatoris diaris per tornar a iniciar la sessió a l'aplicació",
                 'No pots configurar les notificacions, estan totes activades per defecte',
             ],

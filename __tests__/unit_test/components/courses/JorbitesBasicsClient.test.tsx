@@ -70,7 +70,15 @@ describe('JorbitesBasicsClient', () => {
         // Checks requirements step sidebar item is active or rendered
         expect(screen.getAllByText('requirements').length).toBeGreaterThan(0);
         expect(screen.getAllByText('workflow').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('pwa').length).toBeGreaterThan(0);
+        expect(
+            screen.getAllByText(
+                'jorbites_basics_course_details.req_interactions_label'
+            ).length
+        ).toBeGreaterThan(0);
+        expect(
+            screen.getAllByText('jorbites_basics_course_details.pwa_info_title')
+                .length
+        ).toBeGreaterThan(0);
         expect(screen.getAllByText('final_test').length).toBeGreaterThan(0);
     });
 });
