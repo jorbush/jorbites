@@ -203,7 +203,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         duration="2 hours"
                         progress={progressContest}
                         slug="contest-manager"
-                        badgeSrc="/badges/contest_manager_badge.jpg"
+                        badgeSrc="/badges/contest_manager_badge.webp"
                     />
                 </div>
             </div>

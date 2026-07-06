@@ -635,7 +635,7 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
                         <CourseCompleted
                             courseTitle="Contest Manager Certificate"
                             currentUserNames={currentUser?.name}
-                            badgePath="/badges/contest_manager_badge.jpg"
+                            badgePath="/badges/contest_manager_badge.webp"
                         />
                     )}
                 </div>

@@ -94,7 +94,7 @@ describe('CertificateDownloadLinkSection', () => {
         name: 'Jordi Bonet',
         dateString: 'July 4, 2026',
         certId: 'JRBT-2026-XYZ',
-        absoluteBadgeUrl: 'http://localhost/badges/contest_manager_badge.jpg',
+        absoluteBadgeUrl: 'http://localhost/badges/contest_manager_badge.webp',
         logoUrl: 'http://localhost/images/logo-nobg.png',
         labels: {
             completion: 'CERTIFICATE OF COMPLETION',
@@ -158,7 +158,7 @@ describe('CertificateDownloadLinkSection', () => {
             'http://localhost/images/logo-nobg.png'
         );
         expect(images[1].getAttribute('src')).toBe(
-            'http://localhost/badges/contest_manager_badge.jpg'
+            'http://localhost/badges/contest_manager_badge.webp'
         );
     });
 
