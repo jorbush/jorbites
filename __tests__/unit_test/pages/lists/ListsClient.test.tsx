@@ -27,7 +27,7 @@ const mockUser: SafeUser = {
     badges: [],
 };
 
-const mockLists: SafeList[] = [
+const mockMyLists: SafeList[] = [
     {
         id: 'list-1',
         name: 'To cook later',
@@ -52,6 +52,27 @@ const mockLists: SafeList[] = [
     },
 ];
 
+const mockCommunityLists: SafeList[] = [
+    {
+        id: 'list-3',
+        name: 'Awesome Desserts',
+        userId: 'other-user-id',
+        recipeIds: ['recipe-2', 'recipe-3'],
+        isDefault: false,
+        isPrivate: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        user: {
+            id: 'other-user-id',
+            name: 'Other Chef',
+            image: null,
+            level: 2,
+            verified: true,
+            badges: [],
+        },
+    },
+];
+
 describe('ListsClient', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -61,36 +82,105 @@ describe('ListsClient', () => {
         cleanup();
     });
 
-    it('renders all lists', () => {
-        render(<ListsClient initialLists={mockLists} />);
+    it('renders tabs correctly when authenticated', () => {
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
+        expect(screen.getByText('my_lists')).toBeDefined();
+        expect(screen.getByText('community_lists')).toBeDefined();
+    });
+
+    it('renders only community lists tab when unauthenticated', () => {
+        render(
+            <ListsClient
+                initialMyLists={[]}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={null}
+            />
+        );
+        expect(screen.queryByText('my_lists')).toBeNull();
+        expect(screen.getByText('community_lists')).toBeDefined();
+        expect(screen.getByText('Awesome Desserts')).toBeDefined();
+    });
+
+    it('renders user lists under my lists tab by default when logged in', () => {
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
         expect(screen.getByText('to_cook_later')).toBeDefined();
         expect(screen.getByText('My Special List')).toBeDefined();
+        expect(screen.queryByText('Awesome Desserts')).toBeNull();
     });
 
-    it('shows delete button only for non-default lists', () => {
-        render(<ListsClient initialLists={mockLists} />);
+    it('switches to community lists when tab is clicked', () => {
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
 
-        // Filter those that have the delete icon/title
+        const communityTab = screen.getByText('community_lists');
+        fireEvent.click(communityTab);
+
+        expect(screen.queryByText('to_cook_later')).toBeNull();
+        expect(screen.queryByText('My Special List')).toBeNull();
+        expect(screen.getByText('Awesome Desserts')).toBeDefined();
+    });
+
+    it('shows delete button only for non-default owned lists on My Lists tab', () => {
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
+
         const deleteButtons = screen.queryAllByTitle('delete_list');
-
-        expect(deleteButtons.length).toBe(1);
+        expect(deleteButtons.length).toBe(1); // Only for My Special List
     });
 
-    it('opens confirm modal when delete is clicked', async () => {
-        render(<ListsClient initialLists={mockLists} />);
+    it('never shows delete button on Community Lists tab', () => {
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
+
+        const communityTab = screen.getByText('community_lists');
+        fireEvent.click(communityTab);
+
+        const deleteButtons = screen.queryAllByTitle('delete_list');
+        expect(deleteButtons.length).toBe(0);
+    });
+
+    it('opens confirm modal and calls delete API when deleting owned list', async () => {
+        vi.mocked(axios.delete).mockResolvedValue({ data: {} });
+
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
 
         const deleteButton = screen.getByTitle('delete_list');
         fireEvent.click(deleteButton);
 
         expect(screen.getByText('delete_list_confirmation')).toBeDefined();
-    });
-
-    it('calls axios.delete when confirmed', async () => {
-        vi.mocked(axios.delete).mockResolvedValue({ data: {} });
-        render(<ListsClient initialLists={mockLists} />);
-
-        const deleteButton = screen.getByTitle('delete_list');
-        fireEvent.click(deleteButton);
 
         const confirmButton = screen.getByTestId('modal-action-button');
         await act(async () => {

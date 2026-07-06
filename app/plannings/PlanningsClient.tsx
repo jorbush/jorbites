@@ -14,6 +14,9 @@ import useLoginModal from '@/app/hooks/useLoginModal';
 import PlanningModal from '@/app/components/modals/PlanningModal';
 import { PlanningCard } from '@/app/components/plannings/PlanningCard';
 import { planningsReducer } from './planningsReducer';
+import TabNavigation, {
+    NavigationTab,
+} from '@/app/components/utils/TabNavigation';
 
 interface PlanningsClientProps {
     initialMyPlannings: SafePlanning[];
@@ -158,6 +161,15 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
             </div>
         );
     };
+
+    const tabs: NavigationTab[] = [
+        ...(currentUser ? [{ id: 'my', label: t('my_meal_plans') }] : []),
+        ...(currentUser
+            ? [{ id: 'saved', label: t('saved_meal_plans') || 'Saved Plans' }]
+            : []),
+        { id: 'community', label: t('community_meal_plans') },
+    ];
+
     return (
         <Container>
             <div className="flex flex-col gap-8 pb-12 md:pt-8 dark:text-white">
@@ -190,45 +202,13 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                 </div>
 
                 {/* Tab Navigation */}
-                <div className="flex border-b border-neutral-200 dark:border-neutral-800">
-                    {currentUser && (
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('my')}
-                            className={`cursor-pointer border-b-2 px-6 py-3.5 text-sm font-semibold transition ${
-                                activeTab === 'my'
-                                    ? 'border-neutral-900 text-neutral-900 dark:border-neutral-100 dark:text-white'
-                                    : 'border-transparent text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300'
-                            }`}
-                        >
-                            {t('my_meal_plans')}
-                        </button>
-                    )}
-                    {currentUser && (
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('saved')}
-                            className={`cursor-pointer border-b-2 px-6 py-3.5 text-sm font-semibold transition ${
-                                activeTab === 'saved'
-                                    ? 'border-neutral-900 text-neutral-900 dark:border-neutral-100 dark:text-white'
-                                    : 'border-transparent text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300'
-                            }`}
-                        >
-                            {t('saved_meal_plans') || 'Saved Plans'}
-                        </button>
-                    )}
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab('community')}
-                        className={`cursor-pointer border-b-2 px-6 py-3.5 text-sm font-semibold transition ${
-                            activeTab === 'community'
-                                ? 'border-neutral-900 text-neutral-900 dark:border-neutral-100 dark:text-white'
-                                : 'border-transparent text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300'
-                        }`}
-                    >
-                        {t('community_meal_plans')}
-                    </button>
-                </div>
+                <TabNavigation
+                    tabs={tabs}
+                    activeTab={activeTab}
+                    onTabChange={(tabId) =>
+                        setActiveTab(tabId as 'my' | 'saved' | 'community')
+                    }
+                />
 
                 {/* Tab Content */}
                 <div className="mt-2">
