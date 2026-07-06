@@ -4,9 +4,9 @@
 
 <div align="center">
 
-  **🌐 [Visit Jorbites.com](https://jorbites.com)**
+**🌐 [Visit Jorbites.com](https://jorbites.com)**
 
-  *Join our community of food lovers and discover amazing recipes!*
+_Join our community of food lovers and discover amazing recipes!_
 
 </div>
 
@@ -16,7 +16,7 @@ A user posted this recipe that indirectly answers the question:
 
 <div align="center">
 
-  **🥑 [Why Jorbites?](https://jorbites.com/recipes/68b194a84e84cb9eabfb4350)**
+**🥑 [Why Jorbites?](https://jorbites.com/recipes/68b194a84e84cb9eabfb4350)**
 
 </div>
 
@@ -40,6 +40,7 @@ Jorbites follows a modern microservices architecture for scalability and perform
 ![Architecture Diagram](docs/architecture/architecture.png)
 
 ### Core Platform
+
 - **Main App:** Next.js with TypeScript, deployed on Vercel
 - **Database:** MongoDB Atlas with Prisma ORM
 - **Authentication:** NextAuth with Google/GitHub providers
@@ -48,11 +49,14 @@ Jorbites follows a modern microservices architecture for scalability and perform
 - **Rate Limiting:** Upstash Redis for API protection
 
 ### Microservices
+
 - **[Jorbites Notifier](https://github.com/jorbush/jorbites-notifier)** (Go): Lightweight notification service with FIFO queue
 - **[Badge Forge](https://github.com/jorbush/badge_forge)** (Rust): High-performance badge and level calculation system
 - **[Pantry Keeper](https://github.com/jorbush/pantry_keeper)** (Python): Automated database backup system
+- **[Tagatoni](https://github.com/jorbush/tagatoni)** (Rust): Robust, always-running autonomous agent designed to audit and enrich posted recipes by adding missing fields for SEO and user experience.
 
 ### Videogames
+
 - **[Paltín Dash](https://github.com/jorbush/paltin-dash)** (React): A 3D endless runner videogame
 
 > **Why Microservices?** This architecture overcomes Vercel's 10-second API function limitation, enabling better scalability and performance for compute-intensive operations.

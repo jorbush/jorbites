@@ -1,4 +1,3 @@
-import EmptyState from '@/app/components/utils/EmptyState';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getLists from '@/app/actions/getLists';
@@ -6,30 +5,27 @@ import ListsClient from '@/app/lists/ListsClient';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Mis Listas | Jorbites',
-    description: 'Organiza tus recetas favoritas en listas personalizadas.',
+    title: 'Listas de Recetas | Jorbites',
+    description:
+        'Organiza tus recetas favoritas en listas y descubre listas públicas de la comunidad.',
+    alternates: {
+        canonical: '/lists',
+    },
 };
 
 const ListsPage = async () => {
-    const [currentUser, lists] = await Promise.all([
+    const [currentUser, { myLists, communityLists }] = await Promise.all([
         getCurrentUser(),
         getLists(),
     ]);
 
-    if (!currentUser) {
-        return (
-            <ClientOnly>
-                <EmptyState
-                    title="Unauthorized"
-                    subtitle="Please login"
-                />
-            </ClientOnly>
-        );
-    }
-
     return (
         <ClientOnly>
-            <ListsClient initialLists={lists} />
+            <ListsClient
+                initialMyLists={myLists}
+                initialCommunityLists={communityLists}
+                currentUser={currentUser}
+            />
         </ClientOnly>
     );
 };
