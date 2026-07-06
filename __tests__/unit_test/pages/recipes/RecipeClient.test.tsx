@@ -23,7 +23,10 @@ vi.mock('@/app/hooks/useLoginModal', () => ({
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
-        t: (key: string) => key,
+        t: (key: string, options?: { defaultValue?: string }) => {
+            if (options?.defaultValue) return options.defaultValue;
+            return key;
+        },
         i18n: {
             changeLanguage: vi.fn(),
             language: 'en',
@@ -158,5 +161,25 @@ describe('RecipeClient', () => {
                 rating: null,
             });
         });
+    });
+
+    it('renders calories, yield, and cuisine if present on recipe', () => {
+        const recipeWithDetails = {
+            ...mockRecipe,
+            calories: 600,
+            recipeYield: 3,
+            recipeCuisine: 'Indian',
+        };
+        const { getByText } = render(
+            <RecipeClient
+                recipe={recipeWithDetails}
+                currentUser={mockCurrentUser}
+                comments={mockComments}
+            />
+        );
+
+        expect(getByText('600 calories')).toBeDefined();
+        expect(getByText('3 servings')).toBeDefined();
+        expect(getByText('Indian')).toBeDefined();
     });
 });

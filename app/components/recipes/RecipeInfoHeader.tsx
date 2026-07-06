@@ -8,6 +8,7 @@ import AddToListButton from '@/app/components/buttons/AddToListButton';
 import VerificationBadge from '@/app/components/VerificationBadge';
 import StarRating from '@/app/components/utils/StarRating';
 import getUserDisplayName from '@/app/utils/responsive';
+import { CuisineIcon } from './CuisineIcon';
 
 interface RecipeInfoHeaderProps {
     user: SafeUser;
@@ -23,6 +24,9 @@ interface RecipeInfoHeaderProps {
     push: (url: string) => void;
     isMdOrSmaller: boolean;
     isSmOrSmaller: boolean;
+    calories?: number | null;
+    recipeCuisine?: string | null;
+    recipeYield?: number | null;
 }
 
 export const RecipeInfoHeader: React.FC<RecipeInfoHeaderProps> = ({
@@ -39,6 +43,9 @@ export const RecipeInfoHeader: React.FC<RecipeInfoHeaderProps> = ({
     push,
     isMdOrSmaller,
     isSmOrSmaller,
+    calories,
+    recipeCuisine,
+    recipeYield,
 }) => {
     return (
         <div className="flex flex-col gap-2">
@@ -102,6 +109,47 @@ export const RecipeInfoHeader: React.FC<RecipeInfoHeaderProps> = ({
                     {ingredientsCount}{' '}
                     {mounted ? t('ingredients').toLowerCase() : 'ingredients'}
                 </div>
+                {calories && (
+                    <div
+                        className="border-l border-neutral-300 pl-4 dark:border-neutral-700"
+                        data-testid="recipe-calories"
+                    >
+                        {calories}{' '}
+                        {mounted ? t('calories').toLowerCase() : 'calories'}
+                    </div>
+                )}
+                {recipeYield && (
+                    <div
+                        className="border-l border-neutral-300 pl-4 dark:border-neutral-700"
+                        data-testid="recipe-yield"
+                    >
+                        {recipeYield}{' '}
+                        {mounted
+                            ? recipeYield === 1
+                                ? t('serving').toLowerCase()
+                                : t('servings').toLowerCase()
+                            : 'servings'}
+                    </div>
+                )}
+                {recipeCuisine && (
+                    <div
+                        className="flex items-center gap-1.5 border-l border-neutral-300 pl-4 dark:border-neutral-700"
+                        data-testid="recipe-cuisine"
+                    >
+                        <CuisineIcon
+                            cuisine={recipeCuisine}
+                            size={18}
+                        />
+                        <span>
+                            {mounted
+                                ? t(
+                                      `cuisine_${recipeCuisine.toLowerCase().replace(/\s+/g, '_')}`,
+                                      { defaultValue: recipeCuisine }
+                                  )
+                                : recipeCuisine}
+                        </span>
+                    </div>
+                )}
                 {averageRating > 0 && (
                     <div
                         className="flex items-center gap-1.5 border-l border-neutral-300 pl-4 dark:border-neutral-700"

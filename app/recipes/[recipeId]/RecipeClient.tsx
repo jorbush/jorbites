@@ -148,6 +148,9 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             youtubeUrl={recipe.youtubeUrl || undefined}
                             averageRating={averageRating}
                             ratingCount={ratingCount}
+                            calories={recipe.calories}
+                            recipeCuisine={recipe.recipeCuisine}
+                            recipeYield={recipe.recipeYield}
                         />
                     </div>
                     <div id="comments-section">

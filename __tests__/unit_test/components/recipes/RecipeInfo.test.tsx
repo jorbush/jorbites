@@ -18,7 +18,10 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
-        t: (key: string) => key,
+        t: (key: string, options?: { defaultValue?: string }) => {
+            if (options?.defaultValue) return options.defaultValue;
+            return key;
+        },
         i18n: {
             changeLanguage: vi.fn(),
             language: 'en',
@@ -206,5 +209,25 @@ describe('RecipeInfo', () => {
         render(<RecipeInfo {...mockProps} />);
 
         expect(screen.queryByTestId('recipe-average-rating')).toBeNull();
+    });
+
+    it('renders calories, yield, and cuisine when passed as props', () => {
+        render(
+            <RecipeInfo
+                {...mockProps}
+                calories={500}
+                recipeYield={2}
+                recipeCuisine="Mexican"
+            />
+        );
+
+        expect(screen.getByTestId('recipe-calories')).toBeDefined();
+        expect(screen.getByText('500 calories')).toBeDefined();
+
+        expect(screen.getByTestId('recipe-yield')).toBeDefined();
+        expect(screen.getByText('2 servings')).toBeDefined();
+
+        expect(screen.getByTestId('recipe-cuisine')).toBeDefined();
+        expect(screen.getByText('Mexican')).toBeDefined();
     });
 });
