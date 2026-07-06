@@ -43,6 +43,9 @@ interface RecipeInfoProps {
     youtubeUrl?: string | null;
     averageRating?: number;
     ratingCount?: number;
+    calories?: number | null;
+    recipeCuisine?: string | null;
+    recipeYield?: number | null;
 }
 
 const EMPTY_ARRAY: any[] = [];
@@ -149,6 +152,9 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     youtubeUrl,
     averageRating = 0,
     ratingCount = 0,
+    calories,
+    recipeCuisine,
+    recipeYield,
 }) => {
     const { t } = useTranslation();
     const { push } = useRouter() || {};
@@ -191,6 +197,9 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 push={push}
                 isMdOrSmaller={isMdOrSmaller}
                 isSmOrSmaller={isSmOrSmaller}
+                calories={calories}
+                recipeCuisine={recipeCuisine}
+                recipeYield={recipeYield}
             />
 
             <RecipeCoCooks
