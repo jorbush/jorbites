@@ -3,11 +3,11 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
-import CourseTest from '@/app/components/courses/CourseTest';
-import CourseCompleted from '@/app/components/courses/CourseCompleted';
-import CourseLayout from '@/app/components/courses/CourseLayout';
-import CourseWorkflowStep from '@/app/components/courses/CourseWorkflowStep';
-import CourseInfoStep from '@/app/components/courses/CourseInfoStep';
+import CourseTest from '@/app/components/courses/core/CourseTest';
+import CourseCompleted from '@/app/components/courses/steps/CourseCompleted';
+import CourseLayout from '@/app/components/courses/core/CourseLayout';
+import CourseWorkflowStep from '@/app/components/courses/steps/CourseWorkflowStep';
+import CourseInfoStep from '@/app/components/courses/steps/CourseInfoStep';
 import { useCourseProgress } from '@/app/hooks/useCourseProgress';
 import { contestManagerQuestions } from './contestManagerQuestions';
 import {

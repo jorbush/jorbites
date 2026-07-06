@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import CourseWorkflowStep from '@/app/components/courses/CourseWorkflowStep';
+import CourseWorkflowStep from '@/app/components/courses/steps/CourseWorkflowStep';
 import React from 'react';
 import { FiCheck } from 'react-icons/fi';
 

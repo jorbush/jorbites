@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import CertificateDownloadLinkSection from '@/app/components/courses/CertificateDownloadLinkSection';
+import CertificateDownloadLinkSection from '@/app/components/courses/certificate/CertificateDownloadLinkSection';
 
 afterEach(() => {
     cleanup();

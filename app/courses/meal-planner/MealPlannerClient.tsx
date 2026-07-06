@@ -12,11 +12,11 @@ import {
 import { FcPlanner } from 'react-icons/fc';
 import { SafeUser } from '@/app/types';
 
-import CourseTest from '@/app/components/courses/CourseTest';
-import CourseLayout from '@/app/components/courses/CourseLayout';
-import CourseInfoStep from '@/app/components/courses/CourseInfoStep';
-import CourseWorkflowStep from '@/app/components/courses/CourseWorkflowStep';
-import CourseCompleted from '@/app/components/courses/CourseCompleted';
+import CourseTest from '@/app/components/courses/core/CourseTest';
+import CourseLayout from '@/app/components/courses/core/CourseLayout';
+import CourseInfoStep from '@/app/components/courses/steps/CourseInfoStep';
+import CourseWorkflowStep from '@/app/components/courses/steps/CourseWorkflowStep';
+import CourseCompleted from '@/app/components/courses/steps/CourseCompleted';
 import { useCourseProgress } from '@/app/hooks/useCourseProgress';
 import { mealPlannerQuestions } from './mealPlannerQuestions';
 import useIsMounted from '@/app/hooks/useIsMounted';

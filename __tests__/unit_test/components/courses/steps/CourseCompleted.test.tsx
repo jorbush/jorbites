@@ -1,6 +1,6 @@
 import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import CourseCompleted from '@/app/components/courses/CourseCompleted';
+import CourseCompleted from '@/app/components/courses/steps/CourseCompleted';
 import React from 'react';
 
 // Mock react-i18next
@@ -11,7 +11,7 @@ vi.mock('react-i18next', () => ({
 }));
 
 // Mock CertificateGenerator
-vi.mock('@/app/components/courses/CertificateGenerator', () => ({
+vi.mock('@/app/components/courses/certificate/CertificateGenerator', () => ({
     default: (props: any) => (
         <div data-testid="mock-cert-generator">
             MockedCert: {props.courseTitle} | {props.currentUserNames} |{' '}

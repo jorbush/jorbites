@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiAward } from 'react-icons/fi';
-import CertificateGenerator from './CertificateGenerator';
+import CertificateGenerator from '../certificate/CertificateGenerator';
 
 interface CourseCompletedProps {
     courseTitle: string;

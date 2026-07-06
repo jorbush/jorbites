@@ -32,7 +32,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 // Mock CertificateGenerator
-vi.mock('@/app/components/courses/CertificateGenerator', () => ({
+vi.mock('@/app/components/courses/certificate/CertificateGenerator', () => ({
     default: () => (
         <div data-testid="certificate-generator">Certificate Generator</div>
     ),

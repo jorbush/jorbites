@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import SectionHeader from '@/app/components/utils/SectionHeader';
-import CertificateCard from '@/app/components/courses/CertificateCard';
+import CertificateCard from '@/app/components/courses/certificate/CertificateCard';
 import { FcDiploma1 } from 'react-icons/fc';
 
 import useIsMounted from '@/app/hooks/useIsMounted';
