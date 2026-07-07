@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { SafeList, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
@@ -30,32 +30,16 @@ const ListsClient: React.FC<ListsClientProps> = ({
     const { push, refresh } = useRouter() || {};
     const { t, i18n } = useTranslation();
 
-    const [myLists, setMyLists] = useState<SafeList[]>(initialMyLists);
-    const [communityLists, setCommunityLists] = useState<SafeList[]>(
-        initialCommunityLists
-    );
-
     const [activeTab, setActiveTab] = useState<'my' | 'community'>(
         currentUser ? 'my' : 'community'
     );
     const [deleteListId, setDeleteListId] = useState<string | null>(null);
-
-    useEffect(() => {
-        setMyLists(initialMyLists);
-    }, [initialMyLists]);
-
-    useEffect(() => {
-        setCommunityLists(initialCommunityLists);
-    }, [initialCommunityLists]);
 
     const onDelete = useCallback(async () => {
         if (!deleteListId) return;
         try {
             await axios.delete(`/api/lists/${deleteListId}`);
             toast.success(t('list_deleted') || 'List deleted');
-            setMyLists((prev) =>
-                prev.filter((list) => list.id !== deleteListId)
-            );
             refresh();
         } catch (error: any) {
             toast.error(error?.response?.data || t('something_went_wrong'));
@@ -64,7 +48,8 @@ const ListsClient: React.FC<ListsClientProps> = ({
         }
     }, [deleteListId, refresh, t]);
 
-    const listsToRender = activeTab === 'my' ? myLists : communityLists;
+    const listsToRender =
+        activeTab === 'my' ? initialMyLists : initialCommunityLists;
 
     const tabs: NavigationTab[] = [
         ...(currentUser ? [{ id: 'my', label: t('my_lists') }] : []),
