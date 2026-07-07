@@ -163,7 +163,7 @@ const CertificateDownloadLinkSection: React.FC<
                 {({ loading }: { loading: boolean }) => (
                     <>
                         <FiDownload className="size-4" />
-                        <span>{loading ? 'Generating...' : downloadLabel}</span>
+                        <span>{loading ? 'Generating…' : downloadLabel}</span>
                     </>
                 )}
             </DownloadLink>

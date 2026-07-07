@@ -65,13 +65,11 @@ describe('<CertificateDownloadSection />', () => {
         render(<CertificateDownloadSection {...mockProps} />);
 
         // It should render loading text initially (before the dynamic import promise resolves)
-        expect(screen.getByText('Loading download options...')).toBeDefined();
+        expect(screen.getByText('Loading download options…')).toBeDefined();
 
         // Wait for dynamic import to resolve and load CertificateDownloadLinkSection
         await waitFor(() => {
-            expect(
-                screen.queryByText('Loading download options...')
-            ).toBeNull();
+            expect(screen.queryByText('Loading download options…')).toBeNull();
         });
 
         // Verify that the download link section rendered correctly with the mocked react-pdf components
