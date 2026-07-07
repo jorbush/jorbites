@@ -78,6 +78,7 @@ describe('Comments', () => {
             userId: '1',
             user: mockUser,
             recipeId: '1', // Add the recipeId property
+            likedIds: [],
         },
     ];
 

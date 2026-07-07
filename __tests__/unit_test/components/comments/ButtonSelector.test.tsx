@@ -8,13 +8,18 @@ vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => {
             const translations: Record<
-                'oldest_first' | 'newest_first',
+                'oldest_first' | 'newest_first' | 'most_liked',
                 string
             > = {
                 oldest_first: 'Oldest First',
                 newest_first: 'Newest First',
+                most_liked: 'Most Liked',
             };
-            return translations[key as 'oldest_first' | 'newest_first'] || key;
+            return (
+                translations[
+                    key as 'oldest_first' | 'newest_first' | 'most_liked'
+                ] || key
+            );
         },
     }),
 }));
@@ -66,8 +71,23 @@ describe('<ButtonSelector />', () => {
         expect(FaSortAmountDown).toHaveBeenCalled();
     });
 
-    it('toggles sort order when button is clicked', () => {
-        const { rerender } = render(
+    it('renders with initial most_liked sort order', () => {
+        render(
+            <ButtonSelector
+                sortOrder="most_liked"
+                onSortChange={mockOnSortChange}
+            />
+        );
+
+        // Check if the button displays 'Most Liked'
+        expect(screen.getByText('Most Liked')).toBeDefined();
+
+        // Verify the descending icon is used
+        expect(FaSortAmountDown).toHaveBeenCalled();
+    });
+
+    it('calls onSortChange when an option is selected from dropdown', () => {
+        render(
             <ButtonSelector
                 sortOrder="asc"
                 onSortChange={mockOnSortChange}
@@ -77,22 +97,14 @@ describe('<ButtonSelector />', () => {
         // Initially in ascending order
         expect(screen.getByText('Oldest First')).toBeDefined();
 
-        // Click to toggle
+        // Click button to open dropdown
         fireEvent.click(screen.getByRole('button'));
 
-        // Verify onSortChange was called with descending order
-        expect(mockOnSortChange).toHaveBeenCalledWith('desc');
+        // Click the "Most Liked" option
+        fireEvent.click(screen.getByRole('option', { name: 'Most Liked' }));
 
-        // Simulate parent updating the prop and rerendering
-        rerender(
-            <ButtonSelector
-                sortOrder="desc"
-                onSortChange={mockOnSortChange}
-            />
-        );
-
-        // Verify the button now shows 'Newest First'
-        expect(screen.getByText('Newest First')).toBeDefined();
+        // Verify onSortChange was called with 'most_liked'
+        expect(mockOnSortChange).toHaveBeenCalledWith('most_liked');
     });
 
     it('updates display when sortOrder prop changes', () => {

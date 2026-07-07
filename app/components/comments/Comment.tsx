@@ -14,6 +14,11 @@ import { formatText } from '@/app/utils/textFormatting';
 import StarRating from '@/app/components/utils/StarRating';
 import { useTranslateableContent } from '@/app/hooks/useTranslateableContent';
 import useIsMounted from '@/app/hooks/useIsMounted';
+import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
+import useCommentLike from '@/app/hooks/useCommentLike';
+import { SafeUser } from '@/app/types';
+
+const DEFAULT_LIKED_IDS: string[] = [];
 
 interface CommentProps {
     userId: string;
@@ -26,6 +31,8 @@ interface CommentProps {
     commentId: string;
     userLevel?: number;
     rating: number | null;
+    likedIds?: string[];
+    currentUser?: SafeUser | null;
 }
 
 const Comment: React.FC<CommentProps> = ({
@@ -39,9 +46,16 @@ const Comment: React.FC<CommentProps> = ({
     commentId,
     userLevel,
     rating,
+    likedIds = DEFAULT_LIKED_IDS,
+    currentUser,
 }) => {
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
     const mounted = useIsMounted();
+    const { hasLiked, toggleLike } = useCommentLike({
+        commentId,
+        likedIds,
+        currentUser,
+    });
     const formattedDate = mounted
         ? format(new Date(createdAt), 'dd/MM/yyyy HH:mm')
         : '';
@@ -120,7 +134,33 @@ const Comment: React.FC<CommentProps> = ({
                     </p>
                 </div>
                 <div className="mt-2 flex min-h-[24px] items-center justify-between text-sm text-neutral-500 dark:text-neutral-400">
-                    <div className="shrink-0">{translateButtonElement}</div>
+                    <div className="flex items-center gap-4">
+                        <div className="shrink-0">{translateButtonElement}</div>
+                        <button
+                            type="button"
+                            onClick={toggleLike}
+                            className="flex cursor-pointer items-center gap-1 transition hover:opacity-85 focus:outline-hidden"
+                            aria-label={
+                                hasLiked ? 'Unlike comment' : 'Like comment'
+                            }
+                            data-testid="comment-like-button"
+                        >
+                            {hasLiked ? (
+                                <AiFillHeart
+                                    className="fill-green-450 text-green-450"
+                                    size={16}
+                                />
+                            ) : (
+                                <AiOutlineHeart
+                                    className="text-neutral-500 dark:text-neutral-400"
+                                    size={16}
+                                />
+                            )}
+                            <span className="text-xs font-semibold">
+                                {likedIds.length}
+                            </span>
+                        </button>
+                    </div>
                     <div className="ml-auto">{formattedDate}</div>
                 </div>
                 {canDelete && (

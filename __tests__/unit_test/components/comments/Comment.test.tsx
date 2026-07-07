@@ -35,6 +35,12 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('axios');
 vi.mock('react-hot-toast');
+vi.mock('@/app/hooks/useCommentLike', () => ({
+    default: ({ commentId, likedIds, currentUser }: any) => ({
+        hasLiked: likedIds.includes(currentUser?.id),
+        toggleLike: vi.fn(),
+    }),
+}));
 
 // Mock ConfirmModal
 vi.mock('@/app/components/modals/ConfirmModal', () => ({
@@ -58,6 +64,9 @@ describe('Comment', () => {
         userName: 'Test User',
         commentId: 'comment123',
         userLevel: 5,
+        rating: null,
+        likedIds: [] as string[],
+        currentUser: null,
     };
 
     beforeEach(() => {
@@ -163,5 +172,17 @@ describe('Comment', () => {
         render(<Comment {...mockProps} />);
 
         expect(screen.queryByTestId('comment-rating')).toBeNull();
+    });
+
+    it('renders comment likes correctly', () => {
+        render(
+            <Comment
+                {...mockProps}
+                likedIds={['user1', 'user2']}
+            />
+        );
+
+        expect(screen.getByTestId('comment-like-button')).toBeDefined();
+        expect(screen.getByText('2')).toBeDefined();
     });
 });
