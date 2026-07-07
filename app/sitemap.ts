@@ -60,6 +60,16 @@ export async function getSitemapData(): Promise<MetadataRoute.Sitemap> {
             lastModified: new Date(),
             priority: 1.0,
         },
+        {
+            url: `${baseUrl}/courses`,
+            lastModified: new Date(),
+            priority: 0.8,
+        },
+        {
+            url: `${baseUrl}/courses/contest-manager`,
+            lastModified: new Date(),
+            priority: 0.7,
+        },
         ...recipeEntries,
         ...eventEntries,
         ...userEntries,
