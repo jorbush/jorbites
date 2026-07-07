@@ -69,9 +69,7 @@ describe('<CertificateDownloadSection />', () => {
 
         // Wait for dynamic import to resolve and load CertificateDownloadLinkSection
         await waitFor(() => {
-            expect(
-                screen.queryByText('Loading download options…')
-            ).toBeNull();
+            expect(screen.queryByText('Loading download options…')).toBeNull();
         });
 
         // Verify that the download link section rendered correctly with the mocked react-pdf components
