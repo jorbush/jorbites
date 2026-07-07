@@ -117,6 +117,45 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
         [t, courseTitle]
     );
 
+    const [pngBadgeUrl, setPngBadgeUrl] = useState<string | undefined>(
+        undefined
+    );
+
+    React.useEffect(() => {
+        if (!badgePath || typeof window === 'undefined') return;
+        const absoluteUrl = `${window.location.origin}${badgePath}`;
+
+        const loadAndTranscode = (): Promise<string> => {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.naturalWidth || img.width;
+                        canvas.height = img.naturalHeight || img.height;
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            ctx.drawImage(img, 0, 0);
+                            resolve(canvas.toDataURL('image/png'));
+                        } else {
+                            resolve(absoluteUrl);
+                        }
+                    } catch (err) {
+                        console.error('Error transcoding badge to PNG:', err);
+                        resolve(absoluteUrl);
+                    }
+                };
+                img.onerror = () => {
+                    resolve(absoluteUrl);
+                };
+                img.src = absoluteUrl;
+            });
+        };
+
+        loadAndTranscode().then(setPngBadgeUrl);
+    }, [badgePath]);
+
     // Construct full URLs with current window origin for development/production accuracy
     const logoUrl =
         typeof window !== 'undefined'
@@ -198,7 +237,7 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
                         name={name}
                         dateString={dateString}
                         certId={certId}
-                        absoluteBadgeUrl={absoluteBadgeUrl}
+                        absoluteBadgeUrl={pngBadgeUrl || absoluteBadgeUrl}
                         logoUrl={logoUrl}
                         labels={labels}
                         courseTitle={courseTitle}
