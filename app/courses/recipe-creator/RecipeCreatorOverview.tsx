@@ -41,7 +41,7 @@ const RecipeCreatorOverview: React.FC<RecipeCreatorOverviewProps> = ({
         <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
             <div className="mb-6 flex items-center gap-3">
                 <FiCheck className="size-8 text-neutral-700 dark:text-neutral-300" />
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">
                     {t('recipe_creator_course_details.requirements_title')}
                 </h2>
             </div>
@@ -97,7 +97,7 @@ const RecipeCreatorOverview: React.FC<RecipeCreatorOverviewProps> = ({
                 </div>
 
                 <div className="rounded-xl bg-neutral-50 p-6 dark:bg-neutral-800/30">
-                    <h4 className="mb-4 text-sm font-bold text-neutral-800 dark:text-neutral-200">
+                    <h4 className="mb-4 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
                         {t('recipe_creator_course_details.action_required')}
                     </h4>
                     <div className="space-y-3">

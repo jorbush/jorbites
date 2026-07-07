@@ -87,7 +87,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                             )}
                         </div>
 
-                        <h3 className="mb-2 text-xl font-bold text-neutral-900 dark:text-white">
+                        <h3 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-white">
                             {title}
                         </h3>
                         <p className="mb-6 text-sm text-neutral-600 dark:text-neutral-400">

@@ -24,7 +24,7 @@ const CourseCompleted: React.FC<CourseCompletedProps> = ({
                 <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
                     <FiAward className="size-6" />
                 </div>
-                <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
                     {t('pass_message')}
                 </h3>
             </div>
