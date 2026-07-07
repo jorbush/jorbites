@@ -150,7 +150,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({
                             <div
                                 className={`flex size-5 items-center justify-center rounded-full border-2 ${
                                     isSelected
-                                        ? 'border-green-450 bg-green-450 text-neutral-950'
+                                        ? 'border-green-450 bg-green-450 text-green-950'
                                         : 'border-neutral-300 dark:border-neutral-700'
                                 }`}
                             >

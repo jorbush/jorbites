@@ -55,7 +55,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                             />
                         ) : (
                             <div
-                                className={`bg-green-450 flex size-full items-center justify-center text-neutral-950 ${comingSoon ? 'opacity-50 grayscale' : ''}`}
+                                className={`bg-green-450 flex size-full items-center justify-center text-green-950 ${comingSoon ? 'opacity-50 grayscale' : ''}`}
                             >
                                 <FiAward
                                     className={`size-12 ${comingSoon ? '' : 'animate-pulse'}`}

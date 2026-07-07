@@ -158,7 +158,7 @@ const CertificateDownloadLinkSection: React.FC<
             <DownloadLink
                 document={pdfDocument}
                 fileName={`Jorbites_Certificate_${courseTitle.replace(/\s+/g, '_')}.pdf`}
-                className="bg-green-450 inline-flex animate-none cursor-pointer items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-neutral-950 transition hover:opacity-90"
+                className="bg-green-450 inline-flex animate-none cursor-pointer items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-green-950 transition hover:opacity-90"
             >
                 {({ loading }: { loading: boolean }) => (
                     <>
