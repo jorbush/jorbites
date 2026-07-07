@@ -97,6 +97,10 @@ const QuestsOverview: React.FC<QuestsOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.open}
                                 onChange={() => handleOverviewCheck('open')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t('quests_course_details.checklist_open') ||
+                                    ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t('quests_course_details.checklist_open')}
@@ -108,6 +112,11 @@ const QuestsOverview: React.FC<QuestsOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.fulfill}
                                 onChange={() => handleOverviewCheck('fulfill')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'quests_course_details.checklist_fulfill'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t('quests_course_details.checklist_fulfill')}
@@ -119,6 +128,11 @@ const QuestsOverview: React.FC<QuestsOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.status}
                                 onChange={() => handleOverviewCheck('status')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'quests_course_details.checklist_status'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t('quests_course_details.checklist_status')}
@@ -130,6 +144,11 @@ const QuestsOverview: React.FC<QuestsOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.likes}
                                 onChange={() => handleOverviewCheck('likes')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'quests_course_details.checklist_likes'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t('quests_course_details.checklist_likes')}

@@ -93,6 +93,11 @@ const RecipeListsOverview: React.FC<RecipeListsOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.auto}
                                 onChange={() => handleOverviewCheck('auto')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'recipe_lists_course_details.checklist_auto'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -106,6 +111,11 @@ const RecipeListsOverview: React.FC<RecipeListsOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.custom}
                                 onChange={() => handleOverviewCheck('custom')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'recipe_lists_course_details.checklist_custom'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -119,6 +129,11 @@ const RecipeListsOverview: React.FC<RecipeListsOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.privacy}
                                 onChange={() => handleOverviewCheck('privacy')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'recipe_lists_course_details.checklist_privacy'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -132,6 +147,11 @@ const RecipeListsOverview: React.FC<RecipeListsOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.multi}
                                 onChange={() => handleOverviewCheck('multi')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'recipe_lists_course_details.checklist_multi'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(

@@ -107,6 +107,11 @@ const RecipeCreatorOverview: React.FC<RecipeCreatorOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.inputs}
                                 onChange={() => handleOverviewCheck('inputs')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'recipe_creator_course_details.checklist_inputs'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -124,6 +129,11 @@ const RecipeCreatorOverview: React.FC<RecipeCreatorOverviewProps> = ({
                                     handleOverviewCheck('plaintext')
                                 }
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'recipe_creator_course_details.checklist_plaintext'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -137,6 +147,11 @@ const RecipeCreatorOverview: React.FC<RecipeCreatorOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.draft}
                                 onChange={() => handleOverviewCheck('draft')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'recipe_creator_course_details.checklist_draft'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -150,6 +165,11 @@ const RecipeCreatorOverview: React.FC<RecipeCreatorOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.editing}
                                 onChange={() => handleOverviewCheck('editing')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'recipe_creator_course_details.checklist_editing'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(

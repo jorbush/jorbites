@@ -112,6 +112,11 @@ const JorbitesBasicsOverview: React.FC<JorbitesBasicsOverviewProps> = ({
                                 onChange={() => handleOverviewCheck('recipes')}
                                 className="mt-1 accent-green-600"
                                 id="recipes-checkbox"
+                                aria-label={
+                                    t(
+                                        'jorbites_basics_course_details.checklist_recipes'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -130,6 +135,11 @@ const JorbitesBasicsOverview: React.FC<JorbitesBasicsOverviewProps> = ({
                                 }
                                 className="mt-1 accent-green-600"
                                 id="interactions-checkbox"
+                                aria-label={
+                                    t(
+                                        'jorbites_basics_course_details.checklist_interactions'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -144,6 +154,11 @@ const JorbitesBasicsOverview: React.FC<JorbitesBasicsOverviewProps> = ({
                                 onChange={() => handleOverviewCheck('lists')}
                                 className="mt-1 accent-green-600"
                                 id="lists-checkbox"
+                                aria-label={
+                                    t(
+                                        'jorbites_basics_course_details.checklist_lists'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -160,6 +175,11 @@ const JorbitesBasicsOverview: React.FC<JorbitesBasicsOverviewProps> = ({
                                 onChange={() => handleOverviewCheck('settings')}
                                 className="mt-1 accent-green-600"
                                 id="settings-checkbox"
+                                aria-label={
+                                    t(
+                                        'jorbites_basics_course_details.checklist_settings'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
