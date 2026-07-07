@@ -65,12 +65,12 @@ describe('<CertificateDownloadSection />', () => {
         render(<CertificateDownloadSection {...mockProps} />);
 
         // It should render loading text initially (before the dynamic import promise resolves)
-        expect(screen.getByText('Loading download options...')).toBeDefined();
+        expect(screen.getByText('Loading download options…')).toBeDefined();
 
         // Wait for dynamic import to resolve and load CertificateDownloadLinkSection
         await waitFor(() => {
             expect(
-                screen.queryByText('Loading download options...')
+                screen.queryByText('Loading download options…')
             ).toBeNull();
         });
 

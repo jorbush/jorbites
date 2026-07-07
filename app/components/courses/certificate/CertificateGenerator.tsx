@@ -18,7 +18,7 @@ const CertificateDownloadSection = dynamic(
         ssr: false,
         loading: () => (
             <div className="flex h-12 w-full items-center justify-center text-sm font-semibold text-neutral-500">
-                Loading download options...
+                Loading download options…
             </div>
         ),
     }
