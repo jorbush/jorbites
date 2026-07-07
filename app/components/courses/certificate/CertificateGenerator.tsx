@@ -169,7 +169,7 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
 
     return (
         <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
-            <h3 className="mb-4 text-xl font-bold text-neutral-900 dark:text-white">
+            <h3 className="mb-4 text-xl font-semibold text-neutral-900 dark:text-white">
                 {t('contest_manager_course_details.download_your_certificate')}
             </h3>
 

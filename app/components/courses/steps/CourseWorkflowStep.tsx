@@ -29,7 +29,7 @@ const CourseWorkflowStep: React.FC<CourseWorkflowStepProps> = ({
         <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
             <div className="mb-6 flex items-center gap-3">
                 <Icon className="size-8 text-neutral-700 dark:text-neutral-300" />
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">
                     {title}
                 </h2>
             </div>
@@ -67,7 +67,7 @@ const CourseWorkflowStep: React.FC<CourseWorkflowStepProps> = ({
                                     isActive ? 'opacity-100' : 'opacity-40'
                                 }`}
                             >
-                                <h4 className="text-base font-bold text-neutral-900 dark:text-white">
+                                <h4 className="text-base font-semibold text-neutral-900 dark:text-white">
                                     {t(`${stepPrefix}${step}_title`)}
                                 </h4>
                                 <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">

@@ -52,7 +52,7 @@ const RequirementsModule: React.FC<RequirementsModuleProps> = ({
         <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 dark:border-neutral-800 dark:bg-neutral-900">
             <div className="mb-6 flex items-center gap-3">
                 <FcRules className="size-8" />
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">
                     {t('contest_manager_course_details.requirements_title')}
                 </h2>
             </div>
@@ -101,7 +101,7 @@ const RequirementsModule: React.FC<RequirementsModuleProps> = ({
             </div>
 
             <div className="border-t border-neutral-100 pt-6 dark:border-neutral-800">
-                <h4 className="mb-4 text-sm font-bold tracking-wider text-neutral-400 uppercase">
+                <h4 className="mb-4 text-sm font-semibold tracking-wider text-neutral-400 uppercase">
                     {t('contest_manager_course_details.action_required')}
                 </h4>
                 <div className="space-y-3">
@@ -236,7 +236,7 @@ const VotingModule: React.FC<VotingModuleProps> = ({
 
             {/* URL Prefill Builder Simulator */}
             <div className="dark:bg-neutral-955/40 mt-4 rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-800">
-                <h4 className="mb-3 text-sm font-bold text-neutral-800 dark:text-neutral-200">
+                <h4 className="mb-3 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
                     {t('contest_manager_course_details.voting_builder_title')}
                 </h4>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -353,7 +353,7 @@ const BadgeModule: React.FC<BadgeModuleProps> = ({
             onComplete={onComplete}
         >
             <div className="dark:bg-neutral-955/40 rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-800">
-                <h4 className="mb-3 text-sm font-bold text-neutral-800 dark:text-neutral-200">
+                <h4 className="mb-3 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
                     {t('contest_manager_course_details.badge_builder_title')}
                 </h4>
                 <div className="mb-4">

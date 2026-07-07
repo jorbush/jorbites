@@ -217,7 +217,7 @@ const QuizResults: React.FC<QuizResultsProps> = ({
                     )}
                 </div>
 
-                <h3 className="mb-2 text-2xl font-bold text-neutral-900 dark:text-white">
+                <h3 className="mb-2 text-2xl font-semibold text-neutral-900 dark:text-white">
                     {isPassed ? 'Test Passed!' : 'Test Failed'}
                 </h3>
                 <p className="mx-auto mb-6 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
@@ -396,7 +396,7 @@ const CourseTest: React.FC<CourseTestProps> = ({
                 <div className="bg-green-450/20 dark:bg-green-450/10 mx-auto mb-4 flex size-16 items-center justify-center rounded-full text-green-800 dark:text-green-300">
                     <FiAward className="size-8" />
                 </div>
-                <h3 className="mb-2 text-xl font-bold text-neutral-900 dark:text-white">
+                <h3 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-white">
                     {t('final_test')}
                 </h3>
                 <p className="mx-auto mb-6 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
