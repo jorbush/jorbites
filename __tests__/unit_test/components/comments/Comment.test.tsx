@@ -36,7 +36,7 @@ vi.mock('react-i18next', () => ({
 vi.mock('axios');
 vi.mock('react-hot-toast');
 vi.mock('@/app/hooks/useCommentLike', () => ({
-    default: ({ commentId, likedIds, currentUser }: any) => ({
+    default: ({ _commentId, likedIds, currentUser }: any) => ({
         hasLiked: likedIds.includes(currentUser?.id),
         toggleLike: vi.fn(),
     }),
