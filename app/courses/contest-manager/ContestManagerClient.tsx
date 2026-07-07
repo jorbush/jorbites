@@ -113,6 +113,11 @@ const RequirementsModule: React.FC<RequirementsModuleProps> = ({
                                 onChange('recipes', e.target.checked)
                             }
                             className="mt-0.5 accent-green-600"
+                            aria-label={
+                                t(
+                                    'contest_manager_course_details.checklist_recipes'
+                                ) || ''
+                            }
                         />
                         <span className="text-sm text-neutral-600 dark:text-neutral-400">
                             {t(
@@ -128,6 +133,11 @@ const RequirementsModule: React.FC<RequirementsModuleProps> = ({
                                 onChange('theme', e.target.checked)
                             }
                             className="mt-0.5 accent-green-600"
+                            aria-label={
+                                t(
+                                    'contest_manager_course_details.checklist_theme'
+                                ) || ''
+                            }
                         />
                         <span className="text-sm text-neutral-600 dark:text-neutral-400">
                             {t(
@@ -143,6 +153,11 @@ const RequirementsModule: React.FC<RequirementsModuleProps> = ({
                                 onChange('badge', e.target.checked)
                             }
                             className="mt-0.5 accent-green-600"
+                            aria-label={
+                                t(
+                                    'contest_manager_course_details.checklist_badge'
+                                ) || ''
+                            }
                         />
                         <span className="text-sm text-neutral-600 dark:text-neutral-400">
                             {t(
@@ -158,6 +173,11 @@ const RequirementsModule: React.FC<RequirementsModuleProps> = ({
                                 onChange('announcement', e.target.checked)
                             }
                             className="mt-0.5 accent-green-600"
+                            aria-label={
+                                t(
+                                    'contest_manager_course_details.checklist_announcement'
+                                ) || ''
+                            }
                         />
                         <span className="text-sm text-neutral-600 dark:text-neutral-400">
                             {t(
@@ -235,6 +255,11 @@ const VotingModule: React.FC<VotingModuleProps> = ({
                             value={participantRecipeUrl}
                             onChange={(e) => onRecipeUrlChange(e.target.value)}
                             placeholder="e.g. https://jorbites.com/recipes/clw8s0921"
+                            aria-label={
+                                t(
+                                    'contest_manager_course_details.voting_recipe_label'
+                                ) || ''
+                            }
                             className="focus:border-green-450 w-full rounded-lg border border-neutral-200 px-3 py-2 text-xs focus:outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-white"
                         />
                     </div>
@@ -253,6 +278,11 @@ const VotingModule: React.FC<VotingModuleProps> = ({
                             value={participantUserId}
                             onChange={(e) => onUserIdChange(e.target.value)}
                             placeholder="e.g. clw8a4128"
+                            aria-label={
+                                t(
+                                    'contest_manager_course_details.voting_user_label'
+                                ) || ''
+                            }
                             className="focus:border-green-450 w-full rounded-lg border border-neutral-200 px-3 py-2 text-xs focus:outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-white"
                         />
                     </div>
@@ -339,6 +369,11 @@ const BadgeModule: React.FC<BadgeModuleProps> = ({
                         value={badgeXTopic}
                         onChange={(e) => onTopicChange(e.target.value)}
                         placeholder="e.g. Sushi, Burgers, Vegan Soups"
+                        aria-label={
+                            t(
+                                'contest_manager_course_details.badge_topic_label'
+                            ) || ''
+                        }
                         className="focus:border-green-450 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-white"
                     />
                 </div>

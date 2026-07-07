@@ -101,6 +101,11 @@ const MealPlannerOverview: React.FC<MealPlannerOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.privacy}
                                 onChange={() => handleOverviewCheck('privacy')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'meal_planner_course_details.checklist_privacy'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -114,6 +119,11 @@ const MealPlannerOverview: React.FC<MealPlannerOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.slots}
                                 onChange={() => handleOverviewCheck('slots')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'meal_planner_course_details.checklist_slots'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -129,6 +139,11 @@ const MealPlannerOverview: React.FC<MealPlannerOverviewProps> = ({
                                 }
                                 onChange={() => handleOverviewCheck('shopping')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'meal_planner_course_details.checklist_shopping'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -144,6 +159,11 @@ const MealPlannerOverview: React.FC<MealPlannerOverviewProps> = ({
                                 }
                                 onChange={() => handleOverviewCheck('calendar')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'meal_planner_course_details.checklist_calendar'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(

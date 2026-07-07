@@ -111,6 +111,11 @@ const CommunityEventsOverview: React.FC<CommunityEventsOverviewProps> = ({
                                     handleOverviewCheck('challenge')
                                 }
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'community_events_course_details.checklist_challenge'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -124,6 +129,11 @@ const CommunityEventsOverview: React.FC<CommunityEventsOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.contest}
                                 onChange={() => handleOverviewCheck('contest')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'community_events_course_details.checklist_contest'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -139,6 +149,11 @@ const CommunityEventsOverview: React.FC<CommunityEventsOverviewProps> = ({
                                 }
                                 onChange={() => handleOverviewCheck('calendar')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'community_events_course_details.checklist_temp'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -152,6 +167,11 @@ const CommunityEventsOverview: React.FC<CommunityEventsOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.voting}
                                 onChange={() => handleOverviewCheck('voting')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'community_events_course_details.checklist_voting'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(

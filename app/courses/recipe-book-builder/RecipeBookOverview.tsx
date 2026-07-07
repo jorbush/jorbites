@@ -99,6 +99,11 @@ const RecipeBookOverview: React.FC<RecipeBookOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.styles}
                                 onChange={() => handleOverviewCheck('styles')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'recipe_book_course_details.checklist_styles'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -116,6 +121,11 @@ const RecipeBookOverview: React.FC<RecipeBookOverviewProps> = ({
                                     handleOverviewCheck('selection')
                                 }
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'recipe_book_course_details.checklist_selection'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -129,6 +139,11 @@ const RecipeBookOverview: React.FC<RecipeBookOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.limits}
                                 onChange={() => handleOverviewCheck('limits')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'recipe_book_course_details.checklist_limits'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -144,6 +159,11 @@ const RecipeBookOverview: React.FC<RecipeBookOverviewProps> = ({
                                 }
                                 onChange={() => handleOverviewCheck('download')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'recipe_book_course_details.checklist_download'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(

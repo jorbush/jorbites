@@ -99,6 +99,11 @@ const WorkshopsOverview: React.FC<WorkshopsOverviewProps> = ({
                                 }
                                 onChange={() => handleOverviewCheck('capacity')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'workshops_course_details.checklist_capacity'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -112,6 +117,11 @@ const WorkshopsOverview: React.FC<WorkshopsOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.privacy}
                                 onChange={() => handleOverviewCheck('privacy')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'workshops_course_details.checklist_privacy'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -129,6 +139,11 @@ const WorkshopsOverview: React.FC<WorkshopsOverviewProps> = ({
                                     handleOverviewCheck('whitelist')
                                 }
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'workshops_course_details.checklist_whitelist'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
@@ -142,6 +157,11 @@ const WorkshopsOverview: React.FC<WorkshopsOverviewProps> = ({
                                 checked={isCompleted || overviewChecked.prereqs}
                                 onChange={() => handleOverviewCheck('prereqs')}
                                 className="mt-1 accent-green-600"
+                                aria-label={
+                                    t(
+                                        'workshops_course_details.checklist_prereqs'
+                                    ) || ''
+                                }
                             />
                             <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(
