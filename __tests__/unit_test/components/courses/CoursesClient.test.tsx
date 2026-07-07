@@ -43,15 +43,23 @@ describe('<CoursesClient />', () => {
         const durations = screen.getAllByTestId('card-duration');
 
         // Jorbites Basics (15 mins)
-        expect(durations.some(d => d.textContent === 'duration_minutes_15')).toBe(true);
+        expect(
+            durations.some((d) => d.textContent === 'duration_minutes_15')
+        ).toBe(true);
 
         // Recipe Creator (30 mins)
-        expect(durations.some(d => d.textContent === 'duration_minutes_30')).toBe(true);
+        expect(
+            durations.some((d) => d.textContent === 'duration_minutes_30')
+        ).toBe(true);
 
         // Workshops (1 hour)
-        expect(durations.some(d => d.textContent === 'duration_hours_1')).toBe(true);
+        expect(
+            durations.some((d) => d.textContent === 'duration_hours_1')
+        ).toBe(true);
 
         // Contest Manager (2 hours)
-        expect(durations.some(d => d.textContent === 'duration_hours_2')).toBe(true);
+        expect(
+            durations.some((d) => d.textContent === 'duration_hours_2')
+        ).toBe(true);
     });
 });
