@@ -28,7 +28,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
     comingSoon = false,
 }) => {
     const { t } = useTranslation();
-    const router = useRouter();
+    const { push } = useRouter();
 
     const isCompleted = progress === 100;
     const hasStarted = progress > 0;
@@ -126,7 +126,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                                     }
                                     onClick={() => {
                                         if (!comingSoon) {
-                                            router.push(`/courses/${slug}`);
+                                            push(`/courses/${slug}`);
                                         }
                                     }}
                                     disabled={comingSoon}

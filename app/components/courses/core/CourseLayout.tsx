@@ -36,7 +36,7 @@ const CourseLayout: React.FC<CourseLayoutProps> = ({
     children,
 }) => {
     const { t } = useTranslation();
-    const router = useRouter();
+    const { push } = useRouter();
 
     return (
         <Container>
@@ -44,7 +44,7 @@ const CourseLayout: React.FC<CourseLayoutProps> = ({
                 {/* Back Button */}
                 <button
                     type="button"
-                    onClick={() => router.push('/courses')}
+                    onClick={() => push('/courses')}
                     className="mb-6 flex items-center gap-2 text-neutral-600 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
                 >
                     <FiChevronLeft className="cursor-pointer text-xl" />
