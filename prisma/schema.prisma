@@ -98,6 +98,7 @@ model Comment {
   recipeId String @db.ObjectId
   rating Int?
   createdAt DateTime @default(now())
+  likedIds String[] @db.ObjectId @default([])
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)

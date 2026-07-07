@@ -19,8 +19,10 @@ const sortOrderStore = {
     getSnapshot() {
         if (typeof window === 'undefined') return 'asc';
         return (
-            (localStorage.getItem('commentSortOrder') as 'asc' | 'desc') ||
-            'asc'
+            (localStorage.getItem('commentSortOrder') as
+                | 'asc'
+                | 'desc'
+                | 'most_liked') || 'asc'
         );
     },
     getServerSnapshot() {
@@ -28,7 +30,7 @@ const sortOrderStore = {
     },
 };
 
-const handleSortChange = (order: 'asc' | 'desc') => {
+const handleSortChange = (order: 'asc' | 'desc' | 'most_liked') => {
     localStorage.setItem('commentSortOrder', order);
     if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('storage'));
@@ -60,6 +62,17 @@ const Comments: React.FC<CommentsProps> = ({
     );
 
     const sortedComments = comments.toSorted((a, b) => {
+        if (sortOrder === 'most_liked') {
+            const likesA = a.likedIds?.length || 0;
+            const likesB = b.likedIds?.length || 0;
+            if (likesA !== likesB) {
+                return likesB - likesA;
+            }
+            // Fall back to newest first if likes are equal
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return dateB - dateA;
+        }
         const dateA = new Date(a.createdAt).getTime();
         const dateB = new Date(b.createdAt).getTime();
         return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
@@ -105,6 +118,8 @@ const Comments: React.FC<CommentsProps> = ({
                             commentId={comment.id}
                             userLevel={comment.user.level}
                             rating={comment.rating}
+                            likedIds={comment.likedIds || []}
+                            currentUser={currentUser}
                         />
                     </div>
                 ))}
