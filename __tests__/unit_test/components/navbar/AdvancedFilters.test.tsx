@@ -1,10 +1,4 @@
-import {
-    render,
-    screen,
-    fireEvent,
-    cleanup,
-    waitFor,
-} from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import AdvancedFilters from '@/app/components/navbar/AdvancedFilters';
 import React from 'react';

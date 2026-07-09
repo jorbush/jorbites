@@ -1,4 +1,5 @@
 import prisma from '@/app/lib/prismadb';
+import { Prisma } from '@prisma/client';
 import { redisCache } from '@/app/lib/redis';
 import { SafeRecipe } from '@/app/types';
 import {
@@ -82,7 +83,7 @@ export default async function getRecipes(
             recipeCuisine,
         } = params;
 
-        let query: any = {};
+        let query: Prisma.RecipeWhereInput = {};
 
         if (typeof category === 'string') {
             query.categories = {
@@ -105,8 +106,13 @@ export default async function getRecipes(
         if (minCalories !== undefined && minCalories !== '') {
             const parsed = parseInt(minCalories.toString(), 10);
             if (!isNaN(parsed)) {
+                const currentFilter = (
+                    query.calories && typeof query.calories === 'object'
+                        ? query.calories
+                        : {}
+                ) as Prisma.IntNullableFilter;
                 query.calories = {
-                    ...query.calories,
+                    ...currentFilter,
                     gte: parsed,
                 };
             }
@@ -115,8 +121,13 @@ export default async function getRecipes(
         if (maxCalories !== undefined && maxCalories !== '') {
             const parsed = parseInt(maxCalories.toString(), 10);
             if (!isNaN(parsed)) {
+                const currentFilter = (
+                    query.calories && typeof query.calories === 'object'
+                        ? query.calories
+                        : {}
+                ) as Prisma.IntNullableFilter;
                 query.calories = {
-                    ...query.calories,
+                    ...currentFilter,
                     lte: parsed,
                 };
             }
@@ -125,8 +136,13 @@ export default async function getRecipes(
         if (minYield !== undefined && minYield !== '') {
             const parsed = parseInt(minYield.toString(), 10);
             if (!isNaN(parsed)) {
+                const currentFilter = (
+                    query.recipeYield && typeof query.recipeYield === 'object'
+                        ? query.recipeYield
+                        : {}
+                ) as Prisma.IntNullableFilter;
                 query.recipeYield = {
-                    ...query.recipeYield,
+                    ...currentFilter,
                     gte: parsed,
                 };
             }
@@ -135,8 +151,13 @@ export default async function getRecipes(
         if (maxYield !== undefined && maxYield !== '') {
             const parsed = parseInt(maxYield.toString(), 10);
             if (!isNaN(parsed)) {
+                const currentFilter = (
+                    query.recipeYield && typeof query.recipeYield === 'object'
+                        ? query.recipeYield
+                        : {}
+                ) as Prisma.IntNullableFilter;
                 query.recipeYield = {
-                    ...query.recipeYield,
+                    ...currentFilter,
                     lte: parsed,
                 };
             }

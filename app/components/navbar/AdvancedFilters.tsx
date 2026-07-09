@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect, Suspense } from 'react';
+import { useReducer, useRef, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { FiSliders, FiX } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import Button from '../buttons/Button';
+import { advancedFiltersReducer } from './advancedFiltersReducer';
 
 const POPULAR_CUISINES = [
     'Italian',
@@ -17,6 +18,160 @@ const POPULAR_CUISINES = [
     'American',
     'Mediterranean',
 ];
+
+interface CalorieFilterSectionProps {
+    minCalories: string;
+    maxCalories: string;
+    onChangeMin: (val: string) => void;
+    onChangeMax: (val: string) => void;
+    t: (key: string, options?: { defaultValue?: string }) => string;
+}
+
+const CalorieFilterSection: React.FC<CalorieFilterSectionProps> = ({
+    minCalories,
+    maxCalories,
+    onChangeMin,
+    onChangeMax,
+    t,
+}) => (
+    <div className="flex flex-col gap-1.5">
+        <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            {t('calories') || 'Calories'} (kcal)
+        </span>
+        <div className="flex items-center gap-2">
+            <input
+                type="number"
+                min="0"
+                placeholder={t('min_calories') || 'Min'}
+                aria-label={t('min_calories') || 'Min calories'}
+                value={minCalories}
+                onChange={(e) => onChangeMin(e.target.value)}
+                className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+                data-testid="min-calories-input"
+            />
+            <span className="text-neutral-400">-</span>
+            <input
+                type="number"
+                min="0"
+                placeholder={t('max_calories') || 'Max'}
+                aria-label={t('max_calories') || 'Max calories'}
+                value={maxCalories}
+                onChange={(e) => onChangeMax(e.target.value)}
+                className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+                data-testid="max-calories-input"
+            />
+        </div>
+    </div>
+);
+
+interface YieldFilterSectionProps {
+    minYield: string;
+    maxYield: string;
+    onChangeMin: (val: string) => void;
+    onChangeMax: (val: string) => void;
+    t: (key: string, options?: { defaultValue?: string }) => string;
+}
+
+const YieldFilterSection: React.FC<YieldFilterSectionProps> = ({
+    minYield,
+    maxYield,
+    onChangeMin,
+    onChangeMax,
+    t,
+}) => (
+    <div className="flex flex-col gap-1.5">
+        <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            {t('yield') || 'Servings'}
+        </span>
+        <div className="flex items-center gap-2">
+            <input
+                type="number"
+                min="1"
+                placeholder={t('min_yield') || 'Min'}
+                aria-label={t('min_yield') || 'Min servings'}
+                value={minYield}
+                onChange={(e) => onChangeMin(e.target.value)}
+                className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+                data-testid="min-yield-input"
+            />
+            <span className="text-neutral-400">-</span>
+            <input
+                type="number"
+                min="1"
+                placeholder={t('max_yield') || 'Max'}
+                aria-label={t('max_yield') || 'Max servings'}
+                value={maxYield}
+                onChange={(e) => onChangeMax(e.target.value)}
+                className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+                data-testid="max-yield-input"
+            />
+        </div>
+    </div>
+);
+
+interface CuisineFilterSectionProps {
+    cuisine: string;
+    onChange: (val: string) => void;
+    onPillClick: (val: string) => void;
+    t: (key: string, options?: { defaultValue?: string }) => string;
+}
+
+const CuisineFilterSection: React.FC<CuisineFilterSectionProps> = ({
+    cuisine,
+    onChange,
+    onPillClick,
+    t,
+}) => (
+    <div className="flex flex-col gap-1.5">
+        <label
+            htmlFor="cuisine-input"
+            className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+        >
+            {t('recipe_cuisine') || 'Cuisine'}
+        </label>
+        <input
+            id="cuisine-input"
+            type="text"
+            placeholder={t('cuisine_placeholder') || 'e.g. Italian, Spanish'}
+            value={cuisine}
+            onChange={(e) => onChange(e.target.value)}
+            className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+            data-testid="cuisine-input"
+        />
+
+        <div className="flex flex-col gap-1 pt-1">
+            <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                {t('popular_cuisines') || 'Popular cuisines'}
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+                {POPULAR_CUISINES.map((popCuisine) => {
+                    const translationKey = `cuisine_${popCuisine.toLowerCase().replace(/\s+/g, '_')}`;
+                    const label = t(translationKey, {
+                        defaultValue: popCuisine,
+                    });
+                    const isSelected =
+                        cuisine.toLowerCase() === popCuisine.toLowerCase();
+
+                    return (
+                        <button
+                            key={popCuisine}
+                            type="button"
+                            onClick={() => onPillClick(popCuisine)}
+                            className={`cursor-pointer rounded-full px-2.5 py-1 text-xs font-medium transition ${
+                                isSelected
+                                    ? 'bg-green-450 text-white'
+                                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
+                            }`}
+                            data-testid={`cuisine-pill-${popCuisine.toLowerCase()}`}
+                        >
+                            {label}
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    </div>
+);
 
 const AdvancedFiltersComponent: React.FC = () => {
     const { t } = useTranslation();
@@ -44,20 +199,36 @@ const AdvancedFiltersComponent: React.FC = () => {
         currentCuisine
     );
 
-    const [isOpen, setIsOpen] = useState(false);
-    const [tempMinCalories, setTempMinCalories] = useState(currentMinCalories);
-    const [tempMaxCalories, setTempMaxCalories] = useState(currentMaxCalories);
-    const [tempMinYield, setTempMinYield] = useState(currentMinYield);
-    const [tempMaxYield, setTempMaxYield] = useState(currentMaxYield);
-    const [tempCuisine, setTempCuisine] = useState(currentCuisine);
+    const [state, dispatch] = useReducer(advancedFiltersReducer, {
+        isOpen: false,
+        tempMinCalories: currentMinCalories,
+        tempMaxCalories: currentMaxCalories,
+        tempMinYield: currentMinYield,
+        tempMaxYield: currentMaxYield,
+        tempCuisine: currentCuisine,
+    });
+
+    const {
+        isOpen,
+        tempMinCalories,
+        tempMaxCalories,
+        tempMinYield,
+        tempMaxYield,
+        tempCuisine,
+    } = state;
 
     // Sync state with URL params on open or url changes
     useEffect(() => {
-        setTempMinCalories(currentMinCalories);
-        setTempMaxCalories(currentMaxCalories);
-        setTempMinYield(currentMinYield);
-        setTempMaxYield(currentMaxYield);
-        setTempCuisine(currentCuisine);
+        dispatch({
+            type: 'SYNC_FILTERS',
+            payload: {
+                minCalories: currentMinCalories,
+                maxCalories: currentMaxCalories,
+                minYield: currentMinYield,
+                maxYield: currentMaxYield,
+                recipeCuisine: currentCuisine,
+            },
+        });
     }, [
         isOpen,
         currentMinCalories,
@@ -73,7 +244,7 @@ const AdvancedFiltersComponent: React.FC = () => {
                 dropdownRef.current &&
                 !dropdownRef.current.contains(event.target as Node)
             ) {
-                setIsOpen(false);
+                dispatch({ type: 'SET_OPEN', payload: false });
             }
         };
 
@@ -133,25 +304,21 @@ const AdvancedFiltersComponent: React.FC = () => {
             tempMaxYield,
             tempCuisine
         );
-        setIsOpen(false);
+        dispatch({ type: 'SET_OPEN', payload: false });
     };
 
     const handleClear = () => {
-        setTempMinCalories('');
-        setTempMaxCalories('');
-        setTempMinYield('');
-        setTempMaxYield('');
-        setTempCuisine('');
+        dispatch({ type: 'CLEAR_FILTERS' });
         if (isFilterablePage) {
             updateUrlWithFilters('', '', '', '', '');
         }
     };
 
-    const handleCuisinePillClick = (cuisine: string) => {
-        if (tempCuisine.toLowerCase() === cuisine.toLowerCase()) {
-            setTempCuisine('');
+    const handleCuisinePillClick = (cuisineName: string) => {
+        if (tempCuisine.toLowerCase() === cuisineName.toLowerCase()) {
+            dispatch({ type: 'SET_CUISINE', payload: '' });
         } else {
-            setTempCuisine(cuisine);
+            dispatch({ type: 'SET_CUISINE', payload: cuisineName });
         }
     };
 
@@ -171,7 +338,7 @@ const AdvancedFiltersComponent: React.FC = () => {
         >
             <button
                 type="button"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => dispatch({ type: 'SET_OPEN', payload: !isOpen })}
                 className={`relative cursor-pointer rounded-full p-2 shadow-xs transition hover:shadow-md ${
                     hasActiveFilters
                         ? 'bg-green-450 dark:text-dark text-white'
@@ -216,149 +383,61 @@ const AdvancedFiltersComponent: React.FC = () => {
                             )}
                         </div>
 
-                        {/* Calories filter */}
-                        <div className="flex flex-col gap-1.5">
-                            <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                {t('calories') || 'Calories'} (kcal)
-                            </span>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="number"
-                                    min="0"
-                                    placeholder={t('min_calories') || 'Min'}
-                                    aria-label={
-                                        t('min_calories') || 'Min calories'
-                                    }
-                                    value={tempMinCalories}
-                                    onChange={(e) =>
-                                        setTempMinCalories(e.target.value)
-                                    }
-                                    className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
-                                    data-testid="min-calories-input"
-                                />
-                                <span className="text-neutral-400">-</span>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    placeholder={t('max_calories') || 'Max'}
-                                    aria-label={
-                                        t('max_calories') || 'Max calories'
-                                    }
-                                    value={tempMaxCalories}
-                                    onChange={(e) =>
-                                        setTempMaxCalories(e.target.value)
-                                    }
-                                    className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
-                                    data-testid="max-calories-input"
-                                />
-                            </div>
-                        </div>
+                        <CalorieFilterSection
+                            minCalories={tempMinCalories}
+                            maxCalories={tempMaxCalories}
+                            onChangeMin={(val) =>
+                                dispatch({
+                                    type: 'SET_MIN_CALORIES',
+                                    payload: val,
+                                })
+                            }
+                            onChangeMax={(val) =>
+                                dispatch({
+                                    type: 'SET_MAX_CALORIES',
+                                    payload: val,
+                                })
+                            }
+                            t={t}
+                        />
 
-                        {/* Servings/Yield filter */}
-                        <div className="flex flex-col gap-1.5">
-                            <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                {t('yield') || 'Servings'}
-                            </span>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="number"
-                                    min="1"
-                                    placeholder={t('min_yield') || 'Min'}
-                                    aria-label={
-                                        t('min_yield') || 'Min servings'
-                                    }
-                                    value={tempMinYield}
-                                    onChange={(e) =>
-                                        setTempMinYield(e.target.value)
-                                    }
-                                    className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
-                                    data-testid="min-yield-input"
-                                />
-                                <span className="text-neutral-400">-</span>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    placeholder={t('max_yield') || 'Max'}
-                                    aria-label={
-                                        t('max_yield') || 'Max servings'
-                                    }
-                                    value={tempMaxYield}
-                                    onChange={(e) =>
-                                        setTempMaxYield(e.target.value)
-                                    }
-                                    className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
-                                    data-testid="max-yield-input"
-                                />
-                            </div>
-                        </div>
+                        <YieldFilterSection
+                            minYield={tempMinYield}
+                            maxYield={tempMaxYield}
+                            onChangeMin={(val) =>
+                                dispatch({
+                                    type: 'SET_MIN_YIELD',
+                                    payload: val,
+                                })
+                            }
+                            onChangeMax={(val) =>
+                                dispatch({
+                                    type: 'SET_MAX_YIELD',
+                                    payload: val,
+                                })
+                            }
+                            t={t}
+                        />
 
-                        {/* Cuisine filter */}
-                        <div className="flex flex-col gap-1.5">
-                            <label
-                                htmlFor="cuisine-input"
-                                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-                            >
-                                {t('recipe_cuisine') || 'Cuisine'}
-                            </label>
-                            <input
-                                id="cuisine-input"
-                                type="text"
-                                placeholder={
-                                    t('cuisine_placeholder') ||
-                                    'e.g. Italian, Spanish'
-                                }
-                                value={tempCuisine}
-                                onChange={(e) => setTempCuisine(e.target.value)}
-                                className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
-                                data-testid="cuisine-input"
-                            />
+                        <CuisineFilterSection
+                            cuisine={tempCuisine}
+                            onChange={(val) =>
+                                dispatch({ type: 'SET_CUISINE', payload: val })
+                            }
+                            onPillClick={handleCuisinePillClick}
+                            t={t}
+                        />
 
-                            {/* Popular cuisines quick-select pills */}
-                            <div className="flex flex-col gap-1 pt-1">
-                                <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
-                                    {t('popular_cuisines') ||
-                                        'Popular cuisines'}
-                                </span>
-                                <div className="flex flex-wrap gap-1.5">
-                                    {POPULAR_CUISINES.map((cuisine) => {
-                                        const translationKey = `cuisine_${cuisine.toLowerCase().replace(/\s+/g, '_')}`;
-                                        const label = t(translationKey, {
-                                            defaultValue: cuisine,
-                                        });
-                                        const isSelected =
-                                            tempCuisine.toLowerCase() ===
-                                            cuisine.toLowerCase();
-
-                                        return (
-                                            <button
-                                                key={cuisine}
-                                                type="button"
-                                                onClick={() =>
-                                                    handleCuisinePillClick(
-                                                        cuisine
-                                                    )
-                                                }
-                                                className={`cursor-pointer rounded-full px-2.5 py-1 text-xs font-medium transition ${
-                                                    isSelected
-                                                        ? 'bg-green-450 text-white'
-                                                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
-                                                }`}
-                                                data-testid={`cuisine-pill-${cuisine.toLowerCase()}`}
-                                            >
-                                                {label}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Dropdown Action Buttons */}
                         <div className="flex gap-2 pt-2">
                             <div className="flex-1">
                                 <Button
                                     label={t('cancel') || 'Cancel'}
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={() =>
+                                        dispatch({
+                                            type: 'SET_OPEN',
+                                            payload: false,
+                                        })
+                                    }
                                     outline
                                     small
                                     dataCy="cancel-filters-button"

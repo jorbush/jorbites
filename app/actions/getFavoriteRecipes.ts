@@ -105,8 +105,14 @@ export default async function getFavoriteRecipes(
         if (minCalories !== undefined && minCalories !== '') {
             const parsed = parseInt(minCalories.toString(), 10);
             if (!isNaN(parsed)) {
+                const currentFilter = (
+                    whereClause.calories &&
+                    typeof whereClause.calories === 'object'
+                        ? whereClause.calories
+                        : {}
+                ) as Prisma.IntNullableFilter;
                 whereClause.calories = {
-                    ...whereClause.calories,
+                    ...currentFilter,
                     gte: parsed,
                 };
             }
@@ -115,8 +121,14 @@ export default async function getFavoriteRecipes(
         if (maxCalories !== undefined && maxCalories !== '') {
             const parsed = parseInt(maxCalories.toString(), 10);
             if (!isNaN(parsed)) {
+                const currentFilter = (
+                    whereClause.calories &&
+                    typeof whereClause.calories === 'object'
+                        ? whereClause.calories
+                        : {}
+                ) as Prisma.IntNullableFilter;
                 whereClause.calories = {
-                    ...whereClause.calories,
+                    ...currentFilter,
                     lte: parsed,
                 };
             }
@@ -125,8 +137,14 @@ export default async function getFavoriteRecipes(
         if (minYield !== undefined && minYield !== '') {
             const parsed = parseInt(minYield.toString(), 10);
             if (!isNaN(parsed)) {
+                const currentFilter = (
+                    whereClause.recipeYield &&
+                    typeof whereClause.recipeYield === 'object'
+                        ? whereClause.recipeYield
+                        : {}
+                ) as Prisma.IntNullableFilter;
                 whereClause.recipeYield = {
-                    ...whereClause.recipeYield,
+                    ...currentFilter,
                     gte: parsed,
                 };
             }
@@ -135,8 +153,14 @@ export default async function getFavoriteRecipes(
         if (maxYield !== undefined && maxYield !== '') {
             const parsed = parseInt(maxYield.toString(), 10);
             if (!isNaN(parsed)) {
+                const currentFilter = (
+                    whereClause.recipeYield &&
+                    typeof whereClause.recipeYield === 'object'
+                        ? whereClause.recipeYield
+                        : {}
+                ) as Prisma.IntNullableFilter;
                 whereClause.recipeYield = {
-                    ...whereClause.recipeYield,
+                    ...currentFilter,
                     lte: parsed,
                 };
             }
