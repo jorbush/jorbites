@@ -14,6 +14,7 @@ import {
 } from '@/app/lib/ratelimit';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { headers } from 'next/headers';
+import { RECIPE_CUISINES } from '@/app/utils/constants';
 
 export interface IRecipesParams {
     category?: string;
@@ -164,10 +165,20 @@ export default async function getRecipes(
         }
 
         if (typeof recipeCuisine === 'string' && recipeCuisine.trim()) {
-            query.recipeCuisine = {
-                contains: recipeCuisine.trim(),
-                mode: 'insensitive',
-            };
+            const normalizedCuisine = recipeCuisine.trim();
+            const matchedCuisine = RECIPE_CUISINES.find(
+                (c) => c.toLowerCase() === normalizedCuisine.toLowerCase()
+            );
+            if (matchedCuisine) {
+                query.recipeCuisine = {
+                    contains: matchedCuisine,
+                    mode: 'insensitive',
+                };
+            } else {
+                query.recipeCuisine = {
+                    equals: 'NON_EXISTENT_CUISINE_VAL',
+                };
+            }
         }
 
         if (process.env.ENV === 'production') {

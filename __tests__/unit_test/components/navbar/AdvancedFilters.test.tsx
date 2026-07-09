@@ -119,7 +119,6 @@ describe('<AdvancedFilters />', () => {
             expect(screen.getByTestId('max-calories-input')).toBeDefined();
             expect(screen.getByTestId('min-yield-input')).toBeDefined();
             expect(screen.getByTestId('max-yield-input')).toBeDefined();
-            expect(screen.getByTestId('cuisine-input')).toBeDefined();
         });
 
         it('closes dropdown when clicking outside', () => {
@@ -196,21 +195,20 @@ describe('<AdvancedFilters />', () => {
             expect(maxYield.value).toBe('6');
         });
 
-        it('allows entering and clicking cuisine', () => {
+        it('allows selecting and toggling cuisine pills', () => {
             render(<AdvancedFilters />);
 
             const button = screen.getByTestId('advanced-filters-button');
             fireEvent.click(button);
 
-            const cuisineInput = screen.getByTestId(
-                'cuisine-input'
-            ) as HTMLInputElement;
-            fireEvent.change(cuisineInput, { target: { value: 'Japanese' } });
-            expect(cuisineInput.value).toBe('Japanese');
-
             const italianPill = screen.getByTestId('cuisine-pill-italian');
+            expect(italianPill.className).not.toContain('bg-green-450');
+
             fireEvent.click(italianPill);
-            expect(cuisineInput.value).toBe('Italian');
+            expect(italianPill.className).toContain('bg-green-450');
+
+            fireEvent.click(italianPill);
+            expect(italianPill.className).not.toContain('bg-green-450');
         });
 
         it('initializes inputs with current URL parameter values', () => {
@@ -229,13 +227,11 @@ describe('<AdvancedFilters />', () => {
             const maxYield = screen.getByTestId(
                 'max-yield-input'
             ) as HTMLInputElement;
-            const cuisineInput = screen.getByTestId(
-                'cuisine-input'
-            ) as HTMLInputElement;
+            const spanishPill = screen.getByTestId('cuisine-pill-spanish');
 
             expect(minCalories.value).toBe('300');
             expect(maxYield.value).toBe('4');
-            expect(cuisineInput.value).toBe('Spanish');
+            expect(spanishPill.className).toContain('bg-green-450');
         });
     });
 
@@ -248,11 +244,11 @@ describe('<AdvancedFilters />', () => {
 
             const minCalories = screen.getByTestId('min-calories-input');
             const maxYield = screen.getByTestId('max-yield-input');
-            const cuisineInput = screen.getByTestId('cuisine-input');
+            const italianPill = screen.getByTestId('cuisine-pill-italian');
 
             fireEvent.change(minCalories, { target: { value: '150' } });
             fireEvent.change(maxYield, { target: { value: '5' } });
-            fireEvent.change(cuisineInput, { target: { value: 'Italian' } });
+            fireEvent.click(italianPill);
 
             const applyButton = screen.getByTestId('apply-filters-button');
             fireEvent.click(applyButton);

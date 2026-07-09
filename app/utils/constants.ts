@@ -64,3 +64,33 @@ export const DAYS_OF_WEEK = [
 ];
 
 export const ALLOWED_LANGUAGES = ['en', 'es', 'ca'] as const;
+
+export const RECIPE_CUISINES = [
+    'Spanish',
+    'Catalan',
+    'Italian',
+    'Mexican',
+    'Japanese',
+    'Chinese',
+    'Indian',
+    'French',
+    'American',
+    'Mediterranean',
+    'Middle Eastern',
+    'Greek',
+    'Thai',
+    'Vietnamese',
+    'Moroccan',
+    'Turkish',
+    'Latin American',
+    'Caribbean',
+    'Nordic',
+    'British',
+    'German',
+    'Eastern European',
+    'African',
+    'Asian Fusion',
+    'International'
+] as const;
+
+export type RecipeCuisineType = (typeof RECIPE_CUISINES)[number];

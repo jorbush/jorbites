@@ -6,18 +6,8 @@ import { FiSliders, FiX } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import Button from '../buttons/Button';
 import { advancedFiltersReducer } from './advancedFiltersReducer';
-
-const POPULAR_CUISINES = [
-    'Italian',
-    'Spanish',
-    'Mexican',
-    'Japanese',
-    'Chinese',
-    'Indian',
-    'French',
-    'American',
-    'Mediterranean',
-];
+import { RECIPE_CUISINES } from '@/app/utils/constants';
+import { CuisineIcon } from '../recipes/CuisineIcon';
 
 interface CalorieFilterSectionProps {
     minCalories: string;
@@ -111,64 +101,45 @@ const YieldFilterSection: React.FC<YieldFilterSectionProps> = ({
 
 interface CuisineFilterSectionProps {
     cuisine: string;
-    onChange: (val: string) => void;
     onPillClick: (val: string) => void;
     t: (key: string, options?: { defaultValue?: string }) => string;
 }
 
 const CuisineFilterSection: React.FC<CuisineFilterSectionProps> = ({
     cuisine,
-    onChange,
     onPillClick,
     t,
 }) => (
     <div className="flex flex-col gap-1.5">
-        <label
-            htmlFor="cuisine-input"
-            className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-        >
+        <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             {t('recipe_cuisine') || 'Cuisine'}
-        </label>
-        <input
-            id="cuisine-input"
-            type="text"
-            placeholder={t('cuisine_placeholder') || 'e.g. Italian, Spanish'}
-            value={cuisine}
-            onChange={(e) => onChange(e.target.value)}
-            className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
-            data-testid="cuisine-input"
-        />
+        </span>
+        <div className="flex flex-wrap gap-1.5 max-h-[160px] overflow-y-auto pr-1">
+            {RECIPE_CUISINES.map((popCuisine) => {
+                const translationKey = `cuisine_${popCuisine.toLowerCase().replace(/\s+/g, '_')}`;
+                const label = t(translationKey, {
+                    defaultValue: popCuisine,
+                });
+                const isSelected =
+                    cuisine.toLowerCase() === popCuisine.toLowerCase();
 
-        <div className="flex flex-col gap-1 pt-1">
-            <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
-                {t('popular_cuisines') || 'Popular cuisines'}
-            </span>
-            <div className="flex flex-wrap gap-1.5">
-                {POPULAR_CUISINES.map((popCuisine) => {
-                    const translationKey = `cuisine_${popCuisine.toLowerCase().replace(/\s+/g, '_')}`;
-                    const label = t(translationKey, {
-                        defaultValue: popCuisine,
-                    });
-                    const isSelected =
-                        cuisine.toLowerCase() === popCuisine.toLowerCase();
-
-                    return (
-                        <button
-                            key={popCuisine}
-                            type="button"
-                            onClick={() => onPillClick(popCuisine)}
-                            className={`cursor-pointer rounded-full px-2.5 py-1 text-xs font-medium transition ${
-                                isSelected
-                                    ? 'bg-green-450 text-white'
-                                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
-                            }`}
-                            data-testid={`cuisine-pill-${popCuisine.toLowerCase()}`}
-                        >
-                            {label}
-                        </button>
-                    );
-                })}
-            </div>
+                return (
+                    <button
+                        key={popCuisine}
+                        type="button"
+                        onClick={() => onPillClick(popCuisine)}
+                        className={`cursor-pointer rounded-full px-2.5 py-1 text-xs font-medium transition flex items-center gap-1.5 ${
+                            isSelected
+                                ? 'bg-green-450 text-white font-semibold'
+                                : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
+                        }`}
+                        data-testid={`cuisine-pill-${popCuisine.toLowerCase()}`}
+                    >
+                        <CuisineIcon cuisine={popCuisine} size={14} />
+                        <span>{label}</span>
+                    </button>
+                );
+            })}
         </div>
     </div>
 );
@@ -421,9 +392,6 @@ const AdvancedFiltersComponent: React.FC = () => {
 
                         <CuisineFilterSection
                             cuisine={tempCuisine}
-                            onChange={(val) =>
-                                dispatch({ type: 'SET_CUISINE', payload: val })
-                            }
                             onPillClick={handleCuisinePillClick}
                             t={t}
                         />

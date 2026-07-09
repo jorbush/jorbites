@@ -13,6 +13,7 @@ import {
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
     RECIPE_MAX_CATEGORIES,
+    RECIPE_CUISINES,
 } from '@/app/utils/constants';
 import {
     unauthorizedResponse,
@@ -76,7 +77,39 @@ export async function POST(request: Request) {
             linkedRecipeIds,
             youtubeUrl,
             questId,
+            recipeCuisine,
+            calories,
+            recipeYield,
         } = body;
+
+        // Validate recipeCuisine if provided
+        if (recipeCuisine !== undefined && recipeCuisine !== null && recipeCuisine !== '') {
+            if (typeof recipeCuisine !== 'string') {
+                return badRequest('recipeCuisine must be a string');
+            }
+            const isValid = RECIPE_CUISINES.includes(recipeCuisine as any);
+            if (!isValid) {
+                return validationError(
+                    `Invalid recipeCuisine. Must be one of: ${RECIPE_CUISINES.join(', ')}`
+                );
+            }
+        }
+
+        // Validate calories if provided
+        if (calories !== undefined && calories !== null && calories !== '') {
+            const parsed = parseInt(calories.toString(), 10);
+            if (isNaN(parsed) || parsed < 0) {
+                return validationError('Calories must be a non-negative integer');
+            }
+        }
+
+        // Validate recipeYield if provided
+        if (recipeYield !== undefined && recipeYield !== null && recipeYield !== '') {
+            const parsed = parseInt(recipeYield.toString(), 10);
+            if (isNaN(parsed) || parsed <= 0) {
+                return validationError('Yield must be a positive integer');
+            }
+        }
 
         if (!Array.isArray(categories)) {
             return badRequest('Categories must be an array');
@@ -205,6 +238,9 @@ export async function POST(request: Request) {
                 linkedRecipeIds: limitedLinkedRecipeIds,
                 youtubeUrl: youtubeUrl?.trim() || null,
                 questId: finalQuestId,
+                recipeCuisine: recipeCuisine || null,
+                calories: calories !== undefined && calories !== null && calories !== '' ? parseInt(calories.toString(), 10) : null,
+                recipeYield: recipeYield !== undefined && recipeYield !== null && recipeYield !== '' ? parseInt(recipeYield.toString(), 10) : null,
             },
         });
 

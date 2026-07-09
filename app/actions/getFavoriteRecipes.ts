@@ -7,6 +7,7 @@ import {
     getDateRangeFilter,
 } from '@/app/utils/filter';
 import { Prisma } from '@prisma/client';
+import { RECIPE_CUISINES } from '@/app/utils/constants';
 
 import getCurrentUser from './getCurrentUser';
 
@@ -167,10 +168,20 @@ export default async function getFavoriteRecipes(
         }
 
         if (typeof recipeCuisine === 'string' && recipeCuisine.trim()) {
-            whereClause.recipeCuisine = {
-                contains: recipeCuisine.trim(),
-                mode: 'insensitive',
-            };
+            const normalizedCuisine = recipeCuisine.trim();
+            const matchedCuisine = RECIPE_CUISINES.find(
+                (c) => c.toLowerCase() === normalizedCuisine.toLowerCase()
+            );
+            if (matchedCuisine) {
+                whereClause.recipeCuisine = {
+                    contains: matchedCuisine,
+                    mode: 'insensitive',
+                };
+            } else {
+                whereClause.recipeCuisine = {
+                    equals: 'NON_EXISTENT_CUISINE_VAL',
+                };
+            }
         }
 
         const orderByClause = getPrismaOrderByClause(orderBy);
