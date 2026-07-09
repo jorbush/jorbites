@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
@@ -9,6 +9,7 @@ import CertificateCard from '@/app/components/courses/certificate/CertificateCar
 import { FcDiploma1 } from 'react-icons/fc';
 
 import useIsMounted from '@/app/hooks/useIsMounted';
+import { useAllCoursesProgress } from '@/app/hooks/useAllCoursesProgress';
 
 interface CoursesClientProps {
     currentUser?: SafeUser | null;
@@ -18,78 +19,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
     currentUser: _currentUser,
 }) => {
     const { t } = useTranslation();
-
-    const [progressContest] = useState<number>(() => {
-        if (typeof window === 'undefined') return 0;
-        const stored = localStorage.getItem(
-            'jorbites_course_contest_manager_progress:v2'
-        );
-        return stored ? parseInt(stored, 10) : 0;
-    });
-
-    const [progressLists] = useState<number>(() => {
-        if (typeof window === 'undefined') return 0;
-        const stored = localStorage.getItem(
-            'jorbites_course_recipe_lists_progress:v2'
-        );
-        return stored ? parseInt(stored, 10) : 0;
-    });
-
-    const [progressEvents] = useState<number>(() => {
-        if (typeof window === 'undefined') return 0;
-        const stored = localStorage.getItem(
-            'jorbites_course_community_events_progress:v2'
-        );
-        return stored ? parseInt(stored, 10) : 0;
-    });
-
-    const [progressWorkshops] = useState<number>(() => {
-        if (typeof window === 'undefined') return 0;
-        const stored = localStorage.getItem(
-            'jorbites_course_workshops_progress:v2'
-        );
-        return stored ? parseInt(stored, 10) : 0;
-    });
-
-    const [progressQuests] = useState<number>(() => {
-        if (typeof window === 'undefined') return 0;
-        const stored = localStorage.getItem(
-            'jorbites_course_quests_progress:v2'
-        );
-        return stored ? parseInt(stored, 10) : 0;
-    });
-
-    const [progressRecipeCreator] = useState<number>(() => {
-        if (typeof window === 'undefined') return 0;
-        const stored = localStorage.getItem(
-            'jorbites_course_recipe_creator_progress:v2'
-        );
-        return stored ? parseInt(stored, 10) : 0;
-    });
-
-    const [progressRecipeBook] = useState<number>(() => {
-        if (typeof window === 'undefined') return 0;
-        const stored = localStorage.getItem(
-            'jorbites_course_recipe_book_progress:v2'
-        );
-        return stored ? parseInt(stored, 10) : 0;
-    });
-
-    const [progressMealPlanner] = useState<number>(() => {
-        if (typeof window === 'undefined') return 0;
-        const stored = localStorage.getItem(
-            'jorbites_course_meal_planner_progress:v2'
-        );
-        return stored ? parseInt(stored, 10) : 0;
-    });
-
-    const [progressBasics] = useState<number>(() => {
-        if (typeof window === 'undefined') return 0;
-        const stored = localStorage.getItem(
-            'jorbites_course_basics_progress:v2'
-        );
-        return stored ? parseInt(stored, 10) : 0;
-    });
+    const { progress } = useAllCoursesProgress();
 
     const isMounted = useIsMounted();
 
@@ -113,7 +43,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_jorbites_basics')}
                         description={t('course_jorbites_basics_desc')}
                         duration={t('duration_minutes', { count: 15 })}
-                        progress={progressBasics}
+                        progress={progress.basics}
                         slug="jorbites-basics"
                         badgeSrc="/badges/basics_badge.webp"
                     />
@@ -124,7 +54,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_recipe_creator')}
                         description={t('course_recipe_creator_desc')}
                         duration={t('duration_minutes', { count: 30 })}
-                        progress={progressRecipeCreator}
+                        progress={progress.recipeCreator}
                         slug="recipe-creator"
                         badgeSrc="/badges/recipe_creator_badge.webp"
                     />
@@ -135,7 +65,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_recipe_lists')}
                         description={t('course_recipe_lists_desc')}
                         duration={t('duration_minutes', { count: 30 })}
-                        progress={progressLists}
+                        progress={progress.lists}
                         slug="recipe-lists"
                         badgeSrc="/badges/recipe_lists_badge.webp"
                     />
@@ -146,7 +76,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_meal_planner')}
                         description={t('course_meal_planner_desc')}
                         duration={t('duration_minutes', { count: 45 })}
-                        progress={progressMealPlanner}
+                        progress={progress.mealPlanner}
                         slug="meal-planner"
                         badgeSrc="/badges/meal_planner_badge.webp"
                     />
@@ -157,7 +87,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_community_events')}
                         description={t('course_community_events_desc')}
                         duration={t('duration_minutes', { count: 45 })}
-                        progress={progressEvents}
+                        progress={progress.events}
                         slug="community-events"
                         badgeSrc="/badges/community_events_badge.webp"
                     />
@@ -168,7 +98,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_workshops')}
                         description={t('course_workshops_desc')}
                         duration={t('duration_hours', { count: 1 })}
-                        progress={progressWorkshops}
+                        progress={progress.workshops}
                         slug="workshops"
                         badgeSrc="/badges/workshops_badge.webp"
                     />
@@ -179,7 +109,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_quests') || 'Recipe Quests'}
                         description={t('course_quests_desc')}
                         duration={t('duration_minutes', { count: 30 })}
-                        progress={progressQuests}
+                        progress={progress.quests}
                         slug="quests"
                         badgeSrc="/badges/quests_badge.webp"
                     />
@@ -190,7 +120,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_recipe_book_builder')}
                         description={t('course_recipe_book_builder_desc')}
                         duration={t('duration_hours', { count: 1 })}
-                        progress={progressRecipeBook}
+                        progress={progress.recipeBook}
                         slug="recipe-book-builder"
                         badgeSrc="/badges/recipe_book_badge.webp"
                     />
@@ -201,7 +131,7 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('contest_manager_course')}
                         description={t('contest_manager_description')}
                         duration={t('duration_hours', { count: 2 })}
-                        progress={progressContest}
+                        progress={progress.contest}
                         slug="contest-manager"
                         badgeSrc="/badges/contest_manager_badge.webp"
                     />

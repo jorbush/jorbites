@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import CourseTest from '@/app/components/courses/core/CourseTest';
@@ -9,6 +9,7 @@ import CourseLayout from '@/app/components/courses/core/CourseLayout';
 import CourseWorkflowStep from '@/app/components/courses/steps/CourseWorkflowStep';
 import CourseInfoStep from '@/app/components/courses/steps/CourseInfoStep';
 import { useCourseProgress } from '@/app/hooks/useCourseProgress';
+import { useContestManagerForm } from '@/app/hooks/useContestManagerForm';
 import { contestManagerQuestions } from './contestManagerQuestions';
 import {
     FcDiploma1,
@@ -484,23 +485,20 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
     const { completedModules, markModuleCompleted, isTestPassed } =
         useCourseProgress(MODULES_KEY, PROGRESS_KEY, allStepIds);
 
-    const [activeModuleId, setActiveModuleId] = useState('requirements');
-
-    // Requirements checklist
-    const [reqs, setReqs] = useState({
-        recipes: false,
-        theme: false,
-        badge: false,
-        announcement: false,
-    });
-
-    // Voting url pre-fill generator
-    const [participantUserId, setParticipantUserId] = useState('');
-    const [participantRecipeUrl, setParticipantRecipeUrl] = useState('');
-
-    // AI Badge prompt customizer
-    const [badgeXTopic, setBadgeXTopic] = useState('Italian Pasta');
-    const [copiedBadgePrompt, setCopiedBadgePrompt] = useState(false);
+    const {
+        activeModuleId,
+        setActiveModuleId,
+        reqs,
+        setReqs,
+        participantUserId,
+        setParticipantUserId,
+        participantRecipeUrl,
+        setParticipantRecipeUrl,
+        badgeXTopic,
+        setBadgeXTopic,
+        copiedBadgePrompt,
+        setCopiedBadgePrompt,
+    } = useContestManagerForm();
 
     // ---------------------------------------------------------------------------
     // Helpers
@@ -516,7 +514,7 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
                 markModuleCompleted('requirements');
             }
         },
-        [reqs, markModuleCompleted]
+        [reqs, setReqs, markModuleCompleted]
     );
 
     const generatedFormUrl = useMemo(() => {
