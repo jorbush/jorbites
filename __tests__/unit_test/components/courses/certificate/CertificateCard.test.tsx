@@ -28,7 +28,7 @@ describe('<CertificateCard />', () => {
         id: 'basics',
         title: 'Jorbites Basics',
         description: 'Learn the essentials of Jorbites',
-        duration: '1 hour',
+        duration: 'duration_hours',
         progress: 0,
         slug: 'jorbites-basics',
         badgeSrc: '/badges/basics_badge.webp',
@@ -41,7 +41,7 @@ describe('<CertificateCard />', () => {
         expect(
             screen.getByText('Learn the essentials of Jorbites')
         ).toBeDefined();
-        expect(screen.getByText('1 hour')).toBeDefined();
+        expect(screen.getByText('duration_hours')).toBeDefined();
         // Since progress is 0, start_course should render
         expect(screen.getByText('start_course')).toBeDefined();
     });
