@@ -114,7 +114,7 @@ const CuisineFilterSection: React.FC<CuisineFilterSectionProps> = ({
         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             {t('recipe_cuisine') || 'Cuisine'}
         </span>
-        <div className="flex flex-wrap gap-1.5 max-h-[160px] overflow-y-auto pr-1">
+        <div className="flex max-h-[160px] flex-wrap gap-1.5 overflow-y-auto pr-1">
             {RECIPE_CUISINES.map((popCuisine) => {
                 const translationKey = `cuisine_${popCuisine.toLowerCase().replace(/\s+/g, '_')}`;
                 const label = t(translationKey, {
@@ -128,14 +128,17 @@ const CuisineFilterSection: React.FC<CuisineFilterSectionProps> = ({
                         key={popCuisine}
                         type="button"
                         onClick={() => onPillClick(popCuisine)}
-                        className={`cursor-pointer rounded-full px-2.5 py-1 text-xs font-medium transition flex items-center gap-1.5 ${
+                        className={`flex cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition ${
                             isSelected
-                                ? 'bg-green-450 text-white font-semibold'
+                                ? 'bg-green-450 font-semibold text-white'
                                 : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
                         }`}
                         data-testid={`cuisine-pill-${popCuisine.toLowerCase()}`}
                     >
-                        <CuisineIcon cuisine={popCuisine} size={14} />
+                        <CuisineIcon
+                            cuisine={popCuisine}
+                            size={14}
+                        />
                         <span>{label}</span>
                     </button>
                 );

@@ -83,7 +83,11 @@ export async function POST(request: Request) {
         } = body;
 
         // Validate recipeCuisine if provided
-        if (recipeCuisine !== undefined && recipeCuisine !== null && recipeCuisine !== '') {
+        if (
+            recipeCuisine !== undefined &&
+            recipeCuisine !== null &&
+            recipeCuisine !== ''
+        ) {
             if (typeof recipeCuisine !== 'string') {
                 return badRequest('recipeCuisine must be a string');
             }
@@ -99,12 +103,18 @@ export async function POST(request: Request) {
         if (calories !== undefined && calories !== null && calories !== '') {
             const parsed = parseInt(calories.toString(), 10);
             if (isNaN(parsed) || parsed < 0) {
-                return validationError('Calories must be a non-negative integer');
+                return validationError(
+                    'Calories must be a non-negative integer'
+                );
             }
         }
 
         // Validate recipeYield if provided
-        if (recipeYield !== undefined && recipeYield !== null && recipeYield !== '') {
+        if (
+            recipeYield !== undefined &&
+            recipeYield !== null &&
+            recipeYield !== ''
+        ) {
             const parsed = parseInt(recipeYield.toString(), 10);
             if (isNaN(parsed) || parsed <= 0) {
                 return validationError('Yield must be a positive integer');
@@ -239,8 +249,18 @@ export async function POST(request: Request) {
                 youtubeUrl: youtubeUrl?.trim() || null,
                 questId: finalQuestId,
                 recipeCuisine: recipeCuisine || null,
-                calories: calories !== undefined && calories !== null && calories !== '' ? parseInt(calories.toString(), 10) : null,
-                recipeYield: recipeYield !== undefined && recipeYield !== null && recipeYield !== '' ? parseInt(recipeYield.toString(), 10) : null,
+                calories:
+                    calories !== undefined &&
+                    calories !== null &&
+                    calories !== ''
+                        ? parseInt(calories.toString(), 10)
+                        : null,
+                recipeYield:
+                    recipeYield !== undefined &&
+                    recipeYield !== null &&
+                    recipeYield !== ''
+                        ? parseInt(recipeYield.toString(), 10)
+                        : null,
             },
         });
 

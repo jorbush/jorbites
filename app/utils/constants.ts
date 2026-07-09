@@ -90,7 +90,7 @@ export const RECIPE_CUISINES = [
     'Eastern European',
     'African',
     'Asian Fusion',
-    'International'
+    'International',
 ] as const;
 
 export type RecipeCuisineType = (typeof RECIPE_CUISINES)[number];

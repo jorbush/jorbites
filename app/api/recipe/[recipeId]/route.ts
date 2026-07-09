@@ -296,7 +296,11 @@ export async function PATCH(
         } = body;
 
         // Validate recipeCuisine if provided
-        if (recipeCuisine !== undefined && recipeCuisine !== null && recipeCuisine !== '') {
+        if (
+            recipeCuisine !== undefined &&
+            recipeCuisine !== null &&
+            recipeCuisine !== ''
+        ) {
             if (typeof recipeCuisine !== 'string') {
                 return badRequest('recipeCuisine must be a string');
             }
@@ -312,12 +316,18 @@ export async function PATCH(
         if (calories !== undefined && calories !== null && calories !== '') {
             const parsed = parseInt(calories.toString(), 10);
             if (isNaN(parsed) || parsed < 0) {
-                return validationError('Calories must be a non-negative integer');
+                return validationError(
+                    'Calories must be a non-negative integer'
+                );
             }
         }
 
         // Validate recipeYield if provided
-        if (recipeYield !== undefined && recipeYield !== null && recipeYield !== '') {
+        if (
+            recipeYield !== undefined &&
+            recipeYield !== null &&
+            recipeYield !== ''
+        ) {
             const parsed = parseInt(recipeYield.toString(), 10);
             if (isNaN(parsed) || parsed <= 0) {
                 return validationError('Yield must be a positive integer');
@@ -491,10 +501,16 @@ export async function PATCH(
             updateData.recipeCuisine = recipeCuisine || null;
         }
         if (calories !== undefined) {
-            updateData.calories = calories !== null && calories !== '' ? parseInt(calories.toString(), 10) : null;
+            updateData.calories =
+                calories !== null && calories !== ''
+                    ? parseInt(calories.toString(), 10)
+                    : null;
         }
         if (recipeYield !== undefined) {
-            updateData.recipeYield = recipeYield !== null && recipeYield !== '' ? parseInt(recipeYield.toString(), 10) : null;
+            updateData.recipeYield =
+                recipeYield !== null && recipeYield !== ''
+                    ? parseInt(recipeYield.toString(), 10)
+                    : null;
         }
 
         const updatedRecipe = await prisma.recipe.update({
