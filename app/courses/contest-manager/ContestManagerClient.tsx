@@ -310,7 +310,7 @@ const VotingModule: React.FC<VotingModuleProps> = ({
                             type="button"
                             onClick={onCopyFormLink}
                             aria-label="Copy generated form link and complete module"
-                            className="bg-green-450 inline-flex cursor-pointer items-center justify-center rounded-lg px-3 text-xs font-semibold text-neutral-950 transition hover:opacity-90"
+                            className="bg-green-450 inline-flex cursor-pointer items-center justify-center rounded-lg px-3 text-xs font-semibold text-green-950 transition hover:opacity-90"
                             title="Copy & Complete Module"
                         >
                             <FiCopy className="size-4" />

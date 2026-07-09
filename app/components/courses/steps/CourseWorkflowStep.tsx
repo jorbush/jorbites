@@ -46,7 +46,7 @@ const CourseWorkflowStep: React.FC<CourseWorkflowStepProps> = ({
                                 <div
                                     className={`flex size-6 items-center justify-center rounded-full border-2 text-xs font-bold transition-all duration-300 ${
                                         isActive
-                                            ? 'bg-green-450 border-green-450 text-neutral-950'
+                                            ? 'bg-green-450 border-green-450 text-green-950'
                                             : 'border-neutral-300 bg-neutral-100 text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800'
                                     }`}
                                 >

@@ -42,7 +42,7 @@ const CourseStepper: React.FC<CourseStepperProps> = ({
                         >
                             <div className="relative flex items-center justify-center">
                                 {mod.isCompleted ? (
-                                    <div className="bg-green-450 flex size-6 items-center justify-center rounded-full text-neutral-950">
+                                    <div className="bg-green-450 flex size-6 items-center justify-center rounded-full text-green-950">
                                         <FiCheck className="size-3.5" />
                                     </div>
                                 ) : (
@@ -87,7 +87,7 @@ const CourseStepper: React.FC<CourseStepperProps> = ({
                         >
                             <div className="flex items-center justify-center">
                                 {mod.isCompleted ? (
-                                    <div className="bg-green-450 flex size-5 items-center justify-center rounded-full text-neutral-950">
+                                    <div className="bg-green-450 flex size-5 items-center justify-center rounded-full text-green-950">
                                         <FiCheck className="size-3" />
                                     </div>
                                 ) : (
