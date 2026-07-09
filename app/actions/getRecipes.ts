@@ -22,6 +22,11 @@ export interface IRecipesParams {
     orderBy?: OrderByType;
     startDate?: string;
     endDate?: string;
+    minCalories?: number | string;
+    maxCalories?: number | string;
+    minYield?: number | string;
+    maxYield?: number | string;
+    recipeCuisine?: string;
 }
 
 export interface ServerResponse<T> {
@@ -70,6 +75,11 @@ export default async function getRecipes(
             orderBy = OrderByType.NEWEST,
             startDate,
             endDate,
+            minCalories,
+            maxCalories,
+            minYield,
+            maxYield,
+            recipeCuisine,
         } = params;
 
         let query: any = {};
@@ -90,6 +100,53 @@ export default async function getRecipes(
         const dateRangeFilter = getDateRangeFilter(startDate, endDate);
         if (Object.keys(dateRangeFilter).length > 0) {
             query = { ...query, ...dateRangeFilter };
+        }
+
+        if (minCalories !== undefined && minCalories !== '') {
+            const parsed = parseInt(minCalories.toString(), 10);
+            if (!isNaN(parsed)) {
+                query.calories = {
+                    ...query.calories,
+                    gte: parsed,
+                };
+            }
+        }
+
+        if (maxCalories !== undefined && maxCalories !== '') {
+            const parsed = parseInt(maxCalories.toString(), 10);
+            if (!isNaN(parsed)) {
+                query.calories = {
+                    ...query.calories,
+                    lte: parsed,
+                };
+            }
+        }
+
+        if (minYield !== undefined && minYield !== '') {
+            const parsed = parseInt(minYield.toString(), 10);
+            if (!isNaN(parsed)) {
+                query.recipeYield = {
+                    ...query.recipeYield,
+                    gte: parsed,
+                };
+            }
+        }
+
+        if (maxYield !== undefined && maxYield !== '') {
+            const parsed = parseInt(maxYield.toString(), 10);
+            if (!isNaN(parsed)) {
+                query.recipeYield = {
+                    ...query.recipeYield,
+                    lte: parsed,
+                };
+            }
+        }
+
+        if (typeof recipeCuisine === 'string' && recipeCuisine.trim()) {
+            query.recipeCuisine = {
+                contains: recipeCuisine.trim(),
+                mode: 'insensitive',
+            };
         }
 
         if (process.env.ENV === 'production') {

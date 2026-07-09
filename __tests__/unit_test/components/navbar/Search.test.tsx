@@ -44,6 +44,10 @@ vi.mock('@/app/components/navbar/PeriodFilter', () => ({
     default: () => <div data-testid="period-filter">PeriodFilter</div>,
 }));
 
+vi.mock('@/app/components/navbar/AdvancedFilters', () => ({
+    default: () => <div data-testid="advanced-filters">AdvancedFilters</div>,
+}));
+
 vi.mock('@/app/utils/filter', () => ({
     OrderByType: {
         NEWEST: 'newest',
@@ -116,6 +120,11 @@ describe('<Search />', () => {
         mockSearchParams.delete('startDate');
         mockSearchParams.delete('endDate');
         mockSearchParams.delete('orderBy');
+        mockSearchParams.delete('minCalories');
+        mockSearchParams.delete('maxCalories');
+        mockSearchParams.delete('minYield');
+        mockSearchParams.delete('maxYield');
+        mockSearchParams.delete('recipeCuisine');
     });
 
     afterEach(() => {
@@ -291,6 +300,48 @@ describe('<Search />', () => {
 
         it('shows notification circle when orderBy filter is active', () => {
             mockSearchParams.set('orderBy', 'most_liked');
+
+            render(<Search onSearchModeChange={mockOnSearchModeChange} />);
+
+            const searchButton = screen
+                .getByTestId('search-icon')
+                .closest('button');
+            const notificationCircle = searchButton?.querySelector('span');
+
+            expect(notificationCircle).toBeDefined();
+            expect(notificationCircle?.className).toContain('bg-rose-500');
+        });
+
+        it('shows notification circle when calories filter is active', () => {
+            mockSearchParams.set('minCalories', '100');
+
+            render(<Search onSearchModeChange={mockOnSearchModeChange} />);
+
+            const searchButton = screen
+                .getByTestId('search-icon')
+                .closest('button');
+            const notificationCircle = searchButton?.querySelector('span');
+
+            expect(notificationCircle).toBeDefined();
+            expect(notificationCircle?.className).toContain('bg-rose-500');
+        });
+
+        it('shows notification circle when yield filter is active', () => {
+            mockSearchParams.set('maxYield', '4');
+
+            render(<Search onSearchModeChange={mockOnSearchModeChange} />);
+
+            const searchButton = screen
+                .getByTestId('search-icon')
+                .closest('button');
+            const notificationCircle = searchButton?.querySelector('span');
+
+            expect(notificationCircle).toBeDefined();
+            expect(notificationCircle?.className).toContain('bg-rose-500');
+        });
+
+        it('shows notification circle when cuisine filter is active', () => {
+            mockSearchParams.set('recipeCuisine', 'Mexican');
 
             render(<Search onSearchModeChange={mockOnSearchModeChange} />);
 

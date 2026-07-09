@@ -18,6 +18,11 @@ export interface IFavoriteRecipesParams {
     search?: string;
     startDate?: string;
     endDate?: string;
+    minCalories?: number | string;
+    maxCalories?: number | string;
+    minYield?: number | string;
+    maxYield?: number | string;
+    recipeCuisine?: string;
 }
 
 export interface FavoriteRecipesResponse {
@@ -39,6 +44,11 @@ export default async function getFavoriteRecipes(
             search,
             startDate,
             endDate,
+            minCalories,
+            maxCalories,
+            minYield,
+            maxYield,
+            recipeCuisine,
         } = params;
         logger.info('getFavoriteRecipes - start', { params });
         const currentUser = await getCurrentUser();
@@ -90,6 +100,53 @@ export default async function getFavoriteRecipes(
         const dateRangeFilter = getDateRangeFilter(startDate, endDate);
         if (Object.keys(dateRangeFilter).length > 0) {
             Object.assign(whereClause, dateRangeFilter);
+        }
+
+        if (minCalories !== undefined && minCalories !== '') {
+            const parsed = parseInt(minCalories.toString(), 10);
+            if (!isNaN(parsed)) {
+                whereClause.calories = {
+                    ...whereClause.calories,
+                    gte: parsed,
+                };
+            }
+        }
+
+        if (maxCalories !== undefined && maxCalories !== '') {
+            const parsed = parseInt(maxCalories.toString(), 10);
+            if (!isNaN(parsed)) {
+                whereClause.calories = {
+                    ...whereClause.calories,
+                    lte: parsed,
+                };
+            }
+        }
+
+        if (minYield !== undefined && minYield !== '') {
+            const parsed = parseInt(minYield.toString(), 10);
+            if (!isNaN(parsed)) {
+                whereClause.recipeYield = {
+                    ...whereClause.recipeYield,
+                    gte: parsed,
+                };
+            }
+        }
+
+        if (maxYield !== undefined && maxYield !== '') {
+            const parsed = parseInt(maxYield.toString(), 10);
+            if (!isNaN(parsed)) {
+                whereClause.recipeYield = {
+                    ...whereClause.recipeYield,
+                    lte: parsed,
+                };
+            }
+        }
+
+        if (typeof recipeCuisine === 'string' && recipeCuisine.trim()) {
+            whereClause.recipeCuisine = {
+                contains: recipeCuisine.trim(),
+                mode: 'insensitive',
+            };
         }
 
         const orderByClause = getPrismaOrderByClause(orderBy);

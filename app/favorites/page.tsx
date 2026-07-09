@@ -46,7 +46,12 @@ const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
             resolvedParams.category ||
             resolvedParams.search ||
             resolvedParams.startDate ||
-            resolvedParams.endDate
+            resolvedParams.endDate ||
+            resolvedParams.minCalories ||
+            resolvedParams.maxCalories ||
+            resolvedParams.minYield ||
+            resolvedParams.maxYield ||
+            resolvedParams.recipeCuisine
         );
 
         return (
