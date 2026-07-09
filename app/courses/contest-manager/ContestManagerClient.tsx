@@ -538,7 +538,7 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
         toast.success('AI Badge Prompt copied!');
         markModuleCompleted('badge');
         setTimeout(() => setCopiedBadgePrompt(false), 2000);
-    }, [rawBadgePrompt, markModuleCompleted]);
+    }, [rawBadgePrompt, markModuleCompleted, setCopiedBadgePrompt]);
 
     if (!isMounted) return null;
 
