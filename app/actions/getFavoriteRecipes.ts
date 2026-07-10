@@ -7,6 +7,7 @@ import {
     getDateRangeFilter,
 } from '@/app/utils/filter';
 import { Prisma } from '@prisma/client';
+import { RECIPE_CUISINES } from '@/app/utils/constants';
 
 import getCurrentUser from './getCurrentUser';
 
@@ -18,6 +19,11 @@ export interface IFavoriteRecipesParams {
     search?: string;
     startDate?: string;
     endDate?: string;
+    minCalories?: number | string;
+    maxCalories?: number | string;
+    minYield?: number | string;
+    maxYield?: number | string;
+    recipeCuisine?: string;
 }
 
 export interface FavoriteRecipesResponse {
@@ -39,6 +45,11 @@ export default async function getFavoriteRecipes(
             search,
             startDate,
             endDate,
+            minCalories,
+            maxCalories,
+            minYield,
+            maxYield,
+            recipeCuisine,
         } = params;
         logger.info('getFavoriteRecipes - start', { params });
         const currentUser = await getCurrentUser();
@@ -90,6 +101,87 @@ export default async function getFavoriteRecipes(
         const dateRangeFilter = getDateRangeFilter(startDate, endDate);
         if (Object.keys(dateRangeFilter).length > 0) {
             Object.assign(whereClause, dateRangeFilter);
+        }
+
+        if (minCalories !== undefined && minCalories !== '') {
+            const parsed = parseInt(minCalories.toString(), 10);
+            if (!isNaN(parsed)) {
+                const currentFilter = (
+                    whereClause.calories &&
+                    typeof whereClause.calories === 'object'
+                        ? whereClause.calories
+                        : {}
+                ) as Prisma.IntNullableFilter;
+                whereClause.calories = {
+                    ...currentFilter,
+                    gte: parsed,
+                };
+            }
+        }
+
+        if (maxCalories !== undefined && maxCalories !== '') {
+            const parsed = parseInt(maxCalories.toString(), 10);
+            if (!isNaN(parsed)) {
+                const currentFilter = (
+                    whereClause.calories &&
+                    typeof whereClause.calories === 'object'
+                        ? whereClause.calories
+                        : {}
+                ) as Prisma.IntNullableFilter;
+                whereClause.calories = {
+                    ...currentFilter,
+                    lte: parsed,
+                };
+            }
+        }
+
+        if (minYield !== undefined && minYield !== '') {
+            const parsed = parseInt(minYield.toString(), 10);
+            if (!isNaN(parsed)) {
+                const currentFilter = (
+                    whereClause.recipeYield &&
+                    typeof whereClause.recipeYield === 'object'
+                        ? whereClause.recipeYield
+                        : {}
+                ) as Prisma.IntNullableFilter;
+                whereClause.recipeYield = {
+                    ...currentFilter,
+                    gte: parsed,
+                };
+            }
+        }
+
+        if (maxYield !== undefined && maxYield !== '') {
+            const parsed = parseInt(maxYield.toString(), 10);
+            if (!isNaN(parsed)) {
+                const currentFilter = (
+                    whereClause.recipeYield &&
+                    typeof whereClause.recipeYield === 'object'
+                        ? whereClause.recipeYield
+                        : {}
+                ) as Prisma.IntNullableFilter;
+                whereClause.recipeYield = {
+                    ...currentFilter,
+                    lte: parsed,
+                };
+            }
+        }
+
+        if (typeof recipeCuisine === 'string' && recipeCuisine.trim()) {
+            const normalizedCuisine = recipeCuisine.trim();
+            const matchedCuisine = RECIPE_CUISINES.find(
+                (c) => c.toLowerCase() === normalizedCuisine.toLowerCase()
+            );
+            if (matchedCuisine) {
+                whereClause.recipeCuisine = {
+                    contains: matchedCuisine,
+                    mode: 'insensitive',
+                };
+            } else {
+                whereClause.recipeCuisine = {
+                    equals: 'NON_EXISTENT_CUISINE_VAL',
+                };
+            }
         }
 
         const orderByClause = getPrismaOrderByClause(orderBy);

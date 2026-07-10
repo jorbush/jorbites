@@ -55,8 +55,21 @@ const SearchComponent: React.FC<SearchProps> = ({
     const currentStartDate = get('startDate') || '';
     const currentEndDate = get('endDate') || '';
     const currentOrderBy = get('orderBy') || '';
+    const currentMinCalories = get('minCalories') || '';
+    const currentMaxCalories = get('maxCalories') || '';
+    const currentMinYield = get('minYield') || '';
+    const currentMaxYield = get('maxYield') || '';
+    const currentCuisine = get('recipeCuisine') || '';
     const hasActiveFilters =
-        isFiltering || currentStartDate || currentEndDate || currentOrderBy;
+        isFiltering ||
+        currentStartDate ||
+        currentEndDate ||
+        currentOrderBy ||
+        currentMinCalories ||
+        currentMaxCalories ||
+        currentMinYield ||
+        currentMaxYield ||
+        currentCuisine;
 
     const replaceRef = useRef(replace);
     replaceRef.current = replace;

@@ -1,4 +1,5 @@
 import prisma from '@/app/lib/prismadb';
+import { Prisma } from '@prisma/client';
 import { redisCache } from '@/app/lib/redis';
 import { SafeRecipe } from '@/app/types';
 import {
@@ -13,6 +14,7 @@ import {
 } from '@/app/lib/ratelimit';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { headers } from 'next/headers';
+import { RECIPE_CUISINES } from '@/app/utils/constants';
 
 export interface IRecipesParams {
     category?: string;
@@ -22,6 +24,11 @@ export interface IRecipesParams {
     orderBy?: OrderByType;
     startDate?: string;
     endDate?: string;
+    minCalories?: number | string;
+    maxCalories?: number | string;
+    minYield?: number | string;
+    maxYield?: number | string;
+    recipeCuisine?: string;
 }
 
 export interface ServerResponse<T> {
@@ -70,9 +77,14 @@ export default async function getRecipes(
             orderBy = OrderByType.NEWEST,
             startDate,
             endDate,
+            minCalories,
+            maxCalories,
+            minYield,
+            maxYield,
+            recipeCuisine,
         } = params;
 
-        let query: any = {};
+        let query: Prisma.RecipeWhereInput = {};
 
         if (typeof category === 'string') {
             query.categories = {
@@ -90,6 +102,83 @@ export default async function getRecipes(
         const dateRangeFilter = getDateRangeFilter(startDate, endDate);
         if (Object.keys(dateRangeFilter).length > 0) {
             query = { ...query, ...dateRangeFilter };
+        }
+
+        if (minCalories !== undefined && minCalories !== '') {
+            const parsed = parseInt(minCalories.toString(), 10);
+            if (!isNaN(parsed)) {
+                const currentFilter = (
+                    query.calories && typeof query.calories === 'object'
+                        ? query.calories
+                        : {}
+                ) as Prisma.IntNullableFilter;
+                query.calories = {
+                    ...currentFilter,
+                    gte: parsed,
+                };
+            }
+        }
+
+        if (maxCalories !== undefined && maxCalories !== '') {
+            const parsed = parseInt(maxCalories.toString(), 10);
+            if (!isNaN(parsed)) {
+                const currentFilter = (
+                    query.calories && typeof query.calories === 'object'
+                        ? query.calories
+                        : {}
+                ) as Prisma.IntNullableFilter;
+                query.calories = {
+                    ...currentFilter,
+                    lte: parsed,
+                };
+            }
+        }
+
+        if (minYield !== undefined && minYield !== '') {
+            const parsed = parseInt(minYield.toString(), 10);
+            if (!isNaN(parsed)) {
+                const currentFilter = (
+                    query.recipeYield && typeof query.recipeYield === 'object'
+                        ? query.recipeYield
+                        : {}
+                ) as Prisma.IntNullableFilter;
+                query.recipeYield = {
+                    ...currentFilter,
+                    gte: parsed,
+                };
+            }
+        }
+
+        if (maxYield !== undefined && maxYield !== '') {
+            const parsed = parseInt(maxYield.toString(), 10);
+            if (!isNaN(parsed)) {
+                const currentFilter = (
+                    query.recipeYield && typeof query.recipeYield === 'object'
+                        ? query.recipeYield
+                        : {}
+                ) as Prisma.IntNullableFilter;
+                query.recipeYield = {
+                    ...currentFilter,
+                    lte: parsed,
+                };
+            }
+        }
+
+        if (typeof recipeCuisine === 'string' && recipeCuisine.trim()) {
+            const normalizedCuisine = recipeCuisine.trim();
+            const matchedCuisine = RECIPE_CUISINES.find(
+                (c) => c.toLowerCase() === normalizedCuisine.toLowerCase()
+            );
+            if (matchedCuisine) {
+                query.recipeCuisine = {
+                    contains: matchedCuisine,
+                    mode: 'insensitive',
+                };
+            } else {
+                query.recipeCuisine = {
+                    equals: 'NON_EXISTENT_CUISINE_VAL',
+                };
+            }
         }
 
         if (process.env.ENV === 'production') {

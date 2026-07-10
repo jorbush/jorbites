@@ -30,9 +30,24 @@ const EmptyStateContent: React.FC<EmptyStateProps> = ({
     const category = get('category');
     const startDate = get('startDate');
     const endDate = get('endDate');
+    const minCalories = get('minCalories');
+    const maxCalories = get('maxCalories');
+    const minYield = get('minYield');
+    const maxYield = get('maxYield');
+    const recipeCuisine = get('recipeCuisine');
 
     // Note: orderBy is not a filter, it's a sorting option, so we don't include it
-    const hasFilters = !!(searchQuery || category || startDate || endDate);
+    const hasFilters = !!(
+        searchQuery ||
+        category ||
+        startDate ||
+        endDate ||
+        minCalories ||
+        maxCalories ||
+        minYield ||
+        maxYield ||
+        recipeCuisine
+    );
 
     // Customize messages based on current filters
     let displayTitle = title;
