@@ -5,7 +5,6 @@ import { BiSearch, BiX } from 'react-icons/bi';
 import { FiChevronLeft, FiFilter } from 'react-icons/fi';
 import Logo from '@/app/components/navbar/Logo';
 import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
-import PeriodFilter from '@/app/components/navbar/PeriodFilter';
 import AdvancedFilters from '@/app/components/navbar/AdvancedFilters';
 
 interface SearchFiltersState {
@@ -99,10 +98,6 @@ export const MobileSearch: React.FC<MobileSearchProps> = ({
 
                     <Suspense fallback={null}>
                         <OrderByDropdown />
-                    </Suspense>
-
-                    <Suspense fallback={null}>
-                        <PeriodFilter />
                     </Suspense>
 
                     <Suspense fallback={null}>
