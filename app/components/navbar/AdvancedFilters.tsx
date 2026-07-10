@@ -1,13 +1,12 @@
 'use client';
 
-import { useReducer, useRef, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { Suspense } from 'react';
 import { FiSliders, FiX } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import Button from '../buttons/Button';
-import { advancedFiltersReducer } from './advancedFiltersReducer';
 import { RECIPE_CUISINES } from '@/app/utils/constants';
 import { CuisineIcon } from '../recipes/CuisineIcon';
+import { useAdvancedFilters } from '@/app/hooks/useAdvancedFilters';
 
 interface CalorieFilterSectionProps {
     minCalories: string;
@@ -147,162 +146,74 @@ const CuisineFilterSection: React.FC<CuisineFilterSectionProps> = ({
     </div>
 );
 
+interface DateFilterSectionProps {
+    startDate: string;
+    endDate: string;
+    onChangeStart: (val: string) => void;
+    onChangeEnd: (val: string) => void;
+    t: (key: string, options?: { defaultValue?: string }) => string;
+}
+
+const DateFilterSection: React.FC<DateFilterSectionProps> = ({
+    startDate,
+    endDate,
+    onChangeStart,
+    onChangeEnd,
+    t,
+}) => {
+    const today = new Date().toISOString().split('T')[0];
+    return (
+        <div className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                {t('date') || 'Date'}
+            </span>
+            <div className="flex items-center gap-2">
+                <input
+                    id="advanced-filter-start-date"
+                    aria-label={t('from_date') || 'From date'}
+                    type="date"
+                    value={startDate}
+                    max={endDate || today}
+                    onChange={(e) => onChangeStart(e.target.value)}
+                    className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+                    data-testid="start-date-input"
+                />
+                <span className="text-neutral-400">-</span>
+                <input
+                    id="advanced-filter-end-date"
+                    aria-label={t('to_date') || 'To date'}
+                    type="date"
+                    value={endDate}
+                    min={startDate}
+                    max={today}
+                    onChange={(e) => onChangeEnd(e.target.value)}
+                    className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-100"
+                    data-testid="end-date-input"
+                />
+            </div>
+        </div>
+    );
+};
+
 const AdvancedFiltersComponent: React.FC = () => {
     const { t } = useTranslation();
-    const { replace } = useRouter() || {};
-    const searchParams = useSearchParams();
-    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
-    const pathname = usePathname();
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
-    const isMainPage = pathname === '/';
-    const isFavoritesPage = pathname === '/favorites';
-    const isFilterablePage = isMainPage || isFavoritesPage;
-
-    const currentMinCalories = get('minCalories') || '';
-    const currentMaxCalories = get('maxCalories') || '';
-    const currentMinYield = get('minYield') || '';
-    const currentMaxYield = get('maxYield') || '';
-    const currentCuisine = get('recipeCuisine') || '';
-
-    const hasActiveFilters = !!(
-        currentMinCalories ||
-        currentMaxCalories ||
-        currentMinYield ||
-        currentMaxYield ||
-        currentCuisine
-    );
-
-    const [state, dispatch] = useReducer(advancedFiltersReducer, {
-        isOpen: false,
-        tempMinCalories: currentMinCalories,
-        tempMaxCalories: currentMaxCalories,
-        tempMinYield: currentMinYield,
-        tempMaxYield: currentMaxYield,
-        tempCuisine: currentCuisine,
-    });
-
     const {
+        dropdownRef,
         isOpen,
+        hasActiveFilters,
         tempMinCalories,
         tempMaxCalories,
         tempMinYield,
         tempMaxYield,
         tempCuisine,
-    } = state;
-
-    // Sync state with URL params on open or url changes
-    useEffect(() => {
-        dispatch({
-            type: 'SYNC_FILTERS',
-            payload: {
-                minCalories: currentMinCalories,
-                maxCalories: currentMaxCalories,
-                minYield: currentMinYield,
-                maxYield: currentMaxYield,
-                recipeCuisine: currentCuisine,
-            },
-        });
-    }, [
-        isOpen,
-        currentMinCalories,
-        currentMaxCalories,
-        currentMinYield,
-        currentMaxYield,
-        currentCuisine,
-    ]);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
-            ) {
-                dispatch({ type: 'SET_OPEN', payload: false });
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isOpen]);
-
-    const updateUrlWithFilters = (
-        minCal: string,
-        maxCal: string,
-        minYld: string,
-        maxYld: string,
-        cuisine: string
-    ) => {
-        if (!isFilterablePage) return;
-
-        const params = new URLSearchParams(searchParams?.toString() || '');
-
-        if (minCal) params.set('minCalories', minCal);
-        else params.delete('minCalories');
-
-        if (maxCal) params.set('maxCalories', maxCal);
-        else params.delete('maxCalories');
-
-        if (minYld) params.set('minYield', minYld);
-        else params.delete('minYield');
-
-        if (maxYld) params.set('maxYield', maxYld);
-        else params.delete('maxYield');
-
-        if (cuisine) params.set('recipeCuisine', cuisine);
-        else params.delete('recipeCuisine');
-
-        params.delete('page'); // Reset pagination to page 1
-
-        const newUrl = isMainPage
-            ? params.toString()
-                ? `/?${params.toString()}`
-                : '/'
-            : params.toString()
-              ? `${pathname}?${params.toString()}`
-              : pathname;
-
-        replace(newUrl);
-    };
-
-    const handleApply = () => {
-        updateUrlWithFilters(
-            tempMinCalories,
-            tempMaxCalories,
-            tempMinYield,
-            tempMaxYield,
-            tempCuisine
-        );
-        dispatch({ type: 'SET_OPEN', payload: false });
-    };
-
-    const handleClear = () => {
-        dispatch({ type: 'CLEAR_FILTERS' });
-        if (isFilterablePage) {
-            updateUrlWithFilters('', '', '', '', '');
-        }
-    };
-
-    const handleCuisinePillClick = (cuisineName: string) => {
-        if (tempCuisine.toLowerCase() === cuisineName.toLowerCase()) {
-            dispatch({ type: 'SET_CUISINE', payload: '' });
-        } else {
-            dispatch({ type: 'SET_CUISINE', payload: cuisineName });
-        }
-    };
-
-    const isAnyTempFilterSet = !!(
-        tempMinCalories ||
-        tempMaxCalories ||
-        tempMinYield ||
-        tempMaxYield ||
-        tempCuisine
-    );
+        tempStartDate,
+        tempEndDate,
+        isAnyTempFilterSet,
+        dispatch,
+        handleApply,
+        handleClear,
+        handleCuisinePillClick,
+    } = useAdvancedFilters();
 
     return (
         <div
@@ -387,6 +298,24 @@ const AdvancedFiltersComponent: React.FC = () => {
                             onChangeMax={(val) =>
                                 dispatch({
                                     type: 'SET_MAX_YIELD',
+                                    payload: val,
+                                })
+                            }
+                            t={t}
+                        />
+
+                        <DateFilterSection
+                            startDate={tempStartDate}
+                            endDate={tempEndDate}
+                            onChangeStart={(val) =>
+                                dispatch({
+                                    type: 'SET_START_DATE',
+                                    payload: val,
+                                })
+                            }
+                            onChangeEnd={(val) =>
+                                dispatch({
+                                    type: 'SET_END_DATE',
                                     payload: val,
                                 })
                             }

@@ -5,6 +5,8 @@ export interface AdvancedFiltersState {
     tempMinYield: string;
     tempMaxYield: string;
     tempCuisine: string;
+    tempStartDate: string;
+    tempEndDate: string;
 }
 
 export type AdvancedFiltersAction =
@@ -14,6 +16,8 @@ export type AdvancedFiltersAction =
     | { type: 'SET_MIN_YIELD'; payload: string }
     | { type: 'SET_MAX_YIELD'; payload: string }
     | { type: 'SET_CUISINE'; payload: string }
+    | { type: 'SET_START_DATE'; payload: string }
+    | { type: 'SET_END_DATE'; payload: string }
     | {
           type: 'SYNC_FILTERS';
           payload: {
@@ -22,6 +26,8 @@ export type AdvancedFiltersAction =
               minYield: string;
               maxYield: string;
               recipeCuisine: string;
+              startDate: string;
+              endDate: string;
           };
       }
     | { type: 'CLEAR_FILTERS' };
@@ -43,6 +49,10 @@ export function advancedFiltersReducer(
             return { ...state, tempMaxYield: action.payload };
         case 'SET_CUISINE':
             return { ...state, tempCuisine: action.payload };
+        case 'SET_START_DATE':
+            return { ...state, tempStartDate: action.payload };
+        case 'SET_END_DATE':
+            return { ...state, tempEndDate: action.payload };
         case 'SYNC_FILTERS':
             return {
                 ...state,
@@ -51,6 +61,8 @@ export function advancedFiltersReducer(
                 tempMinYield: action.payload.minYield,
                 tempMaxYield: action.payload.maxYield,
                 tempCuisine: action.payload.recipeCuisine,
+                tempStartDate: action.payload.startDate,
+                tempEndDate: action.payload.endDate,
             };
         case 'CLEAR_FILTERS':
             return {
@@ -60,6 +72,8 @@ export function advancedFiltersReducer(
                 tempMinYield: '',
                 tempMaxYield: '',
                 tempCuisine: '',
+                tempStartDate: '',
+                tempEndDate: '',
                 isOpen: false,
             };
         default:

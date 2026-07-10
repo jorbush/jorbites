@@ -12,10 +12,6 @@ vi.mock('@/app/components/navbar/OrderByDropdown', () => ({
     default: () => <div data-testid="order-by-dropdown">OrderBy</div>,
 }));
 
-vi.mock('@/app/components/navbar/PeriodFilter', () => ({
-    default: () => <div data-testid="period-filter">Period</div>,
-}));
-
 vi.mock('@/app/components/navbar/AdvancedFilters', () => ({
     default: () => <div data-testid="advanced-filters">AdvancedFilters</div>,
 }));
@@ -87,7 +83,6 @@ describe('Search View Components', () => {
                 screen.getByPlaceholderText('search_recipes...')
             ).toBeDefined();
             expect(screen.getByTestId('order-by-dropdown')).toBeDefined();
-            expect(screen.getByTestId('period-filter')).toBeDefined();
             expect(screen.getByTestId('advanced-filters')).toBeDefined();
         });
     });
@@ -150,7 +145,6 @@ describe('Search View Components', () => {
                 screen.getByPlaceholderText('search_recipes...')
             ).toBeDefined();
             expect(screen.getByTestId('order-by-dropdown')).toBeDefined();
-            expect(screen.getByTestId('period-filter')).toBeDefined();
             expect(screen.getByTestId('advanced-filters')).toBeDefined();
         });
     });

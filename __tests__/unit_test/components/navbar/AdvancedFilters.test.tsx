@@ -25,6 +25,10 @@ vi.mock('react-i18next', () => ({
                 recipe_cuisine: 'Cuisine',
                 cuisine_placeholder: 'e.g. Italian, Spanish',
                 popular_cuisines: 'Popular cuisines',
+                filter_by_date: 'Filter by date',
+                date: 'Date',
+                from_date: 'From date',
+                to_date: 'To date',
                 apply: 'Apply',
                 cancel: 'Cancel',
                 cuisine_italian: 'Italian',
@@ -57,10 +61,12 @@ describe('<AdvancedFilters />', () => {
         Array.from(mockSearchParams.keys()).forEach((key) => {
             mockSearchParams.delete(key);
         });
+        vi.setSystemTime(new Date('2024-01-15'));
     });
 
     afterEach(() => {
         cleanup();
+        vi.useRealTimers();
     });
 
     describe('Basic rendering', () => {
@@ -211,10 +217,32 @@ describe('<AdvancedFilters />', () => {
             expect(italianPill.className).not.toContain('bg-green-450');
         });
 
+        it('allows entering date range', () => {
+            render(<AdvancedFilters />);
+
+            const button = screen.getByTestId('advanced-filters-button');
+            fireEvent.click(button);
+
+            const startDate = screen.getByTestId(
+                'start-date-input'
+            ) as HTMLInputElement;
+            const endDate = screen.getByTestId(
+                'end-date-input'
+            ) as HTMLInputElement;
+
+            fireEvent.change(startDate, { target: { value: '2024-01-01' } });
+            fireEvent.change(endDate, { target: { value: '2024-01-10' } });
+
+            expect(startDate.value).toBe('2024-01-01');
+            expect(endDate.value).toBe('2024-01-10');
+        });
+
         it('initializes inputs with current URL parameter values', () => {
             mockSearchParams.set('minCalories', '300');
             mockSearchParams.set('maxYield', '4');
             mockSearchParams.set('recipeCuisine', 'Spanish');
+            mockSearchParams.set('startDate', '2024-01-02');
+            mockSearchParams.set('endDate', '2024-01-12');
 
             render(<AdvancedFilters />);
 
@@ -228,10 +256,18 @@ describe('<AdvancedFilters />', () => {
                 'max-yield-input'
             ) as HTMLInputElement;
             const spanishPill = screen.getByTestId('cuisine-pill-spanish');
+            const startDate = screen.getByTestId(
+                'start-date-input'
+            ) as HTMLInputElement;
+            const endDate = screen.getByTestId(
+                'end-date-input'
+            ) as HTMLInputElement;
 
             expect(minCalories.value).toBe('300');
             expect(maxYield.value).toBe('4');
             expect(spanishPill.className).toContain('bg-green-450');
+            expect(startDate.value).toBe('2024-01-02');
+            expect(endDate.value).toBe('2024-01-12');
         });
     });
 
@@ -245,22 +281,28 @@ describe('<AdvancedFilters />', () => {
             const minCalories = screen.getByTestId('min-calories-input');
             const maxYield = screen.getByTestId('max-yield-input');
             const italianPill = screen.getByTestId('cuisine-pill-italian');
+            const startDate = screen.getByTestId('start-date-input');
+            const endDate = screen.getByTestId('end-date-input');
 
             fireEvent.change(minCalories, { target: { value: '150' } });
             fireEvent.change(maxYield, { target: { value: '5' } });
             fireEvent.click(italianPill);
+            fireEvent.change(startDate, { target: { value: '2024-01-05' } });
+            fireEvent.change(endDate, { target: { value: '2024-01-08' } });
 
             const applyButton = screen.getByTestId('apply-filters-button');
             fireEvent.click(applyButton);
 
             expect(mockReplace).toHaveBeenCalledWith(
-                '/?minCalories=150&maxYield=5&recipeCuisine=Italian'
+                '/?minCalories=150&maxYield=5&recipeCuisine=Italian&startDate=2024-01-05&endDate=2024-01-08'
             );
         });
 
         it('updates URL when clearing advanced filters', () => {
             mockSearchParams.set('minCalories', '200');
             mockSearchParams.set('recipeCuisine', 'Mexican');
+            mockSearchParams.set('startDate', '2024-01-05');
+            mockSearchParams.set('endDate', '2024-01-08');
 
             render(<AdvancedFilters />);
 

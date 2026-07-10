@@ -35,13 +35,9 @@ vi.mock('react-icons/io5', () => ({
     IoReorderThree: () => <div data-testid="reorder-icon" />,
 }));
 
-// Mock OrderByDropdown and PeriodFilter components
+// Mock OrderByDropdown component
 vi.mock('@/app/components/navbar/OrderByDropdown', () => ({
     default: () => <div data-testid="order-by-dropdown">OrderByDropdown</div>,
-}));
-
-vi.mock('@/app/components/navbar/PeriodFilter', () => ({
-    default: () => <div data-testid="period-filter">PeriodFilter</div>,
 }));
 
 vi.mock('@/app/components/navbar/AdvancedFilters', () => ({
