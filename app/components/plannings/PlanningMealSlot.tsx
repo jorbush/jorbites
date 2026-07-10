@@ -70,11 +70,26 @@ export const PlanningMealSlot: React.FC<PlanningMealSlotProps> = ({
                                 <div className="truncate text-xs font-semibold text-neutral-800 hover:underline dark:text-neutral-200">
                                     {recipe.title}
                                 </div>
-                                {recipe.user && (
-                                    <div className="truncate text-[10px] font-light text-neutral-500 dark:text-neutral-400">
-                                        by {recipe.user.name || 'Anonymous'}
-                                    </div>
-                                )}
+                                <div className="mt-0.5 flex max-w-full flex-row items-center gap-1">
+                                    {recipe.user && (
+                                        <span className="truncate text-[10px] font-light text-neutral-500 dark:text-neutral-400">
+                                            by {recipe.user.name || 'Anonymous'}
+                                        </span>
+                                    )}
+                                    {recipe.user && recipe.calories && (
+                                        <span className="text-[10px] text-neutral-300 dark:text-neutral-700">
+                                            •
+                                        </span>
+                                    )}
+                                    {recipe.calories && (
+                                        <span
+                                            data-testid="recipe-calories"
+                                            className="dark:text-emerald-450 shrink-0 text-[10px] font-semibold text-emerald-600"
+                                        >
+                                            {recipe.calories} kcal
+                                        </span>
+                                    )}
+                                </div>
                             </button>
 
                             {/* Remove button in Edit mode */}

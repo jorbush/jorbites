@@ -261,7 +261,7 @@ describe('PlanningClient', () => {
 
         // Find the "monday" heading
         const mondayHeading = screen.getByRole('heading', { name: /monday/i });
-        const dayContainer = mondayHeading.closest('div');
+        const dayContainer = mondayHeading.closest('.rounded-3xl');
 
         // Find all meal slots in that day
         const mealSlots = dayContainer!.querySelectorAll(
