@@ -88,6 +88,7 @@ export async function GET(request: Request) {
                     title: true,
                     imageSrc: true,
                     userId: true,
+                    calories: true,
                     user: {
                         select: {
                             name: true,

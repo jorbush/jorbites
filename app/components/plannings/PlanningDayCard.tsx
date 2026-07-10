@@ -23,12 +23,35 @@ export const PlanningDayCard: React.FC<PlanningDayCardProps> = ({
     push,
     t,
 }) => {
+    const totalCalories = MEAL_TYPES.reduce((acc, mealType) => {
+        const key = `${day}-${mealType}`;
+        const slotMeals = groupedMeals[key] || [];
+        return (
+            acc +
+            slotMeals.reduce(
+                (sum, meal) => sum + (meal.recipe?.calories || 0),
+                0
+            )
+        );
+    }, 0);
+
     return (
         <div className="flex flex-col gap-4 rounded-3xl border border-neutral-200/50 bg-neutral-50/20 p-5 shadow-xs dark:border-neutral-800/80 dark:bg-neutral-950/20">
-            {/* Day Title */}
-            <h3 className="text-xl font-semibold tracking-tight capitalize">
-                {t(day)}
-            </h3>
+            {/* Day Title & Calories */}
+            <div className="flex flex-row items-center justify-between">
+                <h3 className="text-xl font-semibold tracking-tight capitalize">
+                    {t(day)}
+                </h3>
+                {totalCalories > 0 && (
+                    <span
+                        data-testid="day-calories"
+                        className="border-emerald-250/30 rounded-full border bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:border-emerald-800/40 dark:bg-emerald-950/40 dark:text-emerald-400"
+                    >
+                        {totalCalories}{' '}
+                        {(t('calories') || 'calories').toLowerCase()}
+                    </span>
+                )}
+            </div>
 
             {/* 4 Meal Slots Grid */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">

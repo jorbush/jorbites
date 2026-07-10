@@ -155,6 +155,7 @@ export function usePlanningState({
                 ingredients: recipe.ingredients || [],
                 description: recipe.description || '',
                 user: recipe.user || {},
+                calories: recipe.calories || null,
             },
         };
 
