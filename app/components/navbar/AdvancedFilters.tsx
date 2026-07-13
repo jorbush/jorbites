@@ -369,7 +369,7 @@ const AdvancedFilters: React.FC = () => (
 );
 
 export const AdvancedFiltersSkeleton = () => (
-    <div className="bg-neutral-100 dark:bg-neutral-800 relative flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full p-2">
+    <div className="relative flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full bg-neutral-100 p-2 dark:bg-neutral-800">
         <div className="size-5 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700" />
     </div>
 );
