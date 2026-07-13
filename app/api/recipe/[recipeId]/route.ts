@@ -17,6 +17,7 @@ import {
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { validateRecipeData } from '@/app/utils/recipeValidation';
+import { SafeRecipe } from '@/app/types';
 
 interface IParams {
     recipeId?: string;
@@ -224,7 +225,7 @@ export async function POST(
 }
 
 async function cleanupOldImages(
-    recipe: any,
+    recipe: SafeRecipe,
     newImageSrc: string,
     newExtraImages: string[],
     recipeId: string
@@ -354,7 +355,9 @@ export async function PATCH(
 
         await cleanupOldImages(recipe, imageSrc, extraImages, recipeId);
 
-        const updateData: any = {
+        const updateData: Partial<SafeRecipe> & {
+            extraImages?: string[];
+        } = {
             title,
             description,
             imageSrc,

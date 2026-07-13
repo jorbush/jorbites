@@ -14,6 +14,19 @@ import {
     validationError,
     forbiddenResponse,
 } from '@/app/utils/apiErrors';
+import { SafeRecipe } from '@/app/types';
+
+interface RecipeDataBody {
+    title?: string;
+    description?: string;
+    categories?: string[];
+    ingredients?: string[];
+    steps?: string[];
+    youtubeUrl?: string;
+    recipeCuisine?: string;
+    calories?: number | string;
+    recipeYield?: number | string;
+}
 
 /**
  * Validates recipe data for both POST (create) and PATCH (update) operations.
@@ -22,7 +35,10 @@ import {
  * @param existingRecipe - The existing recipe object (only for PATCH)
  * @returns A Response object with an error message, or null if validation passes
  */
-export function validateRecipeData(body: any, existingRecipe?: any) {
+export function validateRecipeData(
+    body: RecipeDataBody,
+    existingRecipe?: SafeRecipe | null
+) {
     const {
         title,
         description,
