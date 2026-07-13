@@ -40,7 +40,9 @@ describe('useAdvancedFilters', () => {
         mockSearchParams.set('startDate', '2024-01-01');
         mockSearchParams.set('endDate', '2024-01-10');
 
-        const { result } = renderHook(() => useAdvancedFilters());
+        const { result } = renderHook(() =>
+            useAdvancedFilters(mockSearchParams)
+        );
 
         expect(result.current.tempMinCalories).toBe('200');
         expect(result.current.tempMaxCalories).toBe('500');
@@ -55,7 +57,9 @@ describe('useAdvancedFilters', () => {
     });
 
     it('should allow toggling cuisine pill clicks', () => {
-        const { result } = renderHook(() => useAdvancedFilters());
+        const { result } = renderHook(() =>
+            useAdvancedFilters(mockSearchParams)
+        );
 
         act(() => {
             result.current.handleCuisinePillClick('Italian');
@@ -70,7 +74,9 @@ describe('useAdvancedFilters', () => {
     });
 
     it('should apply filters to URL search params', () => {
-        const { result } = renderHook(() => useAdvancedFilters());
+        const { result } = renderHook(() =>
+            useAdvancedFilters(mockSearchParams)
+        );
 
         act(() => {
             result.current.dispatch({
@@ -111,7 +117,9 @@ describe('useAdvancedFilters', () => {
         mockSearchParams.set('recipeCuisine', 'Mexican');
         mockSearchParams.set('startDate', '2024-01-01');
 
-        const { result } = renderHook(() => useAdvancedFilters());
+        const { result } = renderHook(() =>
+            useAdvancedFilters(mockSearchParams)
+        );
 
         act(() => {
             result.current.handleClear();

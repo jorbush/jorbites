@@ -4,9 +4,10 @@ import { useReducer, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { advancedFiltersReducer } from '@/app/components/navbar/advancedFiltersReducer';
 
-export const useAdvancedFilters = () => {
+export const useAdvancedFilters = (
+    searchParams: ReturnType<typeof useSearchParams>
+) => {
     const { replace } = useRouter() || {};
-    const searchParams = useSearchParams();
     const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
     const pathname = usePathname();
     const dropdownRef = useRef<HTMLDivElement>(null);
