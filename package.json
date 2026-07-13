@@ -58,6 +58,7 @@
     "react-markdown": "^10.1.0",
     "swr": "^2.4.1",
     "tailwindcss": "^4.0.17",
+    "tesseract.js": "^7.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2",
     "vite-tsconfig-paths": "^4.3.2",
@@ -85,5 +86,10 @@
   "overrides": {
     "@types/react": "19.2.10",
     "@types/react-dom": "19.2.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "tesseract.js"
+    ]
   }
 }

@@ -378,16 +378,6 @@ describe('<RecipeStepsStep />', () => {
         expect(screen.queryByTestId('recipe-step-0')).toBeDefined();
     });
 
-    it('shows help text in plain text mode', () => {
-        render(<RecipeStepsStep {...mockProps} />);
-
-        const toggleButton = screen.getByTestId('toggle-input-mode');
-        fireEvent.click(toggleButton);
-
-        // Check for help text
-        expect(screen.getByText('paste_steps_help')).toBeDefined();
-    });
-
     it('shows apply button in plain text mode', () => {
         render(<RecipeStepsStep {...mockProps} />);
 
@@ -401,7 +391,7 @@ describe('<RecipeStepsStep />', () => {
 
     it('calls onSetSteps when apply is clicked with valid text', () => {
         const mockSetSteps = vi.fn();
-        const mockGetValues = vi.fn((name: string) => {
+        const mockGetValues = vi.fn((name?: string | string[]) => {
             if (name === 'steps-plain-text') {
                 return '1. Preheat oven\n2. Mix ingredients\n3. Bake';
             }

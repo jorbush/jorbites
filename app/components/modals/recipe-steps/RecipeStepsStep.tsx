@@ -3,7 +3,7 @@
 import { useTranslation } from 'react-i18next';
 import { FieldValues, FieldErrors, UseFormRegister } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Heading from '@/app/components/navigation/Heading';
 import Textarea from '@/app/components/inputs/Textarea';
 import ToggleSwitch from '@/app/components/inputs/ToggleSwitch';
@@ -11,6 +11,7 @@ import Button from '@/app/components/buttons/Button';
 import RecipeStepsInputs from './RecipeStepsInputs';
 import { parseTextToList } from '@/app/utils/textParser';
 import { RECIPE_MAX_STEPS } from '@/app/utils/constants';
+import OcrTextScanner from '@/app/components/inputs/OcrTextScanner';
 
 interface RecipeStepsStepProps {
     numSteps: number;
@@ -44,6 +45,17 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
 
     const inputMode = propInputMode ?? localInputMode;
     const setInputMode = propSetInputMode ?? setLocalInputMode;
+
+    const handleOcrResult = useCallback(
+        (text: string) => {
+            if (!setValue) return;
+            const currentValue = getValues?.('steps-plain-text') || '';
+            const newValue = currentValue ? `${currentValue}\n${text}` : text;
+            setValue('steps-plain-text', newValue);
+            setInputMode('text');
+        },
+        [getValues, setValue, setInputMode]
+    );
 
     const handleAddStep = () => {
         if (numSteps >= RECIPE_MAX_STEPS) {
@@ -88,9 +100,12 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
 
     return (
         <div className="flex flex-col gap-8">
-            <div className="relative flex items-center justify-between pl-2">
-                <Heading title={t('title_steps')} />
-                <div className="absolute top-8 right-0 flex items-center">
+            <div className="flex items-center justify-between pl-2 gap-6">
+                <div className="flex items-center gap-2">
+                    <Heading title={t('title_steps')} />
+                    <OcrTextScanner onResult={handleOcrResult} />
+                </div>
+                <div className="flex items-center">
                     <ToggleSwitch
                         checked={inputMode === 'text'}
                         onChange={handleModeToggle}
@@ -119,9 +134,6 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
                 </>
             ) : (
                 <div className="flex flex-col gap-3">
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                        {t('paste_steps_help')}
-                    </p>
                     <Textarea
                         id="steps-plain-text"
                         label=""
