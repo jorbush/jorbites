@@ -6,7 +6,7 @@ import Container from '@/app/components/utils/Container';
 import CategoryBox from '@/app/components/CategoryBox';
 import { categories } from './categoriesData';
 
-const Categories = () => {
+const CategoriesComponent = () => {
     const searchParamsVal = useSearchParams();
     const get = searchParamsVal
         ? searchParamsVal.get.bind(searchParamsVal)
@@ -58,5 +58,11 @@ export const CategoriesSkeleton = () => {
         </Container>
     );
 };
+
+const Categories = () => (
+    <Suspense fallback={<CategoriesSkeleton />}>
+        <CategoriesComponent />
+    </Suspense>
+);
 
 export default Categories;

@@ -5,6 +5,7 @@ import { FiSliders, FiX } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import Button from '../buttons/Button';
 import { RECIPE_CUISINES } from '@/app/utils/constants';
+import { useSearchParams } from 'next/navigation';
 import { CuisineIcon } from '../recipes/CuisineIcon';
 import { useAdvancedFilters } from '@/app/hooks/useAdvancedFilters';
 
@@ -197,6 +198,7 @@ const DateFilterSection: React.FC<DateFilterSectionProps> = ({
 
 const AdvancedFiltersComponent: React.FC = () => {
     const { t } = useTranslation();
+    const searchParams = useSearchParams();
     const {
         dropdownRef,
         isOpen,
@@ -213,7 +215,7 @@ const AdvancedFiltersComponent: React.FC = () => {
         handleApply,
         handleClear,
         handleCuisinePillClick,
-    } = useAdvancedFilters();
+    } = useAdvancedFilters(searchParams);
 
     return (
         <div
@@ -361,9 +363,15 @@ const AdvancedFiltersComponent: React.FC = () => {
 };
 
 const AdvancedFilters: React.FC = () => (
-    <Suspense fallback={null}>
+    <Suspense fallback={<AdvancedFiltersSkeleton />}>
         <AdvancedFiltersComponent />
     </Suspense>
+);
+
+export const AdvancedFiltersSkeleton = () => (
+    <div className="bg-neutral-100 dark:bg-neutral-800 relative flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full p-2">
+        <div className="size-5 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700" />
+    </div>
 );
 
 export default AdvancedFilters;
