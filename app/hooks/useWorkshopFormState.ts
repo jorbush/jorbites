@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useCallback, useRef, useMemo } from 'react';
+import { useReducer, useCallback, useRef, useMemo, useState } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import useSWR from 'swr';
@@ -38,9 +38,9 @@ export function useWorkshopFormState({
     const isEditMode = workshopModal.isEditMode;
     const editData = workshopModal.editWorkshopData;
 
-    const prevEditWorkshopDataRef = useRef<any>(null);
-    if (editData !== prevEditWorkshopDataRef.current) {
-        prevEditWorkshopDataRef.current = editData;
+    const [prevEditWorkshopData, setPrevEditWorkshopData] = useState<any>(null);
+    if (editData !== prevEditWorkshopData) {
+        setPrevEditWorkshopData(editData);
         if (isEditMode && editData) {
             dispatch({
                 type: 'SET_NUM_INGREDIENTS',
@@ -130,25 +130,25 @@ export function useWorkshopFormState({
         axiosFetcher
     );
 
-    const prevWhitelistedUsersDataRef = useRef<any>(null);
-    const prevIsPrivateRef = useRef<boolean>(isPrivate);
+    const [prevWhitelistedUsersData, setPrevWhitelistedUsersData] = useState<any>(null);
+    const [prevIsPrivate, setPrevIsPrivate] = useState<boolean>(isPrivate);
     const currentLength = whitelistedUserIds?.length || 0;
-    const prevWhitelistedUserIdsLengthRef = useRef<number>(currentLength);
+    const [prevWhitelistedUserIdsLength, setPrevWhitelistedUserIdsLength] = useState<number>(currentLength);
 
     if (
         whitelistedUsersData &&
-        whitelistedUsersData !== prevWhitelistedUsersDataRef.current
+        whitelistedUsersData !== prevWhitelistedUsersData
     ) {
-        prevWhitelistedUsersDataRef.current = whitelistedUsersData;
+        setPrevWhitelistedUsersData(whitelistedUsersData);
         dispatch({ type: 'SET_SELECTED_USERS', payload: whitelistedUsersData });
     }
 
     if (
-        isPrivate !== prevIsPrivateRef.current ||
-        currentLength !== prevWhitelistedUserIdsLengthRef.current
+        isPrivate !== prevIsPrivate ||
+        currentLength !== prevWhitelistedUserIdsLength
     ) {
-        prevIsPrivateRef.current = isPrivate;
-        prevWhitelistedUserIdsLengthRef.current = currentLength;
+        setPrevIsPrivate(isPrivate);
+        setPrevWhitelistedUserIdsLength(currentLength);
         if (!isPrivate || currentLength === 0) {
             dispatch({ type: 'SET_SELECTED_USERS', payload: [] });
         }

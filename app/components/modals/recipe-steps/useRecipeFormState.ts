@@ -62,11 +62,9 @@ export function useRecipeFormState({
         return 1;
     });
     const [isLoading, setIsLoading] = useState(false);
-    const currentUserRef = useRef<SafeUser | null>(null);
-    currentUserRef.current = currentUser || null;
-    const prevQuestDataRef = useRef<any>(null);
-    const prevCoCooksDataRef = useRef<any>(null);
-    const prevLinkedRecipesDataRef = useRef<any>(null);
+    const [prevQuestData, setPrevQuestData] = useState<any>(null);
+    const [prevCoCooksData, setPrevCoCooksData] = useState<any>(null);
+    const [prevLinkedRecipesData, setPrevLinkedRecipesData] = useState<any>(null);
     const [selectedCoCooks, setSelectedCoCooks] = useState<any[]>(() => {
         if (recipeModal.isEditMode && recipeModal.editRecipeData?.coCooks) {
             return recipeModal.editRecipeData.coCooks;
@@ -393,21 +391,18 @@ export function useRecipeFormState({
             : null,
         axiosFetcher
     );
-    if (questData && questData !== prevQuestDataRef.current) {
-        prevQuestDataRef.current = questData;
+    if (questData && questData !== prevQuestData) {
+        setPrevQuestData(questData);
         setSelectedQuest(questData);
     }
 
-    if (coCooksData && coCooksData !== prevCoCooksDataRef.current) {
-        prevCoCooksDataRef.current = coCooksData;
+    if (coCooksData && coCooksData !== prevCoCooksData) {
+        setPrevCoCooksData(coCooksData);
         setSelectedCoCooks(coCooksData);
     }
 
-    if (
-        linkedRecipesData &&
-        linkedRecipesData !== prevLinkedRecipesDataRef.current
-    ) {
-        prevLinkedRecipesDataRef.current = linkedRecipesData;
+    if (linkedRecipesData && linkedRecipesData !== prevLinkedRecipesData) {
+        setPrevLinkedRecipesData(linkedRecipesData);
         setSelectedLinkedRecipes(linkedRecipesData);
     }
     const onBack = () => {

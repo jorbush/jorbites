@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import debounce from 'lodash/debounce';
 import MentionDropdown from './MentionDropdown';
@@ -170,33 +170,32 @@ const MentionInput: React.FC<MentionInputProps> = ({
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const debouncedSearchRef = useRef<ReturnType<typeof debounce> | null>(null);
-    if (!debouncedSearchRef.current) {
-        debouncedSearchRef.current = debounce(async (query: string) => {
-            if (query.length < 1) {
-                setUsers([]);
-                return;
-            }
+    const debouncedSearch = useMemo(
+        () =>
+            debounce(async (query: string) => {
+                if (query.length < 1) {
+                    setUsers([]);
+                    return;
+                }
 
-            try {
-                const response = await axios.get(
-                    `/api/search?q=${encodeURIComponent(query)}&type=users`
-                );
-                setUsers(response.data.users || []);
-            } catch (error) {
-                console.error('Search failed:', error);
-                setUsers([]);
-            }
-        }, 300);
-    }
-    const debouncedSearch = debouncedSearchRef.current;
+                try {
+                    const response = await axios.get(
+                        `/api/search?q=${encodeURIComponent(query)}&type=users`
+                    );
+                    setUsers(response.data.users || []);
+                } catch (error) {
+                    console.error('Search failed:', error);
+                    setUsers([]);
+                }
+            }, 300),
+        []
+    );
 
     useEffect(() => {
-        const currentDebouncedSearch = debouncedSearchRef.current;
         return () => {
-            currentDebouncedSearch?.cancel();
+            debouncedSearch.cancel();
         };
-    }, []);
+    }, [debouncedSearch]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newValue = e.target.value;

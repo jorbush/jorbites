@@ -199,11 +199,9 @@ const RecipeModalContent: React.FC<{
 const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const recipeModal = useRecipeModal();
     const { t } = useTranslation();
-    const currentUserRef = useRef<SafeUser | null>(null);
-    currentUserRef.current = currentUser || null;
 
     const { data: draftData, isLoading: isLoadingDraft } = useSWR(
-        recipeModal.isOpen && !recipeModal.isEditMode && currentUserRef.current
+        recipeModal.isOpen && !recipeModal.isEditMode && currentUser
             ? `/api/draft`
             : null,
         axiosFetcher,

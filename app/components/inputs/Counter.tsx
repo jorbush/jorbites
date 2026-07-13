@@ -22,9 +22,12 @@ const Counter: React.FC<CounterProps> = ({
     const animationFrameId = useRef<number | undefined>(undefined);
 
     const valueRef = useRef(value);
-    valueRef.current = value;
     const onChangeRef = useRef(onChange);
-    onChangeRef.current = onChange;
+
+    useEffect(() => {
+        valueRef.current = value;
+        onChangeRef.current = onChange;
+    });
 
     const updateCounter = useCallback(() => {
         const currentTime = Date.now();

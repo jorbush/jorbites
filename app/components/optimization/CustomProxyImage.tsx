@@ -78,19 +78,15 @@ export default function CustomProxyImage({
     }
 
     // Reset isLoaded when source changes during render
-    const prevOptimizedSrcRef = useRef(optimizedSrc);
-    if (optimizedSrc !== prevOptimizedSrcRef.current) {
-        prevOptimizedSrcRef.current = optimizedSrc;
+    const [prevOptimizedSrc, setPrevOptimizedSrc] = useState(optimizedSrc);
+    if (optimizedSrc !== prevOptimizedSrc) {
+        setPrevOptimizedSrc(optimizedSrc);
         setIsLoadedState(false);
     }
 
-    // Handle preload link injection as a side effect
-    const isPreloadingRef = useRef(preloadViaProxy);
-    isPreloadingRef.current = preloadViaProxy;
-
     useEffect(() => {
         if (
-            isPreloadingRef.current &&
+            preloadViaProxy &&
             optimizedSrc &&
             optimizedSrc !== fallbackImage &&
             typeof window !== 'undefined'

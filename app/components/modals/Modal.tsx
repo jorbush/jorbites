@@ -41,10 +41,10 @@ const Modal: React.FC<ModalProps> = ({
     insideModal,
 }) => {
     const [isClosing, setIsClosing] = useState(false);
-    const prevIsOpenRef = useRef(isOpen);
+    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
 
-    if (isOpen !== prevIsOpenRef.current) {
-        prevIsOpenRef.current = isOpen;
+    if (isOpen !== prevIsOpen) {
+        setPrevIsOpen(isOpen);
         setIsClosing(false);
     }
 
@@ -85,7 +85,7 @@ const Modal: React.FC<ModalProps> = ({
     useEffect(() => {
         handleSubmitRef.current = handleSubmit;
         disabledRef.current = disabled;
-    });
+    }, [handleSubmit, disabled]);
 
     useEffect(() => {
         if (!isOpen) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, Suspense } from 'react';
+import { useState, useRef, useEffect, Suspense, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import DesktopSearch from './DesktopSearch';
@@ -44,8 +44,11 @@ const SearchComponent: React.FC<SearchProps> = ({
     const isExplicitlyExiting = useRef(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const onSearchModeChangeRef = useRef(onSearchModeChange);
-    onSearchModeChangeRef.current = onSearchModeChange;
     const isMobile = useMediaQuery('(max-width: 768px)');
+
+    useEffect(() => {
+        onSearchModeChangeRef.current = onSearchModeChange;
+    }, [onSearchModeChange]);
 
     const isMainPage = pathname === '/';
     const isFavoritesPage = pathname === '/favorites';
@@ -72,39 +75,42 @@ const SearchComponent: React.FC<SearchProps> = ({
         currentCuisine;
 
     const replaceRef = useRef(replace);
-    replaceRef.current = replace;
 
-    const debouncedUrlUpdateRef = useRef<any>(null);
-    if (debouncedUrlUpdateRef.current === null) {
-        debouncedUrlUpdateRef.current = debounce(
-            (
-                value: string,
-                searchParamsStr: string,
-                isFilterable: boolean,
-                isMain: boolean,
-                path: string
-            ) => {
-                if (!isFilterable) return;
-                const params = new URLSearchParams(searchParamsStr);
-                if (value.trim()) {
-                    params.set('search', value.trim());
-                } else {
-                    params.delete('search');
-                }
-                params.delete('page');
-                const newUrl = isMain
-                    ? params.toString()
-                        ? `/?${params.toString()}`
-                        : '/'
-                    : params.toString()
-                      ? `${path}?${params.toString()}`
-                      : path;
-                replaceRef.current(newUrl);
-            },
-            1000
-        );
-    }
-    const debouncedUrlUpdate = debouncedUrlUpdateRef.current;
+    useEffect(() => {
+        replaceRef.current = replace;
+    }, [replace]);
+
+    const debouncedUrlUpdate = useMemo(
+        () =>
+            debounce(
+                (
+                    value: string,
+                    searchParamsStr: string,
+                    isFilterable: boolean,
+                    isMain: boolean,
+                    path: string
+                ) => {
+                    if (!isFilterable) return;
+                    const params = new URLSearchParams(searchParamsStr);
+                    if (value.trim()) {
+                        params.set('search', value.trim());
+                    } else {
+                        params.delete('search');
+                    }
+                    params.delete('page');
+                    const newUrl = isMain
+                        ? params.toString()
+                            ? `/?${params.toString()}`
+                            : '/'
+                        : params.toString()
+                          ? `${path}?${params.toString()}`
+                          : path;
+                    replaceRef.current(newUrl);
+                },
+                1000
+            ),
+        []
+    );
 
     useEffect(() => {
         return () => {
@@ -114,10 +120,10 @@ const SearchComponent: React.FC<SearchProps> = ({
         };
     }, [debouncedUrlUpdate]);
 
-    const prevCurrentSearchRef = useRef(currentSearch);
+    const [prevCurrentSearch, setPrevCurrentSearch] = useState(currentSearch);
 
-    if (currentSearch !== prevCurrentSearchRef.current) {
-        prevCurrentSearchRef.current = currentSearch;
+    if (currentSearch !== prevCurrentSearch) {
+        setPrevCurrentSearch(currentSearch);
         if (currentSearch) {
             setSearchQuery(currentSearch);
             if (!isSearchMode && !isExplicitlyExiting.current) {

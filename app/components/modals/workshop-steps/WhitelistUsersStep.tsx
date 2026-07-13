@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -30,40 +30,41 @@ const WhitelistUsersStep: React.FC<WhitelistUsersStepProps> = ({
         recipes: any[];
     }>({ users: [], recipes: [] });
 
-    const debouncedSearchRef = useRef<ReturnType<typeof debounce> | null>(null);
-    if (!debouncedSearchRef.current) {
-        debouncedSearchRef.current = debounce(
-            async (
-                query: string,
-                tFunction: Function,
-                setResults: Function
-            ) => {
-                if (query.length < 2) {
-                    setResults({ users: [], recipes: [] });
-                    return;
-                }
+    const debouncedSearch = useMemo(
+        () =>
+            debounce(
+                async (
+                    query: string,
+                    tFunction: Function,
+                    setResults: Function
+                ) => {
+                    if (query.length < 2) {
+                        setResults({ users: [], recipes: [] });
+                        return;
+                    }
 
-                try {
-                    const response = await axios.get(
-                        `/api/search?q=${encodeURIComponent(query)}&type=users`
-                    );
-                    setResults(response.data);
-                } catch (error) {
-                    console.error('Search failed:', error);
-                    toast.error(tFunction('search_failed') || 'Search failed');
-                }
-            },
-            300
-        );
-    }
-    const debouncedSearch = debouncedSearchRef.current;
+                    try {
+                        const response = await axios.get(
+                            `/api/search?q=${encodeURIComponent(query)}&type=users`
+                        );
+                        setResults(response.data);
+                    } catch (error) {
+                        console.error('Search failed:', error);
+                        toast.error(
+                            tFunction('search_failed') || 'Search failed'
+                        );
+                    }
+                },
+                300
+            ),
+        []
+    );
 
     useEffect(() => {
-        const currentDebouncedSearch = debouncedSearchRef.current;
         return () => {
-            currentDebouncedSearch?.cancel();
+            debouncedSearch.cancel();
         };
-    }, []);
+    }, [debouncedSearch]);
 
     const handleSearch = useCallback(
         (query: string) => {

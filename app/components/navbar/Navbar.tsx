@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, Suspense } from 'react';
+import { useCallback, useState, Suspense, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Container from '@/app/components/utils/Container';
 import Categories, {
@@ -34,14 +34,14 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     }, []);
 
     const toggleFilter = useCallback(() => {
-        setIsFilterOpen((value) => {
-            const newValue = !value;
-            if (newValue) {
-                setShouldRender(true);
-            }
-            return newValue;
-        });
+        setIsFilterOpen((value) => !value);
     }, []);
+
+    useEffect(() => {
+        if (isFilterOpen) {
+            setShouldRender(true);
+        }
+    }, [isFilterOpen]);
 
     const handleAnimationEnd = useCallback(() => {
         if (!isFilterOpen) {

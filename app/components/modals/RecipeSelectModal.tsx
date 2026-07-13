@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { FiSearch } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
@@ -24,35 +24,34 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
     const [results, setResults] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const debouncedSearchRef = useRef<ReturnType<typeof debounce> | null>(null);
-    if (!debouncedSearchRef.current) {
-        debouncedSearchRef.current = debounce(async (searchQuery: string) => {
-            if (searchQuery.trim().length < 2) {
-                setResults([]);
-                return;
-            }
+    const debouncedSearch = useMemo(
+        () =>
+            debounce(async (searchQuery: string) => {
+                if (searchQuery.trim().length < 2) {
+                    setResults([]);
+                    return;
+                }
 
-            setIsLoading(true);
-            try {
-                const response = await axios.get(
-                    `/api/search?q=${encodeURIComponent(searchQuery)}&type=recipes`
-                );
-                setResults(response.data.recipes || []);
-            } catch (error) {
-                console.error('Recipe search failed:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        }, 300);
-    }
-    const debouncedSearch = debouncedSearchRef.current;
+                setIsLoading(true);
+                try {
+                    const response = await axios.get(
+                        `/api/search?q=${encodeURIComponent(searchQuery)}&type=recipes`
+                    );
+                    setResults(response.data.recipes || []);
+                } catch (error) {
+                    console.error('Recipe search failed:', error);
+                } finally {
+                    setIsLoading(false);
+                }
+            }, 300),
+        []
+    );
 
     useEffect(() => {
-        const currentDebouncedSearch = debouncedSearchRef.current;
         return () => {
-            currentDebouncedSearch?.cancel();
+            debouncedSearch.cancel();
         };
-    }, []);
+    }, [debouncedSearch]);
 
     // Reset state on close
     const handleClose = () => {
