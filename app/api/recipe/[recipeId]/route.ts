@@ -14,20 +14,10 @@ import {
     forbiddenResponse,
     notFoundResponse,
     internalServerError,
-    validationError,
 } from '@/app/utils/apiErrors';
-import {
-    RECIPE_TITLE_MAX_LENGTH,
-    RECIPE_DESCRIPTION_MAX_LENGTH,
-    RECIPE_INGREDIENT_MAX_LENGTH,
-    RECIPE_STEP_MAX_LENGTH,
-    RECIPE_MAX_INGREDIENTS,
-    RECIPE_MAX_STEPS,
-    RECIPE_MAX_CATEGORIES,
-    RECIPE_CUISINES,
-} from '@/app/utils/constants';
 import { logger } from '@/app/lib/axiom/server';
-import { YOUTUBE_URL_REGEX } from '@/app/utils/validation';
+import { validateRecipeData } from '@/app/utils/recipeValidation';
+import { SafeRecipe } from '@/app/types';
 
 interface IParams {
     recipeId?: string;
@@ -234,6 +224,59 @@ export async function POST(
     }
 }
 
+async function cleanupOldImages(
+    recipe: SafeRecipe,
+    newImageSrc: string,
+    newExtraImages: string[],
+    recipeId: string
+) {
+    const imagesToDelete: string[] = [];
+    if (recipe.imageSrc && recipe.imageSrc !== newImageSrc) {
+        imagesToDelete.push(recipe.imageSrc);
+    }
+    const oldExtraImages = recipe.extraImages || [];
+    const newExtraImagesSet = new Set(newExtraImages);
+    for (const oldImage of oldExtraImages) {
+        if (!newExtraImagesSet.has(oldImage)) {
+            imagesToDelete.push(oldImage);
+        }
+    }
+    if (imagesToDelete.length > 0) {
+        try {
+            const { successful, failed } =
+                await deleteMultipleFromCloudinary(imagesToDelete);
+            if (successful.length > 0) {
+                console.log(
+                    `Successfully deleted ${successful.length} old images from Cloudinary for recipe ${recipeId}`
+                );
+            }
+            if (failed.length > 0) {
+                console.warn(
+                    `Failed to delete ${failed.length} old images from Cloudinary for recipe ${recipeId}:`,
+                    failed
+                );
+            }
+        } catch (error) {
+            console.error('Error deleting old images from Cloudinary:', error);
+        }
+    }
+}
+
+async function invalidateRecipeCache(recipeId: string) {
+    try {
+        await redisCache.del(`recipe:${recipeId}`);
+        await redisCache.incr('recipes:global:version');
+    } catch (error: any) {
+        logger.error(
+            'PATCH /api/recipe/[recipeId] - cache invalidation error',
+            {
+                error: error.message,
+                recipeId,
+            }
+        );
+    }
+}
+
 export async function PATCH(
     request: Request,
     props: { params: Promise<IParams> }
@@ -274,6 +317,11 @@ export async function PATCH(
         }
 
         const body = await request.json();
+        const validationErrorResponse = validateRecipeData(body, recipe);
+        if (validationErrorResponse) {
+            return validationErrorResponse;
+        }
+
         const {
             title,
             description,
@@ -295,148 +343,6 @@ export async function PATCH(
             recipeYield,
         } = body;
 
-        // Validate recipeCuisine if provided
-        if (
-            recipeCuisine !== undefined &&
-            recipeCuisine !== null &&
-            recipeCuisine !== ''
-        ) {
-            if (typeof recipeCuisine !== 'string') {
-                return badRequest('recipeCuisine must be a string');
-            }
-            const isValid = RECIPE_CUISINES.includes(recipeCuisine as any);
-            if (!isValid) {
-                return validationError(
-                    `Invalid recipeCuisine. Must be one of: ${RECIPE_CUISINES.join(', ')}`
-                );
-            }
-        }
-
-        // Validate calories if provided
-        if (calories !== undefined && calories !== null && calories !== '') {
-            const parsed = parseInt(calories.toString(), 10);
-            if (isNaN(parsed) || parsed < 0) {
-                return validationError(
-                    'Calories must be a non-negative integer'
-                );
-            }
-        }
-
-        // Validate recipeYield if provided
-        if (
-            recipeYield !== undefined &&
-            recipeYield !== null &&
-            recipeYield !== ''
-        ) {
-            const parsed = parseInt(recipeYield.toString(), 10);
-            if (isNaN(parsed) || parsed <= 0) {
-                return validationError('Yield must be a positive integer');
-            }
-        }
-
-        // Validate categories if provided
-        if (categories !== undefined) {
-            if (!Array.isArray(categories)) {
-                return badRequest('Categories must be an array');
-            }
-
-            if (categories.length > RECIPE_MAX_CATEGORIES) {
-                return validationError(
-                    `Recipe cannot have more than ${RECIPE_MAX_CATEGORIES} categories`
-                );
-            }
-
-            // Validate each category is a non-empty string
-            if (
-                categories.some((cat) => typeof cat !== 'string' || !cat.trim())
-            ) {
-                return badRequest('All categories must be non-empty strings');
-            }
-
-            // Check for existing award-winning category
-            const existingCategories: string[] = recipe.categories || [];
-            const hasAwardWinning = existingCategories.some(
-                (cat: string) => cat.toLowerCase() === 'award-winning'
-            );
-
-            if (
-                categories.some(
-                    (cat: string) => cat.toLowerCase() === 'award-winning'
-                ) &&
-                !hasAwardWinning
-            ) {
-                return forbiddenResponse(
-                    'The Award-winning category cannot be set via API'
-                );
-            }
-
-            // Prevent removal of the Award-winning category
-            if (
-                hasAwardWinning &&
-                !categories.some(
-                    (cat: string) => cat.toLowerCase() === 'award-winning'
-                )
-            ) {
-                return badRequest('Cannot remove the Award-winning category');
-            }
-        }
-
-        if (!title || !description) {
-            return badRequest(
-                'Missing required fields: title and description are required'
-            );
-        }
-
-        if (title && title.length > RECIPE_TITLE_MAX_LENGTH) {
-            return validationError(
-                `Title must be ${RECIPE_TITLE_MAX_LENGTH} characters or less`
-            );
-        }
-
-        if (description && description.length > RECIPE_DESCRIPTION_MAX_LENGTH) {
-            return validationError(
-                `Description must be ${RECIPE_DESCRIPTION_MAX_LENGTH} characters or less`
-            );
-        }
-
-        if (ingredients && ingredients.length > RECIPE_MAX_INGREDIENTS) {
-            return validationError(
-                `Recipe cannot have more than ${RECIPE_MAX_INGREDIENTS} ingredients`
-            );
-        }
-
-        if (steps && steps.length > RECIPE_MAX_STEPS) {
-            return validationError(
-                `Recipe cannot have more than ${RECIPE_MAX_STEPS} steps`
-            );
-        }
-
-        if (ingredients) {
-            for (const ingredient of ingredients) {
-                if (ingredient.length > RECIPE_INGREDIENT_MAX_LENGTH) {
-                    return validationError(
-                        `Each ingredient must be ${RECIPE_INGREDIENT_MAX_LENGTH} characters or less`
-                    );
-                }
-            }
-        }
-
-        if (steps) {
-            for (const step of steps) {
-                if (step.length > RECIPE_STEP_MAX_LENGTH) {
-                    return validationError(
-                        `Each step must be ${RECIPE_STEP_MAX_LENGTH} characters or less`
-                    );
-                }
-            }
-        }
-
-        if (youtubeUrl && youtubeUrl.trim() !== '') {
-            if (!YOUTUBE_URL_REGEX.test(youtubeUrl.trim())) {
-                return validationError('Invalid YouTube URL format');
-            }
-        }
-
         // Handle questId - ensure empty strings become null
         let finalQuestId: string | null = null;
         if (questId !== undefined) {
@@ -447,41 +353,11 @@ export async function PATCH(
 
         const extraImages = [imageSrc1, imageSrc2, imageSrc3].filter(Boolean);
 
-        const imagesToDelete: string[] = [];
-        if (recipe.imageSrc && recipe.imageSrc !== imageSrc) {
-            imagesToDelete.push(recipe.imageSrc);
-        }
-        const oldExtraImages = recipe.extraImages || [];
-        const newExtraImagesSet = new Set(extraImages);
-        for (const oldImage of oldExtraImages) {
-            if (!newExtraImagesSet.has(oldImage)) {
-                imagesToDelete.push(oldImage);
-            }
-        }
-        if (imagesToDelete.length > 0) {
-            try {
-                const { successful, failed } =
-                    await deleteMultipleFromCloudinary(imagesToDelete);
-                if (successful.length > 0) {
-                    console.log(
-                        `Successfully deleted ${successful.length} old images from Cloudinary for recipe ${recipeId}`
-                    );
-                }
-                if (failed.length > 0) {
-                    console.warn(
-                        `Failed to delete ${failed.length} old images from Cloudinary for recipe ${recipeId}:`,
-                        failed
-                    );
-                }
-            } catch (error) {
-                console.error(
-                    'Error deleting old images from Cloudinary:',
-                    error
-                );
-            }
-        }
+        await cleanupOldImages(recipe, imageSrc, extraImages, recipeId);
 
-        const updateData: any = {
+        const updateData: Partial<SafeRecipe> & {
+            extraImages?: string[];
+        } = {
             title,
             description,
             imageSrc,
@@ -522,19 +398,7 @@ export async function PATCH(
 
         logger.info('PATCH /api/recipe/[recipeId] - success', { recipeId });
 
-        // Invalidate per-recipe cache and global recipe cache
-        try {
-            await redisCache.del(`recipe:${recipeId}`);
-            await redisCache.incr('recipes:global:version');
-        } catch (error: any) {
-            logger.error(
-                'PATCH /api/recipe/[recipeId] - cache invalidation error',
-                {
-                    error: error.message,
-                    recipeId,
-                }
-            );
-        }
+        await invalidateRecipeCache(recipeId);
 
         return NextResponse.json(updatedRecipe);
     } catch (error: any) {
