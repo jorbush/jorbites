@@ -16,7 +16,7 @@ import {
     internalServerError,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
-import { validateRecipeData } from '@/app/utils/recipeValidation';
+import { validateRecipeUpdateData } from '@/app/utils/recipeValidation';
 import { SafeRecipe } from '@/app/types';
 
 interface IParams {
@@ -317,7 +317,7 @@ export async function PATCH(
         }
 
         const body = await request.json();
-        const validationErrorResponse = validateRecipeData(body, recipe);
+        const validationErrorResponse = validateRecipeUpdateData(body, recipe);
         if (validationErrorResponse) {
             return validationErrorResponse;
         }

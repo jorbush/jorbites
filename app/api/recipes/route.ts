@@ -12,7 +12,7 @@ import {
     rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
-import { validateRecipeData } from '@/app/utils/recipeValidation';
+import { validateRecipeCreateData } from '@/app/utils/recipeValidation';
 import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 
 export async function POST(request: Request) {
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
 
         logger.info('POST /api/recipes - start', { userId: currentUser.id });
 
-        const validationErrorResponse = validateRecipeData(body);
+        const validationErrorResponse = validateRecipeCreateData(body);
         if (validationErrorResponse) {
             return validationErrorResponse;
         }
