@@ -7,7 +7,6 @@ import updateUserLevel from '@/app/actions/updateUserLevel';
 import { NotificationType } from '@/app/types/notification';
 import {
     unauthorizedResponse,
-    badRequest,
     conflict,
     internalServerError,
     rateLimitExceeded,

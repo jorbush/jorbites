@@ -21,14 +21,16 @@ describe('validateRecipeData', () => {
     });
 
     it('should return 400 when categories is missing for POST', () => {
-        const { categories, ...rest } = validBaseRecipe;
+        const { categories: _categories, ...rest } = validBaseRecipe;
         const result = validateRecipeData(rest);
         expect(result?.status).toBe(400);
     });
 
     it('should return null when categories is missing for PATCH (existingRecipe provided)', () => {
-        const { categories, ...rest } = validBaseRecipe;
-        const result = validateRecipeData(rest, { categories: ['Lunch'] } as any);
+        const { categories: _categories, ...rest } = validBaseRecipe;
+        const result = validateRecipeData(rest, {
+            categories: ['Lunch'],
+        } as any);
         expect(result).toBeNull();
     });
 

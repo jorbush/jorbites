@@ -72,9 +72,7 @@ export function validateRecipeData(
     if (calories !== undefined && calories !== null && calories !== '') {
         const parsed = parseInt(calories.toString(), 10);
         if (isNaN(parsed) || parsed < 0) {
-            return validationError(
-                'Calories must be a non-negative integer'
-            );
+            return validationError('Calories must be a non-negative integer');
         }
     }
 
@@ -103,15 +101,14 @@ export function validateRecipeData(
         }
 
         // Validate each category is a non-empty string
-        if (
-            categories.some((cat) => typeof cat !== 'string' || !cat.trim())
-        ) {
+        if (categories.some((cat) => typeof cat !== 'string' || !cat.trim())) {
             return badRequest('All categories must be non-empty strings');
         }
 
         if (existingRecipe) {
             // PATCH logic: Check for existing award-winning category
-            const existingCategories: string[] = existingRecipe.categories || [];
+            const existingCategories: string[] =
+                existingRecipe.categories || [];
             const hasAwardWinning = existingCategories.some(
                 (cat: string) => cat.toLowerCase() === 'award-winning'
             );
@@ -138,7 +135,11 @@ export function validateRecipeData(
             }
         } else {
             // POST logic: Cannot set Award-winning
-            if (categories.some((cat: string) => cat.toLowerCase() === 'award-winning')) {
+            if (
+                categories.some(
+                    (cat: string) => cat.toLowerCase() === 'award-winning'
+                )
+            ) {
                 return forbiddenResponse(
                     'The Award-winning category cannot be set via API'
                 );
