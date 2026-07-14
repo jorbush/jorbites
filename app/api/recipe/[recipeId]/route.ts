@@ -351,26 +351,39 @@ export async function PATCH(
             finalQuestId = recipe.questId;
         }
 
-        const extraImages = [imageSrc1, imageSrc2, imageSrc3].filter(Boolean);
+        const finalImageSrc =
+            imageSrc !== undefined ? imageSrc : recipe.imageSrc;
+        const hasExtraImageUpdates =
+            imageSrc1 !== undefined ||
+            imageSrc2 !== undefined ||
+            imageSrc3 !== undefined;
+        const finalExtraImages = hasExtraImageUpdates
+            ? [imageSrc1, imageSrc2, imageSrc3].filter(Boolean)
+            : recipe.extraImages || [];
 
-        await cleanupOldImages(recipe, imageSrc, extraImages, recipeId);
+        await cleanupOldImages(
+            recipe,
+            finalImageSrc,
+            finalExtraImages,
+            recipeId
+        );
 
         const updateData: Partial<SafeRecipe> & {
             extraImages?: string[];
         } = {
             title,
             description,
-            imageSrc,
+            imageSrc: imageSrc !== undefined ? imageSrc : undefined,
             method,
             ingredients,
             steps,
             minutes,
-            extraImages,
             coCooksIds: coCooksIds || [],
             linkedRecipeIds: linkedRecipeIds || [],
             youtubeUrl: youtubeUrl?.trim() || null,
             questId: finalQuestId,
             ...(categories !== undefined && { categories }),
+            ...(hasExtraImageUpdates && { extraImages: finalExtraImages }),
         };
 
         if (recipeCuisine !== undefined) {

@@ -150,11 +150,20 @@ export function validateRecipeData(
         return badRequest('Categories must be an array');
     }
 
-    // Required fields check (currently both POST and PATCH require title and description in this implementation)
-    if (!title || !description) {
-        return badRequest(
-            'Missing required fields: title and description are required'
-        );
+    // Required fields check (only required on creation)
+    if (!existingRecipe) {
+        if (!title || !description) {
+            return badRequest(
+                'Missing required fields: title and description are required'
+            );
+        }
+    } else {
+        if (title !== undefined && !title) {
+            return badRequest('Title cannot be empty');
+        }
+        if (description !== undefined && !description) {
+            return badRequest('Description cannot be empty');
+        }
     }
 
     if (title && title.length > RECIPE_TITLE_MAX_LENGTH) {

@@ -37,49 +37,6 @@ jest.mock('next-auth/next', () => ({
     }),
 }));
 
-jest.mock('@/app/lib/prismadb', () => ({
-    __esModule: true,
-    default: {
-        recipe: {
-            findUnique: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn(),
-        },
-        user: {
-            update: jest.fn(),
-            findUnique: jest.fn(),
-        },
-    },
-}));
-
-jest.mock('@/app/actions/getRecipeById', () => ({
-    __esModule: true,
-    default: jest.fn(),
-}));
-
-jest.mock('@/app/actions/getCurrentUser', () => ({
-    __esModule: true,
-    default: jest.fn(() => {
-        if (!mockedSession) return Promise.resolve(null);
-        return Promise.resolve({
-            id: 'test-user-id',
-            name: mockedSession.user?.name,
-            email: mockedSession.user?.email,
-            favoriteIds: [],
-        });
-    }),
-}));
-
-jest.mock('@/app/actions/updateUserLevel', () => ({
-    __esModule: true,
-    default: jest.fn(),
-}));
-
-jest.mock('@/app/actions/sendNotification', () => ({
-    __esModule: true,
-    default: jest.fn(),
-}));
-
 describe('Recipe API Error Handling', () => {
     beforeEach(() => {
         jest.clearAllMocks();

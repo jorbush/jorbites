@@ -54,104 +54,6 @@ jest.mock('next-auth/next', () => ({
     }),
 }));
 
-jest.mock('@/app/actions/getCurrentUser', () => ({
-    __esModule: true,
-    default: jest.fn(() => {
-        if (!mockedSession) return Promise.resolve(null);
-        return Promise.resolve({
-            id: 'test-user-id',
-            name: mockedSession.user?.name,
-            email: mockedSession.user?.email,
-            favoriteIds: [],
-            level: 1,
-        });
-    }),
-}));
-
-jest.mock('@/app/lib/prismadb', () => ({
-    __esModule: true,
-    default: {
-        recipe: {
-            findFirst: jest.fn().mockResolvedValue(null),
-            create: jest.fn().mockImplementation((args) =>
-                Promise.resolve({
-                    id: 'test-recipe-id',
-                    ...args.data,
-                    createdAt: new Date(),
-                })
-            ),
-            findUnique: jest.fn().mockResolvedValue(null),
-            update: jest.fn().mockImplementation((args) =>
-                Promise.resolve({
-                    id: args.where.id,
-                    ...args.data,
-                })
-            ),
-            delete: jest.fn().mockImplementation((args) =>
-                Promise.resolve({
-                    id: args.where.id,
-                })
-            ),
-        },
-        quest: {
-            findUnique: jest.fn().mockResolvedValue(null),
-        },
-        user: {
-            findUnique: jest.fn().mockResolvedValue({
-                id: 'test-user-id',
-                email: 'test@a.com',
-                favoriteIds: [],
-            }),
-            update: jest.fn().mockImplementation((args) =>
-                Promise.resolve({
-                    id: args.where.id,
-                    ...args.data,
-                })
-            ),
-        },
-    },
-}));
-
-jest.mock('@/app/actions/getRecipes', () => ({
-    __esModule: true,
-    default: jest.fn().mockResolvedValue({ data: { recipes: [] } }),
-}));
-
-jest.mock('@/app/actions/getRecipeById', () => ({
-    __esModule: true,
-    default: jest.fn(),
-}));
-
-jest.mock('@/app/actions/getRecipesByUserId', () => ({
-    __esModule: true,
-    default: jest.fn().mockResolvedValue({ recipes: [] }),
-}));
-
-jest.mock('@/app/actions/getFavoriteRecipes', () => ({
-    __esModule: true,
-    default: jest.fn().mockResolvedValue({ recipes: [] }),
-}));
-
-jest.mock('@/app/actions/getCommentsByRecipeId', () => ({
-    __esModule: true,
-    default: jest.fn().mockResolvedValue([]),
-}));
-
-jest.mock('@/app/actions/getCommentById', () => ({
-    __esModule: true,
-    default: jest.fn(),
-}));
-
-jest.mock('@/app/actions/sendNotification', () => ({
-    __esModule: true,
-    default: jest.fn(),
-}));
-
-jest.mock('@/app/actions/updateUserLevel', () => ({
-    __esModule: true,
-    default: jest.fn(),
-}));
-
 describe('Recipes API Routes and Server Actions', () => {
     let initialRecipes: {
         createdAt: string;
@@ -438,13 +340,6 @@ describe('Recipes API Routes and Server Actions', () => {
 describe('Recipes API Error Handling', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        mockedSession = {
-            expires: 'expires',
-            user: {
-                name: 'test',
-                email: 'test@a.com',
-            },
-        };
     });
 
     it('should return 400 when title exceeds max length', async () => {
