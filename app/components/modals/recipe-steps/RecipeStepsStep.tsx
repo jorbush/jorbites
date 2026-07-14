@@ -100,7 +100,7 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
 
     return (
         <div className="flex flex-col gap-8">
-            <div className="flex items-center justify-between pl-2 gap-6">
+            <div className="flex items-center justify-between gap-6 pl-2">
                 <div className="flex items-center gap-2">
                     <Heading title={t('title_steps')} />
                     <OcrTextScanner onResult={handleOcrResult} />

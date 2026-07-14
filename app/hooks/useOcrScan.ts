@@ -1,7 +1,6 @@
 'use client';
 
 import { useRef, useState, useCallback } from 'react';
-import { createWorker, Worker } from 'tesseract.js';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
@@ -30,27 +29,23 @@ export default function useOcrScan({ onResult }: UseOcrScanOptions) {
             setIsScanning(true);
             setScanProgress(0);
 
-            let worker: Worker | null = null;
-
             try {
-                worker = await createWorker('eng+spa+cat', undefined, {
-                    logger: (m) => {
-                        if (m.status === 'recognizing text') {
-                            setScanProgress(
-                                Math.round((m.progress || 0) * 100)
-                            );
-                        }
-                    },
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch('/api/ocr', {
+                    method: 'POST',
+                    body: formData,
                 });
 
-                const {
-                    data: { text },
-                } = await worker.recognize(file);
+                if (!response.ok) {
+                    throw new Error('OCR proxy request failed');
+                }
 
-                const trimmedText = text?.trim() || '';
+                const data = await response.json();
 
-                if (trimmedText) {
-                    onResult(trimmedText);
+                if (data.success && data.text && data.text.trim()) {
+                    onResult(data.text.trim());
                     toast.success(
                         t('scan_complete') || 'Text detected and added'
                     );
@@ -66,9 +61,6 @@ export default function useOcrScan({ onResult }: UseOcrScanOptions) {
                         'Could not detect text. Try with clearer handwriting.'
                 );
             } finally {
-                if (worker) {
-                    await worker.terminate();
-                }
                 setIsScanning(false);
                 setScanProgress(0);
             }

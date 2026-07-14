@@ -10,8 +10,13 @@ interface OcrTextScannerProps {
 
 const OcrTextScanner: React.FC<OcrTextScannerProps> = ({ onResult }) => {
     const { t } = useTranslation();
-    const { isScanning, scanProgress, triggerScan, fileInputRef, handleFileChange } =
-        useOcrScan({ onResult });
+    const {
+        isScanning,
+        scanProgress,
+        triggerScan,
+        fileInputRef,
+        handleFileChange,
+    } = useOcrScan({ onResult });
 
     return (
         <div className="flex items-center">

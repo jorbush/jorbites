@@ -17,33 +17,23 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 
-// Mock tesseract.js
-const mockRecognize = vi.fn();
-const mockTerminate = vi.fn();
-const mockCreateWorker = vi.fn();
-
-vi.mock('tesseract.js', () => ({
-    createWorker: (...args: any[]) => mockCreateWorker(...args),
-}));
-
 import useOcrScan from '@/app/hooks/useOcrScan';
 
 describe('useOcrScan', () => {
     const mockOnResult = vi.fn();
+    const globalFetch = global.fetch;
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockTerminate.mockResolvedValue(undefined);
-        mockRecognize.mockResolvedValue({
-            data: { text: 'Detected OCR text' },
-        });
-        mockCreateWorker.mockResolvedValue({
-            recognize: mockRecognize,
-            terminate: mockTerminate,
-        });
+        // Setup default mock fetch
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: true,
+            json: async () => ({ success: true, text: 'Detected OCR text' }),
+        } as Response);
     });
 
     afterEach(() => {
+        global.fetch = globalFetch;
         vi.restoreAllMocks();
     });
 
@@ -65,7 +55,6 @@ describe('useOcrScan', () => {
         );
 
         const mockClick = vi.fn();
-        // Simulate a ref with a click method
         Object.defineProperty(result.current.fileInputRef, 'current', {
             value: { click: mockClick },
             writable: true,
@@ -91,11 +80,11 @@ describe('useOcrScan', () => {
             await result.current.handleFileChange(event);
         });
 
-        expect(mockCreateWorker).not.toHaveBeenCalled();
+        expect(global.fetch).not.toHaveBeenCalled();
         expect(mockOnResult).not.toHaveBeenCalled();
     });
 
-    it('performs OCR scan and calls onResult with recognized text', async () => {
+    it('performs OCR scan by calling Next.js API proxy and calls onResult with text', async () => {
         const { result } = renderHook(() =>
             useOcrScan({ onResult: mockOnResult })
         );
@@ -111,21 +100,24 @@ describe('useOcrScan', () => {
             await result.current.handleFileChange(event);
         });
 
-        expect(mockCreateWorker).toHaveBeenCalledWith(
-            'eng+spa+cat',
-            undefined,
-            expect.objectContaining({ logger: expect.any(Function) })
+        expect(global.fetch).toHaveBeenCalledTimes(1);
+        expect(global.fetch).toHaveBeenCalledWith(
+            '/api/ocr',
+            expect.objectContaining({
+                method: 'POST',
+                body: expect.any(FormData),
+            })
         );
-        expect(mockRecognize).toHaveBeenCalledWith(mockFile);
         expect(mockOnResult).toHaveBeenCalledWith('Detected OCR text');
         expect(toast.success).toHaveBeenCalledWith('scan_complete');
         expect(result.current.isScanning).toBe(false);
     });
 
     it('shows error toast when no text is detected', async () => {
-        mockRecognize.mockResolvedValue({
-            data: { text: '   ' },
-        });
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: true,
+            json: async () => ({ success: true, text: '   ' }),
+        } as Response);
 
         const { result } = renderHook(() =>
             useOcrScan({ onResult: mockOnResult })
@@ -146,8 +138,11 @@ describe('useOcrScan', () => {
         expect(toast.error).toHaveBeenCalledWith('scan_no_text');
     });
 
-    it('shows error toast when OCR fails', async () => {
-        mockCreateWorker.mockRejectedValue(new Error('Worker init failed'));
+    it('shows error toast when OCR proxy request fails (status not ok)', async () => {
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: false,
+            status: 500,
+        } as Response);
 
         const { result } = renderHook(() =>
             useOcrScan({ onResult: mockOnResult })
@@ -169,33 +164,8 @@ describe('useOcrScan', () => {
         expect(result.current.isScanning).toBe(false);
     });
 
-    it('terminates the worker after successful scan', async () => {
-        const { result } = renderHook(() =>
-            useOcrScan({ onResult: mockOnResult })
-        );
-
-        const mockFile = new File(['test'], 'photo.jpg', {
-            type: 'image/jpeg',
-        });
-        const event = {
-            target: { files: [mockFile], value: 'photo.jpg' },
-        } as unknown as React.ChangeEvent<HTMLInputElement>;
-
-        await act(async () => {
-            await result.current.handleFileChange(event);
-        });
-
-        expect(mockTerminate).toHaveBeenCalledTimes(1);
-    });
-
-    it('terminates the worker even on recognition error', async () => {
-        const workerWithFailingRecognize = {
-            recognize: vi
-                .fn()
-                .mockRejectedValue(new Error('Recognition failed')),
-            terminate: mockTerminate,
-        };
-        mockCreateWorker.mockResolvedValue(workerWithFailingRecognize);
+    it('shows error toast when fetch throws network error', async () => {
+        global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
         const { result } = renderHook(() =>
             useOcrScan({ onResult: mockOnResult })
@@ -212,7 +182,7 @@ describe('useOcrScan', () => {
             await result.current.handleFileChange(event);
         });
 
-        expect(mockTerminate).toHaveBeenCalledTimes(1);
+        expect(mockOnResult).not.toHaveBeenCalled();
         expect(toast.error).toHaveBeenCalledWith('scan_failed');
     });
 

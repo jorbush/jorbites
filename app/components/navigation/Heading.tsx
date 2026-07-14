@@ -26,7 +26,9 @@ const Heading: React.FC<HeadingProps> = ({
                 {title}
             </div>
             {subtitle && (
-                <div className="mt-2 font-light text-neutral-500">{subtitle}</div>
+                <div className="mt-2 font-light text-neutral-500">
+                    {subtitle}
+                </div>
             )}
         </div>
     );

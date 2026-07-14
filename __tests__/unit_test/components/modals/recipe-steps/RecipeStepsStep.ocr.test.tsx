@@ -75,7 +75,10 @@ vi.mock('@/app/components/inputs/ToggleSwitch', () => ({
 // Mock Button component
 vi.mock('@/app/components/buttons/Button', () => ({
     default: ({ label, onClick, dataCy }: any) => (
-        <button data-testid={dataCy} onClick={onClick}>
+        <button
+            data-testid={dataCy}
+            onClick={onClick}
+        >
             {label}
         </button>
     ),
@@ -104,7 +107,10 @@ vi.mock('react-icons/ai', () => ({
 // Mock FaCamera icon
 vi.mock('react-icons/fa', () => ({
     FaCamera: ({ className }: any) => (
-        <svg data-testid="fa-camera-icon" className={className} />
+        <svg
+            data-testid="fa-camera-icon"
+            className={className}
+        />
     ),
 }));
 
@@ -257,7 +263,10 @@ describe('<RecipeStepsStep /> OCR integration', () => {
             capturedOnResult('Scanned steps text');
         });
 
-        expect(mockSetValue).toHaveBeenCalledWith('steps-plain-text', 'Scanned steps text');
+        expect(mockSetValue).toHaveBeenCalledWith(
+            'steps-plain-text',
+            'Scanned steps text'
+        );
         expect(mockSetInputMode).toHaveBeenCalledWith('text');
     });
 });
