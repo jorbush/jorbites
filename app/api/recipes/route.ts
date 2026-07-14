@@ -6,26 +6,13 @@ import sendNotification from '@/app/actions/sendNotification';
 import updateUserLevel from '@/app/actions/updateUserLevel';
 import { NotificationType } from '@/app/types/notification';
 import {
-    RECIPE_TITLE_MAX_LENGTH,
-    RECIPE_DESCRIPTION_MAX_LENGTH,
-    RECIPE_INGREDIENT_MAX_LENGTH,
-    RECIPE_STEP_MAX_LENGTH,
-    RECIPE_MAX_INGREDIENTS,
-    RECIPE_MAX_STEPS,
-    RECIPE_MAX_CATEGORIES,
-    RECIPE_CUISINES,
-} from '@/app/utils/constants';
-import {
     unauthorizedResponse,
-    validationError,
-    badRequest,
-    forbiddenResponse,
     conflict,
     internalServerError,
     rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
-import { YOUTUBE_URL_REGEX } from '@/app/utils/validation';
+import { validateRecipeCreateData } from '@/app/utils/recipeValidation';
 import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 
 export async function POST(request: Request) {
@@ -61,6 +48,12 @@ export async function POST(request: Request) {
         const body = await request.json();
 
         logger.info('POST /api/recipes - start', { userId: currentUser.id });
+
+        const validationErrorResponse = validateRecipeCreateData(body);
+        if (validationErrorResponse) {
+            return validationErrorResponse;
+        }
+
         const {
             title,
             description,
@@ -82,115 +75,6 @@ export async function POST(request: Request) {
             recipeYield,
         } = body;
 
-        // Validate recipeCuisine if provided
-        if (
-            recipeCuisine !== undefined &&
-            recipeCuisine !== null &&
-            recipeCuisine !== ''
-        ) {
-            if (typeof recipeCuisine !== 'string') {
-                return badRequest('recipeCuisine must be a string');
-            }
-            const isValid = RECIPE_CUISINES.includes(recipeCuisine as any);
-            if (!isValid) {
-                return validationError(
-                    `Invalid recipeCuisine. Must be one of: ${RECIPE_CUISINES.join(', ')}`
-                );
-            }
-        }
-
-        // Validate calories if provided
-        if (calories !== undefined && calories !== null && calories !== '') {
-            const parsed = parseInt(calories.toString(), 10);
-            if (isNaN(parsed) || parsed < 0) {
-                return validationError(
-                    'Calories must be a non-negative integer'
-                );
-            }
-        }
-
-        // Validate recipeYield if provided
-        if (
-            recipeYield !== undefined &&
-            recipeYield !== null &&
-            recipeYield !== ''
-        ) {
-            const parsed = parseInt(recipeYield.toString(), 10);
-            if (isNaN(parsed) || parsed <= 0) {
-                return validationError('Yield must be a positive integer');
-            }
-        }
-
-        if (!Array.isArray(categories)) {
-            return badRequest('Categories must be an array');
-        }
-
-        if (categories.length > RECIPE_MAX_CATEGORIES) {
-            return validationError(
-                `Recipe cannot have more than ${RECIPE_MAX_CATEGORIES} categories`
-            );
-        }
-
-        if (categories.some((cat) => typeof cat !== 'string' || !cat.trim())) {
-            return badRequest('All categories must be non-empty strings');
-        }
-
-        if (categories.some((cat) => cat.toLowerCase() === 'award-winning')) {
-            return forbiddenResponse(
-                'The Award-winning category cannot be set via API'
-            );
-        }
-
-        if (!title || !description) {
-            return badRequest(
-                'Missing required fields: title and description are required'
-            );
-        }
-
-        if (title && title.length > RECIPE_TITLE_MAX_LENGTH) {
-            return validationError(
-                `Title must be ${RECIPE_TITLE_MAX_LENGTH} characters or less`
-            );
-        }
-
-        if (description && description.length > RECIPE_DESCRIPTION_MAX_LENGTH) {
-            return validationError(
-                `Description must be ${RECIPE_DESCRIPTION_MAX_LENGTH} characters or less`
-            );
-        }
-
-        if (ingredients && ingredients.length > RECIPE_MAX_INGREDIENTS) {
-            return validationError(
-                `Recipe cannot have more than ${RECIPE_MAX_INGREDIENTS} ingredients`
-            );
-        }
-
-        if (steps && steps.length > RECIPE_MAX_STEPS) {
-            return validationError(
-                `Recipe cannot have more than ${RECIPE_MAX_STEPS} steps`
-            );
-        }
-
-        if (ingredients) {
-            for (const ingredient of ingredients) {
-                if (ingredient.length > RECIPE_INGREDIENT_MAX_LENGTH) {
-                    return validationError(
-                        `Each ingredient must be ${RECIPE_INGREDIENT_MAX_LENGTH} characters or less`
-                    );
-                }
-            }
-        }
-
-        if (steps) {
-            for (const step of steps) {
-                if (step.length > RECIPE_STEP_MAX_LENGTH) {
-                    return validationError(
-                        `Each step must be ${RECIPE_STEP_MAX_LENGTH} characters or less`
-                    );
-                }
-            }
-        }
-
         const recipeExist = await prisma.recipe.findFirst({
             where: {
                 imageSrc: imageSrc as string,
@@ -199,12 +83,6 @@ export async function POST(request: Request) {
 
         if (recipeExist !== null) {
             return conflict('A recipe with this image already exists');
-        }
-
-        if (youtubeUrl && youtubeUrl.trim() !== '') {
-            if (!YOUTUBE_URL_REGEX.test(youtubeUrl.trim())) {
-                return validationError('Invalid YouTube URL format');
-            }
         }
 
         const extraImages: string[] = [];
