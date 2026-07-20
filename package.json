@@ -28,7 +28,7 @@
     "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.38.0",
     "@vercel/speed-insights": "^1.2.0",
-    "axios": "^1.17.0",
+    "axios": "^1.18.0",
     "bcrypt": "^6.0.0",
     "canvas-confetti": "^1.9.3",
     "cloudinary": "^2.7.0",
