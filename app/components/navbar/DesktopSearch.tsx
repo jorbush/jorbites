@@ -4,7 +4,6 @@ import React, { Suspense } from 'react';
 import { BiSearch, BiX } from 'react-icons/bi';
 import { FiChevronLeft, FiFilter } from 'react-icons/fi';
 import Logo from '@/app/components/navbar/Logo';
-import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
 import AdvancedFilters from '@/app/components/navbar/AdvancedFilters';
 
 interface SearchFiltersState {
@@ -61,46 +60,16 @@ export const DesktopSearch: React.FC<DesktopSearchProps> = ({
             {isSearchMode ? (
                 <form
                     onSubmit={onSubmit}
-                    className="animate-search-fade-in flex items-center gap-3"
+                    className="animate-search-fade-in flex items-center gap-2 md:gap-3"
                 >
                     <button
                         type="button"
                         onClick={onSearchToggle}
-                        className="flex min-h-[40px] min-w-[40px] flex-shrink-0 cursor-pointer items-center justify-center rounded-full p-2 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                        className="flex min-h-[40px] min-w-[40px] shrink-0 cursor-pointer items-center justify-center rounded-full p-2 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
                         aria-label={t('back') || 'Back'}
                     >
                         <FiChevronLeft size={20} />
                     </button>
-
-                    <div className="relative">
-                        <input
-                            ref={inputRef}
-                            type="text"
-                            placeholder={t('search_recipes') + '...'}
-                            aria-label={t('search_recipes') || 'Search recipes'}
-                            value={searchQuery}
-                            onChange={(e) => onChange(e.target.value)}
-                            onKeyDown={onKeyDown}
-                            className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 min-h-[40px] w-48 rounded-full border border-neutral-300 bg-white py-2 pr-10 pl-4 text-sm transition-all outline-none focus:ring-2 md:w-64 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
-                        />
-                        {searchQuery && (
-                            <button
-                                type="button"
-                                onClick={() => onChange('')}
-                                className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
-                            >
-                                <BiX size={16} />
-                            </button>
-                        )}
-                    </div>
-
-                    <Suspense fallback={null}>
-                        <OrderByDropdown />
-                    </Suspense>
-
-                    <Suspense fallback={null}>
-                        <AdvancedFilters />
-                    </Suspense>
 
                     <button
                         type="button"
@@ -120,6 +89,42 @@ export const DesktopSearch: React.FC<DesktopSearchProps> = ({
                         {isFiltering && (
                             <span className="absolute -top-1 -right-1 size-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
                         )}
+                    </button>
+
+                    <div className="relative">
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            placeholder={t('search_recipes') + '...'}
+                            aria-label={t('search_recipes') || 'Search recipes'}
+                            value={searchQuery}
+                            onChange={(e) => onChange(e.target.value)}
+                            onKeyDown={onKeyDown}
+                            className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 min-h-[40px] w-48 rounded-full border border-neutral-300 bg-white py-2 pr-10 pl-4 text-sm transition-colors outline-none focus:ring-2 md:w-64 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+                        />
+                        {searchQuery && (
+                            <button
+                                type="button"
+                                onClick={() => onChange('')}
+                                className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+                                aria-label={t('clear') || 'Clear search'}
+                            >
+                                <BiX size={16} />
+                            </button>
+                        )}
+                    </div>
+
+                    <Suspense fallback={null}>
+                        <AdvancedFilters />
+                    </Suspense>
+
+                    <button
+                        type="submit"
+                        className="bg-green-450 dark:text-dark relative flex min-h-[40px] min-w-[40px] cursor-pointer items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
+                        aria-label={t('search') || 'Search'}
+                        data-testid="search-submit-button"
+                    >
+                        <BiSearch size={18} />
                     </button>
                 </form>
             ) : (

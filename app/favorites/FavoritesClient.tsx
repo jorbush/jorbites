@@ -4,6 +4,7 @@ import { SafeRecipe, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import Pagination from '@/app/components/navigation/Pagination';
+import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
 import { FcLike } from 'react-icons/fc';
 import SectionHeader from '@/app/components/utils/SectionHeader';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +35,9 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                     title={t('favorites')}
                     className="mb-4"
                 />
+            </div>
+            <div className="mb-4 flex justify-end">
+                <OrderByDropdown />
             </div>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                 {recipes.map((recipe: any) => (

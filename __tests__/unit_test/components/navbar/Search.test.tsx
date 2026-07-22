@@ -87,11 +87,6 @@ vi.mock('react-i18next', () => ({
     }),
 }));
 
-// Mock debounce
-vi.mock('lodash/debounce', () => ({
-    default: (fn: any) => fn,
-}));
-
 const mockPush = vi.fn();
 const mockReplace = vi.fn();
 const mockSearchParams = new URLSearchParams();
@@ -155,6 +150,8 @@ describe('<Search />', () => {
             expect(
                 screen.getByPlaceholderText('search_recipes...')
             ).toBeDefined();
+            expect(screen.getByTestId('filter-button')).toBeDefined();
+            expect(screen.getByTestId('search-submit-button')).toBeDefined();
         });
 
         it('shows clear button when search input has value', () => {
@@ -167,7 +164,7 @@ describe('<Search />', () => {
     });
 
     describe('Search functionality', () => {
-        it('updates URL when typing in search input', async () => {
+        it('updates URL when submitting search form', async () => {
             mockSearchParams.set('search', 'test');
 
             render(<Search onSearchModeChange={mockOnSearchModeChange} />);
@@ -176,8 +173,11 @@ describe('<Search />', () => {
                 screen.getByPlaceholderText('search_recipes...');
             fireEvent.change(searchInput, { target: { value: 'new search' } });
 
+            const submitButton = screen.getByTestId('search-submit-button');
+            fireEvent.click(submitButton);
+
             await waitFor(() => {
-                expect(mockReplace).toHaveBeenCalled();
+                expect(mockReplace).toHaveBeenCalledWith('/?search=new+search');
             });
         });
 
@@ -190,6 +190,9 @@ describe('<Search />', () => {
             const searchInput =
                 screen.getByPlaceholderText('search_recipes...');
             fireEvent.change(searchInput, { target: { value: 'new search' } });
+
+            const submitButton = screen.getByTestId('search-submit-button');
+            fireEvent.click(submitButton);
 
             await waitFor(() => {
                 const lastCall =
@@ -209,7 +212,6 @@ describe('<Search />', () => {
             fireEvent.click(backButton!);
 
             expect(mockPush).toHaveBeenCalled();
-            // Note: onSearchModeChange is called with true initially when search params are set
             expect(mockOnSearchModeChange).toHaveBeenCalled();
         });
 
@@ -222,7 +224,6 @@ describe('<Search />', () => {
                 screen.getByPlaceholderText('search_recipes...');
             fireEvent.keyDown(searchInput, { key: 'Escape' });
 
-            // Note: onSearchModeChange is called when component renders due to search params
             expect(mockOnSearchModeChange).toHaveBeenCalled();
         });
 
@@ -260,7 +261,6 @@ describe('<Search />', () => {
                 screen.getByPlaceholderText('search_recipes...');
             fireEvent.change(searchInput, { target: { value: '' } });
 
-            // Search mode should still be active
             expect(screen.getByTestId('chevron-left-icon')).toBeDefined();
         });
     });
@@ -383,9 +383,8 @@ describe('<Search />', () => {
 
             render(<Search onSearchModeChange={mockOnSearchModeChange} />);
 
-            // In search mode, the search icon is not visible (back button is shown instead)
-            expect(screen.queryByTestId('search-icon')).toBeNull();
             expect(screen.getByTestId('chevron-left-icon')).toBeDefined();
+            expect(screen.getByTestId('search-submit-button')).toBeDefined();
         });
     });
 
