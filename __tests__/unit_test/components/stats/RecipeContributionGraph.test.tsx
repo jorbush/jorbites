@@ -127,15 +127,14 @@ describe('<RecipeContributionGraph />', () => {
         );
 
         // Should have 53 weeks (371 days / 7)
-        // Look for week columns - they have flex flex-col classes
-        // Use a more flexible selector that matches the structure
+        // Week columns have flex + flex-col classes; gap is set via inline style
         const allDivs = container.querySelectorAll('div');
         const weekColumns = Array.from(allDivs).filter((div) => {
             const classes = div.className || '';
             return (
                 classes.includes('flex') &&
                 classes.includes('flex-col') &&
-                classes.includes('gap')
+                div.children.length === 7 // each week column has exactly 7 day cells
             );
         });
         // Each week column contains 7 days, so we expect 53 week columns
@@ -149,8 +148,8 @@ describe('<RecipeContributionGraph />', () => {
 
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
-        // Find a day cell that should have a recipe
-        const dayCells = screen.getAllByTitle(/recipe/i);
+        // Find a day cell that should have a recipe — cells now use aria-label
+        const dayCells = screen.getAllByLabelText(/recipe/i);
         if (dayCells.length > 0) {
             const dayCell = dayCells[0];
             fireEvent.mouseEnter(dayCell);
@@ -209,15 +208,28 @@ describe('<RecipeContributionGraph />', () => {
             <RecipeContributionGraph recipes={[recipe]} />
         );
 
-        // Month labels should be present - they're in the month labels row
-        const monthLabelsRow = container.querySelector(
-            '.mb-2.flex.min-w-\\[600px\\]'
-        );
-        const monthLabels =
-            monthLabelsRow?.querySelectorAll(
-                '.text-xs.text-neutral-500, .text-\\[10px\\].text-neutral-500'
-            ) || [];
-        expect(monthLabels.length).toBeGreaterThan(0);
+        // Month labels are rendered as <span> with month abbreviations
+        const monthNames = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec',
+        ];
+        const hasMonthLabel = monthNames.some((month) => {
+            const elements = Array.from(
+                container.querySelectorAll('span')
+            ).filter((el) => el.textContent?.trim() === month);
+            return elements.length > 0;
+        });
+        expect(hasMonthLabel).toBe(true);
     });
 
     it('displays day of week labels', () => {
@@ -246,7 +258,8 @@ describe('<RecipeContributionGraph />', () => {
 
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
-        const dayCells = screen.getAllByTitle(/recipe/i);
+        // Cells now use aria-label instead of title
+        const dayCells = screen.getAllByLabelText(/recipe/i);
         if (dayCells.length > 0) {
             const dayCell = dayCells[0];
             fireEvent.mouseEnter(dayCell);
