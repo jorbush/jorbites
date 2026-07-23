@@ -3,6 +3,7 @@
 import { Suspense } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import useIsMounted from '@/app/hooks/useIsMounted';
 import {
     OrderByType,
     ORDER_BY_OPTIONS,
@@ -13,6 +14,7 @@ import Dropdown from '@/app/components/utils/Dropdown';
 
 const OrderByDropdownComponent: React.FC = () => {
     const { t } = useTranslation();
+    const mounted = useIsMounted();
     const { replace } = useRouter() || {};
     const searchParams = useSearchParams();
     const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
@@ -43,6 +45,7 @@ const OrderByDropdownComponent: React.FC = () => {
 
     const getOrderLabel = (orderBy: OrderByType) => {
         const translationKey = ORDER_BY_LABELS[orderBy];
+        if (!mounted) return translationKey;
         const fallbackLabel = ORDER_BY_FALLBACK_LABELS[orderBy];
         return t(translationKey) || fallbackLabel;
     };
@@ -64,7 +67,7 @@ const OrderByDropdownComponent: React.FC = () => {
             value={currentOrderBy}
             onChange={handleOrderChange}
             buttonContent={buttonContent}
-            ariaLabel={t('order_by') || 'Order by'}
+            ariaLabel={mounted ? t('order_by') || 'Order by' : 'order_by'}
             showNotification={currentOrderBy !== OrderByType.NEWEST}
             chevronClassName=""
         />
