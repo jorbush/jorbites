@@ -2,7 +2,6 @@
 
 import { Suspense } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { IoReorderThree } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 import {
     OrderByType,
@@ -54,29 +53,9 @@ const OrderByDropdownComponent: React.FC = () => {
     }));
 
     const buttonContent = (
-        <>
-            {/* Mobile: Show reorder icon only on main page, show text on profile */}
-            <div
-                className={`flex items-center gap-1 ${isProfilePage ? '' : 'lg:hidden'}`}
-            >
-                {isProfilePage ? (
-                    <span className="text-sm">
-                        {getOrderLabel(currentOrderBy)}
-                    </span>
-                ) : (
-                    <IoReorderThree size={18} />
-                )}
-            </div>
-
-            {/* Desktop: Show text on main page */}
-            {!isProfilePage && (
-                <div className="hidden items-center gap-1 lg:flex">
-                    <span className="text-sm">
-                        {getOrderLabel(currentOrderBy)}
-                    </span>
-                </div>
-            )}
-        </>
+        <div className="flex items-center gap-1">
+            <span className="text-sm">{getOrderLabel(currentOrderBy)}</span>
+        </div>
     );
 
     return (
@@ -87,7 +66,7 @@ const OrderByDropdownComponent: React.FC = () => {
             buttonContent={buttonContent}
             ariaLabel={t('order_by') || 'Order by'}
             showNotification={currentOrderBy !== OrderByType.NEWEST}
-            chevronClassName={isProfilePage ? '' : 'hidden lg:inline'}
+            chevronClassName=""
         />
     );
 };

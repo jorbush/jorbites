@@ -16,6 +16,10 @@ vi.mock('@/app/components/recipes/RecipeCard', () => ({
     ),
 }));
 
+vi.mock('@/app/components/navbar/OrderByDropdown', () => ({
+    default: () => <div data-testid="order-by-dropdown">OrderByDropdown</div>,
+}));
+
 vi.mock('@/app/components/utils/EmptyState', () => ({
     default: () => <div data-testid="empty-state">Empty State</div>,
 }));

@@ -2,6 +2,7 @@ import Container from '@/app/components/utils/Container';
 import RecipeCard from '@/app/components/recipes/RecipeCard';
 import EmptyState from '@/app/components/utils/EmptyState';
 import Pagination from '@/app/components/navigation/Pagination';
+import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
 import { isMobile } from '@/app/utils/deviceDetector';
 import getRecipes, { IRecipesParams } from '@/app/actions/getRecipes';
 import getCurrentUser from '@/app/actions/getCurrentUser';
@@ -69,6 +70,9 @@ const Home = async ({ searchParams }: HomeProps) => {
                     </div>
                 ) : (
                     <>
+                        <div className="-mt-3 mb-3 flex justify-end sm:-mt-5">
+                            <OrderByDropdown />
+                        </div>
                         <section
                             aria-label="Recipes grid"
                             className="min-h-[60vh]"

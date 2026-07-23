@@ -106,7 +106,7 @@ describe('<OrderByDropdown />', () => {
             expect(screen.getByTestId('chevron-down-icon')).toBeDefined();
         });
 
-        it('renders reorder icon on mobile (screen width < 1024px)', () => {
+        it('renders dropdown button with label and chevron on mobile (screen width < 1024px)', () => {
             // Mock smaller screen size
             Object.defineProperty(window, 'innerWidth', {
                 value: 768,
@@ -114,7 +114,8 @@ describe('<OrderByDropdown />', () => {
 
             render(<OrderByDropdown />);
 
-            expect(screen.getByTestId('reorder-icon')).toBeDefined();
+            expect(screen.getByText('Newest first')).toBeDefined();
+            expect(screen.getByTestId('chevron-down-icon')).toBeDefined();
         });
 
         it('shows notification circle when non-default order is selected', () => {

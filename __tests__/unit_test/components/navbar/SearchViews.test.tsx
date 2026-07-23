@@ -8,10 +8,6 @@ vi.mock('@/app/components/navbar/Logo', () => ({
     default: () => <div data-testid="logo">Logo</div>,
 }));
 
-vi.mock('@/app/components/navbar/OrderByDropdown', () => ({
-    default: () => <div data-testid="order-by-dropdown">OrderBy</div>,
-}));
-
 vi.mock('@/app/components/navbar/AdvancedFilters', () => ({
     default: () => <div data-testid="advanced-filters">AdvancedFilters</div>,
 }));
@@ -82,8 +78,9 @@ describe('Search View Components', () => {
             expect(
                 screen.getByPlaceholderText('search_recipes...')
             ).toBeDefined();
-            expect(screen.getByTestId('order-by-dropdown')).toBeDefined();
+            expect(screen.getByTestId('filter-button')).toBeDefined();
             expect(screen.getByTestId('advanced-filters')).toBeDefined();
+            expect(screen.getByTestId('search-submit-button')).toBeDefined();
         });
     });
 
@@ -144,8 +141,9 @@ describe('Search View Components', () => {
             expect(
                 screen.getByPlaceholderText('search_recipes...')
             ).toBeDefined();
-            expect(screen.getByTestId('order-by-dropdown')).toBeDefined();
+            expect(screen.getByTestId('filter-button')).toBeDefined();
             expect(screen.getByTestId('advanced-filters')).toBeDefined();
+            expect(screen.getByTestId('search-submit-button')).toBeDefined();
         });
     });
 });
