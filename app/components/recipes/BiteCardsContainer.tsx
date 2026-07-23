@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -19,6 +19,7 @@ interface BiteCardsContainerProps {
 }
 
 const SESSION_STORAGE_KEY = 'bite_cards_progress_v2';
+const EMPTY_RECIPES: SafeRecipe[] = [];
 
 const saveProgressToStorage = (
     recipes: SafeRecipe[],
@@ -41,13 +42,34 @@ const saveProgressToStorage = (
     }
 };
 
+const getInitialSwipedIds = (): string[] => {
+    if (typeof window !== 'undefined') {
+        try {
+            const saved = sessionStorage.getItem(SESSION_STORAGE_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed?.swipedIds)) {
+                    return parsed.swipedIds;
+                }
+            }
+        } catch {}
+    }
+    return [];
+};
+
 export default function BiteCardsContainer({
-    initialRecipes = [],
+    initialRecipes = EMPTY_RECIPES,
     currentUser,
 }: BiteCardsContainerProps) {
     const router = useRouter();
     const loginModal = useLoginModal();
     const { t } = useTranslation();
+
+    // Swiped IDs track session history without triggering unneeded re-renders
+    const swipedIdsRef = useRef<string[] | null>(null);
+    if (swipedIdsRef.current === null) {
+        swipedIdsRef.current = getInitialSwipedIds();
+    }
 
     // Lazy state initializers so sessionStorage state is restored BEFORE first render
     const [recipes, setRecipes] = useState<SafeRecipe[]>(() => {
@@ -84,21 +106,6 @@ export default function BiteCardsContainer({
         return 0;
     });
 
-    const [swipedIds, setSwipedIds] = useState<string[]>(() => {
-        if (typeof window !== 'undefined') {
-            try {
-                const saved = sessionStorage.getItem(SESSION_STORAGE_KEY);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (Array.isArray(parsed?.swipedIds)) {
-                        return parsed.swipedIds;
-                    }
-                }
-            } catch {}
-        }
-        return [];
-    });
-
     const [history, setHistory] = useState<
         { recipe: SafeRecipe; action: 'save' | 'skip' }[]
     >([]);
@@ -116,8 +123,9 @@ export default function BiteCardsContainer({
         async (excludeCurrentSession = false) => {
             setIsLoading(true);
             try {
+                const currentSwiped = swipedIdsRef.current || [];
                 const idsToExclude = excludeCurrentSession
-                    ? swipedIds.join(',')
+                    ? currentSwiped.join(',')
                     : '';
                 const res = await axios.get<SafeRecipe[]>(
                     `/api/recipes/bite-cards${idsToExclude ? `?excludeIds=${idsToExclude}` : ''}`
@@ -126,14 +134,14 @@ export default function BiteCardsContainer({
                 setRecipes(fetched);
                 setCurrentIndex(0);
                 setHistory([]);
-                saveProgressToStorage(fetched, 0, swipedIds);
+                saveProgressToStorage(fetched, 0, currentSwiped);
             } catch {
                 toast.error(t('bite_cards_load_error'));
             } finally {
                 setIsLoading(false);
             }
         },
-        [swipedIds, t]
+        [t]
     );
 
     const activeRecipes = recipes.slice(currentIndex, currentIndex + 2);
@@ -148,9 +156,12 @@ export default function BiteCardsContainer({
             }
 
             const nextIndex = currentIndex + 1;
-            const updatedSwipedIds = [...swipedIds, recipe.id];
+            const updatedSwipedIds = [
+                ...(swipedIdsRef.current || []),
+                recipe.id,
+            ];
+            swipedIdsRef.current = updatedSwipedIds;
             setHistory((prev) => [...prev, { recipe, action: 'save' }]);
-            setSwipedIds(updatedSwipedIds);
             setCurrentIndex(nextIndex);
             saveProgressToStorage(recipes, nextIndex, updatedSwipedIds);
 
@@ -166,29 +177,36 @@ export default function BiteCardsContainer({
                 toast.error(t('bite_cards_save_error'));
             }
         },
-        [currentUser, loginModal, currentIndex, recipes, swipedIds, t]
+        [currentUser, loginModal, currentIndex, recipes, t]
     );
 
     const handleSwipeLeft = useCallback(
         (recipe: SafeRecipe) => {
             const nextIndex = currentIndex + 1;
-            const updatedSwipedIds = [...swipedIds, recipe.id];
+            const updatedSwipedIds = [
+                ...(swipedIdsRef.current || []),
+                recipe.id,
+            ];
+            swipedIdsRef.current = updatedSwipedIds;
             setHistory((prev) => [...prev, { recipe, action: 'skip' }]);
-            setSwipedIds(updatedSwipedIds);
             setCurrentIndex(nextIndex);
             saveProgressToStorage(recipes, nextIndex, updatedSwipedIds);
         },
-        [currentIndex, recipes, swipedIds]
+        [currentIndex, recipes]
     );
 
     // Directly navigate to recipe page on swipe top or click view recipe
     const handleSwipeUp = useCallback(
         (recipe: SafeRecipe) => {
             // Persist state before navigation so returning back restores exact card position
-            saveProgressToStorage(recipes, currentIndex, swipedIds);
+            saveProgressToStorage(
+                recipes,
+                currentIndex,
+                swipedIdsRef.current || []
+            );
             router.push(`/recipes/${recipe.id}`);
         },
-        [recipes, currentIndex, swipedIds, router]
+        [recipes, currentIndex, router]
     );
 
     const handleUndo = useCallback(() => {
@@ -197,12 +215,12 @@ export default function BiteCardsContainer({
         const nextIndex = Math.max(0, currentIndex - 1);
         setHistory((prev) => prev.slice(0, -1));
         setCurrentIndex(nextIndex);
-        saveProgressToStorage(recipes, nextIndex, swipedIds);
+        saveProgressToStorage(recipes, nextIndex, swipedIdsRef.current || []);
 
         if (lastAction.action === 'save') {
             toast(`Restored "${lastAction.recipe.title}"`, { icon: '🔄' });
         }
-    }, [history, currentIndex, recipes, swipedIds]);
+    }, [history, currentIndex, recipes]);
 
     return (
         <div className="relative z-0 mx-auto flex h-[calc(100dvh-160px)] w-full max-w-sm flex-col pb-1 sm:max-w-md md:h-auto md:min-h-[calc(100vh-120px)]">

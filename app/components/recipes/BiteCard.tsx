@@ -31,6 +31,24 @@ interface BiteCardProps {
     onSwipeUp: (recipe: SafeRecipe) => void;
 }
 
+const getCoords = (e: React.PointerEvent<HTMLDivElement>) => {
+    const native = e.nativeEvent as any;
+    return {
+        x:
+            e.clientX ??
+            native?.clientX ??
+            (e as any).pageX ??
+            native?.pageX ??
+            0,
+        y:
+            e.clientY ??
+            native?.clientY ??
+            (e as any).pageY ??
+            native?.pageY ??
+            0,
+    };
+};
+
 const BiteCard: React.FC<BiteCardProps> = ({
     recipe,
     isTop,
@@ -52,24 +70,6 @@ const BiteCard: React.FC<BiteCardProps> = ({
     const [isDragging, setIsDragging] = useState(false);
     const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
     const cardRef = useRef<HTMLDivElement>(null);
-
-    const getCoords = (e: React.PointerEvent<HTMLDivElement>) => {
-        const native = e.nativeEvent as any;
-        return {
-            x:
-                e.clientX ??
-                native?.clientX ??
-                (e as any).pageX ??
-                native?.pageX ??
-                0,
-            y:
-                e.clientY ??
-                native?.clientY ??
-                (e as any).pageY ??
-                native?.pageY ??
-                0,
-        };
-    };
 
     const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
         if (!isTop) return;
@@ -222,9 +222,9 @@ const BiteCard: React.FC<BiteCardProps> = ({
                     {/* Categories Chips */}
                     {recipe.categories && recipe.categories.length > 0 && (
                         <div className="flex flex-wrap gap-2">
-                            {recipe.categories.slice(0, 3).map((cat, i) => (
+                            {recipe.categories.slice(0, 3).map((cat) => (
                                 <span
-                                    key={i}
+                                    key={cat}
                                     className="bg-green-450/20 text-green-450 border-green-450/40 rounded-full border px-2.5 py-1 text-xs font-semibold backdrop-blur-sm"
                                 >
                                     {t(cat.toLowerCase())}
