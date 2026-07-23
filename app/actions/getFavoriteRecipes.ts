@@ -174,7 +174,7 @@ export default async function getFavoriteRecipes(
             );
             if (matchedCuisine) {
                 whereClause.recipeCuisine = {
-                    contains: matchedCuisine,
+                    equals: matchedCuisine,
                     mode: 'insensitive',
                 };
             } else {

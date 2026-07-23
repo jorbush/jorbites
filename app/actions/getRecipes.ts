@@ -171,7 +171,7 @@ export default async function getRecipes(
             );
             if (matchedCuisine) {
                 query.recipeCuisine = {
-                    contains: matchedCuisine,
+                    equals: matchedCuisine,
                     mode: 'insensitive',
                 };
             } else {
