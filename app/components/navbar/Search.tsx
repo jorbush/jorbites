@@ -36,7 +36,6 @@ const SearchComponent: React.FC<SearchProps> = ({
     const currentSearch = get('search') || '';
     const [isSearchMode, setIsSearchMode] = useState(Boolean(currentSearch));
     const [searchQuery, setSearchQuery] = useState(currentSearch);
-    const isExplicitlyExiting = useRef(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const onSearchModeChangeRef = useRef(onSearchModeChange);
 
@@ -73,21 +72,16 @@ const SearchComponent: React.FC<SearchProps> = ({
     useEffect(() => {
         if (currentSearch !== prevCurrentSearchRef.current) {
             prevCurrentSearchRef.current = currentSearch;
+            setSearchQuery(currentSearch);
             if (currentSearch) {
-                setSearchQuery(currentSearch);
-                if (!isSearchMode && !isExplicitlyExiting.current) {
-                    setIsSearchMode(true);
-                    onSearchModeChangeRef.current?.(true);
-                }
+                setIsSearchMode(true);
+                onSearchModeChangeRef.current?.(true);
             } else {
-                if (isExplicitlyExiting.current) {
-                    setIsSearchMode(false);
-                    onSearchModeChangeRef.current?.(false);
-                    isExplicitlyExiting.current = false;
-                }
+                setIsSearchMode(false);
+                onSearchModeChangeRef.current?.(false);
             }
         }
-    }, [currentSearch, isSearchMode]);
+    }, [currentSearch]);
 
     const hasFiredInitialRef = useRef(false);
     useEffect(() => {
@@ -123,7 +117,8 @@ const SearchComponent: React.FC<SearchProps> = ({
 
     const handleSearchToggle = () => {
         if (isSearchMode) {
-            isExplicitlyExiting.current = true;
+            setIsSearchMode(false);
+            onSearchModeChange?.(false);
             if (isFilterablePage && currentSearch) {
                 const params = new URLSearchParams(
                     searchParams?.toString() || ''
@@ -137,10 +132,6 @@ const SearchComponent: React.FC<SearchProps> = ({
                       ? `${pathname}?${params.toString()}`
                       : pathname;
                 push(newUrl);
-            } else {
-                setIsSearchMode(false);
-                onSearchModeChange?.(false);
-                isExplicitlyExiting.current = false;
             }
         } else {
             setIsSearchMode(true);
