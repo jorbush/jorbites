@@ -82,7 +82,6 @@ const SearchComponent: React.FC<SearchProps> = ({
                     onSearchModeChangeRef.current?.(true);
                 }
             } else {
-                setSearchQuery('');
                 if (isExplicitlyExiting.current) {
                     setIsSearchMode(false);
                     onSearchModeChangeRef.current?.(false);
@@ -127,7 +126,6 @@ const SearchComponent: React.FC<SearchProps> = ({
     const handleSearchToggle = () => {
         if (isSearchMode) {
             isExplicitlyExiting.current = true;
-            setSearchQuery('');
             if (isFilterablePage && currentSearch) {
                 const params = new URLSearchParams(
                     searchParams?.toString() || ''

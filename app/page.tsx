@@ -70,7 +70,7 @@ const Home = async ({ searchParams }: HomeProps) => {
                     </div>
                 ) : (
                     <>
-                        <div className="mb-4 flex justify-end">
+                        <div className="-mt-3 mb-3 flex justify-end sm:-mt-5">
                             <OrderByDropdown />
                         </div>
                         <section
