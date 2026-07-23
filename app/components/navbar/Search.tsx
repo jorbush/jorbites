@@ -53,7 +53,6 @@ const SearchComponent: React.FC<SearchProps> = ({
 
     const currentStartDate = get('startDate') || '';
     const currentEndDate = get('endDate') || '';
-    const currentOrderBy = get('orderBy') || '';
     const currentMinCalories = get('minCalories') || '';
     const currentMaxCalories = get('maxCalories') || '';
     const currentMinYield = get('minYield') || '';
@@ -63,7 +62,6 @@ const SearchComponent: React.FC<SearchProps> = ({
         isFiltering ||
         currentStartDate ||
         currentEndDate ||
-        currentOrderBy ||
         currentMinCalories ||
         currentMaxCalories ||
         currentMinYield ||
