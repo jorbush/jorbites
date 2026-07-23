@@ -29,6 +29,12 @@ vi.mock('next/link', () => ({
 }));
 
 vi.mock('react-icons/fc', () => ({
+    FcSimCard: ({ className }: { className?: string }) => (
+        <div
+            data-testid="fc-sim-card-icon"
+            className={className}
+        />
+    ),
     FcPositiveDynamic: ({ className }: { className?: string }) => (
         <div
             data-testid="fc-positive-dynamic-icon"
@@ -86,14 +92,26 @@ describe('FooterMenu', () => {
 
     it('renders without crashing', () => {
         render(<FooterMenu />);
-        expect(screen.getAllByTestId('footer-menu-link')).toHaveLength(6);
+        expect(screen.getAllByTestId('footer-menu-link')).toHaveLength(7);
     });
 
     it('renders all menu items', () => {
         render(<FooterMenu />);
 
         const menuLinks = screen.getAllByTestId('footer-menu-link');
-        expect(menuLinks).toHaveLength(6);
+        expect(menuLinks).toHaveLength(7);
+    });
+
+    it('renders Bite Cards link with correct props', () => {
+        render(<FooterMenu />);
+
+        const biteCardsLink = screen
+            .getAllByTestId('footer-menu-link')
+            .find((link) => link.getAttribute('data-href') === '/bite-cards');
+
+        expect(biteCardsLink).toBeDefined();
+        expect(biteCardsLink?.getAttribute('data-prefetch')).toBe('false');
+        expect(biteCardsLink?.textContent).toContain('bite_cards_title');
     });
 
     it('renders Top Jorbiters link with correct props', () => {
@@ -137,6 +155,7 @@ describe('FooterMenu', () => {
     it('renders icons for each menu item', () => {
         render(<FooterMenu />);
 
+        expect(screen.getAllByTestId('fc-sim-card-icon')).toHaveLength(1);
         expect(screen.getAllByTestId('fc-positive-dynamic-icon')).toHaveLength(
             1
         );
@@ -190,6 +209,7 @@ describe('FooterMenu', () => {
     it('calls translation function with correct keys', () => {
         render(<FooterMenu />);
 
+        expect(mockT).toHaveBeenCalledWith('bite_cards_title');
         expect(mockT).toHaveBeenCalledWith('top_jorbiters');
         expect(mockT).toHaveBeenCalledWith('chefs');
         expect(mockT).toHaveBeenCalledWith('workshops');
@@ -201,6 +221,7 @@ describe('FooterMenu', () => {
     it('renders translated text correctly', () => {
         render(<FooterMenu />);
 
+        expect(screen.getAllByText('bite_cards_title')).toHaveLength(1);
         expect(screen.getAllByText('top_jorbiters')).toHaveLength(1);
         expect(screen.getAllByText('chefs')).toHaveLength(1);
         expect(screen.getAllByText('workshops')).toHaveLength(1);
@@ -216,6 +237,7 @@ describe('FooterMenu', () => {
         const { container } = render(<FooterMenu />);
 
         // Should still render with the key as fallback
+        expect(container.textContent).toContain('bite_cards_title');
         expect(container.textContent).toContain('top_jorbiters');
         expect(container.textContent).toContain('chefs');
         expect(container.textContent).toContain('workshops');
@@ -239,29 +261,33 @@ describe('FooterMenu', () => {
 
         const menuLinks = screen.getAllByTestId('footer-menu-link');
 
-        // First should be Top Jorbiters
-        expect(menuLinks[0].getAttribute('data-href')).toBe('/top-jorbiters');
-        expect(menuLinks[0].textContent).toContain('top_jorbiters');
+        // First should be Bite Cards
+        expect(menuLinks[0].getAttribute('data-href')).toBe('/bite-cards');
+        expect(menuLinks[0].textContent).toContain('bite_cards_title');
 
-        // Second should be Chefs
-        expect(menuLinks[1].getAttribute('data-href')).toBe('/chefs');
-        expect(menuLinks[1].textContent).toContain('chefs');
+        // Second should be Top Jorbiters
+        expect(menuLinks[1].getAttribute('data-href')).toBe('/top-jorbiters');
+        expect(menuLinks[1].textContent).toContain('top_jorbiters');
 
-        // Third should be Workshops
-        expect(menuLinks[2].getAttribute('data-href')).toBe('/workshops');
-        expect(menuLinks[2].textContent).toContain('workshops');
+        // Third should be Chefs
+        expect(menuLinks[2].getAttribute('data-href')).toBe('/chefs');
+        expect(menuLinks[2].textContent).toContain('chefs');
 
-        // Fourth should be Blog
-        expect(menuLinks[3].getAttribute('data-href')).toBe('/blog');
-        expect(menuLinks[3].textContent).toContain('blog');
+        // Fourth should be Workshops
+        expect(menuLinks[3].getAttribute('data-href')).toBe('/workshops');
+        expect(menuLinks[3].textContent).toContain('workshops');
 
-        // Fifth should be Certificates
-        expect(menuLinks[4].getAttribute('data-href')).toBe('/courses');
-        expect(menuLinks[4].textContent).toContain('courses');
+        // Fifth should be Blog
+        expect(menuLinks[4].getAttribute('data-href')).toBe('/blog');
+        expect(menuLinks[4].textContent).toContain('blog');
 
-        // Sixth should be About
-        expect(menuLinks[5].getAttribute('data-href')).toBe('/about');
-        expect(menuLinks[5].textContent).toContain('about');
+        // Sixth should be Courses
+        expect(menuLinks[5].getAttribute('data-href')).toBe('/courses');
+        expect(menuLinks[5].textContent).toContain('courses');
+
+        // Seventh should be About
+        expect(menuLinks[6].getAttribute('data-href')).toBe('/about');
+        expect(menuLinks[6].textContent).toContain('about');
     });
 
     it('has accessible structure with spans for text', () => {
