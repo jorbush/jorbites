@@ -294,7 +294,7 @@ describe('<Search />', () => {
             expect(notificationCircle?.className).toContain('bg-rose-500');
         });
 
-        it('shows notification circle when orderBy filter is active', () => {
+        it('does not show notification circle when orderBy filter is active', () => {
             mockSearchParams.set('orderBy', 'most_liked');
 
             render(<Search onSearchModeChange={mockOnSearchModeChange} />);
@@ -304,8 +304,7 @@ describe('<Search />', () => {
                 .closest('button');
             const notificationCircle = searchButton?.querySelector('span');
 
-            expect(notificationCircle).toBeDefined();
-            expect(notificationCircle?.className).toContain('bg-rose-500');
+            expect(notificationCircle).toBeNull();
         });
 
         it('shows notification circle when calories filter is active', () => {
