@@ -1222,5 +1222,23 @@
         "final_test_description": "Pon a prueba tus conocimientos con 6 preguntas de opción múltiple. Necesitas al menos un 80% (5 respuestas correctas) para aprobar y recibir el Certificado de Conceptos Básicos.",
         "name_confirmed": "Nombre confirmado",
         "change_name": "Cambiar Nombre"
-    }
+    },
+    "bite_cards_title": "Bite Cards",
+    "bite_cards_loading": "Cargando nuevas recetas...",
+    "bite_cards_save": "GUARDAR",
+    "bite_cards_skip": "SALTAR",
+    "bite_cards_view": "VER",
+    "bite_cards_undo": "Deshacer",
+    "bite_cards_all_caught_up": "¡Ya las has visto todas!",
+    "bite_cards_all_caught_up_desc": "Has pasado por todas las tarjetas disponibles. ¡Pulsa para descubrir nuevas recetas!",
+    "bite_cards_discover": "Descubrir más recetas",
+    "bite_cards_save_favorites": "Guardar en favoritos (desliza a la derecha)",
+    "bite_cards_skip_action": "Saltar (desliza a la izquierda)",
+    "bite_cards_view_recipe": "Ver receta (desliza hacia arriba)",
+    "bite_cards_saved_toast": "¡\"{{title}}\" guardada en favoritos! ❤️",
+    "bite_cards_save_error": "Error al guardar la receta",
+    "bite_cards_load_error": "Error al cargar las recetas",
+    "bite_cards_method": "Método",
+    "bite_cards_cuisine": "Cocina",
+    "bite_cards_anonymous": "Chef anónimo"
 }

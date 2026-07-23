@@ -1219,5 +1219,23 @@
         "final_test_description": "Posa a prova els teus coneixements amb 6 preguntes d'opció múltiple. Necessites almenys un 80% (5 respostes correctes) per aprovar i rebre el Certificat de Conceptes Bàsics.",
         "name_confirmed": "Nom confirmat",
         "change_name": "Canviar Nom"
-    }
+    },
+    "bite_cards_title": "Bite Cards",
+    "bite_cards_loading": "Carregant noves receptes...",
+    "bite_cards_save": "DESAR",
+    "bite_cards_skip": "SALTAR",
+    "bite_cards_view": "VEURE",
+    "bite_cards_undo": "Desfer",
+    "bite_cards_all_caught_up": "Ja les has vist totes!",
+    "bite_cards_all_caught_up_desc": "Has passat per totes les targetes disponibles. Prem per descobrir noves receptes!",
+    "bite_cards_discover": "Descobrir més receptes",
+    "bite_cards_save_favorites": "Desa als favorits (llisca a la dreta)",
+    "bite_cards_skip_action": "Saltar (llisca a l'esquerra)",
+    "bite_cards_view_recipe": "Veure recepta (llisca cap amunt)",
+    "bite_cards_saved_toast": "\"{{title}}\" desat als favorits! ❤️",
+    "bite_cards_save_error": "Error en desar la recepta",
+    "bite_cards_load_error": "Error en carregar les receptes",
+    "bite_cards_method": "Mètode",
+    "bite_cards_cuisine": "Cuina",
+    "bite_cards_anonymous": "Xef anònim"
 }
