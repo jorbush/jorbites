@@ -1221,5 +1221,23 @@
         "final_test_description": "Test your knowledge with 6 multiple-choice questions. You need at least 80% (5 correct answers) to pass and receive the Jorbites Basics Certificate.",
         "name_confirmed": "Name confirmed",
         "change_name": "Change Name"
-    }
+    },
+    "bite_cards_title": "Bite Cards",
+    "bite_cards_loading": "Loading fresh bite cards...",
+    "bite_cards_save": "SAVE",
+    "bite_cards_skip": "SKIP",
+    "bite_cards_view": "VIEW",
+    "bite_cards_undo": "Undo",
+    "bite_cards_all_caught_up": "You're All Caught Up!",
+    "bite_cards_all_caught_up_desc": "You've swiped through all available cards in this batch. Click below to fetch fresh new recipes!",
+    "bite_cards_discover": "Discover New Cards",
+    "bite_cards_save_favorites": "Save to Favorites (Swipe Right)",
+    "bite_cards_skip_action": "Skip (Swipe Left)",
+    "bite_cards_view_recipe": "View Recipe (Swipe Up)",
+    "bite_cards_saved_toast": "Saved \"{{title}}\" to Favorites! ❤️",
+    "bite_cards_save_error": "Failed to save recipe",
+    "bite_cards_load_error": "Failed to load bite cards",
+    "bite_cards_method": "Method",
+    "bite_cards_cuisine": "Cuisine",
+    "bite_cards_anonymous": "Anonymous Chef"
 }

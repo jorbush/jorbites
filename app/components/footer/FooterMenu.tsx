@@ -9,43 +9,49 @@ import {
     FcManager,
     FcNews,
     FcDiploma1,
+    FcSimCard,
 } from 'react-icons/fc';
 
 interface FooterMenuItem {
     href: string;
-    labelKey: string;
+    label: string;
     icon: React.ComponentType<any>;
 }
 
 const MENU_ITEMS: FooterMenuItem[] = [
     {
+        href: '/bite-cards',
+        label: 'bite_cards_title',
+        icon: FcSimCard,
+    },
+    {
         href: '/top-jorbiters',
-        labelKey: 'top_jorbiters',
+        label: 'top_jorbiters',
         icon: FcPositiveDynamic,
     },
     {
         href: '/chefs',
-        labelKey: 'chefs',
+        label: 'chefs',
         icon: FcManager,
     },
     {
         href: '/workshops',
-        labelKey: 'workshops',
+        label: 'workshops',
         icon: FcConferenceCall,
     },
     {
         href: '/blog',
-        labelKey: 'blog',
+        label: 'blog',
         icon: FcNews,
     },
     {
         href: '/courses',
-        labelKey: 'courses',
+        label: 'courses',
         icon: FcDiploma1,
     },
     {
         href: '/about',
-        labelKey: 'about',
+        label: 'about',
         icon: FcAbout,
     },
 ];
@@ -63,7 +69,7 @@ const FooterMenu = () => {
                     prefetch={false}
                 >
                     <item.icon className="size-4" />
-                    <span>{t(item.labelKey)}</span>
+                    <span>{t(item.label)}</span>
                 </Link>
             ))}
         </div>
