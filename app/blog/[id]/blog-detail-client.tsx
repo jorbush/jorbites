@@ -20,6 +20,7 @@ interface BlogDetailClientProps {
 
 const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id, lang }) => {
     const { t, i18n } = useTranslation();
+    // eslint-disable-next-line react-compiler-destructure-method
     const { push } = useRouter() || {};
 
     useTheme();
