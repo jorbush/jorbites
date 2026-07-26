@@ -1,5 +1,7 @@
 packages: []
 
+trustPolicy: no-downgrade
+
 allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
