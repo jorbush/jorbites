@@ -94,7 +94,7 @@ const PushNotificationManager: React.FC = () => {
                 ),
             });
             setSubscription(sub);
-            const serializedSub = JSON.parse(JSON.stringify(sub));
+            const serializedSub = sub.toJSON();
             await subscribeUser(serializedSub);
             toast.success(t('push_notifications_subscribed_success'));
         } catch (error) {
@@ -109,7 +109,7 @@ const PushNotificationManager: React.FC = () => {
         setLoading(true);
         try {
             if (subscription) {
-                const serializedSub = JSON.parse(JSON.stringify(subscription));
+                const serializedSub = subscription.toJSON();
                 await unsubscribeUser(serializedSub); // Call server action first
                 await subscription.unsubscribe(); // Then unsubscribe locally
                 setSubscription(undefined);
