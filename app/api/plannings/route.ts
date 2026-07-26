@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prismadb';
+import { redisCache } from '@/app/lib/redis';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app/lib/axiom/server';
 import { USER_SELECT_FIELDS } from '@/app/utils/constants';
@@ -11,6 +12,20 @@ import {
 
 export async function GET() {
     try {
+        const cacheKey = 'plannings:public';
+
+        try {
+            const cachedData = await redisCache.get(cacheKey);
+            if (cachedData) {
+                logger.info('GET /api/plannings - cache hit', { cacheKey });
+                return NextResponse.json(JSON.parse(cachedData));
+            }
+        } catch (cacheError: any) {
+            logger.error('GET /api/plannings - cache get error', {
+                error: cacheError.message,
+            });
+        }
+
         logger.info('GET /api/plannings - start');
 
         const plannings = await prisma.planning.findMany({
@@ -79,6 +94,19 @@ export async function GET() {
                   }))
                 : [],
         }));
+
+        try {
+            await redisCache.set(
+                cacheKey,
+                JSON.stringify(safePlannings),
+                'EX',
+                86400
+            ); // 1 day
+        } catch (cacheError: any) {
+            logger.error('GET /api/plannings - cache set error', {
+                error: cacheError.message,
+            });
+        }
 
         return NextResponse.json(safePlannings);
     } catch (error: any) {
@@ -149,6 +177,17 @@ export async function POST(request: Request) {
         logger.info('POST /api/plannings - success', {
             planningId: planning.id,
         });
+
+        // Invalidate global public plannings cache if the new plan is public
+        if (!planning.isPrivate) {
+            try {
+                await redisCache.del('plannings:public');
+            } catch (cacheError: any) {
+                logger.error('POST /api/plannings - cache invalidation error', {
+                    error: cacheError.message,
+                });
+            }
+        }
 
         const safePlanning = {
             ...planning,
