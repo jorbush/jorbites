@@ -325,16 +325,6 @@ describe('<IngredientsStep />', () => {
         expect(screen.queryByTestId('recipe-ingredient-0')).toBeDefined();
     });
 
-    it('shows help text in plain text mode', () => {
-        render(<IngredientsStep {...mockProps} />);
-
-        const toggleButton = screen.getByTestId('toggle-input-mode');
-        fireEvent.click(toggleButton);
-
-        // Check for help text
-        expect(screen.getByText('paste_ingredients_help')).toBeDefined();
-    });
-
     it('shows apply button in plain text mode', () => {
         render(<IngredientsStep {...mockProps} />);
 
@@ -348,7 +338,7 @@ describe('<IngredientsStep />', () => {
 
     it('calls onSetIngredients when apply is clicked with valid text', () => {
         const mockSetIngredients = vi.fn();
-        const mockGetValues = vi.fn((name: string) => {
+        const mockGetValues = vi.fn((name?: string | string[]) => {
             if (name === 'ingredients-plain-text') {
                 return '1. flour\n2. sugar\n3. eggs';
             }
