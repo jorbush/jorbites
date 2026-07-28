@@ -234,7 +234,7 @@ const BiteCard: React.FC<BiteCardProps> = ({
                     )}
 
                     {/* Title */}
-                    <h2 className="text-2xl leading-tight font-extrabold tracking-tight text-white drop-shadow-md sm:text-3xl">
+                    <h2 className="text-2xl leading-tight font-semibold tracking-tight text-white drop-shadow-md sm:text-3xl">
                         {recipe.title}
                     </h2>
 
