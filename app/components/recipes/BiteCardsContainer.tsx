@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -88,6 +88,8 @@ export default function BiteCardsContainer({
                 }
             } catch {}
         }
+        // State is initialized on mount. If initialRecipes changes, the parent resets
+        // the state via the key prop to avoid props-to-state synchronization effects.
         return initialRecipes;
     });
 
@@ -110,14 +112,6 @@ export default function BiteCardsContainer({
         { recipe: SafeRecipe; action: 'save' | 'skip' }[]
     >([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    // If initialRecipes arrived later and local recipes array was empty, update
-    useEffect(() => {
-        if (recipes.length === 0 && initialRecipes.length > 0) {
-            setRecipes(initialRecipes);
-            saveProgressToStorage(initialRecipes, 0, []);
-        }
-    }, [initialRecipes, recipes.length]);
 
     const fetchBiteCards = useCallback(
         async (excludeCurrentSession = false) => {
