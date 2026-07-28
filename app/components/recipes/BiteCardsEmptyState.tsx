@@ -22,7 +22,7 @@ export const BiteCardsEmptyState: React.FC<BiteCardsEmptyStateProps> = ({
                 🎉
             </div>
             <div className="space-y-1.5">
-                <h2 className="text-xl font-black tracking-tight text-white">
+                <h2 className="text-xl font-semibold tracking-tight text-white">
                     {t('bite_cards_all_caught_up')}
                 </h2>
                 <p className="max-w-xs text-xs leading-relaxed text-neutral-400">

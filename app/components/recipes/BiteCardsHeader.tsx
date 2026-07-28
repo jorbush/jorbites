@@ -21,7 +21,7 @@ export const BiteCardsHeader: React.FC<BiteCardsHeaderProps> = ({
         >
             <div className="flex items-center gap-2">
                 <span className="bg-green-450 flex size-2.5 animate-pulse rounded-full" />
-                <h1 className="text-base font-black tracking-tight text-neutral-900 dark:text-neutral-100">
+                <h1 className="text-base font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
                     {t('bite_cards_title')}
                 </h1>
             </div>
