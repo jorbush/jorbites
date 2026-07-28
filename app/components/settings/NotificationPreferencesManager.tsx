@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
@@ -52,14 +53,43 @@ const CATEGORIES: {
     },
 ];
 
+const getRouter = () => {
+    try {
+        return useRouter();
+    } catch {
+        return null;
+    }
+};
+
 const NotificationPreferencesManager: React.FC<
     NotificationPreferencesManagerProps
 > = ({ currentUser }) => {
+    const router = getRouter();
     const { t } = useTranslation();
     const [isPending, startTransition] = useTransition();
     const [updatingKey, setUpdatingKey] = useState<PreferenceCategory | null>(
         null
     );
+    const [isPushSubscribed, setIsPushSubscribed] = useState(false);
+
+    useEffect(() => {
+        if (
+            typeof window !== 'undefined' &&
+            'serviceWorker' in navigator &&
+            'PushManager' in window
+        ) {
+            navigator.serviceWorker.ready
+                .then((registration) =>
+                    registration.pushManager.getSubscription()
+                )
+                .then((sub) => {
+                    setIsPushSubscribed(!!sub);
+                })
+                .catch(() => {
+                    setIsPushSubscribed(false);
+                });
+        }
+    }, []);
 
     const initialPrefs = currentUser?.notificationPreferences || {};
     const [preferences, setPreferences] = useState<
@@ -74,20 +104,26 @@ const NotificationPreferencesManager: React.FC<
     });
 
     useEffect(() => {
-        if (currentUser?.notificationPreferences) {
-            const prefs = currentUser.notificationPreferences;
-            setPreferences({
-                social: prefs.social ?? true,
-                newContent: prefs.newContent ?? true,
-                eventsAndChallenges: prefs.eventsAndChallenges ?? true,
-                quests: prefs.quests ?? true,
-                voting: prefs.voting ?? true,
-                achievements: prefs.achievements ?? true,
-            });
-        }
-    }, [currentUser?.notificationPreferences]);
+        const prefs = currentUser?.notificationPreferences;
+        setPreferences({
+            social: prefs?.social ?? true,
+            newContent: prefs?.newContent ?? true,
+            eventsAndChallenges: prefs?.eventsAndChallenges ?? true,
+            quests: prefs?.quests ?? true,
+            voting: prefs?.voting ?? true,
+            achievements: prefs?.achievements ?? true,
+        });
+    }, [
+        currentUser?.notificationPreferences?.social,
+        currentUser?.notificationPreferences?.newContent,
+        currentUser?.notificationPreferences?.eventsAndChallenges,
+        currentUser?.notificationPreferences?.quests,
+        currentUser?.notificationPreferences?.voting,
+        currentUser?.notificationPreferences?.achievements,
+    ]);
 
-    const isMasterEnabled = !!currentUser?.emailNotifications;
+    const isMasterEnabled =
+        !!currentUser?.emailNotifications || isPushSubscribed;
 
     const handleToggle = (key: PreferenceCategory) => {
         if (!isMasterEnabled || isPending || updatingKey !== null) return;
@@ -102,6 +138,7 @@ const NotificationPreferencesManager: React.FC<
                     [key]: newValue,
                 });
                 toast.success(t('notification_preferences_updated'));
+                router?.refresh();
             } catch {
                 // Revert on error
                 setPreferences((prev) => ({ ...prev, [key]: !newValue }));

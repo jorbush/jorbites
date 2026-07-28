@@ -48,8 +48,8 @@ const SettingsTabContent: React.FC<SettingsTabContentProps> = ({
             return currentUser ? (
                 <div className="flex flex-col gap-4">
                     <EmailNotificationsSelector currentUser={currentUser} />
-                    <NotificationPreferencesManager currentUser={currentUser} />
                     <PushNotificationManager />
+                    <NotificationPreferencesManager currentUser={currentUser} />
                     <ChangeUserImageSelector
                         ref={userImageRef}
                         currentUser={currentUser}
