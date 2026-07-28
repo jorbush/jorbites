@@ -14,8 +14,10 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function BiteCardsPage() {
-    const currentUser = await getCurrentUser();
-    const safeRecipes = await getBiteCards({ limit: 20 }).catch(() => []);
+    const [currentUser, safeRecipes] = await Promise.all([
+        getCurrentUser(),
+        getBiteCards({ limit: 20 }).catch(() => []),
+    ]);
 
     const recipesKey = safeRecipes.map((r) => r.id).join(',');
 
