@@ -13,10 +13,10 @@ export async function GET(request: Request) {
             : 20;
 
         const excludeIds = excludeParam
-            ? excludeParam
-                  .split(',')
-                  .map((id) => id.trim())
-                  .filter(Boolean)
+            ? excludeParam.split(',').flatMap((id) => {
+                  const trimmed = id.trim();
+                  return trimmed ? [trimmed] : [];
+              })
             : [];
 
         const recipes = await getBiteCards({ limit, excludeIds });
