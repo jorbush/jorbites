@@ -17,11 +17,14 @@ export default async function BiteCardsPage() {
     const currentUser = await getCurrentUser();
     const safeRecipes = await getBiteCards({ limit: 20 }).catch(() => []);
 
+    const recipesKey = safeRecipes.map((r) => r.id).join(',');
+
     return (
         <ClientOnly>
             <main className="min-h-[calc(100vh-60px)] pb-2">
                 <Container>
                     <BiteCardsContainer
+                        key={recipesKey}
                         initialRecipes={safeRecipes}
                         currentUser={currentUser}
                     />
