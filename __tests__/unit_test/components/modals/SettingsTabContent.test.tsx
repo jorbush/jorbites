@@ -33,6 +33,14 @@ vi.mock('@/app/components/settings/PushNotificationManager', () => ({
     ),
 }));
 
+vi.mock('@/app/components/settings/NotificationPreferencesManager', () => ({
+    default: () => (
+        <div data-testid="notification-preferences-manager">
+            NotificationPreferencesManager
+        </div>
+    ),
+}));
+
 vi.mock('@/app/components/settings/ChangeUserImage', () => ({
     default: ({ ref: _ref }: any) => (
         <div data-testid="change-user-image-selector">
@@ -114,6 +122,9 @@ describe('SettingsTabContent', () => {
             screen.getByText('EmailNotificationsSelector for Test User')
         ).toBeDefined();
         expect(screen.getByTestId('push-notification-manager')).toBeDefined();
+        expect(
+            screen.getByTestId('notification-preferences-manager')
+        ).toBeDefined();
         expect(screen.getByTestId('change-user-image-selector')).toBeDefined();
         expect(screen.getByTestId('change-user-name-selector')).toBeDefined();
         expect(screen.getByTestId('change-password-selector')).toBeDefined();

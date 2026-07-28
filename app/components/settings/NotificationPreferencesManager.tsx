@@ -53,18 +53,10 @@ const CATEGORIES: {
     },
 ];
 
-const getRouter = () => {
-    try {
-        return useRouter();
-    } catch {
-        return null;
-    }
-};
-
 const NotificationPreferencesManager: React.FC<
     NotificationPreferencesManagerProps
 > = ({ currentUser }) => {
-    const router = getRouter();
+    const { refresh } = useRouter() || {};
     const { t } = useTranslation();
     const [isPending, startTransition] = useTransition();
     const [updatingKey, setUpdatingKey] = useState<PreferenceCategory | null>(
@@ -113,14 +105,7 @@ const NotificationPreferencesManager: React.FC<
             voting: prefs?.voting ?? true,
             achievements: prefs?.achievements ?? true,
         });
-    }, [
-        currentUser?.notificationPreferences?.social,
-        currentUser?.notificationPreferences?.newContent,
-        currentUser?.notificationPreferences?.eventsAndChallenges,
-        currentUser?.notificationPreferences?.quests,
-        currentUser?.notificationPreferences?.voting,
-        currentUser?.notificationPreferences?.achievements,
-    ]);
+    }, [currentUser?.notificationPreferences]);
 
     const isMasterEnabled =
         !!currentUser?.emailNotifications || isPushSubscribed;
@@ -138,7 +123,7 @@ const NotificationPreferencesManager: React.FC<
                     [key]: newValue,
                 });
                 toast.success(t('notification_preferences_updated'));
-                router?.refresh();
+                refresh?.();
             } catch {
                 // Revert on error
                 setPreferences((prev) => ({ ...prev, [key]: !newValue }));
