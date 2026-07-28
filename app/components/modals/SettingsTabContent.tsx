@@ -4,6 +4,7 @@ import React from 'react';
 import ThemeSelector from '@/app/components/settings/ThemeSelector';
 import LanguageSelector from '@/app/components/settings/LanguageSelector';
 import EmailNotificationsSelector from '@/app/components/settings/EmailNotificationsSelector';
+import NotificationPreferencesManager from '@/app/components/settings/NotificationPreferencesManager';
 import PushNotificationManager from '@/app/components/settings/PushNotificationManager';
 import ChangeUserImageSelector, {
     ChangeUserImageRef,
@@ -47,6 +48,7 @@ const SettingsTabContent: React.FC<SettingsTabContentProps> = ({
             return currentUser ? (
                 <div className="flex flex-col gap-4">
                     <EmailNotificationsSelector currentUser={currentUser} />
+                    <NotificationPreferencesManager currentUser={currentUser} />
                     <PushNotificationManager />
                     <ChangeUserImageSelector
                         ref={userImageRef}

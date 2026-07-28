@@ -23,6 +23,7 @@ model User {
   savedPlanningIds    String[]  @db.ObjectId
   pinnedRecipeIds     String[]  @db.ObjectId
   emailNotifications  Boolean   @default(false)
+  notificationPreferences NotificationPreferences?
   level               Int       @default(0)
   verified            Boolean   @default(false)
   language            String?   @default("es")
@@ -38,6 +39,15 @@ model User {
   pushSubscriptions   PushSubscription[]
   lists               List[]
   plannings           Planning[]
+}
+
+type NotificationPreferences {
+  social              Boolean @default(true)
+  newContent          Boolean @default(true)
+  eventsAndChallenges Boolean @default(true)
+  quests              Boolean @default(true)
+  voting              Boolean @default(true)
+  achievements        Boolean @default(true)
 }
 
 model Account {

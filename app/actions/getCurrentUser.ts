@@ -33,6 +33,7 @@ export default async function getCurrentUser() {
                 verified: true,
                 language: true,
                 badges: true,
+                notificationPreferences: true,
             },
         });
 

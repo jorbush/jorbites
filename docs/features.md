@@ -70,10 +70,16 @@ This document provides a comprehensive overview of all features available in Jor
 
 ### Notifications
 
-**Email Notifications**
-- New recipes
-- Comments on your recipes
-- Likes on your recipes and comments
+**Granular Category Preferences**
+- Control notifications per service/category:
+  - **Social**: Likes, comments, and mentions
+  - **New Content**: New recipes and blog posts
+  - **Events & Challenges**: Community events and weekly challenges
+  - **Quests**: Recipe request missions and submissions
+  - **Voting**: Recipe voting period opening and winner announcements
+  - **Achievements**: Earned badges and verified status
+- Master toggle for global email notifications
+- Multi-channel delivery (Email and PWA Web Push)
 
 ## Technical Features
 
