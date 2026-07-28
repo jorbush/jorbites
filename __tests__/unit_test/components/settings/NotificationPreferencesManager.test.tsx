@@ -12,6 +12,14 @@ import { act } from 'react';
 import { toast } from 'react-hot-toast';
 import { SafeUser } from '@/app/types';
 
+const mockRefresh = vi.fn();
+
+vi.mock('next/navigation', () => ({
+    useRouter: () => ({
+        refresh: mockRefresh,
+    }),
+}));
+
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => key,
@@ -49,7 +57,7 @@ describe('<NotificationPreferencesManager />', () => {
         vi.restoreAllMocks();
     });
 
-    it('returns null when master emailNotifications is false', () => {
+    it('returns null when BOTH emailNotifications is false AND push notifications are unsubscribed', () => {
         const { container } = render(
             <NotificationPreferencesManager currentUser={mockUserInactive} />
         );
@@ -72,7 +80,37 @@ describe('<NotificationPreferencesManager />', () => {
         expect(screen.getByText('notification_achievements')).toBeDefined();
     });
 
-    it('toggles preference and calls PATCH API with expected key and value', async () => {
+    it('renders category toggles when emailNotifications is false BUT push notifications are subscribed (OR logic)', async () => {
+        // Mock serviceWorker ready with an active push subscription
+        const mockGetSubscription = vi
+            .fn()
+            .mockResolvedValue({ endpoint: 'https://push.example.com/sub' });
+        Object.defineProperty(global.navigator, 'serviceWorker', {
+            value: {
+                ready: Promise.resolve({
+                    pushManager: {
+                        getSubscription: mockGetSubscription,
+                    },
+                }),
+            },
+            writable: true,
+            configurable: true,
+        });
+        (global as any).window.PushManager = {};
+
+        render(
+            <NotificationPreferencesManager currentUser={mockUserInactive} />
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText('notification_preferences_title')
+            ).toBeDefined();
+            expect(screen.getByText('notification_social')).toBeDefined();
+        });
+    });
+
+    it('toggles preference, calls PATCH API, and calls router.refresh() to update server components', async () => {
         (axios.patch as any).mockResolvedValue({
             data: { social: false },
         });
@@ -93,6 +131,7 @@ describe('<NotificationPreferencesManager />', () => {
             expect(toast.success).toHaveBeenCalledWith(
                 'notification_preferences_updated'
             );
+            expect(mockRefresh).toHaveBeenCalled();
         });
     });
 
