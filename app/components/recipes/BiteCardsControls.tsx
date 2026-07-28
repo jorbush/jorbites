@@ -65,12 +65,12 @@ export const BiteCardsControls: React.FC<BiteCardsControlsProps> = ({
                 type="button"
                 onClick={onFavorite}
                 data-testid="bite-cards-favorite-btn"
-                className="bg-green-450 shadow-green-450/40 flex size-15 cursor-pointer items-center justify-center rounded-full font-extrabold text-neutral-900 shadow-lg transition hover:scale-110 hover:bg-[#b0e88b] active:scale-95"
+                className="bg-green-450 shadow-green-450/40 flex size-15 cursor-pointer items-center justify-center rounded-full font-extrabold text-green-950 shadow-lg transition hover:scale-110 hover:bg-[#b0e88b] active:scale-95"
                 title={t('bite_cards_save_favorites') as string}
             >
                 <FaHeart
                     size={24}
-                    className="text-neutral-900"
+                    className="text-green-950"
                 />
             </button>
         </div>

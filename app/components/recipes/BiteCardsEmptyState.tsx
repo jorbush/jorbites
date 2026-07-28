@@ -33,7 +33,7 @@ export const BiteCardsEmptyState: React.FC<BiteCardsEmptyStateProps> = ({
                 type="button"
                 onClick={onDiscoverNew}
                 data-testid="bite-cards-discover-btn"
-                className="bg-green-450 mt-1 flex transform cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-sm font-extrabold text-neutral-900 shadow-lg transition hover:bg-[#b0e88b] active:scale-95"
+                className="bg-green-450 mt-1 flex transform cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-sm font-extrabold text-green-950 shadow-lg transition hover:bg-[#b0e88b] active:scale-95"
             >
                 <FaRedo size={13} /> {t('bite_cards_discover')}
             </button>
