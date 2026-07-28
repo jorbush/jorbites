@@ -95,8 +95,8 @@ export default async function getBiteCards(
             });
         }
 
-        const shuffled = [...candidates]
-            .sort(() => Math.random() - 0.5)
+        const shuffled = candidates
+            .toSorted(() => Math.random() - 0.5)
             .slice(0, limit);
 
         const safeRecipes = shuffled.map((recipe) => ({
