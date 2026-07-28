@@ -72,6 +72,7 @@ export type SafeUser = Omit<
     | 'pinnedRecipeIds'
     | 'emailNotifications'
     | 'language'
+    | 'notificationPreferences'
 > & {
     createdAt?: string;
     updatedAt?: string;
@@ -91,6 +92,14 @@ export type SafeUser = Omit<
     mostUsedCategory?: string | null | undefined;
     mostUsedMethod?: string | null | undefined;
     badges?: string[];
+    notificationPreferences?: {
+        social?: boolean;
+        newContent?: boolean;
+        eventsAndChallenges?: boolean;
+        quests?: boolean;
+        voting?: boolean;
+        achievements?: boolean;
+    } | null;
 };
 
 export type SafeWorkshop = Omit<
