@@ -22,6 +22,7 @@ const CookiesPolicy: React.FC<CookiesPolicyProps> = ({ policy }) => {
                             type="button"
                             className="flex items-center gap-2 text-neutral-600 focus:outline-hidden dark:text-neutral-100"
                             onClick={() => back()}
+                            aria-label="Go back"
                         >
                             <FiChevronLeft className="text-xl" />
                         </button>
