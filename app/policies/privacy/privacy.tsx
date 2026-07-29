@@ -6,13 +6,29 @@ import { FiChevronLeft } from 'react-icons/fi';
 import { Policy } from '@/app/utils/policy-utils';
 import ReactMarkdown from 'react-markdown';
 import { PolicyStyles } from '@/app/components/policies/PolicyStyles';
+import { useTranslation } from 'react-i18next';
 
 interface PrivacyPolicyProps {
-    policy: Policy;
+    policy?: Policy | null;
+    policies?: Record<string, Policy | null>;
 }
 
-const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ policy }) => {
+const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({
+    policy: initialPolicy,
+    policies,
+}) => {
     const { back } = useRouter() || {};
+    const { i18n } = useTranslation();
+
+    const activeLang = (i18n.language || 'es').slice(0, 2).toLowerCase();
+    const policy = policies
+        ? policies[activeLang] ||
+          policies['es'] ||
+          policies['en'] ||
+          initialPolicy
+        : initialPolicy;
+
+    if (!policy) return null;
 
     return (
         <Container>

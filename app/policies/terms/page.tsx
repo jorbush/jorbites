@@ -1,5 +1,5 @@
 import TermsPolicy from '@/app/policies/terms/terms';
-import { getPolicyBySlug } from '@/app/utils/policy-utils';
+import { getPoliciesBySlug, getPolicyBySlug } from '@/app/utils/policy-utils';
 import PolicySkeleton from '@/app/components/policies/PolicySkeleton';
 import { cookies } from 'next/headers';
 import { Metadata } from 'next';
@@ -7,7 +7,9 @@ import { Metadata } from 'next';
 export async function generateMetadata(): Promise<Metadata> {
     const cookieStore = await cookies();
     const lang = cookieStore.get('i18next')?.value || 'en';
-    const policy = await getPolicyBySlug('terms', lang);
+    const policy =
+        (await getPolicyBySlug('terms', lang)) ||
+        (await getPolicyBySlug('terms', 'es'));
 
     if (!policy) {
         return {
@@ -22,15 +24,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const TermsPolicyPage = async () => {
-    const cookieStore = await cookies();
-    const lang = cookieStore.get('i18next')?.value || 'en';
-    const policy = await getPolicyBySlug('terms', lang);
+    const policies = await getPoliciesBySlug('terms');
 
-    if (!policy) {
+    if (!policies || (!policies.en && !policies.es && !policies.ca)) {
         return <PolicySkeleton />;
     }
 
-    return <TermsPolicy policy={policy} />;
+    return <TermsPolicy policies={policies} />;
 };
 
 export default TermsPolicyPage;

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, cleanup, screen } from '@testing-library/react';
-import CookiesPolicyPage from '@/app/policies/cookies/page';
+import TermsPolicyPage from '@/app/policies/terms/page';
 import * as policyUtils from '@/app/utils/policy-utils';
 
 vi.mock('next/headers', () => ({
@@ -22,13 +22,13 @@ vi.mock('@/app/utils/policy-utils', () => ({
 
 const mockPolicy = {
     frontmatter: {
-        title: 'Cookies Policy',
-        description: 'Jorbites Cookies Policy',
+        title: 'Terms of Service',
+        description: 'Jorbites Terms of Service',
     },
     content: `
-This is a mock cookies policy.
+This is a mock terms of service policy.
     `,
-    slug: 'cookies',
+    slug: 'terms',
     language: 'en',
 };
 
@@ -38,7 +38,7 @@ const mockPolicies = {
     ca: mockPolicy,
 };
 
-describe('CookiesPolicyPage', () => {
+describe('TermsPolicyPage', () => {
     beforeEach(() => {
         vi.spyOn(policyUtils, 'getPolicyBySlug').mockResolvedValue(mockPolicy);
         vi.spyOn(policyUtils, 'getPoliciesBySlug').mockResolvedValue(
@@ -51,12 +51,12 @@ describe('CookiesPolicyPage', () => {
         vi.restoreAllMocks();
     });
 
-    it('renders CookiesPolicy', async () => {
-        const Page = await CookiesPolicyPage();
+    it('renders TermsPolicy', async () => {
+        const Page = await TermsPolicyPage();
         render(Page);
-        expect(screen.getByText('Cookies Policy')).toBeDefined();
+        expect(screen.getByText('Terms of Service')).toBeDefined();
         expect(
-            screen.getByText('This is a mock cookies policy.')
+            screen.getByText('This is a mock terms of service policy.')
         ).toBeDefined();
     });
 });

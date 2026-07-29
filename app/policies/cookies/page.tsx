@@ -1,5 +1,5 @@
 import CookiesPolicy from '@/app/policies/cookies/cookies';
-import { getPolicyBySlug } from '@/app/utils/policy-utils';
+import { getPoliciesBySlug, getPolicyBySlug } from '@/app/utils/policy-utils';
 import PolicySkeleton from '@/app/components/policies/PolicySkeleton';
 import { cookies } from 'next/headers';
 import { Metadata } from 'next';
@@ -7,7 +7,9 @@ import { Metadata } from 'next';
 export async function generateMetadata(): Promise<Metadata> {
     const cookieStore = await cookies();
     const lang = cookieStore.get('i18next')?.value || 'en';
-    const policy = await getPolicyBySlug('cookies', lang);
+    const policy =
+        (await getPolicyBySlug('cookies', lang)) ||
+        (await getPolicyBySlug('cookies', 'es'));
 
     if (!policy) {
         return {
@@ -22,15 +24,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const CookiesPolicyPage = async () => {
-    const cookieStore = await cookies();
-    const lang = cookieStore.get('i18next')?.value || 'en';
-    const policy = await getPolicyBySlug('cookies', lang);
+    const policies = await getPoliciesBySlug('cookies');
 
-    if (!policy) {
+    if (!policies || (!policies.en && !policies.es && !policies.ca)) {
         return <PolicySkeleton />;
     }
 
-    return <CookiesPolicy policy={policy} />;
+    return <CookiesPolicy policies={policies} />;
 };
 
 export default CookiesPolicyPage;
