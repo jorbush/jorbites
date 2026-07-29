@@ -26,7 +26,7 @@ function renderMarkdownTableContent(content: string) {
     // Skip divider line (line index 1 if it's :--- | ---)
     const dataLines = lines
         .slice(1)
-        .filter((line) => !line.match(/^\|[\s:\|-]+\|$/));
+        .filter((line) => !line.match(/^\|[\s:|-]+\|$/));
 
     return (
         <div className="my-6 overflow-x-auto rounded-lg border border-neutral-200 shadow-xs dark:border-neutral-700">
@@ -35,7 +35,7 @@ function renderMarkdownTableContent(content: string) {
                     <tr>
                         {headerCells.map((cell, idx) => (
                             <th
-                                key={idx}
+                                key={`th-${cell}-${idx}`}
                                 className="border-b border-neutral-200 px-4 py-3 dark:border-neutral-700"
                             >
                                 {cell}
@@ -46,14 +46,15 @@ function renderMarkdownTableContent(content: string) {
                 <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
                     {dataLines.map((line, rIdx) => {
                         const rowCells = parseRow(line);
+                        const rowKey = `tr-${rIdx}-${line.slice(0, 15)}`;
                         return (
                             <tr
-                                key={rIdx}
+                                key={rowKey}
                                 className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
                             >
                                 {rowCells.map((cell, cIdx) => (
                                     <td
-                                        key={cIdx}
+                                        key={`${rowKey}-td-${cIdx}`}
                                         className="px-4 py-3"
                                     >
                                         {cell}
@@ -171,5 +172,13 @@ export const PolicyStyles: Components = {
             className="px-4 py-3"
             {...props}
         />
+    ),
+    code: ({ node: _node, children, ...props }) => (
+        <code
+            className="rounded bg-neutral-100 px-1.5 py-0.5 font-mono text-xs text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200"
+            {...props}
+        >
+            {children}
+        </code>
     ),
 };

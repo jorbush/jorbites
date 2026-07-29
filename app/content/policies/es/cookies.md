@@ -17,20 +17,65 @@ Las cookies son pequeños archivos de texto que se almacenan en su dispositivo c
 
 Estas cookies y tokens de seguridad son necesarios para que el Sitio Web funcione de manera segura. Permiten el inicio de sesión del usuario, mantienen la sesión y protegen contra vulnerabilidades de seguridad. No se pueden desactivar.
 
-| Nombre de Cookie / Token | Propósito | Tipo | Caducidad |
-| :--- | :--- | :--- | :--- |
-| `next-auth.session-token` / `__Secure-next-auth.session-token` | Identifica su sesión de usuario autenticado. | Esencial | 30 Días |
-| `next-auth.csrf-token` / `__Host-next-auth.csrf-token` | Protección CSRF para formularios y solicitudes API de autenticación. | Esencial | Sesión |
-| `next-auth.callback-url` | Almacena la URL de redirección durante el inicio de sesión OAuth (Google/GitHub). | Esencial | Sesión |
+<table>
+  <thead>
+    <tr>
+      <th>Nombre de Cookie / Token</th>
+      <th>Propósito</th>
+      <th>Tipo</th>
+      <th>Caducidad</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>next-auth.session-token</code> / <code>__Secure-next-auth.session-token</code></td>
+      <td>Identifica su sesión de usuario autenticado.</td>
+      <td>Esencial</td>
+      <td>30 Días</td>
+    </tr>
+    <tr>
+      <td><code>next-auth.csrf-token</code> / <code>__Host-next-auth.csrf-token</code></td>
+      <td>Protección CSRF para formularios y solicitudes API de autenticación.</td>
+      <td>Esencial</td>
+      <td>Sesión</td>
+    </tr>
+    <tr>
+      <td><code>next-auth.callback-url</code></td>
+      <td>Almacena la URL de redirección durante el inicio de sesión OAuth (Google/GitHub).</td>
+      <td>Esencial</td>
+      <td>Sesión</td>
+    </tr>
+  </tbody>
+</table>
 
 ### B. Almacenamiento Funcional y de Preferencias (LocalStorage)
 
 Utilizamos el LocalStorage del navegador para conservar sus ajustes de experiencia de usuario sin enviar datos confidenciales a los servidores.
 
-| Nombre de Clave | Propósito | Tipo de Almacenamiento | Caducidad |
-| :--- | :--- | :--- | :--- |
-| `theme` | Recuerda su preferencia de tema visual (Modo Oscuro / Modo Claro). | LocalStorage | Persistente |
-| `i18nextLng` / `i18next` | Almacena su idioma preferido de interfaz (Inglés, Español, Catalán). | LocalStorage / Cookie | Persistente |
+<table>
+  <thead>
+    <tr>
+      <th>Nombre de Clave</th>
+      <th>Propósito</th>
+      <th>Tipo de Almacenamiento</th>
+      <th>Caducidad</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>theme</code></td>
+      <td>Recuerda su preferencia de tema visual (Modo Oscuro / Modo Claro).</td>
+      <td>LocalStorage</td>
+      <td>Persistente</td>
+    </tr>
+    <tr>
+      <td><code>i18nextLng</code> / <code>i18next</code></td>
+      <td>Almacena su idioma preferido de interfaz (Inglés, Español, Catalán).</td>
+      <td>LocalStorage / Cookie</td>
+      <td>Persistente</td>
+    </tr>
+  </tbody>
+</table>
 
 ### C. Analítica y Rendimiento
 

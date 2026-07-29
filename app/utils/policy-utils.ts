@@ -76,11 +76,18 @@ export async function getPoliciesBySlug(
     slug: string
 ): Promise<Record<string, Policy | null>> {
     const languages = ['en', 'es', 'ca'];
-    const result: Record<string, Policy | null> = {};
+    const policies = await Promise.all(
+        languages.map(async (lang) => ({
+            lang,
+            policy: await getPolicyBySlug(slug, lang),
+        }))
+    );
 
-    for (const lang of languages) {
-        result[lang] = await getPolicyBySlug(slug, lang);
-    }
-
-    return result;
+    return policies.reduce<Record<string, Policy | null>>(
+        (acc, { lang, policy }) => {
+            acc[lang] = policy;
+            return acc;
+        },
+        {}
+    );
 }

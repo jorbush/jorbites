@@ -17,20 +17,65 @@ Les cookies són petits fitxers de text que s'emmagatzemen al vostre dispositiu 
 
 Aquestes cookies i tokens de seguretat són necessaris perquè el Lloc Web funcioni de manera segura. Permeten l'inici de sessió de l'usuari, mantenen la sessió i protegeixen contra vulnerabilitats de seguretat. No es poden desactivar.
 
-| Nom de Cookie / Token | Propòsit | Tipus | Caducitat |
-| :--- | :--- | :--- | :--- |
-| `next-auth.session-token` / `__Secure-next-auth.session-token` | Identifica la vostra sessió d'usuari autenticat. | Essencial | 30 Dies |
-| `next-auth.csrf-token` / `__Host-next-auth.csrf-token` | Protecció CSRF per a formularis i sol·licituds API d'autenticació. | Essencial | Sessió |
-| `next-auth.callback-url` | Emmagatzema l'URL de redirecció durant l'inici de sessió OAuth (Google/GitHub). | Essencial | Sessió |
+<table>
+  <thead>
+    <tr>
+      <th>Nom de Cookie / Token</th>
+      <th>Propòsit</th>
+      <th>Tipus</th>
+      <th>Caducitat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>next-auth.session-token</code> / <code>__Secure-next-auth.session-token</code></td>
+      <td>Identifica la vostra sessió d'usuari autenticat.</td>
+      <td>Essencial</td>
+      <td>30 Dies</td>
+    </tr>
+    <tr>
+      <td><code>next-auth.csrf-token</code> / <code>__Host-next-auth.csrf-token</code></td>
+      <td>Protecció CSRF per a formularis i sol·licituds API d'autenticació.</td>
+      <td>Essencial</td>
+      <td>Sessió</td>
+    </tr>
+    <tr>
+      <td><code>next-auth.callback-url</code></td>
+      <td>Emmagatzema l'URL de redirecció durant l'inici de sessió OAuth (Google/GitHub).</td>
+      <td>Essencial</td>
+      <td>Sessió</td>
+    </tr>
+  </tbody>
+</table>
 
 ### B. Emmagatzematge Funcional i de Preferències (LocalStorage)
 
 Utilitzem el LocalStorage del navegador per conservar els vostres ajustos d'experiència d'usuari sense enviar dades confidencials als servidors.
 
-| Nom de Clau | Propòsit | Tipus d'Emmagatzematge | Caducitat |
-| :--- | :--- | :--- | :--- |
-| `theme` | Recorda la vostra preferència de tema visual (Mode Fosc / Mode Clar). | LocalStorage | Persistent |
-| `i18nextLng` / `i18next` | Emmagatzema el vostre idioma preferit d'interfície (Anglès, Espanyol, Català). | LocalStorage / Cookie | Persistent |
+<table>
+  <thead>
+    <tr>
+      <th>Nom de Clau</th>
+      <th>Propòsit</th>
+      <th>Tipus d'Emmagatzematge</th>
+      <th>Caducitat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>theme</code></td>
+      <td>Recorda la vostra preferència de tema visual (Mode Fosc / Mode Clar).</td>
+      <td>LocalStorage</td>
+      <td>Persistent</td>
+    </tr>
+    <tr>
+      <td><code>i18nextLng</code> / <code>i18next</code></td>
+      <td>Emmagatzema el vostre idioma preferit d'interfície (Anglès, Espanyol, Català).</td>
+      <td>LocalStorage / Cookie</td>
+      <td>Persistent</td>
+    </tr>
+  </tbody>
+</table>
 
 ### C. Analítica i Rendiment
 

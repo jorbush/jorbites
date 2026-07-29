@@ -17,20 +17,65 @@ Cookies are small text files stored on your device when you visit a website. Loc
 
 These cookies and security tokens are required for the Website to function securely. They enable user login, maintain your session, and protect against security vulnerabilities. They cannot be disabled.
 
-| Cookie / Token Name | Purpose | Type | Expiration |
-| :--- | :--- | :--- | :--- |
-| `next-auth.session-token` / `__Secure-next-auth.session-token` | Identifies your authenticated user session. | Essential | 30 Days |
-| `next-auth.csrf-token` / `__Host-next-auth.csrf-token` | CSRF protection for secure authentication forms and API requests. | Essential | Session |
-| `next-auth.callback-url` | Stores redirect targets during OAuth login flows (Google/GitHub). | Essential | Session |
+<table>
+  <thead>
+    <tr>
+      <th>Cookie / Token Name</th>
+      <th>Purpose</th>
+      <th>Type</th>
+      <th>Expiration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>next-auth.session-token</code> / <code>__Secure-next-auth.session-token</code></td>
+      <td>Identifies your authenticated user session.</td>
+      <td>Essential</td>
+      <td>30 Days</td>
+    </tr>
+    <tr>
+      <td><code>next-auth.csrf-token</code> / <code>__Host-next-auth.csrf-token</code></td>
+      <td>CSRF protection for secure authentication forms and API requests.</td>
+      <td>Essential</td>
+      <td>Session</td>
+    </tr>
+    <tr>
+      <td><code>next-auth.callback-url</code></td>
+      <td>Stores redirect targets during OAuth login flows (Google/GitHub).</td>
+      <td>Essential</td>
+      <td>Session</td>
+    </tr>
+  </tbody>
+</table>
 
 ### B. Functional & Preference Storage (LocalStorage)
 
 We use browser LocalStorage to preserve your user experience settings without sending sensitive data to servers.
 
-| Key Name | Purpose | Storage Type | Expiration |
-| :--- | :--- | :--- | :--- |
-| `theme` | Remembers your display theme preference (Dark Mode / Light Mode). | LocalStorage | Persistent |
-| `i18nextLng` / `i18next` | Stores your preferred display language (English, Spanish, Catalan). | LocalStorage / Cookie | Persistent |
+<table>
+  <thead>
+    <tr>
+      <th>Key Name</th>
+      <th>Purpose</th>
+      <th>Storage Type</th>
+      <th>Expiration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>theme</code></td>
+      <td>Remembers your display theme preference (Dark Mode / Light Mode).</td>
+      <td>LocalStorage</td>
+      <td>Persistent</td>
+    </tr>
+    <tr>
+      <td><code>i18nextLng</code> / <code>i18next</code></td>
+      <td>Stores your preferred display language (English, Spanish, Catalan).</td>
+      <td>LocalStorage / Cookie</td>
+      <td>Persistent</td>
+    </tr>
+  </tbody>
+</table>
 
 ### C. Analytics & Performance
 
