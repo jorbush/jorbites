@@ -17,6 +17,15 @@ const DEFAULT_PREFERENCES = {
     achievements: true,
 };
 
+const ALLOWED_KEYS = new Set([
+    'social',
+    'newContent',
+    'eventsAndChallenges',
+    'quests',
+    'voting',
+    'achievements',
+]);
+
 export async function GET() {
     try {
         const currentUser = await getCurrentUser();
@@ -66,17 +75,8 @@ export async function PATCH(request: Request) {
             return badRequest('Invalid request body');
         }
 
-        const allowedKeys = [
-            'social',
-            'newContent',
-            'eventsAndChallenges',
-            'quests',
-            'voting',
-            'achievements',
-        ];
-
         for (const key of Object.keys(body)) {
-            if (!allowedKeys.includes(key)) {
+            if (!ALLOWED_KEYS.has(key)) {
                 return badRequest(`Unknown preference key: ${key}`);
             }
             if (typeof body[key] !== 'boolean') {
