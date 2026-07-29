@@ -36,7 +36,7 @@ The Jorbites Platform relies on automated background microservices to manage and
 
 ## 5. Third-Party Links & Infrastructure
 
-The Platform relies on third-party infrastructure providers including [Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com), [MongoDB](https://www.mongodb.com), [Cloudinary](https://cloudinary.com/), and [Upstash](https://www.upstash.com/). We are not responsible for the availability or content of third-party websites or services linked to or integrated with the Platform.
+The Platform relies on third-party infrastructure providers including [Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com), [MongoDB](https://www.mongodb.com), [Cloudinary](https://cloudinary.com/), [Upstash](https://www.upstash.com/), and [Axiom](https://axiom.co). We are not responsible for the availability or content of third-party websites or services linked to or integrated with the Platform.
 
 ## 6. Disclaimer of Warranties & Limitation of Liability
 

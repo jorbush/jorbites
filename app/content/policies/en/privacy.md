@@ -22,13 +22,14 @@ We collect various types of information to provide, maintain, and improve our se
 
 ## 2. Artificial Intelligence & Microservices Processing
 
-Our Platform integrates automated background microservices and AI technologies to enhance platform functionality:
+Our Platform integrates automated background microservices, telemetry, and AI technologies to enhance platform functionality:
 
 - **AI Processing (Google Gemini API)**: When you generate or import recipes using our AI features, prompts and recipe inputs are processed via the Google Gemini API in accordance with [Google's AI Privacy Notice](https://policies.google.com/privacy).
 - **Automated Recipe Auditing (Tagatoni)**: Shared recipes are audited by our automated microservice (*Tagatoni*) using Google Gemini API to estimate nutritional data (calories) and classify cuisine categories for SEO and discoverability.
 - **Gamification & Badges (Badge Forge)**: Your activity metrics are asynchronously processed by our *Badge Forge* service to calculate user levels and award achievement badges.
 - **Transactional Notifications (Jorbites Notifier)**: System emails, welcome messages, and password resets are queued and dispatched via our *Jorbites Notifier* service.
 - **Automated Backups (Pantry Keeper)**: Database backups are processed by our automated system (*Pantry Keeper*) to prevent data loss and ensure system resiliency.
+- **Server Logging & Error Monitoring (Axiom)**: System logs, error diagnostics, and application performance metrics are securely processed by [Axiom](https://axiom.co/legal/privacy).
 
 ## 3. How We Use Your Information
 
@@ -38,7 +39,7 @@ We use the information we collect to:
 - Process and personalize your recipe experience.
 - Send transactional emails and notifications regarding your account.
 - Calculate gamification badges and user level progression.
-- Analyze site performance using [Vercel Speed Insights](https://vercel.com/docs/speed-insights).
+- Monitor application health, debug system errors, and analyze site performance using [Axiom](https://axiom.co/legal/privacy) and [Vercel Speed Insights](https://vercel.com/docs/speed-insights).
 
 ## 4. Third-Party Service Providers
 
@@ -47,6 +48,7 @@ We do not sell or rent your personal data. We share data only with service provi
 - **Hosting & Infrastructure**: [Vercel](https://vercel.com/legal/privacy-policy), [Hostinger](https://www.hostinger.com/privacy).
 - **Databases & Caching**: [MongoDB](https://www.mongodb.com/legal/privacy-policy), [Upstash Redis](https://upstash.com/trust/privacy.pdf).
 - **Media Storage**: [Cloudinary](https://cloudinary.com/privacy).
+- **Logging & Diagnostic Telemetry**: [Axiom](https://axiom.co/legal/privacy).
 - **AI & Analytics**: [Google Gemini API](https://policies.google.com/privacy), [Vercel Speed Insights](https://vercel.com/legal/privacy-policy).
 
 ## 5. Data Protection Rights (GDPR & Applicable Law)

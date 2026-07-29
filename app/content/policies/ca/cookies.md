@@ -39,10 +39,11 @@ El nostre Lloc Web s'allotja en servidors de tercers i utilitza proveïdors d'in
 - **Allotjament**: [Política de Privacitat de Vercel](https://vercel.com/legal/privacy-policy), [Política de Privacitat de Hostinger](https://www.hostinger.com/privacy)
 - **Base de Dades i Memòria Catxé**: [Política de Privacitat de MongoDB](https://www.mongodb.com/legal/privacy-policy), [Política de Privacitat de Upstash](https://upstash.com/trust/privacy.pdf)
 - **Multimèdia**: [Política de Privacitat de Cloudinary](https://cloudinary.com/privacy)
+- **Registres i Monitoratge**: [Política de Privacitat d'Axiom](https://axiom.co/legal/privacy)
 
 ## 4. Com Gestionar les Cookies i l'Emmagatzematge del Navegador
 
-Podeu esborrar les cookies i l'emmagatzematge local en quisser moment a través de la configuració del vostre navegador web:
+Podeu esborrar les cookies i l'emmagatzematge local en qualsevol moment a través de la configuració del vostre navegador web:
 
 - **Chrome**: Configuració -> Privacitat i seguretat -> Cookies i altres dades de llocs
 - **Firefox**: Opcions -> Privacitat & Seguretat -> Cookies i dades del lloc

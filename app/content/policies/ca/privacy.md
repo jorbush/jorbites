@@ -22,13 +22,14 @@ Recopilem diversos tipus d'informació per proporcionar, mantenir i millorar els
 
 ## 2. Processament per Intel·ligència Artificial i Microserveis
 
-La nostra Plataforma integra microserveis automatitzats en segon pla i tecnologies d'IA per millorar la funcionalitat:
+La nostra Plataforma integra microserveis automatitzats en segon pla, telemetria i tecnologies d'IA per millorar la funcionalitat:
 
 - **Processament d'IA (Google Gemini API)**: En generar o importar receptes utilitzant les nostres funcions d'IA, les entrades són processades a través de l'API de Google Gemini d'acord amb la [Política de Privacitat d'IA de Google](https://policies.google.com/privacy).
 - **Auditoria Automatitzada de Receptes (Tagatoni)**: Les receptes compartides s'auditen mitjançant el nostre microservei automatitzat (*Tagatoni*) utilitzant l'API de Google Gemini per estimar dades nutricionals (calories) i classificar categories de cuina.
 - **Gamificació i Insígnies (Badge Forge)**: Les vostres mètriques d'activitat es processen de forma asíncrona pel nostre servei *Badge Forge* per calcular els nivells d'usuari i atorgar insígnies.
 - **Notificacions Transaccionals (Jorbites Notifier)**: Els correus del sistema i restabliments de contrasenya s'envien a través del nostre servei *Jorbites Notifier*.
 - **Còpies de Seguretat (Pantry Keeper)**: Les còpies de seguretat de la base de dades són gestionades pel nostre sistema automatitzat (*Pantry Keeper*).
+- **Registres del Servidor i Diagnòstic (Axiom)**: Els registres del sistema i diagnòstic d'errors es processen de forma segura mitjançant [Axiom](https://axiom.co/legal/privacy).
 
 ## 3. Com Utilitzem la Vostra Informació
 
@@ -38,7 +39,7 @@ Utilitzem la informació recopilada per a:
 - Processar i personalitzar la vostra experiència amb les receptes.
 - Enviar correus electrònics transaccionals i notificacions de compte.
 - Calcular insígnies de gamificació i progressió de nivell.
-- Analitzar el rendiment del lloc mitjançant [Vercel Speed Insights](https://vercel.com/docs/speed-insights).
+- Supervisar la salut de l'aplicació, solucionar errors i analitzar el rendiment del lloc mitjançant [Axiom](https://axiom.co/legal/privacy) i [Vercel Speed Insights](https://vercel.com/docs/speed-insights).
 
 ## 4. Proveïdors de Serveis de Tercers
 
@@ -47,6 +48,7 @@ No venem ni lloguem les vostres dades personals. Compartim informació només am
 - **Allotjament i Infraestructura**: [Vercel](https://vercel.com/legal/privacy-policy), [Hostinger](https://www.hostinger.com/privacy).
 - **Bases de Dades i Memòria Catxé**: [MongoDB](https://www.mongodb.com/legal/privacy-policy), [Upstash Redis](https://upstash.com/trust/privacy.pdf).
 - **Emmagatzematge Multimèdia**: [Cloudinary](https://cloudinary.com/privacy).
+- **Registres i Telemetria de Diagnòstic**: [Axiom](https://axiom.co/legal/privacy).
 - **IA i Analítica**: [Google Gemini API](https://policies.google.com/privacy), [Vercel Speed Insights](https://vercel.com/legal/privacy-policy).
 
 ## 5. Drets de Protecció de Dades (RGPD)

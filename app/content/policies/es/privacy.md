@@ -22,13 +22,14 @@ Recopilamos varios tipos de información para proporcionar, mantener y mejorar n
 
 ## 2. Procesamiento por Inteligencia Artificial y Microservicios
 
-Nuestra Plataforma integra microservicios automatizados en segundo plano y tecnologías de IA para mejorar la funcionalidad:
+Nuestra Plataforma integra microservicios automatizados en segundo plano, telemetría y tecnologías de IA para mejorar la funcionalidad:
 
 - **Procesamiento de IA (Google Gemini API)**: Al generar o importar recetas utilizando nuestras funciones de IA, las entradas y descripciones son procesadas a través de la API de Google Gemini de acuerdo con la [Política de Privacidad de IA de Google](https://policies.google.com/privacy).
 - **Auditoría Automatizada de Recetas (Tagatoni)**: Las recetas compartidas se auditan mediante nuestro microservicio automatizado (*Tagatoni*) usando la API de Google Gemini para estimar datos nutricionales (calorías) y clasificar categorías de cocina.
 - **Gamificación e Insignias (Badge Forge)**: Sus métricas de actividad son procesadas de forma asíncrona por nuestro servicio *Badge Forge* para calcular los niveles de usuario y otorgar insignias.
 - **Notificaciones Transaccionales (Jorbites Notifier)**: Los correos del sistema y restablecimientos de contraseña se envían a través de nuestro servicio *Jorbites Notifier*.
 - **Copias de Seguridad (Pantry Keeper)**: Las copias de seguridad de la base de datos son gestionadas por nuestro sistema automatizado (*Pantry Keeper*).
+- **Registros del Servidor y Diagnóstico (Axiom)**: Los registros del sistema y diagnóstico de errores son procesados de forma segura mediante [Axiom](https://axiom.co/legal/privacy).
 
 ## 3. Cómo Utilizamos su Información
 
@@ -38,7 +39,7 @@ Utilizamos la información recopilada para:
 - Procesar y personalizar su experiencia con las recetas.
 - Enviar correos electrónicos transaccionales y notificaciones de cuenta.
 - Calcular insignias de gamificación y progresión de nivel.
-- Analizar el rendimiento del sitio mediante [Vercel Speed Insights](https://vercel.com/docs/speed-insights).
+- Supervisar la salud de la aplicación, solucionar errores y analizar el rendimiento del sitio mediante [Axiom](https://axiom.co/legal/privacy) y [Vercel Speed Insights](https://vercel.com/docs/speed-insights).
 
 ## 4. Proveedores de Servicios de Terceros
 
@@ -47,6 +48,7 @@ No vendemos ni alquilamos sus datos personales. Compartimos información solo co
 - **Alojamiento e Infraestructura**: [Vercel](https://vercel.com/legal/privacy-policy), [Hostinger](https://www.hostinger.com/privacy).
 - **Bases de Datos y Caché**: [MongoDB](https://www.mongodb.com/legal/privacy-policy), [Upstash Redis](https://upstash.com/trust/privacy.pdf).
 - **Almacenamiento Multimedia**: [Cloudinary](https://cloudinary.com/privacy).
+- **Registros y Telemetría de Diagnóstico**: [Axiom](https://axiom.co/legal/privacy).
 - **IA y Analítica**: [Google Gemini API](https://policies.google.com/privacy), [Vercel Speed Insights](https://vercel.com/legal/privacy-policy).
 
 ## 5. Derechos de Protección de Datos (RGPD)

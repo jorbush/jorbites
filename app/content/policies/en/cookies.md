@@ -39,6 +39,7 @@ Our Website is hosted on third-party servers and uses infrastructure providers t
 - **Hosting**: [Vercel Privacy Policy](https://vercel.com/legal/privacy-policy), [Hostinger Privacy Policy](https://www.hostinger.com/privacy)
 - **Database & Caching**: [MongoDB Privacy Policy](https://www.mongodb.com/legal/privacy-policy), [Upstash Privacy Policy](https://upstash.com/trust/privacy.pdf)
 - **Media**: [Cloudinary Privacy Policy](https://cloudinary.com/privacy)
+- **Logging & Monitoring**: [Axiom Privacy Policy](https://axiom.co/legal/privacy)
 
 ## 4. How to Manage Cookies and Browser Storage
 

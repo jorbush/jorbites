@@ -36,7 +36,7 @@ La Plataforma Jorbites utilitza microserveis automatitzats en segon pla per gest
 
 ## 5. Enllaços de Tercers i Infraestructura
 
-La Plataforma depèn de proveïdors d'infraestructura de tercers, inclosos [Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com), [MongoDB](https://www.mongodb.com), [Cloudinary](https://cloudinary.com/) i [Upstash](https://www.upstash.com/). No som responsables de la disponibilitat o contingut de llocs o serveis de tercers.
+La Plataforma depèn de proveïdors d'infraestructura de tercers, inclosos [Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com), [MongoDB](https://www.mongodb.com), [Cloudinary](https://cloudinary.com/), [Upstash](https://www.upstash.com/) i [Axiom](https://axiom.co). No som responsables de la disponibilitat o contingut de llocs o serveis de tercers.
 
 ## 6. Limitació de Responsabilitat
 

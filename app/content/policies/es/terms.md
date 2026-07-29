@@ -25,7 +25,7 @@ Al crear una cuenta o acceder a la Plataforma, usted acepta quedar vinculado por
 
 La Plataforma Jorbites utiliza microservicios automatizados en segundo plano para gestionar y mejorar su experiencia:
 
-- **Gamificación y Logros (Badge Forge)**: Los niveles de experiencia de usuario, puntos y insignias de logros se calculan automáticamente mediante nuestros servicios de procesamiento internos. Los puntos e insignias no tienen valor monetario y pueden actualizarse o ajustarse a nuestra discreción.
+- **Gamificación y Logros (Badge Forge)**: Los niveles de experiencia de usuario, puntos e insignias de logros se calculan automáticamente mediante nuestros servicios de procesamiento internos. Los puntos e insignias no tienen valor monetario y pueden actualizarse o ajustarse a nuestra discreción.
 - **Auditoría Automatizada de Recetas (Tagatoni)**: Las recetas compartidas públicamente pueden ser procesadas por servicios automatizados en segundo plano para enriquecer metadatos (como estimaciones nutricionales y clasificación de cocinas).
 - **Notificaciones (Jorbites Notifier)**: Las notificaciones transaccionales y alertas de cuenta se gestionan a través de nuestro microservicio interno de notificaciones.
 
@@ -36,7 +36,7 @@ La Plataforma Jorbites utiliza microservicios automatizados en segundo plano par
 
 ## 5. Enlaces de Terceros e Infraestructura
 
-La Plataforma depende de proveedores de infraestructura de terceros, incluidos [Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com), [MongoDB](https://www.mongodb.com), [Cloudinary](https://cloudinary.com/) y [Upstash](https://www.upstash.com/). No somos responsables de la disponibilidad o contenido de sitios o servicios de terceros.
+La Plataforma depende de proveedores de infraestructura de terceros, incluidos [Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com), [MongoDB](https://www.mongodb.com), [Cloudinary](https://cloudinary.com/), [Upstash](https://www.upstash.com/) y [Axiom](https://axiom.co). No somos responsables de la disponibilidad o contenido de sitios o servicios de terceros.
 
 ## 6. Limitación de Responsabilidad
 

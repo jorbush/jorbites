@@ -39,6 +39,7 @@ Nuestro Sitio Web se aloja en servidores de terceros y utiliza proveedores de in
 - **Alojamiento**: [Política de Privacidad de Vercel](https://vercel.com/legal/privacy-policy), [Política de Privacidad de Hostinger](https://www.hostinger.com/privacy)
 - **Base de Datos y Caché**: [Política de Privacidad de MongoDB](https://www.mongodb.com/legal/privacy-policy), [Política de Privacidad de Upstash](https://upstash.com/trust/privacy.pdf)
 - **Multimedia**: [Política de Privacidad de Cloudinary](https://cloudinary.com/privacy)
+- **Registros y Monitorización**: [Política de Privacidad de Axiom](https://axiom.co/legal/privacy)
 
 ## 4. Cómo Gestionar las Cookies y el Almacenamiento del Navegador
 
