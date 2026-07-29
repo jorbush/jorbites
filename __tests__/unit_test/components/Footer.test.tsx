@@ -85,10 +85,11 @@ describe('<Footer />', () => {
         });
     });
 
-    it('renders the privacy policy and cookies policy links', () => {
+    it('renders the privacy policy, cookies policy, and terms of service links', () => {
         render(<Footer />);
         const privacyLink = screen.getByText('privacy_policy');
         const cookiesLink = screen.getByText('cookies_policy');
+        const termsLink = screen.getByText('terms_of_service');
 
         expect(privacyLink).toBeDefined();
         expect(privacyLink.closest('a')?.getAttribute('href')).toBe(
@@ -97,6 +98,10 @@ describe('<Footer />', () => {
         expect(cookiesLink).toBeDefined();
         expect(cookiesLink.closest('a')?.getAttribute('href')).toBe(
             '/policies/cookies'
+        );
+        expect(termsLink).toBeDefined();
+        expect(termsLink.closest('a')?.getAttribute('href')).toBe(
+            '/policies/terms'
         );
     });
 
@@ -190,6 +195,7 @@ describe('<Footer />', () => {
             expect(screen.getByText(`version ${version}`)).toBeDefined();
             expect(screen.getByText('privacy_policy')).toBeDefined();
             expect(screen.getByText('cookies_policy')).toBeDefined();
+            expect(screen.getByText('terms_of_service')).toBeDefined();
             expect(screen.getByAltText('Jorbites Logo')).toBeDefined();
         });
     });

@@ -3,41 +3,61 @@ title: 'Política de Cookies'
 description: 'Política de Cookies de Jorbites'
 ---
 
-Última actualización: [6 de diciembre de 2025]
+Última actualización: 29 de julio de 2026
 
-Esta Política de Cookies explica cómo **Jorbites** ("nosotros", "nos" o "nuestro") utiliza cookies y tecnologías similares en nuestro sitio web, accesible en [https://jorbites.com](https://jorbites.com) (el "Sitio Web").
+Esta Política de Cookies explica cómo **Jorbites** ("nosotros", "nuestro" o "nos") utiliza cookies y tecnologías de almacenamiento local en nuestro sitio web, accesible en [https://jorbites.com](https://jorbites.com) (el "Sitio Web").
 
-## ¿Qué son las cookies?
+## 1. ¿Qué son las cookies y el almacenamiento local?
 
-Las cookies son pequeños archivos de texto que se almacenan en su dispositivo (ordenador, tableta o móvil) cuando visita un sitio web. Se utilizan ampliamente para que los sitios web funcionen o para mejorar su eficiencia, así como para proporcionar información a los propietarios del sitio web.
+Las cookies son pequeños archivos de texto que se almacenan en su dispositivo cuando visita un sitio web. El almacenamiento local (como `localStorage` y `sessionStorage` de HTML5) permite a los sitios web almacenar y recuperar datos en su navegador para mantener funciones esenciales y recordar preferencias.
 
-## Tipos de cookies que utilizamos
+## 2. Cookies y Almacenamiento que Utilizamos
 
-### Cookies Técnicas Esenciales
+### A. Cookies Técnicas Esenciales (Estrictamente Necesarias)
 
-Estas cookies son necesarias para que el Sitio Web funcione y no se pueden desactivar en nuestros sistemas. Generalmente, solo se configuran en respuesta a acciones realizadas por usted que constituyen una solicitud de servicios, como establecer sus preferencias de privacidad, iniciar sesión o completar formularios.
+Estas cookies y tokens de seguridad son necesarios para que el Sitio Web funcione de manera segura. Permiten el inicio de sesión del usuario, mantienen la sesión y protegen contra vulnerabilidades de seguridad. No se pueden desactivar.
 
--   **Cookies de Sesión**: Estas cookies son temporales y se eliminan cuando cierra su navegador. Se utilizan para mantener su sesión y permitirle navegar por el Sitio Web.
--   **Cookies de Autenticación**: Utilizamos cookies de autenticación para identificarlo cuando inicia sesión en nuestro Sitio Web. Utilizamos servicios de autenticación de terceros, como [Google SSO](https://policies.google.com/privacy) y [GitHub SSO](https://docs.github.com/en/github/authenticating-to-github/githubs-privacy-statement).
+| Nombre de Cookie / Token | Propósito | Tipo | Caducidad |
+| :--- | :--- | :--- | :--- |
+| `next-auth.session-token` / `__Secure-next-auth.session-token` | Identifica su sesión de usuario autenticado. | Esencial | 30 Días |
+| `next-auth.csrf-token` / `__Host-next-auth.csrf-token` | Protección CSRF para formularios y solicitudes API de autenticación. | Esencial | Sesión |
+| `next-auth.callback-url` | Almacena la URL de redirección durante el inicio de sesión OAuth (Google/GitHub). | Esencial | Sesión |
 
-## Servicios de terceros
+### B. Almacenamiento Funcional y de Preferencias (LocalStorage)
 
-Nuestro Sitio Web está alojado en servidores de terceros y utiliza varios servicios de terceros que pueden establecer cookies en su dispositivo. Utilizamos servicios de [Vercel](https://vercel.com) y [Hostinger](https://www.hostinger.com) para el alojamiento, [MongoDB](https://www.mongodb.com) para nuestra base de datos, [Cloudinary](https://cloudinary.com/) para el almacenamiento de imágenes y [Upstash](https://www.upstash.com/) para el almacenamiento en caché.
+Utilizamos el LocalStorage del navegador para conservar sus ajustes de experiencia de usuario sin enviar datos confidenciales a los servidores.
 
--   [Política de Privacidad de Vercel](https://vercel.com/legal/privacy-policy)
--   [Política de Privacidad de Hostinger](https://www.hostinger.com/privacy)
--   [Política de Privacidad de MongoDB](https://www.mongodb.com/legal/privacy-policy)
--   [Política de Privacidad de Cloudinary](https://cloudinary.com/privacy)
--   [Política de Privacidad de Upstash](https://upstash.com/trust/privacy.pdf)
+| Nombre de Clave | Propósito | Tipo de Almacenamiento | Caducidad |
+| :--- | :--- | :--- | :--- |
+| `theme` | Recuerda su preferencia de tema visual (Modo Oscuro / Modo Claro). | LocalStorage | Persistente |
+| `i18nextLng` / `i18next` | Almacena su idioma preferido de interfaz (Inglés, Español, Catalán). | LocalStorage / Cookie | Persistente |
 
-## Cómo gestionar las cookies
+### C. Analítica y Rendimiento
 
-Puede controlar y/o eliminar las cookies como desee. Puede eliminar todas las cookies que ya están en su ordenador y puede configurar la mayoría de los navegadores para evitar que se coloquen. Sin embargo, si hace esto, es posible que deba ajustar manualmente algunas preferencias cada vez que visite un sitio y que algunos servicios y funcionalidades no funcionen.
+Utilizamos [Vercel Speed Insights](https://vercel.com/docs/speed-insights) para medir métricas de rendimiento agregadas (tiempos de carga de páginas). Este servicio mide el rendimiento general sin utilizar cookies de seguimiento de terceros ni almacenar perfiles identificables.
 
-## Cambios en la Política de Cookies
+## 3. Infraestructura de Terceros
 
-Podemos actualizar nuestra Política de Cookies de vez en cuando. Le notificaremos cualquier cambio publicando la nueva Política de Cookies en esta página.
+Nuestro Sitio Web se aloja en servidores de terceros y utiliza proveedores de infraestructura que pueden establecer conexiones técnicas:
 
-## Contacto
+- **Alojamiento**: [Política de Privacidad de Vercel](https://vercel.com/legal/privacy-policy), [Política de Privacidad de Hostinger](https://www.hostinger.com/privacy)
+- **Base de Datos y Caché**: [Política de Privacidad de MongoDB](https://www.mongodb.com/legal/privacy-policy), [Política de Privacidad de Upstash](https://upstash.com/trust/privacy.pdf)
+- **Multimedia**: [Política de Privacidad de Cloudinary](https://cloudinary.com/privacy)
+
+## 4. Cómo Gestionar las Cookies y el Almacenamiento del Navegador
+
+Puede borrar las cookies y el almacenamiento local en cualquier momento a través de la configuración de su navegador web:
+
+- **Chrome**: Configuración -> Privacidad y seguridad -> Cookies y otros datos de sitios
+- **Firefox**: Opciones -> Privacidad & Seguridad -> Cookies y datos del sitio
+- **Safari**: Preferencias -> Privacidad -> Gestionar datos del sitio web
+
+*Nota: Desactivar o borrar las cookies esenciales cerrará la sesión de su cuenta de Jorbites.*
+
+## 5. Cambios en esta Política
+
+Podemos actualizar nuestra Política de Cookies periódicamente. Publicaremos cualquier cambio en esta página con la fecha de "Última actualización" revisada.
+
+## 6. Contacto
 
 Si tiene alguna pregunta sobre esta Política de Cookies, puede contactarnos en [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com) o consultar nuestra [Política de Privacidad](/policies/privacy).

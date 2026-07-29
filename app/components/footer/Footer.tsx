@@ -88,6 +88,13 @@ const Footer = () => {
                         >
                             {t('cookies_policy')}
                         </Link>
+                        <Link
+                            href="/policies/terms"
+                            className="text-neutral-500 transition-colors duration-200 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
+                            prefetch={false}
+                        >
+                            {t('terms_of_service')}
+                        </Link>
                     </nav>
                     <Link
                         href="/"
