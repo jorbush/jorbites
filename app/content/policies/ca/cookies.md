@@ -17,65 +17,16 @@ Les cookies són petits fitxers de text que s'emmagatzemen al vostre dispositiu 
 
 Aquestes cookies i tokens de seguretat són necessaris perquè el Lloc Web funcioni de manera segura. Permeten l'inici de sessió de l'usuari, mantenen la sessió i protegeixen contra vulnerabilitats de seguretat. No es poden desactivar.
 
-<table>
-  <thead>
-    <tr>
-      <th>Nom de Cookie / Token</th>
-      <th>Propòsit</th>
-      <th>Tipus</th>
-      <th>Caducitat</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>next-auth.session-token</code> / <code>__Secure-next-auth.session-token</code></td>
-      <td>Identifica la vostra sessió d'usuari autenticat.</td>
-      <td>Essencial</td>
-      <td>30 Dies</td>
-    </tr>
-    <tr>
-      <td><code>next-auth.csrf-token</code> / <code>__Host-next-auth.csrf-token</code></td>
-      <td>Protecció CSRF per a formularis i sol·licituds API d'autenticació.</td>
-      <td>Essencial</td>
-      <td>Sessió</td>
-    </tr>
-    <tr>
-      <td><code>next-auth.callback-url</code></td>
-      <td>Emmagatzema l'URL de redirecció durant l'inici de sessió OAuth (Google/GitHub).</td>
-      <td>Essencial</td>
-      <td>Sessió</td>
-    </tr>
-  </tbody>
-</table>
+- **`next-auth.session-token` / `__Secure-next-auth.session-token`**: Identifica la vostra sessió d'usuari autenticat (Tipus: Essencial, Caducitat: 30 Dies).
+- **`next-auth.csrf-token` / `__Host-next-auth.csrf-token`**: Protecció CSRF per a formularis i sol·licituds API d'autenticació (Tipus: Essencial, Caducitat: Sessió).
+- **`next-auth.callback-url`**: Emmagatzema l'URL de redirecció durant l'inici de sessió OAuth (Google/GitHub) (Tipus: Essencial, Caducitat: Sessió).
 
 ### B. Emmagatzematge Funcional i de Preferències (LocalStorage)
 
 Utilitzem el LocalStorage del navegador per conservar els vostres ajustos d'experiència d'usuari sense enviar dades confidencials als servidors.
 
-<table>
-  <thead>
-    <tr>
-      <th>Nom de Clau</th>
-      <th>Propòsit</th>
-      <th>Tipus d'Emmagatzematge</th>
-      <th>Caducitat</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>theme</code></td>
-      <td>Recorda la vostra preferència de tema visual (Mode Fosc / Mode Clar).</td>
-      <td>LocalStorage</td>
-      <td>Persistent</td>
-    </tr>
-    <tr>
-      <td><code>i18nextLng</code> / <code>i18next</code></td>
-      <td>Emmagatzema el vostre idioma preferit d'interfície (Anglès, Espanyol, Català).</td>
-      <td>LocalStorage / Cookie</td>
-      <td>Persistent</td>
-    </tr>
-  </tbody>
-</table>
+- **`theme`**: Recorda la vostra preferència de tema visual (Mode Fosc / Mode Clar) (Tipus: LocalStorage, Caducitat: Persistent).
+- **`i18nextLng` / `i18next`**: Emmagatzema el vostre idioma preferit d'interfície (Anglès, Espanyol, Català) (Tipus: LocalStorage / Cookie, Caducitat: Persistent).
 
 ### C. Analítica i Rendiment
 
@@ -91,7 +42,7 @@ El nostre Lloc Web s'allotja en servidors de tercers i utilitza proveïdors d'in
 
 ## 4. Com Gestionar les Cookies i l'Emmagatzematge del Navegador
 
-Podeu esborrar les cookies i l'emmagatzematge local en qualsevol moment a través de la configuració del vostre navegador web:
+Podeu esborrar les cookies i l'emmagatzematge local en quisser moment a través de la configuració del vostre navegador web:
 
 - **Chrome**: Configuració -> Privacitat i seguretat -> Cookies i altres dades de llocs
 - **Firefox**: Opcions -> Privacitat & Seguretat -> Cookies i dades del lloc
