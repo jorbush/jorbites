@@ -26,6 +26,9 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentUser }) => {
 
     const handleChangeLanguage = async (selectedLanguage: string) => {
         i18n.changeLanguage(selectedLanguage);
+        if (typeof document !== 'undefined') {
+            document.cookie = `i18next=${selectedLanguage};path=/;max-age=31536000;SameSite=Lax`;
+        }
         if (currentUser) {
             try {
                 const res = await fetch('/api/user/language', {

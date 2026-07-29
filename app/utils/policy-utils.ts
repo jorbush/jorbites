@@ -68,3 +68,26 @@ export async function getPolicyBySlug(
         language,
     };
 }
+
+/**
+ * Get all localized versions of a policy by slug
+ */
+export async function getPoliciesBySlug(
+    slug: string
+): Promise<Record<string, Policy | null>> {
+    const languages = ['en', 'es', 'ca'];
+    const policies = await Promise.all(
+        languages.map(async (lang) => ({
+            lang,
+            policy: await getPolicyBySlug(slug, lang),
+        }))
+    );
+
+    return policies.reduce<Record<string, Policy | null>>(
+        (acc, { lang, policy }) => {
+            acc[lang] = policy;
+            return acc;
+        },
+        {}
+    );
+}

@@ -17,6 +17,7 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/app/utils/policy-utils', () => ({
     getPolicyBySlug: vi.fn(),
+    getPoliciesBySlug: vi.fn(),
 }));
 
 const mockPolicy = {
@@ -31,9 +32,18 @@ This is a mock privacy policy.
     language: 'en',
 };
 
+const mockPolicies = {
+    en: mockPolicy,
+    es: mockPolicy,
+    ca: mockPolicy,
+};
+
 describe('PrivacyPolicyPage', () => {
     beforeEach(() => {
         vi.spyOn(policyUtils, 'getPolicyBySlug').mockResolvedValue(mockPolicy);
+        vi.spyOn(policyUtils, 'getPoliciesBySlug').mockResolvedValue(
+            mockPolicies
+        );
     });
 
     afterEach(() => {

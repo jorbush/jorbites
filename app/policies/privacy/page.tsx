@@ -1,5 +1,5 @@
 import PrivacyPolicy from '@/app/policies/privacy/privacy';
-import { getPolicyBySlug } from '@/app/utils/policy-utils';
+import { getPoliciesBySlug, getPolicyBySlug } from '@/app/utils/policy-utils';
 import PolicySkeleton from '@/app/components/policies/PolicySkeleton';
 import { cookies } from 'next/headers';
 import { Metadata } from 'next';
@@ -7,7 +7,9 @@ import { Metadata } from 'next';
 export async function generateMetadata(): Promise<Metadata> {
     const cookieStore = await cookies();
     const lang = cookieStore.get('i18next')?.value || 'en';
-    const policy = await getPolicyBySlug('privacy', lang);
+    const policy =
+        (await getPolicyBySlug('privacy', lang)) ||
+        (await getPolicyBySlug('privacy', 'es'));
 
     if (!policy) {
         return {
@@ -22,15 +24,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const PrivacyPolicyPage = async () => {
-    const cookieStore = await cookies();
-    const lang = cookieStore.get('i18next')?.value || 'en';
-    const policy = await getPolicyBySlug('privacy', lang);
+    const policies = await getPoliciesBySlug('privacy');
 
-    if (!policy) {
+    if (!policies || (!policies.en && !policies.es && !policies.ca)) {
         return <PolicySkeleton />;
     }
 
-    return <PrivacyPolicy policy={policy} />;
+    return <PrivacyPolicy policies={policies} />;
 };
 
 export default PrivacyPolicyPage;

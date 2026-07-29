@@ -3,62 +3,73 @@ title: 'Privacy Policy'
 description: 'Jorbites Privacy Policy'
 ---
 
-Last Updated: December 6, 2025
+Last Updated: July 29, 2026
 
-This Privacy Policy explains how **Jorbites** ("we", "us", or "our") collects, uses, and discloses your personal information when you use our website, accessible at [https://jorbites.com](https://jorbites.com) (the "Website").
+This Privacy Policy explains how **Jorbites** ("we", "us", or "our") collects, uses, and discloses your personal information when you use our website, accessible at [https://jorbites.com](https://jorbites.com) (the "Website"), and our associated microservices.
 
-## Information We Collect
+## 1. Information We Collect
 
-We collect various types of information to provide and improve our services to you.
+We collect various types of information to provide, maintain, and improve our services:
 
--   **User Data**:
-    -   **Identification and Contact**: Name, email address, username.
-    -   **Authentication**: We use third-party authentication services, such as Google and GitHub, to verify your identity.
-    -   **Preferences and Settings**: Language, theme, and other personalized settings.
--   **Activity Data**:
-    -   **Recipes**: Recipes you create, save, or interact with.
-    -   **Comments**: Comments you post on recipes and other content.
--   **Images**: Images you upload are stored on [Cloudinary](https://cloudinary.com/).
+- **User & Account Data**:
+  - **Identification and Contact**: Name, email address, username, profile picture.
+  - **Authentication**: Authentication via third-party OAuth providers ([Google SSO](https://policies.google.com/privacy), [GitHub SSO](https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement)) or email login credentials.
+  - **Preferences & Settings**: Language (`i18next`), theme preferences (`dark`/`light`), and custom application settings.
+- **Activity & Content Data**:
+  - **Recipes & Interactions**: Recipes you create, edit, save to favorites, planning lists, and comments you post.
+  - **Engagement & Levels**: Activity metrics (recipe creation counts, engagement points) processed to award user levels and achievement badges.
+- **Media Files**: Images you upload are stored and served via [Cloudinary](https://cloudinary.com/).
 
-## How We Use Your Information
+## 2. Artificial Intelligence & Microservices Processing
 
-We use the information we collect for various purposes:
+Our Platform integrates automated background microservices, telemetry, and AI technologies to enhance platform functionality:
 
--   To provide and maintain our services.
--   To improve and personalize your experience.
--   To communicate with you about updates and news.
--   To analyze usage and improve our services.
+- **AI Processing (Google Gemini API)**: When you generate or import recipes using our AI features, prompts and recipe inputs are processed via the Google Gemini API in accordance with [Google's AI Privacy Notice](https://policies.google.com/privacy).
+- **Automated Recipe Auditing (Tagatoni)**: Shared recipes are audited by our automated microservice (*Tagatoni*) using Google Gemini API to estimate nutritional data (calories) and classify cuisine categories for SEO and discoverability.
+- **Gamification & Badges (Badge Forge)**: Your activity metrics are asynchronously processed by our *Badge Forge* service to calculate user levels and award achievement badges.
+- **Transactional Notifications (Jorbites Notifier)**: System emails, welcome messages, and password resets are queued and dispatched via our *Jorbites Notifier* service.
+- **Automated Backups (Pantry Keeper)**: Database backups are processed by our automated system (*Pantry Keeper*) to prevent data loss and ensure system resiliency.
+- **Server Logging & Error Monitoring (Axiom)**: System logs, error diagnostics, and application performance metrics are securely processed by [Axiom](https://axiom.co/legal/privacy).
 
-## Sharing Your Information
+## 3. How We Use Your Information
 
-We do not sell or rent your personal information. We may share your information in the following cases:
+We use the information we collect to:
 
--   **Service Providers**: We use third-party services for hosting ([Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com)), database ([MongoDB](https://www.mongodb.com)), image storage ([Cloudinary](https://cloudinary.com/)), caching ([Upstash](https://www.upstash.com/), [Redis](https://www.redis.io)), and security ([Rate Limit](https://github.com/upstash/ratelimit-js)).
--   **Legal Requirements**: If required by law or in response to valid requests from public authorities.
+- Provide, maintain, and secure the Platform.
+- Process and personalize your recipe experience.
+- Send transactional emails and notifications regarding your account.
+- Calculate gamification badges and user level progression.
+- Monitor application health, debug system errors, and analyze site performance using [Axiom](https://axiom.co/legal/privacy) and [Vercel Speed Insights](https://vercel.com/docs/speed-insights).
 
-## Data Security
+## 4. Third-Party Service Providers
 
-We take reasonable measures to protect your personal information from unauthorized access, use, or disclosure.
+We do not sell or rent your personal data. We share data only with service providers required for operating the Platform:
 
-## Your Rights
+- **Hosting & Infrastructure**: [Vercel](https://vercel.com/legal/privacy-policy), [Hostinger](https://www.hostinger.com/privacy).
+- **Databases & Caching**: [MongoDB](https://www.mongodb.com/legal/privacy-policy), [Upstash Redis](https://upstash.com/trust/privacy.pdf).
+- **Media Storage**: [Cloudinary](https://cloudinary.com/privacy).
+- **Logging & Diagnostic Telemetry**: [Axiom](https://axiom.co/legal/privacy).
+- **AI & Analytics**: [Google Gemini API](https://policies.google.com/privacy), [Vercel Speed Insights](https://vercel.com/legal/privacy-policy).
 
-You have the following rights regarding your personal information:
+## 5. Data Protection Rights (GDPR & Applicable Law)
 
--   **Access**: To request access to your personal data.
--   **Rectification**: To request correction of inaccurate data.
--   **Deletion**: To request the deletion of your data.
--   **Opposition**: To object to the processing of your data.
+Depending on your location, you have the following rights regarding your personal information:
 
-To exercise these rights, please contact us at [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).
+- **Access**: Request a copy of the personal data we hold about you.
+- **Rectification**: Request correction of inaccurate or incomplete data.
+- **Erasure / Deletion**: Request deletion of your account and personal data.
+- **Restriction & Objection**: Object to or restrict certain processing activities.
 
-## Data Retention
+To exercise any of these rights, please contact us at [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).
 
-We retain your personal information for as long as necessary to provide our services and comply with legal obligations.
+## 6. Data Security & Retention
 
-## Changes to This Policy
+We implement security measures to protect your data against unauthorized access, loss, or alteration. We retain personal data for as long as your account remains active or as needed to provide our services.
 
-We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page.
+## 7. Changes to This Policy
 
-## Contact
+We may update our Privacy Policy from time to time. Any updates will be posted on this page with a revised "Last Updated" date.
+
+## 8. Contact
 
 If you have any questions about this Privacy Policy, please contact us at [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).

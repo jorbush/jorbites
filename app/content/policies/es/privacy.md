@@ -3,62 +3,73 @@ title: 'Política de Privacidad'
 description: 'Política de Privacidad de Jorbites'
 ---
 
-Última actualización: 6 de diciembre de 2025
+Última actualización: 29 de julio de 2026
 
-Esta Política de Privacidad explica cómo **Jorbites** ("nosotros", "nos" o "nuestro") recopila, utiliza y divulga su información personal cuando utiliza nuestro sitio web, accesible en [https://jorbites.com](https://jorbites.com) (el "Sitio Web").
+Esta Política de Privacidad explica cómo **Jorbites** ("nosotros", "nuestro" o "nos") recopila, utiliza y divulga su información personal cuando utiliza nuestro sitio web, accesible en [https://jorbites.com](https://jorbites.com) (el "Sitio Web"), y nuestros microservicios asociados.
 
-## Información que Recopilamos
+## 1. Información que Recopilamos
 
-Recopilamos varios tipos de información para proporcionar y mejorar nuestros servicios para usted.
+Recopilamos varios tipos de información para proporcionar, mantener y mejorar nuestros servicios:
 
--   **Datos del Usuario**:
-    -   **Identificación y Contacto**: Nombre, dirección de correo electrónico, nombre de usuario.
-    -   **Autenticación**: Utilizamos servicios de autenticación de terceros, como Google y GitHub, para verificar su identidad.
-    -   **Preferencias y Configuración**: Idioma, tema y otras configuraciones personalizadas.
--   **Datos de Actividad**:
-    -   **Recetas**: Recetas que crea, guarda o con las que interactúa.
-    -   **Comentarios**: Comentarios que publica en recetas y otro contenido.
--   **Imágenes**: Las imágenes que carga se almacenan en [Cloudinary](https://cloudinary.com/).
+- **Datos de Usuario y Cuenta**:
+  - **Identificación y Contacto**: Nombre, dirección de correo electrónico, nombre de usuario, imagen de perfil.
+  - **Autenticación**: Autenticación a través de proveedores de OAuth de terceros ([Google SSO](https://policies.google.com/privacy), [GitHub SSO](https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement)) o credenciales de correo electrónico.
+  - **Preferencias y Ajustes**: Idioma (`i18next`), preferencia de tema (`dark`/`light`) y configuraciones personalizadas.
+- **Datos de Actividad y Contenido**:
+  - **Recetas e Interacciones**: Recetas que crea, edita, guarda en favoritos, listas de planificación y comentarios que publica.
+  - **Niveles e Insignias**: Métricas de actividad procesadas para otorgar niveles de usuario e insignias de logros.
+- **Archivos Multimedia**: Las imágenes que carga se almacenan y sirven a través de [Cloudinary](https://cloudinary.com/).
 
-## Cómo Usamos Su Información
+## 2. Procesamiento por Inteligencia Artificial y Microservicios
 
-Utilizamos la información que recopilamos para diversos fines:
+Nuestra Plataforma integra microservicios automatizados en segundo plano, telemetría y tecnologías de IA para mejorar la funcionalidad:
 
--   Para proporcionar y mantener nuestros servicios.
--   Para mejorar y personalizar su experiencia.
--   Para comunicarnos con usted sobre actualizaciones y noticias.
--   Para analizar el uso y mejorar nuestros servicios.
+- **Procesamiento de IA (Google Gemini API)**: Al generar o importar recetas utilizando nuestras funciones de IA, las entradas y descripciones son procesadas a través de la API de Google Gemini de acuerdo con la [Política de Privacidad de IA de Google](https://policies.google.com/privacy).
+- **Auditoría Automatizada de Recetas (Tagatoni)**: Las recetas compartidas se auditan mediante nuestro microservicio automatizado (*Tagatoni*) usando la API de Google Gemini para estimar datos nutricionales (calorías) y clasificar categorías de cocina.
+- **Gamificación e Insignias (Badge Forge)**: Sus métricas de actividad son procesadas de forma asíncrona por nuestro servicio *Badge Forge* para calcular los niveles de usuario y otorgar insignias.
+- **Notificaciones Transaccionales (Jorbites Notifier)**: Los correos del sistema y restablecimientos de contraseña se envían a través de nuestro servicio *Jorbites Notifier*.
+- **Copias de Seguridad (Pantry Keeper)**: Las copias de seguridad de la base de datos son gestionadas por nuestro sistema automatizado (*Pantry Keeper*).
+- **Registros del Servidor y Diagnóstico (Axiom)**: Los registros del sistema y diagnóstico de errores son procesados de forma segura mediante [Axiom](https://axiom.co/legal/privacy).
 
-## Compartir Su Información
+## 3. Cómo Utilizamos su Información
 
-No vendemos ni alquilamos su información personal. Podemos compartir su información en los siguientes casos:
+Utilizamos la información recopilada para:
 
--   **Proveedores de Servicios**: Utilizamos servicios de terceros para el alojamiento ([Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com)), base de datos ([MongoDB](https://www.mongodb.com)), almacenamiento de imágenes ([Cloudinary](https://cloudinary.com/)), almacenamiento en caché ([Upstash](https://www.upstash.com/), [Redis](https://www.redis.io)) y seguridad ([Rate Limit](https://github.com/upstash/ratelimit-js)).
--   **Requisitos Legales**: Si así lo exige la ley o en respuesta a solicitudes válidas de las autoridades públicas.
+- Proporcionar, mantener y proteger la Plataforma.
+- Procesar y personalizar su experiencia con las recetas.
+- Enviar correos electrónicos transaccionales y notificaciones de cuenta.
+- Calcular insignias de gamificación y progresión de nivel.
+- Supervisar la salud de la aplicación, solucionar errores y analizar el rendimiento del sitio mediante [Axiom](https://axiom.co/legal/privacy) y [Vercel Speed Insights](https://vercel.com/docs/speed-insights).
 
-## Seguridad de los Datos
+## 4. Proveedores de Servicios de Terceros
 
-Tomamos medidas razonables para proteger su información personal del acceso, uso o divulgación no autorizados.
+No vendemos ni alquilamos sus datos personales. Compartimos información solo con proveedores de servicios necesarios para operar la Plataforma:
 
-## Sus Derechos
+- **Alojamiento e Infraestructura**: [Vercel](https://vercel.com/legal/privacy-policy), [Hostinger](https://www.hostinger.com/privacy).
+- **Bases de Datos y Caché**: [MongoDB](https://www.mongodb.com/legal/privacy-policy), [Upstash Redis](https://upstash.com/trust/privacy.pdf).
+- **Almacenamiento Multimedia**: [Cloudinary](https://cloudinary.com/privacy).
+- **Registros y Telemetría de Diagnóstico**: [Axiom](https://axiom.co/legal/privacy).
+- **IA y Analítica**: [Google Gemini API](https://policies.google.com/privacy), [Vercel Speed Insights](https://vercel.com/legal/privacy-policy).
 
-Usted tiene los siguientes derechos con respecto a su información personal:
+## 5. Derechos de Protección de Datos (RGPD)
 
--   **Acceso**: Para solicitar acceso a sus datos personales.
--   **Rectificación**: Para solicitar la corrección de datos inexactos.
--   **Eliminación**: Para solicitar la eliminación de sus datos.
--   **Oposición**: Para oponerse al tratamiento de sus datos.
+Según su ubicación, tiene los siguientes derechos con respecto a su información personal:
 
-Para ejercer estos derechos, contáctenos en [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).
+- **Acceso**: Solicitar una copia de sus datos personales.
+- **Rectificación**: Solicitar la corrección de datos inexactos.
+- **Supresión / Eliminación**: Solicitar la eliminación de su cuenta y datos personales.
+- **Oposición y Limitación**: Oponerse o limitar ciertos tratamientos de datos.
 
-## Retención de Datos
+Para ejercer cualquiera de estos derechos, contáctenos en [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).
 
-Retenemos su información personal durante el tiempo que sea necesario para proporcionar nuestros servicios y cumplir con las obligaciones legales.
+## 6. Seguridad y Retención de Datos
 
-## Cambios a Esta Política
+Implementamos medidas de seguridad para proteger sus datos contra accesos no autorizados. Conservamos los datos personales mientras su cuenta permanezca activa.
 
-Podemos actualizar esta Política de Privacidad de vez en cuando. Le notificaremos cualquier cambio publicando la nueva política en esta página.
+## 7. Cambios en esta Política
 
-## Contacto
+Podemos actualizar nuestra Política de Privacidad periódicamente. Publicaremos cualquier cambio en esta página con la fecha de "Última actualización" revisada.
+
+## 8. Contacto
 
 Si tiene alguna pregunta sobre esta Política de Privacidad, contáctenos en [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).

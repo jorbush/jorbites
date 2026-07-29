@@ -1,4 +1,5 @@
 'use client';
+
 import Container from '@/app/components/utils/Container';
 import { useRouter } from 'next/navigation';
 import { FiChevronLeft } from 'react-icons/fi';
@@ -7,12 +8,12 @@ import ReactMarkdown from 'react-markdown';
 import { PolicyStyles } from '@/app/components/policies/PolicyStyles';
 import { useTranslation } from 'react-i18next';
 
-interface CookiesPolicyProps {
+interface TermsPolicyProps {
     policy?: Policy | null;
     policies?: Record<string, Policy | null>;
 }
 
-const CookiesPolicy: React.FC<CookiesPolicyProps> = ({
+const TermsPolicy: React.FC<TermsPolicyProps> = ({
     policy: initialPolicy,
     policies,
 }) => {
@@ -56,4 +57,4 @@ const CookiesPolicy: React.FC<CookiesPolicyProps> = ({
     );
 };
 
-export default CookiesPolicy;
+export default TermsPolicy;

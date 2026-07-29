@@ -1,4 +1,4 @@
-import CookiesPolicy from '@/app/policies/cookies/cookies';
+import TermsPolicy from '@/app/policies/terms/terms';
 import { getPoliciesBySlug, getPolicyBySlug } from '@/app/utils/policy-utils';
 import PolicySkeleton from '@/app/components/policies/PolicySkeleton';
 import { cookies } from 'next/headers';
@@ -8,12 +8,12 @@ export async function generateMetadata(): Promise<Metadata> {
     const cookieStore = await cookies();
     const lang = cookieStore.get('i18next')?.value || 'en';
     const policy =
-        (await getPolicyBySlug('cookies', lang)) ||
-        (await getPolicyBySlug('cookies', 'es'));
+        (await getPolicyBySlug('terms', lang)) ||
+        (await getPolicyBySlug('terms', 'es'));
 
     if (!policy) {
         return {
-            title: 'Cookies Policy | Jorbites',
+            title: 'Terms of Service | Jorbites',
         };
     }
 
@@ -23,14 +23,14 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-const CookiesPolicyPage = async () => {
-    const policies = await getPoliciesBySlug('cookies');
+const TermsPolicyPage = async () => {
+    const policies = await getPoliciesBySlug('terms');
 
     if (!policies || (!policies.en && !policies.es && !policies.ca)) {
         return <PolicySkeleton />;
     }
 
-    return <CookiesPolicy policies={policies} />;
+    return <TermsPolicy policies={policies} />;
 };
 
-export default CookiesPolicyPage;
+export default TermsPolicyPage;

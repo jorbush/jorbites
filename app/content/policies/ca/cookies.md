@@ -3,41 +3,58 @@ title: 'Política de Cookies'
 description: 'Política de Cookies de Jorbites'
 ---
 
-Darrera actualització: [6 de desembre de 2025]
+Última actualització: 29 de juliol de 2026
 
-Aquesta Política de Cookies explica com **Jorbites** ("nosaltres", "ens" o "nostre") utilitza cookies i tecnologies similars al nostre lloc web, accessible a [https://jorbites.com](https://jorbites.com) (el "Lloc Web").
+Aquesta Política de Cookies explica com **Jorbites** ("nosaltres", "nostre" o "ens") utilitza cookies i tecnologies d'emmagatzematge local al nostre lloc web, accessible a [https://jorbites.com](https://jorbites.com) (el "Lloc Web").
 
-## Què són les cookies?
+## 1. Què són les cookies i l'emmagatzematge local?
 
-Les cookies són petits fitxers de text que s’emmagatzemen al vostre dispositiu (ordinador, tauleta o mòbil) quan visiteu un lloc web. S’utilitzen àmpliament per fer que els llocs web funcionin o per millorar-ne l’eficiència, així com per proporcionar informació als propietaris del lloc web.
+Les cookies són petits fitxers de text que s'emmagatzemen al vostre dispositiu quan visiteu un lloc web. L'emmagatzematge local (com `localStorage` i `sessionStorage` d'HTML5) permet als llocs web emmagatzemar i recuperar dades al vostre navegador per mantenir funcions essencials i recordar preferències.
 
-## Tipus de cookies que utilitzem
+## 2. Cookies i Emmagatzematge que Utilitzem
 
-### Cookies Tècniques Essencials
+### A. Cookies Tècniques Essencials (Estrictament Necessàries)
 
-Aquestes cookies són necessàries perquè el Lloc Web funcioni i no es poden desactivar als nostres sistemes. Generalment, només es configuren en resposta a accions realitzades per vostè que constitueixen una sol·licitud de serveis, com ara establir les vostres preferències de privadesa, iniciar sessió o omplir formularis.
+Aquestes cookies i tokens de seguretat són necessaris perquè el Lloc Web funcioni de manera segura. Permeten l'inici de sessió de l'usuari, mantenen la sessió i protegeixen contra vulnerabilitats de seguretat. No es poden desactivar.
 
--   **Cookies de Sessió**: Aquestes cookies són temporals i s’eliminen quan tanqueu el navegador. S’utilitzen per mantenir la vostra sessió i permetre-us navegar pel Lloc Web.
--   **Cookies d’Autenticació**: Utilitzem cookies d’autenticació per identificar-vos quan inicieu sessió al nostre Lloc Web. Utilitzem serveis d’autenticació de tercers, com ara [Google SSO](https://policies.google.com/privacy) i [GitHub SSO](https://docs.github.com/en/github/authenticating-to-github/githubs-privacy-statement).
+- **`next-auth.session-token` / `__Secure-next-auth.session-token`**: Identifica la vostra sessió d'usuari autenticat (Tipus: Essencial, Caducitat: 30 Dies).
+- **`next-auth.csrf-token` / `__Host-next-auth.csrf-token`**: Protecció CSRF per a formularis i sol·licituds API d'autenticació (Tipus: Essencial, Caducitat: Sessió).
+- **`next-auth.callback-url`**: Emmagatzema l'URL de redirecció durant l'inici de sessió OAuth (Google/GitHub) (Tipus: Essencial, Caducitat: Sessió).
 
-## Serveis de tercers
+### B. Emmagatzematge Funcional i de Preferències (LocalStorage)
 
-El nostre Lloc Web està allotjat en servidors de tercers i utilitza diversos serveis de tercers que poden establir cookies al vostre dispositiu. Utilitzem serveis de [Vercel](https://vercel.com) i [Hostinger](https://www.hostinger.com) per a l’allotjament, [MongoDB](https://www.mongodb.com) per a la nostra base de dades, [Cloudinary](https://cloudinary.com/) per a l’emmagatzematge d’imatges i [Upstash](https://www.upstash.com/) per a la memòria cau.
+Utilitzem el LocalStorage del navegador per conservar els vostres ajustos d'experiència d'usuari sense enviar dades confidencials als servidors.
 
--   [Política de Privadesa de Vercel](https://vercel.com/legal/privacy-policy)
--   [Política de Privadesa de Hostinger](https://www.hostinger.com/privacy)
--   [Política de Privadesa de MongoDB](https://www.mongodb.com/legal/privacy-policy)
--   [Política de Privadesa de Cloudinary](https://cloudinary.com/privacy)
--   [Política de Privadesa d’Upstash](https://upstash.com/trust/privacy.pdf)
+- **`theme`**: Recorda la vostra preferència de tema visual (Mode Fosc / Mode Clar) (Tipus: LocalStorage, Caducitat: Persistent).
+- **`i18nextLng` / `i18next`**: Emmagatzema el vostre idioma preferit d'interfície (Anglès, Espanyol, Català) (Tipus: LocalStorage / Cookie, Caducitat: Persistent).
 
-## Com gestionar les cookies
+### C. Analítica i Rendiment
 
-Podeu controlar i/o eliminar les cookies com vulgueu. Podeu eliminar totes les cookies que ja es troben al vostre ordinador i podeu configurar la majoria dels navegadors per evitar que es col·loquin. Tanmateix, si ho feu, és possible que hàgiu d’ajustar manualment algunes preferències cada vegada que visiteu un lloc i que alguns serveis i funcionalitats no funcionin.
+Utilitzem [Vercel Speed Insights](https://vercel.com/docs/speed-insights) per mesurar mètriques de rendiment agregades (temps de càrrega de pàgines). Aquest servei mesura el rendiment general sense utilitzar cookies de seguiment de tercers ni emmagatzemar perfils identificables.
 
-## Canvis a la Política de Cookies
+## 3. Infraestructura de Tercers
 
-Podem actualitzar la nostra Política de Cookies de tant en tant. Us notificarem qualsevol canvi publicant la nova Política de Cookies en aquesta pàgina.
+El nostre Lloc Web s'allotja en servidors de tercers i utilitza proveïdors d'infraestructura que poden establir connexions tècniques:
 
-## Contacte
+- **Allotjament**: [Política de Privacitat de Vercel](https://vercel.com/legal/privacy-policy), [Política de Privacitat de Hostinger](https://www.hostinger.com/privacy)
+- **Base de Dades i Memòria Catxé**: [Política de Privacitat de MongoDB](https://www.mongodb.com/legal/privacy-policy), [Política de Privacitat de Upstash](https://upstash.com/trust/privacy.pdf)
+- **Multimèdia**: [Política de Privacitat de Cloudinary](https://cloudinary.com/privacy)
+- **Registres i Monitoratge**: [Política de Privacitat d'Axiom](https://axiom.co/legal/privacy)
 
-Si teniu alguna pregunta sobre aquesta Política de Cookies, podeu contactar-nos a [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com) o consultar la nostra [Política de Privadesa](/policies/privacy).
+## 4. Com Gestionar les Cookies i l'Emmagatzematge del Navegador
+
+Podeu esborrar les cookies i l'emmagatzematge local en qualsevol moment a través de la configuració del vostre navegador web:
+
+- **Chrome**: Configuració -> Privacitat i seguretat -> Cookies i altres dades de llocs
+- **Firefox**: Opcions -> Privacitat & Seguretat -> Cookies i dades del lloc
+- **Safari**: Preferències -> Privacitat -> Gestionar dades del lloc web
+
+*Nota: Desactivar o esborrar les cookies essencials tancarà la sessió del vostre compte de Jorbites.*
+
+## 5. Canvis en Aquesta Política
+
+Podem actualitzar la nostra Política de Cookies periòdicament. Publicarem qualsevol canvi en aquesta pàgina amb la data d'Última actualització revisada.
+
+## 6. Contacte
+
+Si teniu qualsevol pregunta sobre aquesta Política de Cookies, podeu contactar-nos a [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com) o consultar la nostra [Política de Privacitat](/policies/privacy).

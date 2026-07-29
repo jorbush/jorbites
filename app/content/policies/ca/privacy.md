@@ -1,64 +1,75 @@
 ---
-title: 'Política de Privadesa'
-description: 'Política de Privadesa de Jorbites'
+title: 'Política de Privacitat'
+description: 'Política de Privacitat de Jorbites'
 ---
 
-Darrera actualització: 6 de desembre de 2025
+Última actualització: 29 de juliol de 2026
 
-Aquesta Política de Privadesa explica com **Jorbites** ("nosaltres", "ens" o "nostre") recopila, utilitza i divulga la vostra informació personal quan utilitzeu el nostre lloc web, accessible a [https://jorbites.com](https://jorbites.com) (el "Lloc Web").
+Aquesta Política de Privacitat explica com **Jorbites** ("nosaltres", "nostre" o "ens") recopila, utilitza i divulga la vostra informació personal quan utilitzeu el nostre lloc web, accessible a [https://jorbites.com](https://jorbites.com) (el "Lloc Web"), i els nostres microserveis associats.
 
-## Informació que Recopilem
+## 1. Informació que Recopilem
 
-Recopilem diversos tipus d’informació per proporcionar i millorar els nostres serveis per a vostè.
+Recopilem diversos tipus d'informació per proporcionar, mantenir i millorar els nostres serveis:
 
--   **Dades de l’Usuari**:
-    -   **Identificació i Contacte**: Nom, adreça de correu electrònic, nom d’usuari.
-    -   **Autenticació**: Utilitzem serveis d’autenticació de tercers, com ara Google i GitHub, per verificar la vostra identitat.
-    -   **Preferències i Configuració**: Idioma, tema i altres configuracions personalitzades.
--   **Dades d’Activitat**:
-    -   **Receptes**: Receptes que creeu, deseu o amb les quals interactueu.
-    -   **Comentaris**: Comentaris que publiqueu en receptes i altre contingut.
--   **Imatges**: Les imatges que pengeu s’emmagatzemen a [Cloudinary](https://cloudinary.com/).
+- **Dades d'Usuari i Compte**:
+  - **Identificació i Contacte**: Nom, adreça de correu electrònic, nom d'usuari, imatge de perfil.
+  - **Autenticació**: Autenticació mitjançant proveïdors d'OAuth de tercers ([Google SSO](https://policies.google.com/privacy), [GitHub SSO](https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement)) o credencials de correu electrònic.
+  - **Preferències i Ajustos**: Idioma (`i18next`), preferència de tema (`dark`/`light`) i configuracions personalitzades.
+- **Dades d'Activitat i Contingut**:
+  - **Receptes i Interaccions**: Receptes que creeu, editeu, deseu a preferits, llistes de planificació i comentaris que publiqueu.
+  - **Nivells i Insígnies**: Mètriques d'activitat processades per atorgar nivells d'usuari i insígnies d'assoliments.
+- **Arxius Multimèdia**: Les imatges que carregueu s'emmagatzemen i serveixen mitjançant [Cloudinary](https://cloudinary.com/).
 
-## Com Utilitzem la Vostra Informació
+## 2. Processament per Intel·ligència Artificial i Microserveis
 
-Utilitzem la informació que recopilem per a diversos fins:
+La nostra Plataforma integra microserveis automatitzats en segon pla, telemetria i tecnologies d'IA per millorar la funcionalitat:
 
--   Per proporcionar i mantenir els nostres serveis.
--   Per millorar i personalitzar la vostra experiència.
--   Per comunicar-nos amb vosaltres sobre actualitzacions i notícies.
--   Per analitzar l’ús i millorar els nostres serveis.
+- **Processament d'IA (Google Gemini API)**: En generar o importar receptes utilitzant les nostres funcions d'IA, les entrades són processades a través de l'API de Google Gemini d'acord amb la [Política de Privacitat d'IA de Google](https://policies.google.com/privacy).
+- **Auditoria Automatitzada de Receptes (Tagatoni)**: Les receptes compartides s'auditen mitjançant el nostre microservei automatitzat (*Tagatoni*) utilitzant l'API de Google Gemini per estimar dades nutricionals (calories) i classificar categories de cuina.
+- **Gamificació i Insígnies (Badge Forge)**: Les vostres mètriques d'activitat es processen de forma asíncrona pel nostre servei *Badge Forge* per calcular els nivells d'usuari i atorgar insígnies.
+- **Notificacions Transaccionals (Jorbites Notifier)**: Els correus del sistema i restabliments de contrasenya s'envien a través del nostre servei *Jorbites Notifier*.
+- **Còpies de Seguretat (Pantry Keeper)**: Les còpies de seguretat de la base de dades són gestionades pel nostre sistema automatitzat (*Pantry Keeper*).
+- **Registres del Servidor i Diagnòstic (Axiom)**: Els registres del sistema i diagnòstic d'errors es processen de forma segura mitjançant [Axiom](https://axiom.co/legal/privacy).
 
-## Compartir la Vostra Informació
+## 3. Com Utilitzem la Vostra Informació
 
-No venem ni lloguem la vostra informació personal. Podem compartir la vostra informació en els casos següents:
+Utilitzem la informació recopilada per a:
 
--   **Proveïdors de Serveis**: Utilitzem serveis de tercers per a l’allotjament ([Vercel](https://vercel.com), [Hostinger](https://www.hostinger.com)), base de dades ([MongoDB](https://www.mongodb.com)), emmagatzematge d’imatges ([Cloudinary](https://cloudinary.com/)), memòria cau ([Upstash](https://www.upstash.com/), [Redis](https://www.redis.io)) i seguretat ([Rate Limit](https://github.com/upstash/ratelimit-js)).
--   **Requisits Legals**: Si ho exigeix la llei o en resposta a sol·licituds vàlides de les autoritats públiques.
+- Proporcionar, mantenir i protegir la Plataforma.
+- Processar i personalitzar la vostra experiència amb les receptes.
+- Enviar correus electrònics transaccionals i notificacions de compte.
+- Calcular insígnies de gamificació i progressió de nivell.
+- Supervisar la salut de l'aplicació, solucionar errors i analitzar el rendiment del lloc mitjançant [Axiom](https://axiom.co/legal/privacy) i [Vercel Speed Insights](https://vercel.com/docs/speed-insights).
 
-## Seguretat de les Dades
+## 4. Proveïdors de Serveis de Tercers
 
-Prenem mesures raonables per protegir la vostra informació personal de l’accés, ús o divulgació no autoritzats.
+No venem ni lloguem les vostres dades personals. Compartim informació només amb proveïdors de serveis necessaris per operar la Plataforma:
 
-## Els Vostres Drets
+- **Allotjament i Infraestructura**: [Vercel](https://vercel.com/legal/privacy-policy), [Hostinger](https://www.hostinger.com/privacy).
+- **Bases de Dades i Memòria Catxé**: [MongoDB](https://www.mongodb.com/legal/privacy-policy), [Upstash Redis](https://upstash.com/trust/privacy.pdf).
+- **Emmagatzematge Multimèdia**: [Cloudinary](https://cloudinary.com/privacy).
+- **Registres i Telemetria de Diagnòstic**: [Axiom](https://axiom.co/legal/privacy).
+- **IA i Analítica**: [Google Gemini API](https://policies.google.com/privacy), [Vercel Speed Insights](https://vercel.com/legal/privacy-policy).
 
-Teniu els drets següents pel que fa a la vostra informació personal:
+## 5. Drets de Protecció de Dades (RGPD)
 
--   **Accés**: Per sol·licitar accés a les vostres dades personals.
--   **Rectificació**: Per sol·licitar la correcció de dades inexactes.
--   **Supressió**: Per sol·licitar la supressió de les vostres dades.
--   **Oposició**: Per oposar-vos al tractament de les vostres dades.
+Segons la vostra ubicació, teniu els següents drets sobre la vostra informació personal:
 
-Per exercir aquests drets, contacteu-nos a [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).
+- **Accés**: Sol·licitar una còpia de les vostres dades personals.
+- **Rectificació**: Sol·licitar la correcció de dades inexactes.
+- **Supressió / Eliminació**: Sol·licitar l'eliminació del vostre compte i dades personals.
+- **Oposició i Limitació**: Oposar-vos o limitar certs tractaments de dades.
 
-## Retenció de Dades
+Per exercir qualsevol d'aquests drets, contacteu-nos a [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).
 
-Retenim la vostra informació personal durant el temps que sigui necessari per proporcionar els nostres serveis i complir les obligacions legals.
+## 6. Seguretat i Retenció de Dades
 
-## Canvis a Aquesta Política
+Implementem mesures de seguretat per protegir les vostres dades contra accessos no autoritzats. Conservem les dades personals mentre el vostre compte mantingui l'activitat.
 
-Podem actualitzar aquesta Política de Privadesa de tant en tant. Us notificarem qualsevol canvi publicant la nova política en aquesta pàgina.
+## 7. Canvis en Aquesta Política
 
-## Contacte
+Podem actualitzar la nostra Política de Privacitat periòdicament. Publicarem qualsevol canvi en aquesta pàgina amb la data d'Última actualització revisada.
 
-Si teniu alguna pregunta sobre aquesta Política de Privadesa, contacteu-nos a [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).
+## 8. Contacte
+
+Si teniu qualsevol pregunta sobre aquesta Política de Privacitat, contacteu-nos a [jbonetv5@gmail.com](mailto:jbonetv5@gmail.com).
