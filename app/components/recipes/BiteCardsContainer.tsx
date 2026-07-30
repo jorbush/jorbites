@@ -61,7 +61,7 @@ export default function BiteCardsContainer({
     initialRecipes = EMPTY_RECIPES,
     currentUser,
 }: BiteCardsContainerProps) {
-    const router = useRouter();
+    const { push } = useRouter() || {};
     const loginModal = useLoginModal();
     const { t } = useTranslation();
 
@@ -198,9 +198,9 @@ export default function BiteCardsContainer({
                 currentIndex,
                 swipedIdsRef.current || []
             );
-            router.push(`/recipes/${recipe.id}`);
+            push?.(`/recipes/${recipe.id}`);
         },
-        [recipes, currentIndex, router]
+        [recipes, currentIndex, push]
     );
 
     const handleUndo = useCallback(() => {
