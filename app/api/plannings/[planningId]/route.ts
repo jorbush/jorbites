@@ -19,7 +19,10 @@ export async function GET(
     props: { params: Promise<IParams> }
 ) {
     try {
-        const params = await props.params;
+        const [params, currentUser] = await Promise.all([
+            props.params,
+            getCurrentUser(),
+        ]);
         const { planningId } = params;
 
         logger.info('GET /api/plannings/[planningId] - start', { planningId });
@@ -50,6 +53,12 @@ export async function GET(
 
         if (!planning) {
             return notFoundResponse('Planning not found');
+        }
+
+        if (planning.isPrivate) {
+            if (!currentUser || planning.userId !== currentUser.id) {
+                return notFoundResponse('Planning not found');
+            }
         }
 
         const safePlanning = {
@@ -104,8 +113,10 @@ export async function PATCH(
     props: { params: Promise<IParams> }
 ) {
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+        const [params, currentUser] = await Promise.all([
+            props.params,
+            getCurrentUser(),
+        ]);
 
         if (!currentUser) {
             return unauthorizedResponse('Unauthorized');
@@ -297,8 +308,10 @@ export async function DELETE(
     props: { params: Promise<IParams> }
 ) {
     try {
-        const params = await props.params;
-        const currentUser = await getCurrentUser();
+        const [params, currentUser] = await Promise.all([
+            props.params,
+            getCurrentUser(),
+        ]);
 
         if (!currentUser) {
             return unauthorizedResponse('Unauthorized');
