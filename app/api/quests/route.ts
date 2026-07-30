@@ -8,12 +8,14 @@ import {
     validationError,
     badRequest,
     internalServerError,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import {
     QUEST_DESCRIPTION_MAX_LENGTH,
     QUEST_TITLE_MAX_LENGTH,
 } from '@/app/utils/constants';
+import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 
 export async function POST(request: Request) {
     try {
@@ -23,6 +25,25 @@ export async function POST(request: Request) {
             return unauthorizedResponse(
                 'User authentication required to create quest'
             );
+        }
+
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await contentCreationRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                logger.warn('POST /api/quests - rate limit exceeded', {
+                    userId: currentUser.id,
+                });
+                return rateLimitExceeded(
+                    `Too many requests. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
         }
 
         const body = await request.json();

@@ -8,9 +8,11 @@ import {
     forbiddenResponse,
     notFoundResponse,
     internalServerError,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { WORKSHOP_MAX_PARTICIPANTS } from '@/app/utils/constants';
 import { logger } from '@/app/lib/axiom/server';
+import { authenticatedRatelimit } from '@/app/lib/ratelimit';
 
 interface IParams {
     workshopId?: string;
@@ -28,6 +30,28 @@ export async function POST(
             return unauthorizedResponse(
                 'User authentication required to join workshop'
             );
+        }
+
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await authenticatedRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                logger.warn(
+                    'POST /api/workshop/[workshopId]/join - rate limit exceeded',
+                    {
+                        userId: currentUser.id,
+                    }
+                );
+                return rateLimitExceeded(
+                    `Too many requests. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
         }
 
         const { workshopId } = params;

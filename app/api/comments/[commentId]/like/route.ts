@@ -6,9 +6,11 @@ import {
     invalidInput,
     notFoundResponse,
     internalServerError,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { redisCache } from '@/app/lib/redis';
+import { authenticatedRatelimit } from '@/app/lib/ratelimit';
 
 interface IParams {
     commentId?: string;
@@ -28,6 +30,28 @@ export async function POST(
             return unauthorizedResponse(
                 'User authentication required to like comment'
             );
+        }
+
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await authenticatedRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                logger.warn(
+                    'POST /api/comments/[commentId]/like - rate limit exceeded',
+                    {
+                        userId: currentUser.id,
+                    }
+                );
+                return rateLimitExceeded(
+                    `Too many requests. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
         }
 
         const { commentId } = params;
@@ -107,6 +131,28 @@ export async function DELETE(
             return unauthorizedResponse(
                 'User authentication required to unlike comment'
             );
+        }
+
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await authenticatedRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                logger.warn(
+                    'DELETE /api/comments/[commentId]/like - rate limit exceeded',
+                    {
+                        userId: currentUser.id,
+                    }
+                );
+                return rateLimitExceeded(
+                    `Too many requests. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
         }
 
         const { commentId } = params;

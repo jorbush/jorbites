@@ -4,8 +4,10 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import {
     unauthorizedResponse,
     internalServerError,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { authenticatedRatelimit } from '@/app/lib/ratelimit';
 
 export async function GET(request: Request) {
     try {
@@ -23,6 +25,25 @@ export async function GET(request: Request) {
             return unauthorizedResponse(
                 'User authentication required to search'
             );
+        }
+
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await authenticatedRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                logger.warn('GET /api/search - rate limit exceeded', {
+                    userId: currentUser.id,
+                });
+                return rateLimitExceeded(
+                    `Too many requests. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
         }
 
         logger.info('GET /api/search - start', {
