@@ -153,7 +153,7 @@ const NotificationPreferencesManager: React.FC<
                         className="flex items-center justify-between gap-2"
                     >
                         <div className="flex min-w-0 flex-1 items-center gap-2">
-                            <Icon className="h-4 w-4 shrink-0 text-neutral-500" />
+                            <Icon className="size-4 shrink-0 text-neutral-500" />
                             <span className="truncate text-sm text-neutral-600 dark:text-neutral-400">
                                 {t(labelKey)}
                             </span>
