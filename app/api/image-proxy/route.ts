@@ -2,43 +2,109 @@ import { NextRequest, NextResponse } from 'next/server';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 
+const ALLOWED_DOMAINS = new Set([
+    'res.cloudinary.com',
+    'lh3.googleusercontent.com',
+    'avatars.githubusercontent.com',
+    'img.youtube.com',
+]);
+
+const ALLOWED_FORMATS = new Set(['webp', 'png', 'jpg', 'jpeg', 'avif']);
+const ALLOWED_QUALITIES = new Set([
+    'auto:eco',
+    'auto:good',
+    'auto:best',
+    'low',
+]);
+
+function parseDimension(val: string | null): number | undefined {
+    if (!val) return undefined;
+    if (!/^\d+$/.test(val)) return NaN;
+    const num = parseInt(val, 10);
+    return num > 0 && num <= 8192 ? num : NaN;
+}
+
 export async function GET(request: NextRequest) {
     const url = request.nextUrl.searchParams.get('url');
-    const width = request.nextUrl.searchParams.get('w');
-    const height = request.nextUrl.searchParams.get('h');
-    const quality = request.nextUrl.searchParams.get('q') || 'auto:good';
-    const allowedFormats = new Set(['webp', 'png', 'jpg', 'jpeg', 'avif']);
+    const rawWidth = request.nextUrl.searchParams.get('w');
+    const rawHeight = request.nextUrl.searchParams.get('h');
+    const rawQuality = request.nextUrl.searchParams.get('q') || 'auto:good';
     const requestedFormat =
         request.nextUrl.searchParams.get('f')?.toLowerCase() || 'webp';
-    const format = allowedFormats.has(requestedFormat)
+    const format = ALLOWED_FORMATS.has(requestedFormat)
         ? requestedFormat === 'jpeg'
             ? 'jpg'
             : requestedFormat
         : 'webp';
 
-    logger.info('GET /api/image-proxy - start', {
-        url: url?.substring(0, 100),
-        width,
-        height,
-        quality,
-        format,
-    });
+    const width = parseDimension(rawWidth);
+    const height = parseDimension(rawHeight);
 
     if (!url) {
         logger.error('GET /api/image-proxy - missing URL parameter');
         return badRequest('URL parameter is required');
     }
 
+    let parsedUrl: URL;
+    try {
+        parsedUrl = new URL(url);
+    } catch {
+        logger.error('GET /api/image-proxy - invalid URL format', { url });
+        return badRequest('Invalid URL format');
+    }
+
+    if (
+        (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') ||
+        !ALLOWED_DOMAINS.has(parsedUrl.hostname)
+    ) {
+        logger.error('GET /api/image-proxy - URL domain not allowed', {
+            hostname: parsedUrl.hostname,
+        });
+        return badRequest('URL domain not allowed');
+    }
+
+    if ((rawWidth && isNaN(width!)) || (rawHeight && isNaN(height!))) {
+        logger.error(
+            'GET /api/image-proxy - invalid width or height parameter',
+            {
+                rawWidth,
+                rawHeight,
+            }
+        );
+        return badRequest('Invalid width or height parameter');
+    }
+
+    if (!ALLOWED_QUALITIES.has(rawQuality)) {
+        logger.error('GET /api/image-proxy - invalid quality parameter', {
+            rawQuality,
+        });
+        return badRequest('Invalid quality parameter');
+    }
+    const quality = rawQuality as
+        | 'auto:eco'
+        | 'auto:good'
+        | 'auto:best'
+        | 'low';
+
+    logger.info('GET /api/image-proxy - start', {
+        url: url.substring(0, 100),
+        width,
+        height,
+        quality,
+        format,
+    });
+
     try {
         let imageUrl = url;
 
-        if (url.includes('cloudinary.com')) {
+        if (parsedUrl.hostname === 'res.cloudinary.com') {
             try {
                 const cloudinaryRegex =
                     /^(https?:\/\/res\.cloudinary\.com\/[^/]+)\/image\/upload(?:\/([^/]+))?\/(.+)$/;
                 const matches = url.match(cloudinaryRegex);
 
                 if (matches) {
+                    // Note: _existingTransforms is intentionally ignored to strip existing transforms and apply proxy options
                     const [, baseUrl, _existingTransforms, imagePath] = matches;
 
                     let qualityParam = 'q_auto:good';
@@ -62,66 +128,77 @@ export async function GET(request: NextRequest) {
                     }
                     imageUrl = `${baseUrl}/image/upload/${transformParams.join(',')}/${imagePath}`;
                 } else {
-                    console.error(
-                        '[Image Proxy] Invalid Cloudinary URL format:',
-                        url
+                    logger.error(
+                        'GET /api/image-proxy - invalid Cloudinary URL format',
+                        {
+                            url,
+                        }
                     );
                 }
             } catch (error) {
-                console.error(
-                    '[Image Proxy] Error parsing Cloudinary URL:',
-                    error
+                // Inner try/catch falls back to original URL on transform parse error
+                const message =
+                    error instanceof Error ? error.message : String(error);
+                logger.error(
+                    'GET /api/image-proxy - error parsing Cloudinary URL',
+                    {
+                        error: message,
+                    }
                 );
             }
-        } else if (url.includes('googleusercontent.com')) {
+        } else if (parsedUrl.hostname === 'lh3.googleusercontent.com') {
             try {
-                // For Google images, we can add size parameters
-                // Google supports s parameter for size (s=96 for 96x96 pixels)
                 if (width || height) {
-                    const size = Math.max(
-                        parseInt(width || '400'),
-                        parseInt(height || '400')
-                    );
+                    const size = Math.max(width || 0, height || 0);
 
-                    // If the URL already has parameters, add size parameter
+                    // Note: Google avatar URLs embed sizing parameters directly into path segments (e.g. /photo=s96-c).
+                    // Using URL.pathname setter would percent-encode '=' and '-', breaking the URL. We operate on the raw string instead.
                     if (url.includes('=')) {
-                        // Replace existing size parameter or add new one
                         if (url.includes('=s')) {
                             imageUrl = url.replace(/=s\d+/, `=s${size}`);
                         } else {
                             imageUrl = `${url}-s${size}`;
                         }
                     } else {
-                        // Add size parameter for basic URLs
                         imageUrl = `${url}=s${size}`;
                     }
                 }
-                // If no dimensions specified, use original URL for maximum quality
             } catch (error) {
-                console.error('[Image Proxy] Error parsing Google URL:', error);
+                // Inner try/catch falls back to original URL on transform parse error
+                const message =
+                    error instanceof Error ? error.message : String(error);
+                logger.error(
+                    'GET /api/image-proxy - error parsing Google URL',
+                    {
+                        error: message,
+                    }
+                );
             }
-        } else if (url.includes('githubusercontent.com')) {
+        } else if (parsedUrl.hostname === 'avatars.githubusercontent.com') {
             try {
-                // For GitHub images, we can add size parameters
-                // GitHub supports s parameter for size (&s=96 for 96x96 pixels)
                 if (width || height) {
-                    const size = Math.max(
-                        parseInt(width || '400'),
-                        parseInt(height || '400')
-                    );
+                    const size = Math.max(width || 0, height || 0);
 
-                    // Parse the URL to add or replace size parameter
                     const urlObj = new URL(url);
                     urlObj.searchParams.set('s', size.toString());
                     imageUrl = urlObj.toString();
                 }
-                // If no dimensions specified, use original URL for maximum quality
             } catch (error) {
-                console.error('[Image Proxy] Error parsing GitHub URL:', error);
+                // Inner try/catch falls back to original URL on transform parse error
+                const message =
+                    error instanceof Error ? error.message : String(error);
+                logger.error(
+                    'GET /api/image-proxy - error parsing GitHub URL',
+                    {
+                        error: message,
+                    }
+                );
             }
         }
 
-        console.log('[Image Proxy] Fetching from:', imageUrl);
+        logger.info('GET /api/image-proxy - fetching upstream', {
+            imageUrl: imageUrl.substring(0, 100),
+        });
         const imageResponse = await fetch(imageUrl, {
             headers: {
                 'User-Agent': 'Jorbites Image Proxy',
@@ -134,12 +211,11 @@ export async function GET(request: NextRequest) {
         });
 
         if (!imageResponse.ok) {
-            console.error(
-                `[Image Proxy] Fetch error: ${imageResponse.status} ${imageResponse.statusText}`
-            );
-            return badRequest(
-                `Failed to fetch image: ${imageResponse.statusText}`
-            );
+            logger.error('GET /api/image-proxy - upstream fetch failed', {
+                status: imageResponse.status,
+                statusText: imageResponse.statusText,
+            });
+            return badRequest('Failed to fetch image');
         }
 
         const imageData = await imageResponse.arrayBuffer();
@@ -150,6 +226,7 @@ export async function GET(request: NextRequest) {
             url: imageUrl.substring(0, 100),
             contentType,
         });
+        // Access-Control-Allow-Origin: * allows frontend client apps to safely display proxied assets cross-origin
         return new NextResponse(imageData, {
             status: 200,
             headers: {
@@ -158,9 +235,10 @@ export async function GET(request: NextRequest) {
                 'Access-Control-Allow-Origin': '*',
             },
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
         logger.error('GET /api/image-proxy - error', {
-            error: error.message,
+            error: message,
             url,
         });
         return internalServerError('Failed to process image request');
