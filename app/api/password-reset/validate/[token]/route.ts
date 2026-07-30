@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import prisma from '@/app/lib/prismadb';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
@@ -23,9 +24,14 @@ export async function GET(
             return badRequest('Token is required');
         }
 
+        const hashedResetToken = crypto
+            .createHash('sha256')
+            .update(token)
+            .digest('hex');
+
         const user = await prisma.user.findFirst({
             where: {
-                resetToken: token,
+                resetToken: hashedResetToken,
                 resetTokenExpiry: {
                     gt: new Date(),
                 },

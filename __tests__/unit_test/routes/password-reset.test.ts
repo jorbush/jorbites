@@ -6,17 +6,22 @@ import { NextRequest } from 'next/server';
 import bcrypt from 'bcrypt';
 import prisma from '@/app/lib/prismadb';
 import sendNotification from '@/app/actions/sendNotification';
+import crypto from 'crypto';
 
 // Mock dependencies
 jest.mock('bcrypt', () => ({
     hash: jest.fn(),
 }));
 
-jest.mock('crypto', () => ({
-    randomBytes: jest.fn().mockReturnValue({
-        toString: jest.fn().mockReturnValue('mock-token'),
-    }),
-}));
+jest.mock('crypto', () => {
+    const actualCrypto = jest.requireActual('crypto');
+    return {
+        ...actualCrypto,
+        randomBytes: jest.fn().mockReturnValue({
+            toString: jest.fn().mockReturnValue('mock-token'),
+        }),
+    };
+});
 
 jest.mock('@/app/lib/prismadb', () => ({
     user: {
@@ -86,10 +91,16 @@ describe('Password Reset API Error Handling', () => {
 
             expect(response.status).toBe(200);
             expect(data.success).toBe(true);
+
+            const expectedHashedToken = crypto
+                .createHash('sha256')
+                .update('mock-token')
+                .digest('hex');
+
             expect(prisma.user.update).toHaveBeenCalledWith({
                 where: { id: '1' },
                 data: {
-                    resetToken: 'mock-token',
+                    resetToken: expectedHashedToken,
                     resetTokenExpiry: expect.any(Date),
                 },
             });
@@ -186,13 +197,32 @@ describe('Password Reset API Error Handling', () => {
             expect(data.error).toBe('Invalid or expired token');
             expect(data.code).toBe('BAD_REQUEST');
             expect(data.timestamp).toBeDefined();
+
+            const expectedHashedToken = crypto
+                .createHash('sha256')
+                .update('invalid-token')
+                .digest('hex');
+
+            expect(prisma.user.findFirst).toHaveBeenCalledWith({
+                where: {
+                    resetToken: expectedHashedToken,
+                    resetTokenExpiry: {
+                        gt: expect.any(Date),
+                    },
+                },
+            });
         });
 
         it('should reset password successfully with valid token', async () => {
+            const expectedHashedToken = crypto
+                .createHash('sha256')
+                .update('valid-token')
+                .digest('hex');
+
             const mockUser = {
                 id: '1',
                 email: 'test@example.com',
-                resetToken: 'valid-token',
+                resetToken: expectedHashedToken,
                 resetTokenExpiry: new Date(Date.now() + 3600000),
             };
             (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce(
@@ -216,6 +246,16 @@ describe('Password Reset API Error Handling', () => {
             expect(response.status).toBe(200);
             expect(data.success).toBe(true);
             expect(bcrypt.hash).toHaveBeenCalledWith('newpassword123', 12);
+
+            expect(prisma.user.findFirst).toHaveBeenCalledWith({
+                where: {
+                    resetToken: expectedHashedToken,
+                    resetTokenExpiry: {
+                        gt: expect.any(Date),
+                    },
+                },
+            });
+
             expect(prisma.user.update).toHaveBeenCalledWith({
                 where: { id: '1' },
                 data: {
@@ -287,13 +327,32 @@ describe('Password Reset API Error Handling', () => {
 
             expect(response.status).toBe(200);
             expect(data.valid).toBe(false);
+
+            const expectedHashedToken = crypto
+                .createHash('sha256')
+                .update('invalid-token')
+                .digest('hex');
+
+            expect(prisma.user.findFirst).toHaveBeenCalledWith({
+                where: {
+                    resetToken: expectedHashedToken,
+                    resetTokenExpiry: {
+                        gt: expect.any(Date),
+                    },
+                },
+            });
         });
 
         it('should return valid when token is found and not expired', async () => {
+            const expectedHashedToken = crypto
+                .createHash('sha256')
+                .update('valid-token')
+                .digest('hex');
+
             const mockUser = {
                 id: '1',
                 email: 'test@example.com',
-                resetToken: 'valid-token',
+                resetToken: expectedHashedToken,
                 resetTokenExpiry: new Date(Date.now() + 3600000),
             };
             (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce(
@@ -315,6 +374,15 @@ describe('Password Reset API Error Handling', () => {
 
             expect(response.status).toBe(200);
             expect(data.valid).toBe(true);
+
+            expect(prisma.user.findFirst).toHaveBeenCalledWith({
+                where: {
+                    resetToken: expectedHashedToken,
+                    resetTokenExpiry: {
+                        gt: expect.any(Date),
+                    },
+                },
+            });
         });
 
         it('should return 500 when database operation fails', async () => {

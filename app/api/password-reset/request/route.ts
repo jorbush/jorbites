@@ -63,6 +63,10 @@ export async function POST(request: Request) {
         }
 
         const resetToken = crypto.randomBytes(32).toString('hex');
+        const hashedResetToken = crypto
+            .createHash('sha256')
+            .update(resetToken)
+            .digest('hex');
         const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
 
         await prisma.user.update({
@@ -70,7 +74,7 @@ export async function POST(request: Request) {
                 id: user.id,
             },
             data: {
-                resetToken,
+                resetToken: hashedResetToken,
                 resetTokenExpiry,
             },
         });
