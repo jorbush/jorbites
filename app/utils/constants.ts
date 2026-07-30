@@ -1,6 +1,17 @@
 export const JORBITES_URL = 'https://jorbites.com';
 export const CONTACT_EMAIL = 'jbonetv5@gmail.com';
 
+export const getVapidEmail = () => {
+    const rawVapidEmail =
+        process.env.VAPID_EMAIL || 'mailto:jorbites.app@gmail.com';
+    return rawVapidEmail.startsWith('mailto:') ||
+        rawVapidEmail.startsWith('http')
+        ? rawVapidEmail
+        : `mailto:${rawVapidEmail}`;
+};
+
+export const VAPID_EMAIL = getVapidEmail();
+
 export const INDEXNOW_API_KEY = 'f6ee79a7601145559ed566ccb188b132';
 export const INDEXNOW_HOST = 'jorbites.com';
 export const INDEXNOW_KEY_LOCATION = `https://${INDEXNOW_HOST}/${INDEXNOW_API_KEY}.txt`;
