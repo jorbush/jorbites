@@ -180,6 +180,94 @@ describe('Plannings API Routes', () => {
 
             expect(response.status).toBe(200);
         });
+
+        it('should return 404 if planning is private and user is not authenticated', async () => {
+            mockGetCurrentUser.mockResolvedValue(null);
+            (prisma.planning.findUnique as jest.Mock).mockResolvedValue({
+                id: 'plan-1',
+                name: 'Plan 1',
+                isPrivate: true,
+                userId: 'user-1',
+                createdAt: new Date('2026-05-25T18:00:00.000Z'),
+                updatedAt: new Date('2026-05-25T18:00:00.000Z'),
+                meals: [],
+            });
+
+            const request = new Request(
+                'http://localhost/api/plannings/plan-1'
+            );
+            const response = await GET_DETAIL(request, {
+                params: Promise.resolve({ planningId: 'plan-1' }),
+            });
+
+            expect(response.status).toBe(404);
+        });
+
+        it('should return 404 if planning is private and user is authenticated but not the owner', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-2' });
+            (prisma.planning.findUnique as jest.Mock).mockResolvedValue({
+                id: 'plan-1',
+                name: 'Plan 1',
+                isPrivate: true,
+                userId: 'user-1',
+                createdAt: new Date('2026-05-25T18:00:00.000Z'),
+                updatedAt: new Date('2026-05-25T18:00:00.000Z'),
+                meals: [],
+            });
+
+            const request = new Request(
+                'http://localhost/api/plannings/plan-1'
+            );
+            const response = await GET_DETAIL(request, {
+                params: Promise.resolve({ planningId: 'plan-1' }),
+            });
+
+            expect(response.status).toBe(404);
+        });
+
+        it('should return 200 with planning details if planning is private and user is authenticated as the owner', async () => {
+            mockGetCurrentUser.mockResolvedValue({ id: 'user-1' });
+            (prisma.planning.findUnique as jest.Mock).mockResolvedValue({
+                id: 'plan-1',
+                name: 'Plan 1',
+                isPrivate: true,
+                userId: 'user-1',
+                createdAt: new Date('2026-05-25T18:00:00.000Z'),
+                updatedAt: new Date('2026-05-25T18:00:00.000Z'),
+                meals: [],
+            });
+
+            const request = new Request(
+                'http://localhost/api/plannings/plan-1'
+            );
+            const response = await GET_DETAIL(request, {
+                params: Promise.resolve({ planningId: 'plan-1' }),
+            });
+
+            expect(response.status).toBe(200);
+        });
+
+        it('should return 200 with planning details if planning is public even if user is not authenticated', async () => {
+            mockGetCurrentUser.mockResolvedValue(null);
+            (prisma.planning.findUnique as jest.Mock).mockResolvedValue({
+                id: 'plan-1',
+                name: 'Plan 1',
+                isPrivate: false,
+                userId: 'user-1',
+                createdAt: new Date('2026-05-25T18:00:00.000Z'),
+                updatedAt: new Date('2026-05-25T18:00:00.000Z'),
+                meals: [],
+            });
+
+            const request = new Request(
+                'http://localhost/api/plannings/plan-1'
+            );
+            const response = await GET_DETAIL(request, {
+                params: Promise.resolve({ planningId: 'plan-1' }),
+            });
+
+            expect(response.status).toBe(200);
+        });
     });
 
     describe('PATCH /api/plannings/[planningId]', () => {
