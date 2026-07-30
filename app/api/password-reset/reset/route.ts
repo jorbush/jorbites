@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { headers } from 'next/headers';
 import prisma from '@/app/lib/prismadb';
 import bcrypt from 'bcrypt';
@@ -55,9 +56,14 @@ export async function POST(request: Request) {
             return badRequest('Password must be at least 6 characters long');
         }
 
+        const hashedResetToken = crypto
+            .createHash('sha256')
+            .update(token)
+            .digest('hex');
+
         const user = await prisma.user.findFirst({
             where: {
-                resetToken: token,
+                resetToken: hashedResetToken,
                 resetTokenExpiry: {
                     gt: new Date(),
                 },
