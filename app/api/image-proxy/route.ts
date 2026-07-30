@@ -149,7 +149,7 @@ export async function GET(request: NextRequest) {
         } else if (parsedUrl.hostname === 'lh3.googleusercontent.com') {
             try {
                 if (width || height) {
-                    const size = Math.max(width || 400, height || 400);
+                    const size = Math.max(width || 0, height || 0);
 
                     // Note: Google avatar URLs embed sizing parameters directly into path segments (e.g. /photo=s96-c).
                     // Using URL.pathname setter would percent-encode '=' and '-', breaking the URL. We operate on the raw string instead.
@@ -177,7 +177,7 @@ export async function GET(request: NextRequest) {
         } else if (parsedUrl.hostname === 'avatars.githubusercontent.com') {
             try {
                 if (width || height) {
-                    const size = Math.max(width || 400, height || 400);
+                    const size = Math.max(width || 0, height || 0);
 
                     const urlObj = new URL(url);
                     urlObj.searchParams.set('s', size.toString());
