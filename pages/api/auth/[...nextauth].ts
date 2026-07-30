@@ -60,6 +60,30 @@ export const authOptions: AuthOptions = {
     debug: process.env.NODE_ENV === 'development',
     session: {
         strategy: 'jwt',
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+        updateAge: 24 * 60 * 60, // 24 hours
+    },
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                return {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    picture: user.image,
+                };
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (token && session.user) {
+                (session.user as any).id = token.id;
+                session.user.name = token.name;
+                session.user.email = token.email;
+                session.user.image = token.picture;
+            }
+            return session;
+        },
     },
     secret: process.env.NEXTAUTH_SECRET,
 };
