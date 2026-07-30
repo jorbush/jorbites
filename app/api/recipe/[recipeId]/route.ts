@@ -14,10 +14,12 @@ import {
     forbiddenResponse,
     notFoundResponse,
     internalServerError,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { validateRecipeUpdateData } from '@/app/utils/recipeValidation';
 import { SafeRecipe } from '@/app/types';
+import { authenticatedRatelimit } from '@/app/lib/ratelimit';
 
 interface IParams {
     recipeId?: string;
@@ -40,6 +42,28 @@ export async function POST(
             return unauthorizedResponse(
                 'User authentication required to interact with recipe'
             );
+        }
+
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await authenticatedRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                logger.warn(
+                    'POST /api/recipe/[recipeId] - rate limit exceeded',
+                    {
+                        userId: currentUser.id,
+                    }
+                );
+                return rateLimitExceeded(
+                    `Too many requests. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
         }
 
         const { recipeId } = params;

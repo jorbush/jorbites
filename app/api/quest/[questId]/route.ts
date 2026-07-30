@@ -8,12 +8,14 @@ import {
     notFoundResponse,
     forbiddenResponse,
     internalServerError,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import {
     QUEST_TITLE_MAX_LENGTH,
     QUEST_DESCRIPTION_MAX_LENGTH,
 } from '@/app/utils/constants';
+import { authenticatedRatelimit } from '@/app/lib/ratelimit';
 
 export async function GET(
     request: Request,
@@ -83,6 +85,28 @@ export async function PATCH(
             return unauthorizedResponse(
                 'User authentication required to update quest'
             );
+        }
+
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await authenticatedRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                logger.warn(
+                    'PATCH /api/quest/[questId] - rate limit exceeded',
+                    {
+                        userId: currentUser.id,
+                    }
+                );
+                return rateLimitExceeded(
+                    `Too many requests. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
         }
 
         const { questId } = await params;

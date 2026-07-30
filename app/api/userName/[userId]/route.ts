@@ -8,8 +8,10 @@ import {
     badRequest,
     conflict,
     internalServerError,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
+import { authenticatedRatelimit } from '@/app/lib/ratelimit';
 
 export async function PATCH(request: Request) {
     try {
@@ -19,6 +21,28 @@ export async function PATCH(request: Request) {
             return unauthorizedResponse(
                 'User authentication required to update username'
             );
+        }
+
+        if (process.env.ENV === 'production') {
+            const { success, reset } = await authenticatedRatelimit.limit(
+                currentUser.id
+            );
+            if (!success) {
+                const retryAfterSeconds = Math.max(
+                    1,
+                    Math.ceil((reset - Date.now()) / 1000)
+                );
+                logger.warn(
+                    'PATCH /api/userName/[userId] - rate limit exceeded',
+                    {
+                        userId: currentUser.id,
+                    }
+                );
+                return rateLimitExceeded(
+                    `Too many requests. Please try again in ${retryAfterSeconds} seconds.`,
+                    retryAfterSeconds
+                );
+            }
         }
 
         logger.info('PATCH /api/userName/[userId] - start', {

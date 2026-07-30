@@ -6,7 +6,9 @@ import {
     internalServerError,
     unauthorizedResponse,
     badRequest,
+    rateLimitExceeded,
 } from '@/app/utils/apiErrors';
+import { authenticatedRatelimit } from '@/app/lib/ratelimit';
 import {
     getActiveSession,
     getSessionDetails,
@@ -132,6 +134,28 @@ export async function POST(request: Request) {
                 return unauthorizedResponse(
                     'User authentication required to vote'
                 );
+            }
+
+            if (process.env.ENV === 'production') {
+                const { success, reset } = await authenticatedRatelimit.limit(
+                    currentUser.id
+                );
+                if (!success) {
+                    const retryAfterSeconds = Math.max(
+                        1,
+                        Math.ceil((reset - Date.now()) / 1000)
+                    );
+                    logger.warn(
+                        'api/top-recipe-vote POST (user) - rate limit exceeded',
+                        {
+                            userId: currentUser.id,
+                        }
+                    );
+                    return rateLimitExceeded(
+                        `Too many requests. Please try again in ${retryAfterSeconds} seconds.`,
+                        retryAfterSeconds
+                    );
+                }
             }
 
             const body = await request.json();
