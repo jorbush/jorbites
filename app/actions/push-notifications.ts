@@ -6,6 +6,7 @@ import getCurrentUser, { auth } from '@/app/actions/getCurrentUser';
 import { unauthorized } from 'next/navigation';
 import { after } from 'next/server';
 import { logger } from '@/app/lib/axiom/server';
+import { VAPID_EMAIL } from '@/app/utils/constants';
 
 declare global {
     var isPushInitialized: boolean | undefined;
@@ -25,7 +26,7 @@ function ensureWebPushInitialized() {
         });
     } else {
         webpush.setVapidDetails(
-            'mailto:jorbites.app@gmail.com',
+            VAPID_EMAIL,
             process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
             process.env.VAPID_PRIVATE_KEY
         );
