@@ -34,7 +34,7 @@ describe('Image Proxy API Error Handling', () => {
             });
 
             const request = new NextRequest(
-                'http://localhost:3000/api/image-proxy?url=https://example.com/image.jpg'
+                'http://localhost:3000/api/image-proxy?url=https://img.youtube.com/vi/abc/0.jpg'
             );
 
             const response = await ImageProxyGET(request);
@@ -51,7 +51,7 @@ describe('Image Proxy API Error Handling', () => {
             mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
             const request = new NextRequest(
-                'http://localhost:3000/api/image-proxy?url=https://example.com/image.jpg'
+                'http://localhost:3000/api/image-proxy?url=https://img.youtube.com/vi/abc/0.jpg'
             );
 
             const response = await ImageProxyGET(request);
@@ -60,6 +60,34 @@ describe('Image Proxy API Error Handling', () => {
             expect(response.status).toBe(500);
             expect(data.error).toBe('Failed to process image request');
             expect(data.code).toBe('INTERNAL_SERVER_ERROR');
+            expect(data.timestamp).toBeDefined();
+        });
+
+        it('should return 400 when URL domain is not allowed', async () => {
+            const request = new NextRequest(
+                'http://localhost:3000/api/image-proxy?url=https://example.com/image.jpg'
+            );
+
+            const response = await ImageProxyGET(request);
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data.error).toBe('URL domain not allowed');
+            expect(data.code).toBe('BAD_REQUEST');
+            expect(data.timestamp).toBeDefined();
+        });
+
+        it('should return 400 when URL parameter is invalid', async () => {
+            const request = new NextRequest(
+                'http://localhost:3000/api/image-proxy?url=not-a-valid-url'
+            );
+
+            const response = await ImageProxyGET(request);
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data.error).toBe('URL parameter is invalid');
+            expect(data.code).toBe('BAD_REQUEST');
             expect(data.timestamp).toBeDefined();
         });
 
@@ -103,14 +131,14 @@ describe('Image Proxy API Error Handling', () => {
             });
 
             const request = new NextRequest(
-                'http://localhost:3000/api/image-proxy?url=https://example.com/image.png'
+                'http://localhost:3000/api/image-proxy?url=https://img.youtube.com/vi/abc/0.jpg'
             );
 
             const response = await ImageProxyGET(request);
 
             expect(response.status).toBe(200);
             expect(mockFetch).toHaveBeenCalledWith(
-                'https://example.com/image.png',
+                'https://img.youtube.com/vi/abc/0.jpg',
                 expect.any(Object)
             );
         });

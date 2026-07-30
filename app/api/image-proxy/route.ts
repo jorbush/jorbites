@@ -29,6 +29,31 @@ export async function GET(request: NextRequest) {
         return badRequest('URL parameter is required');
     }
 
+    const ALLOWED_DOMAINS = [
+        'res.cloudinary.com',
+        'lh3.googleusercontent.com',
+        'avatars.githubusercontent.com',
+        'img.youtube.com',
+    ];
+
+    let parsedUrl: URL;
+    try {
+        parsedUrl = new URL(url);
+    } catch (e) {
+        logger.error('GET /api/image-proxy - invalid URL', { url });
+        return badRequest('URL parameter is invalid');
+    }
+
+    if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+        logger.error('GET /api/image-proxy - invalid protocol', { url, protocol: parsedUrl.protocol });
+        return badRequest('URL protocol not allowed');
+    }
+
+    if (!ALLOWED_DOMAINS.includes(parsedUrl.hostname)) {
+        logger.error('GET /api/image-proxy - domain not allowed', { url, hostname: parsedUrl.hostname });
+        return badRequest('URL domain not allowed');
+    }
+
     try {
         let imageUrl = url;
 
