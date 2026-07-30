@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useTransition } from 'react';
+import React, {
+    useState,
+    useEffect,
+    useTransition,
+    useMemo,
+    useOptimistic,
+} from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
@@ -83,29 +89,25 @@ const NotificationPreferencesManager: React.FC<
         }
     }, []);
 
-    const initialPrefs = currentUser?.notificationPreferences || {};
-    const [preferences, setPreferences] = useState<
-        Record<PreferenceCategory, boolean>
-    >({
-        social: initialPrefs.social ?? true,
-        newContent: initialPrefs.newContent ?? true,
-        eventsAndChallenges: initialPrefs.eventsAndChallenges ?? true,
-        quests: initialPrefs.quests ?? true,
-        voting: initialPrefs.voting ?? true,
-        achievements: initialPrefs.achievements ?? true,
-    });
-
-    useEffect(() => {
-        const prefs = currentUser?.notificationPreferences;
-        setPreferences({
-            social: prefs?.social ?? true,
-            newContent: prefs?.newContent ?? true,
-            eventsAndChallenges: prefs?.eventsAndChallenges ?? true,
-            quests: prefs?.quests ?? true,
-            voting: prefs?.voting ?? true,
-            achievements: prefs?.achievements ?? true,
-        });
+    const basePreferences = useMemo<Record<PreferenceCategory, boolean>>(() => {
+        const prefs = currentUser?.notificationPreferences || {};
+        return {
+            social: prefs.social ?? true,
+            newContent: prefs.newContent ?? true,
+            eventsAndChallenges: prefs.eventsAndChallenges ?? true,
+            quests: prefs.quests ?? true,
+            voting: prefs.voting ?? true,
+            achievements: prefs.achievements ?? true,
+        };
     }, [currentUser?.notificationPreferences]);
+
+    const [optimisticPreferences, setOptimisticPreferences] = useOptimistic(
+        basePreferences,
+        (state, update: { key: PreferenceCategory; value: boolean }) => ({
+            ...state,
+            [update.key]: update.value,
+        })
+    );
 
     const isMasterEnabled =
         !!currentUser?.emailNotifications || isPushSubscribed;
@@ -113,11 +115,11 @@ const NotificationPreferencesManager: React.FC<
     const handleToggle = (key: PreferenceCategory) => {
         if (!isMasterEnabled || isPending || updatingKey !== null) return;
 
-        const newValue = !preferences[key];
-        setPreferences((prev) => ({ ...prev, [key]: newValue }));
+        const newValue = !optimisticPreferences[key];
         setUpdatingKey(key);
 
         startTransition(async () => {
+            setOptimisticPreferences({ key, value: newValue });
             try {
                 await axios.patch('/api/notificationPreferences', {
                     [key]: newValue,
@@ -125,8 +127,6 @@ const NotificationPreferencesManager: React.FC<
                 toast.success(t('notification_preferences_updated'));
                 refresh?.();
             } catch {
-                // Revert on error
-                setPreferences((prev) => ({ ...prev, [key]: !newValue }));
                 toast.error(t('something_went_wrong'));
             } finally {
                 setUpdatingKey(null);
@@ -159,7 +159,7 @@ const NotificationPreferencesManager: React.FC<
                             </span>
                         </div>
                         <ToggleSwitch
-                            checked={preferences[key]}
+                            checked={optimisticPreferences[key]}
                             onChange={() => handleToggle(key)}
                             label=""
                             dataCy={`pref-toggle-${key}`}
