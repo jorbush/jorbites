@@ -109,6 +109,8 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 createdAt={recipe.createdAt}
                 userName={recipe.user?.name}
                 minutes={recipe.minutes}
+                prepTime={recipe.prepTime}
+                cookTime={recipe.cookTime}
                 ingredients={recipe.ingredients}
                 steps={recipe.steps}
                 categories={recipeCategories}
@@ -127,6 +129,8 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                     <RecipeHead
                         title={recipe.title}
                         minutes={recipe.minutes.toString()}
+                        prepTime={recipe.prepTime}
+                        cookTime={recipe.cookTime}
                         imagesSrc={[recipe.imageSrc, ...recipe.extraImages]}
                     />
                     <div className="mt-1 grid grid-cols-1 md:grid-cols-1 md:gap-10">
@@ -151,6 +155,8 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             calories={recipe.calories}
                             recipeCuisine={recipe.recipeCuisine}
                             recipeYield={recipe.recipeYield}
+                            prepTime={recipe.prepTime}
+                            cookTime={recipe.cookTime}
                         />
                     </div>
                     <div id="comments-section">

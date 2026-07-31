@@ -8,6 +8,7 @@ interface CounterProps {
     subtitle: string;
     value: number;
     onChange: (_value: number) => void;
+    minValue?: number;
 }
 
 const Counter: React.FC<CounterProps> = ({
@@ -15,6 +16,7 @@ const Counter: React.FC<CounterProps> = ({
     subtitle,
     value,
     onChange,
+    minValue = 1,
 }) => {
     const isIncrementing = useRef(false);
     const isDecrementing = useRef(false);
@@ -22,9 +24,14 @@ const Counter: React.FC<CounterProps> = ({
     const animationFrameId = useRef<number | undefined>(undefined);
 
     const valueRef = useRef(value);
-    valueRef.current = value;
     const onChangeRef = useRef(onChange);
-    onChangeRef.current = onChange;
+    const minValueRef = useRef(minValue);
+
+    useEffect(() => {
+        valueRef.current = value;
+        onChangeRef.current = onChange;
+        minValueRef.current = minValue;
+    });
 
     const updateCounter = useCallback(() => {
         const currentTime = Date.now();
@@ -32,7 +39,10 @@ const Counter: React.FC<CounterProps> = ({
         if (currentTime - lastUpdateTime.current >= 100) {
             if (isIncrementing.current) {
                 onChangeRef.current(valueRef.current + 1);
-            } else if (isDecrementing.current && valueRef.current > 1) {
+            } else if (
+                isDecrementing.current &&
+                valueRef.current > minValueRef.current
+            ) {
                 onChangeRef.current(valueRef.current - 1);
             }
             lastUpdateTime.current = currentTime;
@@ -76,7 +86,7 @@ const Counter: React.FC<CounterProps> = ({
     }, []);
 
     const handleDecrement = useCallback(() => {
-        if (valueRef.current > 1) {
+        if (valueRef.current > minValueRef.current) {
             onChangeRef.current(valueRef.current - 1);
         }
     }, []);
@@ -88,7 +98,7 @@ const Counter: React.FC<CounterProps> = ({
     }, [startUpdateLoop]);
 
     const handleDecrementStart = useCallback(() => {
-        if (valueRef.current > 1) {
+        if (valueRef.current > minValueRef.current) {
             isDecrementing.current = true;
             isIncrementing.current = false;
             startUpdateLoop();
@@ -104,6 +114,7 @@ const Counter: React.FC<CounterProps> = ({
             <div className="flex flex-row items-center gap-4">
                 <button
                     type="button"
+                    aria-label={`Decrease ${title}`}
                     onClick={handleDecrement}
                     onMouseDown={handleDecrementStart}
                     onMouseUp={handleStop}
@@ -119,6 +130,7 @@ const Counter: React.FC<CounterProps> = ({
                 </div>
                 <button
                     type="button"
+                    aria-label={`Increase ${title}`}
                     onClick={handleIncrement}
                     onMouseDown={handleIncrementStart}
                     onMouseUp={handleStop}

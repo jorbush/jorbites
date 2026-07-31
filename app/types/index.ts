@@ -45,6 +45,8 @@ export type SafeRecipe = Omit<
     calories?: number | null;
     recipeCuisine?: string | null;
     recipeYield?: number | null;
+    prepTime?: number | null;
+    cookTime?: number | null;
 };
 
 export type CommentAuthor = Pick<

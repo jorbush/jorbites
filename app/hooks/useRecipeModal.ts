@@ -14,6 +14,8 @@ export interface EditRecipeData {
     ingredients: string[];
     steps: string[];
     minutes: number;
+    prepTime?: number | null;
+    cookTime?: number | null;
     coCooksIds?: string[];
     linkedRecipeIds?: string[];
     coCooks?: SafeUser[];

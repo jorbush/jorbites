@@ -365,6 +365,8 @@ export async function PATCH(
             recipeCuisine,
             calories,
             recipeYield,
+            prepTime,
+            cookTime,
         } = body;
 
         // Handle questId - ensure empty strings become null
@@ -423,6 +425,18 @@ export async function PATCH(
             updateData.recipeYield =
                 recipeYield !== null && recipeYield !== ''
                     ? parseInt(recipeYield.toString(), 10)
+                    : null;
+        }
+        if (prepTime !== undefined) {
+            updateData.prepTime =
+                prepTime !== null && prepTime !== ''
+                    ? parseInt(prepTime.toString(), 10)
+                    : null;
+        }
+        if (cookTime !== undefined) {
+            updateData.cookTime =
+                cookTime !== null && cookTime !== ''
+                    ? parseInt(cookTime.toString(), 10)
                     : null;
         }
 

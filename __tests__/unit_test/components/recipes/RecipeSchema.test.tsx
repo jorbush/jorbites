@@ -33,9 +33,48 @@ describe('RecipeSchema', () => {
         expect(json['@context']).toBe('https://schema.org');
         expect(json['@type']).toBe('Recipe');
         expect(json.name).toBe(mockProps.title);
+        expect(json.totalTime).toBe('PT45M');
         expect(json.recipeInstructions).toHaveLength(4);
         expect(json.recipeInstructions[0]['@type']).toBe('HowToStep');
         expect(json.recipeInstructions[0].text).toBe('Step 1');
+    });
+
+    it('formats totalTime, prepTime, and cookTime as ISO durations when provided', () => {
+        const propsWithTimes = {
+            ...mockProps,
+            minutes: 45,
+            prepTime: 15,
+            cookTime: 30,
+        };
+        const { container } = render(<RecipeSchema {...propsWithTimes} />);
+
+        const scriptTag = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const json = JSON.parse(scriptTag?.innerHTML || '{}');
+
+        expect(json.totalTime).toBe('PT45M');
+        expect(json.prepTime).toBe('PT15M');
+        expect(json.cookTime).toBe('PT30M');
+    });
+
+    it('omits prepTime and cookTime when they are not specified', () => {
+        const propsNoPrepCook = {
+            ...mockProps,
+            minutes: 20,
+            prepTime: undefined,
+            cookTime: undefined,
+        };
+        const { container } = render(<RecipeSchema {...propsNoPrepCook} />);
+
+        const scriptTag = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const json = JSON.parse(scriptTag?.innerHTML || '{}');
+
+        expect(json.totalTime).toBe('PT20M');
+        expect(json.prepTime).toBeUndefined();
+        expect(json.cookTime).toBeUndefined();
     });
 
     it('generates high-res image URLs for Cloudinary images', () => {

@@ -1,21 +1,27 @@
 'use client';
 
-import { useState, useRef, useEffect, TouchEvent } from 'react';
+import { useState, useRef, useEffect, useMemo, TouchEvent } from 'react';
 import { FiChevronLeft, FiChevronRight, FiShare2 } from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
 import Heading from '@/app/components/navigation/Heading';
 import { useRouter } from 'next/navigation';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import useShare from '@/app/hooks/useShare';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface RecipeHeadProps {
     title: string;
     minutes: string;
+    prepTime?: number | null;
+    cookTime?: number | null;
     imagesSrc: string[];
 }
 
 const RecipeHead: React.FC<RecipeHeadProps> = ({
     title,
     minutes,
+    prepTime,
+    cookTime,
     imagesSrc,
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -24,6 +30,20 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
     const { share } = useShare();
     const touchStartX = useRef(0);
     const touchEndX = useRef(0);
+    const { t } = useTranslation();
+    const mounted = useIsMounted();
+
+    const subtitleText = useMemo(() => {
+        const prepLabel = mounted ? (t('prep_short') ?? 'Prep') : 'Prep';
+        const cookLabel = mounted ? (t('cook_short') ?? 'Cook') : 'Cook';
+        const parts: string[] = [];
+        if (prepTime) parts.push(`${prepLabel}: ${prepTime}m`);
+        if (cookTime) parts.push(`${cookLabel}: ${cookTime}m`);
+        if (parts.length > 0) {
+            return `${minutes} min (${parts.join(' · ')})`;
+        }
+        return `${minutes} min`;
+    }, [minutes, prepTime, cookTime, mounted, t]);
 
     useEffect(() => {
         if (isTransitioning.current) {
@@ -93,7 +113,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 </button>
                 <Heading
                     title={title}
-                    subtitle={`${minutes} min`}
+                    subtitle={subtitleText}
                     center
                 />
                 <button
@@ -114,7 +134,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 {imagesSrc.map((imageSrc, index) => (
                     <div
                         key={imageSrc}
-                        className="absolute size-full transition-all duration-300 ease-in-out"
+                        className="absolute size-full transition-[transform,opacity] duration-300 ease-in-out"
                         style={{
                             transform: `translateX(${
                                 (index - currentImageIndex) * 100

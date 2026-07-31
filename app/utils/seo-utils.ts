@@ -78,3 +78,26 @@ export const getYoutubeVideoId = (
     }
     return null;
 };
+
+export const formatIsoDuration = (
+    minutes?: number | null
+): string | undefined => {
+    if (
+        minutes === undefined ||
+        minutes === null ||
+        isNaN(minutes) ||
+        minutes <= 0
+    ) {
+        return undefined;
+    }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    let result = 'PT';
+    if (hours > 0) {
+        result += `${hours}H`;
+    }
+    if (mins > 0 || hours === 0) {
+        result += `${mins}M`;
+    }
+    return result;
+};
