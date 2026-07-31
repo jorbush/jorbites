@@ -51,10 +51,14 @@ export async function PATCH(
             return badRequest('Current password and new password are required');
         }
 
-        if (newPassword.length < 6) {
+        if (newPassword.length < 8) {
             return badRequest(
-                'New password must be at least 6 characters long'
+                'New password must be at least 8 characters long'
             );
+        }
+
+        if (newPassword.length > 128) {
+            return badRequest('New password must not exceed 128 characters');
         }
 
         // Get the user with the hashed password for verification

@@ -11,7 +11,7 @@ import Input from '@/app/components/inputs/Input';
 import Button from '@/app/components/buttons/Button';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
-import { axiosFetcher } from '@/app/utils/fetcher';
+import { axiosPostFetcher } from '@/app/utils/fetcher';
 
 interface ResetPasswordClientProps {
     token: string;
@@ -36,7 +36,7 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
 
     const { data: validationData, error: validationError } = useSWR(
         token ? `/api/password-reset/validate/${token}` : null,
-        axiosFetcher,
+        axiosPostFetcher,
         {
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
@@ -155,12 +155,12 @@ const ResetPasswordClient: React.FC<ResetPasswordClientProps> = ({ token }) => {
                             required
                         />
                         <Button
+                            type="submit"
                             label={
                                 isLoading
                                     ? t('updating') || 'Updating...'
                                     : t('update_password') || 'Update Password'
                             }
-                            onClick={handleSubmit(onSubmit)}
                             disabled={isLoading}
                         />
                     </form>
