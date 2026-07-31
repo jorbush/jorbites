@@ -1,7 +1,7 @@
 import { expect } from '@jest/globals';
 import { POST as PasswordResetRequestPOST } from '@/app/api/password-reset/request/route';
 import { POST as PasswordResetPOST } from '@/app/api/password-reset/reset/route';
-import { GET as PasswordResetValidateGET } from '@/app/api/password-reset/validate/[token]/route';
+import { POST as PasswordResetValidatePOST } from '@/app/api/password-reset/validate/[token]/route';
 import { NextRequest } from 'next/server';
 import bcrypt from 'bcrypt';
 import prisma from '@/app/lib/prismadb';
@@ -165,7 +165,7 @@ describe('Password Reset API Error Handling', () => {
             const mockRequest = {
                 json: jest.fn().mockResolvedValue({
                     token: 'valid-token',
-                    password: '12345',
+                    password: '1234567',
                 }),
             } as unknown as Request;
 
@@ -174,10 +174,51 @@ describe('Password Reset API Error Handling', () => {
 
             expect(response.status).toBe(400);
             expect(data.error).toBe(
-                'Password must be at least 6 characters long'
+                'Password must be at least 8 characters long'
             );
             expect(data.code).toBe('BAD_REQUEST');
             expect(data.timestamp).toBeDefined();
+        });
+
+        it('should return 400 when password exceeds 128 characters', async () => {
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    token: 'valid-token',
+                    password: 'a'.repeat(129),
+                }),
+            } as unknown as Request;
+
+            const response = await PasswordResetPOST(mockRequest);
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data.error).toBe('Password must not exceed 128 characters');
+            expect(data.code).toBe('BAD_REQUEST');
+        });
+
+        it('should allow password reset with exactly 8 character password', async () => {
+            (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce({
+                id: '1',
+                email: 'test@example.com',
+            });
+            (bcrypt.hash as jest.Mock).mockResolvedValueOnce('hashedPassword');
+            (prisma.user.update as jest.Mock).mockResolvedValueOnce({
+                id: '1',
+                email: 'test@example.com',
+            });
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    token: 'valid-token',
+                    password: '12345678',
+                }),
+            } as unknown as Request;
+
+            const response = await PasswordResetPOST(mockRequest);
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(data.success).toBe(true);
         });
 
         it('should return 400 when token is invalid or expired', async () => {
@@ -288,7 +329,7 @@ describe('Password Reset API Error Handling', () => {
         });
     });
 
-    describe('GET /api/password-reset/validate/[token]', () => {
+    describe('POST /api/password-reset/validate/[token]', () => {
         it('should return 400 when token is missing', async () => {
             const mockParams = {
                 params: Promise.resolve({ token: undefined }),
@@ -297,7 +338,7 @@ describe('Password Reset API Error Handling', () => {
             const request = new NextRequest(
                 'http://localhost:3000/api/password-reset/validate/'
             );
-            const response = await PasswordResetValidateGET(
+            const response = await PasswordResetValidatePOST(
                 request,
                 mockParams
             );
@@ -319,7 +360,7 @@ describe('Password Reset API Error Handling', () => {
             const request = new NextRequest(
                 'http://localhost:3000/api/password-reset/validate/invalid-token'
             );
-            const response = await PasswordResetValidateGET(
+            const response = await PasswordResetValidatePOST(
                 request,
                 mockParams
             );
@@ -366,7 +407,7 @@ describe('Password Reset API Error Handling', () => {
             const request = new NextRequest(
                 'http://localhost:3000/api/password-reset/validate/valid-token'
             );
-            const response = await PasswordResetValidateGET(
+            const response = await PasswordResetValidatePOST(
                 request,
                 mockParams
             );
@@ -397,7 +438,7 @@ describe('Password Reset API Error Handling', () => {
             const request = new NextRequest(
                 'http://localhost:3000/api/password-reset/validate/valid-token'
             );
-            const response = await PasswordResetValidateGET(
+            const response = await PasswordResetValidatePOST(
                 request,
                 mockParams
             );

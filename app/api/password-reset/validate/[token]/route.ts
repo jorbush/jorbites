@@ -8,7 +8,7 @@ interface IParams {
     token?: string;
 }
 
-export async function GET(
+export async function POST(
     request: NextRequest,
     props: { params: Promise<IParams> }
 ) {
@@ -16,7 +16,7 @@ export async function GET(
         const params = await props.params;
         const { token } = params;
 
-        logger.info('GET /api/password-reset/validate/[token] - start', {
+        logger.info('POST /api/password-reset/validate/[token] - start', {
             hasToken: !!token,
         });
 
@@ -40,15 +40,15 @@ export async function GET(
 
         if (!user) {
             logger.info(
-                'GET /api/password-reset/validate/[token] - invalid token'
+                'POST /api/password-reset/validate/[token] - invalid token'
             );
             return NextResponse.json({ valid: false });
         }
 
-        logger.info('GET /api/password-reset/validate/[token] - valid token');
+        logger.info('POST /api/password-reset/validate/[token] - valid token');
         return NextResponse.json({ valid: true });
     } catch (error: any) {
-        logger.error('GET /api/password-reset/validate/[token] - error', {
+        logger.error('POST /api/password-reset/validate/[token] - error', {
             error: error.message,
         });
         return internalServerError('Failed to validate token');

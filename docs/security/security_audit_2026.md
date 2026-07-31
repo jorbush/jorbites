@@ -112,12 +112,13 @@ secret: process.env.NEXTAUTH_SECRET,
 ## 🟡 MEDIUM Findings
 
 ### M-1: Password Length Policy
+*Status: Resolved*
 
 **Files**: `register/route.ts`, `password-reset/reset/route.ts`, `password/[userId]/route.ts`
 
-Minimum length requirement is currently set to 6 characters.
+Minimum length requirement was previously set to 6 characters.
 
-**Remediation**: Consider increasing minimum length to 8+ characters to improve account resilience against basic credential attacks.
+**Remediation**: Updated minimum password length policy across all registration, reset, and password modification routes and forms to 8+ characters.
 
 ---
 

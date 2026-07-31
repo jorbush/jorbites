@@ -134,12 +134,28 @@ describe('ChangePassword', () => {
 
     it('shows validation error for short new password', async () => {
         render(<ChangePassword {...defaultProps} />);
-        fireEvent.click(screen.getByTestId('edit-password-icon'));
+        fireEvent.click(screen.getByTestId('edit-password-button'));
         fireEvent.change(screen.getByTestId('new-password-input'), {
-            target: { value: '123' },
+            target: { value: '1234567' },
         });
         // Wait for validation error to appear
         expect(await screen.findByText('password_too_short')).toBeDefined();
+    });
+
+    it('accepts exact 8-character password and enables save button', async () => {
+        render(<ChangePassword {...defaultProps} />);
+        fireEvent.click(screen.getByTestId('edit-password-button'));
+        fireEvent.change(screen.getByTestId('current-password-input'), {
+            target: { value: 'currentpass' },
+        });
+        fireEvent.change(screen.getByTestId('new-password-input'), {
+            target: { value: '12345678' },
+        });
+        fireEvent.change(screen.getByTestId('confirm-password-input'), {
+            target: { value: '12345678' },
+        });
+        expect(screen.queryByText('password_too_short')).toBeNull();
+        expect(await screen.findByTestId('save-password-button')).toBeDefined();
     });
 
     it('shows validation error when passwords do not match', async () => {

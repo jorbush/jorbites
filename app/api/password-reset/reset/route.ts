@@ -52,8 +52,12 @@ export async function POST(request: Request) {
             return badRequest('Token and password are required');
         }
 
-        if (password.length < 6) {
-            return badRequest('Password must be at least 6 characters long');
+        if (password.length < 8) {
+            return badRequest('Password must be at least 8 characters long');
+        }
+
+        if (password.length > 128) {
+            return badRequest('Password must not exceed 128 characters');
         }
 
         const hashedResetToken = crypto

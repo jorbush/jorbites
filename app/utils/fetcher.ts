@@ -12,3 +12,6 @@ export const fetcher = async (url: string) => {
 
 export const axiosFetcher = (url: string) =>
     axios.get(url).then((res) => res.data);
+
+export const axiosPostFetcher = (url: string) =>
+    axios.post(url).then((res) => res.data);

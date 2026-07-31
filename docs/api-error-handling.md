@@ -121,8 +121,8 @@ if (existingUser) {
 }
 
 // Input format validation
-if (password.length < 6) {
-    return badRequest('Password must be at least 6 characters long');
+if (password.length < 8) {
+    return badRequest('Password must be at least 8 characters long');
 }
 ```
 
@@ -136,8 +136,8 @@ if (!email || !name || !password) {
 }
 
 // Format validation
-if (password.length < 6) {
-    return badRequest('Password must be at least 6 characters long');
+if (password.length < 8) {
+    return badRequest('Password must be at least 8 characters long');
 }
 ```
 

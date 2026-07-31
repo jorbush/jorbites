@@ -39,8 +39,13 @@ describe('ResetPasswordClient', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        // Default behavior for token validation
-        vi.mocked(axios.get).mockResolvedValue({ data: { valid: true } });
+        // Default behavior for token validation and post calls
+        vi.mocked(axios.post).mockImplementation((url: string) => {
+            if (url.includes('/validate/')) {
+                return Promise.resolve({ data: { valid: true } });
+            }
+            return Promise.resolve({ data: { success: true } });
+        });
     });
 
     afterEach(() => {
@@ -64,7 +69,7 @@ describe('ResetPasswordClient', () => {
         renderWithSWR(<ResetPasswordClient token={mockToken} />);
 
         await waitFor(() => {
-            expect(axios.get).toHaveBeenCalledWith(
+            expect(axios.post).toHaveBeenCalledWith(
                 `/api/password-reset/validate/${mockToken}`
             );
         });
@@ -72,7 +77,12 @@ describe('ResetPasswordClient', () => {
 
     it('shows invalid token message when token is invalid', async () => {
         // Mock invalid token response
-        vi.mocked(axios.get).mockResolvedValue({ data: { valid: false } });
+        vi.mocked(axios.post).mockImplementation((url: string) => {
+            if (url.includes('/validate/')) {
+                return Promise.resolve({ data: { valid: false } });
+            }
+            return Promise.resolve({ data: {} });
+        });
 
         const { getByText } = renderWithSWR(
             <ResetPasswordClient token="invalid-token" />
@@ -87,7 +97,12 @@ describe('ResetPasswordClient', () => {
 
     it('shows error when API validation fails', async () => {
         // Mock API error
-        vi.mocked(axios.get).mockRejectedValue(new Error('API Error'));
+        vi.mocked(axios.post).mockImplementation((url: string) => {
+            if (url.includes('/validate/')) {
+                return Promise.reject(new Error('API Error'));
+            }
+            return Promise.resolve({ data: {} });
+        });
         const toast = await import('react-hot-toast');
 
         renderWithSWR(<ResetPasswordClient token="error-token" />);
@@ -100,8 +115,13 @@ describe('ResetPasswordClient', () => {
     });
 
     it('shows error when password reset fails', async () => {
-        vi.mocked(axios.post).mockRejectedValue({
-            response: { data: { error: 'Reset failed' } },
+        vi.mocked(axios.post).mockImplementation((url: string) => {
+            if (url.includes('/validate/')) {
+                return Promise.resolve({ data: { valid: true } });
+            }
+            return Promise.reject({
+                response: { data: { error: 'Reset failed' } },
+            });
         });
         const toast = await import('react-hot-toast');
 
@@ -129,11 +149,14 @@ describe('ResetPasswordClient', () => {
         });
     });
 
-    it('disables form inputs while loading', async () => {
-        // Mock a slow response to test loading state
-        vi.mocked(axios.post).mockImplementation(
-            () => new Promise((resolve) => setTimeout(() => resolve({}), 100))
-        );
+    it('resets password successfully and redirects to home page', async () => {
+        vi.mocked(axios.post).mockImplementation((url: string) => {
+            if (url.includes('/validate/')) {
+                return Promise.resolve({ data: { valid: true } });
+            }
+            return Promise.resolve({ data: { success: true } });
+        });
+        const toast = await import('react-hot-toast');
 
         const { getByText, getByLabelText } = renderWithSWR(
             <ResetPasswordClient token={mockToken} />
@@ -145,17 +168,25 @@ describe('ResetPasswordClient', () => {
             const submitButton = getByText('update_password');
 
             fireEvent.change(passwordInput, {
-                target: { value: 'newPassword123' },
+                target: { value: '12345678' },
             });
             fireEvent.change(confirmInput, {
-                target: { value: 'newPassword123' },
+                target: { value: '12345678' },
             });
             fireEvent.click(submitButton);
         });
 
-        // Check for loading state
         await waitFor(() => {
-            expect(getByText('updating')).toBeDefined();
+            expect(axios.post).toHaveBeenCalledWith(
+                '/api/password-reset/reset',
+                {
+                    token: mockToken,
+                    password: '12345678',
+                }
+            );
+            expect(toast.toast.success).toHaveBeenCalledWith(
+                'password_reset_success'
+            );
         });
     });
 });

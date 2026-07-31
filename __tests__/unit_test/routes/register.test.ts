@@ -79,7 +79,7 @@ describe('Register API Error Handling', () => {
                 json: jest.fn().mockResolvedValue({
                     email: 'test@example.com',
                     name: 'Test User',
-                    password: '12345',
+                    password: '1234567',
                 }),
             } as unknown as Request;
 
@@ -88,10 +88,51 @@ describe('Register API Error Handling', () => {
 
             expect(response.status).toBe(400);
             expect(data.error).toBe(
-                'Password must be at least 6 characters long'
+                'Password must be at least 8 characters long'
             );
             expect(data.code).toBe('BAD_REQUEST');
             expect(data.timestamp).toBeDefined();
+        });
+
+        it('should return 400 when password exceeds 128 characters', async () => {
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    email: 'test@example.com',
+                    name: 'Test User',
+                    password: 'a'.repeat(129),
+                }),
+            } as unknown as Request;
+
+            const response = await RegisterPOST(mockRequest);
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data.error).toBe('Password must not exceed 128 characters');
+            expect(data.code).toBe('BAD_REQUEST');
+        });
+
+        it('should allow registration with exactly 8 character password', async () => {
+            (prisma.user.findFirst as jest.Mock).mockResolvedValueOnce(null);
+            (bcrypt.hash as jest.Mock).mockResolvedValueOnce('hashedPassword');
+            (prisma.user.create as jest.Mock).mockResolvedValueOnce({
+                id: '1',
+                email: 'test@example.com',
+                name: 'Test User',
+            });
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    email: 'test@example.com',
+                    name: 'Test User',
+                    password: '12345678',
+                }),
+            } as unknown as Request;
+
+            const response = await RegisterPOST(mockRequest);
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(data.id).toBe('1');
         });
 
         it('should return 409 when email already exists', async () => {

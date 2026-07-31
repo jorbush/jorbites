@@ -6,6 +6,7 @@ import React, {
     useState,
     useTransition,
     useImperativeHandle,
+    useId,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
@@ -13,7 +14,8 @@ import { SafeUser } from '@/app/types';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { FaRegSave } from 'react-icons/fa';
-import { FiEdit3, FiEye, FiEyeOff } from 'react-icons/fi';
+import { ChangePasswordHeader } from './ChangePasswordHeader';
+import { PasswordFieldInput } from './PasswordFieldInput';
 
 interface ChangePasswordProps {
     currentUser?: SafeUser | null;
@@ -33,6 +35,10 @@ const ChangePassword = ({ currentUser, ref }: ChangePasswordProps) => {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    const currentPasswordId = useId();
+    const newPasswordId = useId();
+    const confirmPasswordId = useId();
+
     const {
         register,
         handleSubmit,
@@ -48,8 +54,9 @@ const ChangePassword = ({ currentUser, ref }: ChangePasswordProps) => {
         mode: 'onChange',
     });
 
-    const watchedFields = watch();
-    const { currentPassword, newPassword, confirmPassword } = watchedFields;
+    const currentPassword = watch('currentPassword') || '';
+    const newPassword = watch('newPassword') || '';
+    const confirmPassword = watch('confirmPassword') || '';
 
     const updatePassword: SubmitHandler<FieldValues> = useCallback(
         (data) => {
@@ -109,188 +116,130 @@ const ChangePassword = ({ currentUser, ref }: ChangePasswordProps) => {
         [isEditing, handleSubmit, updatePassword]
     );
 
+    const hidePasswordText = t('hide_password') || 'Hide password';
+    const showPasswordText = t('show_password') || 'Show password';
+
     return (
         <div
             className="flex flex-col gap-4"
             data-testid="change-password-selector"
         >
-            <div className="flex items-center">
-                <div className="flex-1">
-                    <p className="text-left">
-                        {t('change_password') || 'Change Password'}
-                    </p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                        {t('password_requirements') ||
-                            'Password must be at least 6 characters long'}
-                    </p>
-                </div>
-                <div className="flex items-center">
-                    {!isEditing ? (
-                        <FiEdit3
-                            data-testid="edit-password-icon"
-                            className="size-4 cursor-pointer text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
-                            onClick={handleEditClick}
-                        />
-                    ) : (
-                        <button
-                            type="button"
-                            onClick={handleCancelEdit}
-                            className="text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
-                            disabled={isPending}
-                            data-testid="cancel-edit-button"
-                        >
-                            {t('cancel') || 'Cancel'}
-                        </button>
-                    )}
-                </div>
-            </div>
+            <ChangePasswordHeader
+                title={t('change_password') || 'Change Password'}
+                requirementsText={
+                    t('password_requirements') ||
+                    'Password must be at least 8 characters long'
+                }
+                isEditing={isEditing}
+                isPending={isPending}
+                onEditClick={handleEditClick}
+                onCancelEdit={handleCancelEdit}
+                changePasswordLabel={t('change_password') || 'Change Password'}
+                cancelLabel={t('cancel') || 'Cancel'}
+            />
 
             {isEditing && (
-                <div className="flex flex-col gap-3">
+                <form
+                    onSubmit={handleSubmit(updatePassword)}
+                    className="flex flex-col gap-3"
+                >
                     {/* Current Password */}
-                    <div className="flex flex-col gap-1">
-                        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                            {t('current_password') || 'Current Password'}
-                        </label>
-                        <div className="relative">
-                            <input
-                                type={showCurrentPassword ? 'text' : 'password'}
-                                {...register('currentPassword', {
-                                    required: true,
-                                    minLength: 1,
-                                })}
-                                className="focus:ring-green-450 w-full rounded border border-neutral-300 px-3 py-2 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
-                                placeholder={
-                                    t('enter_current_password') ||
-                                    'Enter current password'
-                                }
-                                disabled={isPending}
-                                data-testid="current-password-input"
-                            />
-                            <button
-                                type="button"
-                                className="absolute top-1/2 right-3 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
-                                onClick={() =>
-                                    setShowCurrentPassword(!showCurrentPassword)
-                                }
-                                data-testid="toggle-current-password"
-                            >
-                                {showCurrentPassword ? (
-                                    <FiEyeOff size={16} />
-                                ) : (
-                                    <FiEye size={16} />
-                                )}
-                            </button>
-                        </div>
-                    </div>
+                    <PasswordFieldInput
+                        id={currentPasswordId}
+                        label={t('current_password') || 'Current Password'}
+                        placeholder={
+                            t('enter_current_password') ||
+                            'Enter current password'
+                        }
+                        registerProps={register('currentPassword', {
+                            required: true,
+                            minLength: 1,
+                        })}
+                        showPassword={showCurrentPassword}
+                        onToggleShowPassword={() =>
+                            setShowCurrentPassword(!showCurrentPassword)
+                        }
+                        disabled={isPending}
+                        testId="current-password-input"
+                        toggleTestId="toggle-current-password"
+                        hidePasswordLabel={hidePasswordText}
+                        showPasswordLabel={showPasswordText}
+                    />
 
                     {/* New Password */}
-                    <div className="flex flex-col gap-1">
-                        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                            {t('new_password') || 'New Password'}
-                        </label>
-                        <div className="relative">
-                            <input
-                                type={showNewPassword ? 'text' : 'password'}
-                                {...register('newPassword', {
-                                    required: true,
-                                    minLength: 6,
-                                    validate: (value) =>
-                                        value !== currentPassword ||
-                                        t('new_password_must_be_different') ||
-                                        'New password must be different from current password',
-                                })}
-                                className="focus:ring-green-450 w-full rounded border border-neutral-300 px-3 py-2 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
-                                placeholder={
-                                    t('enter_new_password') ||
-                                    'Enter new password'
-                                }
-                                disabled={isPending}
-                                data-testid="new-password-input"
-                            />
-                            <button
-                                type="button"
-                                className="absolute top-1/2 right-3 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
-                                onClick={() =>
-                                    setShowNewPassword(!showNewPassword)
-                                }
-                                data-testid="toggle-new-password"
-                            >
-                                {showNewPassword ? (
-                                    <FiEyeOff size={16} />
-                                ) : (
-                                    <FiEye size={16} />
-                                )}
-                            </button>
-                        </div>
-                        {newPassword.length > 0 && newPassword.length < 6 && (
-                            <p className="text-xs text-red-500">
-                                {t('password_too_short') ||
-                                    'Password must be at least 6 characters'}
-                            </p>
-                        )}
-                    </div>
+                    <PasswordFieldInput
+                        id={newPasswordId}
+                        label={t('new_password') || 'New Password'}
+                        placeholder={
+                            t('enter_new_password') || 'Enter new password'
+                        }
+                        registerProps={register('newPassword', {
+                            required: true,
+                            minLength: 8,
+                            validate: (value) =>
+                                value !== currentPassword ||
+                                t('new_password_must_be_different') ||
+                                'New password must be different from current password',
+                        })}
+                        showPassword={showNewPassword}
+                        onToggleShowPassword={() =>
+                            setShowNewPassword(!showNewPassword)
+                        }
+                        disabled={isPending}
+                        errorText={
+                            newPassword.length > 0 &&
+                            newPassword.length < 8 &&
+                            (t('password_too_short') ||
+                                'Password must be at least 8 characters')
+                        }
+                        secondaryErrorText={
+                            newPassword.length > 0 &&
+                            newPassword === currentPassword &&
+                            (t('new_password_must_be_different') ||
+                                'New password must be different from current password')
+                        }
+                        testId="new-password-input"
+                        toggleTestId="toggle-new-password"
+                        hidePasswordLabel={hidePasswordText}
+                        showPasswordLabel={showPasswordText}
+                    />
 
                     {/* Confirm Password */}
-                    <div className="flex flex-col gap-1">
-                        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                            {t('confirm_password') || 'Confirm Password'}
-                        </label>
-                        <div className="relative">
-                            <input
-                                type={showConfirmPassword ? 'text' : 'password'}
-                                {...register('confirmPassword', {
-                                    required: true,
-                                    validate: (value) =>
-                                        value === newPassword ||
-                                        t('passwords_dont_match') ||
-                                        'Passwords do not match',
-                                })}
-                                className="focus:ring-green-450 w-full rounded border border-neutral-300 px-3 py-2 text-base focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
-                                placeholder={
-                                    t('confirm_new_password') ||
-                                    'Confirm new password'
-                                }
-                                disabled={isPending}
-                                data-testid="confirm-password-input"
-                            />
-                            <button
-                                type="button"
-                                className="absolute top-1/2 right-3 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
-                                onClick={() =>
-                                    setShowConfirmPassword(!showConfirmPassword)
-                                }
-                                data-testid="toggle-confirm-password"
-                            >
-                                {showConfirmPassword ? (
-                                    <FiEyeOff size={16} />
-                                ) : (
-                                    <FiEye size={16} />
-                                )}
-                            </button>
-                        </div>
-                        {confirmPassword.length > 0 &&
-                            confirmPassword !== newPassword && (
-                                <p className="text-xs text-red-500">
-                                    {t('passwords_dont_match') ||
-                                        'Passwords do not match'}
-                                </p>
-                            )}
-                        {newPassword.length > 0 &&
-                            newPassword === currentPassword && (
-                                <p className="text-xs text-red-500">
-                                    {t('new_password_must_be_different') ||
-                                        'New password must be different from current password'}
-                                </p>
-                            )}
-                    </div>
+                    <PasswordFieldInput
+                        id={confirmPasswordId}
+                        label={t('confirm_password') || 'Confirm Password'}
+                        placeholder={
+                            t('confirm_new_password') || 'Confirm new password'
+                        }
+                        registerProps={register('confirmPassword', {
+                            required: true,
+                            validate: (value) =>
+                                value === newPassword ||
+                                t('passwords_dont_match') ||
+                                'Passwords do not match',
+                        })}
+                        showPassword={showConfirmPassword}
+                        onToggleShowPassword={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        disabled={isPending}
+                        errorText={
+                            confirmPassword.length > 0 &&
+                            confirmPassword !== newPassword &&
+                            (t('passwords_dont_match') ||
+                                'Passwords do not match')
+                        }
+                        testId="confirm-password-input"
+                        toggleTestId="toggle-confirm-password"
+                        hidePasswordLabel={hidePasswordText}
+                        showPasswordLabel={showPasswordText}
+                    />
 
                     {/* Save Button */}
                     {canSave && (
                         <div className="flex justify-end">
                             <button
-                                type="button"
-                                onClick={handleSubmit(updatePassword)}
+                                type="submit"
                                 disabled={isPending}
                                 className="bg-green-450 flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white transition-colors hover:opacity-80 disabled:opacity-50 dark:text-black dark:hover:opacity-100"
                                 data-testid="save-password-button"
@@ -302,7 +251,7 @@ const ChangePassword = ({ currentUser, ref }: ChangePasswordProps) => {
                             </button>
                         </div>
                     )}
-                </div>
+                </form>
             )}
         </div>
     );
