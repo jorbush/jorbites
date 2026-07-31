@@ -12,7 +12,7 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import { authenticatedRatelimit } from '@/app/lib/ratelimit';
 
-export async function PUT(request: Request) {
+export async function PATCH(request: Request) {
     try {
         const currentUser = await getCurrentUser();
 
@@ -32,7 +32,7 @@ export async function PUT(request: Request) {
                     Math.ceil((reset - Date.now()) / 1000)
                 );
                 logger.warn(
-                    'PUT /api/userImage/[userId] - rate limit exceeded',
+                    'PATCH /api/userImage/[userId] - rate limit exceeded',
                     {
                         userId: currentUser.id,
                     }
@@ -44,7 +44,7 @@ export async function PUT(request: Request) {
             }
         }
 
-        logger.info('PUT /api/userImage/[userId] - start', {
+        logger.info('PATCH /api/userImage/[userId] - start', {
             userId: currentUser.id,
         });
 
@@ -91,12 +91,12 @@ export async function PUT(request: Request) {
             },
         });
 
-        logger.info('PUT /api/userImage/[userId] - success', {
+        logger.info('PATCH /api/userImage/[userId] - success', {
             userId: user.id,
         });
         return NextResponse.json(user);
     } catch (error: any) {
-        logger.error('PUT /api/userImage/[userId] - error', {
+        logger.error('PATCH /api/userImage/[userId] - error', {
             error: error.message,
         });
         return internalServerError('Failed to update user image');

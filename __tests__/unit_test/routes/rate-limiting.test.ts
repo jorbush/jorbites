@@ -82,7 +82,7 @@ import { POST as WorkshopJoinPOST } from '@/app/api/workshop/[workshopId]/join/r
 import { POST as QuestsPOST } from '@/app/api/quests/route';
 import { PATCH as QuestPATCH } from '@/app/api/quest/[questId]/route';
 import { PATCH as UserNamePATCH } from '@/app/api/userName/[userId]/route';
-import { PUT as UserImagePUT } from '@/app/api/userImage/[userId]/route';
+import { PATCH as UserImagePATCH } from '@/app/api/userImage/[userId]/route';
 import { POST as TopRecipeVotePOST } from '@/app/api/top-recipe-vote/route';
 import { GET as SearchGET } from '@/app/api/search/route';
 
@@ -224,17 +224,17 @@ describe('L-4 Rate Limiting Audit Fixes', () => {
         expect(authenticatedRatelimit.limit).toHaveBeenCalledWith('user-123');
     });
 
-    it('PUT /api/userImage/[userId] should enforce rate limit', async () => {
+    it('PATCH /api/userImage/[userId] should enforce rate limit', async () => {
         (authenticatedRatelimit.limit as jest.Mock).mockResolvedValueOnce({
             success: false,
             reset: Date.now() + 10000,
         });
 
         const req = new Request('http://localhost/api/userImage/user-123', {
-            method: 'PUT',
+            method: 'PATCH',
             body: JSON.stringify({ userImage: 'https://example.com/img.jpg' }),
         });
-        const res = await UserImagePUT(req);
+        const res = await UserImagePATCH(req);
         const data = await res.json();
 
         expect(res.status).toBe(429);
