@@ -9,6 +9,6 @@ export enum UserEventType {
 
 export interface UserInteractionData {
     recipeId: string;
-    userId: string;
+    userId?: string;
     metadata?: Record<string, unknown>;
 }

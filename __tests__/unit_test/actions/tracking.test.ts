@@ -9,6 +9,12 @@ import {
 } from 'vitest';
 import { logger } from '@/app/lib/axiom/server';
 
+vi.mock('next/navigation', () => ({
+    unauthorized: vi.fn(() => {
+        throw new Error('UNAUTHORIZED');
+    }),
+}));
+
 vi.mock('@/app/actions/getCurrentUser', async (importOriginal) => {
     const original =
         await importOriginal<typeof import('@/app/actions/getCurrentUser')>();
@@ -16,7 +22,9 @@ vi.mock('@/app/actions/getCurrentUser', async (importOriginal) => {
         ...original,
         default: vi.fn(),
         auth: vi.fn(() =>
-            Promise.resolve({ user: { email: 'user-1@test.com' } })
+            Promise.resolve({
+                user: { id: 'user-1', email: 'user-1@test.com' },
+            })
         ),
     };
 });
@@ -82,7 +90,7 @@ describe('trackUserInteraction', () => {
 
         vi.stubEnv('NODE_ENV', 'production');
 
-        await trackRecipeView('recipe-1', 'user-1');
+        await trackRecipeView('recipe-1');
 
         expect(
             (logger.warn as unknown as MockInstance).mock.calls.length
@@ -102,12 +110,12 @@ describe('trackUserInteraction', () => {
             await import('@/app/actions/tracking');
 
         // First event – should connect + send
-        const p1 = trackRecipeView('recipe-1', 'user-1');
+        const p1 = trackRecipeView('recipe-1');
         vi.runAllTimersAsync();
         await p1;
 
         // Second event – should NOT call connect again (already connected)
-        const p2 = trackRecipeLike('recipe-1', 'user-1');
+        const p2 = trackRecipeLike('recipe-1');
         vi.runAllTimersAsync();
         await p2;
 
@@ -125,7 +133,7 @@ describe('trackUserInteraction', () => {
         }));
         const { trackRecipeView } = await import('@/app/actions/tracking');
 
-        const promise = trackRecipeView('recipe-1', 'user-1');
+        const promise = trackRecipeView('recipe-1');
         // Advance time past the 3 s timeout
         await vi.advanceTimersByTimeAsync(3_001);
         await promise;
@@ -150,7 +158,7 @@ describe('trackUserInteraction', () => {
         }));
         const { trackRecipeView } = await import('@/app/actions/tracking');
 
-        const promise = trackRecipeView('recipe-1', 'user-1');
+        const promise = trackRecipeView('recipe-1');
         await vi.advanceTimersByTimeAsync(3_001);
         await promise;
 
@@ -170,7 +178,7 @@ describe('trackUserInteraction', () => {
         }));
         const { trackRecipeView } = await import('@/app/actions/tracking');
 
-        const promise = trackRecipeView('recipe-1', 'user-1');
+        const promise = trackRecipeView('recipe-1');
         await vi.advanceTimersByTimeAsync(3_001);
 
         // Must resolve, not reject
@@ -197,18 +205,66 @@ describe('trackUserInteraction', () => {
         const { trackRecipeView } = await import('@/app/actions/tracking');
 
         // First call – times out, isConnected remains false
-        const p1 = trackRecipeView('recipe-1', 'user-1');
+        const p1 = trackRecipeView('recipe-1');
         await vi.advanceTimersByTimeAsync(3_001);
         await p1;
 
         vi.clearAllMocks(); // reset spy call counts before the second assertion
 
         // Second call – should attempt connect again (not skip it)
-        const p2 = trackRecipeView('recipe-1', 'user-1');
+        const p2 = trackRecipeView('recipe-1');
         vi.runAllTimersAsync();
         await p2;
 
         expect(connect).toHaveBeenCalledTimes(1); // 2nd overall, 1st since clearAllMocks
         expect(send).toHaveBeenCalledTimes(1);
+    });
+
+    it('enforces session.user.id and ignores spoofed client-supplied userId', async () => {
+        const mockProducer = makeMockProducer();
+        vi.doMock('@/app/lib/kafka', () => ({
+            default: mockProducer,
+            kafkaStatus: { isConnected: true },
+        }));
+        const { trackUserInteraction, trackRecipeView } =
+            await import('@/app/actions/tracking');
+        const { UserEventType } = await import('@/app/types/tracking');
+
+        // Client passes a spoofed userId ('spoofed-victim-id')
+        const p1 = trackUserInteraction(UserEventType.RECIPE_VIEW, {
+            recipeId: 'recipe-100',
+            userId: 'spoofed-victim-id',
+        });
+        vi.runAllTimersAsync();
+        await p1;
+
+        expect(mockProducer.send).toHaveBeenCalledTimes(1);
+        const sendCallArg = mockProducer.send.mock.calls[0][0];
+        expect(sendCallArg.messages[0].key).toBe('user-1');
+        const payload = JSON.parse(sendCallArg.messages[0].value);
+        expect(payload.userId).toBe('user-1');
+        expect(payload.userId).not.toBe('spoofed-victim-id');
+
+        // Check helper function binds session.user.id
+        const p2 = trackRecipeView('recipe-100');
+        vi.runAllTimersAsync();
+        await p2;
+
+        expect(mockProducer.send).toHaveBeenCalledTimes(2);
+        const secondPayload = JSON.parse(
+            mockProducer.send.mock.calls[1][0].messages[0].value
+        );
+        expect(secondPayload.userId).toBe('user-1');
+    });
+
+    it('triggers unauthorized when session or session.user.id is missing', async () => {
+        const { auth } = await import('@/app/actions/getCurrentUser');
+        (auth as any).mockResolvedValueOnce(null);
+
+        const { trackRecipeView } = await import('@/app/actions/tracking');
+
+        await expect(trackRecipeView('recipe-1')).rejects.toThrow(
+            'UNAUTHORIZED'
+        );
     });
 });

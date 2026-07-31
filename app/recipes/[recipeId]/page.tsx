@@ -92,7 +92,7 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
     }
 
     if (recipe?.id && currentUser?.id) {
-        void trackRecipeView(recipe.id, currentUser.id);
+        void trackRecipeView(recipe.id);
     }
 
     return (
