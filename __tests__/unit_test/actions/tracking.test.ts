@@ -257,14 +257,18 @@ describe('trackUserInteraction', () => {
         expect(secondPayload.userId).toBe('user-1');
     });
 
-    it('triggers unauthorized when session or session.user.id is missing', async () => {
+    it('safely skips tracking when session or session.user.id is missing', async () => {
+        const mockProducer = makeMockProducer();
+        vi.doMock('@/app/lib/kafka', () => ({
+            default: mockProducer,
+            kafkaStatus: { isConnected: true },
+        }));
         const { auth } = await import('@/app/actions/getCurrentUser');
         (auth as any).mockResolvedValueOnce(null);
 
         const { trackRecipeView } = await import('@/app/actions/tracking');
 
-        await expect(trackRecipeView('recipe-1')).rejects.toThrow(
-            'UNAUTHORIZED'
-        );
+        await expect(trackRecipeView('recipe-1')).resolves.toBeUndefined();
+        expect(mockProducer.send).not.toHaveBeenCalled();
     });
 });

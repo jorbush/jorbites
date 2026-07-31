@@ -4,7 +4,6 @@ import producer, { kafkaStatus } from '@/app/lib/kafka';
 import { logger } from '@/app/lib/axiom/server';
 import { UserEventType, UserInteractionData } from '@/app/types/tracking';
 import { auth } from '@/app/actions/getCurrentUser';
-import { unauthorized } from 'next/navigation';
 
 const KAFKA_TIMEOUT_MS = 3000;
 
@@ -27,13 +26,18 @@ export async function trackUserInteraction(
     data: UserInteractionData
 ) {
     const session = await auth();
-    if (!session || !session.user) {
-        unauthorized();
-    }
+    const userId = (session?.user as { id?: string } | undefined)?.id;
 
-    const userId = (session.user as { id?: string }).id;
-    if (!userId) {
-        unauthorized();
+    if (!session || !session.user || !userId) {
+        if (process.env.NODE_ENV !== 'production') {
+            logger.info(
+                `[Tracking Skipped] Unauthenticated or missing user ID: ${eventType}`,
+                {
+                    recipeId: data.recipeId,
+                }
+            );
+        }
+        return;
     }
 
     const { recipeId, metadata } = data;
