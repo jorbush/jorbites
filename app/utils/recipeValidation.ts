@@ -26,6 +26,9 @@ interface RecipeDataBody {
     recipeCuisine?: string;
     calories?: number | string;
     recipeYield?: number | string;
+    minutes?: number | string;
+    prepTime?: number | string;
+    cookTime?: number | string;
 }
 
 /**
@@ -45,7 +48,51 @@ function validateCommonFields(body: RecipeDataBody) {
         recipeCuisine,
         calories,
         recipeYield,
+        minutes,
+        prepTime,
+        cookTime,
     } = body;
+
+    let parsedPrep = 0;
+    let parsedCook = 0;
+
+    // Validate prepTime if provided
+    if (prepTime !== undefined && prepTime !== null && prepTime !== '') {
+        if (typeof prepTime !== 'number' && typeof prepTime !== 'string') {
+            return badRequest(
+                'prepTime must be a number or string representation of a number'
+            );
+        }
+        const parsed = parseInt(prepTime.toString(), 10);
+        if (isNaN(parsed) || parsed < 0) {
+            return validationError('prepTime must be a non-negative integer');
+        }
+        parsedPrep = parsed;
+    }
+
+    // Validate cookTime if provided
+    if (cookTime !== undefined && cookTime !== null && cookTime !== '') {
+        if (typeof cookTime !== 'number' && typeof cookTime !== 'string') {
+            return badRequest(
+                'cookTime must be a number or string representation of a number'
+            );
+        }
+        const parsed = parseInt(cookTime.toString(), 10);
+        if (isNaN(parsed) || parsed < 0) {
+            return validationError('cookTime must be a non-negative integer');
+        }
+        parsedCook = parsed;
+    }
+
+    // Validate total time is at least prepTime + cookTime if minutes is provided
+    if (minutes !== undefined && minutes !== null && minutes !== '') {
+        const parsedMinutes = parseInt(minutes.toString(), 10);
+        if (!isNaN(parsedMinutes) && parsedPrep + parsedCook > parsedMinutes) {
+            return validationError(
+                'Total time (minutes) cannot be less than prep time plus cook time'
+            );
+        }
+    }
 
     // Validate recipeCuisine if provided
     if (

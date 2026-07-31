@@ -226,4 +226,44 @@ describe('<DescriptionStep />', () => {
         const component = screen.getByTestId('heading').parentElement;
         expect(component?.innerHTML).toContain('<hr>');
     });
+
+    it('toggles time breakdown display when breakdown button is clicked', () => {
+        const onPrepTimeChange = vi.fn();
+        const onCookTimeChange = vi.fn();
+
+        render(
+            <DescriptionStep
+                {...mockProps}
+                onPrepTimeChange={onPrepTimeChange}
+                onCookTimeChange={onCookTimeChange}
+            />
+        );
+
+        const toggleButton = screen.getByTestId('toggle-time-breakdown');
+        expect(toggleButton.textContent).toContain('add_time_breakdown');
+
+        // Click to expand breakdown
+        fireEvent.click(toggleButton);
+        expect(toggleButton.textContent).toContain('hide_time_breakdown');
+        expect(screen.getByText('prep_time')).toBeDefined();
+        expect(screen.getByText('cook_time')).toBeDefined();
+
+        // Click to remove breakdown
+        fireEvent.click(toggleButton);
+        expect(onPrepTimeChange).toHaveBeenCalledWith(undefined);
+        expect(onCookTimeChange).toHaveBeenCalledWith(undefined);
+    });
+
+    it('auto-expands time breakdown when prepTime or cookTime is set', () => {
+        render(
+            <DescriptionStep
+                {...mockProps}
+                prepTime={15}
+                cookTime={30}
+            />
+        );
+
+        expect(screen.getByText('prep_time')).toBeDefined();
+        expect(screen.getByText('cook_time')).toBeDefined();
+    });
 });

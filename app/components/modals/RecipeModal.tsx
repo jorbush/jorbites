@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import useSWR from 'swr';
 import { axiosFetcher } from '@/app/utils/fetcher';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
@@ -49,6 +49,8 @@ const RecipeModalContent: React.FC<{
         errors,
         categories,
         minutes,
+        prepTime,
+        cookTime,
         imageSrc,
         method,
         addCoCook,
@@ -122,6 +124,10 @@ const RecipeModalContent: React.FC<{
                 errors={errors}
                 minutes={minutes}
                 onMinutesChange={(value) => setCustomValue('minutes', value)}
+                prepTime={prepTime}
+                onPrepTimeChange={(value) => setCustomValue('prepTime', value)}
+                cookTime={cookTime}
+                onCookTimeChange={(value) => setCustomValue('cookTime', value)}
             />
         );
     }
@@ -199,8 +205,10 @@ const RecipeModalContent: React.FC<{
 const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const recipeModal = useRecipeModal();
     const { t } = useTranslation();
-    const currentUserRef = useRef<SafeUser | null>(null);
-    currentUserRef.current = currentUser || null;
+    const currentUserRef = useRef<SafeUser | null>(currentUser || null);
+    useEffect(() => {
+        currentUserRef.current = currentUser || null;
+    }, [currentUser]);
 
     const { data: draftData, isLoading: isLoadingDraft } = useSWR(
         recipeModal.isOpen && !recipeModal.isEditMode && currentUserRef.current

@@ -291,4 +291,17 @@ describe('<RecipeHead />', () => {
         // Should be on second image from first swipe only
         expect(parent1?.style.opacity).toBe('1');
     });
+
+    it('formats subtitle with prepTime and cookTime breakdown when provided', () => {
+        render(
+            <RecipeHead
+                {...mockProps}
+                prepTime={10}
+                cookTime={20}
+            />
+        );
+        expect(
+            screen.getByText('30 min (prep_short: 10m · cook_short: 20m)')
+        ).toBeDefined();
+    });
 });

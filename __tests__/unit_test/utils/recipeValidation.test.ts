@@ -389,5 +389,38 @@ describe('Recipe Validation Utilities', () => {
             });
             expect(result?.status).toBe(400);
         });
+
+        it('should accept valid prepTime and cookTime values', () => {
+            const result = validateRecipeCreateData({
+                ...validCreateRecipe,
+                prepTime: 15,
+                cookTime: '30',
+            });
+            expect(result).toBeNull();
+        });
+
+        it('should return 400 if prepTime or cookTime is invalid or negative', () => {
+            const negativePrepResult = validateRecipeCreateData({
+                ...validCreateRecipe,
+                prepTime: -5,
+            });
+            expect(negativePrepResult?.status).toBe(400);
+
+            const invalidCookResult = validateRecipeCreateData({
+                ...validCreateRecipe,
+                cookTime: 'invalid' as unknown as number,
+            });
+            expect(invalidCookResult?.status).toBe(400);
+        });
+
+        it('should return 400 if total time (minutes) is less than prepTime + cookTime', () => {
+            const result = validateRecipeCreateData({
+                ...validCreateRecipe,
+                minutes: 20,
+                prepTime: 15,
+                cookTime: 15,
+            });
+            expect(result?.status).toBe(400);
+        });
     });
 });

@@ -1,6 +1,10 @@
 'use client';
 import React from 'react';
-import { getHighResImageUrl, getYoutubeVideoId } from '@/app/utils/seo-utils';
+import {
+    getHighResImageUrl,
+    getYoutubeVideoId,
+    formatIsoDuration,
+} from '@/app/utils/seo-utils';
 import { JORBITES_URL } from '@/app/utils/constants';
 import { SafeComment } from '@/app/types';
 
@@ -12,6 +16,8 @@ interface RecipeSchemaProps {
     createdAt: string;
     userName?: string | null;
     minutes?: number;
+    prepTime?: number | null;
+    cookTime?: number | null;
     ingredients?: string[];
     steps?: string[];
     categories?: string[];
@@ -35,6 +41,8 @@ export default function RecipeSchema({
     createdAt,
     userName,
     minutes,
+    prepTime,
+    cookTime,
     ingredients,
     steps,
     categories,
@@ -71,6 +79,10 @@ export default function RecipeSchema({
         }
     }
 
+    const totalTimeIso = formatIsoDuration(minutes) || 'PT30M';
+    const prepTimeIso = formatIsoDuration(prepTime);
+    const cookTimeIso = formatIsoDuration(cookTime);
+
     const schemaData: any = {
         '@context': 'https://schema.org',
         '@type': 'Recipe',
@@ -82,9 +94,9 @@ export default function RecipeSchema({
             '@type': 'Person',
             name: userName || 'Usuario de Jorbites',
         },
-        prepTime: `PT${minutes || 30}M`,
-        cookTime: `PT${minutes || 30}M`,
-        totalTime: `PT${minutes || 30}M`,
+        totalTime: totalTimeIso,
+        ...(prepTimeIso && { prepTime: prepTimeIso }),
+        ...(cookTimeIso && { cookTime: cookTimeIso }),
         recipeIngredient: ingredients || [],
         recipeInstructions:
             steps?.map((step, index) => {

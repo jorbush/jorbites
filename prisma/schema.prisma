@@ -93,6 +93,8 @@ model Recipe {
   calories Int?
   recipeCuisine String?
   recipeYield Int?
+  prepTime Int?
+  cookTime Int?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]

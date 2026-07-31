@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import useSWR, { mutate } from 'swr';
@@ -62,8 +62,10 @@ export function useRecipeFormState({
         return 1;
     });
     const [isLoading, setIsLoading] = useState(false);
-    const currentUserRef = useRef<SafeUser | null>(null);
-    currentUserRef.current = currentUser || null;
+    const currentUserRef = useRef<SafeUser | null>(currentUser || null);
+    useEffect(() => {
+        currentUserRef.current = currentUser || null;
+    }, [currentUser]);
     const prevQuestDataRef = useRef<any>(null);
     const prevCoCooksDataRef = useRef<any>(null);
     const prevLinkedRecipesDataRef = useRef<any>(null);
@@ -125,6 +127,8 @@ export function useRecipeFormState({
                 ingredients: editData.ingredients,
                 steps: editData.steps,
                 minutes: editData.minutes,
+                prepTime: editData.prepTime ?? undefined,
+                cookTime: editData.cookTime ?? undefined,
                 coCooksIds: editData.coCooksIds || [],
                 linkedRecipeIds: editData.linkedRecipeIds || [],
                 youtubeUrl: editData.youtubeUrl || '',
@@ -159,6 +163,8 @@ export function useRecipeFormState({
                 steps: draftData.steps || [],
                 minutes:
                     draftData.minutes !== undefined ? draftData.minutes : 30,
+                prepTime: draftData.prepTime ?? undefined,
+                cookTime: draftData.cookTime ?? undefined,
                 coCooksIds: draftData.coCooksIds || [],
                 linkedRecipeIds: draftData.linkedRecipeIds || [],
                 youtubeUrl: draftData.youtubeUrl || '',
@@ -179,6 +185,8 @@ export function useRecipeFormState({
             ingredients: [],
             steps: [],
             minutes: 30,
+            prepTime: undefined,
+            cookTime: undefined,
             coCooksIds: [],
             linkedRecipeIds: [],
             youtubeUrl: '',
@@ -205,6 +213,8 @@ export function useRecipeFormState({
 
     const categories = watch('categories');
     const minutes = watch('minutes');
+    const prepTime = watch('prepTime');
+    const cookTime = watch('cookTime');
     const imageSrc = watch('imageSrc');
     const method = watch('method');
 
@@ -345,6 +355,8 @@ export function useRecipeFormState({
             ingredients: newIngredients,
             steps: newSteps,
             minutes: watch('minutes'),
+            prepTime: watch('prepTime'),
+            cookTime: watch('cookTime'),
             coCooksIds: watch('coCooksIds'),
             linkedRecipeIds: watch('linkedRecipeIds'),
             youtubeUrl: watch('youtubeUrl'),
@@ -393,23 +405,29 @@ export function useRecipeFormState({
             : null,
         axiosFetcher
     );
-    if (questData && questData !== prevQuestDataRef.current) {
-        prevQuestDataRef.current = questData;
-        setSelectedQuest(questData);
-    }
+    useEffect(() => {
+        if (questData && questData !== prevQuestDataRef.current) {
+            prevQuestDataRef.current = questData;
+            setSelectedQuest(questData);
+        }
+    }, [questData]);
 
-    if (coCooksData && coCooksData !== prevCoCooksDataRef.current) {
-        prevCoCooksDataRef.current = coCooksData;
-        setSelectedCoCooks(coCooksData);
-    }
+    useEffect(() => {
+        if (coCooksData && coCooksData !== prevCoCooksDataRef.current) {
+            prevCoCooksDataRef.current = coCooksData;
+            setSelectedCoCooks(coCooksData);
+        }
+    }, [coCooksData]);
 
-    if (
-        linkedRecipesData &&
-        linkedRecipesData !== prevLinkedRecipesDataRef.current
-    ) {
-        prevLinkedRecipesDataRef.current = linkedRecipesData;
-        setSelectedLinkedRecipes(linkedRecipesData);
-    }
+    useEffect(() => {
+        if (
+            linkedRecipesData &&
+            linkedRecipesData !== prevLinkedRecipesDataRef.current
+        ) {
+            prevLinkedRecipesDataRef.current = linkedRecipesData;
+            setSelectedLinkedRecipes(linkedRecipesData);
+        }
+    }, [linkedRecipesData]);
     const onBack = () => {
         setStep((value) => Math.max(value - 1, 0));
     };
@@ -528,6 +546,8 @@ export function useRecipeFormState({
                 ingredients: [],
                 steps: [],
                 minutes: 10,
+                prepTime: undefined,
+                cookTime: undefined,
                 coCooksIds: [],
                 linkedRecipeIds: [],
                 youtubeUrl: '',
@@ -646,6 +666,8 @@ export function useRecipeFormState({
         reset,
         categories,
         minutes,
+        prepTime,
+        cookTime,
         imageSrc,
         method,
         addCoCook,

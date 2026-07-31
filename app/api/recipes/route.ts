@@ -73,6 +73,8 @@ export async function POST(request: Request) {
             recipeCuisine,
             calories,
             recipeYield,
+            prepTime,
+            cookTime,
         } = body;
 
         const recipeExist = await prisma.recipe.findFirst({
@@ -138,6 +140,18 @@ export async function POST(request: Request) {
                     recipeYield !== null &&
                     recipeYield !== ''
                         ? parseInt(recipeYield.toString(), 10)
+                        : null,
+                prepTime:
+                    prepTime !== undefined &&
+                    prepTime !== null &&
+                    prepTime !== ''
+                        ? parseInt(prepTime.toString(), 10)
+                        : null,
+                cookTime:
+                    cookTime !== undefined &&
+                    cookTime !== null &&
+                    cookTime !== ''
+                        ? parseInt(cookTime.toString(), 10)
                         : null,
             },
         });
