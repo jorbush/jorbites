@@ -30,7 +30,7 @@ const ChangeUserImageSelector = ({
 
     const updateUserProfile = useCallback(() => {
         axios
-            .put(`/api/userImage/${currentUser?.id}`, {
+            .patch(`/api/userImage/${currentUser?.id}`, {
                 userImage: newImage,
             })
             .then(() => {

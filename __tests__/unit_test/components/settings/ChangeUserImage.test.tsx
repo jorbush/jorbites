@@ -114,7 +114,7 @@ describe('<ChangeUserImageSelector />', () => {
     });
 
     it('updates user profile when save button is clicked', async () => {
-        (axios.put as any).mockResolvedValue({});
+        (axios.patch as any).mockResolvedValue({});
 
         render(<ChangeUserImageSelector {...mockProps} />);
         const uploadWidget = screen.getByAltText('Upload');
@@ -127,7 +127,7 @@ describe('<ChangeUserImageSelector />', () => {
         });
 
         await waitFor(() => {
-            expect(axios.put).toHaveBeenCalledWith(
+            expect(axios.patch).toHaveBeenCalledWith(
                 `/api/userImage/${mockCurrentUser.id}`,
                 {
                     userImage: 'https://example.com/new-image.jpg',
@@ -138,7 +138,7 @@ describe('<ChangeUserImageSelector />', () => {
     });
 
     it('updates user profile when ref save method is called', async () => {
-        (axios.put as any).mockResolvedValue({});
+        (axios.patch as any).mockResolvedValue({});
         const ref = React.createRef<ChangeUserImageRef>();
 
         render(
@@ -156,7 +156,7 @@ describe('<ChangeUserImageSelector />', () => {
         });
 
         await waitFor(() => {
-            expect(axios.put).toHaveBeenCalledWith(
+            expect(axios.patch).toHaveBeenCalledWith(
                 `/api/userImage/${mockCurrentUser.id}`,
                 {
                     userImage: 'https://example.com/new-image.jpg',
@@ -167,7 +167,7 @@ describe('<ChangeUserImageSelector />', () => {
     });
 
     it('handles API error when updating profile', async () => {
-        (axios.put as any).mockRejectedValue(new Error('API Error'));
+        (axios.patch as any).mockRejectedValue(new Error('API Error'));
 
         render(<ChangeUserImageSelector {...mockProps} />);
         const uploadWidget = screen.getByAltText('Upload');
