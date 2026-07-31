@@ -22,9 +22,14 @@ module.exports = {
           '0%, 100%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.2)' },
         },
+        'smooth-float': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-8px)' },
+        },
       },
       animation: {
         'pulse-scale': 'pulse-scale 1s ease-in-out infinite',
+        'smooth-float': 'smooth-float 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite',
       },
     }
   },

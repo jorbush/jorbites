@@ -230,7 +230,7 @@ export default function BiteCardsContainer({
                     <div className="absolute inset-0 flex animate-pulse flex-col items-center justify-center gap-3 rounded-3xl bg-neutral-200 text-neutral-400 dark:bg-neutral-800">
                         <FaUtensils
                             size={36}
-                            className="text-green-450 animate-bounce"
+                            className="text-green-450 animate-smooth-float"
                         />
                         <p className="text-xs font-semibold">
                             {t('bite_cards_loading')}
