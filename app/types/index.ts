@@ -33,6 +33,8 @@ export type SafeRecipe = Omit<
     | 'calories'
     | 'recipeCuisine'
     | 'recipeYield'
+    | 'prepTime'
+    | 'cookTime'
 > & {
     createdAt: string;
     coCooksIds?: string[];

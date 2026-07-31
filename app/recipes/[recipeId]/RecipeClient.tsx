@@ -155,8 +155,6 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             calories={recipe.calories}
                             recipeCuisine={recipe.recipeCuisine}
                             recipeYield={recipe.recipeYield}
-                            prepTime={recipe.prepTime}
-                            cookTime={recipe.cookTime}
                         />
                     </div>
                     <div id="comments-section">
