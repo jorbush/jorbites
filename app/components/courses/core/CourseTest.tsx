@@ -118,7 +118,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({
                 </div>
                 <div className="mt-2 h-2 w-full rounded-full bg-neutral-100 dark:bg-neutral-800">
                     <div
-                        className="bg-green-450 h-full rounded-full transition-all duration-300"
+                        className="bg-green-450 h-full rounded-full transition duration-300"
                         style={{ width: `${progressPercent}%` }}
                     />
                 </div>

@@ -20,7 +20,7 @@ const WeeklyChallenge: React.FC<WeeklyChallengeProps> = ({ challenge }) => {
             href="/events/challenge_of_the_week"
             className="block"
         >
-            <div className="dark:bg-dark mb-10 rounded-xl border border-neutral-200 bg-white p-6 transition-all hover:border-yellow-500 hover:shadow-lg dark:border-neutral-700 dark:hover:border-yellow-500">
+            <div className="dark:bg-dark mb-10 rounded-xl border border-neutral-200 bg-white p-6 transition hover:border-yellow-500 hover:shadow-lg dark:border-neutral-700 dark:hover:border-yellow-500">
                 <div className="mb-4 flex items-center">
                     <FiAward className="mr-2 text-2xl text-yellow-500" />
                     <h2 className="text-2xl font-semibold dark:text-neutral-100">

@@ -183,7 +183,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                             onClick={() =>
                                                 push(`/blog/${blog.id}`)
                                             }
-                                            className="group hover:border-primary-500 dark:hover:border-primary-500 w-full cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 text-left transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-800"
+                                            className="group hover:border-primary-500 dark:hover:border-primary-500 w-full cursor-pointer rounded-xl border border-neutral-200 bg-white p-4 text-left transition hover:shadow-md dark:border-neutral-800 dark:bg-neutral-800"
                                         >
                                             <div className="mb-2 flex items-center justify-between">
                                                 <span className="bg-primary-100 text-primary-700 dark:bg-primary-900/30 rounded-full px-2 py-0.5 text-xs font-semibold dark:text-white">

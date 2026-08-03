@@ -140,7 +140,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                                     handleSearchChange(e.target.value)
                                 }
                                 onKeyDown={handleKeyDown}
-                                className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-full border border-neutral-300 bg-white py-3 pr-10 pl-11 text-sm transition-all outline-none focus:ring-2 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+                                className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-full border border-neutral-300 bg-white py-3 pr-10 pl-11 text-sm transition outline-none focus:ring-2 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                                 data-cy="chef-search-input"
                                 data-testid="chef-search-input"
                                 aria-label={t('search_chefs') ?? ''}

@@ -85,7 +85,7 @@ const LikesClient: React.FC<LikesClientProps> = ({ recipe, likedUsers }) => {
                         {likedUsers.map((user) => (
                             <div
                                 key={user.id}
-                                className="relative flex items-center justify-between overflow-hidden rounded-xl border border-neutral-100 bg-white p-4 shadow-xs transition-all duration-200 hover:border-neutral-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700"
+                                className="relative flex items-center justify-between overflow-hidden rounded-xl border border-neutral-100 bg-white p-4 shadow-xs transition duration-200 hover:border-neutral-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700"
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="relative z-10">

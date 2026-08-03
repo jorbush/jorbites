@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         description:
             'Lee artículos sobre cocina, recetas especiales y novedades de la comunidad Jorbites.',
         type: 'website',
-        url: 'https://jorbites.com/blog',
+        url: '/blog',
     },
     alternates: {
         canonical: '/blog',

@@ -183,7 +183,8 @@ describe('FooterMenu', () => {
             expect(className).toContain('px-3');
             expect(className).toContain('py-2');
             expect(className).toContain('text-sm');
-            expect(className).toContain('transition-all');
+            expect(className).toContain('transition');
+            expect(className).not.toContain('transition-all');
             expect(className).toContain('duration-200');
             expect(className).toContain('hover:bg-neutral-100');
         });
