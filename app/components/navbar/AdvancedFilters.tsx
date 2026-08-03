@@ -243,7 +243,7 @@ const AdvancedFiltersComponent: React.FC = () => {
 
             {isOpen && (
                 <div
-                    className="dark:bg-dark/97 absolute top-12 right-0 z-50 max-w-[340px] min-w-[320px] rounded-xl border border-neutral-200/40 bg-white/97 p-4 shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition-all duration-300 dark:border-neutral-800/40 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]"
+                    className="dark:bg-dark/97 absolute top-12 right-0 z-50 max-w-[340px] min-w-[320px] rounded-xl border border-neutral-200/40 bg-white/97 p-4 shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition duration-300 dark:border-neutral-800/40 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]"
                     style={{
                         animation: 'dropdownFadeIn 0.15s ease-out forwards',
                     }}
