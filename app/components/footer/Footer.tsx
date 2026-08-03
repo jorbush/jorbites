@@ -64,7 +64,7 @@ const Footer = () => {
                             <a
                                 key={link.label}
                                 href={link.href}
-                                className="text-neutral-500 transition-all duration-200 hover:-translate-y-1 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
+                                className="text-neutral-500 transition duration-200 hover:-translate-y-1 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label={link.label}
