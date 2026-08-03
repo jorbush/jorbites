@@ -21,7 +21,10 @@ const CategoryStep: React.FC<CategoryStepProps> = ({
 }) => {
     const { t } = useTranslation();
 
-    const selectedCategoriesSet = useMemo(() => new Set(selectedCategories), [selectedCategories]);
+    const selectedCategoriesSet = useMemo(
+        () => new Set(selectedCategories),
+        [selectedCategories]
+    );
 
     const handleCategoryClick = (categoryLabel: string) => {
         const isSelected = selectedCategories.includes(categoryLabel);
