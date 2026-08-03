@@ -8,7 +8,13 @@ import {
     WeeklyChallenge,
     Planning,
     PlanningMeal,
+    Quest,
 } from '@prisma/client';
+
+export type SafeQuest = Omit<Quest, 'createdAt' | 'updatedAt'> & {
+    createdAt: string;
+    updatedAt: string;
+};
 
 export type SafeWeeklyChallenge = Omit<
     WeeklyChallenge,

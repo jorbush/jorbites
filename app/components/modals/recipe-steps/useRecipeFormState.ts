@@ -7,7 +7,7 @@ import useSWR, { mutate } from 'swr';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { SafeUser, SafeRecipe } from '@/app/types';
+import { SafeUser, SafeRecipe, SafeQuest } from '@/app/types';
 import { axiosFetcher } from '@/app/utils/fetcher';
 import {
     RECIPE_MAX_INGREDIENTS,
@@ -94,9 +94,11 @@ export function useRecipeFormState({
         }
         return initial;
     });
-    const [knownQuests, setKnownQuests] = useState<Record<string, any>>(() => {
-        return {};
-    });
+    const [knownQuests, setKnownQuests] = useState<Record<string, SafeQuest>>(
+        () => {
+            return {};
+        }
+    );
     const [ingredientsInputMode, setIngredientsInputMode] = useState<
         'list' | 'text'
     >('list');
@@ -233,15 +235,18 @@ export function useRecipeFormState({
     const cookTime = watch('cookTime');
     const imageSrc = watch('imageSrc');
     const method = watch('method');
-    const watchCoCooksIds = watch('coCooksIds');
-    const watchLinkedRecipeIds = watch('linkedRecipeIds');
+    const rawCoCooksIds = watch('coCooksIds');
+    const rawLinkedRecipeIds = watch('linkedRecipeIds');
 
-    const coCooksIds: string[] = Array.isArray(watchCoCooksIds)
-        ? watchCoCooksIds
-        : [];
-    const linkedRecipeIds: string[] = Array.isArray(watchLinkedRecipeIds)
-        ? watchLinkedRecipeIds
-        : [];
+    const coCooksIds: string[] = useMemo(
+        () => (Array.isArray(rawCoCooksIds) ? rawCoCooksIds : []),
+        [rawCoCooksIds]
+    );
+
+    const linkedRecipeIds: string[] = useMemo(
+        () => (Array.isArray(rawLinkedRecipeIds) ? rawLinkedRecipeIds : []),
+        [rawLinkedRecipeIds]
+    );
 
     const setCustomValue = (id: string, value: any) => {
         setValue(id, value, {
@@ -300,7 +305,7 @@ export function useRecipeFormState({
         );
     };
 
-    const selectQuest = (quest: any) => {
+    const selectQuest = (quest: SafeQuest) => {
         if (quest?.id) {
             setKnownQuests((prev) => ({ ...prev, [quest.id]: quest }));
         }
@@ -395,7 +400,7 @@ export function useRecipeFormState({
 
     const questId = watch('questId');
 
-    const { data: questData } = useSWR(
+    const { data: questData } = useSWR<SafeQuest>(
         questId ? `/api/quest/${questId}` : null,
         axiosFetcher
     );
@@ -451,31 +456,25 @@ export function useRecipeFormState({
         }
     }
 
-    const selectedQuest = useMemo(() => {
+    const selectedQuest = useMemo<SafeQuest | null>(() => {
         return questId ? (knownQuests[questId] ?? null) : null;
     }, [questId, knownQuests]);
 
     const selectedCoCooks = useMemo<SafeUser[]>(() => {
-        const ids: string[] = Array.isArray(watchCoCooksIds)
-            ? watchCoCooksIds
-            : [];
-        return ids
+        return coCooksIds
             .map((id: string) => knownUsers[id])
             .filter((user: SafeUser | undefined): user is SafeUser =>
                 Boolean(user)
             );
-    }, [watchCoCooksIds, knownUsers]);
+    }, [coCooksIds, knownUsers]);
 
     const selectedLinkedRecipes = useMemo<SafeRecipe[]>(() => {
-        const ids: string[] = Array.isArray(watchLinkedRecipeIds)
-            ? watchLinkedRecipeIds
-            : [];
-        return ids
+        return linkedRecipeIds
             .map((id: string) => knownRecipes[id])
             .filter((recipe: SafeRecipe | undefined): recipe is SafeRecipe =>
                 Boolean(recipe)
             );
-    }, [watchLinkedRecipeIds, knownRecipes]);
+    }, [linkedRecipeIds, knownRecipes]);
 
     const onBack = () => {
         setStep((value) => Math.max(value - 1, 0));
