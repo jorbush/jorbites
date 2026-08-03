@@ -7,7 +7,7 @@ import useSWR, { mutate } from 'swr';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { SafeUser } from '@/app/types';
+import { SafeUser, SafeRecipe } from '@/app/types';
 import { axiosFetcher } from '@/app/utils/fetcher';
 import {
     RECIPE_MAX_INGREDIENTS,
@@ -66,19 +66,19 @@ export function useRecipeFormState({
     useEffect(() => {
         currentUserRef.current = currentUser || null;
     }, [currentUser]);
-    const [selectedCoCooksState, setSelectedCoCooksState] = useState<any[]>(
-        () => {
-            if (recipeModal.isEditMode && recipeModal.editRecipeData?.coCooks) {
-                return recipeModal.editRecipeData.coCooks;
-            }
-            if (draftData && draftData.coCooks) {
-                return draftData.coCooks;
-            }
-            return [];
+    const [selectedCoCooksState, setSelectedCoCooksState] = useState<
+        SafeUser[]
+    >(() => {
+        if (recipeModal.isEditMode && recipeModal.editRecipeData?.coCooks) {
+            return recipeModal.editRecipeData.coCooks;
         }
-    );
+        if (draftData && draftData.coCooks) {
+            return draftData.coCooks;
+        }
+        return [];
+    });
     const [selectedLinkedRecipesState, setSelectedLinkedRecipesState] =
-        useState<any[]>(() => {
+        useState<SafeRecipe[]>(() => {
             if (
                 recipeModal.isEditMode &&
                 recipeModal.editRecipeData?.linkedRecipes
@@ -226,14 +226,14 @@ export function useRecipeFormState({
         });
     };
 
-    const addCoCook = (user: any) => {
+    const addCoCook = (user: SafeUser) => {
         if (selectedCoCooks.length >= 4) {
             toast.error(
                 t('max_cooks_reached') || 'Maximum of 4 co-cooks allowed'
             );
             return;
         }
-        if (selectedCoCooks.some((cook) => cook.id === user.id)) {
+        if (selectedCoCooks.some((cook: SafeUser) => cook.id === user.id)) {
             toast.error(
                 t('cook_already_added') || 'This cook is already added'
             );
@@ -243,22 +243,22 @@ export function useRecipeFormState({
         setSelectedCoCooksState(newSelectedCoCooks);
         setValue(
             'coCooksIds',
-            newSelectedCoCooks.map((cook) => cook.id)
+            newSelectedCoCooks.map((cook: SafeUser) => cook.id)
         );
     };
 
     const removeCoCook = (userId: string) => {
         const updatedCooks = selectedCoCooks.filter(
-            (cook) => cook.id !== userId
+            (cook: SafeUser) => cook.id !== userId
         );
         setSelectedCoCooksState(updatedCooks);
         setValue(
             'coCooksIds',
-            updatedCooks.map((cook) => cook.id)
+            updatedCooks.map((cook: SafeUser) => cook.id)
         );
     };
 
-    const addLinkedRecipe = (recipe: any) => {
+    const addLinkedRecipe = (recipe: SafeRecipe) => {
         if (selectedLinkedRecipes.length >= 2) {
             toast.error(
                 t('max_recipes_reached') ||
@@ -266,7 +266,7 @@ export function useRecipeFormState({
             );
             return;
         }
-        if (selectedLinkedRecipes.some((r) => r.id === recipe.id)) {
+        if (selectedLinkedRecipes.some((r: SafeRecipe) => r.id === recipe.id)) {
             toast.error(
                 t('recipe_already_added') || 'This recipe is already added'
             );
@@ -276,18 +276,18 @@ export function useRecipeFormState({
         setSelectedLinkedRecipesState(newLinkedRecipes);
         setValue(
             'linkedRecipeIds',
-            newLinkedRecipes.map((r) => r.id)
+            newLinkedRecipes.map((r: SafeRecipe) => r.id)
         );
     };
 
     const removeLinkedRecipe = (recipeId: string) => {
         const updatedRecipes = selectedLinkedRecipes.filter(
-            (recipe) => recipe.id !== recipeId
+            (recipe: SafeRecipe) => recipe.id !== recipeId
         );
         setSelectedLinkedRecipesState(updatedRecipes);
         setValue(
             'linkedRecipeIds',
-            updatedRecipes.map((recipe) => recipe.id)
+            updatedRecipes.map((recipe: SafeRecipe) => recipe.id)
         );
     };
 
@@ -392,30 +392,32 @@ export function useRecipeFormState({
         axiosFetcher
     );
 
-    const { data: coCooksData } = useSWR(
+    const { data: coCooksData } = useSWR<SafeUser[]>(
         coCooksIds.length > 0
             ? `/api/users/multiple?ids=${coCooksIds.join(',')}`
             : null,
         axiosFetcher
     );
 
-    const { data: linkedRecipesData } = useSWR(
+    const { data: linkedRecipesData } = useSWR<SafeRecipe[]>(
         linkedRecipeIds.length > 0
             ? `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
             : null,
         axiosFetcher
     );
+
     const selectedQuest = useMemo(() => {
         return questData ?? selectedQuestState;
     }, [questData, selectedQuestState]);
 
-    const selectedCoCooks = useMemo(() => {
+    const selectedCoCooks = useMemo<SafeUser[]>(() => {
         return coCooksData ?? selectedCoCooksState;
     }, [coCooksData, selectedCoCooksState]);
 
-    const selectedLinkedRecipes = useMemo(() => {
+    const selectedLinkedRecipes = useMemo<SafeRecipe[]>(() => {
         return linkedRecipesData ?? selectedLinkedRecipesState;
     }, [linkedRecipesData, selectedLinkedRecipesState]);
+
     const onBack = () => {
         setStep((value) => Math.max(value - 1, 0));
     };
