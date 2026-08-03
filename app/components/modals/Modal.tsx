@@ -131,7 +131,6 @@ const Modal: React.FC<ModalProps> = ({
                                     onClick={handleClose}
                                     aria-label="Close"
                                     data-testid="close-modal-button"
-                                    aria-label="Close"
                                 >
                                     <IoMdClose size={18} />
                                 </button>
