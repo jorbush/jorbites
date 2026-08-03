@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 
+const STAR_VALUES = [1, 2, 3, 4, 5] as const;
+
 interface StarRatingProps {
     rating: number; // 0 to 5
     interactive?: boolean;
@@ -41,15 +43,15 @@ export const StarRating: React.FC<StarRatingProps> = ({
     const displayRating = hoverRating !== null ? hoverRating : rating;
 
     // Render stars
-    const renderStar = (index: number) => {
-        const starValue = index + 1;
+    const renderStar = (starValue: number) => {
+        const index = starValue - 1;
         const sizeStyle = { width: size, height: size };
 
         if (interactive) {
             const isFilled = starValue <= displayRating;
             return (
                 <button
-                    key={starValue}
+                    key={`star-interactive-${starValue}`}
                     type="button"
                     onClick={() => handleClick(starValue)}
                     onMouseEnter={() => handleMouseEnter(starValue)}
@@ -73,7 +75,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
             // Full star
             return (
                 <span
-                    key={starValue}
+                    key={`star-display-filled-${starValue}`}
                     className="text-amber-500"
                     data-testid={`star-filled-${index}`}
                 >
@@ -84,7 +86,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
             // Half star
             return (
                 <span
-                    key={starValue}
+                    key={`star-display-half-${starValue}`}
                     className="text-amber-500"
                     data-testid={`star-half-${index}`}
                 >
@@ -95,7 +97,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
             // Empty star
             return (
                 <span
-                    key={starValue}
+                    key={`star-display-empty-${starValue}`}
                     className="text-neutral-300 dark:text-neutral-600"
                     data-testid={`star-empty-${index}`}
                 >
@@ -110,7 +112,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
             className={`flex items-center ${interactive ? 'gap-0' : 'gap-1'} ${className}`}
             onMouseLeave={handleMouseLeave}
         >
-            {Array.from({ length: 5 }).map((_, index) => renderStar(index))}
+            {STAR_VALUES.map((starValue) => renderStar(starValue))}
         </div>
     );
 };
