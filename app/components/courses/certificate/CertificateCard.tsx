@@ -35,7 +35,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
 
     return (
         <div
-            className={`overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-all duration-300 dark:border-neutral-800 dark:bg-neutral-900 ${
+            className={`overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition duration-300 dark:border-neutral-800 dark:bg-neutral-900 ${
                 comingSoon
                     ? 'opacity-85'
                     : 'hover:-translate-y-1 hover:shadow-md'
@@ -105,7 +105,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                                 </div>
                                 <div className="h-3 w-full overflow-hidden rounded-full border border-neutral-300/20 bg-neutral-200 dark:border-neutral-700/20 dark:bg-neutral-800">
                                     <div
-                                        className="bg-green-450 h-full rounded-full transition-all duration-300"
+                                        className="bg-green-450 h-full rounded-full transition duration-300"
                                         style={{ width: `${progress}%` }}
                                     />
                                 </div>

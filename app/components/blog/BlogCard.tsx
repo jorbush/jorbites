@@ -19,7 +19,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
     };
 
     return (
-        <div className="group hover:border-green-450/50 relative rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800">
+        <div className="group hover:border-green-450/50 relative rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition duration-300 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800">
             <div className="flex h-full flex-col">
                 <div className="mb-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">
                     {formatDate(blog.frontmatter.date, i18n.language)}

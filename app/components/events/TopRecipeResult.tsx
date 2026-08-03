@@ -41,7 +41,7 @@ const TopRecipeResult: React.FC<TopRecipeResultProps> = ({
     const badgePath = `/badges/${badgeSlug}.webp`;
 
     return (
-        <div className="border-green-450/30 from-green-450/5 dark:border-green-450/20 relative mb-10 overflow-hidden rounded-2xl border-2 bg-gradient-to-br via-white to-emerald-50/10 p-6 shadow-lg transition-all duration-300 hover:shadow-xl dark:from-neutral-900/40 dark:via-neutral-950 dark:to-emerald-950/5">
+        <div className="border-green-450/30 from-green-450/5 dark:border-green-450/20 relative mb-10 overflow-hidden rounded-2xl border-2 bg-gradient-to-br via-white to-emerald-50/10 p-6 shadow-lg transition duration-300 hover:shadow-xl dark:from-neutral-900/40 dark:via-neutral-950 dark:to-emerald-950/5">
             {/* Background glowing decorations */}
             <div className="bg-green-450/10 dark:bg-green-450/5 absolute -top-16 -right-16 size-40 rounded-full blur-3xl" />
             <div className="absolute -bottom-16 -left-16 size-40 rounded-full bg-emerald-500/10 blur-3xl dark:bg-emerald-500/5" />

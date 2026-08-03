@@ -96,7 +96,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
     };
 
     return (
-        <div className="mb-10 rounded-2xl border border-neutral-200 bg-gradient-to-br from-neutral-50 via-white to-neutral-50/50 p-6 shadow-md transition-all duration-300 dark:border-neutral-800 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900/50">
+        <div className="mb-10 rounded-2xl border border-neutral-200 bg-gradient-to-br from-neutral-50 via-white to-neutral-50/50 p-6 shadow-md transition duration-300 dark:border-neutral-800 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900/50">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <div className="bg-green-450/20 dark:bg-green-450/10 dark:text-green-450 flex size-12 items-center justify-center rounded-xl text-green-600">
@@ -137,7 +137,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                     return (
                         <div
                             key={candidate.id}
-                            className={`group relative flex flex-col justify-between overflow-hidden rounded-xl border p-4 transition-all duration-300 ${
+                            className={`group relative flex flex-col justify-between overflow-hidden rounded-xl border p-4 transition duration-300 ${
                                 isSelected
                                     ? 'border-green-450 bg-green-450/5 dark:border-green-450/50 dark:bg-green-450/10 shadow-sm'
                                     : 'border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-neutral-700'
@@ -195,9 +195,9 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                                         </span>
                                         <span>{votePercent}%</span>
                                     </div>
-                                    <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+                                    <div className="dark:bg-neutral-850 h-2 w-full overflow-hidden rounded-full bg-neutral-100">
                                         <div
-                                            className={`h-full rounded-full transition-all duration-500 ${
+                                            className={`h-full rounded-full transition duration-500 ${
                                                 isSelected
                                                     ? 'from-green-450 bg-gradient-to-r to-emerald-500'
                                                     : 'bg-neutral-400 dark:bg-neutral-600'
@@ -211,7 +211,7 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                                     type="button"
                                     onClick={() => handleVote(candidate.id)}
                                     disabled={!!votingId}
-                                    className={`flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 ${
+                                    className={`flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition duration-200 ${
                                         isSelected
                                             ? 'bg-green-450 shadow-green-450/20 hover:bg-green-450/90 text-white shadow-sm dark:text-black'
                                             : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
