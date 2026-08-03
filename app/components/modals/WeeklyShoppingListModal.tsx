@@ -29,7 +29,7 @@ const WeeklyShoppingListModal: React.FC<WeeklyShoppingListModalProps> = ({
     const allIngredients = useMemo(() => {
         const ingredientsByRecipe: Record<
             string,
-            { recipeTitle: string; items: string[] }
+            { recipeTitle: string; items: Set<string> }
         > = {};
         const consolidatedSet = new Set<string>();
 
@@ -39,14 +39,12 @@ const WeeklyShoppingListModal: React.FC<WeeklyShoppingListModalProps> = ({
                 if (!ingredientsByRecipe[recipeId]) {
                     ingredientsByRecipe[recipeId] = {
                         recipeTitle: meal.recipe.title,
-                        items: [],
+                        items: new Set<string>(),
                     };
                 }
                 const recipeIngredients = meal.recipe.ingredients || [];
                 recipeIngredients.forEach((ing: string) => {
-                    if (!ingredientsByRecipe[recipeId].items.includes(ing)) {
-                        ingredientsByRecipe[recipeId].items.push(ing);
-                    }
+                    ingredientsByRecipe[recipeId].items.add(ing);
                     consolidatedSet.add(ing);
                 });
             }
@@ -56,7 +54,8 @@ const WeeklyShoppingListModal: React.FC<WeeklyShoppingListModalProps> = ({
             byRecipe: Object.entries(ingredientsByRecipe).map(
                 ([recipeId, data]) => ({
                     recipeId,
-                    ...data,
+                    recipeTitle: data.recipeTitle,
+                    items: Array.from(data.items),
                 })
             ),
             consolidated: Array.from(consolidatedSet),

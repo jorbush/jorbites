@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
+import { useMemo } from 'react';
 import Heading from '@/app/components/navigation/Heading';
 import CategoryInput from '@/app/components/inputs/CategoryInput';
 import { categories } from '@/app/components/navbar/categoriesData';
@@ -19,6 +20,11 @@ const CategoryStep: React.FC<CategoryStepProps> = ({
     onCategorySelect,
 }) => {
     const { t } = useTranslation();
+
+    const selectedCategoriesSet = useMemo(
+        () => new Set(selectedCategories),
+        [selectedCategories]
+    );
 
     const handleCategoryClick = (categoryLabel: string) => {
         const isSelected = selectedCategories.includes(categoryLabel);
@@ -57,7 +63,7 @@ const CategoryStep: React.FC<CategoryStepProps> = ({
                             >
                                 <CategoryInput
                                     onClick={handleCategoryClick}
-                                    selected={selectedCategories.includes(
+                                    selected={selectedCategoriesSet.has(
                                         item.label
                                     )}
                                     label={item.label}
