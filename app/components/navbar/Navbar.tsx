@@ -34,14 +34,12 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     }, []);
 
     const toggleFilter = useCallback(() => {
-        setIsFilterOpen((value) => {
-            const newValue = !value;
-            if (newValue) {
-                setShouldRender(true);
-            }
-            return newValue;
-        });
-    }, []);
+        const newValue = !isFilterOpen;
+        setIsFilterOpen(newValue);
+        if (newValue) {
+            setShouldRender(true);
+        }
+    }, [isFilterOpen]);
 
     const handleAnimationEnd = useCallback(() => {
         if (!isFilterOpen) {
