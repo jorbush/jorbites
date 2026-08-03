@@ -13,7 +13,7 @@ export const metadata: Metadata = {
         description:
             'Participa en eventos de cocina, desafíos y concursos para ganar insignias y recompensas exclusivas en Jorbites.',
         type: 'website',
-        url: 'https://jorbites.com/events',
+        url: '/events',
     },
     alternates: {
         canonical: '/events',

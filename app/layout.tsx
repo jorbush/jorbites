@@ -79,7 +79,7 @@ export const metadata = {
         title: 'Jorbites | Comparte tus mejores recetas',
         description:
             'Descubre y comparte recetas deliciosas creadas por una comunidad de amantes de la cocina',
-        url: 'https://jorbites.com',
+        url: '/',
         siteName: 'Jorbites',
         images: [
             {
