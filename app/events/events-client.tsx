@@ -136,7 +136,13 @@ const EventsClient: React.FC<EventsClientProps> = ({ weeklyChallenge }) => {
                                 className="mb-10"
                             >
                                 <h2 className="mb-5 text-2xl font-semibold dark:text-neutral-100">
-                                    <div className="h-8 w-40 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                                    <span className="sr-only">
+                                        {t('loading') || 'Loading…'}
+                                    </span>
+                                    <div
+                                        className="h-8 w-40 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"
+                                        aria-hidden="true"
+                                    ></div>
                                 </h2>
                                 <div className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth px-6 pb-2">
                                     {[...Array(4)].map((_, i) => (
