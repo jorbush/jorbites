@@ -66,20 +66,19 @@ export function useRecipeFormState({
     useEffect(() => {
         currentUserRef.current = currentUser || null;
     }, [currentUser]);
-    const prevQuestDataRef = useRef<any>(null);
-    const prevCoCooksDataRef = useRef<any>(null);
-    const prevLinkedRecipesDataRef = useRef<any>(null);
-    const [selectedCoCooks, setSelectedCoCooks] = useState<any[]>(() => {
-        if (recipeModal.isEditMode && recipeModal.editRecipeData?.coCooks) {
-            return recipeModal.editRecipeData.coCooks;
-        }
-        if (draftData && draftData.coCooks) {
-            return draftData.coCooks;
-        }
-        return [];
-    });
-    const [selectedLinkedRecipes, setSelectedLinkedRecipes] = useState<any[]>(
+    const [selectedCoCooksState, setSelectedCoCooksState] = useState<any[]>(
         () => {
+            if (recipeModal.isEditMode && recipeModal.editRecipeData?.coCooks) {
+                return recipeModal.editRecipeData.coCooks;
+            }
+            if (draftData && draftData.coCooks) {
+                return draftData.coCooks;
+            }
+            return [];
+        }
+    );
+    const [selectedLinkedRecipesState, setSelectedLinkedRecipesState] =
+        useState<any[]>(() => {
             if (
                 recipeModal.isEditMode &&
                 recipeModal.editRecipeData?.linkedRecipes
@@ -90,9 +89,10 @@ export function useRecipeFormState({
                 return draftData.linkedRecipes;
             }
             return [];
-        }
+        });
+    const [selectedQuestState, setSelectedQuestState] = useState<any | null>(
+        null
     );
-    const [selectedQuest, setSelectedQuest] = useState<any | null>(null);
     const [ingredientsInputMode, setIngredientsInputMode] = useState<
         'list' | 'text'
     >('list');
@@ -240,7 +240,7 @@ export function useRecipeFormState({
             return;
         }
         const newSelectedCoCooks = [...selectedCoCooks, user];
-        setSelectedCoCooks(newSelectedCoCooks);
+        setSelectedCoCooksState(newSelectedCoCooks);
         setValue(
             'coCooksIds',
             newSelectedCoCooks.map((cook) => cook.id)
@@ -251,7 +251,7 @@ export function useRecipeFormState({
         const updatedCooks = selectedCoCooks.filter(
             (cook) => cook.id !== userId
         );
-        setSelectedCoCooks(updatedCooks);
+        setSelectedCoCooksState(updatedCooks);
         setValue(
             'coCooksIds',
             updatedCooks.map((cook) => cook.id)
@@ -273,7 +273,7 @@ export function useRecipeFormState({
             return;
         }
         const newLinkedRecipes = [...selectedLinkedRecipes, recipe];
-        setSelectedLinkedRecipes(newLinkedRecipes);
+        setSelectedLinkedRecipesState(newLinkedRecipes);
         setValue(
             'linkedRecipeIds',
             newLinkedRecipes.map((r) => r.id)
@@ -284,7 +284,7 @@ export function useRecipeFormState({
         const updatedRecipes = selectedLinkedRecipes.filter(
             (recipe) => recipe.id !== recipeId
         );
-        setSelectedLinkedRecipes(updatedRecipes);
+        setSelectedLinkedRecipesState(updatedRecipes);
         setValue(
             'linkedRecipeIds',
             updatedRecipes.map((recipe) => recipe.id)
@@ -292,12 +292,12 @@ export function useRecipeFormState({
     };
 
     const selectQuest = (quest: any) => {
-        setSelectedQuest(quest);
+        setSelectedQuestState(quest);
         setValue('questId', quest.id);
     };
 
     const removeQuest = () => {
-        setSelectedQuest(null);
+        setSelectedQuestState(null);
         setValue('questId', '');
     };
 
@@ -405,29 +405,17 @@ export function useRecipeFormState({
             : null,
         axiosFetcher
     );
-    useEffect(() => {
-        if (questData && questData !== prevQuestDataRef.current) {
-            prevQuestDataRef.current = questData;
-            setSelectedQuest(questData);
-        }
-    }, [questData]);
+    const selectedQuest = useMemo(() => {
+        return questData ?? selectedQuestState;
+    }, [questData, selectedQuestState]);
 
-    useEffect(() => {
-        if (coCooksData && coCooksData !== prevCoCooksDataRef.current) {
-            prevCoCooksDataRef.current = coCooksData;
-            setSelectedCoCooks(coCooksData);
-        }
-    }, [coCooksData]);
+    const selectedCoCooks = useMemo(() => {
+        return coCooksData ?? selectedCoCooksState;
+    }, [coCooksData, selectedCoCooksState]);
 
-    useEffect(() => {
-        if (
-            linkedRecipesData &&
-            linkedRecipesData !== prevLinkedRecipesDataRef.current
-        ) {
-            prevLinkedRecipesDataRef.current = linkedRecipesData;
-            setSelectedLinkedRecipes(linkedRecipesData);
-        }
-    }, [linkedRecipesData]);
+    const selectedLinkedRecipes = useMemo(() => {
+        return linkedRecipesData ?? selectedLinkedRecipesState;
+    }, [linkedRecipesData, selectedLinkedRecipesState]);
     const onBack = () => {
         setStep((value) => Math.max(value - 1, 0));
     };
@@ -556,9 +544,9 @@ export function useRecipeFormState({
             setStep(STEPS.CATEGORY);
             setNumIngredients(1);
             setNumSteps(1);
-            setSelectedCoCooks([]);
-            setSelectedLinkedRecipes([]);
-            setSelectedQuest(null);
+            setSelectedCoCooksState([]);
+            setSelectedLinkedRecipesState([]);
+            setSelectedQuestState(null);
             recipeModal.onClose();
             refresh();
         } catch (error) {
