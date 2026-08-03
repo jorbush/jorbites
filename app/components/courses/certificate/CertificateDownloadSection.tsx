@@ -42,32 +42,42 @@ const CertificateDownloadSection: React.FC<CertificateDownloadSectionProps> = ({
     const [pdfModule, setPdfModule] = useState<ReactPdfModule | null>(null);
 
     useEffect(() => {
+        let isMounted = true;
         // Load @react-pdf/renderer dynamically when component mounts
-        import('@react-pdf/renderer').then((mod) => {
-            mod.Font.register({
-                family: 'Montserrat',
-                fonts: [
-                    {
-                        src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aX8.ttf',
-                        fontWeight: 400,
-                    },
-                    {
-                        src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCu173w5aX8.ttf',
-                        fontWeight: 600,
-                    },
-                    {
-                        src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM73w5aX8.ttf',
-                        fontWeight: 700,
-                    },
-                    {
-                        src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUFjIg1_i6t8kCHKm459Wx7xQYXK0vOoz6jq6R9aX8.ttf',
-                        fontWeight: 400,
-                        fontStyle: 'italic',
-                    },
-                ],
+        import('@react-pdf/renderer')
+            .then((mod) => {
+                if (!isMounted) return;
+                mod.Font.register({
+                    family: 'Montserrat',
+                    fonts: [
+                        {
+                            src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aX8.ttf',
+                            fontWeight: 400,
+                        },
+                        {
+                            src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCu173w5aX8.ttf',
+                            fontWeight: 600,
+                        },
+                        {
+                            src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM73w5aX8.ttf',
+                            fontWeight: 700,
+                        },
+                        {
+                            src: 'https://fonts.gstatic.com/s/montserrat/v31/JTUFjIg1_i6t8kCHKm459Wx7xQYXK0vOoz6jq6R9aX8.ttf',
+                            fontWeight: 400,
+                            fontStyle: 'italic',
+                        },
+                    ],
+                });
+                setPdfModule(mod);
+            })
+            .catch((err) => {
+                console.error('Failed to load @react-pdf/renderer dynamically:', err);
             });
-            setPdfModule(mod);
-        });
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const styles = useMemo(() => {
