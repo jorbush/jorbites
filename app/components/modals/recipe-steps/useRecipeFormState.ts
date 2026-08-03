@@ -7,7 +7,7 @@ import useSWR, { mutate } from 'swr';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { SafeUser } from '@/app/types';
+import { SafeUser, SafeRecipe, SafeQuest } from '@/app/types';
 import { axiosFetcher } from '@/app/utils/fetcher';
 import {
     RECIPE_MAX_INGREDIENTS,
@@ -66,33 +66,39 @@ export function useRecipeFormState({
     useEffect(() => {
         currentUserRef.current = currentUser || null;
     }, [currentUser]);
-    const prevQuestDataRef = useRef<any>(null);
-    const prevCoCooksDataRef = useRef<any>(null);
-    const prevLinkedRecipesDataRef = useRef<any>(null);
-    const [selectedCoCooks, setSelectedCoCooks] = useState<any[]>(() => {
-        if (recipeModal.isEditMode && recipeModal.editRecipeData?.coCooks) {
-            return recipeModal.editRecipeData.coCooks;
-        }
-        if (draftData && draftData.coCooks) {
-            return draftData.coCooks;
-        }
-        return [];
-    });
-    const [selectedLinkedRecipes, setSelectedLinkedRecipes] = useState<any[]>(
+    const [knownUsers, setKnownUsers] = useState<Record<string, SafeUser>>(
         () => {
-            if (
-                recipeModal.isEditMode &&
-                recipeModal.editRecipeData?.linkedRecipes
-            ) {
-                return recipeModal.editRecipeData.linkedRecipes;
+            const initial: Record<string, SafeUser> = {};
+            const items = recipeModal.isEditMode
+                ? recipeModal.editRecipeData?.coCooks
+                : draftData?.coCooks;
+            if (Array.isArray(items)) {
+                items.forEach((user: SafeUser) => {
+                    if (user?.id) initial[user.id] = user;
+                });
             }
-            if (draftData && draftData.linkedRecipes) {
-                return draftData.linkedRecipes;
-            }
-            return [];
+            return initial;
         }
     );
-    const [selectedQuest, setSelectedQuest] = useState<any | null>(null);
+    const [knownRecipes, setKnownRecipes] = useState<
+        Record<string, SafeRecipe>
+    >(() => {
+        const initial: Record<string, SafeRecipe> = {};
+        const items = recipeModal.isEditMode
+            ? recipeModal.editRecipeData?.linkedRecipes
+            : draftData?.linkedRecipes;
+        if (Array.isArray(items)) {
+            items.forEach((recipe: SafeRecipe) => {
+                if (recipe?.id) initial[recipe.id] = recipe;
+            });
+        }
+        return initial;
+    });
+    const [knownQuests, setKnownQuests] = useState<Record<string, SafeQuest>>(
+        () => {
+            return {};
+        }
+    );
     const [ingredientsInputMode, setIngredientsInputMode] = useState<
         'list' | 'text'
     >('list');
@@ -129,8 +135,14 @@ export function useRecipeFormState({
                 minutes: editData.minutes,
                 prepTime: editData.prepTime ?? undefined,
                 cookTime: editData.cookTime ?? undefined,
-                coCooksIds: editData.coCooksIds || [],
-                linkedRecipeIds: editData.linkedRecipeIds || [],
+                coCooksIds:
+                    editData.coCooksIds ||
+                    editData.coCooks?.map((c: SafeUser) => c.id) ||
+                    [],
+                linkedRecipeIds:
+                    editData.linkedRecipeIds ||
+                    editData.linkedRecipes?.map((r: SafeRecipe) => r.id) ||
+                    [],
                 youtubeUrl: editData.youtubeUrl || '',
                 questId: editData.questId || recipeModal.questId || '',
                 ...ingredientsObject,
@@ -165,8 +177,14 @@ export function useRecipeFormState({
                     draftData.minutes !== undefined ? draftData.minutes : 30,
                 prepTime: draftData.prepTime ?? undefined,
                 cookTime: draftData.cookTime ?? undefined,
-                coCooksIds: draftData.coCooksIds || [],
-                linkedRecipeIds: draftData.linkedRecipeIds || [],
+                coCooksIds:
+                    draftData.coCooksIds ||
+                    draftData.coCooks?.map((c: SafeUser) => c.id) ||
+                    [],
+                linkedRecipeIds:
+                    draftData.linkedRecipeIds ||
+                    draftData.linkedRecipes?.map((r: SafeRecipe) => r.id) ||
+                    [],
                 youtubeUrl: draftData.youtubeUrl || '',
                 questId: draftData.questId || recipeModal.questId || '',
                 ...ingredientsObject,
@@ -217,6 +235,18 @@ export function useRecipeFormState({
     const cookTime = watch('cookTime');
     const imageSrc = watch('imageSrc');
     const method = watch('method');
+    const rawCoCooksIds = watch('coCooksIds');
+    const rawLinkedRecipeIds = watch('linkedRecipeIds');
+
+    const coCooksIds: string[] = useMemo(
+        () => (Array.isArray(rawCoCooksIds) ? rawCoCooksIds : []),
+        [rawCoCooksIds]
+    );
+
+    const linkedRecipeIds: string[] = useMemo(
+        () => (Array.isArray(rawLinkedRecipeIds) ? rawLinkedRecipeIds : []),
+        [rawLinkedRecipeIds]
+    );
 
     const setCustomValue = (id: string, value: any) => {
         setValue(id, value, {
@@ -226,78 +256,63 @@ export function useRecipeFormState({
         });
     };
 
-    const addCoCook = (user: any) => {
-        if (selectedCoCooks.length >= 4) {
+    const addCoCook = (user: SafeUser) => {
+        if (coCooksIds.length >= 4) {
             toast.error(
                 t('max_cooks_reached') || 'Maximum of 4 co-cooks allowed'
             );
             return;
         }
-        if (selectedCoCooks.some((cook) => cook.id === user.id)) {
+        if (coCooksIds.includes(user.id)) {
             toast.error(
                 t('cook_already_added') || 'This cook is already added'
             );
             return;
         }
-        const newSelectedCoCooks = [...selectedCoCooks, user];
-        setSelectedCoCooks(newSelectedCoCooks);
-        setValue(
-            'coCooksIds',
-            newSelectedCoCooks.map((cook) => cook.id)
-        );
+        setKnownUsers((prev) => ({ ...prev, [user.id]: user }));
+        setValue('coCooksIds', [...coCooksIds, user.id]);
     };
 
     const removeCoCook = (userId: string) => {
-        const updatedCooks = selectedCoCooks.filter(
-            (cook) => cook.id !== userId
-        );
-        setSelectedCoCooks(updatedCooks);
         setValue(
             'coCooksIds',
-            updatedCooks.map((cook) => cook.id)
+            coCooksIds.filter((id: string) => id !== userId)
         );
     };
 
-    const addLinkedRecipe = (recipe: any) => {
-        if (selectedLinkedRecipes.length >= 2) {
+    const addLinkedRecipe = (recipe: SafeRecipe) => {
+        if (linkedRecipeIds.length >= 2) {
             toast.error(
                 t('max_recipes_reached') ||
                     'Maximum of 2 linked recipes allowed'
             );
             return;
         }
-        if (selectedLinkedRecipes.some((r) => r.id === recipe.id)) {
+        if (linkedRecipeIds.includes(recipe.id)) {
             toast.error(
                 t('recipe_already_added') || 'This recipe is already added'
             );
             return;
         }
-        const newLinkedRecipes = [...selectedLinkedRecipes, recipe];
-        setSelectedLinkedRecipes(newLinkedRecipes);
-        setValue(
-            'linkedRecipeIds',
-            newLinkedRecipes.map((r) => r.id)
-        );
+        setKnownRecipes((prev) => ({ ...prev, [recipe.id]: recipe }));
+        setValue('linkedRecipeIds', [...linkedRecipeIds, recipe.id]);
     };
 
     const removeLinkedRecipe = (recipeId: string) => {
-        const updatedRecipes = selectedLinkedRecipes.filter(
-            (recipe) => recipe.id !== recipeId
-        );
-        setSelectedLinkedRecipes(updatedRecipes);
         setValue(
             'linkedRecipeIds',
-            updatedRecipes.map((recipe) => recipe.id)
+            linkedRecipeIds.filter((id: string) => id !== recipeId)
         );
     };
 
-    const selectQuest = (quest: any) => {
-        setSelectedQuest(quest);
-        setValue('questId', quest.id);
+    const selectQuest = (quest: SafeQuest) => {
+        if (quest?.id) {
+            setKnownQuests((prev) => ({ ...prev, [quest.id]: quest }));
+        }
+        setValue('questId', quest?.id || '');
     };
 
     const removeQuest = () => {
-        setSelectedQuest(null);
         setValue('questId', '');
     };
 
@@ -384,50 +399,83 @@ export function useRecipeFormState({
     };
 
     const questId = watch('questId');
-    const coCooksIds = watch('coCooksIds') || [];
-    const linkedRecipeIds = watch('linkedRecipeIds') || [];
 
-    const { data: questData } = useSWR(
+    const { data: questData } = useSWR<SafeQuest>(
         questId ? `/api/quest/${questId}` : null,
         axiosFetcher
     );
 
-    const { data: coCooksData } = useSWR(
+    const { data: coCooksData } = useSWR<SafeUser[]>(
         coCooksIds.length > 0
             ? `/api/users/multiple?ids=${coCooksIds.join(',')}`
             : null,
         axiosFetcher
     );
 
-    const { data: linkedRecipesData } = useSWR(
+    const { data: linkedRecipesData } = useSWR<SafeRecipe[]>(
         linkedRecipeIds.length > 0
             ? `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
             : null,
         axiosFetcher
     );
-    useEffect(() => {
-        if (questData && questData !== prevQuestDataRef.current) {
-            prevQuestDataRef.current = questData;
-            setSelectedQuest(questData);
-        }
-    }, [questData]);
 
-    useEffect(() => {
-        if (coCooksData && coCooksData !== prevCoCooksDataRef.current) {
-            prevCoCooksDataRef.current = coCooksData;
-            setSelectedCoCooks(coCooksData);
+    const [prevCoCooksData, setPrevCoCooksData] = useState(coCooksData);
+    if (coCooksData && coCooksData !== prevCoCooksData) {
+        setPrevCoCooksData(coCooksData);
+        if (Array.isArray(coCooksData)) {
+            setKnownUsers((prev) => {
+                const next = { ...prev };
+                coCooksData.forEach((user: SafeUser) => {
+                    if (user?.id) next[user.id] = user;
+                });
+                return next;
+            });
         }
-    }, [coCooksData]);
+    }
 
-    useEffect(() => {
-        if (
-            linkedRecipesData &&
-            linkedRecipesData !== prevLinkedRecipesDataRef.current
-        ) {
-            prevLinkedRecipesDataRef.current = linkedRecipesData;
-            setSelectedLinkedRecipes(linkedRecipesData);
+    const [prevLinkedRecipesData, setPrevLinkedRecipesData] =
+        useState(linkedRecipesData);
+    if (linkedRecipesData && linkedRecipesData !== prevLinkedRecipesData) {
+        setPrevLinkedRecipesData(linkedRecipesData);
+        if (Array.isArray(linkedRecipesData)) {
+            setKnownRecipes((prev) => {
+                const next = { ...prev };
+                linkedRecipesData.forEach((recipe: SafeRecipe) => {
+                    if (recipe?.id) next[recipe.id] = recipe;
+                });
+                return next;
+            });
         }
-    }, [linkedRecipesData]);
+    }
+
+    const [prevQuestData, setPrevQuestData] = useState(questData);
+    if (questData && questData !== prevQuestData) {
+        setPrevQuestData(questData);
+        if (questData?.id) {
+            setKnownQuests((prev) => ({ ...prev, [questData.id]: questData }));
+        }
+    }
+
+    const selectedQuest = useMemo<SafeQuest | null>(() => {
+        return questId ? (knownQuests[questId] ?? null) : null;
+    }, [questId, knownQuests]);
+
+    const selectedCoCooks = useMemo<SafeUser[]>(() => {
+        return coCooksIds
+            .map((id: string) => knownUsers[id])
+            .filter((user: SafeUser | undefined): user is SafeUser =>
+                Boolean(user)
+            );
+    }, [coCooksIds, knownUsers]);
+
+    const selectedLinkedRecipes = useMemo<SafeRecipe[]>(() => {
+        return linkedRecipeIds
+            .map((id: string) => knownRecipes[id])
+            .filter((recipe: SafeRecipe | undefined): recipe is SafeRecipe =>
+                Boolean(recipe)
+            );
+    }, [linkedRecipeIds, knownRecipes]);
+
     const onBack = () => {
         setStep((value) => Math.max(value - 1, 0));
     };
@@ -556,9 +604,9 @@ export function useRecipeFormState({
             setStep(STEPS.CATEGORY);
             setNumIngredients(1);
             setNumSteps(1);
-            setSelectedCoCooks([]);
-            setSelectedLinkedRecipes([]);
-            setSelectedQuest(null);
+            setKnownUsers({});
+            setKnownRecipes({});
+            setKnownQuests({});
             recipeModal.onClose();
             refresh();
         } catch (error) {
