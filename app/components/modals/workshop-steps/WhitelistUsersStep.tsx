@@ -134,6 +134,7 @@ const WhitelistUsersStep: React.FC<WhitelistUsersStepProps> = ({
                                     onClick={() => onRemoveUser(user.id)}
                                     className="ml-1 text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
                                     type="button"
+                                    aria-label={`Remove ${user.name}`}
                                 >
                                     <AiFillDelete size={16} />
                                 </button>

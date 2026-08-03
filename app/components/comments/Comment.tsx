@@ -168,6 +168,7 @@ const Comment: React.FC<CommentProps> = ({
                         type="button"
                         className="absolute top-2 right-1 border-0 bg-transparent p-0 text-rose-500"
                         onClick={openDeleteModal}
+                        aria-label="Delete comment"
                         data-testid="MdDelete"
                     >
                         <MdDelete size={20} />
