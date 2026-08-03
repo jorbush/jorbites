@@ -4,6 +4,7 @@ import {
     useRef,
     useSyncExternalStore,
     useReducer,
+    useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
@@ -91,9 +92,9 @@ export function useRecipeTranslation({
     }, [descriptionText, ingredientsTextJoined, stepsTextJoined]);
 
     // Reset translation state during render when contentKey changes
-    const prevContentKeyRef = useRef(contentKey);
-    if (contentKey !== prevContentKeyRef.current) {
-        prevContentKeyRef.current = contentKey;
+    const [prevContentKey, setPrevContentKey] = useState(contentKey);
+    if (contentKey !== prevContentKey) {
+        setPrevContentKey(contentKey);
         dispatch({ type: 'RESET_TRANSLATION' });
     }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -66,10 +66,8 @@ export default function BiteCardsContainer({
     const { t } = useTranslation();
 
     // Swiped IDs track session history without triggering unneeded re-renders
-    const swipedIdsRef = useRef<string[] | null>(null);
-    if (swipedIdsRef.current === null) {
-        swipedIdsRef.current = getInitialSwipedIds();
-    }
+    const initialSwipedIds = useMemo(() => getInitialSwipedIds(), []);
+    const swipedIdsRef = useRef<string[]>(initialSwipedIds);
 
     // Lazy state initializers so sessionStorage state is restored BEFORE first render
     const [recipes, setRecipes] = useState<SafeRecipe[]>(() => {
