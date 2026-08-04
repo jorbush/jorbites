@@ -4,7 +4,6 @@ import producer, { kafkaStatus } from '@/app/lib/kafka';
 import { logger } from '@/app/lib/axiom/server';
 import { UserEventType, UserInteractionData } from '@/app/types/tracking';
 import { auth } from '@/app/actions/getCurrentUser';
-import { unauthorized } from 'next/navigation';
 
 const KAFKA_TIMEOUT_MS = 3000;
 
@@ -27,11 +26,21 @@ export async function trackUserInteraction(
     data: UserInteractionData
 ) {
     const session = await auth();
-    if (!session) {
-        unauthorized();
+    const userId = (session?.user as { id?: string } | undefined)?.id;
+
+    if (!session || !session.user || !userId) {
+        if (process.env.NODE_ENV !== 'production') {
+            logger.info(
+                `[Tracking Skipped] Unauthenticated or missing user ID: ${eventType}`,
+                {
+                    recipeId: data.recipeId,
+                }
+            );
+        }
+        return;
     }
 
-    const { recipeId, userId, metadata } = data;
+    const { recipeId, metadata } = data;
 
     if (!producer) {
         if (process.env.NODE_ENV !== 'production') {
@@ -86,79 +95,42 @@ export async function trackUserInteraction(
     }
 }
 
-export async function trackRecipeView(recipeId: string, userId: string) {
-    const session = await auth();
-    if (!session) {
-        unauthorized();
-    }
-
+export async function trackRecipeView(recipeId: string) {
     return trackUserInteraction(UserEventType.RECIPE_VIEW, {
         recipeId,
-        userId,
     });
 }
 
-export async function trackRecipeLike(recipeId: string, userId: string) {
-    const session = await auth();
-    if (!session) {
-        unauthorized();
-    }
-
+export async function trackRecipeLike(recipeId: string) {
     return trackUserInteraction(UserEventType.RECIPE_LIKE, {
         recipeId,
-        userId,
     });
 }
 
-export async function trackRecipeUnlike(recipeId: string, userId: string) {
-    const session = await auth();
-    if (!session) {
-        unauthorized();
-    }
-
+export async function trackRecipeUnlike(recipeId: string) {
     return trackUserInteraction(UserEventType.RECIPE_UNLIKE, {
         recipeId,
-        userId,
     });
 }
 
-export async function trackRecipeSave(recipeId: string, userId: string) {
-    const session = await auth();
-    if (!session) {
-        unauthorized();
-    }
-
+export async function trackRecipeSave(recipeId: string) {
     return trackUserInteraction(UserEventType.RECIPE_SAVE, {
         recipeId,
-        userId,
     });
 }
 
-export async function trackRecipeUnsave(recipeId: string, userId: string) {
-    const session = await auth();
-    if (!session) {
-        unauthorized();
-    }
-
+export async function trackRecipeUnsave(recipeId: string) {
     return trackUserInteraction(UserEventType.RECIPE_UNSAVE, {
         recipeId,
-        userId,
     });
 }
 
 export async function trackRecipeCooked(
     recipeId: string,
-    userId: string,
     metadata?: Record<string, unknown>
 ) {
-    const session = await auth();
-    if (!session) {
-        unauthorized();
-    }
-
     return trackUserInteraction(UserEventType.RECIPE_COOKED, {
         recipeId,
-        userId,
         metadata,
     });
 }

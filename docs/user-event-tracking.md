@@ -41,6 +41,9 @@ All event types are defined in the `UserEventType` enum (`app/actions/tracking.t
 
 ## Usage
 
+> [!NOTE]
+> All tracking server actions automatically bind `userId` from the authenticated session (`session.user.id`) to prevent event spoofing in user interaction analytics. Client parameters cannot override `session.user.id`.
+
 ### Basic Usage
 
 ```typescript
@@ -51,13 +54,13 @@ import {
 } from '@/app/actions/tracking';
 
 // Track a recipe view
-await trackRecipeView(recipeId, userId);
+await trackRecipeView(recipeId);
 
 // Track when user saves a recipe
-await trackRecipeSave(recipeId, userId);
+await trackRecipeSave(recipeId);
 
 // Track when user marks recipe as cooked (with optional metadata)
-await trackRecipeCooked(recipeId, userId, {
+await trackRecipeCooked(recipeId, {
     rating: 5,
     cookingTime: 45,
     modifications: ['added garlic', 'doubled spices']
@@ -74,7 +77,6 @@ import { UserEventType } from '@/app/types/tracking';
 
 await trackUserInteraction(UserEventType.RECIPE_VIEW, {
     recipeId,
-    userId,
     metadata: {
         source: 'search',
         position: 3
@@ -88,13 +90,13 @@ Tracking is designed to be non-blocking. In API routes or server actions:
 
 ```typescript
 // Fire and forget pattern
-trackRecipeSave(recipeId, userId).catch((error) => {
-    logger.error('Failed to track recipe save', { recipeId, userId, error });
+trackRecipeSave(recipeId).catch((error) => {
+    logger.error('Failed to track recipe save', { recipeId, error });
 });
 
 // Or with try-catch for server components
 try {
-    await trackRecipeView(recipeId, userId);
+    await trackRecipeView(recipeId);
 } catch (error) {
     // Silently fail - tracking errors should not break page rendering
     console.error('Error tracking recipe view:', error);

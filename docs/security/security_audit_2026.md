@@ -147,12 +147,11 @@ The local TLS development certificates (`localhost-key.pem`, `localhost.pem`) us
 ---
 
 ### M-5: Tracking Server Actions `userId` Trust
+*Status: Verified - Fixed*
 
-**File**: [tracking.ts](file:///Users/jordi/dev/jorbites/jorbites/app/actions/tracking.ts)
+**File**: [tracking.ts](file:///Users/jordi/.gemini/antigravity/worktrees/jorbites/secure_tracking_user_id/app/actions/tracking.ts)
 
-The tracking functions authenticate via `auth()`, but accept `userId` from client parameters.
-
-**Recommendation**: Prefer binding `userId` directly from `session.user.id` to prevent event spoofing in user interaction analytics.
+The tracking functions authenticate via `auth()` and now strictly bind `userId` directly from `session.user.id`, ignoring client-provided `userId` parameters to prevent event spoofing in user interaction analytics.
 
 ---
 
