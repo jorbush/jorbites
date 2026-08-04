@@ -129,8 +129,8 @@ const Modal: React.FC<ModalProps> = ({
                                     type="button"
                                     className="absolute left-9 cursor-pointer border-0 p-1 text-black transition hover:opacity-70 dark:text-neutral-100"
                                     onClick={handleClose}
-                                    data-testid="close-modal-button"
                                     aria-label="Close"
+                                    data-testid="close-modal-button"
                                 >
                                     <IoMdClose size={18} />
                                 </button>

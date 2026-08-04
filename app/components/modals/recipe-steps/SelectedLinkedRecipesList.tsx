@@ -54,6 +54,7 @@ export const SelectedLinkedRecipesList: React.FC<
                             type="button"
                             onClick={() => onRemoveLinkedRecipe(recipe.id)}
                             className="text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
+                            aria-label={`Remove ${recipe.title}`}
                         >
                             <AiFillDelete size={20} />
                         </button>
