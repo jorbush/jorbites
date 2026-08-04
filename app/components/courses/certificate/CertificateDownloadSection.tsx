@@ -72,7 +72,10 @@ const CertificateDownloadSection: React.FC<CertificateDownloadSectionProps> = ({
                 setPdfModule(mod);
             })
             .catch((err) => {
-                console.error('Failed to load @react-pdf/renderer dynamically:', err);
+                console.error(
+                    'Failed to load @react-pdf/renderer dynamically:',
+                    err
+                );
             });
 
         return () => {
