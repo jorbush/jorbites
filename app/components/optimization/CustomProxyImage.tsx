@@ -88,7 +88,7 @@ export default function CustomProxyImage({
     const isPreloadingRef = useRef(preloadViaProxy);
     useEffect(() => {
         isPreloadingRef.current = preloadViaProxy;
-    });
+    }, [preloadViaProxy]);
 
     useEffect(() => {
         if (

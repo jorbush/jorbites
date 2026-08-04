@@ -55,7 +55,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
 
     useEffect(() => {
         checkScrollPositionRef.current = checkScrollPosition;
-    });
+    }, [checkScrollPosition]);
 
     useEffect(() => {
         const container = scrollContainerRef.current;

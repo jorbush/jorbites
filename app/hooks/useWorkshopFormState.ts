@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useCallback, useMemo, useState } from 'react';
+import { useReducer, useCallback, useMemo, useState, useEffect } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import useSWR from 'swr';
@@ -38,9 +38,13 @@ export function useWorkshopFormState({
     const isEditMode = workshopModal.isEditMode;
     const editData = workshopModal.editWorkshopData;
 
-    const [prevEditWorkshopData, setPrevEditWorkshopData] = useState<any>(null);
-    if (editData !== prevEditWorkshopData) {
-        setPrevEditWorkshopData(editData);
+    const editDataKey =
+        editData?.id ||
+        editData?.title ||
+        (editData ? JSON.stringify(editData) : null);
+    const [prevEditDataKey, setPrevEditDataKey] = useState<any>(null);
+    if (editDataKey !== prevEditDataKey) {
+        setPrevEditDataKey(editDataKey);
         if (isEditMode && editData) {
             dispatch({
                 type: 'SET_NUM_INGREDIENTS',
@@ -130,31 +134,22 @@ export function useWorkshopFormState({
         axiosFetcher
     );
 
-    const [prevWhitelistedUsersData, setPrevWhitelistedUsersData] =
-        useState<any>(null);
-    const [prevIsPrivate, setPrevIsPrivate] = useState<boolean>(isPrivate);
     const currentLength = whitelistedUserIds?.length || 0;
-    const [prevWhitelistedUserIdsLength, setPrevWhitelistedUserIdsLength] =
-        useState<number>(currentLength);
 
-    if (
-        whitelistedUsersData &&
-        whitelistedUsersData !== prevWhitelistedUsersData
-    ) {
-        setPrevWhitelistedUsersData(whitelistedUsersData);
-        dispatch({ type: 'SET_SELECTED_USERS', payload: whitelistedUsersData });
-    }
+    useEffect(() => {
+        if (whitelistedUsersData) {
+            dispatch({
+                type: 'SET_SELECTED_USERS',
+                payload: whitelistedUsersData,
+            });
+        }
+    }, [whitelistedUsersData]);
 
-    if (
-        isPrivate !== prevIsPrivate ||
-        currentLength !== prevWhitelistedUserIdsLength
-    ) {
-        setPrevIsPrivate(isPrivate);
-        setPrevWhitelistedUserIdsLength(currentLength);
+    useEffect(() => {
         if (!isPrivate || currentLength === 0) {
             dispatch({ type: 'SET_SELECTED_USERS', payload: [] });
         }
-    }
+    }, [isPrivate, currentLength]);
 
     const onBack = () => {
         dispatch({ type: 'SET_STEP', payload: step - 1 });
