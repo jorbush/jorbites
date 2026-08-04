@@ -143,7 +143,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                     alt={event.frontmatter.title}
                     width={800}
                     height={600}
-                    className="w-full object-contain"
+                    className="h-auto w-full object-contain"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
                     priority
                 />

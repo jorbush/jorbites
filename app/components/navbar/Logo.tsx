@@ -14,7 +14,7 @@ const Logo = () => {
         >
             <Image
                 alt="Logo"
-                className="w-32 dark:hidden"
+                className="h-auto w-32 dark:hidden"
                 height={29}
                 width={128}
                 src="/images/logo-nobg.webp"
@@ -23,7 +23,7 @@ const Logo = () => {
             />
             <Image
                 alt="Logo"
-                className="hidden w-32 dark:block"
+                className="hidden h-auto w-32 dark:block"
                 height={29}
                 width={128}
                 src="/images/no_bg_white.webp"
