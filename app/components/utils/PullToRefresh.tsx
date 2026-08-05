@@ -17,6 +17,8 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
     const startYRef = useRef<number | null>(null);
     const pullDistanceRef = useRef<number>(0);
     const { refresh } = useRouter() || {};
+    const timer1Ref = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const timer2Ref = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const [state, dispatch] = useReducer(pullToRefreshReducer, {
         refreshing: false,
@@ -75,10 +77,17 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             if (startYRef.current !== null) {
                 if (pullDistanceRef.current > threshold) {
                     dispatch({ type: 'START_REFRESHING' });
-                    setTimeout(() => {
-                        refresh();
-                        setTimeout(() => {
+
+                    if (timer1Ref.current) clearTimeout(timer1Ref.current);
+                    if (timer2Ref.current) clearTimeout(timer2Ref.current);
+
+                    timer1Ref.current = setTimeout(() => {
+                        if (refresh) refresh();
+                        timer1Ref.current = null;
+
+                        timer2Ref.current = setTimeout(() => {
                             dispatch({ type: 'STOP_REFRESHING' });
+                            timer2Ref.current = null;
                         }, 500);
                     }, 800);
                 } else {
@@ -103,6 +112,8 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             document.removeEventListener('touchstart', handleTouchStart);
             document.removeEventListener('touchmove', handleTouchMove);
             document.removeEventListener('touchend', handleTouchEnd);
+            if (timer1Ref.current) clearTimeout(timer1Ref.current);
+            if (timer2Ref.current) clearTimeout(timer2Ref.current);
         };
     }, [threshold, refresh]);
 
