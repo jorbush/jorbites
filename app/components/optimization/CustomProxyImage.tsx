@@ -85,14 +85,9 @@ export default function CustomProxyImage({
     }
 
     // Handle preload link injection as a side effect
-    const isPreloadingRef = useRef(preloadViaProxy);
-    useEffect(() => {
-        isPreloadingRef.current = preloadViaProxy;
-    }, [preloadViaProxy]);
-
     useEffect(() => {
         if (
-            isPreloadingRef.current &&
+            preloadViaProxy &&
             optimizedSrc &&
             optimizedSrc !== fallbackImage &&
             typeof window !== 'undefined'
@@ -109,7 +104,7 @@ export default function CustomProxyImage({
             }
             document.head.appendChild(link);
         }
-    }, [optimizedSrc, srcSet, sizes]);
+    }, [preloadViaProxy, optimizedSrc, srcSet, sizes]);
 
     useEffect(() => {
         if (imgRef.current && priority) {
