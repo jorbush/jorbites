@@ -13,11 +13,14 @@ import { translateableRecipeContentReducer } from '@/app/components/translation/
 
 const subscribe = () => () => {};
 
+import { GanttTable } from '@/app/types';
+
 interface UseRecipeTranslationProps {
     description: React.ReactNode;
     descriptionText?: string;
     ingredientsText?: string[];
     stepsText?: string[];
+    ganttTable?: GanttTable | null;
 }
 
 export function useRecipeTranslation({
@@ -25,6 +28,7 @@ export function useRecipeTranslation({
     descriptionText,
     ingredientsText,
     stepsText,
+    ganttTable,
 }: UseRecipeTranslationProps) {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
@@ -43,6 +47,7 @@ export function useRecipeTranslation({
         translatedDescription: null,
         translatedIngredients: null,
         translatedSteps: null,
+        translatedGanttTable: null,
     });
 
     const {
@@ -52,6 +57,7 @@ export function useRecipeTranslation({
         translatedDescription,
         translatedIngredients,
         translatedSteps,
+        translatedGanttTable,
     } = state;
 
     const ingredientsTextJoined = useMemo(
@@ -168,7 +174,8 @@ export function useRecipeTranslation({
     const hasContent = Boolean(
         descriptionText ||
         (ingredientsText && ingredientsText.length > 0) ||
-        (stepsText && stepsText.length > 0)
+        (stepsText && stepsText.length > 0) ||
+        (ganttTable && (ganttTable.rows?.length || ganttTable.preSteps?.length))
     );
 
     const handleTranslate = async () => {
@@ -241,12 +248,60 @@ export function useRecipeTranslation({
                       )
                     : Promise.resolve([]);
 
-            const [translatedDesc, translatedIngArray, translatedStpsArray] =
-                await Promise.all([
-                    descriptionPromise,
-                    ingredientsPromise,
-                    stepsPromise,
-                ]);
+            const ganttPromise = ganttTable
+                ? Promise.all([
+                      Promise.all(
+                          (ganttTable.preSteps || []).map((step) =>
+                              translator.translate(step)
+                          )
+                      ),
+                      Promise.all(
+                          (ganttTable.rows || []).map((row) =>
+                              translator.translate(row.ingredient)
+                          )
+                      ),
+                      Promise.all(
+                          (ganttTable.columns || []).map((col) =>
+                              translator.translate(col.action)
+                          )
+                      ),
+                  ]).then(
+                      ([
+                          translatedPreSteps,
+                          translatedIngs,
+                          translatedActions,
+                      ]) => ({
+                          preSteps: (translatedPreSteps || []).map((s) =>
+                              s.trim()
+                          ),
+                          rows: (ganttTable.rows || []).map((row, idx) => ({
+                              ...row,
+                              ingredient:
+                                  translatedIngs[idx]?.trim() || row.ingredient,
+                          })),
+                          columns: (ganttTable.columns || []).map(
+                              (col, idx) => ({
+                                  ...col,
+                                  action:
+                                      translatedActions[idx]?.trim() ||
+                                      col.action,
+                              })
+                          ),
+                      })
+                  )
+                : Promise.resolve(null);
+
+            const [
+                translatedDesc,
+                translatedIngArray,
+                translatedStpsArray,
+                translatedGantt,
+            ] = await Promise.all([
+                descriptionPromise,
+                ingredientsPromise,
+                stepsPromise,
+                ganttPromise,
+            ]);
 
             let finalDesc = null;
             if (descriptionText && translatedDesc) {
@@ -267,11 +322,6 @@ export function useRecipeTranslation({
                         return acc;
                     },
                     []
-                );
-
-                console.log(
-                    'Translated ingredients array:',
-                    translatedIngredientItems
                 );
 
                 if (translatedIngredientItems.length > 0) {
@@ -295,8 +345,6 @@ export function useRecipeTranslation({
                     []
                 );
 
-                console.log('Translated steps array:', translatedStepItems);
-
                 if (translatedStepItems.length > 0) {
                     finalSteps = translatedStepItems;
                 }
@@ -308,6 +356,7 @@ export function useRecipeTranslation({
                     description: finalDesc,
                     ingredients: finalIng,
                     steps: finalSteps,
+                    ganttTable: translatedGantt,
                 },
             });
         } catch (error) {
@@ -341,6 +390,11 @@ export function useRecipeTranslation({
             ? translatedSteps
             : stepsText || [];
 
+    const displayGanttTable =
+        isTranslated && translatedGanttTable
+            ? translatedGanttTable
+            : ganttTable || null;
+
     const targetLanguage =
         (typeof i18n.language === 'string'
             ? i18n.language
@@ -358,6 +412,7 @@ export function useRecipeTranslation({
         displayDescription,
         displayIngredients,
         displaySteps,
+        displayGanttTable,
         showTranslateButton,
         t,
     };

@@ -230,4 +230,30 @@ describe('RecipeInfo', () => {
         expect(screen.getByTestId('recipe-cuisine')).toBeDefined();
         expect(screen.getByText('Mexican')).toBeDefined();
     });
+
+    it('renders ganttTable section when ganttTable prop is provided', () => {
+        const mockGanttTable = {
+            preSteps: ['Preheat oven'],
+            rows: [{ ingredient: 'Flour', group: 0 }],
+            columns: [
+                {
+                    action: 'mix',
+                    rowSpan: [0, 0] as [number, number],
+                    colIndex: 0,
+                },
+            ],
+        };
+
+        render(
+            <RecipeInfo
+                {...mockProps}
+                ganttTable={mockGanttTable}
+            />
+        );
+
+        expect(screen.getByTestId('gantt-table-section')).toBeDefined();
+        expect(screen.getByText('Preheat oven')).toBeDefined();
+        expect(screen.getByText('Flour')).toBeDefined();
+        expect(screen.getByText('mix')).toBeDefined();
+    });
 });

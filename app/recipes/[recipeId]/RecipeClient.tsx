@@ -155,6 +155,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             calories={recipe.calories}
                             recipeCuisine={recipe.recipeCuisine}
                             recipeYield={recipe.recipeYield}
+                            ganttTable={recipe.ganttTable}
                         />
                     </div>
                     <div id="comments-section">
