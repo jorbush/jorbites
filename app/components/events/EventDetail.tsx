@@ -119,6 +119,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                     type="button"
                     className="mr-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
                     onClick={() => back()}
+                    aria-label="Back"
                 >
                     <FiChevronLeft className="text-xl" />
                 </button>
@@ -142,7 +143,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                     alt={event.frontmatter.title}
                     width={800}
                     height={600}
-                    className="w-full object-contain"
+                    className="h-auto w-full object-contain"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
                     priority
                 />

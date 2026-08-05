@@ -38,6 +38,7 @@ export const SelectedQuestDisplay: React.FC<SelectedQuestDisplayProps> = ({
                         type="button"
                         onClick={onRemoveQuest}
                         className="ml-2 text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
+                        aria-label={`Remove ${selectedQuest.title}`}
                     >
                         <AiFillDelete size={20} />
                     </button>

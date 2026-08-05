@@ -35,11 +35,12 @@ function ensureWebPushInitialized() {
 }
 
 export async function subscribeUser(sub: webpush.PushSubscription) {
-    ensureWebPushInitialized();
     const session = await auth();
     if (!session) {
         unauthorized();
     }
+
+    ensureWebPushInitialized();
 
     const currentUser = await getCurrentUser();
     if (!currentUser) {
@@ -73,11 +74,12 @@ export async function subscribeUser(sub: webpush.PushSubscription) {
 }
 
 export async function unsubscribeUser(sub?: webpush.PushSubscription | null) {
-    ensureWebPushInitialized();
     const session = await auth();
     if (!session) {
         unauthorized();
     }
+
+    ensureWebPushInitialized();
 
     const currentUser = await getCurrentUser();
     if (!currentUser) {
