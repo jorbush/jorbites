@@ -40,11 +40,11 @@ const Modal: React.FC<ModalProps> = ({
     icon: Icon,
     insideModal,
 }) => {
+    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
     const [isClosing, setIsClosing] = useState(false);
-    const prevIsOpenRef = useRef(isOpen);
 
-    if (isOpen !== prevIsOpenRef.current) {
-        prevIsOpenRef.current = isOpen;
+    if (isOpen !== prevIsOpen) {
+        setPrevIsOpen(isOpen);
         setIsClosing(false);
     }
 

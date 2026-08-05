@@ -52,7 +52,10 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
 
     // Set up ResizeObserver to check scroll position on container size or content size changes
     const checkScrollPositionRef = useRef(checkScrollPosition);
-    checkScrollPositionRef.current = checkScrollPosition;
+
+    useEffect(() => {
+        checkScrollPositionRef.current = checkScrollPosition;
+    }, [checkScrollPosition]);
 
     useEffect(() => {
         const container = scrollContainerRef.current;

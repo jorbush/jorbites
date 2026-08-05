@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useCallback, useRef, useMemo } from 'react';
+import { useReducer, useCallback, useMemo, useState, useEffect } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import useSWR from 'swr';
@@ -38,9 +38,10 @@ export function useWorkshopFormState({
     const isEditMode = workshopModal.isEditMode;
     const editData = workshopModal.editWorkshopData;
 
-    const prevEditWorkshopDataRef = useRef<any>(null);
-    if (editData !== prevEditWorkshopDataRef.current) {
-        prevEditWorkshopDataRef.current = editData;
+    const editDataKey = editData?.id ?? null;
+    const [prevEditDataKey, setPrevEditDataKey] = useState<any>(null);
+    if (editDataKey !== prevEditDataKey) {
+        setPrevEditDataKey(editDataKey);
         if (isEditMode && editData) {
             dispatch({
                 type: 'SET_NUM_INGREDIENTS',
@@ -130,29 +131,18 @@ export function useWorkshopFormState({
         axiosFetcher
     );
 
-    const prevWhitelistedUsersDataRef = useRef<any>(null);
-    const prevIsPrivateRef = useRef<boolean>(isPrivate);
     const currentLength = whitelistedUserIds?.length || 0;
-    const prevWhitelistedUserIdsLengthRef = useRef<number>(currentLength);
 
-    if (
-        whitelistedUsersData &&
-        whitelistedUsersData !== prevWhitelistedUsersDataRef.current
-    ) {
-        prevWhitelistedUsersDataRef.current = whitelistedUsersData;
-        dispatch({ type: 'SET_SELECTED_USERS', payload: whitelistedUsersData });
-    }
-
-    if (
-        isPrivate !== prevIsPrivateRef.current ||
-        currentLength !== prevWhitelistedUserIdsLengthRef.current
-    ) {
-        prevIsPrivateRef.current = isPrivate;
-        prevWhitelistedUserIdsLengthRef.current = currentLength;
+    useEffect(() => {
         if (!isPrivate || currentLength === 0) {
             dispatch({ type: 'SET_SELECTED_USERS', payload: [] });
+        } else if (whitelistedUsersData) {
+            dispatch({
+                type: 'SET_SELECTED_USERS',
+                payload: whitelistedUsersData,
+            });
         }
-    }
+    }, [whitelistedUsersData, isPrivate, currentLength]);
 
     const onBack = () => {
         dispatch({ type: 'SET_STEP', payload: step - 1 });

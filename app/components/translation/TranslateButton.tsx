@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useSyncExternalStore, useRef } from 'react';
+import { useState, useEffect, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiGlobe } from 'react-icons/fi';
 import i18n from '@/app/i18n';
@@ -65,9 +65,9 @@ export function TranslateButton({
     );
 
     // Reset detectedLanguage during render when text changes
-    const prevTextRef = useRef(text);
-    if (text !== prevTextRef.current) {
-        prevTextRef.current = text;
+    const [prevText, setPrevText] = useState(text);
+    if (text !== prevText) {
+        setPrevText(text);
         setDetectedLanguage(null);
     }
 

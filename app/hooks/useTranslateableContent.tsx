@@ -4,7 +4,6 @@ import React, {
     useState,
     useEffect,
     useMemo,
-    useRef,
     useCallback,
     useSyncExternalStore,
 } from 'react';
@@ -76,9 +75,9 @@ export function useTranslateableContent({
     const contentKey = `${textContent}|${currentLanguage}`;
 
     // Reset translation state during render when contentKey changes
-    const prevContentKeyRef = useRef(contentKey);
-    if (contentKey !== prevContentKeyRef.current) {
-        prevContentKeyRef.current = contentKey;
+    const [prevContentKey, setPrevContentKey] = useState(contentKey);
+    if (contentKey !== prevContentKey) {
+        setPrevContentKey(contentKey);
         setTranslatedContent(null);
         setIsTranslated(false);
         setDetectedLanguage(null);
