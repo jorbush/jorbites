@@ -38,10 +38,7 @@ export function useWorkshopFormState({
     const isEditMode = workshopModal.isEditMode;
     const editData = workshopModal.editWorkshopData;
 
-    const editDataKey =
-        editData?.id ||
-        editData?.title ||
-        (editData ? JSON.stringify(editData) : null);
+    const editDataKey = editData?.id ?? null;
     const [prevEditDataKey, setPrevEditDataKey] = useState<any>(null);
     if (editDataKey !== prevEditDataKey) {
         setPrevEditDataKey(editDataKey);
@@ -137,19 +134,15 @@ export function useWorkshopFormState({
     const currentLength = whitelistedUserIds?.length || 0;
 
     useEffect(() => {
-        if (whitelistedUsersData) {
+        if (!isPrivate || currentLength === 0) {
+            dispatch({ type: 'SET_SELECTED_USERS', payload: [] });
+        } else if (whitelistedUsersData) {
             dispatch({
                 type: 'SET_SELECTED_USERS',
                 payload: whitelistedUsersData,
             });
         }
-    }, [whitelistedUsersData]);
-
-    useEffect(() => {
-        if (!isPrivate || currentLength === 0) {
-            dispatch({ type: 'SET_SELECTED_USERS', payload: [] });
-        }
-    }, [isPrivate, currentLength]);
+    }, [whitelistedUsersData, isPrivate, currentLength]);
 
     const onBack = () => {
         dispatch({ type: 'SET_STEP', payload: step - 1 });
