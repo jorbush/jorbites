@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { SafeUser, SafeWorkshopParticipant } from '@/app/types';
 import Avatar from '@/app/components/utils/Avatar';
 import { useTranslation } from 'react-i18next';
@@ -59,6 +60,19 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
     const mounted = useIsMounted();
     const isMdOrSmaller = useMediaQuery('(max-width: 425px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
+
+    const [formattedJoinedDates, setFormattedJoinedDates] = useState<
+        Record<string, string>
+    >({});
+
+    useEffect(() => {
+        if (!participants || participants.length === 0) return;
+        const formatted: Record<string, string> = {};
+        participants.forEach((p) => {
+            formatted[p.id] = new Date(p.joinedAt).toLocaleDateString();
+        });
+        setFormattedJoinedDates(formatted);
+    }, [participants]);
 
     const { data: whitelistedUsersData } = useSWR<any[]>(
         whitelistedUserIds.length > 0
@@ -262,11 +276,8 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                                     <div className="size-2 rounded-full bg-green-500" />
                                     <span>
                                         {t('joined_at')}:{' '}
-                                        {mounted
-                                            ? new Date(
-                                                  participant.joinedAt
-                                              ).toLocaleDateString()
-                                            : ''}
+                                        {formattedJoinedDates[participant.id] ||
+                                            ''}
                                     </span>
                                 </div>
                             ))}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { FiChevronLeft, FiShare2 } from 'react-icons/fi';
 import Heading from '@/app/components/navigation/Heading';
 import { useRouter } from 'next/navigation';
@@ -20,14 +20,16 @@ const WorkshopHead: React.FC<WorkshopHeadProps> = ({
 }) => {
     const { back } = useRouter() || {};
     const { share } = useShare();
+    const [formattedDate, setFormattedDate] = useState('');
 
-    const formattedDate = useMemo(() => {
+    useEffect(() => {
         const workshopDate = new Date(date);
-        return new Intl.DateTimeFormat('default', {
+        const formatted = new Intl.DateTimeFormat('default', {
             month: 'short',
             day: 'numeric',
             year: 'numeric',
         }).format(workshopDate);
+        setFormattedDate(formatted);
     }, [date]);
 
     return (
