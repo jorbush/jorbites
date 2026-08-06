@@ -11,7 +11,6 @@ import useIsMounted from '@/app/hooks/useIsMounted';
 import i18n from '@/app/i18n';
 import { translateableRecipeContentReducer } from '@/app/components/translation/translateableRecipeContentReducer';
 import { GanttTable } from '@/app/types';
-import { Prisma } from '@prisma/client';
 
 const subscribe = () => () => {};
 
@@ -20,7 +19,7 @@ interface UseRecipeTranslationProps {
     descriptionText?: string;
     ingredientsText?: string[];
     stepsText?: string[];
-    ganttTable?: GanttTable | Prisma.JsonValue | null;
+    ganttTable?: GanttTable | null;
 }
 
 export function useRecipeTranslation({
@@ -28,12 +27,8 @@ export function useRecipeTranslation({
     descriptionText,
     ingredientsText,
     stepsText,
-    ganttTable: rawGanttTable,
+    ganttTable,
 }: UseRecipeTranslationProps) {
-    const ganttTable = rawGanttTable as unknown as
-        | GanttTable
-        | null
-        | undefined;
     const { t } = useTranslation();
     const isMounted = useIsMounted();
     const isAvailable = useSyncExternalStore(

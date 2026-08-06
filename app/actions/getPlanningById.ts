@@ -1,6 +1,7 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
 import { USER_SELECT_FIELDS } from '@/app/utils/constants';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 interface IParams {
     planningId?: string;
@@ -58,8 +59,7 @@ export default async function getPlanningById(params: IParams) {
                       ...meal,
                       recipe: meal.recipe
                           ? {
-                                ...meal.recipe,
-                                createdAt: meal.recipe.createdAt.toISOString(),
+                                ...toSafeRecipe(meal.recipe),
                                 user: meal.recipe.user
                                     ? {
                                           ...meal.recipe.user,

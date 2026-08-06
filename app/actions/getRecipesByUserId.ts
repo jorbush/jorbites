@@ -2,6 +2,7 @@ import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
 import { OrderByType, getPrismaOrderByClause } from '@/app/utils/filter';
 import { SafeRecipe } from '@/app/types';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 interface IParams {
     userId?: string;
@@ -44,10 +45,7 @@ export default async function getRecipesByUserId(
             },
         });
 
-        const safeRecipes = recipes.map((recipe) => ({
-            ...recipe,
-            createdAt: recipe.createdAt.toString(),
-        }));
+        const safeRecipes = recipes.map(toSafeRecipe);
 
         logger.info('getRecipesByUserId - success', {
             userId,

@@ -15,6 +15,7 @@ import {
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { headers } from 'next/headers';
 import { RECIPE_CUISINES } from '@/app/utils/constants';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 export interface IRecipesParams {
     category?: string;
@@ -214,10 +215,7 @@ export default async function getRecipes(
             where: query,
         });
 
-        const safeRecipes = recipes.map((recipe) => ({
-            ...recipe,
-            createdAt: recipe.createdAt.toISOString(),
-        }));
+        const safeRecipes = recipes.map(toSafeRecipe);
 
         logger.info('getRecipes - success', { totalRecipes, page, limit });
 

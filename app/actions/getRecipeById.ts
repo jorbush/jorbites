@@ -1,6 +1,7 @@
 import prisma from '@/app/lib/prismadb';
 import { redisCache } from '@/app/lib/redis';
 import { logger } from '@/app/lib/axiom/server';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 interface IParams {
     recipeId?: string;
@@ -49,10 +50,7 @@ export default async function getRecipeById(params: IParams) {
             return null;
         }
 
-        const safeRecipe = {
-            ...recipe,
-            createdAt: recipe.createdAt.toISOString(),
-        };
+        const safeRecipe = toSafeRecipe(recipe);
 
         logger.info('getRecipeById - success', { recipeId });
 

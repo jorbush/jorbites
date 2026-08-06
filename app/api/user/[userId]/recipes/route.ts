@@ -9,6 +9,7 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { recipeBookRatelimit } from '@/app/lib/ratelimit';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 interface IParams {
     userId?: string;
@@ -78,10 +79,7 @@ export async function GET(
             },
         });
 
-        const safeRecipes = recipes.map((recipe) => ({
-            ...recipe,
-            createdAt: recipe.createdAt.toISOString(),
-        }));
+        const safeRecipes = recipes.map(toSafeRecipe);
 
         logger.info('GET /api/user/[userId]/recipes - success', {
             userId,

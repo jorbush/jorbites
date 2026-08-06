@@ -1,5 +1,6 @@
 import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 interface IParams {
     questId?: string;
@@ -78,10 +79,7 @@ export default async function getQuestById(params: IParams) {
             ...quest,
             createdAt: quest.createdAt.toISOString(),
             updatedAt: quest.updatedAt.toISOString(),
-            recipes: quest.recipes.map((recipe) => ({
-                ...recipe,
-                createdAt: recipe.createdAt.toISOString(),
-            })),
+            recipes: quest.recipes.map(toSafeRecipe),
         };
     } catch (error: any) {
         logger.error('getQuestById - error', {

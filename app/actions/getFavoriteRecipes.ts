@@ -10,6 +10,7 @@ import { Prisma } from '@prisma/client';
 import { RECIPE_CUISINES } from '@/app/utils/constants';
 
 import getCurrentUser from './getCurrentUser';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 export interface IFavoriteRecipesParams {
     page?: number;
@@ -197,10 +198,7 @@ export default async function getFavoriteRecipes(
             where: whereClause,
         });
 
-        const safeFavorites = favorites.map((favorite) => ({
-            ...favorite,
-            createdAt: favorite.createdAt.toString(),
-        }));
+        const safeFavorites = favorites.map(toSafeRecipe);
 
         logger.info('getFavoriteRecipes - success', {
             count: safeFavorites.length,

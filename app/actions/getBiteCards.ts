@@ -3,6 +3,7 @@ import { logger } from '@/app/lib/axiom/server';
 import { SafeRecipe } from '@/app/types';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { Prisma } from '@prisma/client';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 export interface IGetBiteCardsParams {
     limit?: number;
@@ -99,10 +100,7 @@ export default async function getBiteCards(
             .toSorted(() => Math.random() - 0.5)
             .slice(0, limit);
 
-        const safeRecipes = shuffled.map((recipe) => ({
-            ...recipe,
-            createdAt: recipe.createdAt.toISOString(),
-        }));
+        const safeRecipes = shuffled.map(toSafeRecipe);
 
         logger.info('getBiteCards - success', {
             count: safeRecipes.length,

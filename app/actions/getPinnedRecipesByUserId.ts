@@ -2,6 +2,7 @@ import prisma from '@/app/lib/prismadb';
 import { redisCache } from '@/app/lib/redis';
 import { logger } from '@/app/lib/axiom/server';
 import { SafeRecipe } from '@/app/types';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 export default async function getPinnedRecipesByUserId(
     userId: string
@@ -60,10 +61,7 @@ export default async function getPinnedRecipesByUserId(
             .map((id) => recipes.find((recipe) => recipe.id === id))
             .filter((recipe): recipe is (typeof recipes)[0] => !!recipe);
 
-        const safeRecipes = orderedRecipes.map((recipe) => ({
-            ...recipe,
-            createdAt: recipe.createdAt.toString(),
-        }));
+        const safeRecipes = orderedRecipes.map(toSafeRecipe);
 
         logger.info('getPinnedRecipesByUserId - success', {
             userId,

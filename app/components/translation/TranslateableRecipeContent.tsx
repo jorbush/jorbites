@@ -4,22 +4,19 @@ import React from 'react';
 import TranslationControls from './TranslationControls';
 import { useRecipeTranslation } from '@/app/hooks/useRecipeTranslation';
 import { GanttTable } from '@/app/types';
-import { Prisma } from '@prisma/client';
 
 interface TranslateableRecipeContentProps {
     description: React.ReactNode;
     descriptionText?: string;
     ingredientsText?: string[];
     stepsText?: string[];
-    ganttTable?: GanttTable | Prisma.JsonValue | null;
+    ganttTable?: GanttTable | null;
     RenderDescription: React.ComponentType<{
         content: string | React.ReactNode;
     }>;
     RenderIngredients: React.ComponentType<{ items: string[] }>;
     RenderSteps: React.ComponentType<{ items: string[] }>;
-    RenderGanttTable?: React.ComponentType<{
-        ganttTable?: GanttTable | Prisma.JsonValue | null;
-    }>;
+    RenderGanttTable?: React.ComponentType<{ ganttTable?: GanttTable | null }>;
 }
 
 export function TranslateableRecipeContent({
