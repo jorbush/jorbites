@@ -10,6 +10,7 @@ import { toast } from 'react-hot-toast';
 import useIsMounted from '@/app/hooks/useIsMounted';
 import i18n from '@/app/i18n';
 import { translateableRecipeContentReducer } from '@/app/components/translation/translateableRecipeContentReducer';
+import { GanttTable } from '@/app/types';
 
 const subscribe = () => () => {};
 
@@ -18,6 +19,7 @@ interface UseRecipeTranslationProps {
     descriptionText?: string;
     ingredientsText?: string[];
     stepsText?: string[];
+    ganttTable?: GanttTable | null;
 }
 
 export function useRecipeTranslation({
@@ -25,6 +27,7 @@ export function useRecipeTranslation({
     descriptionText,
     ingredientsText,
     stepsText,
+    ganttTable,
 }: UseRecipeTranslationProps) {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
@@ -43,6 +46,7 @@ export function useRecipeTranslation({
         translatedDescription: null,
         translatedIngredients: null,
         translatedSteps: null,
+        translatedGanttTable: null,
     });
 
     const {
@@ -52,6 +56,7 @@ export function useRecipeTranslation({
         translatedDescription,
         translatedIngredients,
         translatedSteps,
+        translatedGanttTable,
     } = state;
 
     const ingredientsTextJoined = useMemo(
@@ -62,6 +67,16 @@ export function useRecipeTranslation({
         () => stepsText?.join('\n') || '',
         [stepsText]
     );
+
+    const ganttTextJoined = useMemo(() => {
+        if (!ganttTable) return '';
+        const pre = (ganttTable.preSteps || []).join('\n');
+        const rows = (ganttTable.rows || [])
+            .map((r) => r.ingredient)
+            .join('\n');
+        const cols = (ganttTable.columns || []).map((c) => c.action).join('\n');
+        return `${pre}\n${rows}\n${cols}`;
+    }, [ganttTable]);
 
     const sampleTextForDetection = useMemo(() => {
         if (descriptionText && descriptionText.trim().length >= 10) {
@@ -79,16 +94,34 @@ export function useRecipeTranslation({
                 return firstStep;
             }
         }
+        if (ganttTextJoined) {
+            const firstGanttLine = ganttTextJoined
+                .split('\n')
+                .find((line) => line.trim().length >= 10);
+            if (firstGanttLine) {
+                return firstGanttLine;
+            }
+        }
         return '';
-    }, [descriptionText, ingredientsTextJoined, stepsTextJoined]);
+    }, [
+        descriptionText,
+        ingredientsTextJoined,
+        stepsTextJoined,
+        ganttTextJoined,
+    ]);
 
     const contentKey = useMemo(() => {
         const currentLang =
             (typeof i18n.language === 'string'
                 ? i18n.language
                 : i18n.resolvedLanguage) || 'es';
-        return `${descriptionText}|${ingredientsTextJoined}|${stepsTextJoined}|${currentLang}`;
-    }, [descriptionText, ingredientsTextJoined, stepsTextJoined]);
+        return `${descriptionText}|${ingredientsTextJoined}|${stepsTextJoined}|${ganttTextJoined}|${currentLang}`;
+    }, [
+        descriptionText,
+        ingredientsTextJoined,
+        stepsTextJoined,
+        ganttTextJoined,
+    ]);
 
     // Reset translation state during render when contentKey changes
     const [prevContentKey, setPrevContentKey] = useState(contentKey);
@@ -168,7 +201,8 @@ export function useRecipeTranslation({
     const hasContent = Boolean(
         descriptionText ||
         (ingredientsText && ingredientsText.length > 0) ||
-        (stepsText && stepsText.length > 0)
+        (stepsText && stepsText.length > 0) ||
+        (ganttTable && (ganttTable.rows?.length || ganttTable.preSteps?.length))
     );
 
     const handleTranslate = async () => {
@@ -241,12 +275,74 @@ export function useRecipeTranslation({
                       )
                     : Promise.resolve([]);
 
-            const [translatedDesc, translatedIngArray, translatedStpsArray] =
-                await Promise.all([
-                    descriptionPromise,
-                    ingredientsPromise,
-                    stepsPromise,
-                ]);
+            const isGanttValid =
+                ganttTable &&
+                Array.isArray(ganttTable.rows) &&
+                Array.isArray(ganttTable.columns) &&
+                (!ganttTable.preSteps || Array.isArray(ganttTable.preSteps));
+
+            const ganttPromise = isGanttValid
+                ? Promise.all([
+                      Promise.all(
+                          (ganttTable.preSteps || []).map((step) =>
+                              typeof step === 'string' && step.trim()
+                                  ? translator.translate(step)
+                                  : Promise.resolve(step || '')
+                          )
+                      ),
+                      Promise.all(
+                          (ganttTable.rows || []).map((row) =>
+                              typeof row?.ingredient === 'string' &&
+                              row.ingredient.trim()
+                                  ? translator.translate(row.ingredient)
+                                  : Promise.resolve(row?.ingredient || '')
+                          )
+                      ),
+                      Promise.all(
+                          (ganttTable.columns || []).map((col) =>
+                              typeof col?.action === 'string' &&
+                              col.action.trim()
+                                  ? translator.translate(col.action)
+                                  : Promise.resolve(col?.action || '')
+                          )
+                      ),
+                  ]).then(
+                      ([
+                          translatedPreSteps,
+                          translatedIngs,
+                          translatedActions,
+                      ]) => ({
+                          preSteps: (translatedPreSteps || []).map((s) =>
+                              s.trim()
+                          ),
+                          rows: (ganttTable.rows || []).map((row, idx) => ({
+                              ...row,
+                              ingredient:
+                                  translatedIngs[idx]?.trim() || row.ingredient,
+                          })),
+                          columns: (ganttTable.columns || []).map(
+                              (col, idx) => ({
+                                  ...col,
+                                  action:
+                                      translatedActions[idx]?.trim() ||
+                                      col.action,
+                              })
+                          ),
+                      })
+                  )
+                : Promise.resolve(null);
+
+            const [
+                translatedDesc,
+                translatedIngArray,
+                translatedStpsArray,
+                translatedGantt,
+            ] = await Promise.all([
+                descriptionPromise,
+                ingredientsPromise,
+                stepsPromise,
+                ganttPromise,
+            ]);
 
             let finalDesc = null;
             if (descriptionText && translatedDesc) {
@@ -267,11 +363,6 @@ export function useRecipeTranslation({
                         return acc;
                     },
                     []
-                );
-
-                console.log(
-                    'Translated ingredients array:',
-                    translatedIngredientItems
                 );
 
                 if (translatedIngredientItems.length > 0) {
@@ -295,8 +386,6 @@ export function useRecipeTranslation({
                     []
                 );
 
-                console.log('Translated steps array:', translatedStepItems);
-
                 if (translatedStepItems.length > 0) {
                     finalSteps = translatedStepItems;
                 }
@@ -308,6 +397,7 @@ export function useRecipeTranslation({
                     description: finalDesc,
                     ingredients: finalIng,
                     steps: finalSteps,
+                    ganttTable: translatedGantt,
                 },
             });
         } catch (error) {
@@ -341,6 +431,11 @@ export function useRecipeTranslation({
             ? translatedSteps
             : stepsText || [];
 
+    const displayGanttTable =
+        isTranslated && translatedGanttTable
+            ? translatedGanttTable
+            : ganttTable || null;
+
     const targetLanguage =
         (typeof i18n.language === 'string'
             ? i18n.language
@@ -358,6 +453,7 @@ export function useRecipeTranslation({
         displayDescription,
         displayIngredients,
         displaySteps,
+        displayGanttTable,
         showTranslateButton,
         t,
     };

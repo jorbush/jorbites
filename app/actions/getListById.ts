@@ -10,6 +10,7 @@ import {
     notFoundResponse,
     unauthorizedResponse,
 } from '@/app/utils/apiErrors';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 interface IParams {
     listId?: string;
@@ -75,8 +76,7 @@ export default async function getListById(
         });
 
         const safeRecipes = recipes.map((recipe) => ({
-            ...recipe,
-            createdAt: recipe.createdAt.toISOString(),
+            ...toSafeRecipe(recipe),
             user: {
                 ...recipe.user,
                 createdAt: recipe.user.createdAt.toISOString(),

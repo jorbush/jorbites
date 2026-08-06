@@ -1,7 +1,7 @@
 'use client';
 
 import { IconType } from 'react-icons';
-import { SafeUser } from '@/app/types';
+import { GanttTable, SafeUser } from '@/app/types';
 import RecipeCategoryAndMethod from '@/app/components/recipes/RecipeCategoryAndMethod';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
@@ -14,6 +14,7 @@ import { axiosFetcher } from '@/app/utils/fetcher';
 import { RecipeInfoHeader } from './RecipeInfoHeader';
 import { RecipeCoCooks } from './RecipeCoCooks';
 import { RecipeLinkedRecipes } from './RecipeLinkedRecipes';
+import { RecipeGanttTable } from './RecipeGanttTable';
 import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface RecipeInfoProps {
@@ -46,6 +47,7 @@ interface RecipeInfoProps {
     calories?: number | null;
     recipeCuisine?: string | null;
     recipeYield?: number | null;
+    ganttTable?: GanttTable | null;
 }
 
 const EMPTY_ARRAY: any[] = [];
@@ -155,6 +157,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     calories,
     recipeCuisine,
     recipeYield,
+    ganttTable,
 }) => {
     const { t } = useTranslation();
     const { push } = useRouter() || {};
@@ -217,13 +220,13 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
             <TranslateableRecipeContent
                 description={description}
                 descriptionText={descriptionText}
-                ingredients={ingredients}
                 ingredientsText={ingredientsText}
-                steps={steps}
                 stepsText={stepsText}
+                ganttTable={ganttTable}
                 RenderDescription={RecipeDescription}
                 RenderIngredients={RecipeIngredients}
                 RenderSteps={RecipeSteps}
+                RenderGanttTable={RecipeGanttTable}
             />
 
             {/* YouTube video section */}

@@ -95,6 +95,7 @@ model Recipe {
   recipeYield Int?
   prepTime Int?
   cookTime Int?
+  ganttTable Json?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]

@@ -9,6 +9,7 @@ import {
     badRequest,
     notFoundResponse,
 } from '@/app/utils/apiErrors';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 interface IParams {
     planningId?: string;
@@ -79,8 +80,7 @@ export async function GET(
                       ...meal,
                       recipe: meal.recipe
                           ? {
-                                ...meal.recipe,
-                                createdAt: meal.recipe.createdAt.toISOString(),
+                                ...toSafeRecipe(meal.recipe),
                                 user: meal.recipe.user
                                     ? {
                                           ...meal.recipe.user,
@@ -274,8 +274,7 @@ export async function PATCH(
                       ...meal,
                       recipe: meal.recipe
                           ? {
-                                ...meal.recipe,
-                                createdAt: meal.recipe.createdAt.toISOString(),
+                                ...toSafeRecipe(meal.recipe),
                                 user: meal.recipe.user
                                     ? {
                                           ...meal.recipe.user,

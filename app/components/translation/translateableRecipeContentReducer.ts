@@ -1,3 +1,5 @@
+import { GanttTable } from '@/app/types';
+
 export interface TranslateableRecipeContentState {
     detectedLanguage: string | null;
     isTranslated: boolean;
@@ -5,6 +7,7 @@ export interface TranslateableRecipeContentState {
     translatedDescription: string | null;
     translatedIngredients: string[] | null;
     translatedSteps: string[] | null;
+    translatedGanttTable: GanttTable | null;
 }
 
 export type TranslateableRecipeContentAction =
@@ -17,6 +20,7 @@ export type TranslateableRecipeContentAction =
               description: string | null;
               ingredients: string[] | null;
               steps: string[] | null;
+              ganttTable?: GanttTable | null;
           };
       }
     | { type: 'SHOW_ORIGINAL' }
@@ -41,6 +45,7 @@ export function translateableRecipeContentReducer(
                 translatedDescription: action.payload.description,
                 translatedIngredients: action.payload.ingredients,
                 translatedSteps: action.payload.steps,
+                translatedGanttTable: action.payload.ganttTable || null,
             };
         case 'SHOW_ORIGINAL':
             return {
@@ -49,6 +54,7 @@ export function translateableRecipeContentReducer(
                 translatedDescription: null,
                 translatedIngredients: null,
                 translatedSteps: null,
+                translatedGanttTable: null,
             };
         case 'RESET_TRANSLATION':
             return {
@@ -58,6 +64,7 @@ export function translateableRecipeContentReducer(
                 translatedDescription: null,
                 translatedIngredients: null,
                 translatedSteps: null,
+                translatedGanttTable: null,
             };
         default:
             return state;

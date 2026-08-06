@@ -3,19 +3,20 @@
 import React from 'react';
 import TranslationControls from './TranslationControls';
 import { useRecipeTranslation } from '@/app/hooks/useRecipeTranslation';
+import { GanttTable } from '@/app/types';
 
 interface TranslateableRecipeContentProps {
     description: React.ReactNode;
     descriptionText?: string;
-    ingredients: React.ReactNode[];
     ingredientsText?: string[];
-    steps: React.ReactNode[];
     stepsText?: string[];
+    ganttTable?: GanttTable | null;
     RenderDescription: React.ComponentType<{
         content: string | React.ReactNode;
     }>;
     RenderIngredients: React.ComponentType<{ items: string[] }>;
     RenderSteps: React.ComponentType<{ items: string[] }>;
+    RenderGanttTable?: React.ComponentType<{ ganttTable?: GanttTable | null }>;
 }
 
 export function TranslateableRecipeContent({
@@ -23,9 +24,11 @@ export function TranslateableRecipeContent({
     descriptionText,
     ingredientsText,
     stepsText,
+    ganttTable,
     RenderDescription,
     RenderIngredients,
     RenderSteps,
+    RenderGanttTable,
 }: TranslateableRecipeContentProps) {
     const {
         isTranslated,
@@ -35,6 +38,7 @@ export function TranslateableRecipeContent({
         displayDescription,
         displayIngredients,
         displaySteps,
+        displayGanttTable,
         showTranslateButton,
         t,
     } = useRecipeTranslation({
@@ -42,6 +46,7 @@ export function TranslateableRecipeContent({
         descriptionText,
         ingredientsText,
         stepsText,
+        ganttTable,
     });
 
     return (
@@ -62,6 +67,9 @@ export function TranslateableRecipeContent({
             </div>
             <RenderIngredients items={displayIngredients} />
             <RenderSteps items={displaySteps} />
+            {RenderGanttTable && (
+                <RenderGanttTable ganttTable={displayGanttTable} />
+            )}
         </>
     );
 }

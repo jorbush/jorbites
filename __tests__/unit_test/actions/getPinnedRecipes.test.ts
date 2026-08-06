@@ -122,7 +122,7 @@ describe('getPinnedRecipesByUserId Server Action', () => {
         // Date formatting check
         expect(typeof result[0].createdAt).toBe('string');
         expect(result[0].createdAt).toBe(
-            new Date('2026-05-22T12:00:00.000Z').toString()
+            new Date('2026-05-22T12:00:00.000Z').toISOString()
         );
 
         // Redis cache set check

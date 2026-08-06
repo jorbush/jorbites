@@ -26,6 +26,23 @@ export type SafeWeeklyChallenge = Omit<
     updatedAt: string;
 };
 
+export interface GanttRow {
+    ingredient: string;
+    group: number;
+}
+
+export interface GanttColumn {
+    action: string;
+    rowSpan: [number, number];
+    colIndex: number;
+}
+
+export interface GanttTable {
+    preSteps: string[];
+    rows: GanttRow[];
+    columns: GanttColumn[];
+}
+
 export type SafeRecipe = Omit<
     Recipe,
     | 'createdAt'
@@ -41,6 +58,7 @@ export type SafeRecipe = Omit<
     | 'recipeYield'
     | 'prepTime'
     | 'cookTime'
+    | 'ganttTable'
 > & {
     createdAt: string;
     coCooksIds?: string[];
@@ -55,6 +73,7 @@ export type SafeRecipe = Omit<
     recipeYield?: number | null;
     prepTime?: number | null;
     cookTime?: number | null;
+    ganttTable?: GanttTable | null;
 };
 
 export type CommentAuthor = Pick<

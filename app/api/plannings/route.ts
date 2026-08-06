@@ -8,6 +8,7 @@ import {
     internalServerError,
     badRequest,
 } from '@/app/utils/apiErrors';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 export async function GET() {
     try {
@@ -60,8 +61,7 @@ export async function GET() {
                       ...meal,
                       recipe: meal.recipe
                           ? {
-                                ...meal.recipe,
-                                createdAt: meal.recipe.createdAt.toISOString(),
+                                ...toSafeRecipe(meal.recipe),
                                 user: meal.recipe.user
                                     ? {
                                           ...meal.recipe.user,

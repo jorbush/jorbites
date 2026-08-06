@@ -2,6 +2,7 @@ import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { logger } from '@/app//lib/axiom/server';
 import { USER_SELECT_FIELDS } from '@/app/utils/constants';
+import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 export default async function getPlannings() {
     try {
@@ -120,8 +121,7 @@ export default async function getPlannings() {
                       ...meal,
                       recipe: meal.recipe
                           ? {
-                                ...meal.recipe,
-                                createdAt: meal.recipe.createdAt.toISOString(),
+                                ...toSafeRecipe(meal.recipe),
                                 user: meal.recipe.user
                                     ? {
                                           ...meal.recipe.user,
