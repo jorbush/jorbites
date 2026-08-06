@@ -101,7 +101,7 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
                     <div className="mb-4 flex flex-col gap-1.5 rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-sm text-neutral-700 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300">
                         {preSteps.map((step, idx) => (
                             <div
-                                key={`pre-${idx}`}
+                                key={`pre-${step}-${idx}`}
                                 className="flex items-start gap-2"
                             >
                                 <span className="font-semibold text-rose-500">
@@ -128,7 +128,7 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
 
                                 return (
                                     <tr
-                                        key={`row-${rIdx}`}
+                                        key={`row-${row.ingredient}-${rIdx}`}
                                         className="border-b border-neutral-200 last:border-b-0 dark:border-neutral-800"
                                     >
                                         <th
@@ -164,7 +164,7 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
 
                                                     return (
                                                         <td
-                                                            key={`cell-${rIdx}-${cIdx}`}
+                                                            key={`cell-${row.ingredient}-${cIdx}`}
                                                             rowSpan={spanCount}
                                                             className={`border border-neutral-200 p-3 text-center align-middle font-medium dark:border-neutral-800 ${bgClass}`}
                                                         >
@@ -174,7 +174,7 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
                                                 }
                                                 return (
                                                     <td
-                                                        key={`empty-${rIdx}-${cIdx}`}
+                                                        key={`empty-${row.ingredient}-${cIdx}`}
                                                         className="border border-neutral-200 bg-transparent p-3 dark:border-neutral-800"
                                                     />
                                                 );

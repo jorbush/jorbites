@@ -10,10 +10,9 @@ import { toast } from 'react-hot-toast';
 import useIsMounted from '@/app/hooks/useIsMounted';
 import i18n from '@/app/i18n';
 import { translateableRecipeContentReducer } from '@/app/components/translation/translateableRecipeContentReducer';
+import { GanttTable } from '@/app/types';
 
 const subscribe = () => () => {};
-
-import { GanttTable } from '@/app/types';
 
 interface UseRecipeTranslationProps {
     description: React.ReactNode;
@@ -69,6 +68,16 @@ export function useRecipeTranslation({
         [stepsText]
     );
 
+    const ganttTextJoined = useMemo(() => {
+        if (!ganttTable) return '';
+        const pre = (ganttTable.preSteps || []).join('\n');
+        const rows = (ganttTable.rows || [])
+            .map((r) => r.ingredient)
+            .join('\n');
+        const cols = (ganttTable.columns || []).map((c) => c.action).join('\n');
+        return `${pre}\n${rows}\n${cols}`;
+    }, [ganttTable]);
+
     const sampleTextForDetection = useMemo(() => {
         if (descriptionText && descriptionText.trim().length >= 10) {
             return descriptionText;
@@ -85,16 +94,34 @@ export function useRecipeTranslation({
                 return firstStep;
             }
         }
+        if (ganttTextJoined) {
+            const firstGanttLine = ganttTextJoined
+                .split('\n')
+                .find((line) => line.trim().length >= 10);
+            if (firstGanttLine) {
+                return firstGanttLine;
+            }
+        }
         return '';
-    }, [descriptionText, ingredientsTextJoined, stepsTextJoined]);
+    }, [
+        descriptionText,
+        ingredientsTextJoined,
+        stepsTextJoined,
+        ganttTextJoined,
+    ]);
 
     const contentKey = useMemo(() => {
         const currentLang =
             (typeof i18n.language === 'string'
                 ? i18n.language
                 : i18n.resolvedLanguage) || 'es';
-        return `${descriptionText}|${ingredientsTextJoined}|${stepsTextJoined}|${currentLang}`;
-    }, [descriptionText, ingredientsTextJoined, stepsTextJoined]);
+        return `${descriptionText}|${ingredientsTextJoined}|${stepsTextJoined}|${ganttTextJoined}|${currentLang}`;
+    }, [
+        descriptionText,
+        ingredientsTextJoined,
+        stepsTextJoined,
+        ganttTextJoined,
+    ]);
 
     // Reset translation state during render when contentKey changes
     const [prevContentKey, setPrevContentKey] = useState(contentKey);
@@ -248,7 +275,13 @@ export function useRecipeTranslation({
                       )
                     : Promise.resolve([]);
 
-            const ganttPromise = ganttTable
+            const isGanttValid =
+                ganttTable &&
+                Array.isArray(ganttTable.rows) &&
+                Array.isArray(ganttTable.columns) &&
+                (!ganttTable.preSteps || Array.isArray(ganttTable.preSteps));
+
+            const ganttPromise = isGanttValid
                 ? Promise.all([
                       Promise.all(
                           (ganttTable.preSteps || []).map((step) =>
