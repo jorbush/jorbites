@@ -20,6 +20,7 @@ import { logger } from '@/app/lib/axiom/server';
 import { validateRecipeUpdateData } from '@/app/utils/recipeValidation';
 import { SafeRecipe } from '@/app/types';
 import { authenticatedRatelimit } from '@/app/lib/ratelimit';
+import { Prisma } from '@prisma/client';
 
 interface IParams {
     recipeId?: string;
@@ -394,9 +395,7 @@ export async function PATCH(
             recipeId
         );
 
-        const updateData: Partial<SafeRecipe> & {
-            extraImages?: string[];
-        } = {
+        const updateData: Prisma.RecipeUncheckedUpdateInput = {
             title,
             description,
             imageSrc: imageSrc !== undefined ? imageSrc : undefined,
