@@ -2,6 +2,7 @@
 
 import { IconType } from 'react-icons';
 import { GanttTable, SafeUser } from '@/app/types';
+import { Prisma } from '@prisma/client';
 import RecipeCategoryAndMethod from '@/app/components/recipes/RecipeCategoryAndMethod';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
@@ -47,7 +48,7 @@ interface RecipeInfoProps {
     calories?: number | null;
     recipeCuisine?: string | null;
     recipeYield?: number | null;
-    ganttTable?: GanttTable | null;
+    ganttTable?: GanttTable | Prisma.JsonValue | null;
 }
 
 const EMPTY_ARRAY: any[] = [];

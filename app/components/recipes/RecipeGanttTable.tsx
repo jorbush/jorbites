@@ -2,11 +2,12 @@
 
 import React from 'react';
 import { GanttTable } from '@/app/types';
+import { Prisma } from '@prisma/client';
 import { useTranslation } from 'react-i18next';
 import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface RecipeGanttTableProps {
-    ganttTable?: GanttTable | null;
+    ganttTable?: GanttTable | Prisma.JsonValue | null;
 }
 
 const GROUP_BACKGROUNDS = [
@@ -23,16 +24,18 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
     const { t } = useTranslation();
     const mounted = useIsMounted();
 
+    const data = ganttTable as unknown as GanttTable | null | undefined;
+
     if (
-        !ganttTable ||
-        !Array.isArray(ganttTable.rows) ||
-        ganttTable.rows.length === 0 ||
-        !Array.isArray(ganttTable.columns)
+        !data ||
+        !Array.isArray(data.rows) ||
+        data.rows.length === 0 ||
+        !Array.isArray(data.columns)
     ) {
         return null;
     }
 
-    const { preSteps = [], rows = [], columns = [] } = ganttTable;
+    const { preSteps = [], rows = [], columns = [] } = data;
 
     // Find total column count (guarding against invalid/negative colIndex)
     const maxColIndex = columns.reduce((max, col) => {

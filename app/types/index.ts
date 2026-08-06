@@ -9,6 +9,7 @@ import {
     Planning,
     PlanningMeal,
     Quest,
+    Prisma,
 } from '@prisma/client';
 
 export type SafeQuest = Omit<Quest, 'createdAt' | 'updatedAt'> & {
@@ -73,7 +74,7 @@ export type SafeRecipe = Omit<
     recipeYield?: number | null;
     prepTime?: number | null;
     cookTime?: number | null;
-    ganttTable?: GanttTable | null;
+    ganttTable?: GanttTable | Prisma.JsonValue | null;
 };
 
 export type CommentAuthor = Pick<
