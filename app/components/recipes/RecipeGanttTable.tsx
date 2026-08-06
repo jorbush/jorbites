@@ -93,9 +93,9 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
                 data-cy="gantt-table-section"
                 data-testid="gantt-table-section"
             >
-                <div className="mb-4 flex flex-row items-center gap-2 text-xl font-semibold">
+                <h3 className="mb-4 flex flex-row items-center gap-2 text-xl font-semibold">
                     {tableLabel}
-                </div>
+                </h3>
 
                 {Array.isArray(preSteps) && preSteps.length > 0 && (
                     <div className="mb-4 flex flex-col gap-1.5 rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-sm text-neutral-700 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300">
@@ -120,7 +120,12 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
                     >
                         <tbody>
                             {rows.map((row, rIdx) => {
-                                const groupIndex = Math.abs(row.group || 0);
+                                const rawGroup =
+                                    typeof row?.group === 'number' &&
+                                    !isNaN(row.group)
+                                        ? row.group
+                                        : 0;
+                                const groupIndex = Math.abs(rawGroup);
                                 const bgClass =
                                     GROUP_BACKGROUNDS[
                                         groupIndex % GROUP_BACKGROUNDS.length

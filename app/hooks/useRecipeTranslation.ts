@@ -285,17 +285,25 @@ export function useRecipeTranslation({
                 ? Promise.all([
                       Promise.all(
                           (ganttTable.preSteps || []).map((step) =>
-                              translator.translate(step)
+                              typeof step === 'string' && step.trim()
+                                  ? translator.translate(step)
+                                  : Promise.resolve(step || '')
                           )
                       ),
                       Promise.all(
                           (ganttTable.rows || []).map((row) =>
-                              translator.translate(row.ingredient)
+                              typeof row?.ingredient === 'string' &&
+                              row.ingredient.trim()
+                                  ? translator.translate(row.ingredient)
+                                  : Promise.resolve(row?.ingredient || '')
                           )
                       ),
                       Promise.all(
                           (ganttTable.columns || []).map((col) =>
-                              translator.translate(col.action)
+                              typeof col?.action === 'string' &&
+                              col.action.trim()
+                                  ? translator.translate(col.action)
+                                  : Promise.resolve(col?.action || '')
                           )
                       ),
                   ]).then(
