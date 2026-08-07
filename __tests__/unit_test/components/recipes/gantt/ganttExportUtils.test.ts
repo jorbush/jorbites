@@ -53,12 +53,7 @@ describe('ganttExportUtils', () => {
     });
 
     describe('exportGanttTableToCSV', () => {
-        it('triggers CSV download', () => {
-            const createObjectURLMock = vi.fn().mockReturnValue('blob:test');
-            const revokeObjectURLMock = vi.fn();
-            global.URL.createObjectURL = createObjectURLMock;
-            global.URL.revokeObjectURL = revokeObjectURLMock;
-
+        it('triggers CSV download with data URI', () => {
             const appendChildSpy = vi
                 .spyOn(document.body, 'appendChild')
                 .mockImplementation((node) => node);
@@ -74,9 +69,14 @@ describe('ganttExportUtils', () => {
                 mockT as any
             );
 
-            expect(createObjectURLMock).toHaveBeenCalled();
             expect(appendChildSpy).toHaveBeenCalled();
             expect(removeChildSpy).toHaveBeenCalled();
+
+            const addedLink = appendChildSpy.mock
+                .calls[0][0] as HTMLAnchorElement;
+            expect(addedLink.getAttribute('href')).toContain(
+                'data:text/csv;charset=utf-8,'
+            );
 
             appendChildSpy.mockRestore();
             removeChildSpy.mockRestore();
