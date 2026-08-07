@@ -59,7 +59,7 @@ describe('RecipeGanttTable', () => {
         render(<RecipeGanttTable ganttTable={mockGanttTable} />);
 
         expect(screen.getByTestId('gantt-table-section')).toBeDefined();
-        expect(screen.getByText('Cooking Flow')).toBeDefined();
+        expect(screen.getByText('Gantt Table')).toBeDefined();
         expect(screen.getByText('Preheat oven to 350°F (170°C)')).toBeDefined();
         expect(screen.getByText('Butter and flour pan')).toBeDefined();
     });
@@ -113,5 +113,16 @@ describe('RecipeGanttTable', () => {
 
         expect(screen.getByText('Milk')).toBeDefined();
         expect(screen.getByText('Prestep 1')).toBeDefined();
+    });
+
+    it('renders Copy, Sheet, and PNG action buttons', () => {
+        render(<RecipeGanttTable ganttTable={mockGanttTable} />);
+
+        expect(screen.getByTestId('gantt-table-copy-btn')).toBeDefined();
+        expect(screen.getByTestId('gantt-table-sheet-btn')).toBeDefined();
+        expect(screen.getByTestId('gantt-table-png-btn')).toBeDefined();
+        expect(screen.getByText('Copy')).toBeDefined();
+        expect(screen.getByText('Sheet')).toBeDefined();
+        expect(screen.getByText('PNG')).toBeDefined();
     });
 });
