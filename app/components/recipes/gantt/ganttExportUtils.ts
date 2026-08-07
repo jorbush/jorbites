@@ -42,7 +42,7 @@ export const copyGanttTableToClipboard = async (
         );
         return true;
     } catch {
-        toast.error('Failed to copy');
+        toast.error(t('failed_to_copy', { defaultValue: 'Failed to copy' }));
         return false;
     }
 };
@@ -83,13 +83,19 @@ export const exportGanttTableToCSV = (
             csvRows.push(rowCells);
         });
 
-        const csvContent = csvRows
-            .map((r) =>
-                r
-                    .map((field) => `"${(field || '').replace(/"/g, '""')}"`)
-                    .join(',')
-            )
-            .join('\n');
+        // Add UTF-8 BOM (\uFEFF) so Excel and spreadsheet apps correctly render UTF-8 characters like ñ, á, é, •
+        const bom = '\uFEFF';
+        const csvContent =
+            bom +
+            csvRows
+                .map((r) =>
+                    r
+                        .map(
+                            (field) => `"${(field || '').replace(/"/g, '""')}"`
+                        )
+                        .join(',')
+                )
+                .join('\n');
 
         const encodedUri =
             'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
@@ -103,7 +109,11 @@ export const exportGanttTableToCSV = (
             t('downloaded_sheet', { defaultValue: 'Sheet downloaded!' })
         );
     } catch {
-        toast.error('Failed to export sheet');
+        toast.error(
+            t('failed_to_export_sheet', {
+                defaultValue: 'Failed to export sheet',
+            })
+        );
     }
 };
 
@@ -137,23 +147,24 @@ export const exportGanttTableToPNG = async (
             btnBar.remove();
         }
 
+        const inlineStyles = `
+            * { box-sizing: border-box; }
+            body, div, table, th, td, span { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+            table { border-collapse: collapse; width: 100%; font-size: 14px; text-align: left; }
+            th, td { border: 1px solid ${isDark ? '#262626' : '#e5e7eb'}; padding: 12px; }
+            th { background-color: ${isDark ? '#171717' : '#f9fafb'}; color: ${isDark ? '#e5e5e5' : '#1f2937'}; white-space: nowrap; font-weight: 500; }
+            .bg-amber-500\\/10 { background-color: ${isDark ? 'rgba(245,158,11,0.2)' : 'rgba(245,158,11,0.1)'}; color: ${isDark ? '#fef3c7' : '#78350f'}; }
+            .bg-emerald-500\\/10 { background-color: ${isDark ? 'rgba(16,185,129,0.2)' : 'rgba(16,185,129,0.1)'}; color: ${isDark ? '#a7f3d0' : '#065f46'}; }
+            .bg-sky-500\\/10 { background-color: ${isDark ? 'rgba(14,165,233,0.2)' : 'rgba(14,165,233,0.1)'}; color: ${isDark ? '#bae6fd' : '#075985'}; }
+            .bg-purple-500\\/10 { background-color: ${isDark ? 'rgba(168,85,247,0.2)' : 'rgba(168,85,247,0.1)'}; color: ${isDark ? '#e9d5ff' : '#6b21a8'}; }
+            .bg-rose-500\\/10 { background-color: ${isDark ? 'rgba(244,63,94,0.2)' : 'rgba(244,63,94,0.1)'}; color: ${isDark ? '#fecdd3' : '#9f1239'}; }
+        `;
+
         const data = `
             <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
                 <foreignObject width="100%" height="100%">
-                    <div xmlns="http://www.w3.org/1999/xhtml" class="${document.documentElement.className}">
-                        <style>
-                            ${Array.from(document.styleSheets)
-                                .flatMap((sheet) => {
-                                    try {
-                                        return Array.from(sheet.cssRules).map(
-                                            (rule) => rule.cssText
-                                        );
-                                    } catch {
-                                        return [];
-                                    }
-                                })
-                                .join('\n')}
-                        </style>
+                    <div xmlns="http://www.w3.org/1999/xhtml">
+                        <style>${inlineStyles}</style>
                         <div style="padding: 16px; background-color: ${isDark ? '#171717' : '#ffffff'}; color: ${isDark ? '#f5f5f5' : '#171717'};">
                             ${clonedNode.innerHTML}
                         </div>
@@ -191,6 +202,8 @@ export const exportGanttTableToPNG = async (
             img.src = svgDataUri;
         });
     } catch {
-        toast.error('Failed to export PNG');
+        toast.error(
+            t('failed_to_export_png', { defaultValue: 'Failed to export PNG' })
+        );
     }
 };
