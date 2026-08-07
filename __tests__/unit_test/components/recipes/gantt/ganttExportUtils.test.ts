@@ -85,7 +85,7 @@ describe('ganttExportUtils', () => {
 
     describe('exportGanttTableToPNG', () => {
         it('handles null element safely', async () => {
-            await exportGanttTableToPNG(null, mockT as any);
+            await exportGanttTableToPNG(null, 'Recipe Title', mockT as any);
         });
     });
 });

@@ -119,12 +119,14 @@ export const exportGanttTableToCSV = (
 
 export const exportGanttTableToPNG = async (
     element: HTMLDivElement | null,
+    titleText: string,
     t: TFunction
 ) => {
     if (!element) return;
     try {
         const width = element.offsetWidth || 800;
-        const height = element.offsetHeight || 400;
+        const extraBottomMargin = 36;
+        const height = (element.offsetHeight || 400) + extraBottomMargin;
 
         const canvas = document.createElement('canvas');
         const scale = 2;
@@ -147,9 +149,15 @@ export const exportGanttTableToPNG = async (
             btnBar.remove();
         }
 
+        const titleEl = clonedNode.querySelector('h3');
+        if (titleEl && titleText) {
+            titleEl.textContent = titleText;
+        }
+
         const inlineStyles = `
             * { box-sizing: border-box; }
-            body, div, table, th, td, span { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+            body, div, table, th, td, span, h3 { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+            h3 { font-size: 20px; font-weight: 700; margin: 0 0 16px 0; color: ${isDark ? '#f5f5f5' : '#171717'}; }
             table { border-collapse: collapse; width: 100%; font-size: 14px; text-align: left; }
             th, td { border: 1px solid ${isDark ? '#262626' : '#e5e7eb'}; padding: 12px; }
             th { background-color: ${isDark ? '#171717' : '#f9fafb'}; color: ${isDark ? '#e5e5e5' : '#1f2937'}; white-space: nowrap; font-weight: 500; }
@@ -165,7 +173,7 @@ export const exportGanttTableToPNG = async (
                 <foreignObject width="100%" height="100%">
                     <div xmlns="http://www.w3.org/1999/xhtml">
                         <style>${inlineStyles}</style>
-                        <div style="padding: 16px; background-color: ${isDark ? '#171717' : '#ffffff'}; color: ${isDark ? '#f5f5f5' : '#171717'};">
+                        <div style="padding: 16px 16px 36px 16px; background-color: ${isDark ? '#171717' : '#ffffff'}; color: ${isDark ? '#f5f5f5' : '#171717'};">
                             ${clonedNode.innerHTML}
                         </div>
                     </div>

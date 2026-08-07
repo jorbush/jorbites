@@ -48,6 +48,7 @@ interface RecipeInfoProps {
     recipeCuisine?: string | null;
     recipeYield?: number | null;
     ganttTable?: GanttTable | null;
+    recipeTitle?: string;
 }
 
 const EMPTY_ARRAY: any[] = [];
@@ -158,6 +159,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     recipeCuisine,
     recipeYield,
     ganttTable,
+    recipeTitle,
 }) => {
     const { t } = useTranslation();
     const { push } = useRouter() || {};
@@ -223,6 +225,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 ingredientsText={ingredientsText}
                 stepsText={stepsText}
                 ganttTable={ganttTable}
+                recipeTitle={recipeTitle}
                 RenderDescription={RecipeDescription}
                 RenderIngredients={RecipeIngredients}
                 RenderSteps={RecipeSteps}

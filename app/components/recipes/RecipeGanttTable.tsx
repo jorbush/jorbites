@@ -15,10 +15,12 @@ import {
 
 interface RecipeGanttTableProps {
     ganttTable?: GanttTable | null;
+    recipeTitle?: string;
 }
 
 export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
     ganttTable,
+    recipeTitle,
 }) => {
     const { t } = useTranslation();
     const mounted = useIsMounted();
@@ -104,7 +106,11 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
     };
 
     const handleExportPNG = () => {
-        exportGanttTableToPNG(tableSectionRef.current, t);
+        exportGanttTableToPNG(
+            tableSectionRef.current,
+            recipeTitle || tableLabel,
+            t
+        );
     };
 
     return (
