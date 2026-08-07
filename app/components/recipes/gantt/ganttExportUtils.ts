@@ -95,16 +95,20 @@ export const exportGanttTableToCSV = (
             type: 'text/csv;charset=utf-8;',
         });
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'gantt-table.csv');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        toast.success(
-            t('downloaded_sheet', { defaultValue: 'Sheet downloaded!' })
-        );
+
+        try {
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'gantt-table.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            toast.success(
+                t('downloaded_sheet', { defaultValue: 'Sheet downloaded!' })
+            );
+        } finally {
+            URL.revokeObjectURL(url);
+        }
     } catch {
         toast.error('Failed to export sheet');
     }
@@ -165,32 +169,42 @@ export const exportGanttTableToPNG = async (
             </svg>
         `;
 
-        const img = new Image();
         const svgBlob = new Blob([data], {
             type: 'image/svg+xml;charset=utf-8',
         });
         const url = URL.createObjectURL(svgBlob);
 
-        img.onload = () => {
-            ctx.drawImage(img, 0, 0);
+        try {
+            await new Promise<void>((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => {
+                    try {
+                        ctx.drawImage(img, 0, 0);
+                        const pngUrl = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.href = pngUrl;
+                        link.download = 'gantt-table.png';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        toast.success(
+                            t('downloaded_png', {
+                                defaultValue: 'PNG downloaded!',
+                            })
+                        );
+                        resolve();
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                img.onerror = (err) => {
+                    reject(err);
+                };
+                img.src = url;
+            });
+        } finally {
             URL.revokeObjectURL(url);
-
-            const pngUrl = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.href = pngUrl;
-            link.download = 'gantt-table.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            toast.success(
-                t('downloaded_png', { defaultValue: 'PNG downloaded!' })
-            );
-        };
-        img.onerror = () => {
-            URL.revokeObjectURL(url);
-            toast.error('Failed to export PNG');
-        };
-        img.src = url;
+        }
     } catch {
         toast.error('Failed to export PNG');
     }
