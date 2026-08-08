@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, fireEvent, act, cleanup } from '@testing-library/react';
+import { render, act, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import PullToRefresh from '@/app/components/utils/PullToRefresh';
 
