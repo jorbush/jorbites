@@ -139,6 +139,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             user={recipe.user}
                             likes={recipe.numLikes}
                             currentUser={currentUser}
+                            recipeTitle={recipe.title}
                             categories={categoryObjects}
                             method={method}
                             description={formattedDescription}
