@@ -16,6 +16,8 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
 }) => {
     const startYRef = useRef<number | null>(null);
     const pullDistanceRef = useRef<number>(0);
+    const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const stopTimerRef = useRef<NodeJS.Timeout | null>(null);
     const { refresh } = useRouter() || {};
 
     const [state, dispatch] = useReducer(pullToRefreshReducer, {
@@ -75,11 +77,19 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             if (startYRef.current !== null) {
                 if (pullDistanceRef.current > threshold) {
                     dispatch({ type: 'START_REFRESHING' });
-                    setTimeout(() => {
-                        refresh();
-                        setTimeout(() => {
+                    if (refreshTimerRef.current) {
+                        clearTimeout(refreshTimerRef.current);
+                    }
+                    if (stopTimerRef.current) {
+                        clearTimeout(stopTimerRef.current);
+                    }
+                    refreshTimerRef.current = setTimeout(() => {
+                        refresh?.();
+                        stopTimerRef.current = setTimeout(() => {
                             dispatch({ type: 'STOP_REFRESHING' });
+                            stopTimerRef.current = null;
                         }, 500);
+                        refreshTimerRef.current = null;
                     }, 800);
                 } else {
                     dispatch({ type: 'RESET' });
@@ -103,6 +113,14 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             document.removeEventListener('touchstart', handleTouchStart);
             document.removeEventListener('touchmove', handleTouchMove);
             document.removeEventListener('touchend', handleTouchEnd);
+            if (refreshTimerRef.current) {
+                clearTimeout(refreshTimerRef.current);
+                refreshTimerRef.current = null;
+            }
+            if (stopTimerRef.current) {
+                clearTimeout(stopTimerRef.current);
+                stopTimerRef.current = null;
+            }
         };
     }, [threshold, refresh]);
 
