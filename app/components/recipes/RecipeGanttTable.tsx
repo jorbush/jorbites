@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { GanttTable } from '@/app/types';
 import { useTranslation } from 'react-i18next';
 import useIsMounted from '@/app/hooks/useIsMounted';
@@ -8,7 +8,6 @@ import { RecipeGanttControls } from './gantt/RecipeGanttControls';
 import { RecipeGanttPreSteps } from './gantt/RecipeGanttPreSteps';
 import { RecipeGanttGrid } from './gantt/RecipeGanttGrid';
 import {
-    copyGanttTableToClipboard,
     exportGanttTableToCSV,
     exportGanttTableToPNG,
 } from './gantt/ganttExportUtils';
@@ -24,7 +23,6 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
 }) => {
     const { t } = useTranslation();
     const mounted = useIsMounted();
-    const [copied, setCopied] = useState(false);
     const tableSectionRef = useRef<HTMLDivElement>(null);
 
     if (
@@ -87,20 +85,6 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
         ? t('gantt_table', { defaultValue: 'Gantt Table' })
         : 'Gantt Table';
 
-    const handleCopy = async () => {
-        const success = await copyGanttTableToClipboard(
-            preSteps,
-            rows,
-            cellMap,
-            totalCols,
-            t
-        );
-        if (success) {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        }
-    };
-
     const handleExportSheet = () => {
         exportGanttTableToCSV(preSteps, rows, cellMap, totalCols, t);
     };
@@ -127,10 +111,8 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
                         {tableLabel}
                     </h3>
                     <RecipeGanttControls
-                        onCopy={handleCopy}
                         onExportSheet={handleExportSheet}
                         onExportPNG={handleExportPNG}
-                        copied={copied}
                     />
                 </div>
 

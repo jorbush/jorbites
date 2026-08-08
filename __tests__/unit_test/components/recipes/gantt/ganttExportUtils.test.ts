@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
-    copyGanttTableToClipboard,
     exportGanttTableToCSV,
     exportGanttTableToPNG,
 } from '@/app/components/recipes/gantt/ganttExportUtils';
@@ -25,31 +24,6 @@ describe('ganttExportUtils', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-    });
-
-    describe('copyGanttTableToClipboard', () => {
-        it('copies table data to navigator.clipboard', async () => {
-            const writeTextMock = vi.fn().mockResolvedValue(undefined);
-            Object.assign(navigator, {
-                clipboard: {
-                    writeText: writeTextMock,
-                },
-            });
-
-            const result = await copyGanttTableToClipboard(
-                ['Preheat oven'],
-                mockRows,
-                mockCellMap,
-                1,
-                mockT as any
-            );
-
-            expect(result).toBe(true);
-            expect(writeTextMock).toHaveBeenCalled();
-            expect(writeTextMock.mock.calls[0][0]).toContain('Preheat oven');
-            expect(writeTextMock.mock.calls[0][0]).toContain('Salt');
-            expect(writeTextMock.mock.calls[0][0]).toContain('add');
-        });
     });
 
     describe('exportGanttTableToCSV', () => {

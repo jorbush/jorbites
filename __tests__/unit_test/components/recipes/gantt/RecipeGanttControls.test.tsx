@@ -11,7 +11,6 @@ vi.mock('react-i18next', () => ({
 }));
 
 describe('RecipeGanttControls', () => {
-    const onCopy = vi.fn();
     const onExportSheet = vi.fn();
     const onExportPNG = vi.fn();
 
@@ -23,49 +22,27 @@ describe('RecipeGanttControls', () => {
         cleanup();
     });
 
-    it('renders Copy, Sheet, and PNG buttons', () => {
+    it('renders Sheet and PNG buttons', () => {
         render(
             <RecipeGanttControls
-                onCopy={onCopy}
                 onExportSheet={onExportSheet}
                 onExportPNG={onExportPNG}
-                copied={false}
             />
         );
 
-        expect(screen.getByTestId('gantt-table-copy-btn')).toBeDefined();
         expect(screen.getByTestId('gantt-table-sheet-btn')).toBeDefined();
         expect(screen.getByTestId('gantt-table-png-btn')).toBeDefined();
-        expect(screen.getByText('Copy')).toBeDefined();
         expect(screen.getByText('Sheet')).toBeDefined();
         expect(screen.getByText('PNG')).toBeDefined();
-    });
-
-    it('displays Copied! when copied prop is true', () => {
-        render(
-            <RecipeGanttControls
-                onCopy={onCopy}
-                onExportSheet={onExportSheet}
-                onExportPNG={onExportPNG}
-                copied={true}
-            />
-        );
-
-        expect(screen.getByText('Copied!')).toBeDefined();
     });
 
     it('triggers callbacks when action buttons are clicked', () => {
         render(
             <RecipeGanttControls
-                onCopy={onCopy}
                 onExportSheet={onExportSheet}
                 onExportPNG={onExportPNG}
-                copied={false}
             />
         );
-
-        fireEvent.click(screen.getByTestId('gantt-table-copy-btn'));
-        expect(onCopy).toHaveBeenCalledTimes(1);
 
         fireEvent.click(screen.getByTestId('gantt-table-sheet-btn'));
         expect(onExportSheet).toHaveBeenCalledTimes(1);
