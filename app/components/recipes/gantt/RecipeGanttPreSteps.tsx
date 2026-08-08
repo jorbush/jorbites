@@ -14,7 +14,11 @@ export const RecipeGanttPreSteps: React.FC<RecipeGanttPreStepsProps> = ({
     }
 
     return (
-        <div className="mb-5 flex flex-col gap-1.5 rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-sm text-neutral-700 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300">
+        <div
+            data-testid="gantt-pre-steps"
+            style={{ marginBottom: '24px' }}
+            className="mb-6 flex flex-col gap-1.5 rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-sm text-neutral-700 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
+        >
             {preSteps.map((step, idx) => (
                 <div
                     key={`pre-${step}-${idx}`}

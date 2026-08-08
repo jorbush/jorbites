@@ -80,7 +80,7 @@ export const exportGanttTableToPNG = async (
     if (!element) return;
     try {
         const width = element.offsetWidth || 800;
-        const height = (element.offsetHeight || 400) + 8;
+        const height = (element.offsetHeight || 400) + 12;
 
         const canvas = document.createElement('canvas');
         const scale = 2;
@@ -112,7 +112,7 @@ export const exportGanttTableToPNG = async (
             * { box-sizing: border-box; }
             body, div, table, th, td, span, h3 { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
             h3 { font-size: 20px; font-weight: 700; margin: 0 0 16px 0; color: ${isDark ? '#f5f5f5' : '#171717'}; }
-            .mb-4 { margin-bottom: 20px !important; }
+            [data-testid="gantt-pre-steps"], .mb-4, .mb-5, .mb-6 { margin-bottom: 24px !important; }
             .gap-1\\.5 { gap: 6px; }
             table { border-collapse: collapse; width: 100%; font-size: 14px; text-align: left; }
             th, td { border: 1px solid ${isDark ? '#262626' : '#e5e7eb'}; padding: 12px; }
