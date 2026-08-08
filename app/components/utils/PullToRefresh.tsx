@@ -75,12 +75,6 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             if (startYRef.current !== null) {
                 if (pullDistanceRef.current > threshold) {
                     dispatch({ type: 'START_REFRESHING' });
-                    setTimeout(() => {
-                        refresh();
-                        setTimeout(() => {
-                            dispatch({ type: 'STOP_REFRESHING' });
-                        }, 500);
-                    }, 800);
                 } else {
                     dispatch({ type: 'RESET' });
                 }
@@ -104,7 +98,24 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             document.removeEventListener('touchmove', handleTouchMove);
             document.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [threshold, refresh]);
+    }, [threshold]);
+
+    useEffect(() => {
+        if (!refreshing) return;
+
+        const refreshTimer = setTimeout(() => {
+            refresh?.();
+        }, 800);
+
+        const stopTimer = setTimeout(() => {
+            dispatch({ type: 'STOP_REFRESHING' });
+        }, 1300);
+
+        return () => {
+            clearTimeout(refreshTimer);
+            clearTimeout(stopTimer);
+        };
+    }, [refreshing, refresh]);
 
     return (
         <>
