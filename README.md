@@ -55,11 +55,11 @@ Jorbites follows a modern microservices architecture for scalability and perform
 - **[Pantry Keeper](https://github.com/jorbush/pantry_keeper)** (Python): Automated database backup system
 - **[Tagatoni](https://github.com/jorbush/tagatoni)** (Rust): Robust, always-running autonomous agent designed to audit and enrich posted recipes by adding missing fields for SEO and user experience.
 
+> **Why Microservices?** This architecture overcomes Vercel's 10-second API function limitation, enabling better scalability and performance for compute-intensive operations.
+
 ### Videogames
 
 - **[Paltín Dash](https://github.com/jorbush/paltin-dash)** (React): A 3D endless runner videogame
-
-> **Why Microservices?** This architecture overcomes Vercel's 10-second API function limitation, enabling better scalability and performance for compute-intensive operations.
 
 ## 📚 Documentation
 
