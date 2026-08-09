@@ -103,9 +103,9 @@ const Footer = () => {
                         <Image
                             src="/avocado.webp"
                             alt="Jorbites Logo"
-                            width={24}
-                            height={24}
-                            className="size-6 transition-transform group-hover:scale-110"
+                            width={222}
+                            height={194}
+                            className="h-6 w-auto transition-transform group-hover:scale-110"
                         />
                         <span className="text-base text-neutral-600 dark:text-neutral-400">
                             Jorbites

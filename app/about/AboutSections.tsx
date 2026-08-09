@@ -243,9 +243,9 @@ export const DeveloperSection: React.FC<SectionProps> = ({ t }) => (
                 <Image
                     src="/avocado.webp"
                     alt="Jorbites Logo"
-                    width={80}
-                    height={80}
-                    className="size-20"
+                    width={222}
+                    height={194}
+                    className="h-20 w-auto"
                 />
             </div>
             <div className="flex-1 text-center md:text-left">
