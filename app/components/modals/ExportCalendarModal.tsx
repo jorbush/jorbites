@@ -47,6 +47,7 @@ const ExportCalendarModal: React.FC<ExportCalendarModalProps> = ({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        URL.revokeObjectURL(url);
 
         onClose();
         toast.success(
