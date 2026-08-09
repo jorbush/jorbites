@@ -68,6 +68,7 @@ describe('ExportCalendarModal', () => {
         fireEvent.click(downloadButton);
 
         expect(createObjectURLMock).toHaveBeenCalled();
+        expect(revokeObjectURLMock).toHaveBeenCalledWith('blob:url');
         expect(mockClose).toHaveBeenCalledTimes(1);
     });
 });
