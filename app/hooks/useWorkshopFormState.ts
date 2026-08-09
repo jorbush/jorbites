@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useCallback, useMemo, useState, useEffect } from 'react';
+import { useReducer, useCallback, useMemo, useState } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import useSWR from 'swr';
@@ -56,8 +56,7 @@ export function useWorkshopFormState({
         }
     }
 
-    const { step, isLoading, numIngredients, numPreviousSteps, selectedUsers } =
-        state;
+    const { step, isLoading, numIngredients, numPreviousSteps } = state;
 
     const defaultValues = useMemo(() => {
         if (isEditMode && editData) {
@@ -131,18 +130,20 @@ export function useWorkshopFormState({
         axiosFetcher
     );
 
-    const currentLength = whitelistedUserIds?.length || 0;
-
-    useEffect(() => {
-        if (!isPrivate || currentLength === 0) {
-            dispatch({ type: 'SET_SELECTED_USERS', payload: [] });
-        } else if (whitelistedUsersData) {
-            dispatch({
-                type: 'SET_SELECTED_USERS',
-                payload: whitelistedUsersData,
-            });
+    const selectedUsers = useMemo(() => {
+        if (!isPrivate || whitelistedUserIds.length === 0) {
+            return [];
         }
-    }, [whitelistedUsersData, isPrivate, currentLength]);
+        if (state.selectedUsers.length > 0) {
+            return state.selectedUsers;
+        }
+        return whitelistedUsersData || [];
+    }, [
+        isPrivate,
+        whitelistedUserIds.length,
+        state.selectedUsers,
+        whitelistedUsersData,
+    ]);
 
     const onBack = () => {
         dispatch({ type: 'SET_STEP', payload: step - 1 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { getProxyImageSrcAndSrcSet } from '@/app/utils/imageOptimizer';
 import useIsMounted from '@/app/hooks/useIsMounted';
 
@@ -84,37 +84,6 @@ export default function CustomProxyImage({
         setIsLoadedState(false);
     }
 
-    // Handle preload link injection as a side effect
-    useEffect(() => {
-        if (
-            preloadViaProxy &&
-            optimizedSrc &&
-            optimizedSrc !== fallbackImage &&
-            typeof window !== 'undefined'
-        ) {
-            const link = document.createElement('link');
-            link.rel = 'preload';
-            link.as = 'image';
-            link.fetchPriority = 'high';
-            if (srcSet) {
-                link.setAttribute('imagesrcset', srcSet);
-                link.setAttribute('imagesizes', sizes);
-            } else {
-                link.href = optimizedSrc;
-            }
-            document.head.appendChild(link);
-        }
-    }, [preloadViaProxy, optimizedSrc, srcSet, sizes]);
-
-    useEffect(() => {
-        if (imgRef.current && priority) {
-            imgRef.current.setAttribute('fetchpriority', 'high');
-            imgRef.current.setAttribute('loading', 'eager');
-            imgRef.current.setAttribute('decoding', 'sync');
-            imgRef.current.id = 'lcp-image';
-        }
-    }, [priority]);
-
     const baseStyle = fill
         ? ({
               position: 'absolute',
@@ -152,6 +121,19 @@ export default function CustomProxyImage({
                     : style
             }
         >
+            {preloadViaProxy &&
+                optimizedSrc &&
+                optimizedSrc !== fallbackImage && (
+                    <link
+                        rel="preload"
+                        as="image"
+                        href={srcSet ? undefined : optimizedSrc}
+                        imageSrcSet={srcSet || undefined}
+                        imageSizes={srcSet ? sizes : undefined}
+                        fetchPriority="high"
+                    />
+                )}
+
             {/* Blurry placeholder - only for non-circular images */}
             {placeholderSrc && !circular && (
                 <div
@@ -171,11 +153,15 @@ export default function CustomProxyImage({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
                 ref={imgRef}
+                id={priority ? 'lcp-image' : undefined}
                 src={optimizedSrc}
                 srcSet={srcSet || undefined}
                 alt={alt}
                 width={!fill ? actualWidth : undefined}
                 height={!fill ? actualHeight : undefined}
+                loading={priority ? 'eager' : undefined}
+                decoding={priority ? 'sync' : undefined}
+                fetchPriority={priority ? 'high' : undefined}
                 onLoad={() => setIsLoadedState(true)}
                 style={baseStyle}
                 sizes={sizes}
