@@ -103,5 +103,3 @@ export const RecipeGanttGrid: React.FC<RecipeGanttGridProps> = ({
         </div>
     );
 };
-
-export default RecipeGanttGrid;
