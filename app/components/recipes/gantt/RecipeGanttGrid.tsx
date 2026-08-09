@@ -91,6 +91,7 @@ export const RecipeGanttGrid: React.FC<RecipeGanttGridProps> = ({
                                             <td
                                                 key={`empty-${row.ingredient}-${cIdx}`}
                                                 className="border border-neutral-200 bg-transparent p-3 dark:border-neutral-800"
+                                                aria-label="Empty"
                                             />
                                         );
                                     }

@@ -36,5 +36,9 @@ describe('RecipeGanttGrid', () => {
         expect(screen.getByRole('rowheader', { name: 'Sugar' })).toBeDefined();
         expect(screen.getByText('melt')).toBeDefined();
         expect(screen.getByText('mix')).toBeDefined();
+
+        // Check that empty cells have an accessible aria-label="Empty"
+        const emptyCell = screen.getByRole('cell', { name: 'Empty' });
+        expect(emptyCell).toBeDefined();
     });
 });
