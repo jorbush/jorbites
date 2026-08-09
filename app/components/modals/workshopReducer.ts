@@ -1,3 +1,5 @@
+import { SafeUser } from '@/app/types';
+
 export enum WORKSHOP_STEPS {
     INFO = 0,
     REQUIREMENTS = 1,
@@ -10,7 +12,7 @@ export interface WorkshopState {
     isLoading: boolean;
     numIngredients: number;
     numPreviousSteps: number;
-    selectedUsers: any[];
+    selectedUsers: SafeUser[];
 }
 
 export type WorkshopAction =
@@ -18,7 +20,7 @@ export type WorkshopAction =
     | { type: 'SET_LOADING'; payload: boolean }
     | { type: 'SET_NUM_INGREDIENTS'; payload: number }
     | { type: 'SET_NUM_PREVIOUS_STEPS'; payload: number }
-    | { type: 'SET_SELECTED_USERS'; payload: any[] }
+    | { type: 'SET_SELECTED_USERS'; payload: SafeUser[] }
     | { type: 'RESET_MODAL' };
 
 export function workshopReducer(

@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useCallback, useMemo, useState, useEffect } from 'react';
+import { useReducer, useCallback, useMemo, useState } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import useSWR from 'swr';
@@ -17,8 +17,16 @@ import {
     workshopReducer,
 } from '@/app/components/modals/workshopReducer';
 
+import { EditWorkshopData } from '@/app/hooks/useWorkshopModal';
+import { SafeUser, SafeWorkshop } from '@/app/types';
+
 interface UseWorkshopFormStateProps {
-    workshopModal: any;
+    workshopModal: {
+        isOpen: boolean;
+        isEditMode: boolean;
+        editWorkshopData?: EditWorkshopData | SafeWorkshop | null;
+        onClose: () => void;
+    };
 }
 
 export function useWorkshopFormState({
@@ -39,7 +47,7 @@ export function useWorkshopFormState({
     const editData = workshopModal.editWorkshopData;
 
     const editDataKey = editData?.id ?? null;
-    const [prevEditDataKey, setPrevEditDataKey] = useState<any>(null);
+    const [prevEditDataKey, setPrevEditDataKey] = useState<string | null>(null);
     if (editDataKey !== prevEditDataKey) {
         setPrevEditDataKey(editDataKey);
         if (isEditMode && editData) {
@@ -56,8 +64,7 @@ export function useWorkshopFormState({
         }
     }
 
-    const { step, isLoading, numIngredients, numPreviousSteps, selectedUsers } =
-        state;
+    const { step, isLoading, numIngredients, numPreviousSteps } = state;
 
     const defaultValues = useMemo(() => {
         if (isEditMode && editData) {
@@ -124,25 +131,27 @@ export function useWorkshopFormState({
     const imageSrc = watch('imageSrc');
     const whitelistedUserIds = watch('whitelistedUserIds') || [];
 
-    const { data: whitelistedUsersData } = useSWR(
+    const { data: whitelistedUsersData } = useSWR<SafeUser[]>(
         workshopModal.isOpen && isPrivate && whitelistedUserIds.length > 0
             ? `/api/users/multiple?ids=${whitelistedUserIds.join(',')}`
             : null,
         axiosFetcher
     );
 
-    const currentLength = whitelistedUserIds?.length || 0;
-
-    useEffect(() => {
-        if (!isPrivate || currentLength === 0) {
-            dispatch({ type: 'SET_SELECTED_USERS', payload: [] });
-        } else if (whitelistedUsersData) {
-            dispatch({
-                type: 'SET_SELECTED_USERS',
-                payload: whitelistedUsersData,
-            });
+    const selectedUsers = useMemo<SafeUser[]>(() => {
+        if (!isPrivate || whitelistedUserIds.length === 0) {
+            return [];
         }
-    }, [whitelistedUsersData, isPrivate, currentLength]);
+        if (state.selectedUsers.length > 0) {
+            return state.selectedUsers;
+        }
+        return whitelistedUsersData || [];
+    }, [
+        isPrivate,
+        whitelistedUserIds.length,
+        state.selectedUsers,
+        whitelistedUsersData,
+    ]);
 
     const onBack = () => {
         dispatch({ type: 'SET_STEP', payload: step - 1 });
@@ -212,9 +221,10 @@ export function useWorkshopFormState({
             reset();
             dispatch({ type: 'RESET_MODAL' });
             workshopModal.onClose();
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { error?: string } } };
             toast.error(
-                error?.response?.data?.error || t('something_went_wrong')
+                err?.response?.data?.error || t('something_went_wrong')
             );
         } finally {
             dispatch({ type: 'SET_LOADING', payload: false });
@@ -222,7 +232,7 @@ export function useWorkshopFormState({
     };
 
     const setCustomValue = useCallback(
-        (id: string, value: any) => {
+        (id: string, value: unknown) => {
             setValue(id, value, {
                 shouldValidate: true,
                 shouldDirty: true,
@@ -251,7 +261,7 @@ export function useWorkshopFormState({
         });
     };
 
-    const addWhitelistedUser = (user: any) => {
+    const addWhitelistedUser = (user: SafeUser) => {
         if (selectedUsers.some((u) => u.id === user.id)) {
             toast.error(t('user_already_added') || 'User already added');
             return;
