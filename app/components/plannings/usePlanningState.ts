@@ -31,7 +31,7 @@ export function usePlanningState({
     const isOwner = currentUser?.id === planning.userId;
 
     const [isSaved, setIsSaved] = useState(
-        currentUser?.savedPlanningIds?.includes(planning.id) || false
+        () => currentUser?.savedPlanningIds?.includes(planning.id) || false
     );
 
     // View/Edit mode states
