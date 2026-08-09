@@ -17,13 +17,14 @@ import {
     workshopReducer,
 } from '@/app/components/modals/workshopReducer';
 
+import { EditWorkshopData } from '@/app/hooks/useWorkshopModal';
 import { SafeUser, SafeWorkshop } from '@/app/types';
 
 interface UseWorkshopFormStateProps {
     workshopModal: {
         isOpen: boolean;
         isEditMode: boolean;
-        editWorkshopData?: SafeWorkshop | null;
+        editWorkshopData?: EditWorkshopData | SafeWorkshop | null;
         onClose: () => void;
     };
 }
