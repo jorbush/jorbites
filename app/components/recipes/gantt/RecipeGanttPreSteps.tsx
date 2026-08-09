@@ -31,5 +31,3 @@ export const RecipeGanttPreSteps: React.FC<RecipeGanttPreStepsProps> = ({
         </div>
     );
 };
-
-export default RecipeGanttPreSteps;

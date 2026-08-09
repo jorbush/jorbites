@@ -128,5 +128,3 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
         </>
     );
 };
-
-export default RecipeGanttTable;

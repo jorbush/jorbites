@@ -47,5 +47,3 @@ export const RecipeGanttControls: React.FC<RecipeGanttControlsProps> = ({
         </div>
     );
 };
-
-export default RecipeGanttControls;
