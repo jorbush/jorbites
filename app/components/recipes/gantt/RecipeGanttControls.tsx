@@ -29,7 +29,7 @@ export const RecipeGanttControls: React.FC<RecipeGanttControlsProps> = ({
                 aria-label="Export Sheet"
                 title="Export as CSV/Sheet"
             >
-                <BsTable className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+                <BsTable className="size-4 text-neutral-500 dark:text-neutral-400" />
                 <span>{t('sheet', { defaultValue: 'Sheet' })}</span>
             </button>
 
@@ -41,7 +41,7 @@ export const RecipeGanttControls: React.FC<RecipeGanttControlsProps> = ({
                 aria-label="Export PNG"
                 title="Download as PNG"
             >
-                <FiDownload className="h-4 w-4" />
+                <FiDownload className="size-4" />
                 <span>{t('png', { defaultValue: 'PNG' })}</span>
             </button>
         </div>

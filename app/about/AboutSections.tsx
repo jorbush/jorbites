@@ -245,7 +245,7 @@ export const DeveloperSection: React.FC<SectionProps> = ({ t }) => (
                     alt="Jorbites Logo"
                     width={80}
                     height={80}
-                    className="h-20 w-20"
+                    className="size-20"
                 />
             </div>
             <div className="flex-1 text-center md:text-left">
