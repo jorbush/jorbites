@@ -10,6 +10,20 @@ import { NextRequest } from 'next/server';
 
 let mockedSession: Session | null = null;
 
+jest.mock('@/app/lib/prismadb', () => ({
+    user: {
+        findUnique: jest.fn(),
+    },
+    quest: {
+        create: jest.fn(),
+        findUnique: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+    },
+}));
+
+import prisma from '@/app/lib/prismadb';
+
 // This mocks our custom helper function to avoid passing authOptions around
 jest.mock('@/pages/api/auth/[...nextauth].ts', () => ({
     authOptions: {
@@ -34,10 +48,22 @@ import {
 describe('Quests API Error Handling', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        if (mockedSession?.user?.email) {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+                id: 'test-user-id',
+                name: 'test',
+                email: 'test@a.com',
+                createdAt: new Date('2026-01-01'),
+                updatedAt: new Date('2026-01-01'),
+            });
+        } else {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+        }
     });
 
     it('should return 401 when user is not authenticated on POST', async () => {
         mockedSession = null;
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
         const request = new NextRequest('http://localhost:3000/api/quests', {
             method: 'POST',
@@ -64,6 +90,13 @@ describe('Quests API Error Handling', () => {
                 email: 'test@a.com',
             },
         };
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+            id: 'test-user-id',
+            name: 'test',
+            email: 'test@a.com',
+            createdAt: new Date('2026-01-01'),
+            updatedAt: new Date('2026-01-01'),
+        });
 
         const request = new NextRequest('http://localhost:3000/api/quests', {
             method: 'POST',
@@ -92,6 +125,13 @@ describe('Quests API Error Handling', () => {
                 email: 'test@a.com',
             },
         };
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+            id: 'test-user-id',
+            name: 'test',
+            email: 'test@a.com',
+            createdAt: new Date('2026-01-01'),
+            updatedAt: new Date('2026-01-01'),
+        });
 
         const request = new NextRequest('http://localhost:3000/api/quests', {
             method: 'POST',
@@ -120,6 +160,13 @@ describe('Quests API Error Handling', () => {
                 email: 'test@a.com',
             },
         };
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+            id: 'test-user-id',
+            name: 'test',
+            email: 'test@a.com',
+            createdAt: new Date('2026-01-01'),
+            updatedAt: new Date('2026-01-01'),
+        });
 
         const request = new NextRequest('http://localhost:3000/api/quests', {
             method: 'POST',
@@ -156,6 +203,7 @@ describe('Quests API Error Handling', () => {
 
     it('should return 401 when user is not authenticated on PATCH', async () => {
         mockedSession = null;
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
         const mockParams = {
             params: Promise.resolve({ questId: 'test-id' }),
@@ -188,6 +236,13 @@ describe('Quests API Error Handling', () => {
                 email: 'test@a.com',
             },
         };
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+            id: 'test-user-id',
+            name: 'test',
+            email: 'test@a.com',
+            createdAt: new Date('2026-01-01'),
+            updatedAt: new Date('2026-01-01'),
+        });
 
         const mockParams = {
             params: Promise.resolve({ questId: '' }),
@@ -217,6 +272,13 @@ describe('Quests API Error Handling', () => {
                 email: 'test@a.com',
             },
         };
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+            id: 'test-user-id',
+            name: 'test',
+            email: 'test@a.com',
+            createdAt: new Date('2026-01-01'),
+            updatedAt: new Date('2026-01-01'),
+        });
 
         const mockParams = {
             params: Promise.resolve({ questId: '' }),
@@ -237,6 +299,7 @@ describe('Quests API Error Handling', () => {
 
     it('should return 401 when user is not authenticated on DELETE', async () => {
         mockedSession = null;
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
         const mockParams = {
             params: Promise.resolve({ questId: 'test-id' }),

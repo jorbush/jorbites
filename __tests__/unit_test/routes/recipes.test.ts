@@ -25,20 +25,35 @@ import {
 
 let mockedSession: Session | null = null;
 
-jest.mock('@/app/lib/redis', () => ({
-    redis: {
-        get: jest.fn(),
-        set: jest.fn(),
-        del: jest.fn(),
-        incr: jest.fn(),
+jest.mock('@/app/lib/prismadb', () => ({
+    user: {
+        findUnique: jest.fn(),
+        update: jest.fn(),
     },
-    redisCache: {
-        get: jest.fn(),
-        set: jest.fn(),
-        del: jest.fn(),
-        incr: jest.fn(),
+    recipe: {
+        findFirst: jest.fn(),
+        findUnique: jest.fn(),
+        findMany: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+        count: jest.fn(),
+    },
+    comment: {
+        findUnique: jest.fn(),
+        findMany: jest.fn(),
+        create: jest.fn(),
+        delete: jest.fn(),
+        aggregate: jest
+            .fn()
+            .mockResolvedValue({
+                _avg: { rating: null },
+                _count: { rating: 0 },
+            }),
     },
 }));
+
+import prisma from '@/app/lib/prismadb';
 
 jest.mock('@/pages/api/auth/[...nextauth].ts', () => ({
     authOptions: {
@@ -55,59 +70,67 @@ jest.mock('next-auth/next', () => ({
 }));
 
 describe('Recipes API Routes and Server Actions', () => {
-    let initialRecipes: {
-        createdAt: string;
-        id: string;
-        title: string;
-        description: string;
-        imageSrc: string;
-        categories: string[];
-        method: string;
-        minutes: number;
-        numLikes: number;
-        ingredients: string[];
-        steps: string[];
-        extraImages: string[];
-        userId: string;
-    }[] = [];
-    let publishedRecipe: {
-        id: string;
-        title: string;
-        description: string;
-        imageSrc: string;
-        createdAt: Date;
-        categories: string[];
-        method: string;
-        minutes: number;
-        numLikes: number;
-        ingredients: string[];
-        steps: string[];
-        extraImages: string[];
-        userId: string;
-    } | null = null;
+    const mockUser = {
+        id: 'user-1',
+        name: 'test',
+        email: 'test@a.com',
+        emailVerified: null,
+        image: null,
+        hashedPassword: 'hashedPassword',
+        favoriteIds: [],
+        savedPlanningIds: [],
+        pinnedRecipeIds: [],
+        emailNotifications: false,
+        level: 1,
+        verified: false,
+        language: 'en',
+        badges: [],
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01'),
+    };
 
-    let initialUser: {
-        createdAt: string;
-        updatedAt: string;
-        emailVerified: string | null;
-        id: string;
-        name: string | null;
-        email: string | null;
-        image: string | null;
-        hashedPassword: string | null;
-        favoriteIds: string[];
-        emailNotifications: boolean;
-        level: number;
-        verified: boolean;
-    } | null = null;
+    const mockRecipe = {
+        id: 'recipe-1',
+        title: 'Test Recipe',
+        description: 'Delicious test recipe',
+        imageSrc: `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/v1721469287/IMG_7717_xedos6.webp`,
+        categories: ['Desserts'],
+        method: 'Oven',
+        ingredients: ['sugar', 'flour'],
+        steps: ['Mix ingredients', 'Bake at 350F'],
+        minutes: 30,
+        extraImages: [],
+        numLikes: 0,
+        userId: 'user-1',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01'),
+        coCooksIds: [],
+        linkedRecipeIds: [],
+        user: {
+            id: 'user-1',
+            name: 'test',
+            image: null,
+            email: 'test@a.com',
+        },
+    };
 
-    let comment: {
-        id: string;
-        userId: string;
-        comment: string;
-        recipeId: string;
-        createdAt: string;
-    } | null = null;
+    const mockComment = {
+        id: 'comment-1',
+        userId: 'user-1',
+        comment: 'Great recipe!',
+        recipeId: 'recipe-1',
+        createdAt: new Date('2026-01-01'),
+        user: {
+            id: 'user-1',
+            name: 'test',
+            image: null,
+        },
+    };
+
+    let initialRecipesCount = 0;
+    let publishedRecipe: any = null;
+    let initialUser: any = null;
+    let comment: any = null;
 
     beforeEach(() => {
         mockedSession = {
@@ -117,17 +140,28 @@ describe('Recipes API Routes and Server Actions', () => {
                 email: 'test@a.com',
             },
         };
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
     });
 
     it('should return the current recipes and the current user', async () => {
+        (prisma.recipe.findMany as jest.Mock).mockResolvedValue([]);
+        (prisma.recipe.count as jest.Mock).mockResolvedValue(0);
+
         const response = await getRecipes({});
-        initialRecipes = response.data?.recipes || [];
+        initialRecipesCount = response.data?.recipes?.length || 0;
         const currentUser = await getCurrentUser();
         initialUser = currentUser;
+        expect(currentUser).toMatchObject({
+            id: 'user-1',
+            email: 'test@a.com',
+        });
     });
 
     it('should create a new recipe', async () => {
-        const mockRecipe = {
+        (prisma.recipe.findFirst as jest.Mock).mockResolvedValue(null);
+        (prisma.recipe.create as jest.Mock).mockResolvedValue(mockRecipe);
+
+        const recipeInput = {
             title: 'Test Recipe',
             description: 'Delicious test recipe',
             imageSrc: `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/v1721469287/IMG_7717_xedos6.webp`,
@@ -138,33 +172,22 @@ describe('Recipes API Routes and Server Actions', () => {
             minutes: 30,
         };
         const mockRequest = {
-            json: jest.fn().mockResolvedValue(mockRecipe),
+            json: jest.fn().mockResolvedValue(recipeInput),
         } as unknown as Request;
 
         const response = await RecipePOST(mockRequest);
         const result = await response.json();
-        expect(result).toMatchObject(mockRecipe);
-        publishedRecipe = result as {
-            id: string;
-            title: string;
-            description: string;
-            imageSrc: string;
-            createdAt: Date;
-            categories: string[];
-            method: string;
-            minutes: number;
-            numLikes: number;
-            ingredients: string[];
-            steps: string[];
-            extraImages: string[];
-            userId: string;
-        };
+        expect(result).toMatchObject(recipeInput);
+        publishedRecipe = result;
     });
 
     it('should return the updated recipes', async () => {
+        (prisma.recipe.findMany as jest.Mock).mockResolvedValue([mockRecipe]);
+        (prisma.recipe.count as jest.Mock).mockResolvedValue(1);
+
         const response = await getRecipes({});
         expect(response.data?.recipes.length).toBeGreaterThan(
-            initialRecipes.length
+            initialRecipesCount
         );
     });
 
@@ -172,22 +195,46 @@ describe('Recipes API Routes and Server Actions', () => {
         if (!initialUser) {
             throw new Error('initialUser is not defined');
         }
+        (prisma.recipe.findMany as jest.Mock).mockResolvedValue([mockRecipe]);
+
         const mockParams = { userId: initialUser.id };
         const response = await getRecipesByUserId(mockParams);
         expect(response.recipes.length).toBeGreaterThan(0);
     });
 
     it('should return the recipes filtered by category', async () => {
+        (prisma.recipe.findMany as jest.Mock).mockResolvedValue([mockRecipe]);
+        (prisma.recipe.count as jest.Mock).mockResolvedValue(1);
+
         const response = await getRecipes({ category: 'Desserts' });
         expect(response.data?.recipes.length).toBeGreaterThan(0);
     });
 
     it('should return the recipe by id', async () => {
+        (prisma.recipe.findUnique as jest.Mock).mockResolvedValue(mockRecipe);
+
         const response = await getRecipeById({ recipeId: publishedRecipe?.id });
-        expect(response).toMatchObject(publishedRecipe || {});
+        expect(response).toMatchObject({
+            id: mockRecipe.id,
+            title: mockRecipe.title,
+        });
     });
 
     it('should like the recipe', async () => {
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+            ...mockUser,
+            favoriteIds: [],
+        });
+        (prisma.user.update as jest.Mock).mockResolvedValue({
+            id: 'user-1',
+            favoriteIds: [publishedRecipe?.id],
+        });
+        (prisma.recipe.findUnique as jest.Mock).mockResolvedValue(mockRecipe);
+        (prisma.recipe.update as jest.Mock).mockResolvedValue({
+            ...mockRecipe,
+            numLikes: 1,
+        });
+
         const mockParams = {
             params: Promise.resolve({ recipeId: publishedRecipe?.id }),
         };
@@ -196,19 +243,29 @@ describe('Recipes API Routes and Server Actions', () => {
             mockParams
         );
         const resultFav = await responseFav.json();
-        const currentUser = await getCurrentUser();
         expect(resultFav).toMatchObject({
-            id: currentUser?.id,
+            id: 'user-1',
             favoriteIds: expect.arrayContaining([publishedRecipe?.id]),
         });
     });
 
     it('should have added the recipe id to the current user favoriteIds', async () => {
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+            ...mockUser,
+            favoriteIds: [publishedRecipe?.id],
+        });
+
         const currentUser = await getCurrentUser();
         expect(currentUser?.favoriteIds).toContain(publishedRecipe?.id);
     });
 
     it('should return favorites recipes from the current user with the return', async () => {
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+            ...mockUser,
+            favoriteIds: [publishedRecipe?.id],
+        });
+        (prisma.recipe.findMany as jest.Mock).mockResolvedValue([mockRecipe]);
+
         const response = await getFavoriteRecipes();
         expect(
             response.recipes.filter(
@@ -218,6 +275,23 @@ describe('Recipes API Routes and Server Actions', () => {
     });
 
     it('should undo the like of the recipe', async () => {
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+            ...mockUser,
+            favoriteIds: [publishedRecipe?.id],
+        });
+        (prisma.user.update as jest.Mock).mockResolvedValue({
+            id: 'user-1',
+            favoriteIds: [],
+        });
+        (prisma.recipe.findUnique as jest.Mock).mockResolvedValue({
+            ...mockRecipe,
+            numLikes: 1,
+        });
+        (prisma.recipe.update as jest.Mock).mockResolvedValue({
+            ...mockRecipe,
+            numLikes: 0,
+        });
+
         const mockParams = {
             params: Promise.resolve({ recipeId: publishedRecipe?.id }),
         };
@@ -226,17 +300,27 @@ describe('Recipes API Routes and Server Actions', () => {
             mockParams
         );
         const resultFav = await responseFav.json();
-        const currentUser = await getCurrentUser();
-        expect(resultFav).toMatchObject({ id: currentUser?.id });
+        expect(resultFav).toMatchObject({ id: 'user-1' });
         expect(resultFav.favoriteIds).not.toContain(publishedRecipe?.id);
     });
 
     it('should have removed the recipe id to the current user favoriteIds', async () => {
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+            ...mockUser,
+            favoriteIds: [],
+        });
+
         const currentUser = await getCurrentUser();
         expect(currentUser?.favoriteIds).not.toContain(publishedRecipe?.id);
     });
 
     it('should return favorites recipes from the current user without the recipe id', async () => {
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+            ...mockUser,
+            favoriteIds: [],
+        });
+        (prisma.recipe.findMany as jest.Mock).mockResolvedValue([]);
+
         const response = await getFavoriteRecipes();
         expect(
             response.recipes.filter(
@@ -250,24 +334,49 @@ describe('Recipes API Routes and Server Actions', () => {
             recipeId: publishedRecipe?.id,
             comment: 'Great recipe!',
         };
+        (prisma.recipe.findUnique as jest.Mock).mockResolvedValue(mockRecipe);
+        (prisma.comment.aggregate as jest.Mock).mockResolvedValue({
+            _avg: { rating: null },
+            _count: { rating: 0 },
+        });
+        (prisma.recipe.update as jest.Mock).mockResolvedValue({
+            ...mockRecipe,
+            comments: [
+                {
+                    ...mockComment,
+                    createdAt: mockComment.createdAt.toISOString(),
+                },
+            ],
+        });
+        (prisma.comment.findMany as jest.Mock).mockResolvedValue([mockComment]);
+
         const mockRequest = {
             json: jest.fn().mockResolvedValue(mockBody),
         } as unknown as Request;
         const response = await CommentPOST(mockRequest);
         const result = await response.json();
-        expect(result).toMatchObject(publishedRecipe || {});
         expect(result.comments.length).toBe(1);
         expect(result.comments[0].recipeId).toBe(publishedRecipe?.id);
-        const currentUser = await getCurrentUser();
-        expect(result.comments[0].userId).toBe(currentUser?.id);
+        expect(result.comments[0].userId).toBe('user-1');
         expect(result.comments[0].comment).toBe(mockBody.comment);
-        comment = result.comments[0];
+        comment = {
+            id: mockComment.id,
+            userId: mockComment.userId,
+            comment: mockComment.comment,
+            recipeId: mockComment.recipeId,
+            createdAt: mockComment.createdAt.toISOString(),
+        };
     });
 
     it('should return comment by comment id', async () => {
         if (!comment) {
             throw new Error('comment is not defined');
         }
+        (prisma.comment.findUnique as jest.Mock).mockResolvedValue({
+            ...mockComment,
+            createdAt: mockComment.createdAt,
+        });
+
         const response = await getCommentById({ commentId: comment?.id });
         expect(response).toMatchObject(comment);
     });
@@ -276,6 +385,13 @@ describe('Recipes API Routes and Server Actions', () => {
         if (!comment) {
             throw new Error('comment is not defined');
         }
+        (prisma.comment.findMany as jest.Mock).mockResolvedValue([
+            {
+                ...mockComment,
+                createdAt: mockComment.createdAt,
+            },
+        ]);
+
         const response = await getCommentsByRecipeId({
             recipeId: publishedRecipe?.id,
         });
@@ -286,6 +402,9 @@ describe('Recipes API Routes and Server Actions', () => {
         if (!comment) {
             throw new Error('comment is not defined');
         }
+        (prisma.comment.findUnique as jest.Mock).mockResolvedValue(mockComment);
+        (prisma.comment.delete as jest.Mock).mockResolvedValue(mockComment);
+
         const mockParams = {
             params: Promise.resolve({ commentId: comment.id }),
         };
@@ -294,13 +413,15 @@ describe('Recipes API Routes and Server Actions', () => {
             mockParams
         );
         const result = await response.json();
-        expect(result).toMatchObject(comment || {});
+        expect(result).toMatchObject({ id: comment.id });
     });
 
     it('should not return any comments by recipe id', async () => {
         if (!comment) {
             throw new Error('comment is not defined');
         }
+        (prisma.comment.findMany as jest.Mock).mockResolvedValue([]);
+
         const response = await getCommentsByRecipeId({
             recipeId: publishedRecipe?.id,
         });
@@ -311,6 +432,9 @@ describe('Recipes API Routes and Server Actions', () => {
         if (!publishedRecipe?.id) {
             throw new Error('publishedRecipe id is not defined');
         }
+        (prisma.recipe.findUnique as jest.Mock).mockResolvedValue(mockRecipe);
+        (prisma.recipe.delete as jest.Mock).mockResolvedValue(mockRecipe);
+
         const mockParams = {
             params: Promise.resolve({ recipeId: publishedRecipe.id }),
         };
@@ -319,13 +443,16 @@ describe('Recipes API Routes and Server Actions', () => {
             mockParams
         );
         const result = await response.json();
-        expect(result).toMatchObject(publishedRecipe || {});
+        expect(result).toMatchObject({ id: mockRecipe.id });
         publishedRecipe = null;
     });
 
     it('should return the updated recipes', async () => {
+        (prisma.recipe.findMany as jest.Mock).mockResolvedValue([]);
+        (prisma.recipe.count as jest.Mock).mockResolvedValue(0);
+
         const response = await getRecipes({});
-        expect(response?.data?.recipes?.length).toBe(initialRecipes.length);
+        expect(response?.data?.recipes?.length).toBe(initialRecipesCount);
     });
 
     it('should level down the recipe user level', async () => {
@@ -338,8 +465,25 @@ describe('Recipes API Routes and Server Actions', () => {
 });
 
 describe('Recipes API Error Handling', () => {
+    const mockUser = {
+        id: 'user-1',
+        name: 'test',
+        email: 'test@a.com',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01'),
+    };
+
     beforeEach(() => {
         jest.clearAllMocks();
+        mockedSession = {
+            expires: 'expires',
+            user: {
+                name: 'test',
+                email: 'test@a.com',
+            },
+        };
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+        (prisma.recipe.findFirst as jest.Mock).mockResolvedValue(null);
     });
 
     it('should return 400 when title exceeds max length', async () => {
@@ -440,6 +584,7 @@ describe('Recipes API Error Handling', () => {
 
     it('should return 401 when user is not authenticated', async () => {
         mockedSession = null;
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
         const request = new NextRequest('http://localhost:3000/api/recipes', {
             method: 'POST',

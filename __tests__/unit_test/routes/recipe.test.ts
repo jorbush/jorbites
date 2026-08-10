@@ -8,6 +8,34 @@ import { Session } from 'next-auth';
 
 let mockedSession: Session | null = null;
 
+const mockUser = {
+    id: 'test-user-id',
+    name: 'test',
+    email: 'test@a.com',
+    favoriteIds: [],
+    createdAt: new Date('2026-01-01'),
+    updatedAt: new Date('2026-01-01'),
+};
+
+jest.mock('@/app/lib/prismadb', () => ({
+    user: {
+        findUnique: jest.fn(),
+        update: jest.fn(),
+    },
+    recipe: {
+        findUnique: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+    },
+}));
+
+import prisma from '@/app/lib/prismadb';
+
+jest.mock('@/app/actions/getRecipeById', () => ({
+    __esModule: true,
+    default: jest.fn(),
+}));
+
 jest.mock('@/app/lib/redis', () => ({
     redis: {
         get: jest.fn(),
@@ -40,11 +68,17 @@ jest.mock('next-auth/next', () => ({
 describe('Recipe API Error Handling', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        if (mockedSession?.user?.email) {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+        } else {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+        }
     });
 
     describe('POST /api/recipe/[recipeId]', () => {
         it('should return 401 when user is not authenticated', async () => {
             mockedSession = null;
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
             const mockRequest = {
                 json: jest.fn().mockResolvedValue({
@@ -75,6 +109,7 @@ describe('Recipe API Error Handling', () => {
                     email: 'test@a.com',
                 },
             };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
             const mockRequest = {
                 json: jest.fn().mockResolvedValue({
@@ -105,6 +140,7 @@ describe('Recipe API Error Handling', () => {
                     email: 'test@a.com',
                 },
             };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
             const mockRequest = {
                 json: jest.fn().mockResolvedValue({
@@ -131,6 +167,7 @@ describe('Recipe API Error Handling', () => {
     describe('DELETE /api/recipe/[recipeId]', () => {
         it('should return 401 when user is not authenticated', async () => {
             mockedSession = null;
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
             const mockParams = {
                 params: Promise.resolve({ recipeId: 'test-recipe-id' }),
@@ -155,6 +192,7 @@ describe('Recipe API Error Handling', () => {
                     email: 'test@a.com',
                 },
             };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
             const mockParams = {
                 params: Promise.resolve({ recipeId: '' }),
@@ -175,6 +213,7 @@ describe('Recipe API Error Handling', () => {
     describe('PATCH /api/recipe/[recipeId]', () => {
         it('should return 401 when user is not authenticated', async () => {
             mockedSession = null;
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
             const mockRequest = {
                 json: jest.fn().mockResolvedValue({
@@ -212,6 +251,7 @@ describe('Recipe API Error Handling', () => {
                     email: 'test@a.com',
                 },
             };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
             const mockRequest = {
                 json: jest.fn().mockResolvedValue({
