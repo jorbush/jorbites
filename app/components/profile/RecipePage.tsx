@@ -180,9 +180,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                         {labels.ingredients}
                     </Text>
                     {recipe.ingredients &&
-                        recipe.ingredients.map((ing) => (
+                        recipe.ingredients.map((ing, i) => (
                             <View
-                                key={`ing-${ing}`}
+                                key={`ing-${i}-${ing}`}
                                 style={styles.ingredientItem}
                             >
                                 <Text style={styles.bulletPoint}>•</Text>
@@ -216,7 +216,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     {recipe.steps &&
                         recipe.steps.map((step, i) => (
                             <View
-                                key={`step-${step}`}
+                                key={`step-${i}-${step}`}
                                 style={styles.stepItem}
                             >
                                 <Text style={styles.stepNum}>{i + 1}.</Text>
