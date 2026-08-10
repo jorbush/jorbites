@@ -4,6 +4,26 @@ import { Session } from 'next-auth';
 
 let mockedSession: Session | null = null;
 
+const mockUser = {
+    id: 'test-user-id',
+    name: 'test',
+    email: 'test@a.com',
+    createdAt: new Date('2026-01-01'),
+    updatedAt: new Date('2026-01-01'),
+};
+
+jest.mock('@/app/lib/prismadb', () => ({
+    user: {
+        findUnique: jest.fn(),
+        findMany: jest.fn().mockResolvedValue([]),
+    },
+    recipe: {
+        findMany: jest.fn().mockResolvedValue([]),
+    },
+}));
+
+import prisma from '@/app/lib/prismadb';
+
 // This mocks our custom helper function to avoid passing authOptions around
 jest.mock('@/pages/api/auth/[...nextauth].ts', () => ({
     authOptions: {
@@ -23,11 +43,17 @@ jest.mock('next-auth/next', () => ({
 describe('Search API Error Handling', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        if (mockedSession?.user?.email) {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+        } else {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+        }
     });
 
     describe('GET /api/search', () => {
         it('should return 401 when user is not authenticated', async () => {
             mockedSession = null;
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
             const mockRequest = {
                 url: 'http://localhost:3000/api/search?q=test',
@@ -50,6 +76,7 @@ describe('Search API Error Handling', () => {
                     email: 'test@a.com',
                 },
             };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
             const mockRequest = {
                 url: 'http://localhost:3000/api/search?q=a',
@@ -70,6 +97,7 @@ describe('Search API Error Handling', () => {
                     email: 'test@a.com',
                 },
             };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
             const mockRequest = {
                 url: 'http://localhost:3000/api/search',
@@ -90,6 +118,7 @@ describe('Search API Error Handling', () => {
                     email: 'test@a.com',
                 },
             };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
             const mockRequest = {
                 url: 'http://localhost:3000/api/search?q=test%20query',

@@ -18,6 +18,29 @@ import {
 
 let mockedSession: Session | null = null;
 
+jest.mock('@/app/lib/prismadb', () => ({
+    user: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        delete: jest.fn(),
+    },
+    workshop: {
+        create: jest.fn(),
+        findUnique: jest.fn(),
+        findMany: jest.fn().mockResolvedValue([]),
+        update: jest.fn(),
+        delete: jest.fn(),
+        count: jest.fn().mockResolvedValue(0),
+    },
+    workshopParticipant: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        delete: jest.fn(),
+    },
+}));
+
+import prisma from '@/app/lib/prismadb';
+
 // Mock auth
 jest.mock('@/pages/api/auth/[...nextauth].ts', () => ({
     authOptions: {
@@ -34,44 +57,29 @@ jest.mock('next-auth/next', () => ({
 }));
 
 describe('Workshops API Routes and Server Actions', () => {
-    let initialUser: any = null;
+    const initialUser = {
+        id: 'workshop-test-user-id',
+        name: 'Workshop Test User',
+        email: 'workshop_test@test.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        emailVerified: null,
+    };
 
-    beforeAll(async () => {
-        // Create a test user
-        const currentDate = new Date();
-        const userData = {
-            name: 'Workshop Test User',
-            email: `workshop_test_${currentDate.getTime()}@test.com`,
-            hashedPassword: 'hashedPassword',
-        };
-
-        const { PrismaClient } = require('@prisma/client');
-        const prisma = new PrismaClient();
-
-        const createdUser = await prisma.user.create({
-            data: userData,
-        });
-
-        initialUser = {
-            ...createdUser,
-            createdAt: createdUser.createdAt.toISOString(),
-            updatedAt: createdUser.updatedAt.toISOString(),
-            emailVerified: createdUser.emailVerified?.toISOString() || null,
-        };
-    });
-
-    afterAll(async () => {
-        // Clean up: delete test user
-        const { PrismaClient } = require('@prisma/client');
-        const prisma = new PrismaClient();
-
-        if (initialUser) {
-            await prisma.user.delete({
-                where: { id: initialUser.id },
+    beforeEach(() => {
+        jest.clearAllMocks();
+        if (mockedSession?.user?.email) {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+                id: initialUser.id,
+                name: initialUser.name,
+                email: initialUser.email,
+                createdAt: new Date(),
+                updatedAt: new Date(),
             });
+        } else {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
         }
-
-        await prisma.$disconnect();
+        (prisma.workshop.findMany as jest.Mock).mockResolvedValue([]);
     });
 
     describe('POST /api/workshops - Create Workshop Error Handling', () => {
@@ -80,10 +88,18 @@ describe('Workshops API Routes and Server Actions', () => {
                 user: { email: initialUser.email },
                 expires: new Date(Date.now() + 86400000).toISOString(),
             };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+                id: initialUser.id,
+                name: initialUser.name,
+                email: initialUser.email,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
         });
 
         it('should reject workshop creation without authentication', async () => {
             mockedSession = null;
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
             const workshopData = {
                 title: 'Unauthorized Workshop',
@@ -226,6 +242,7 @@ describe('Workshops API Routes and Server Actions', () => {
     describe('PATCH /api/workshop/[workshopId] - Update Workshop Error Handling', () => {
         it('should reject update without authentication', async () => {
             mockedSession = null;
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
             const updateData = {
                 title: 'Unauthorized Update',
@@ -253,6 +270,7 @@ describe('Workshops API Routes and Server Actions', () => {
     describe('POST /api/workshop/[workshopId]/join - Join/Leave Workshop Error Handling', () => {
         it('should reject join without authentication', async () => {
             mockedSession = null;
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
             const req = new NextRequest(
                 `http://localhost:3000/api/workshop/fake-workshop-id/join`,
@@ -274,6 +292,13 @@ describe('Workshops API Routes and Server Actions', () => {
                 user: { email: initialUser.email },
                 expires: new Date(Date.now() + 86400000).toISOString(),
             };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+                id: initialUser.id,
+                name: initialUser.name,
+                email: initialUser.email,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
 
             const req = new NextRequest(
                 `http://localhost:3000/api/workshop/fake-workshop-id/join`,
@@ -294,6 +319,7 @@ describe('Workshops API Routes and Server Actions', () => {
     describe('DELETE /api/workshop/[workshopId] - Delete Workshop Error Handling', () => {
         it('should reject delete without authentication', async () => {
             mockedSession = null;
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
             const req = new NextRequest(
                 `http://localhost:3000/api/workshop/fake-workshop-id`,
@@ -312,6 +338,7 @@ describe('Workshops API Routes and Server Actions', () => {
 
     describe('Server Actions - Get Workshops', () => {
         it('should get workshops list', async () => {
+            (prisma.workshop.findMany as jest.Mock).mockResolvedValue([]);
             const result = await getWorkshops({ limit: 10 });
 
             expect(result.error).toBeNull();
@@ -320,6 +347,7 @@ describe('Workshops API Routes and Server Actions', () => {
         });
 
         it('should filter upcoming workshops', async () => {
+            (prisma.workshop.findMany as jest.Mock).mockResolvedValue([]);
             const result = await getWorkshops({
                 limit: 10,
             });
@@ -334,6 +362,7 @@ describe('Workshops API Routes and Server Actions', () => {
         });
 
         it('should handle search with no results', async () => {
+            (prisma.workshop.findMany as jest.Mock).mockResolvedValue([]);
             const result = await getWorkshops({
                 search: 'NonExistentWorkshopTitle12345',
                 limit: 10,

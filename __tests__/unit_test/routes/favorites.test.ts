@@ -7,6 +7,28 @@ import { Session } from 'next-auth';
 
 let mockedSession: Session | null = null;
 
+const mockUser = {
+    id: 'test-user-id',
+    name: 'test',
+    email: 'test@a.com',
+    favoriteIds: [],
+    createdAt: new Date('2026-01-01'),
+    updatedAt: new Date('2026-01-01'),
+};
+
+jest.mock('@/app/lib/prismadb', () => ({
+    user: {
+        findUnique: jest.fn(),
+        update: jest.fn(),
+    },
+    recipe: {
+        findUnique: jest.fn(),
+        update: jest.fn(),
+    },
+}));
+
+import prisma from '@/app/lib/prismadb';
+
 // This mocks our custom helper function to avoid passing authOptions around
 jest.mock('@/pages/api/auth/[...nextauth].ts', () => ({
     authOptions: {
@@ -26,11 +48,17 @@ jest.mock('next-auth/next', () => ({
 describe('Favorites API Error Handling', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        if (mockedSession?.user?.email) {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+        } else {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+        }
     });
 
     describe('POST /api/favorites/[recipeId]', () => {
         it('should return 401 when user is not authenticated', async () => {
             mockedSession = null;
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
             const mockParams = {
                 params: Promise.resolve({ recipeId: 'test-recipe-id' }),
@@ -55,6 +83,7 @@ describe('Favorites API Error Handling', () => {
                     email: 'test@a.com',
                 },
             };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
             const mockParams = {
                 params: Promise.resolve({ recipeId: '' }),
@@ -79,6 +108,7 @@ describe('Favorites API Error Handling', () => {
                     email: 'test@a.com',
                 },
             };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
             const mockParams = {
                 params: Promise.resolve({ recipeId: undefined }),
@@ -99,6 +129,7 @@ describe('Favorites API Error Handling', () => {
     describe('DELETE /api/favorites/[recipeId]', () => {
         it('should return 401 when user is not authenticated', async () => {
             mockedSession = null;
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
             const mockParams = {
                 params: Promise.resolve({ recipeId: 'test-recipe-id' }),
@@ -123,6 +154,7 @@ describe('Favorites API Error Handling', () => {
                     email: 'test@a.com',
                 },
             };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
             const mockParams = {
                 params: Promise.resolve({ recipeId: '' }),
