@@ -8,6 +8,7 @@ import { useForm, FieldValues } from 'react-hook-form';
 
 import Button from '@/app/components/buttons/Button';
 import Input from '@/app/components/inputs/Input';
+import { formatDate } from '@/app/utils/date-utils';
 
 // Load CertificateDownloadSection dynamically. Since it statically imports
 // @react-pdf/renderer, that entire heavy library is successfully split
@@ -62,20 +63,8 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
 
     const watchName = watch('certificateName');
 
-    const today = new Date();
-    const currentLang = i18n.language || 'en';
-    const dateString = today.toLocaleDateString(
-        currentLang === 'ca'
-            ? 'ca-ES'
-            : currentLang === 'es'
-              ? 'es-ES'
-              : 'en-US',
-        {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        }
-    );
+    const today = useMemo(() => new Date(), []);
+    const dateString = formatDate(today, i18n.language);
 
     const issueYear = today.getFullYear().toString();
     const issueMonth = (today.getMonth() + 1).toString();

@@ -6,6 +6,8 @@ import Heading from '@/app/components/navigation/Heading';
 import { useRouter } from 'next/navigation';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import useShare from '@/app/hooks/useShare';
+import { useTranslation } from 'react-i18next';
+import { formatDateLanguage } from '@/app/utils/date-utils';
 
 interface WorkshopHeadProps {
     title: string;
@@ -20,15 +22,11 @@ const WorkshopHead: React.FC<WorkshopHeadProps> = ({
 }) => {
     const { back } = useRouter() || {};
     const { share } = useShare();
+    const { i18n } = useTranslation();
 
     const formattedDate = useMemo(() => {
-        const workshopDate = new Date(date);
-        return new Intl.DateTimeFormat('default', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-        }).format(workshopDate);
-    }, [date]);
+        return formatDateLanguage(date, 'MMM d, yyyy', i18n?.language);
+    }, [date, i18n?.language]);
 
     return (
         <>
