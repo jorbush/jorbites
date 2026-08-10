@@ -32,9 +32,9 @@ const RecipeCategoryAndMethod: React.FC<RecipeInfoProps> = ({
                 className="flex flex-row flex-wrap gap-8 dark:text-neutral-100"
             >
                 {categories &&
-                    categories.map((category) => (
+                    categories.map((category, index) => (
                         <RecipeCategoryView
-                            key={category.label}
+                            key={`${category.label}-${index}`}
                             icon={category.icon}
                             label={category.label}
                             description={''}

@@ -88,9 +88,9 @@ const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({ items }) => {
                     {mounted ? t('ingredients') : 'ingredients'}
                 </div>
                 <ul className="list-disc pt-4 pl-9">
-                    {items.map((item) => (
+                    {items.map((item, i) => (
                         <li
-                            key={`ing-${item}`}
+                            key={`ing-${i}-${item}`}
                             className="mb-2"
                         >
                             {formatText(item)}
@@ -124,7 +124,7 @@ const RecipeSteps: React.FC<RecipeStepsProps> = ({ items }) => {
                 <ol className="list-decimal pt-4 pl-9">
                     {items.map((item, index) => (
                         <li
-                            key={`step-${item}`}
+                            key={`step-${index}-${item}`}
                             className="overflow-wrap-anywhere mb-2 break-words"
                             data-cy={`step-${index}`}
                         >
