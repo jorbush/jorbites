@@ -263,9 +263,11 @@ const WorkshopInfo: React.FC<WorkshopInfoProps> = ({
                                     <span>
                                         {t('joined_at')}:{' '}
                                         {mounted
-                                            ? new Date(
-                                                  participant.joinedAt
-                                              ).toLocaleDateString()
+                                            ? formatDateLanguage(
+                                                  participant.joinedAt,
+                                                  'MMM d, yyyy',
+                                                  i18n.language
+                                              )
                                             : ''}
                                     </span>
                                 </div>
