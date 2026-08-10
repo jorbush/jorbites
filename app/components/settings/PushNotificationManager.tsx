@@ -53,26 +53,34 @@ const PushNotificationManager: React.FC = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        let isCancelled = false;
+
+        async function registerServiceWorker() {
+            try {
+                const registration = await navigator.serviceWorker.register(
+                    '/sw.js',
+                    {
+                        scope: '/',
+                        updateViaCache: 'none',
+                    }
+                );
+                const sub = await registration.pushManager.getSubscription();
+                if (!isCancelled) {
+                    setSubscription(sub || undefined);
+                }
+            } catch (error) {
+                console.error('Service Worker registration failed:', error);
+            }
+        }
+
         if (isSupported) {
             registerServiceWorker();
         }
-    }, [isSupported]);
 
-    async function registerServiceWorker() {
-        try {
-            const registration = await navigator.serviceWorker.register(
-                '/sw.js',
-                {
-                    scope: '/',
-                    updateViaCache: 'none',
-                }
-            );
-            const sub = await registration.pushManager.getSubscription();
-            setSubscription(sub || undefined);
-        } catch (error) {
-            console.error('Service Worker registration failed:', error);
-        }
-    }
+        return () => {
+            isCancelled = true;
+        };
+    }, [isSupported]);
 
     async function subscribeToPush() {
         setLoading(true);
