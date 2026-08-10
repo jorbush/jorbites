@@ -44,12 +44,10 @@ jest.mock('@/app/lib/prismadb', () => ({
         findMany: jest.fn(),
         create: jest.fn(),
         delete: jest.fn(),
-        aggregate: jest
-            .fn()
-            .mockResolvedValue({
-                _avg: { rating: null },
-                _count: { rating: 0 },
-            }),
+        aggregate: jest.fn().mockResolvedValue({
+            _avg: { rating: null },
+            _count: { rating: 0 },
+        }),
     },
 }));
 
