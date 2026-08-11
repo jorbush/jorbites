@@ -36,11 +36,9 @@ export default function CustomProxyImage({
     maxQuality = false,
 }: CustomProxyImageProps) {
     const isMounted = useIsMounted();
-    const [isLoadedState, setIsLoadedState] = useState(false);
+    const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
     const imgRef = useRef<HTMLImageElement>(null);
     const useMaxQuality = maxQuality || quality === 'auto:best';
-
-    const isLoaded = isLoadedState || (isMounted && !!imgRef.current?.complete);
 
     const actualWidth = width;
     const actualHeight = height;
@@ -53,6 +51,9 @@ export default function CustomProxyImage({
         fill,
         maxQuality,
     });
+
+    const isLoaded =
+        loadedSrc === optimizedSrc || (isMounted && !!imgRef.current?.complete);
 
     const fallbackImage = '/avocado.webp';
     let placeholderSrc = fallbackImage;
@@ -75,13 +76,6 @@ export default function CustomProxyImage({
         }
         placeholderParams.set('q', 'auto:eco');
         placeholderSrc = `/api/image-proxy?${placeholderParams.toString()}`;
-    }
-
-    // Reset isLoaded when source changes during render
-    const [prevOptimizedSrc, setPrevOptimizedSrc] = useState(optimizedSrc);
-    if (optimizedSrc !== prevOptimizedSrc) {
-        setPrevOptimizedSrc(optimizedSrc);
-        setIsLoadedState(false);
     }
 
     const baseStyle = fill
@@ -162,7 +156,7 @@ export default function CustomProxyImage({
                 loading={priority ? 'eager' : undefined}
                 decoding={priority ? 'sync' : undefined}
                 fetchPriority={priority ? 'high' : undefined}
-                onLoad={() => setIsLoadedState(true)}
+                onLoad={() => setLoadedSrc(optimizedSrc)}
                 style={baseStyle}
                 sizes={sizes}
                 className={`${className} ${fill ? 'object-cover' : ''} transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}

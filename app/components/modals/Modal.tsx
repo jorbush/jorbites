@@ -40,13 +40,7 @@ const Modal: React.FC<ModalProps> = ({
     icon: Icon,
     insideModal,
 }) => {
-    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
     const [isClosing, setIsClosing] = useState(false);
-
-    if (isOpen !== prevIsOpen) {
-        setPrevIsOpen(isOpen);
-        setIsClosing(false);
-    }
 
     const showAnimation = isOpen && !isClosing;
 
@@ -60,6 +54,7 @@ const Modal: React.FC<ModalProps> = ({
         setIsClosing(true);
         setTimeout(() => {
             onClose();
+            setIsClosing(false);
         }, 300);
     }, [onClose, disabled]);
 
