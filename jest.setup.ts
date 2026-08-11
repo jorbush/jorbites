@@ -1,5 +1,18 @@
 (globalThis as { [key: string]: any }).IS_REACT_ACT_ENVIRONMENT = true;
 
+// Mock next/server 'after' callback so tests outside request scope do not throw
+jest.mock('next/server', () => {
+    const original = jest.requireActual('next/server');
+    return {
+        ...original,
+        after: jest.fn((fn: () => void) => {
+            try {
+                fn();
+            } catch {}
+        }),
+    };
+});
+
 // Mock Axiom modules to prevent external network calls in tests
 jest.mock('@axiomhq/nextjs', () => ({
     withAxiom: (handler: any) => handler,

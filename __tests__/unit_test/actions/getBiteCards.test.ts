@@ -1,30 +1,31 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import getBiteCards from '@/app/actions/getBiteCards';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
-vi.mock('@/app/lib/prismadb', () => ({
+jest.mock('@/app/lib/prismadb', () => ({
+    __esModule: true,
     default: {
         recipe: {
-            findMany: vi.fn(),
+            findMany: jest.fn(),
         },
     },
 }));
 
-vi.mock('@/app/actions/getCurrentUser', () => ({
-    default: vi.fn(),
+jest.mock('@/app/actions/getCurrentUser', () => ({
+    __esModule: true,
+    default: jest.fn(),
 }));
 
-vi.mock('@/app/lib/axiom/server', () => ({
+jest.mock('@/app/lib/axiom/server', () => ({
     logger: {
-        info: vi.fn(),
-        error: vi.fn(),
+        info: jest.fn(),
+        error: jest.fn(),
     },
 }));
 
 describe('getBiteCards Server Action', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     it('fetches candidate recipes excluding favorited and custom excluded IDs', async () => {
@@ -32,7 +33,7 @@ describe('getBiteCards Server Action', () => {
             id: 'user-1',
             favoriteIds: ['fav-1'],
         };
-        vi.mocked(getCurrentUser).mockResolvedValue(mockUser as any);
+        jest.mocked(getCurrentUser).mockResolvedValue(mockUser as any);
 
         const mockCandidateRecipes = [
             {
@@ -41,7 +42,7 @@ describe('getBiteCards Server Action', () => {
                 createdAt: new Date('2026-01-01T00:00:00.000Z'),
             },
         ];
-        vi.mocked(prisma.recipe.findMany).mockResolvedValue(
+        jest.mocked(prisma.recipe.findMany).mockResolvedValue(
             mockCandidateRecipes as any
         );
 
@@ -65,8 +66,8 @@ describe('getBiteCards Server Action', () => {
     });
 
     it('re-throws when database query fails', async () => {
-        vi.mocked(getCurrentUser).mockResolvedValue(null);
-        vi.mocked(prisma.recipe.findMany).mockRejectedValue(
+        jest.mocked(getCurrentUser).mockResolvedValue(null);
+        jest.mocked(prisma.recipe.findMany).mockRejectedValue(
             new Error('DB Failure')
         );
 

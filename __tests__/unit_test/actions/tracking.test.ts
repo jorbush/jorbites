@@ -1,29 +1,41 @@
-import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeEach,
-    afterEach,
-    MockInstance,
-} from 'vitest';
+import { trackRecipeView, trackRecipeLike } from '@/app/actions/tracking';
 import { logger } from '@/app/lib/axiom/server';
 
-vi.mock('@/app/actions/getCurrentUser', async (importOriginal) => {
-    const original =
-        await importOriginal<typeof import('@/app/actions/getCurrentUser')>();
-    return {
-        ...original,
-        default: vi.fn(),
-        auth: vi.fn(() =>
-            Promise.resolve({ user: { email: 'user-1@test.com' } })
-        ),
-    };
-});
+jest.unmock('@/app/actions/tracking');
 
-// ---------------------------------------------------------------------------
-// Helpers to build a mock producer
-// ---------------------------------------------------------------------------
+jest.mock('next/navigation', () => ({
+    unauthorized: jest.fn(),
+}));
+
+jest.mock('@/app/lib/axiom/server', () => ({
+    logger: {
+        info: jest.fn(),
+        warn: jest.fn(),
+        error: jest.fn(),
+    },
+}));
+
+jest.mock('@/app/lib/kafka', () => ({
+    __esModule: true,
+    get default() {
+        return (global as any).__mockProducer;
+    },
+    get kafkaStatus() {
+        if (!(global as any).__mockKafkaStatus) {
+            (global as any).__mockKafkaStatus = { isConnected: false };
+        }
+        return (global as any).__mockKafkaStatus;
+    },
+}));
+
+jest.mock('@/app/actions/getCurrentUser', () => ({
+    __esModule: true,
+    default: jest.fn(),
+    auth: jest.fn(() =>
+        Promise.resolve({ user: { email: 'user-1@test.com' } })
+    ),
+}));
+
 function makeMockProducer({
     connectDelay = 0,
     sendDelay = 0,
@@ -35,7 +47,7 @@ function makeMockProducer({
     connectShouldFail?: boolean;
     sendShouldFail?: boolean;
 } = {}) {
-    const connect = vi.fn(() =>
+    const connect = jest.fn(() =>
         connectShouldFail
             ? new Promise<void>((_, reject) =>
                   setTimeout(
@@ -45,7 +57,7 @@ function makeMockProducer({
               )
             : new Promise<void>((resolve) => setTimeout(resolve, connectDelay))
     );
-    const send = vi.fn(() =>
+    const send = jest.fn(() =>
         sendShouldFail
             ? new Promise<void>((_, reject) =>
                   setTimeout(
@@ -58,57 +70,43 @@ function makeMockProducer({
     return { connect, send };
 }
 
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
-
 describe('trackUserInteraction', () => {
-    // We reload the module between tests to reset `isConnected` state.
     beforeEach(() => {
-        vi.resetModules();
-        vi.useFakeTimers();
+        jest.clearAllMocks();
+        jest.useFakeTimers();
+        (global as any).__mockKafkaStatus = { isConnected: false };
+        (global as any).__mockProducer = null;
     });
 
     afterEach(() => {
-        vi.useRealTimers();
+        jest.useRealTimers();
     });
 
     it('is a no-op (with a warning) when Kafka producer is null', async () => {
-        vi.doMock('@/app/lib/kafka', () => ({
-            default: null,
-            kafkaStatus: { isConnected: false },
-        }));
-        const { trackRecipeView } = await import('@/app/actions/tracking');
-
-        vi.stubEnv('NODE_ENV', 'production');
+        (global as any).__mockProducer = null;
+        const originalEnv = process.env.NODE_ENV;
+        process.env.NODE_ENV = 'production';
 
         await trackRecipeView('recipe-1', 'user-1');
 
-        expect(
-            (logger.warn as unknown as MockInstance).mock.calls.length
-        ).toBeGreaterThan(0);
+        expect((logger.warn as jest.Mock).mock.calls.length).toBeGreaterThan(0);
         expect(logger.error).not.toHaveBeenCalled();
 
-        vi.unstubAllEnvs();
+        process.env.NODE_ENV = originalEnv;
     });
 
     it('connects once and sends successfully on the happy path', async () => {
         const mockProducer = makeMockProducer();
-        vi.doMock('@/app/lib/kafka', () => ({
-            default: mockProducer,
-            kafkaStatus: { isConnected: false },
-        }));
-        const { trackRecipeView, trackRecipeLike } =
-            await import('@/app/actions/tracking');
+        (global as any).__mockProducer = mockProducer;
 
         // First event – should connect + send
         const p1 = trackRecipeView('recipe-1', 'user-1');
-        vi.runAllTimersAsync();
+        await jest.runAllTimersAsync();
         await p1;
 
         // Second event – should NOT call connect again (already connected)
         const p2 = trackRecipeLike('recipe-1', 'user-1');
-        vi.runAllTimersAsync();
+        await jest.runAllTimersAsync();
         await p2;
 
         expect(mockProducer.connect).toHaveBeenCalledTimes(1);
@@ -117,17 +115,12 @@ describe('trackUserInteraction', () => {
     });
 
     it('times out and logs an error when connect exceeds KAFKA_TIMEOUT_MS', async () => {
-        // connect takes 10 seconds – well above the 3-second timeout
-        const mockProducer = makeMockProducer({ connectDelay: 10_000 });
-        vi.doMock('@/app/lib/kafka', () => ({
-            default: mockProducer,
-            kafkaStatus: { isConnected: false },
-        }));
-        const { trackRecipeView } = await import('@/app/actions/tracking');
+        (global as any).__mockProducer = makeMockProducer({
+            connectDelay: 10_000,
+        });
 
         const promise = trackRecipeView('recipe-1', 'user-1');
-        // Advance time past the 3 s timeout
-        await vi.advanceTimersByTimeAsync(3_001);
+        await jest.advanceTimersByTimeAsync(3_001);
         await promise;
 
         expect(logger.error).toHaveBeenCalledWith(
@@ -139,19 +132,13 @@ describe('trackUserInteraction', () => {
     });
 
     it('times out and logs an error when send exceeds KAFKA_TIMEOUT_MS', async () => {
-        // connect is fast, but send takes 10 seconds
-        const mockProducer = makeMockProducer({
+        (global as any).__mockProducer = makeMockProducer({
             connectDelay: 0,
             sendDelay: 10_000,
         });
-        vi.doMock('@/app/lib/kafka', () => ({
-            default: mockProducer,
-            kafkaStatus: { isConnected: false },
-        }));
-        const { trackRecipeView } = await import('@/app/actions/tracking');
 
         const promise = trackRecipeView('recipe-1', 'user-1');
-        await vi.advanceTimersByTimeAsync(3_001);
+        await jest.advanceTimersByTimeAsync(3_001);
         await promise;
 
         expect(logger.error).toHaveBeenCalledWith(
@@ -163,24 +150,19 @@ describe('trackUserInteraction', () => {
     });
 
     it('does NOT propagate the error to the caller when Kafka times out', async () => {
-        const mockProducer = makeMockProducer({ connectDelay: 10_000 });
-        vi.doMock('@/app/lib/kafka', () => ({
-            default: mockProducer,
-            kafkaStatus: { isConnected: false },
-        }));
-        const { trackRecipeView } = await import('@/app/actions/tracking');
+        (global as any).__mockProducer = makeMockProducer({
+            connectDelay: 10_000,
+        });
 
         const promise = trackRecipeView('recipe-1', 'user-1');
-        await vi.advanceTimersByTimeAsync(3_001);
+        await jest.advanceTimersByTimeAsync(3_001);
 
-        // Must resolve, not reject
         await expect(promise).resolves.toBeUndefined();
     });
 
     it('resets isConnected and retries connect on the next event after a failure', async () => {
-        // First connect: hangs (times out). Second connect: succeeds immediately.
         let callCount = 0;
-        const connect = vi.fn(() => {
+        const connect = jest.fn(() => {
             callCount++;
             if (callCount === 1) {
                 return new Promise<void>((_, reject) =>
@@ -189,26 +171,22 @@ describe('trackUserInteraction', () => {
             }
             return Promise.resolve();
         });
-        const send = vi.fn().mockResolvedValue(undefined);
-        vi.doMock('@/app/lib/kafka', () => ({
-            default: { connect, send },
-            kafkaStatus: { isConnected: false },
-        }));
-        const { trackRecipeView } = await import('@/app/actions/tracking');
+        const send = jest.fn().mockResolvedValue(undefined);
+        (global as any).__mockProducer = { connect, send };
 
         // First call – times out, isConnected remains false
         const p1 = trackRecipeView('recipe-1', 'user-1');
-        await vi.advanceTimersByTimeAsync(3_001);
+        await jest.advanceTimersByTimeAsync(3_001);
         await p1;
 
-        vi.clearAllMocks(); // reset spy call counts before the second assertion
+        jest.clearAllMocks();
 
         // Second call – should attempt connect again (not skip it)
         const p2 = trackRecipeView('recipe-1', 'user-1');
-        vi.runAllTimersAsync();
+        await jest.runAllTimersAsync();
         await p2;
 
-        expect(connect).toHaveBeenCalledTimes(1); // 2nd overall, 1st since clearAllMocks
+        expect(connect).toHaveBeenCalledTimes(1);
         expect(send).toHaveBeenCalledTimes(1);
     });
 });

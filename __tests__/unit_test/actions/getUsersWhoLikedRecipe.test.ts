@@ -1,18 +1,18 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import getUsersWhoLikedRecipe from '@/app/actions/getUsersWhoLikedRecipe';
 import prisma from '@/app/lib/prismadb';
 
-vi.mock('@/app/lib/prismadb', () => ({
+jest.mock('@/app/lib/prismadb', () => ({
+    __esModule: true,
     default: {
         user: {
-            findMany: vi.fn(),
+            findMany: jest.fn(),
         },
     },
 }));
 
 describe('getUsersWhoLikedRecipe Server Action', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     it('should return empty list when recipeId is missing', async () => {
@@ -45,7 +45,7 @@ describe('getUsersWhoLikedRecipe Server Action', () => {
             },
         ];
 
-        vi.mocked(prisma.user.findMany).mockResolvedValue(mockDbUsers as any);
+        jest.mocked(prisma.user.findMany).mockResolvedValue(mockDbUsers as any);
 
         const result = await getUsersWhoLikedRecipe({ recipeId: 'recipe-123' });
 
@@ -92,10 +92,10 @@ describe('getUsersWhoLikedRecipe Server Action', () => {
     });
 
     it('should return empty list and log error when Prisma query throws', async () => {
-        const consoleErrorSpy = vi
+        const consoleErrorSpy = jest
             .spyOn(console, 'error')
             .mockImplementation(() => {});
-        vi.mocked(prisma.user.findMany).mockRejectedValue(
+        jest.mocked(prisma.user.findMany).mockRejectedValue(
             new Error('DB connection error')
         );
 
