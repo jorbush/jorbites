@@ -1,5 +1,5 @@
 import { GET as ChefsGET } from '@/app/api/chefs/route';
-import getChefs, { ChefOrderByType } from '@/app/actions/getChefs';
+import getChefs from '@/app/actions/getChefs';
 
 jest.mock('@/app/actions/getChefs', () => ({
     __esModule: true,
