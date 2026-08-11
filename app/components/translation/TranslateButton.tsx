@@ -60,16 +60,13 @@ export function TranslateButton({
         () => false
     );
     const [isTranslating, setIsTranslating] = useState(false);
-    const [detectedLanguage, setDetectedLanguage] = useState<string | null>(
-        null
-    );
+    const [detectedInfo, setDetectedInfo] = useState<{
+        text: string;
+        lang: string;
+    } | null>(null);
 
-    // Reset detectedLanguage during render when text changes
-    const [prevText, setPrevText] = useState(text);
-    if (text !== prevText) {
-        setPrevText(text);
-        setDetectedLanguage(null);
-    }
+    const detectedLanguage =
+        detectedInfo?.text === text ? detectedInfo.lang : null;
 
     useEffect(() => {
         if (
@@ -96,7 +93,7 @@ export function TranslateButton({
                         if (cancelled) return; // Check again before state update
                         const lang = topResult.detectedLanguage;
                         if (['en', 'ca', 'es'].includes(lang)) {
-                            setDetectedLanguage(lang);
+                            setDetectedInfo({ text, lang });
                         } else {
                             const langMap: Record<string, string> = {
                                 'en-US': 'en',
@@ -105,7 +102,10 @@ export function TranslateButton({
                                 'es-MX': 'es',
                                 'ca-ES': 'ca',
                             };
-                            setDetectedLanguage(langMap[lang] || null);
+                            const mappedLang = langMap[lang];
+                            if (mappedLang) {
+                                setDetectedInfo({ text, lang: mappedLang });
+                            }
                         }
                     }
                 }
