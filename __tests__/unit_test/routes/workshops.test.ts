@@ -265,6 +265,67 @@ describe('Workshops API Routes and Server Actions', () => {
 
             expect(res.status).toBe(401);
         });
+
+        it('should return 404 when workshop does not exist', async () => {
+            mockedSession = {
+                user: { email: initialUser.email },
+                expires: new Date(Date.now() + 86400000).toISOString(),
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(
+                initialUser
+            );
+            (prisma.workshop.findUnique as jest.Mock).mockResolvedValue(null);
+
+            const req = new NextRequest(
+                'http://localhost:3000/api/workshop/missing-id',
+                {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        title: 'Updated Title',
+                        description: 'Updated description',
+                        date: new Date(Date.now() + 86400000).toISOString(),
+                        location: 'Online',
+                    }),
+                }
+            );
+
+            const res = await WorkshopPATCH(req, {
+                params: Promise.resolve({ workshopId: 'missing-id' }),
+            });
+            expect(res.status).toBe(404);
+        });
+
+        it('should return 403 when user is not the host of the workshop', async () => {
+            mockedSession = {
+                user: { email: initialUser.email },
+                expires: new Date(Date.now() + 86400000).toISOString(),
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(
+                initialUser
+            );
+            (prisma.workshop.findUnique as jest.Mock).mockResolvedValue({
+                id: 'workshop-1',
+                hostId: 'other-host-id',
+            });
+
+            const req = new NextRequest(
+                'http://localhost:3000/api/workshop/workshop-1',
+                {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        title: 'Updated Title',
+                        description: 'Updated description',
+                        date: new Date(Date.now() + 86400000).toISOString(),
+                        location: 'Online',
+                    }),
+                }
+            );
+
+            const res = await WorkshopPATCH(req, {
+                params: Promise.resolve({ workshopId: 'workshop-1' }),
+            });
+            expect(res.status).toBe(403);
+        });
     });
 
     describe('POST /api/workshop/[workshopId]/join - Join/Leave Workshop Error Handling', () => {
@@ -314,6 +375,72 @@ describe('Workshops API Routes and Server Actions', () => {
 
             expect(res.status).toBe(400);
         });
+
+        it('should return 404 when workshop to join is not found', async () => {
+            mockedSession = {
+                user: { email: initialUser.email },
+                expires: new Date(Date.now() + 86400000).toISOString(),
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(
+                initialUser
+            );
+            (prisma.workshop.findUnique as jest.Mock).mockResolvedValue(null);
+
+            const req = new NextRequest(
+                `http://localhost:3000/api/workshop/missing-workshop/join`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'join' }),
+                }
+            );
+
+            const res = await WorkshopJoinPOST(req, {
+                params: Promise.resolve({ workshopId: 'missing-workshop' }),
+            });
+
+            expect(res.status).toBe(404);
+        });
+
+        it('should allow user to join workshop successfully', async () => {
+            mockedSession = {
+                user: { email: initialUser.email },
+                expires: new Date(Date.now() + 86400000).toISOString(),
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(
+                initialUser
+            );
+            (prisma.workshop.findUnique as jest.Mock).mockResolvedValue({
+                id: 'workshop-1',
+                hostId: 'other-host',
+                date: new Date(Date.now() + 86400000),
+                isPrivate: false,
+                whitelistedUserIds: [],
+                maxParticipants: 10,
+                participants: [],
+            });
+            (
+                prisma.workshopParticipant.findUnique as jest.Mock
+            ).mockResolvedValue(null);
+            (prisma.workshopParticipant.create as jest.Mock).mockResolvedValue(
+                {}
+            );
+
+            const req = new NextRequest(
+                `http://localhost:3000/api/workshop/workshop-1/join`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'join' }),
+                }
+            );
+
+            const res = await WorkshopJoinPOST(req, {
+                params: Promise.resolve({ workshopId: 'workshop-1' }),
+            });
+
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.message).toBe('Successfully joined workshop');
+        });
     });
 
     describe('DELETE /api/workshop/[workshopId] - Delete Workshop Error Handling', () => {
@@ -333,6 +460,30 @@ describe('Workshops API Routes and Server Actions', () => {
             });
 
             expect(res.status).toBe(401);
+        });
+
+        it('should return 404 when workshop to delete does not exist', async () => {
+            mockedSession = {
+                user: { email: initialUser.email },
+                expires: new Date(Date.now() + 86400000).toISOString(),
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(
+                initialUser
+            );
+            (prisma.workshop.findUnique as jest.Mock).mockResolvedValue(null);
+
+            const req = new NextRequest(
+                `http://localhost:3000/api/workshop/missing-id`,
+                {
+                    method: 'DELETE',
+                }
+            );
+
+            const res = await WorkshopDELETE(req, {
+                params: Promise.resolve({ workshopId: 'missing-id' }),
+            });
+
+            expect(res.status).toBe(404);
         });
     });
 

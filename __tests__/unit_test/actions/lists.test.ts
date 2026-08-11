@@ -1,26 +1,29 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import getLists from '@/app/actions/getLists';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
-vi.mock('@/app/actions/getCurrentUser');
-vi.mock('@/app/lib/prismadb', () => ({
+jest.mock('@/app/actions/getCurrentUser', () => ({
+    __esModule: true,
+    default: jest.fn(),
+}));
+jest.mock('@/app/lib/prismadb', () => ({
+    __esModule: true,
     default: {
         list: {
-            findMany: vi.fn(),
-            create: vi.fn(),
+            findMany: jest.fn(),
+            create: jest.fn(),
         },
     },
 }));
 
 describe('Lists Server Actions', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     describe('getLists', () => {
         it('should return empty myLists and public communityLists when guest (unauthenticated)', async () => {
-            vi.mocked(getCurrentUser).mockResolvedValue(null);
+            jest.mocked(getCurrentUser).mockResolvedValue(null);
 
             const mockDbCommunityLists = [
                 {
@@ -41,7 +44,7 @@ describe('Lists Server Actions', () => {
                 },
             ];
 
-            vi.mocked(prisma.list.findMany).mockResolvedValue(
+            jest.mocked(prisma.list.findMany).mockResolvedValue(
                 mockDbCommunityLists as any
             );
 
@@ -54,11 +57,11 @@ describe('Lists Server Actions', () => {
         });
 
         it('should return user lists and community lists when authenticated', async () => {
-            vi.mocked(getCurrentUser).mockResolvedValue({
+            jest.mocked(getCurrentUser).mockResolvedValue({
                 id: 'user-1',
             } as any);
 
-            vi.mocked(prisma.list.findMany)
+            jest.mocked(prisma.list.findMany)
                 .mockResolvedValueOnce([
                     {
                         id: 'community-list',
@@ -103,11 +106,11 @@ describe('Lists Server Actions', () => {
         });
 
         it('should create default list when authenticated user has no lists', async () => {
-            vi.mocked(getCurrentUser).mockResolvedValue({
+            jest.mocked(getCurrentUser).mockResolvedValue({
                 id: 'user-1',
             } as any);
 
-            vi.mocked(prisma.list.findMany)
+            jest.mocked(prisma.list.findMany)
                 .mockResolvedValueOnce([]) // communityLists
                 .mockResolvedValueOnce([]); // myLists (none found initially)
 
@@ -127,7 +130,9 @@ describe('Lists Server Actions', () => {
                 },
             };
 
-            vi.mocked(prisma.list.create).mockResolvedValue(defaultList as any);
+            jest.mocked(prisma.list.create).mockResolvedValue(
+                defaultList as any
+            );
 
             const result = await getLists();
 

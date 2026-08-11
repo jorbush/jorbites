@@ -1,35 +1,35 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import getPinnedRecipesByUserId from '@/app/actions/getPinnedRecipesByUserId';
 import prisma from '@/app/lib/prismadb';
 import { redisCache } from '@/app/lib/redis';
 
-vi.mock('@/app/lib/prismadb', () => ({
+jest.mock('@/app/lib/prismadb', () => ({
+    __esModule: true,
     default: {
         user: {
-            findUnique: vi.fn(),
+            findUnique: jest.fn(),
         },
         recipe: {
-            findMany: vi.fn(),
+            findMany: jest.fn(),
         },
     },
 }));
 
-vi.mock('@/app/lib/redis', () => ({
+jest.mock('@/app/lib/redis', () => ({
     redis: {
-        get: vi.fn(),
-        set: vi.fn(),
-        del: vi.fn(),
+        get: jest.fn(),
+        set: jest.fn(),
+        del: jest.fn(),
     },
     redisCache: {
-        get: vi.fn(),
-        set: vi.fn(),
-        del: vi.fn(),
+        get: jest.fn(),
+        set: jest.fn(),
+        del: jest.fn(),
     },
 }));
 
 describe('getPinnedRecipesByUserId Server Action', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     it('should return empty list when userId is missing', async () => {
@@ -45,7 +45,7 @@ describe('getPinnedRecipesByUserId Server Action', () => {
                 createdAt: '2026-05-20T12:00:00.000Z',
             },
         ];
-        vi.mocked(redisCache.get).mockResolvedValue(
+        jest.mocked(redisCache.get).mockResolvedValue(
             JSON.stringify(mockRecipes)
         );
 
@@ -57,15 +57,15 @@ describe('getPinnedRecipesByUserId Server Action', () => {
     });
 
     it('should return empty list when user is not found in database', async () => {
-        vi.mocked(redisCache.get).mockResolvedValue(null);
-        vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
+        jest.mocked(redisCache.get).mockResolvedValue(null);
+        jest.mocked(prisma.user.findUnique).mockResolvedValue(null);
         const result = await getPinnedRecipesByUserId('user-1');
         expect(result).toEqual([]);
     });
 
     it('should return empty list when user has no pinned recipe IDs', async () => {
-        vi.mocked(redisCache.get).mockResolvedValue(null);
-        vi.mocked(prisma.user.findUnique).mockResolvedValue({
+        jest.mocked(redisCache.get).mockResolvedValue(null);
+        jest.mocked(prisma.user.findUnique).mockResolvedValue({
             id: 'user-1',
             pinnedRecipeIds: [],
         } as any);
@@ -75,9 +75,9 @@ describe('getPinnedRecipesByUserId Server Action', () => {
     });
 
     it('should query DB, sort, return, and set cache on cache miss', async () => {
-        vi.mocked(redisCache.get).mockResolvedValue(null);
+        jest.mocked(redisCache.get).mockResolvedValue(null);
         const pinnedIds = ['recipe-3', 'recipe-1', 'recipe-2'];
-        vi.mocked(prisma.user.findUnique).mockResolvedValue({
+        jest.mocked(prisma.user.findUnique).mockResolvedValue({
             id: 'user-1',
             pinnedRecipeIds: pinnedIds,
         } as any);
@@ -100,7 +100,7 @@ describe('getPinnedRecipesByUserId Server Action', () => {
             },
         ];
 
-        vi.mocked(prisma.recipe.findMany).mockResolvedValue(dbRecipes as any);
+        jest.mocked(prisma.recipe.findMany).mockResolvedValue(dbRecipes as any);
 
         const result = await getPinnedRecipesByUserId('user-1');
 

@@ -1,27 +1,30 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import getPlannings from '@/app/actions/getPlannings';
 import getPlanningById from '@/app/actions/getPlanningById';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
-vi.mock('@/app/actions/getCurrentUser');
-vi.mock('@/app/lib/prismadb', () => ({
+jest.mock('@/app/actions/getCurrentUser', () => ({
+    __esModule: true,
+    default: jest.fn(),
+}));
+jest.mock('@/app/lib/prismadb', () => ({
+    __esModule: true,
     default: {
         planning: {
-            findMany: vi.fn(),
-            findUnique: vi.fn(),
+            findMany: jest.fn(),
+            findUnique: jest.fn(),
         },
     },
 }));
 
 describe('Plannings Server Actions', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     describe('getPlannings', () => {
         it('should return empty myPlannings and public communityPlannings when guest (unauthenticated)', async () => {
-            vi.mocked(getCurrentUser).mockResolvedValue(null);
+            jest.mocked(getCurrentUser).mockResolvedValue(null);
 
             const mockDbCommunityPlans = [
                 {
@@ -40,7 +43,7 @@ describe('Plannings Server Actions', () => {
                     meals: [],
                 },
             ];
-            vi.mocked(prisma.planning.findMany).mockResolvedValue(
+            jest.mocked(prisma.planning.findMany).mockResolvedValue(
                 mockDbCommunityPlans as any
             );
 
@@ -53,11 +56,11 @@ describe('Plannings Server Actions', () => {
         });
 
         it('should return user plans and community plans when authenticated', async () => {
-            vi.mocked(getCurrentUser).mockResolvedValue({
+            jest.mocked(getCurrentUser).mockResolvedValue({
                 id: 'user-1',
             } as any);
 
-            vi.mocked(prisma.planning.findMany)
+            jest.mocked(prisma.planning.findMany)
                 .mockResolvedValueOnce([
                     {
                         id: 'community-plan',
@@ -107,7 +110,7 @@ describe('Plannings Server Actions', () => {
         });
 
         it('should return null when planning is not found in database', async () => {
-            vi.mocked(prisma.planning.findUnique).mockResolvedValue(null);
+            jest.mocked(prisma.planning.findUnique).mockResolvedValue(null);
             const result = await getPlanningById({
                 planningId: 'non-existent',
             });
@@ -154,7 +157,7 @@ describe('Plannings Server Actions', () => {
                     },
                 ],
             };
-            vi.mocked(prisma.planning.findUnique).mockResolvedValue(
+            jest.mocked(prisma.planning.findUnique).mockResolvedValue(
                 mockDbPlan as any
             );
 

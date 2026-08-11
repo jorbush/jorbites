@@ -1,28 +1,31 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import getRecipes from '@/app/actions/getRecipes';
 import getFavoriteRecipes from '@/app/actions/getFavoriteRecipes';
 import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
-vi.mock('@/app/actions/getCurrentUser');
-vi.mock('@/app/lib/prismadb', () => ({
+jest.mock('@/app/actions/getCurrentUser', () => ({
+    __esModule: true,
+    default: jest.fn(),
+}));
+jest.mock('@/app/lib/prismadb', () => ({
+    __esModule: true,
     default: {
         recipe: {
-            findMany: vi.fn(),
-            count: vi.fn(),
+            findMany: jest.fn(),
+            count: jest.fn(),
         },
     },
 }));
 
 describe('getRecipes and getFavoriteRecipes Actions', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     describe('getRecipes cuisine filtering', () => {
         it('should use exact match (equals) instead of contains for recipeCuisine', async () => {
-            vi.mocked(prisma.recipe.findMany).mockResolvedValue([]);
-            vi.mocked(prisma.recipe.count).mockResolvedValue(0);
+            jest.mocked(prisma.recipe.findMany).mockResolvedValue([]);
+            jest.mocked(prisma.recipe.count).mockResolvedValue(0);
 
             await getRecipes({ recipeCuisine: 'American' });
 
@@ -41,12 +44,12 @@ describe('getRecipes and getFavoriteRecipes Actions', () => {
 
     describe('getFavoriteRecipes cuisine filtering', () => {
         it('should use exact match (equals) instead of contains for recipeCuisine', async () => {
-            vi.mocked(getCurrentUser).mockResolvedValue({
+            jest.mocked(getCurrentUser).mockResolvedValue({
                 id: 'user-1',
                 favoriteIds: ['recipe-1'],
             } as any);
-            vi.mocked(prisma.recipe.findMany).mockResolvedValue([]);
-            vi.mocked(prisma.recipe.count).mockResolvedValue(0);
+            jest.mocked(prisma.recipe.findMany).mockResolvedValue([]);
+            jest.mocked(prisma.recipe.count).mockResolvedValue(0);
 
             await getFavoriteRecipes({ recipeCuisine: 'American' });
 
