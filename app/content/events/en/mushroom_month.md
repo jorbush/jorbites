@@ -1,20 +1,20 @@
 ---
-title: 🍄 Mushroom Month 2025 🍄
-date: 2025-09-01
-endDate: 2025-09-30T21:59:59
+title: 🍄 Mushroom Month 🍄
+date: 2026-09-01
+endDate: 2026-09-30T21:59:59
 image: /images/events/mushroom_month.webp
 description: Celebrate National Mushroom Month with creative mushroom recipes
 ---
 
-# 🍄 Mushroom Month 2025 🍄
+# 🍄 Mushroom Month 🍄
 
 Celebrate National Mushroom Month on Jorbites!
 
-Throughout September 2025, showcase your culinary creativity with mushroom-forward recipes. From wild foraged varieties to cultivated favorites, mushrooms offer endless possibilities for delicious, nutritious dishes.
+Throughout September, showcase your culinary creativity with mushroom-forward recipes. From wild foraged varieties to cultivated favorites, mushrooms offer endless possibilities for delicious, nutritious dishes.
 
 ### 🏆 Earn your exclusive badge!
 
-All Jorbiters who publish a recipe featuring mushrooms as a star ingredient during September 2025 will receive the exclusive Mushroom Month badge.
+All Jorbiters who publish a recipe featuring mushrooms as a star ingredient during September will receive the exclusive Mushroom Month badge.
 
 ### 🍄 Recipe ideas to inspire you:
 

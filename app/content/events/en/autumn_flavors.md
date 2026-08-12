@@ -1,9 +1,8 @@
 ---
 title: 🍂 Autumn Flavors 🍎
-date: 2025-10-07
-endDate: 2025-10-30T21:59:59
+date: 2026-10-07
+endDate: 2026-10-30T21:59:59
 image: /images/events/autumn_flavors.webp
-badge: /images/events/autumn_flavors.webp
 description: Celebrate fall with seasonal recipes featuring autumn's best ingredients
 ---
 
