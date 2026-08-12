@@ -11,56 +11,8 @@ on:
     branches: main
 
 jobs:
-  build:
-    name: Build Next.js App
-    runs-on: ubuntu-latest
-    environment: testing
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 11
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-      - name: Install dependencies with scripts disabled
-        run: pnpm install --ignore-scripts
-
-      - name: Generate Prisma Client
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npx prisma generate
-
-      - name: Build Next.js app
-        run: pnpm run build
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
-          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
-          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
-          SKIP_ENV_VALIDATION: 'true'
-
-      - name: Upload pre-built Next.js bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: next-build
-          path: |
-            .next
-            public
-            node_modules/.prisma
-          include-hidden-files: true
-          retention-days: 1
-
   cypress:
     name: Cypress (${{ matrix.containers.name }})
-    needs: build
     runs-on: ubuntu-latest
     environment: testing
     strategy:
@@ -98,6 +50,14 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
 
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+
       - name: Install dependencies with scripts disabled
         run: pnpm install --ignore-scripts
 
@@ -108,12 +68,6 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
-
-      - name: Download pre-built Next.js bundle
-        uses: actions/download-artifact@v4
-        with:
-          name: next-build
-          path: .
 
       - name: Create cypress.env.json
         env:
@@ -129,6 +83,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           install: false
+          build: pnpm run build
           start: pnpm start
           wait-on: 'http://localhost:3000'
           config-file: cypress.config.ts
