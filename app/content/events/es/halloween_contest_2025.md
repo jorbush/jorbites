@@ -1,12 +1,12 @@
 ---
-title: 🎃 Concurso de Halloween 2025 🎃
-date: 2025-10-31
-endDate: 2025-10-31T21:59:59
+title: 🎃 Concurso de Halloween 🎃
+date: 2026-10-31
+endDate: 2026-10-31T21:59:59
 image: /images/events/halloween_contest.webp
 description: Un concurso delicioso y terrorífico para celebrar Halloween en Jorbites
 ---
 
-# 🎃 Concurso de Halloween 2025 🎃
+# 🎃 Concurso de Halloween 🎃
 
 ¡Es temporada spooky en Jorbites! Calderos de bruja, telarañas de caramelo, panecillos embrujados y bocados deliciosamente escalofriantes. Cocinemos con misterio, color y un toque de travesura.
 
@@ -18,7 +18,7 @@ Snacks mini, principales temáticos y postres con personalidad—todo es bienven
 
 ## 📆 Fechas
 
-Viernes: 31 de octubre de 2025
+Viernes: 31 de octubre
 
 ## 🏆 Premio
 - Un regalo spooky de edición limitada de Jorbites

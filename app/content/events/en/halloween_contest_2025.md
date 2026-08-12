@@ -1,12 +1,12 @@
 ---
-title: 🎃 Halloween Contest 2025 🎃
-date: 2025-10-31
-endDate: 2025-10-31T21:59:59
+title: 🎃 Halloween Contest 🎃
+date: 2026-10-31
+endDate: 2026-10-31T21:59:59
 image: /images/events/halloween_contest.webp
 description: A spooky, tasty contest to celebrate Halloween on Jorbites
 ---
 
-# 🎃 Halloween Contest 2025 🎃
+# 🎃 Halloween Contest 🎃
 
 It's spooky season on Jorbites! Witches' cauldrons, caramel cobwebs, haunted buns, and ghoulishly good bites. Let's cook with mystery, color, and a hint of mischief.
 
@@ -18,7 +18,7 @@ Mini snacks, themed mains, and desserts with personality—all are welcome.
 
 ## 📆 Date
 
-Friday: October 31, 2025
+Friday: October 31
 
 ## 🏆 Prize
 - A limited-edition Jorbites spooky gift

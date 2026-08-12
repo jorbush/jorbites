@@ -1,20 +1,20 @@
 ---
-title: 🥦 Día del Vegetarianismo 2025 🥦
-date: 2025-10-01
-endDate: 2025-10-01T21:59:59
+title: 🥦 Día del Vegetarianismo 🥦
+date: 2026-10-01
+endDate: 2026-10-01T21:59:59
 image: /images/events/vegetarian_day.webp
 description: Celebra el Día Mundial del Vegetarianismo con creatividad vegetal
 ---
 
-# 🥦 Día Mundial del Vegetarianismo 2025 🥦
+# 🥦 Día Mundial del Vegetarianismo 🥦
 
 ¡Celebremos la cocina basada en plantas en Jorbites!
 
-El 1 de octubre de 2025, únete a la comunidad compartiendo tus mejores recetas vegetarianas. Desde ensaladas vibrantes hasta platos principales reconfortantes y horneados caseros—demuestra lo deliciosa que puede ser la cocina vegetal.
+El 1 de octubre, únete a la comunidad compartiendo tus mejores recetas vegetarianas. Desde ensaladas vibrantes hasta platos principales reconfortantes y horneados caseros—demuestra lo deliciosa que puede ser la cocina vegetal.
 
 ### 🏆 Consigue tu medalla exclusiva
 
-Todos los Jorbiters que publiquen una receta vegetariana el 1 de octubre de 2025 recibirán la medalla especial del Día Mundial del Vegetarianismo.
+Todos los Jorbiters que publiquen una receta vegetariana el 1 de octubre recibirán la medalla especial del Día Mundial del Vegetarianismo.
 
 ### 🥗 Ideas para inspirarte
 

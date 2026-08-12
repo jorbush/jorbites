@@ -1,12 +1,12 @@
 ---
-title: 🎃 Concurs de Halloween 2025 🎃
-date: 2025-10-31
-endDate: 2025-10-31T21:59:59
+title: 🎃 Concurs de Halloween 🎃
+date: 2026-10-31
+endDate: 2026-10-31T21:59:59
 image: /images/events/halloween_contest.webp
 description: Un concurs deliciós i terrorífic per celebrar Halloween a Jorbites
 ---
 
-# 🎃 Concurs de Halloween 2025 🎃
+# 🎃 Concurs de Halloween 🎃
 
 És temporada esgarrifosa a Jorbites! Calderes de bruixa, teranyines de caramel, panets encantats i mossegades deliciosament esgarrifoses. Cuinem amb misteri, color i un punt de malifetes.
 
@@ -18,7 +18,7 @@ Aperitius mini, principals temàtics i postres amb personalitat—tot hi té cab
 
 ## 📆 Dates
 
-Divendres: 31 d'octubre de 2025
+Divendres: 31 d'octubre
 
 ## 🏆 Premi
 - Un regal esgarrifós d'edició limitada de Jorbites

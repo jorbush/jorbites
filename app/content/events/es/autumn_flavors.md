@@ -1,7 +1,7 @@
 ---
 title: 🍂 Sabores de Otoño 🍎
-date: 2025-10-07
-endDate: 2025-10-30T21:59:59
+date: 2026-10-07
+endDate: 2026-10-30T21:59:59
 image: /images/events/autumn_flavors.webp
 description: Celebra el otoño con recetas de temporada usando los mejores ingredientes del otoño
 ---

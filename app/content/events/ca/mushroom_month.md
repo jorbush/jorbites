@@ -1,20 +1,20 @@
 ---
-title: 🍄 Mes dels Bolets 2025 🍄
-date: 2025-09-01
-endDate: 2025-09-30T21:59:59
+title: 🍄 Mes dels Bolets 🍄
+date: 2026-09-01
+endDate: 2026-09-30T21:59:59
 image: /images/events/mushroom_month.webp
 description: Celebra el Mes Nacional dels Bolets amb receptes creatives de bolets
 ---
 
-# 🍄 Mes dels Bolets 2025 🍄
+# 🍄 Mes dels Bolets 🍄
 
 Celebrem el Mes Nacional dels Bolets a Jorbites!
 
-Durant tot el setembre de 2025, mostra la teva creativitat culinària amb receptes centrades en els bolets. Des de varietats silvestres fins a favorits cultivats, els bolets ofereixen possibilitats infinites per a plats deliciosos i nutritius.
+Durant tot el setembre, mostra la teva creativitat culinària amb receptes centrades en els bolets. Des de varietats silvestres fins a favorits cultivats, els bolets ofereixen possibilitats infinites per a plats deliciosos i nutritius.
 
 ### 🏆 Aconsegueix la teva medalla exclusiva!
 
-Tots els Jorbiters que publiquin una recepta que inclogui bolets com a ingredient estrella durant el setembre de 2025 rebran la medalla exclusiva del Mes dels Bolets.
+Tots els Jorbiters que publiquin una recepta que inclogui bolets com a ingredient estrella durant el setembre rebran la medalla exclusiva del Mes dels Bolets.
 
 ### 🍄 Idees de receptes per inspirar-te:
 
