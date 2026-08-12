@@ -216,7 +216,7 @@ export function usePlanningState({
                     recipeId: m.recipeId,
                 })),
             });
-            setIsPrivate(!isPrivate);
+            setIsPrivate((prevIsPrivate) => !prevIsPrivate);
             toast.success(
                 !isPrivate ? t('plan_is_private') : t('plan_is_public')
             );

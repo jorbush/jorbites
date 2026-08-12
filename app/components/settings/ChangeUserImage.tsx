@@ -25,13 +25,16 @@ const ChangeUserImageSelector = ({
 }: ChangeUserImageProps) => {
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
-    const [newImage, setNewImage] = useState(currentUser?.image);
+    const [uploadedImage, setUploadedImage] = useState<string | null>(null);
     const [canSave, setCanSave] = useState(false);
 
+    const displayImage = uploadedImage ?? currentUser?.image;
+
     const updateUserProfile = useCallback(() => {
+        const userImageToSave = uploadedImage ?? currentUser?.image;
         axios
             .patch(`/api/userImage/${currentUser?.id}`, {
-                userImage: newImage,
+                userImage: userImageToSave,
             })
             .then(() => {
                 toast.success(t('image_updated'));
@@ -43,10 +46,10 @@ const ChangeUserImageSelector = ({
                 setCanSave(false);
                 refresh();
             });
-    }, [currentUser?.id, newImage, refresh, t]);
+    }, [currentUser?.id, currentUser?.image, uploadedImage, refresh, t]);
 
     const handleUpload = useCallback((result: any) => {
-        setNewImage(result.info.secure_url);
+        setUploadedImage(result.info.secure_url);
         setCanSave(true);
     }, []);
 
@@ -89,7 +92,7 @@ const ChangeUserImageSelector = ({
                                         >
                                             <CustomProxyImage
                                                 src={
-                                                    newImage ||
+                                                    displayImage ||
                                                     '/images/placeholder.webp'
                                                 }
                                                 alt="Upload"

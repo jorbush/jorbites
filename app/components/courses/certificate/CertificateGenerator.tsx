@@ -46,8 +46,11 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
     badgePath,
 }) => {
     const { t, i18n } = useTranslation();
-    const [name, setName] = useState(currentUserNames || '');
-    const [submitted, setSubmitted] = useState(!!currentUserNames);
+    const [customName, setCustomName] = useState<string | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+
+    const name = customName ?? currentUserNames ?? '';
+    const submitted = Boolean(customName || currentUserNames) && !isEditing;
 
     const {
         register,
@@ -84,8 +87,8 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
     const handleConfirmName = (data: FieldValues) => {
         const finalName = data.certificateName.trim();
         if (finalName) {
-            setName(finalName);
-            setSubmitted(true);
+            setCustomName(finalName);
+            setIsEditing(false);
         }
     };
 
@@ -211,7 +214,7 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
                                 type="button"
                                 onClick={() => {
                                     setValue('certificateName', name);
-                                    setSubmitted(false);
+                                    setIsEditing(true);
                                 }}
                                 className="text-xs text-green-600 underline hover:text-green-700 dark:text-green-400"
                             >
