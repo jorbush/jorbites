@@ -1,72 +1,8 @@
 describe('Workshops E2E', () => {
     beforeEach(() => {
-        cy.visit('http://localhost:3000/');
-        // Login
-        cy.get('[data-cy="user-menu"]').click();
-        cy.get('[data-cy="user-menu-login"]').should('be.visible').click();
-        cy.get('[data-cy="login-email"]').type(Cypress.env('userTestEmail'));
-        cy.get('[data-cy="login-password"]').type(
-            Cypress.env('userTestPassword')
-        );
-        cy.get('[data-cy="modal-action-button"]').click();
-        cy.get('[class^="go"]').should('be.visible');
-        cy.wait(1000);
-
-        // Set language to English to ensure consistent test results
-        cy.task('log', 'Setting language to English...');
-        cy.get('[data-cy="user-menu"]').click();
-
-        // Click on settings in the user menu using the new data-cy attribute
-        cy.get('[data-cy="user-menu-panel"]').should('be.visible');
-        cy.get('[data-cy="user-menu-settings"]').click();
-
-        // Settings modal should be open, wait for it to fully load using data-cy selectors
-        cy.get('[data-cy="settings-modal-content"]', { timeout: 10000 }).should(
-            'be.visible'
-        );
-
-        // Look for the language selector using the new data-cy attribute
-        cy.get('[data-cy="language-dropdown"]', { timeout: 5000 })
-            .should('be.visible')
-            .then(($button) => {
-                // Get the button text to check current language
-                const buttonText = $button.text();
-                cy.task('log', `Current language: ${buttonText}`);
-
-                if (!buttonText.includes('English')) {
-                    // Click the dropdown button to open options
-                    cy.wrap($button).click();
-
-                    // Select English from the dropdown
-                    cy.contains('English').click();
-
-                    // Save settings to persist the language change
-                    cy.get('[data-cy="modal-action-button"]')
-                        .should('be.visible')
-                        .click();
-
-                    // Wait for modal to close and language change to take effect
-                    cy.get('[data-cy="settings-modal-content"]').should(
-                        'not.exist'
-                    );
-                    cy.task('log', 'Language changed to English and saved');
-                } else {
-                    // Already in English, just close the modal
-                    cy.get('[data-testid="close-modal-button"]')
-                        .should('be.visible')
-                        .click();
-
-                    // Wait for modal to close
-                    cy.get('[data-cy="settings-modal-content"]').should(
-                        'not.exist'
-                    );
-                    cy.task('log', 'Language already set to English');
-                }
-            });
-
-        // Navigate to workshops page
-        cy.visit('http://localhost:3000/workshops');
-        cy.wait(1000);
+        cy.login();
+        cy.visit('/workshops');
+        cy.ensureEnglish();
     });
 
     it('complete workshop lifecycle - create, update, and delete', () => {
@@ -78,7 +14,6 @@ describe('Workshops E2E', () => {
         // STEP 1: Create a workshop
         cy.task('log', '=== STEP 1: Creating workshop ===');
         cy.get('[data-cy="create-workshop"]').click();
-        cy.wait(500);
 
         // Fill info step
         cy.get('[data-cy="workshop-title"]').type(workshopTitle);
@@ -119,7 +54,7 @@ describe('Workshops E2E', () => {
 
         // Check if the workshop was created
         cy.task('log', 'Workshop created');
-        cy.wait(2000);
+        cy.wait(1000);
 
         // Verify we're on the workshop detail page
         cy.url().should('include', '/workshops/');
@@ -178,7 +113,6 @@ describe('Workshops E2E', () => {
         cy.task('log', '=== STEP 2: Editing workshop ===');
         cy.scrollTo('top');
         cy.get('[data-cy="edit-workshop"]').click();
-        cy.wait(500);
         cy.task('log', 'Edit button clicked');
 
         // Navigate to info step and edit
@@ -205,7 +139,7 @@ describe('Workshops E2E', () => {
         // Update the workshop (final step - images)
         cy.get('[data-cy="modal-action-button"]').click();
         cy.task('log', 'Workshop updated');
-        cy.wait(2000);
+        cy.wait(1000);
 
         // Wait for update to complete and return to workshop page
         cy.url().should('include', '/workshops/');
@@ -268,6 +202,6 @@ describe('Workshops E2E', () => {
         cy.task('log', '✅ Workshop lifecycle test completed');
 
         // Verify we're back to workshops page
-        cy.url().should('eq', 'http://localhost:3000/workshops');
+        cy.location('pathname', { timeout: 10000 }).should('eq', '/workshops');
     });
 });

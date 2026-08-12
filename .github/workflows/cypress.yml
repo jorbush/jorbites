@@ -11,9 +11,66 @@ on:
     branches: main
 
 jobs:
-  cypress:
+  build:
+    name: Build Next.js App
     runs-on: ubuntu-latest
     environment: testing
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 11
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies with scripts disabled
+        run: pnpm install --ignore-scripts
+
+      - name: Generate Prisma Client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma generate
+
+      - name: Build Next.js app
+        run: pnpm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
+          SKIP_ENV_VALIDATION: 'true'
+
+      - name: Upload pre-built Next.js bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: |
+            .next
+            public
+          retention-days: 1
+
+  cypress:
+    name: Cypress (${{ matrix.containers.name }})
+    needs: build
+    runs-on: ubuntu-latest
+    environment: testing
+    strategy:
+      fail-fast: false
+      matrix:
+        containers:
+          - name: "Recipes Spec"
+            spec: "__tests__/e2e/basic.cy.ts"
+          - name: "Workshops & Quests Specs"
+            spec: "__tests__/e2e/workshops.cy.ts,__tests__/e2e/quests.cy.ts"
+          - name: "User & Basic Specs"
+            spec: "__tests__/e2e/user.cy.ts,__tests__/e2e/app.cy.ts"
     services:
       redis:
         image: redis
@@ -45,6 +102,11 @@ jobs:
       - name: Install Cypress binary
         run: npx cypress install
 
+      - name: Download pre-built Next.js bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
+
       - name: Generate Prisma Client
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -64,10 +126,10 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           install: false
-          build: pnpm run build
           start: pnpm start
           wait-on: 'http://localhost:3000'
           config-file: cypress.config.ts
+          spec: ${{ matrix.containers.spec }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
