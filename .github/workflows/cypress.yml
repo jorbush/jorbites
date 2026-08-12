@@ -12,8 +12,19 @@ on:
 
 jobs:
   cypress:
+    name: Cypress (${{ matrix.containers.name }})
     runs-on: ubuntu-latest
     environment: testing
+    strategy:
+      fail-fast: false
+      matrix:
+        containers:
+          - name: "Recipes Spec"
+            spec: "__tests__/e2e/basic.cy.ts"
+          - name: "Workshops & Quests Specs"
+            spec: "__tests__/e2e/workshops.cy.ts,__tests__/e2e/quests.cy.ts"
+          - name: "User & Basic Specs"
+            spec: "__tests__/e2e/user.cy.ts,__tests__/e2e/app.cy.ts"
     services:
       redis:
         image: redis
@@ -38,6 +49,14 @@ jobs:
         with:
           node-version: '22'
           cache: 'pnpm'
+
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       - name: Install dependencies with scripts disabled
         run: pnpm install --ignore-scripts
@@ -68,6 +87,7 @@ jobs:
           start: pnpm start
           wait-on: 'http://localhost:3000'
           config-file: cypress.config.ts
+          spec: ${{ matrix.containers.spec }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
