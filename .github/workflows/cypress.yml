@@ -54,6 +54,7 @@ jobs:
           path: |
             .next
             public
+          include-hidden-files: true
           retention-days: 1
 
   cypress:
@@ -106,6 +107,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: next-build
+          path: .
 
       - name: Generate Prisma Client
         env:
