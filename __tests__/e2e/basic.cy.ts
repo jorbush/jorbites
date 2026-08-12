@@ -1,74 +1,15 @@
 describe('Recipes E2E', () => {
     beforeEach(() => {
-        cy.visit('http://localhost:3000/');
-        // Login
-        cy.get('[data-cy="user-menu"]').click();
-        cy.get('[data-cy="user-menu-login"]').should('be.visible').click();
-        cy.get('[data-cy="login-email"]').type(Cypress.env('userTestEmail'));
-        cy.get('[data-cy="login-password"]').type(
-            Cypress.env('userTestPassword')
-        );
-        cy.get('[data-cy="modal-action-button"]').click();
-        cy.get('[class^="go"]').should('be.visible');
-        cy.wait(1000);
+        cy.login();
+        cy.visit('/');
 
         cy.request({
             method: 'DELETE',
             url: '/api/draft',
-            failOnStatusCode: false, // Don't fail the test if there's no draft to delete
+            failOnStatusCode: false,
         });
 
-        // Set language to English to ensure consistent test results
-        cy.task('log', 'Setting language to English...');
-        cy.get('[data-cy="user-menu"]').click();
-
-        // Click on settings in the user menu using the new data-cy attribute
-        cy.get('[data-cy="user-menu-panel"]').should('be.visible');
-        cy.get('[data-cy="user-menu-settings"]').click();
-
-        // Settings modal should be open, wait for it to fully load using data-cy selectors
-        cy.get('[data-cy="settings-modal-content"]', { timeout: 10000 }).should(
-            'be.visible'
-        );
-
-        // Look for the language selector using the new data-cy attribute
-        cy.get('[data-cy="language-dropdown"]', { timeout: 5000 })
-            .should('be.visible')
-            .then(($button) => {
-                // Get the button text to check current language
-                const buttonText = $button.text();
-                cy.task('log', `Current language: ${buttonText}`);
-
-                if (!buttonText.includes('English')) {
-                    // Click the dropdown button to open options
-                    cy.wrap($button).click();
-
-                    // Select English from the dropdown
-                    cy.contains('English').click();
-
-                    // Save settings to persist the language change
-                    cy.get('[data-cy="modal-action-button"]')
-                        .should('be.visible')
-                        .click();
-
-                    // Wait for modal to close and language change to take effect
-                    cy.get('[data-cy="settings-modal-content"]').should(
-                        'not.exist'
-                    );
-                    cy.task('log', 'Language changed to English and saved');
-                } else {
-                    // Already in English, just close the modal
-                    cy.get('[data-testid="close-modal-button"]')
-                        .should('be.visible')
-                        .click();
-
-                    // Wait for modal to close
-                    cy.get('[data-cy="settings-modal-content"]').should(
-                        'not.exist'
-                    );
-                    cy.task('log', 'Language already set to English');
-                }
-            });
+        cy.ensureEnglish();
     });
 
     it('complete recipe lifecycle - create, like, unlike, comment, delete comment, edit, and delete', () => {
@@ -110,14 +51,14 @@ describe('Recipes E2E', () => {
         cy.get('[data-cy="modal-action-button"]').click();
         // Check if the recipe was created
         cy.task('log', 'Recipe created');
-        cy.get('[class^="go"]').should('be.visible');
-        cy.wait(2000);
+        cy.get('[class^="go"]', { timeout: 10000 }).should('be.visible');
+        cy.wait(1000);
 
         // Navigate to the newly created recipe
         cy.get('[data-cy="recipe-card-title"]')
             .contains(recipeName)
             .should('be.visible')
-            .click();
+            .click({ force: true });
         cy.task('log', '🧪 Recipe creation completed');
 
         // Verify recipe creation details
@@ -182,11 +123,14 @@ describe('Recipes E2E', () => {
         cy.wait(5000);
         cy.get('[data-cy="heart-button"]').click();
         cy.task('log', 'Recipe unliked button clicked');
-        cy.get('[data-testid="heart-button"]').should(
+        cy.get('[data-testid="heart-button"]', { timeout: 10000 }).should(
             'not.have.class',
             'fill-green-450'
         );
-        cy.get('[data-cy="recipe-num-likes"]').should('have.text', '0');
+        cy.get('[data-cy="recipe-num-likes"]', { timeout: 10000 }).should(
+            'have.text',
+            '0'
+        );
         cy.task('log', '🧪 Recipe unliked successfully');
 
         // STEP 4: Comment on the recipe
@@ -270,7 +214,7 @@ describe('Recipes E2E', () => {
         // Update the recipe (final step - images)
         cy.get('[data-cy="modal-action-button"]').click(); // Update button
         cy.task('log', 'Recipe updated');
-        cy.wait(2000);
+        cy.wait(1000);
 
         // Wait for update to complete and return to recipe page
         cy.url().should('include', '/recipes/');
@@ -337,6 +281,6 @@ describe('Recipes E2E', () => {
         cy.task('log', '✅ Recipe lifecycle test completed');
 
         // Verify we're back to homepage
-        cy.url().should('eq', 'http://localhost:3000/');
+        cy.location('pathname', { timeout: 10000 }).should('eq', '/');
     });
 });

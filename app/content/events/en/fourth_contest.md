@@ -3,7 +3,6 @@ title: 🇯🇵 Jorbites Contest 4 🇯🇵
 date: 2025-04-12
 endDate: 2025-04-12
 image: /images/events/fourth_contest/fourth_contest.webp
-badge: /images/events/fourth_contest/badge.webp
 description: Fourth Edition of the Jorbites Contest based on Japan
 ---
 

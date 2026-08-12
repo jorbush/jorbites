@@ -1,20 +1,20 @@
 ---
-title: 🍄 Mes de las Setas 2025 🍄
-date: 2025-09-01
-endDate: 2025-09-30T21:59:59
+title: 🍄 Mes de las Setas 🍄
+date: 2026-09-01
+endDate: 2026-09-30T21:59:59
 image: /images/events/mushroom_month.webp
 description: Celebra el Mes Nacional de las Setas con recetas creativas de setas
 ---
 
-# 🍄 Mes de las Setas 2025 🍄
+# 🍄 Mes de las Setas 🍄
 
 ¡Celebremos el Mes Nacional de las Setas en Jorbites!
 
-Durante todo septiembre de 2025, muestra tu creatividad culinaria con recetas centradas en las setas. Desde variedades silvestres hasta favoritas cultivadas, las setas ofrecen posibilidades infinitas para platos deliciosos y nutritivos.
+Durante todo septiembre, muestra tu creatividad culinaria con recetas centradas en las setas. Desde variedades silvestres hasta favoritas cultivadas, las setas ofrecen posibilidades infinitas para platos deliciosos y nutritivos.
 
 ### 🏆 ¡Consigue tu medalla exclusiva!
 
-Todos los Jorbiters que publiquen una receta que incluya setas como ingrediente estrella durante septiembre de 2025 recibirán la medalla exclusiva del Mes de las Setas.
+Todos los Jorbiters que publiquen una receta que incluya setas como ingrediente estrella durante septiembre recibirán la medalla exclusiva del Mes de las Setas.
 
 ### 🍄 Ideas de recetas para inspirarte:
 
