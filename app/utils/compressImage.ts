@@ -97,15 +97,15 @@ export async function compressImage(
         };
 
         image.onerror = () => {
-            try {
-                URL.revokeObjectURL(objectUrl);
-            } catch {
-                // Ignore
-            }
             reject(new Error('Failed to load image for compression'));
         };
 
         image.src = objectUrl;
+        try {
+            URL.revokeObjectURL(objectUrl);
+        } catch {
+            // Ignore revoke errors in test mocks
+        }
     });
 }
 

@@ -25,6 +25,7 @@ export default function PhotoLightbox({
         <div
             role="dialog"
             aria-modal="true"
+            aria-label={alt || 'Photo lightbox'}
             tabIndex={-1}
             onKeyDown={(e) => e.key === 'Escape' && onClose()}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs focus:outline-none"

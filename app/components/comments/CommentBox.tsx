@@ -80,51 +80,52 @@ const CommentBox: React.FC<CommentBoxProps> = ({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setButtonDisabled(true);
-        if (comment.trim() === '') {
-            toast.error('Comment cannot be empty');
-            setButtonDisabled(false);
-            return;
-        }
-
-        let uploadedImageSrc: string | null = null;
-
-        if (selectedFile) {
-            setIsUploading(true);
-            try {
-                const compressedFile = await compressImage(selectedFile);
-                const response = await axios.post('/api/upload/r2', {
-                    filename: compressedFile.name,
-                    contentType: compressedFile.type,
-                });
-
-                const { uploadUrl, publicUrl } = response.data;
-
-                if (uploadUrl) {
-                    await axios.put(uploadUrl, compressedFile, {
-                        headers: {
-                            'Content-Type': compressedFile.type,
-                        },
-                    });
-                }
-                uploadedImageSrc = publicUrl;
-            } catch (err: unknown) {
-                console.error('Failed to upload image', err);
-                toast.error('Failed to upload photo proof');
-                setIsUploading(false);
-                setButtonDisabled(false);
+        try {
+            if (comment.trim() === '') {
+                toast.error('Comment cannot be empty');
                 return;
             }
-            setIsUploading(false);
+
+            let uploadedImageSrc: string | null = null;
+
+            if (selectedFile) {
+                setIsUploading(true);
+                try {
+                    const compressedFile = await compressImage(selectedFile);
+                    const response = await axios.post('/api/upload/r2', {
+                        filename: compressedFile.name,
+                        contentType: compressedFile.type,
+                    });
+
+                    const { uploadUrl, publicUrl } = response.data;
+
+                    if (uploadUrl) {
+                        await axios.put(uploadUrl, compressedFile, {
+                            headers: {
+                                'Content-Type': compressedFile.type,
+                            },
+                        });
+                    }
+                    uploadedImageSrc = publicUrl;
+                } catch (err: unknown) {
+                    console.error('Failed to upload image', err);
+                    toast.error('Failed to upload photo proof');
+                    return;
+                } finally {
+                    setIsUploading(false);
+                }
+            }
+
+            onCreateComment(comment, rating, isCooked, uploadedImageSrc);
+
+            setComment('');
+            setRating(null);
+            setShowRating(false);
+            setIsCooked(false);
+            handleRemoveFile();
+        } finally {
+            setButtonDisabled(false);
         }
-
-        onCreateComment(comment, rating, isCooked, uploadedImageSrc);
-
-        setComment('');
-        setRating(null);
-        setShowRating(false);
-        setIsCooked(false);
-        handleRemoveFile();
-        setButtonDisabled(false);
     };
 
     const isSubmitting = isLoading || isUploading || isButtonDisabled;
@@ -149,7 +150,12 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                             value={comment}
                             onChange={handleInputChange}
                             placeholder={
-                                mounted ? t('write_comment') : 'write_comment'
+                                mounted
+                                    ? String(
+                                          t('write_comment') ||
+                                              'Write a comment...'
+                                      )
+                                    : 'write_comment'
                             }
                             className="min-h-[38px] w-full resize-none overflow-y-auto border-0 bg-transparent p-0 text-sm text-neutral-900 placeholder:text-neutral-400 focus:ring-0 focus:outline-hidden dark:text-neutral-100 dark:placeholder:text-neutral-500"
                             disabled={isSubmitting}

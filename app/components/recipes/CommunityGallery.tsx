@@ -9,12 +9,14 @@ import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import PhotoLightbox from '@/app/components/modals/PhotoLightbox';
 import useIsMounted from '@/app/hooks/useIsMounted';
 
+const DEFAULT_COMMENTS: SafeComment[] = [];
+
 interface CommunityGalleryProps {
     comments?: SafeComment[];
 }
 
 const CommunityGallery: React.FC<CommunityGalleryProps> = ({
-    comments = [],
+    comments = DEFAULT_COMMENTS,
 }) => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const mounted = useIsMounted();
