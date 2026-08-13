@@ -192,6 +192,14 @@ const MentionInput: React.FC<MentionInputProps> = ({
     );
 
     useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            const newHeight = Math.min(textareaRef.current.scrollHeight, 240);
+            textareaRef.current.style.height = `${newHeight}px`;
+        }
+    }, [value]);
+
+    useEffect(() => {
         return () => {
             debouncedSearch.cancel();
         };
@@ -329,6 +337,7 @@ const MentionInput: React.FC<MentionInputProps> = ({
         <div className="relative">
             <textarea
                 ref={textareaRef}
+                rows={1}
                 className={className}
                 placeholder={placeholder}
                 aria-label={placeholder || 'Mention'}

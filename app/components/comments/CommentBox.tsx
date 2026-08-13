@@ -34,6 +34,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 }) => {
     const [comment, setComment] = useState('');
     const [rating, setRating] = useState<number | null>(null);
+    const [showRating, setShowRating] = useState(false);
     const [isCooked, setIsCooked] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -120,6 +121,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 
         setComment('');
         setRating(null);
+        setShowRating(false);
         setIsCooked(false);
         handleRemoveFile();
         setButtonDisabled(false);
@@ -128,8 +130,8 @@ const CommentBox: React.FC<CommentBoxProps> = ({
     const isSubmitting = isLoading || isUploading || isButtonDisabled;
 
     return (
-        <div className="mb-4 flex items-start">
-            <div className="mt-4 mr-4 mb-4 shrink-0">
+        <div className="mb-6 flex items-start gap-3">
+            <div className="mt-1 shrink-0">
                 <Avatar
                     src={userImage}
                     quality="auto:eco"
@@ -138,69 +140,82 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 
             <form
                 onSubmit={handleSubmit}
-                className="mt-2 grow"
+                className="min-w-0 grow"
             >
-                <div className="relative">
-                    <MentionInput
-                        value={comment}
-                        onChange={handleInputChange}
-                        placeholder={
-                            mounted
-                                ? (t('write_comment') ?? 'Write a comment...')
-                                : 'write_comment'
-                        }
-                        className="h-12 w-full resize-none rounded-md border border-neutral-100 bg-neutral-100 p-2 font-light text-neutral-900 focus:ring-0 focus:outline-hidden dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100"
-                        disabled={isSubmitting}
-                        maxLength={COMMENT_MAX_LENGTH}
-                        dataCy="comment-input"
-                    />
+                <div className="rounded-xl border border-neutral-200 bg-transparent p-3 transition-colors focus-within:border-neutral-300 dark:border-neutral-700 dark:focus:border-neutral-600">
+                    {/* Textarea Area */}
+                    <div className="relative">
+                        <MentionInput
+                            value={comment}
+                            onChange={handleInputChange}
+                            placeholder={
+                                mounted ? t('write_comment') : 'write_comment'
+                            }
+                            className="min-h-[38px] w-full resize-none overflow-y-auto border-0 bg-transparent p-0 text-sm text-neutral-900 placeholder:text-neutral-400 focus:ring-0 focus:outline-hidden dark:text-neutral-100 dark:placeholder:text-neutral-500"
+                            disabled={isSubmitting}
+                            maxLength={COMMENT_MAX_LENGTH}
+                            dataCy="comment-input"
+                        />
+                        <div
+                            className={`absolute right-2 bottom-2 text-xs transition-opacity duration-200 ${
+                                comment.length >=
+                                COMMENT_MAX_LENGTH *
+                                    CHAR_COUNT_WARNING_THRESHOLD
+                                    ? 'text-neutral-500 opacity-100 dark:text-neutral-400'
+                                    : 'opacity-0'
+                            }`}
+                        >
+                            {comment.length}/{COMMENT_MAX_LENGTH}
+                        </div>
+                    </div>
+
+                    {/* Photo Preview Attachment */}
+                    {previewUrl && (
+                        <div className="mt-2.5 inline-block">
+                            <div className="relative overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-700">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={previewUrl}
+                                    alt="Remake preview"
+                                    className="h-16 w-16 object-cover"
+                                    data-testid="photo-preview"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleRemoveFile}
+                                    aria-label="Remove photo"
+                                    data-testid="remove-photo"
+                                    className="absolute top-1 right-1 flex size-4 cursor-pointer items-center justify-center rounded-full bg-rose-500 text-white transition hover:bg-rose-600"
+                                >
+                                    <HiX size={10} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Collapsible Star Rating Container */}
                     <div
-                        className={`absolute right-2 bottom-2 text-xs transition-opacity duration-200 ${
-                            comment.length >=
-                            COMMENT_MAX_LENGTH * CHAR_COUNT_WARNING_THRESHOLD
-                                ? 'text-neutral-500 opacity-100 dark:text-neutral-400'
-                                : 'opacity-0'
+                        className={`overflow-hidden transition-all duration-200 ${
+                            showRating || rating !== null
+                                ? 'mt-2 max-h-12 border-t border-neutral-200/60 pt-2 opacity-100 dark:border-neutral-700/60'
+                                : 'pointer-events-none max-h-0 opacity-0'
                         }`}
                     >
-                        {comment.length}/{COMMENT_MAX_LENGTH}
-                    </div>
-                </div>
-
-                {previewUrl && (
-                    <div className="relative mt-2 inline-block">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={previewUrl}
-                            alt="Remake preview"
-                            className="h-20 w-20 rounded-md border border-neutral-300 object-cover dark:border-neutral-700"
-                            data-testid="photo-preview"
-                        />
-                        <button
-                            type="button"
-                            onClick={handleRemoveFile}
-                            aria-label="Remove photo"
-                            data-testid="remove-photo"
-                            className="absolute -top-2 -right-2 flex size-6 cursor-pointer items-center justify-center rounded-full bg-rose-500 text-white shadow-xs transition hover:bg-rose-600"
-                        >
-                            <HiX size={14} />
-                        </button>
-                    </div>
-                )}
-
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap items-center gap-4">
-                        <StarRating
-                            rating={rating || 0}
-                            interactive
-                            onChange={setRating}
-                            size={18}
-                        />
-                        <div className="flex size-6 shrink-0 items-center justify-center">
+                        <div className="flex items-center gap-1.5">
+                            <StarRating
+                                rating={rating || 0}
+                                interactive
+                                onChange={setRating}
+                                size={16}
+                            />
                             {rating !== null && (
                                 <button
                                     type="button"
-                                    onClick={() => setRating(null)}
-                                    className="flex cursor-pointer items-center justify-center rounded-full p-1 text-neutral-500 transition hover:bg-neutral-200 hover:text-rose-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-rose-400"
+                                    onClick={() => {
+                                        setRating(null);
+                                        setShowRating(false);
+                                    }}
+                                    className="flex cursor-pointer items-center justify-center rounded-full p-0.5 text-neutral-400 hover:text-rose-500 dark:hover:text-rose-400"
                                     data-testid="clear-rating"
                                     aria-label={
                                         mounted
@@ -208,71 +223,163 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                                             : 'Clear rating'
                                     }
                                 >
-                                    <FiTrash size={16} />
+                                    <FiTrash size={12} />
                                 </button>
                             )}
                         </div>
+                    </div>
 
-                        {/* "I Cooked This! 🥑" Toggle */}
-                        <label
-                            className="flex cursor-pointer items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-200"
-                            data-testid="cooked-toggle-label"
-                        >
-                            <input
-                                type="checkbox"
-                                checked={isCooked}
-                                onChange={(e) => setIsCooked(e.target.checked)}
-                                className="size-4 cursor-pointer rounded border-neutral-300 text-emerald-600 focus:ring-emerald-500 dark:border-neutral-600"
-                                data-testid="cooked-toggle"
-                                data-cy="cooked-toggle"
-                            />
-                            <span>
-                                {mounted
-                                    ? t('i_cooked_this') || 'I Cooked This! 🥑'
-                                    : 'I Cooked This! 🥑'}
-                            </span>
-                        </label>
-
-                        {/* Image Upload Button */}
-                        <div>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileSelect}
-                                className="hidden"
-                                id="cooked-photo-input"
-                                data-testid="cooked-photo-input"
-                                data-cy="cooked-photo-input"
-                            />
-                            <label
-                                htmlFor="cooked-photo-input"
-                                className="flex cursor-pointer items-center gap-1 text-xs font-semibold text-neutral-600 hover:text-emerald-600 dark:text-neutral-400 dark:hover:text-emerald-400"
-                                title="Attach photo proof"
+                    {/* Bottom Action Bar */}
+                    <div className="mt-3 flex items-center justify-between border-t border-neutral-200/70 pt-2.5 dark:border-neutral-700/70">
+                        {/* Action Options (Rate, Cooked & Photo) */}
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                            {/* Toggle Star Rating Button (Icon-only on < md, Text on >= md) */}
+                            <button
+                                type="button"
+                                onClick={() => setShowRating((prev) => !prev)}
+                                className={`flex cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition select-none ${
+                                    rating !== null || showRating
+                                        ? 'bg-amber-400/20 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300'
+                                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                                }`}
+                                data-testid="rate-toggle-btn"
+                                title={
+                                    mounted
+                                        ? t('rate') && t('rate') !== 'rate'
+                                            ? t('rate')
+                                            : 'Rate'
+                                        : 'Rate'
+                                }
                             >
-                                <HiOutlineCamera size={18} />
-                                <span>
+                                <span className="text-amber-500">⭐</span>
+                                <span className="hidden md:inline">
                                     {mounted
-                                        ? t('add_photo') || 'Add photo'
-                                        : 'Add photo'}
+                                        ? t('rate') && t('rate') !== 'rate'
+                                            ? t('rate')
+                                            : 'Rate'
+                                        : 'Rate'}
+                                </span>
+                            </button>
+
+                            {/* "I Cooked This! 🥑" Toggle (Short text on < md, Full text on >= md) */}
+                            <label
+                                className={`flex cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition select-none ${
+                                    isCooked
+                                        ? 'bg-green-450/20 dark:bg-green-450/10 text-green-800 dark:text-green-300'
+                                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                                }`}
+                                data-testid="cooked-toggle-label"
+                                title={
+                                    mounted
+                                        ? t('i_cooked_this') &&
+                                          t('i_cooked_this') !== 'i_cooked_this'
+                                            ? t('i_cooked_this')
+                                            : 'I Cooked This!'
+                                        : 'I Cooked This!'
+                                }
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={isCooked}
+                                    onChange={(e) =>
+                                        setIsCooked(e.target.checked)
+                                    }
+                                    className="sr-only"
+                                    data-testid="cooked-toggle"
+                                    data-cy="cooked-toggle"
+                                />
+                                <span>🥑</span>
+                                <span className="md:hidden">
+                                    {mounted
+                                        ? t('cooked_short') &&
+                                          t('cooked_short') !== 'cooked_short'
+                                            ? t('cooked_short')
+                                            : 'Cooked'
+                                        : 'Cooked'}
+                                </span>
+                                <span className="hidden md:inline">
+                                    {mounted
+                                        ? t('i_cooked_this') &&
+                                          t('i_cooked_this') !== 'i_cooked_this'
+                                            ? t('i_cooked_this')
+                                            : 'I Cooked This!'
+                                        : 'I Cooked This!'}
                                 </span>
                             </label>
+
+                            {/* Image Upload Button (Icon-only on < md, Text on >= md) */}
+                            <div>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileSelect}
+                                    className="hidden"
+                                    id="cooked-photo-input"
+                                    data-testid="cooked-photo-input"
+                                    data-cy="cooked-photo-input"
+                                />
+                                <label
+                                    htmlFor="cooked-photo-input"
+                                    className={`flex cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition select-none ${
+                                        selectedFile
+                                            ? 'bg-green-450/20 dark:bg-green-450/10 text-green-800 dark:text-green-300'
+                                            : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                                    }`}
+                                    title={
+                                        mounted
+                                            ? t('add_photo') &&
+                                              t('add_photo') !== 'add_photo'
+                                                ? t('add_photo')
+                                                : 'Add photo'
+                                            : 'Add photo'
+                                    }
+                                >
+                                    <HiOutlineCamera size={14} />
+                                    <span className="hidden md:inline">
+                                        {mounted
+                                            ? t('add_photo') &&
+                                              t('add_photo') !== 'add_photo'
+                                                ? t('add_photo')
+                                                : 'Add photo'
+                                            : 'Add photo'}
+                                    </span>
+                                </label>
+                            </div>
                         </div>
+
+                        {/* Submit Action Button */}
+                        <button
+                            type="submit"
+                            data-testid="submit-comment"
+                            disabled={isSubmitting || comment.trim() === ''}
+                            className={`bg-green-450 flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-green-950 transition hover:opacity-90 md:px-4 ${
+                                isSubmitting || comment.trim() === ''
+                                    ? 'cursor-not-allowed opacity-50'
+                                    : 'cursor-pointer'
+                            }`}
+                            data-cy="submit-comment"
+                            aria-label={
+                                mounted
+                                    ? `${t('submit_comment')}`
+                                    : 'Submit comment'
+                            }
+                        >
+                            <span className="hidden whitespace-nowrap md:inline">
+                                {mounted
+                                    ? t('submit_comment') &&
+                                      t('submit_comment') !== 'submit_comment'
+                                        ? t('submit_comment')
+                                        : 'Submit'
+                                    : 'Submit'}
+                            </span>
+                            <HiOutlinePaperAirplane
+                                size={13}
+                                className="rotate-90"
+                            />
+                        </button>
                     </div>
                 </div>
-
-                <button
-                    type="submit"
-                    data-testid="submit-comment"
-                    disabled={isSubmitting || comment.trim() === ''}
-                    className={`text-green-450 mt-4 mb-4 ml-4 ${isSubmitting || comment.trim() === '' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                    data-cy="submit-comment"
-                    aria-label={
-                        mounted ? `${t('submit_comment')}` : 'Submit comment'
-                    }
-                >
-                    <HiOutlinePaperAirplane size={20} />
-                </button>
             </form>
         </div>
     );
