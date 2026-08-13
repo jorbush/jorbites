@@ -30,83 +30,78 @@ export async function compressImage(
         return file;
     }
 
-    return new Promise((resolve, reject) => {
-        const image = new Image();
-        let objectUrl = '';
+    let objectUrl = '';
+    try {
+        objectUrl = URL.createObjectURL(file);
+        return await new Promise<File>((resolve, reject) => {
+            const image = new Image();
 
-        try {
-            objectUrl = URL.createObjectURL(file);
-        } catch {
-            // If ObjectURL fails (e.g. mock environment), resolve original file
-            return resolve(file);
-        }
+            image.onload = () => {
+                let width = image.width || 800;
+                let height = image.height || 600;
 
-        image.onload = () => {
+                if (width > maxWidth || height > maxHeight) {
+                    if (width / height > maxWidth / maxHeight) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    } else {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    return resolve(file);
+                }
+
+                ctx.drawImage(image, 0, 0, width, height);
+
+                if (typeof canvas.toBlob !== 'function') {
+                    return resolve(file);
+                }
+
+                canvas.toBlob(
+                    (blob) => {
+                        if (!blob) {
+                            return resolve(file);
+                        }
+                        const baseName = file.name.includes('.')
+                            ? file.name.substring(0, file.name.lastIndexOf('.'))
+                            : file.name;
+                        const newFileName = `${baseName}.webp`;
+                        const compressedFile = new File([blob], newFileName, {
+                            type: 'image/webp',
+                            lastModified: Date.now(),
+                        });
+                        resolve(compressedFile);
+                    },
+                    'image/webp',
+                    quality
+                );
+            };
+
+            image.onerror = () => {
+                reject(new Error('Failed to load image for compression'));
+            };
+
+            image.src = objectUrl;
+        });
+    } catch {
+        return file;
+    } finally {
+        if (objectUrl) {
             try {
                 URL.revokeObjectURL(objectUrl);
             } catch {
-                // Ignore revoke errors in test mocks
+                // Ignore
             }
-
-            let width = image.width || 800;
-            let height = image.height || 600;
-
-            if (width > maxWidth || height > maxHeight) {
-                if (width / height > maxWidth / maxHeight) {
-                    height = Math.round((height * maxWidth) / width);
-                    width = maxWidth;
-                } else {
-                    width = Math.round((width * maxHeight) / height);
-                    height = maxHeight;
-                }
-            }
-
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-                return resolve(file);
-            }
-
-            ctx.drawImage(image, 0, 0, width, height);
-
-            if (typeof canvas.toBlob !== 'function') {
-                return resolve(file);
-            }
-
-            canvas.toBlob(
-                (blob) => {
-                    if (!blob) {
-                        return resolve(file);
-                    }
-                    const baseName = file.name.includes('.')
-                        ? file.name.substring(0, file.name.lastIndexOf('.'))
-                        : file.name;
-                    const newFileName = `${baseName}.webp`;
-                    const compressedFile = new File([blob], newFileName, {
-                        type: 'image/webp',
-                        lastModified: Date.now(),
-                    });
-                    resolve(compressedFile);
-                },
-                'image/webp',
-                quality
-            );
-        };
-
-        image.onerror = () => {
-            reject(new Error('Failed to load image for compression'));
-        };
-
-        image.src = objectUrl;
-        try {
-            URL.revokeObjectURL(objectUrl);
-        } catch {
-            // Ignore revoke errors in test mocks
         }
-    });
+    }
 }
 
 export default compressImage;

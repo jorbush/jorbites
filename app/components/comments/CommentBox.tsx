@@ -225,7 +225,10 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                                     data-testid="clear-rating"
                                     aria-label={
                                         mounted
-                                            ? `${t('clear_rating')}`
+                                            ? String(
+                                                  t('clear_rating') ||
+                                                      'Clear rating'
+                                              )
                                             : 'Clear rating'
                                     }
                                 >
@@ -251,18 +254,22 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                                 data-testid="rate-toggle-btn"
                                 title={
                                     mounted
-                                        ? t('rate') && t('rate') !== 'rate'
-                                            ? t('rate')
-                                            : 'Rate'
+                                        ? String(
+                                              t('rate') && t('rate') !== 'rate'
+                                                  ? t('rate')
+                                                  : 'Rate'
+                                          )
                                         : 'Rate'
                                 }
                             >
                                 <span className="text-amber-500">⭐</span>
                                 <span className="hidden md:inline">
                                     {mounted
-                                        ? t('rate') && t('rate') !== 'rate'
-                                            ? t('rate')
-                                            : 'Rate'
+                                        ? String(
+                                              t('rate') && t('rate') !== 'rate'
+                                                  ? t('rate')
+                                                  : 'Rate'
+                                          )
                                         : 'Rate'}
                                 </span>
                             </button>
@@ -277,10 +284,13 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                                 data-testid="cooked-toggle-label"
                                 title={
                                     mounted
-                                        ? t('i_cooked_this') &&
-                                          t('i_cooked_this') !== 'i_cooked_this'
-                                            ? t('i_cooked_this')
-                                            : 'I Cooked This!'
+                                        ? String(
+                                              t('i_cooked_this') &&
+                                                  t('i_cooked_this') !==
+                                                      'i_cooked_this'
+                                                  ? t('i_cooked_this')
+                                                  : 'I Cooked This!'
+                                          )
                                         : 'I Cooked This!'
                                 }
                             >
@@ -297,18 +307,24 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                                 <span>🥑</span>
                                 <span className="md:hidden">
                                     {mounted
-                                        ? t('cooked_short') &&
-                                          t('cooked_short') !== 'cooked_short'
-                                            ? t('cooked_short')
-                                            : 'Cooked'
+                                        ? String(
+                                              t('cooked_short') &&
+                                                  t('cooked_short') !==
+                                                      'cooked_short'
+                                                  ? t('cooked_short')
+                                                  : 'Cooked'
+                                          )
                                         : 'Cooked'}
                                 </span>
                                 <span className="hidden md:inline">
                                     {mounted
-                                        ? t('i_cooked_this') &&
-                                          t('i_cooked_this') !== 'i_cooked_this'
-                                            ? t('i_cooked_this')
-                                            : 'I Cooked This!'
+                                        ? String(
+                                              t('i_cooked_this') &&
+                                                  t('i_cooked_this') !==
+                                                      'i_cooked_this'
+                                                  ? t('i_cooked_this')
+                                                  : 'I Cooked This!'
+                                          )
                                         : 'I Cooked This!'}
                                 </span>
                             </label>
@@ -334,20 +350,26 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                                     }`}
                                     title={
                                         mounted
-                                            ? t('add_photo') &&
-                                              t('add_photo') !== 'add_photo'
-                                                ? t('add_photo')
-                                                : 'Add photo'
+                                            ? String(
+                                                  t('add_photo') &&
+                                                      t('add_photo') !==
+                                                          'add_photo'
+                                                      ? t('add_photo')
+                                                      : 'Add photo'
+                                              )
                                             : 'Add photo'
                                     }
                                 >
                                     <HiOutlineCamera size={14} />
                                     <span className="hidden md:inline">
                                         {mounted
-                                            ? t('add_photo') &&
-                                              t('add_photo') !== 'add_photo'
-                                                ? t('add_photo')
-                                                : 'Add photo'
+                                            ? String(
+                                                  t('add_photo') &&
+                                                      t('add_photo') !==
+                                                          'add_photo'
+                                                      ? t('add_photo')
+                                                      : 'Add photo'
+                                              )
                                             : 'Add photo'}
                                     </span>
                                 </label>
@@ -367,16 +389,22 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                             data-cy="submit-comment"
                             aria-label={
                                 mounted
-                                    ? `${t('submit_comment')}`
+                                    ? String(
+                                          t('submit_comment') ||
+                                              'Submit comment'
+                                      )
                                     : 'Submit comment'
                             }
                         >
                             <span className="hidden whitespace-nowrap md:inline">
                                 {mounted
-                                    ? t('submit_comment') &&
-                                      t('submit_comment') !== 'submit_comment'
-                                        ? t('submit_comment')
-                                        : 'Submit'
+                                    ? String(
+                                          t('submit_comment') &&
+                                              t('submit_comment') !==
+                                                  'submit_comment'
+                                              ? t('submit_comment')
+                                              : 'Submit'
+                                      )
                                     : 'Submit'}
                             </span>
                             <HiOutlinePaperAirplane
