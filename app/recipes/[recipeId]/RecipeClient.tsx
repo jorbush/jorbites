@@ -13,6 +13,7 @@ import RecipeHead from '@/app/components/recipes/RecipeHead';
 import RecipeInfo from '@/app/components/recipes/RecipeInfo';
 import { preparationMethods } from '@/app/components/modals/recipe-steps/preparationMethodsData';
 import Comments from '@/app/components/comments/Comments';
+import CommunityGallery from '@/app/components/recipes/CommunityGallery';
 import DeleteRecipeButton from '@/app/components/recipes/DeleteRecipeButton';
 import EditRecipeButton from '@/app/components/recipes/EditRecipeButton';
 import { useTranslation } from 'react-i18next';
@@ -65,7 +66,12 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const ratingCount = recipe.ratingCount || 0;
 
     const onCreateComment = useCallback(
-        (comment: string, rating: number | null) => {
+        (
+            comment: string,
+            rating: number | null,
+            isCooked?: boolean,
+            imageSrc?: string | null
+        ) => {
             if (!currentUser) {
                 return loginModal.onOpen();
             }
@@ -76,6 +82,8 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                         comment: comment,
                         recipeId: recipe?.id,
                         rating: rating,
+                        isCooked: isCooked,
+                        imageSrc: imageSrc,
                     });
                     toast.success(t('comment_created'));
                 } catch {
@@ -159,6 +167,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             ganttTable={recipe.ganttTable}
                         />
                     </div>
+                    <CommunityGallery comments={comments} />
                     <div id="comments-section">
                         <Comments
                             currentUser={currentUser}

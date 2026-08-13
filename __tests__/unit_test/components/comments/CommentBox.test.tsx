@@ -107,6 +107,8 @@ describe('CommentBox', () => {
         await waitFor(() => {
             expect(mockProps.onCreateComment).toHaveBeenCalledWith(
                 'This is a test comment',
+                null,
+                false,
                 null
             );
         });
@@ -129,7 +131,9 @@ describe('CommentBox', () => {
         await waitFor(() => {
             expect(mockProps.onCreateComment).toHaveBeenCalledWith(
                 'Very nice!',
-                4
+                4,
+                false,
+                null
             );
         });
     });
@@ -158,6 +162,8 @@ describe('CommentBox', () => {
         await waitFor(() => {
             expect(mockProps.onCreateComment).toHaveBeenCalledWith(
                 'No rating comment',
+                null,
+                false,
                 null
             );
         });
@@ -271,6 +277,33 @@ describe('CommentBox', () => {
                 '.absolute.right-2.bottom-2'
             );
             expect(commentBox?.className).toContain('opacity-100');
+        });
+    });
+
+    it('toggles I Cooked This! checkbox and passes isCooked on submit', async () => {
+        render(<CommentBox {...mockProps} />);
+
+        const textarea = screen.getByPlaceholderText('write_comment');
+        fireEvent.change(textarea, {
+            target: { value: 'Made this for dinner!' },
+        });
+
+        const cookedToggle = screen.getByTestId('cooked-toggle');
+        expect(cookedToggle).toHaveProperty('checked', false);
+
+        fireEvent.click(cookedToggle);
+        expect(cookedToggle).toHaveProperty('checked', true);
+
+        const submitButton = screen.getByTestId('submit-comment');
+        fireEvent.click(submitButton);
+
+        await waitFor(() => {
+            expect(mockProps.onCreateComment).toHaveBeenCalledWith(
+                'Made this for dinner!',
+                null,
+                true,
+                null
+            );
         });
     });
 });

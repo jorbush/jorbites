@@ -18,6 +18,20 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'img.youtube.com',
             },
+            {
+                protocol: 'https',
+                hostname: '*.r2.cloudflarestorage.com',
+            },
+            ...(process.env.R2_PUBLIC_DOMAIN
+                ? [
+                      {
+                          protocol: 'https',
+                          hostname: process.env.R2_PUBLIC_DOMAIN
+                              .replace(/^https?:\/\//, '')
+                              .replace(/\/.*$/, ''),
+                      },
+                  ]
+                : []),
         ],
         formats: ['image/avif', 'image/webp'],
         minimumCacheTTL: 31536000,

@@ -110,6 +110,8 @@ model Comment {
   comment String
   recipeId String @db.ObjectId
   rating Int?
+  imageSrc String?
+  isCooked Boolean @default(false)
   createdAt DateTime @default(now())
   likedIds String[] @db.ObjectId @default([])
 

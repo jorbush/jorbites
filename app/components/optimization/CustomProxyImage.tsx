@@ -64,7 +64,13 @@ export default function CustomProxyImage({
         src &&
         (src.includes('cloudinary.com') ||
             src.includes('googleusercontent.com') ||
-            src.includes('githubusercontent.com'))
+            src.includes('githubusercontent.com') ||
+            src.includes('r2.cloudflarestorage.com') ||
+            src.includes(
+                process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN ||
+                    process.env.R2_PUBLIC_DOMAIN ||
+                    'images.jorbites.com'
+            ))
     ) {
         const ratio =
             actualWidth && actualHeight ? actualHeight / actualWidth : null;

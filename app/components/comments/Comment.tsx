@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import Avatar from '@/app/components/utils/Avatar';
 import { MdDelete } from 'react-icons/md';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
+import PhotoLightbox from '@/app/components/modals/PhotoLightbox';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -17,10 +18,11 @@ import useIsMounted from '@/app/hooks/useIsMounted';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import useCommentLike from '@/app/hooks/useCommentLike';
 import { SafeUser } from '@/app/types';
+import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 
 const DEFAULT_LIKED_IDS: string[] = [];
 
-interface CommentProps {
+export interface CommentProps {
     userId: string;
     userImage: string | undefined | null;
     comment: string;
@@ -33,6 +35,8 @@ interface CommentProps {
     rating: number | null;
     likedIds?: string[];
     currentUser?: SafeUser | null;
+    isCooked?: boolean;
+    imageSrc?: string | null;
 }
 
 const Comment: React.FC<CommentProps> = ({
@@ -48,8 +52,11 @@ const Comment: React.FC<CommentProps> = ({
     rating,
     likedIds = DEFAULT_LIKED_IDS,
     currentUser,
+    isCooked = false,
+    imageSrc = null,
 }) => {
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
     const mounted = useIsMounted();
     const { hasLiked, toggleLike } = useCommentLike({
         commentId,
@@ -97,7 +104,7 @@ const Comment: React.FC<CommentProps> = ({
                 />
             </div>
             <div className="mt-2 ml-4 grow">
-                <div className="mb-1 flex flex-row">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
                     <button
                         type="button"
                         className="cursor-pointer truncate border-0 bg-transparent p-0 text-justify text-left font-bold whitespace-normal text-neutral-800 dark:text-neutral-100"
@@ -105,12 +112,25 @@ const Comment: React.FC<CommentProps> = ({
                     >
                         {userName}
                     </button>
-                    {verified && <VerificationBadge className="mt-1 ml-1" />}
-                    <div className="mt-0.5 ml-1.5 text-sm text-neutral-500 dark:text-neutral-400">
+                    {verified && <VerificationBadge className="mt-0.5" />}
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400">
                         {mounted
                             ? `${t('level')} ${userLevel}`
                             : `level ${userLevel}`}
                     </div>
+                    {isCooked && (
+                        <span
+                            className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                            data-testid="cooked-badge"
+                            data-cy="cooked-badge"
+                        >
+                            🥑{' '}
+                            {mounted
+                                ? t('cooked_and_verified') ||
+                                  'Cooked & Verified'
+                                : 'Cooked & Verified'}
+                        </span>
+                    )}
                 </div>
                 {rating !== undefined && rating !== null && rating > 0 && (
                     <div
@@ -133,6 +153,27 @@ const Comment: React.FC<CommentProps> = ({
                             : displayContent}
                     </p>
                 </div>
+
+                {imageSrc && (
+                    <div className="mt-2">
+                        <button
+                            type="button"
+                            onClick={() => setLightboxOpen(true)}
+                            className="group relative inline-block overflow-hidden rounded-lg border border-neutral-200 focus:outline-hidden dark:border-neutral-700"
+                            data-testid="remake-photo-button"
+                            data-cy="remake-photo-button"
+                        >
+                            <CustomProxyImage
+                                src={imageSrc}
+                                alt="User remake proof"
+                                width={180}
+                                height={140}
+                                className="object-cover transition group-hover:scale-105"
+                            />
+                        </button>
+                    </div>
+                )}
+
                 <div className="mt-2 flex min-h-[24px] items-center justify-between text-sm text-neutral-500 dark:text-neutral-400">
                     <div className="flex items-center gap-4">
                         <div className="shrink-0">{translateButtonElement}</div>
@@ -163,6 +204,7 @@ const Comment: React.FC<CommentProps> = ({
                     </div>
                     <div className="ml-auto">{formattedDate}</div>
                 </div>
+
                 {canDelete && (
                     <button
                         type="button"
@@ -174,10 +216,19 @@ const Comment: React.FC<CommentProps> = ({
                         <MdDelete size={20} />
                     </button>
                 )}
+
                 <ConfirmModal
                     open={confirmModalOpen}
                     setIsOpen={setConfirmModalOpen}
                     onConfirm={deleteComment}
+                />
+
+                <PhotoLightbox
+                    src={imageSrc}
+                    alt="User remake proof full size"
+                    isOpen={lightboxOpen}
+                    onClose={() => setLightboxOpen(false)}
+                    testId="lightbox-modal"
                 />
             </div>
         </div>
@@ -185,3 +236,4 @@ const Comment: React.FC<CommentProps> = ({
 };
 
 export default Comment;
+export { Comment as CommentCard };

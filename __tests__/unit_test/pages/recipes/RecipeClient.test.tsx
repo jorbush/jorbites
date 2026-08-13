@@ -159,6 +159,8 @@ describe('RecipeClient', () => {
                 comment: 'New comment',
                 recipeId: '1',
                 rating: null,
+                isCooked: false,
+                imageSrc: null,
             });
         });
     });

@@ -17,6 +17,25 @@ import { logger } from '@/app/lib/axiom/server';
 import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 import { redisCache } from '@/app/lib/redis';
 
+function isValidR2Url(urlStr: unknown): string | null {
+    if (!urlStr || typeof urlStr !== 'string') return null;
+    try {
+        const parsed = new URL(urlStr);
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:')
+            return null;
+        const r2Domain = (process.env.R2_PUBLIC_DOMAIN || 'images.jorbites.com')
+            .replace(/^https?:\/\//, '')
+            .replace(/\/.*$/, '');
+        const isAllowed =
+            parsed.hostname === r2Domain ||
+            parsed.hostname.endsWith('.r2.cloudflarestorage.com') ||
+            parsed.hostname === 'res.cloudinary.com';
+        return isAllowed ? urlStr : null;
+    } catch {
+        return null;
+    }
+}
+
 export async function POST(request: Request) {
     try {
         const currentUser = await getCurrentUser();
@@ -48,12 +67,14 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { recipeId, comment, rating } = body;
+        const { recipeId, comment, rating, isCooked, imageSrc } = body;
 
         logger.info('POST /api/comments - start', {
             recipeId,
             userId: currentUser.id,
             rating,
+            isCooked,
+            hasImage: Boolean(imageSrc),
         });
 
         if (!recipeId || !comment) {
@@ -129,6 +150,8 @@ export async function POST(request: Request) {
                                 rating !== undefined && rating !== null
                                     ? Number(rating)
                                     : null,
+                            isCooked: Boolean(isCooked),
+                            imageSrc: isValidR2Url(imageSrc),
                         },
                     },
                     averageRating: newAvg,
