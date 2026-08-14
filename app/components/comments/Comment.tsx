@@ -118,20 +118,21 @@ const Comment: React.FC<CommentProps> = ({
                             ? `${t('level')} ${userLevel}`
                             : `level ${userLevel}`}
                     </div>
-                    {isCooked && (
+                    {(isCooked || Boolean(imageSrc)) && (
                         <span
-                            className="bg-green-450/20 dark:bg-green-450/10 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold text-green-800 dark:text-green-300"
+                            className="bg-green-450/20 dark:bg-green-450/10 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold text-green-800 dark:text-green-300"
                             data-testid="cooked-badge"
                             data-cy="cooked-badge"
                         >
                             🥑{' '}
                             {mounted
-                                ? t('cooked_and_verified') &&
-                                  t('cooked_and_verified') !==
-                                      'cooked_and_verified'
-                                    ? t('cooked_and_verified')
-                                    : 'Cooked & Verified'
-                                : 'Cooked & Verified'}
+                                ? String(
+                                      t('cooked_short') &&
+                                          t('cooked_short') !== 'cooked_short'
+                                          ? t('cooked_short')
+                                          : 'Cooked'
+                                  )
+                                : 'Cooked'}
                         </span>
                     )}
                 </div>

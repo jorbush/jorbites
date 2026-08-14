@@ -43,6 +43,7 @@ export function getProxyImageSrcAndSrcSet({
         src.includes('googleusercontent.com') ||
         src.includes('githubusercontent.com') ||
         src.includes('r2.cloudflarestorage.com') ||
+        src.includes('.r2.dev') ||
         (r2Domain !== '' && src.includes(r2Domain));
 
     if (!isProxyable) {

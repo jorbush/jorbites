@@ -24,7 +24,10 @@ const CommunityGallery: React.FC<CommunityGalleryProps> = ({
 
     const remakes = useMemo(
         () =>
-            comments.filter((comment) => comment.isCooked && comment.imageSrc),
+            comments.filter(
+                (comment) =>
+                    Boolean(comment.imageSrc) && (comment.isCooked || true)
+            ),
         [comments]
     );
 
@@ -34,21 +37,25 @@ const CommunityGallery: React.FC<CommunityGalleryProps> = ({
 
     return (
         <div
-            className="mt-8 flex flex-col pr-2 pl-2"
+            className="flex flex-col pr-2 pl-2"
             data-testid="community-gallery"
             data-cy="community-gallery"
         >
-            <div className="mb-4 flex items-center justify-between">
+            <hr />
+            <div className="mt-8 mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+                    <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
                         {mounted
-                            ? t('community_remakes') &&
-                              t('community_remakes') !== 'community_remakes'
-                                ? t('community_remakes')
-                                : 'Community Remakes 🥑'
+                            ? String(
+                                  t('community_remakes') &&
+                                      t('community_remakes') !==
+                                          'community_remakes'
+                                      ? t('community_remakes')
+                                      : 'Community Remakes 🥑'
+                              )
                             : 'Community Remakes 🥑'}
                     </h3>
-                    <span className="bg-green-450/20 dark:bg-green-450/10 rounded-full px-2.5 py-0.5 text-xs font-semibold text-green-800 dark:text-green-300">
+                    <span className="text-md ml-2 text-neutral-500">
                         {remakes.length}
                     </span>
                 </div>
@@ -75,7 +82,16 @@ const CommunityGallery: React.FC<CommunityGalleryProps> = ({
                                 className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                             />
                             <div className="bg-green-450 absolute top-2 right-2 rounded-full px-2 py-0.5 text-[10px] font-bold text-green-950 shadow-xs">
-                                🥑 Cooked
+                                🥑{' '}
+                                {mounted
+                                    ? String(
+                                          t('cooked_short') &&
+                                              t('cooked_short') !==
+                                                  'cooked_short'
+                                              ? t('cooked_short')
+                                              : 'Cooked'
+                                      )
+                                    : 'Cooked'}
                             </div>
                         </button>
 

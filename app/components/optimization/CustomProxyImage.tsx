@@ -66,6 +66,7 @@ export default function CustomProxyImage({
             src.includes('googleusercontent.com') ||
             src.includes('githubusercontent.com') ||
             src.includes('r2.cloudflarestorage.com') ||
+            src.includes('.r2.dev') ||
             src.includes(
                 process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN ||
                     process.env.R2_PUBLIC_DOMAIN ||
@@ -102,7 +103,7 @@ export default function CustomProxyImage({
     if (!optimizedSrc) {
         return (
             <div
-                className={`${fill || circular ? 'relative aspect-square' : ''} overflow-hidden bg-neutral-200 dark:bg-neutral-700 ${circular ? 'rounded-full' : ''} ${fill || circular ? className : ''}`}
+                className={`relative ${fill ? 'size-full' : ''} ${fill && !maxQuality ? 'aspect-square' : ''} ${circular ? 'aspect-square rounded-full' : ''} overflow-hidden bg-neutral-200 dark:bg-neutral-700 ${fill || circular ? className : ''}`}
                 style={
                     !fill && !circular
                         ? { width: actualWidth, height: actualHeight, ...style }
@@ -114,7 +115,7 @@ export default function CustomProxyImage({
 
     return (
         <div
-            className={`${(fill && !maxQuality) || circular ? 'relative aspect-square' : ''} overflow-hidden bg-neutral-200 dark:bg-neutral-700 ${circular ? 'rounded-full' : ''} ${fill || circular ? className : ''} ${useMaxQuality && !fill ? 'flex items-center justify-center' : ''}`}
+            className={`relative ${fill ? 'size-full' : ''} ${fill && !maxQuality ? 'aspect-square' : ''} ${circular ? 'aspect-square rounded-full' : ''} overflow-hidden ${fill || circular ? className : ''} ${useMaxQuality && !fill ? 'flex items-center justify-center' : ''}`}
             style={
                 !fill && !circular
                     ? { width: actualWidth, height: actualHeight, ...style }
@@ -138,13 +139,12 @@ export default function CustomProxyImage({
             {placeholderSrc && !circular && (
                 <div
                     style={{
-                        ...baseStyle,
                         backgroundImage: `url(${placeholderSrc})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         filter: 'blur(8px)',
                     }}
-                    className={`transition-opacity duration-300 ${isLoaded ? 'opacity-0' : 'opacity-100'}`}
+                    className={`pointer-events-none absolute inset-0 h-full w-full bg-neutral-200 transition-opacity duration-300 dark:bg-neutral-700 ${isLoaded ? 'opacity-0' : 'opacity-100'}`}
                     aria-hidden="true"
                 />
             )}

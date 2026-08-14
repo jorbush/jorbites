@@ -20,6 +20,10 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
+                hostname: '*.r2.dev',
+            },
+            {
+                protocol: 'https',
                 hostname: '*.r2.cloudflarestorage.com',
             },
             ...(process.env.R2_PUBLIC_DOMAIN

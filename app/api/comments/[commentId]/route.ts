@@ -12,6 +12,7 @@ import {
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { redisCache } from '@/app/lib/redis';
+import { deleteFromR2 } from '@/app/utils/r2';
 
 interface IParams {
     commentId?: string;
@@ -86,6 +87,20 @@ export async function DELETE(
                 ratingCount: stats._count.rating || 0,
             },
         });
+
+        if (comment.imageSrc) {
+            try {
+                await deleteFromR2(comment.imageSrc);
+            } catch (r2Error: any) {
+                logger.error(
+                    'DELETE /api/comments/[commentId] - R2 deletion error',
+                    {
+                        error: r2Error?.message || String(r2Error),
+                        imageSrc: comment.imageSrc,
+                    }
+                );
+            }
+        }
 
         logger.info('DELETE /api/comments/[commentId] - success', {
             commentId,

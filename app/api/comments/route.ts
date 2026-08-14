@@ -29,6 +29,7 @@ function isValidR2Url(urlStr: unknown): string | null {
         const isAllowed =
             parsed.hostname === r2Domain ||
             parsed.hostname.endsWith('.r2.cloudflarestorage.com') ||
+            parsed.hostname.endsWith('.r2.dev') ||
             parsed.hostname === 'res.cloudinary.com';
         return isAllowed ? urlStr : null;
     } catch {
@@ -150,7 +151,7 @@ export async function POST(request: Request) {
                                 rating !== undefined && rating !== null
                                     ? Number(rating)
                                     : null,
-                            isCooked: Boolean(isCooked),
+                            isCooked: Boolean(isCooked || imageSrc),
                             imageSrc: isValidR2Url(imageSrc),
                         },
                     },

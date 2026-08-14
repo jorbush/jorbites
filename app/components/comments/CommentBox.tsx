@@ -58,6 +58,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
         }
 
         setSelectedFile(file);
+        setIsCooked(true);
         const objectUrl = URL.createObjectURL(file);
         setPreviewUrl(objectUrl);
     };

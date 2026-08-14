@@ -28,18 +28,18 @@ export default function PhotoLightbox({
             aria-label={alt || 'Photo lightbox'}
             tabIndex={-1}
             onKeyDown={(e) => e.key === 'Escape' && onClose()}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs focus:outline-none"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 backdrop-blur-xs focus:outline-none sm:p-6"
             onClick={onClose}
             data-testid={testId}
         >
             <div
-                className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-xl bg-neutral-900 p-2 shadow-2xl"
+                className="relative flex max-h-[90vh] max-w-[92vw] flex-col items-center justify-center overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/95 p-2 shadow-2xl sm:max-w-[85vw] md:max-w-[800px]"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button
                     type="button"
                     onClick={onClose}
-                    className="absolute top-3 right-3 z-10 flex size-8 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black"
+                    className="absolute top-3 right-3 z-10 flex size-8 items-center justify-center rounded-full bg-black/70 text-white transition hover:bg-black focus:outline-none sm:size-9"
                     aria-label="Close photo lightbox"
                 >
                     <HiX size={20} />
@@ -50,7 +50,13 @@ export default function PhotoLightbox({
                     width={800}
                     height={600}
                     maxQuality
-                    className="max-h-[85vh] w-auto max-w-full rounded-lg object-contain"
+                    className="max-h-[80vh] w-auto max-w-full rounded-xl object-contain"
+                    style={{
+                        maxWidth: '100%',
+                        maxHeight: '80vh',
+                        width: 'auto',
+                        height: 'auto',
+                    }}
                 />
             </div>
         </div>

@@ -60,7 +60,8 @@ export async function GET(request: NextRequest) {
 
     const isAllowedDomain =
         ALLOWED_DOMAINS.has(parsedUrl.hostname) ||
-        parsedUrl.hostname.endsWith('.r2.cloudflarestorage.com');
+        parsedUrl.hostname.endsWith('.r2.cloudflarestorage.com') ||
+        parsedUrl.hostname.endsWith('.r2.dev');
 
     if (
         (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') ||
