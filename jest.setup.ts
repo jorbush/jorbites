@@ -147,3 +147,29 @@ jest.mock('@/app/actions/tracking', () => ({
     trackRecipeLike: jest.fn().mockResolvedValue(undefined),
     trackRecipeUnlike: jest.fn().mockResolvedValue(undefined),
 }));
+
+// Mock AWS S3 / Cloudflare R2
+jest.mock(
+    '@aws-sdk/client-s3',
+    () => ({
+        S3Client: jest.fn().mockImplementation(() => ({
+            send: jest.fn().mockResolvedValue({}),
+        })),
+        PutObjectCommand: jest.fn().mockImplementation((params) => params),
+        DeleteObjectCommand: jest.fn().mockImplementation((params) => params),
+        DeleteObjectsCommand: jest.fn().mockImplementation((params) => params),
+    }),
+    { virtual: true }
+);
+
+jest.mock('@/app/utils/r2', () => ({
+    deleteFromR2: jest.fn().mockResolvedValue(true),
+    deleteMultipleFromR2: jest
+        .fn()
+        .mockResolvedValue({ successful: [], failed: [] }),
+    isR2Url: jest.fn().mockReturnValue(false),
+    extractR2Key: jest.fn().mockReturnValue(null),
+    uploadToR2: jest
+        .fn()
+        .mockResolvedValue('https://images.jorbites.com/mock.jpg'),
+}));

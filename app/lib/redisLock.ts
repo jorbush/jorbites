@@ -298,9 +298,15 @@ export async function getActiveLocks(
             return locks;
         }
 
-        // Fallback for environments without mget
-        for (const key of keys) {
-            const rawData = await redis.get(key);
+        // Fallback for environments without mget: fetch concurrently
+        const results = await Promise.all(
+            keys.map(async (key) => {
+                const rawData = await redis.get(key);
+                return { key, rawData };
+            })
+        );
+
+        for (const { key, rawData } of results) {
             if (rawData) {
                 const fieldKey = key.replace(
                     `lock:recipe:${targetId}:field:`,
