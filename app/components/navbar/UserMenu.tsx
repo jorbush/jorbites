@@ -87,7 +87,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                 <button
                     type="button"
                     onClick={onPost}
-                    className="hidden cursor-pointer rounded-full border-[1px] bg-transparent px-3 py-2 text-xs font-semibold transition hover:bg-neutral-100 hover:text-black focus:outline-hidden sm:block md:px-4 md:py-3 md:text-sm dark:text-neutral-100 dark:hover:text-black"
+                    className="hidden cursor-pointer rounded-full border-[1px] bg-transparent px-3 py-2 text-xs font-semibold transition hover:bg-neutral-100 hover:text-black focus:outline-hidden sm:block sm:text-sm md:px-4 md:py-3 dark:text-neutral-100 dark:hover:text-black"
                     data-cy="post-recipe"
                 >
                     <span className="whitespace-nowrap">
