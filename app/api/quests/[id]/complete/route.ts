@@ -65,7 +65,7 @@ export async function POST(
         let body: CompleteQuestBody = {};
         try {
             body = await request.json();
-        } catch (_) {
+        } catch {
             // Body optional
         }
 

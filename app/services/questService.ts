@@ -6,7 +6,6 @@ import {
     forbiddenResponse,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
-import { processPendingBadgeEvaluations } from '@/app/lib/questOutbox';
 
 export interface CompleteQuestOptions {
     questId: string;

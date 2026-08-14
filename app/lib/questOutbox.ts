@@ -24,20 +24,24 @@ export async function processPendingBadgeEvaluations(): Promise<{
             count: pendingQuests.length,
         });
 
-        let succeeded = 0;
-        for (const quest of pendingQuests) {
-            if (!quest.acceptedSolverId) continue;
-            const success = await triggerBadgeForgeEvaluation(
-                quest.acceptedSolverId
-            );
-            if (success) {
-                await prisma.quest.update({
-                    where: { id: quest.id },
-                    data: { badgeEvaluated: true },
-                });
-                succeeded++;
-            }
-        }
+        const results = await Promise.all(
+            pendingQuests.map(async (quest) => {
+                if (!quest.acceptedSolverId) return false;
+                const success = await triggerBadgeForgeEvaluation(
+                    quest.acceptedSolverId
+                );
+                if (success) {
+                    await prisma.quest.update({
+                        where: { id: quest.id },
+                        data: { badgeEvaluated: true },
+                    });
+                    return true;
+                }
+                return false;
+            })
+        );
+
+        const succeeded = results.filter(Boolean).length;
 
         return { processed: pendingQuests.length, succeeded };
     } catch (error: unknown) {
