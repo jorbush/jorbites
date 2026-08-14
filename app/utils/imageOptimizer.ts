@@ -34,10 +34,17 @@ export function getProxyImageSrcAndSrcSet({
         return { src, srcSet: '' };
     }
 
+    const r2Domain = (process.env.R2_PUBLIC_DOMAIN || 'images.jorbites.com')
+        .replace(/^https?:\/\//, '')
+        .replace(/\/.*$/, '');
+
     const isProxyable =
         src.includes('cloudinary.com') ||
         src.includes('googleusercontent.com') ||
-        src.includes('githubusercontent.com');
+        src.includes('githubusercontent.com') ||
+        src.includes('r2.cloudflarestorage.com') ||
+        src.includes('.r2.dev') ||
+        (r2Domain !== '' && src.includes(r2Domain));
 
     if (!isProxyable) {
         return { src, srcSet: '' };

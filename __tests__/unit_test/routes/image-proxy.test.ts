@@ -249,4 +249,29 @@ describe('GET /api/image-proxy', () => {
             expect.any(Object)
         );
     });
+
+    it('should process Cloudflare R2 image URL successfully', async () => {
+        const mockImageData = new ArrayBuffer(1024);
+        const mockFetch = global.fetch as jest.Mock;
+        mockFetch.mockResolvedValueOnce({
+            ok: true,
+            status: 200,
+            headers: {
+                get: jest.fn().mockReturnValue('image/webp'),
+            },
+            arrayBuffer: jest.fn().mockResolvedValueOnce(mockImageData),
+        });
+
+        const request = new NextRequest(
+            'http://localhost:3000/api/image-proxy?url=https://images.jorbites.com/remakes/123-test.webp'
+        );
+
+        const response = await ImageProxyGET(request);
+
+        expect(response.status).toBe(200);
+        expect(mockFetch).toHaveBeenCalledWith(
+            'https://images.jorbites.com/remakes/123-test.webp',
+            expect.any(Object)
+        );
+    });
 });
