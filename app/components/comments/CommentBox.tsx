@@ -184,7 +184,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                                 <img
                                     src={previewUrl}
                                     alt="Remake preview"
-                                    className="h-16 w-16 object-cover"
+                                    className="size-16 object-cover"
                                     data-testid="photo-preview"
                                 />
                                 <button
