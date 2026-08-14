@@ -85,6 +85,8 @@ export type SafeComment = Omit<Comment, 'createdAt'> & {
     createdAt: string;
     user: CommentAuthor;
     rating?: number | null;
+    isCooked?: boolean;
+    imageSrc?: string | null;
 };
 
 export type SafeUser = Omit<

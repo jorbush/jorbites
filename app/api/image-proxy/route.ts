@@ -2,11 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { badRequest, internalServerError } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 
+const r2PublicDomain = (process.env.R2_PUBLIC_DOMAIN || 'images.jorbites.com')
+    .replace(/^https?:\/\//, '')
+    .replace(/\/.*$/, '');
+
 const ALLOWED_DOMAINS = new Set([
     'res.cloudinary.com',
     'lh3.googleusercontent.com',
     'avatars.githubusercontent.com',
     'img.youtube.com',
+    r2PublicDomain,
 ]);
 
 const ALLOWED_FORMATS = new Set(['webp', 'png', 'jpg', 'jpeg', 'avif']);
@@ -53,9 +58,14 @@ export async function GET(request: NextRequest) {
         return badRequest('Invalid URL format');
     }
 
+    const isAllowedDomain =
+        ALLOWED_DOMAINS.has(parsedUrl.hostname) ||
+        parsedUrl.hostname.endsWith('.r2.cloudflarestorage.com') ||
+        parsedUrl.hostname.endsWith('.r2.dev');
+
     if (
         (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') ||
-        !ALLOWED_DOMAINS.has(parsedUrl.hostname)
+        !isAllowedDomain
     ) {
         logger.error('GET /api/image-proxy - URL domain not allowed', {
             hostname: parsedUrl.hostname,
