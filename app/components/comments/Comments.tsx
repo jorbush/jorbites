@@ -35,12 +35,16 @@ const handleSortChange = (order: 'asc' | 'desc' | 'most_liked') => {
     if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('storage'));
     }
-    console.log('order', order);
 };
 
 interface CommentsProps {
     currentUser?: SafeUser | null;
-    onCreateComment: (comment: string, rating: number | null) => void;
+    onCreateComment: (
+        comment: string,
+        rating: number | null,
+        isCooked?: boolean,
+        imageSrc?: string | null
+    ) => void;
     comments?: SafeComment[];
     isLoading?: boolean;
 }
@@ -120,6 +124,8 @@ const Comments: React.FC<CommentsProps> = ({
                             rating={comment.rating}
                             likedIds={comment.likedIds || []}
                             currentUser={currentUser}
+                            isCooked={comment.isCooked}
+                            imageSrc={comment.imageSrc}
                         />
                     </div>
                 ))}

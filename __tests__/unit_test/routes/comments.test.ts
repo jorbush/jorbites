@@ -330,6 +330,8 @@ describe('Comments API Error Handling', () => {
                             userId: 'test-user-id',
                             comment: 'Great recipe!',
                             rating: 5,
+                            isCooked: false,
+                            imageSrc: null,
                         },
                     },
                     averageRating: 5.0,
@@ -339,7 +341,6 @@ describe('Comments API Error Handling', () => {
                     comments: true,
                 },
             });
-
             // Assert aggregate calculation query
             expect(prisma.comment.aggregate).toHaveBeenCalledWith({
                 where: {
@@ -348,6 +349,84 @@ describe('Comments API Error Handling', () => {
                 },
                 _avg: { rating: true },
                 _count: { rating: true },
+            });
+        });
+
+        it('should create comment with isCooked true and imageSrc when provided', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'Cooker',
+                    email: 'cooker@example.com',
+                },
+            };
+
+            const mockRecipe = {
+                id: 'recipe-cooked-id',
+                userId: 'owner-id',
+                user: { email: 'owner@example.com' },
+            };
+
+            const mockRecipeAndComment = {
+                id: 'recipe-cooked-id',
+                comments: [
+                    {
+                        id: 'comment-cooked-1',
+                        userId: 'test-user-id',
+                        comment: 'I cooked this!',
+                        rating: 5,
+                        isCooked: true,
+                        imageSrc:
+                            'https://images.jorbites.com/remakes/photo.webp',
+                    },
+                ],
+            };
+
+            (prisma.recipe.findUnique as jest.Mock).mockResolvedValueOnce(
+                mockRecipe
+            );
+            (prisma.recipe.update as jest.Mock).mockResolvedValueOnce(
+                mockRecipeAndComment
+            );
+            (prisma.comment.aggregate as jest.Mock).mockResolvedValueOnce({
+                _avg: { rating: 5.0 },
+                _count: { rating: 1 },
+            });
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    recipeId: 'recipe-cooked-id',
+                    comment: 'I cooked this!',
+                    rating: 5,
+                    isCooked: true,
+                    imageSrc: 'https://images.jorbites.com/remakes/photo.webp',
+                }),
+            } as unknown as Request;
+
+            const response = await CommentPOST(mockRequest);
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(data).toEqual(mockRecipeAndComment);
+            expect(prisma.recipe.update).toHaveBeenCalledWith({
+                where: { id: 'recipe-cooked-id' },
+                data: {
+                    comments: {
+                        create: {
+                            userId: 'test-user-id',
+                            comment: 'I cooked this!',
+                            rating: 5,
+                            isCooked: true,
+                            imageSrc:
+                                'https://images.jorbites.com/remakes/photo.webp',
+                        },
+                    },
+                    averageRating: 5.0,
+                    ratingCount: 2,
+                },
+                include: {
+                    comments: true,
+                },
             });
         });
     });

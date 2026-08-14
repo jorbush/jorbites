@@ -107,6 +107,8 @@ describe('CommentBox', () => {
         await waitFor(() => {
             expect(mockProps.onCreateComment).toHaveBeenCalledWith(
                 'This is a test comment',
+                null,
+                false,
                 null
             );
         });
@@ -129,7 +131,9 @@ describe('CommentBox', () => {
         await waitFor(() => {
             expect(mockProps.onCreateComment).toHaveBeenCalledWith(
                 'Very nice!',
-                4
+                4,
+                false,
+                null
             );
         });
     });
@@ -158,6 +162,8 @@ describe('CommentBox', () => {
         await waitFor(() => {
             expect(mockProps.onCreateComment).toHaveBeenCalledWith(
                 'No rating comment',
+                null,
+                false,
                 null
             );
         });
@@ -272,5 +278,94 @@ describe('CommentBox', () => {
             );
             expect(commentBox?.className).toContain('opacity-100');
         });
+    });
+
+    it('toggles I Cooked This! checkbox and passes isCooked on submit', async () => {
+        render(<CommentBox {...mockProps} />);
+
+        const textarea = screen.getByPlaceholderText('write_comment');
+        fireEvent.change(textarea, {
+            target: { value: 'Made this for dinner!' },
+        });
+
+        const cookedToggle = screen.getByTestId('cooked-toggle');
+        expect(cookedToggle).toHaveProperty('checked', false);
+
+        fireEvent.click(cookedToggle);
+        expect(cookedToggle).toHaveProperty('checked', true);
+
+        const submitButton = screen.getByTestId('submit-comment');
+        fireEvent.click(submitButton);
+
+        await waitFor(() => {
+            expect(mockProps.onCreateComment).toHaveBeenCalledWith(
+                'Made this for dinner!',
+                null,
+                true,
+                null
+            );
+        });
+    });
+
+    it('toggles rating stars container when rate button is clicked', () => {
+        render(<CommentBox {...mockProps} />);
+
+        const rateBtn = screen.getByTestId('rate-toggle-btn');
+        expect(rateBtn).toBeDefined();
+
+        fireEvent.click(rateBtn);
+        const star = screen.getByTestId('star-5');
+        expect(star).toBeDefined();
+    });
+
+    it('renders with transparent background container', () => {
+        const { container } = render(<CommentBox {...mockProps} />);
+        const cardBox = container.querySelector('.rounded-xl');
+        expect(cardBox?.className).toContain('bg-transparent');
+    });
+
+    it('displays photo preview when an image file is selected and allows removing it', async () => {
+        render(<CommentBox {...mockProps} />);
+
+        const fileInput = screen.getByTestId('cooked-photo-input');
+        const file = new File(['fake image'], 'remake.png', {
+            type: 'image/png',
+        });
+
+        // Mock URL.createObjectURL and revokeObjectURL
+        window.URL.createObjectURL = vi.fn(
+            () => 'blob:http://localhost/fake-url'
+        );
+        window.URL.revokeObjectURL = vi.fn();
+
+        fireEvent.change(fileInput, { target: { files: [file] } });
+
+        await waitFor(() => {
+            expect(screen.getByTestId('photo-preview')).toBeDefined();
+        });
+
+        const removeBtn = screen.getByTestId('remove-photo');
+        fireEvent.click(removeBtn);
+
+        expect(screen.queryByTestId('photo-preview')).toBeNull();
+    });
+
+    it('applies correct responsive text visibility classes to action buttons', () => {
+        render(<CommentBox {...mockProps} />);
+
+        const cookedLabel = screen.getByTestId('cooked-toggle-label');
+        expect(cookedLabel.querySelector('.md\\:hidden')).toBeDefined();
+        expect(cookedLabel.querySelector('.hidden.md\\:inline')).toBeDefined();
+
+        const rateBtn = screen.getByTestId('rate-toggle-btn');
+        expect(rateBtn.querySelector('.hidden.md\\:inline')).toBeDefined();
+    });
+
+    it('uses text-base and md:text-sm font size classes on input to prevent auto-zoom on mobile', () => {
+        render(<CommentBox {...mockProps} />);
+
+        const textarea = screen.getByPlaceholderText('write_comment');
+        expect(textarea.className).toContain('text-base');
+        expect(textarea.className).toContain('md:text-sm');
     });
 });

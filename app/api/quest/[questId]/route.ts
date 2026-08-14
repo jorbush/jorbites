@@ -125,6 +125,7 @@ export async function PATCH(
 
         const existingQuest = await prisma.quest.findUnique({
             where: { id: questId },
+            include: { recipes: true },
         });
 
         if (!existingQuest) {
@@ -133,6 +134,15 @@ export async function PATCH(
 
         if (existingQuest.userId !== currentUser.id) {
             return forbiddenResponse('You can only update your own quests');
+        }
+
+        // Prevent reopening a completed quest
+        if (
+            existingQuest.status === 'completed' &&
+            status &&
+            status !== 'completed'
+        ) {
+            return badRequest('Completed quests cannot be reopened');
         }
 
         if (title && title.length > QUEST_TITLE_MAX_LENGTH) {
@@ -151,6 +161,58 @@ export async function PATCH(
             return validationError(
                 'Status must be one of: open, in_progress, completed'
             );
+        }
+
+        const isTransitioningToCompleted =
+            status === 'completed' && existingQuest.status !== 'completed';
+
+        if (isTransitioningToCompleted) {
+            const { completeQuest } =
+                await import('@/app/services/questService');
+            const completionResult = await completeQuest({
+                questId,
+                currentUserId: currentUser.id,
+                recipeId: body.recipeId,
+                solverId: body.solverId || body.userId,
+            });
+
+            if (completionResult.errorResponse) {
+                return completionResult.errorResponse;
+            }
+
+            if (title || description) {
+                const updatedQuest = await prisma.quest.update({
+                    where: { id: questId },
+                    data: {
+                        ...(title && { title }),
+                        ...(description && { description }),
+                    },
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                image: true,
+                                verified: true,
+                            },
+                        },
+                        recipes: {
+                            include: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        image: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                });
+                return NextResponse.json(updatedQuest);
+            }
+
+            return NextResponse.json(completionResult.quest);
         }
 
         const quest = await prisma.quest.update({

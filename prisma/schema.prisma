@@ -110,6 +110,8 @@ model Comment {
   comment String
   recipeId String @db.ObjectId
   rating Int?
+  imageSrc String?
+  isCooked Boolean @default(false)
   createdAt DateTime @default(now())
   likedIds String[] @db.ObjectId @default([])
 
@@ -171,6 +173,9 @@ model Quest {
   updatedAt   DateTime @updatedAt
   userId      String   @db.ObjectId
   status      String   @default("open") // open, in_progress, completed
+  acceptedRecipeId  String?  @db.ObjectId
+  acceptedSolverId  String?  @db.ObjectId
+  badgeEvaluated    Boolean  @default(false)
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipes     Recipe[]
@@ -253,4 +258,3 @@ model RecipeVoteSession {
 
   @@unique([category, periodKey])
 }
-

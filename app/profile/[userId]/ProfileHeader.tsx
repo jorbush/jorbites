@@ -33,12 +33,49 @@ const formatMemberSince = (createdAt: string) => {
     return formatDateLanguage(new Date(createdAt), 'yyyy');
 };
 
+const getBadgeSrc = (badge: string) => {
+    if (badge.startsWith('/') || badge.startsWith('http')) return badge;
+    if (
+        badge.endsWith('.webp') ||
+        badge.endsWith('.jpg') ||
+        badge.endsWith('.png')
+    ) {
+        return `/badges/${badge}`;
+    }
+    return `/badges/${badge}.webp`;
+};
+
+const isQuestBadge = (badge: string) => {
+    return badge.startsWith('quest_solver_') || badge.includes('quest_solver');
+};
+
+const getBadgeTooltip = (badge: string) => {
+    if (badge.includes('quest_solver_10')) {
+        return 'Quest Veteran (Silver) - 10 Quests Fulfilled';
+    }
+    if (badge.includes('quest_solver_25')) {
+        return 'Quest Master (Gold) - 25 Quests Fulfilled';
+    }
+    if (badge.includes('quest_solver_1')) {
+        return 'Quest Solver (Bronze) - 1 Quest Fulfilled';
+    }
+    return `${badge.replace(/\.(webp|png|jpg)$/, '').replace(/_/g, ' ')} badge`;
+};
+
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
-    const { push } = useRouter() || {};
+    const router = useRouter();
     const { t } = useTranslation();
     const isMdOrSmaller = useMediaQuery('(max-width: 415px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
     const { share } = useShare();
+
+    const onBadgeClick = (badge: string) => {
+        if (isQuestBadge(badge)) {
+            router.push('/events/quest_badges');
+        } else {
+            handleBadgeClick();
+        }
+    };
 
     return (
         <Container>
@@ -47,14 +84,16 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                     <Avatar
                         src={user?.image}
                         size={100}
-                        onClick={() => push('/profile/' + user?.id)}
+                        onClick={() => router.push('/profile/' + user?.id)}
                     />
                     <div className="flex flex-col gap-2 text-2xl md:text-3xl">
                         <div className="flex flex-row gap-2">
                             <button
                                 type="button"
                                 className="cursor-pointer text-left focus:outline-hidden"
-                                onClick={() => push('/profile/' + user?.id)}
+                                onClick={() =>
+                                    router.push('/profile/' + user?.id)
+                                }
                             >
                                 {getUserDisplayName(
                                     user,
@@ -105,9 +144,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                             {user.badges.map((badge) => (
                                 <Badge
                                     key={badge}
-                                    src={`/badges/${badge}.webp`}
+                                    src={getBadgeSrc(badge)}
                                     alt={`${badge} badge`}
-                                    onClick={handleBadgeClick}
+                                    tooltipText={getBadgeTooltip(badge)}
+                                    onClick={() => onBadgeClick(badge)}
                                     size={50}
                                 />
                             ))}
