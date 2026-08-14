@@ -33,6 +33,9 @@ vi.mock('next/navigation', () => ({
     useRouter: () => ({
         refresh: vi.fn(),
     }),
+    useSearchParams: () => ({
+        get: vi.fn().mockReturnValue(null),
+    }),
 }));
 
 // Mock react-hot-toast

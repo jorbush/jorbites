@@ -337,8 +337,15 @@ export async function PATCH(
             return notFoundResponse('Recipe not found');
         }
 
-        if (recipe.userId !== currentUser.id) {
-            return forbiddenResponse('You can only edit your own recipes');
+        const isOwner = recipe.userId === currentUser.id;
+        const isCoCook =
+            Array.isArray(recipe.coCooksIds) &&
+            recipe.coCooksIds.includes(currentUser.id);
+
+        if (!isOwner && !isCoCook) {
+            return forbiddenResponse(
+                'You can only edit your own recipes or recipes you co-cook'
+            );
         }
 
         const body = await request.json();
@@ -403,8 +410,11 @@ export async function PATCH(
             ingredients,
             steps,
             minutes,
-            coCooksIds: coCooksIds || [],
-            linkedRecipeIds: linkedRecipeIds || [],
+            coCooksIds: isOwner ? coCooksIds || [] : recipe.coCooksIds || [],
+            linkedRecipeIds:
+                linkedRecipeIds !== undefined
+                    ? linkedRecipeIds || []
+                    : recipe.linkedRecipeIds || [],
             youtubeUrl: youtubeUrl?.trim() || null,
             questId: finalQuestId,
             ...(categories !== undefined && { categories }),

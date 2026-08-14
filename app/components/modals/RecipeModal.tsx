@@ -2,11 +2,12 @@
 
 import { useRef, useEffect } from 'react';
 import useSWR from 'swr';
+import { useSearchParams } from 'next/navigation';
 import { axiosFetcher } from '@/app/utils/fetcher';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
 import { useTranslation } from 'react-i18next';
-import { FiUploadCloud } from 'react-icons/fi';
+import { FiUploadCloud, FiShare2 } from 'react-icons/fi';
 import { SafeUser } from '@/app/types';
 import RelatedContentStep from '@/app/components/modals/recipe-steps/RelatedContentStep';
 import CategoryStep from '@/app/components/modals/recipe-steps/CategoryStep';
@@ -60,6 +61,8 @@ const RecipeModalContent: React.FC<{
         selectQuest,
         removeQuest,
         saveDraft,
+        copyInviteLink,
+        lock,
         addIngredientInput,
         removeIngredientInput,
         setIngredients,
@@ -73,104 +76,218 @@ const RecipeModalContent: React.FC<{
         setCustomValue,
     } = useRecipeFormState({ recipeModal, currentUser, draftData });
 
+    const isCurrentStepLocked = lock?.isLockedByOther(`step:${step}`);
+    const lockOwner = lock?.getLockOwner(`step:${step}`);
+
+    const lockBanner =
+        isCurrentStepLocked && lockOwner ? (
+            <div
+                data-testid="lock-banner"
+                className="mb-4 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs font-semibold text-amber-800 dark:border-amber-800 dark:bg-amber-950/80 dark:text-amber-200"
+            >
+                <span>🔒</span>
+                <span>
+                    @{lockOwner.userName || 'A co-cook'} is currently editing
+                    this step
+                </span>
+            </div>
+        ) : null;
+
     let bodyContent = (
-        <CategoryStep
-            selectedCategories={categories || []}
-            onCategorySelect={(selectedCategories) =>
-                setCustomValue('categories', selectedCategories)
-            }
-        />
+        <div>
+            {lockBanner}
+            <div
+                className={
+                    isCurrentStepLocked ? 'pointer-events-none opacity-60' : ''
+                }
+            >
+                <CategoryStep
+                    selectedCategories={categories || []}
+                    onCategorySelect={(selectedCategories) =>
+                        setCustomValue('categories', selectedCategories)
+                    }
+                />
+            </div>
+        </div>
     );
 
     if (step === STEPS.INGREDIENTS) {
         bodyContent = (
-            <IngredientsStep
-                numIngredients={numIngredients}
-                register={register}
-                errors={errors}
-                onAddIngredient={addIngredientInput}
-                onRemoveIngredient={removeIngredientInput}
-                onSetIngredients={setIngredients}
-                getValues={getValues}
-                setValue={setValue}
-                inputMode={ingredientsInputMode}
-                setInputMode={setIngredientsInputMode}
-            />
+            <div>
+                {lockBanner}
+                <div
+                    className={
+                        isCurrentStepLocked
+                            ? 'pointer-events-none opacity-60'
+                            : ''
+                    }
+                >
+                    <IngredientsStep
+                        numIngredients={numIngredients}
+                        register={register}
+                        errors={errors}
+                        onAddIngredient={addIngredientInput}
+                        onRemoveIngredient={removeIngredientInput}
+                        onSetIngredients={setIngredients}
+                        getValues={getValues}
+                        setValue={setValue}
+                        inputMode={ingredientsInputMode}
+                        setInputMode={setIngredientsInputMode}
+                    />
+                </div>
+            </div>
         );
     }
 
     if (step === STEPS.STEPS) {
         bodyContent = (
-            <RecipeStepsStep
-                numSteps={numSteps}
-                register={register}
-                errors={errors}
-                onAddStep={addStepInput}
-                onRemoveStep={removeStepInput}
-                onSetSteps={setSteps}
-                getValues={getValues}
-                setValue={setValue}
-                inputMode={stepsInputMode}
-                setInputMode={setStepsInputMode}
-            />
+            <div>
+                {lockBanner}
+                <div
+                    className={
+                        isCurrentStepLocked
+                            ? 'pointer-events-none opacity-60'
+                            : ''
+                    }
+                >
+                    <RecipeStepsStep
+                        numSteps={numSteps}
+                        register={register}
+                        errors={errors}
+                        onAddStep={addStepInput}
+                        onRemoveStep={removeStepInput}
+                        onSetSteps={setSteps}
+                        getValues={getValues}
+                        setValue={setValue}
+                        inputMode={stepsInputMode}
+                        setInputMode={setStepsInputMode}
+                    />
+                </div>
+            </div>
         );
     }
 
     if (step === STEPS.DESCRIPTION) {
         bodyContent = (
-            <DescriptionStep
-                isLoading={isLoading}
-                register={register}
-                errors={errors}
-                minutes={minutes}
-                onMinutesChange={(value) => setCustomValue('minutes', value)}
-                prepTime={prepTime}
-                onPrepTimeChange={(value) => setCustomValue('prepTime', value)}
-                cookTime={cookTime}
-                onCookTimeChange={(value) => setCustomValue('cookTime', value)}
-            />
+            <div>
+                {lockBanner}
+                <div
+                    className={
+                        isCurrentStepLocked
+                            ? 'pointer-events-none opacity-60'
+                            : ''
+                    }
+                >
+                    <DescriptionStep
+                        isLoading={isLoading}
+                        register={register}
+                        errors={errors}
+                        minutes={minutes}
+                        onMinutesChange={(value) =>
+                            setCustomValue('minutes', value)
+                        }
+                        prepTime={prepTime}
+                        onPrepTimeChange={(value) =>
+                            setCustomValue('prepTime', value)
+                        }
+                        cookTime={cookTime}
+                        onCookTimeChange={(value) =>
+                            setCustomValue('cookTime', value)
+                        }
+                    />
+                </div>
+            </div>
         );
     }
 
-    if (step == STEPS.METHODS) {
+    if (step === STEPS.METHODS) {
         bodyContent = (
-            <MethodsStep
-                selectedMethod={method}
-                onMethodSelect={(selectedMethod) =>
-                    setCustomValue('method', selectedMethod)
-                }
-            />
+            <div>
+                {lockBanner}
+                <div
+                    className={
+                        isCurrentStepLocked
+                            ? 'pointer-events-none opacity-60'
+                            : ''
+                    }
+                >
+                    <MethodsStep
+                        selectedMethod={method}
+                        onMethodSelect={(selectedMethod) =>
+                            setCustomValue('method', selectedMethod)
+                        }
+                    />
+                </div>
+            </div>
         );
     }
 
     if (step === STEPS.RELATED_CONTENT) {
         bodyContent = (
-            <RelatedContentStep
-                isLoading={isLoading}
-                selectedCoCooks={selectedCoCooks}
-                selectedLinkedRecipes={selectedLinkedRecipes}
-                selectedQuest={selectedQuest}
-                onAddCoCook={addCoCook}
-                onRemoveCoCook={removeCoCook}
-                onAddLinkedRecipe={addLinkedRecipe}
-                onRemoveLinkedRecipe={removeLinkedRecipe}
-                onSelectQuest={selectQuest}
-                onRemoveQuest={removeQuest}
-                register={register}
-                errors={errors}
-            />
+            <div>
+                {lockBanner}
+                <div
+                    className={
+                        isCurrentStepLocked
+                            ? 'pointer-events-none opacity-60'
+                            : ''
+                    }
+                >
+                    <div className="mb-4 flex items-center justify-between">
+                        <span className="text-xs font-semibold text-neutral-500">
+                            Collaborative Co-Cooking
+                        </span>
+                        <button
+                            type="button"
+                            onClick={copyInviteLink}
+                            data-testid="step-copy-co-cook-link-button"
+                            className="flex items-center gap-1 rounded-md bg-emerald-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-emerald-700"
+                        >
+                            <FiShare2 className="text-xs" />
+                            <span>Copy Invite Link 🔗</span>
+                        </button>
+                    </div>
+                    <RelatedContentStep
+                        isLoading={isLoading}
+                        selectedCoCooks={selectedCoCooks}
+                        selectedLinkedRecipes={selectedLinkedRecipes}
+                        selectedQuest={selectedQuest}
+                        onAddCoCook={addCoCook}
+                        onRemoveCoCook={removeCoCook}
+                        onAddLinkedRecipe={addLinkedRecipe}
+                        onRemoveLinkedRecipe={removeLinkedRecipe}
+                        onSelectQuest={selectQuest}
+                        onRemoveQuest={removeQuest}
+                        register={register}
+                        errors={errors}
+                    />
+                </div>
+            </div>
         );
     }
 
     if (step === STEPS.IMAGES) {
         bodyContent = (
-            <ImagesStep
-                imageSrc={imageSrc}
-                imageSrc1={watch('imageSrc1')}
-                imageSrc2={watch('imageSrc2')}
-                imageSrc3={watch('imageSrc3')}
-                onImageChange={(field, value) => setCustomValue(field, value)}
-            />
+            <div>
+                {lockBanner}
+                <div
+                    className={
+                        isCurrentStepLocked
+                            ? 'pointer-events-none opacity-60'
+                            : ''
+                    }
+                >
+                    <ImagesStep
+                        imageSrc={imageSrc}
+                        imageSrc1={watch('imageSrc1')}
+                        imageSrc2={watch('imageSrc2')}
+                        imageSrc3={watch('imageSrc3')}
+                        onImageChange={(field, value) =>
+                            setCustomValue(field, value)
+                        }
+                    />
+                </div>
+            </div>
         );
     }
 
@@ -191,11 +308,27 @@ const RecipeModalContent: React.FC<{
             isLoading={isLoading}
             topButton={
                 !recipeModal.isEditMode ? (
-                    <FiUploadCloud
-                        onClick={saveDraft}
-                        className="cursor-pointer text-2xl text-black transition hover:opacity-70 dark:text-neutral-100"
-                        data-testid="load-draft-button"
-                    />
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={copyInviteLink}
+                            title={
+                                t('copy_co_cook_link') ?? 'Copy Co-Cook Link 🔗'
+                            }
+                            data-testid="copy-co-cook-link-button"
+                            className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 dark:hover:bg-emerald-900"
+                        >
+                            <FiShare2 className="text-sm" />
+                            <span className="hidden sm:inline">
+                                Copy Invite Link 🔗
+                            </span>
+                        </button>
+                        <FiUploadCloud
+                            onClick={saveDraft}
+                            className="cursor-pointer text-2xl text-black transition hover:opacity-70 dark:text-neutral-100"
+                            data-testid="load-draft-button"
+                        />
+                    </div>
                 ) : undefined
             }
         />
@@ -205,14 +338,33 @@ const RecipeModalContent: React.FC<{
 const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const recipeModal = useRecipeModal();
     const { t } = useTranslation();
+    const searchParams = useSearchParams();
+    const draftQueryParam = searchParams?.get('draft');
     const currentUserRef = useRef<SafeUser | null>(currentUser || null);
+
     useEffect(() => {
         currentUserRef.current = currentUser || null;
     }, [currentUser]);
 
+    const activeDraftId = recipeModal.activeDraftId || draftQueryParam;
+
+    const isOpen = recipeModal.isOpen;
+    const isEditMode = recipeModal.isEditMode;
+    const onOpenSharedDraft = recipeModal.onOpenSharedDraft;
+
+    useEffect(() => {
+        if (draftQueryParam && !isOpen && !isEditMode) {
+            onOpenSharedDraft(draftQueryParam);
+        }
+    }, [draftQueryParam, isOpen, isEditMode, onOpenSharedDraft]);
+
+    const draftEndpoint = activeDraftId
+        ? `/api/draft?draftId=${activeDraftId}`
+        : `/api/draft`;
+
     const { data: draftData, isLoading: isLoadingDraft } = useSWR(
         recipeModal.isOpen && !recipeModal.isEditMode && currentUserRef.current
-            ? `/api/draft`
+            ? draftEndpoint
             : null,
         axiosFetcher,
         {

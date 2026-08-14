@@ -64,13 +64,39 @@ jest.mock('@/app/lib/redis', () => ({
         set: jest.fn(),
         del: jest.fn(),
         incr: jest.fn(),
+        scan: jest.fn().mockResolvedValue(['0', []]),
+        keys: jest.fn().mockResolvedValue([]),
+        mget: jest.fn().mockResolvedValue([]),
+        sadd: jest.fn().mockResolvedValue(1),
+        srem: jest.fn().mockResolvedValue(1),
+        smembers: jest.fn().mockResolvedValue([]),
+        expire: jest.fn().mockResolvedValue(1),
+        eval: jest.fn().mockResolvedValue(1),
     },
     redisCache: {
         get: jest.fn(),
         set: jest.fn(),
         del: jest.fn(),
         incr: jest.fn(),
+        scan: jest.fn().mockResolvedValue(['0', []]),
+        keys: jest.fn().mockResolvedValue([]),
+        mget: jest.fn().mockResolvedValue([]),
+        sadd: jest.fn().mockResolvedValue(1),
+        srem: jest.fn().mockResolvedValue(1),
+        smembers: jest.fn().mockResolvedValue([]),
+        expire: jest.fn().mockResolvedValue(1),
+        eval: jest.fn().mockResolvedValue(1),
     },
+}));
+
+// Mock redisLock
+jest.mock('@/app/lib/redisLock', () => ({
+    acquireLock: jest.fn().mockResolvedValue({ success: true, lockedBy: 'mock-user' }),
+    releaseLock: jest.fn().mockResolvedValue(true),
+    getActiveLocks: jest.fn().mockResolvedValue({}),
+    releaseAllLocks: jest.fn().mockResolvedValue(undefined),
+    isLockHeldByUser: jest.fn().mockResolvedValue(false),
+    getLockKey: (targetId: string, fieldKey: string) => `lock:recipe:${targetId}:field:${fieldKey}`,
 }));
 
 // Mock Ratelimit

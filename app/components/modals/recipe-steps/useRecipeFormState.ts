@@ -14,8 +14,12 @@ import {
     RECIPE_MAX_STEPS,
     STEPS,
     STEPS_LENGTH,
+    MAX_CO_COOKS,
+    MAX_LINKED_RECIPES,
 } from '@/app/utils/constants';
 import { parseTextToList } from '@/app/utils/textParser';
+
+import { useRecipeLock } from '@/app/hooks/useRecipeLock';
 
 interface UseRecipeFormStateProps {
     recipeModal: any;
@@ -145,6 +149,8 @@ export function useRecipeFormState({
                     [],
                 youtubeUrl: editData.youtubeUrl || '',
                 questId: editData.questId || recipeModal.questId || '',
+                draftId: '',
+                inviteToken: '',
                 ...ingredientsObject,
                 ...stepsObject,
             };
@@ -187,6 +193,8 @@ export function useRecipeFormState({
                     [],
                 youtubeUrl: draftData.youtubeUrl || '',
                 questId: draftData.questId || recipeModal.questId || '',
+                draftId: draftData.draftId || '',
+                inviteToken: draftData.inviteToken || '',
                 ...ingredientsObject,
                 ...stepsObject,
             };
@@ -209,6 +217,8 @@ export function useRecipeFormState({
             linkedRecipeIds: [],
             youtubeUrl: '',
             questId: recipeModal.questId || '',
+            draftId: '',
+            inviteToken: '',
         };
     }, [
         recipeModal.isEditMode,
@@ -257,9 +267,10 @@ export function useRecipeFormState({
     };
 
     const addCoCook = (user: SafeUser) => {
-        if (coCooksIds.length >= 4) {
+        if (coCooksIds.length >= MAX_CO_COOKS) {
             toast.error(
-                t('max_cooks_reached') || 'Maximum of 4 co-cooks allowed'
+                t('max_cooks_reached') ||
+                    `Maximum of ${MAX_CO_COOKS} co-cooks allowed`
             );
             return;
         }
@@ -281,10 +292,10 @@ export function useRecipeFormState({
     };
 
     const addLinkedRecipe = (recipe: SafeRecipe) => {
-        if (linkedRecipeIds.length >= 2) {
+        if (linkedRecipeIds.length >= MAX_LINKED_RECIPES) {
             toast.error(
                 t('max_recipes_reached') ||
-                    'Maximum of 2 linked recipes allowed'
+                    `Maximum of ${MAX_LINKED_RECIPES} linked recipes allowed`
             );
             return;
         }
@@ -314,6 +325,69 @@ export function useRecipeFormState({
 
     const removeQuest = () => {
         setValue('questId', '');
+    };
+
+    const lockTargetId = recipeModal.isEditMode
+        ? recipeModal.editRecipeData?.id
+        : watch('draftId') || draftData?.draftId;
+
+    const lock = useRecipeLock(lockTargetId, currentUser?.id);
+
+    useEffect(() => {
+        if (lockTargetId && currentUser?.id) {
+            const stepKey = `step:${step}`;
+            lock.acquire(stepKey);
+            return () => {
+                lock.release(stepKey);
+            };
+        }
+    }, [step, lockTargetId, currentUser?.id, lock.acquire, lock.release]);
+
+    const copyInviteLink = async () => {
+        let currentDraftId = getValues('draftId') || draftData?.draftId;
+        let currentToken = getValues('inviteToken') || draftData?.inviteToken;
+
+        if (!currentDraftId || !currentToken) {
+            try {
+                const formData = {
+                    currentStep: step,
+                    categories: getValues('categories'),
+                    method: getValues('method'),
+                    imageSrc: getValues('imageSrc'),
+                    imageSrc1: getValues('imageSrc1'),
+                    imageSrc2: getValues('imageSrc2'),
+                    imageSrc3: getValues('imageSrc3'),
+                    title: getValues('title'),
+                    description: getValues('description'),
+                    minutes: getValues('minutes'),
+                    coCooksIds: getValues('coCooksIds'),
+                    linkedRecipeIds: getValues('linkedRecipeIds'),
+                };
+                const res = await axios.post('/api/draft/invite', formData);
+                currentDraftId = res.data.draftId;
+                currentToken = res.data.inviteToken;
+                setValue('draftId', currentDraftId);
+                setValue('inviteToken', currentToken);
+                mutate('/api/draft', res.data.draft, false);
+            } catch (err) {
+                toast.error(
+                    t('error_generating_link') ||
+                        'Failed to generate invite link'
+                );
+                return;
+            }
+        }
+
+        const shareUrl = `${window.location.origin}/api/draft/join?draft=${currentDraftId}&token=${currentToken}`;
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            toast.success(
+                t('co_cook_link_copied') ||
+                    'Co-cook invite link copied to clipboard! 🔗'
+            );
+        } catch {
+            toast.error('Could not copy link to clipboard');
+        }
     };
 
     const saveDraft = async (stepOverride?: number | React.MouseEvent) => {
@@ -357,7 +431,13 @@ export function useRecipeFormState({
             }
         }
 
+        const currentDraftId = watch('draftId') || draftData?.draftId;
+        const currentInviteToken =
+            watch('inviteToken') || draftData?.inviteToken;
+
         const data = {
+            draftId: currentDraftId,
+            inviteToken: currentInviteToken,
             currentStep: stepToSave,
             categories: watch('categories'),
             method: watch('method'),
@@ -379,8 +459,14 @@ export function useRecipeFormState({
         };
 
         try {
-            await axios.post(`${window.location.origin}/api/draft`, data);
-            mutate('/api/draft', data, false);
+            const res = await axios.post(
+                `${window.location.origin}/api/draft`,
+                data
+            );
+            if (res.data?.draftId && !currentDraftId) {
+                setValue('draftId', res.data.draftId);
+            }
+            mutate('/api/draft', res.data || data, false);
             toast.success(t('draft_saved') ?? 'Draft saved!');
         } catch (error) {
             console.error(error);
@@ -390,7 +476,11 @@ export function useRecipeFormState({
 
     const deleteDraft = async () => {
         try {
-            await axios.delete(`${window.location.origin}/api/draft`);
+            const currentDraftId = watch('draftId') || draftData?.draftId;
+            const url = currentDraftId
+                ? `${window.location.origin}/api/draft?draftId=${currentDraftId}`
+                : `${window.location.origin}/api/draft`;
+            await axios.delete(url);
             mutate('/api/draft', null, false);
         } catch (error) {
             console.error(error);
@@ -725,6 +815,8 @@ export function useRecipeFormState({
         selectQuest,
         removeQuest,
         saveDraft,
+        copyInviteLink,
+        lock,
         addIngredientInput,
         removeIngredientInput,
         setIngredients,

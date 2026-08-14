@@ -36,6 +36,8 @@ jest.mock('@/app/actions/getRecipeById', () => ({
     default: jest.fn(),
 }));
 
+import getRecipeById from '@/app/actions/getRecipeById';
+
 jest.mock('@/app/lib/redis', () => ({
     redis: {
         get: jest.fn(),
@@ -273,6 +275,129 @@ describe('Recipe API Error Handling', () => {
             );
             expect(data.code).toBe('INVALID_INPUT');
             expect(data.timestamp).toBeDefined();
+        });
+
+        it('should preserve existing linkedRecipeIds when omitted from PATCH payload', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+
+            const existingRecipe = {
+                id: 'recipe-123',
+                userId: 'test-user-id',
+                title: 'Existing Title',
+                description: 'Existing Desc',
+                imageSrc: 'http://test.jpg',
+                categories: ['Dinner'],
+                method: 'Baking',
+                ingredients: ['Flour'],
+                steps: ['Mix'],
+                minutes: 30,
+                linkedRecipeIds: ['linked-1', 'linked-2'],
+                coCooksIds: [],
+            };
+
+            (getRecipeById as jest.Mock).mockResolvedValue(existingRecipe);
+            (prisma.recipe.update as jest.Mock).mockResolvedValue({
+                ...existingRecipe,
+                title: 'Updated Title',
+            });
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    title: 'Updated Title',
+                    description: 'Existing Desc',
+                    categories: ['Dinner'],
+                    method: 'Baking',
+                    ingredients: ['Flour'],
+                    steps: ['Mix'],
+                    minutes: 30,
+                    // linkedRecipeIds omitted
+                }),
+            } as unknown as Request;
+
+            const mockParams = {
+                params: Promise.resolve({ recipeId: 'recipe-123' }),
+            };
+
+            const response = await RecipePATCH(mockRequest, mockParams);
+            expect(response.status).toBe(200);
+
+            expect(prisma.recipe.update).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: { id: 'recipe-123' },
+                    data: expect.objectContaining({
+                        linkedRecipeIds: ['linked-1', 'linked-2'],
+                    }),
+                })
+            );
+        });
+
+        it('should prevent co-cook from updating coCooksIds on PATCH', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'Co Cook', email: 'cocook@test.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+                id: 'cocook-id',
+                name: 'Co Cook',
+                email: 'cocook@test.com',
+                favoriteIds: [],
+                createdAt: new Date('2026-01-01'),
+                updatedAt: new Date('2026-01-01'),
+            });
+
+            const existingRecipe = {
+                id: 'recipe-123',
+                userId: 'owner-id',
+                coCooksIds: ['cocook-id'],
+                title: 'Existing Title',
+                description: 'Existing Desc',
+                imageSrc: 'http://test.jpg',
+                categories: ['Dinner'],
+                method: 'Baking',
+                ingredients: ['Flour'],
+                steps: ['Mix'],
+                minutes: 30,
+                linkedRecipeIds: [],
+            };
+
+            (getRecipeById as jest.Mock).mockResolvedValue(existingRecipe);
+            (prisma.recipe.update as jest.Mock).mockResolvedValue(
+                existingRecipe
+            );
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    title: 'Co-Cook Edit',
+                    description: 'Existing Desc',
+                    categories: ['Dinner'],
+                    method: 'Baking',
+                    ingredients: ['Flour'],
+                    steps: ['Mix'],
+                    minutes: 30,
+                    coCooksIds: ['cocook-id', 'malicious-co-cook'], // Co-cook tries to add another user
+                }),
+            } as unknown as Request;
+
+            const mockParams = {
+                params: Promise.resolve({ recipeId: 'recipe-123' }),
+            };
+
+            const response = await RecipePATCH(mockRequest, mockParams);
+            expect(response.status).toBe(200);
+
+            // Verify update was called with existing coCooksIds ['cocook-id'], ignoring the payload
+            expect(prisma.recipe.update).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: { id: 'recipe-123' },
+                    data: expect.objectContaining({
+                        coCooksIds: ['cocook-id'],
+                    }),
+                })
+            );
         });
     });
 });

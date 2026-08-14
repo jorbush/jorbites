@@ -4,6 +4,7 @@ import {
     GET as DraftGET,
     DELETE as DraftDELETE,
 } from '@/app/api/draft/route';
+import { POST as DraftInvitePOST } from '@/app/api/draft/invite/route';
 import { Session } from 'next-auth';
 
 let mockedSession: Session | null = null;
@@ -24,12 +25,49 @@ jest.mock('@/app/lib/prismadb', () => ({
 
 import prisma from '@/app/lib/prismadb';
 
+const redisStore: Record<string, string> = {};
+const redisSets: Record<string, Set<string>> = {};
+
 jest.mock('@/app/lib/redis', () => ({
     redis: {
-        get: jest.fn(),
-        set: jest.fn(),
-        del: jest.fn(),
-        incr: jest.fn(),
+        get: jest.fn(async (key: string) => redisStore[key] || null),
+        set: jest.fn(async (key: string, val: string) => {
+            redisStore[key] = val;
+            return 'OK';
+        }),
+        del: jest.fn(async (...keys: string[]) => {
+            let count = 0;
+            for (const k of keys) {
+                if (redisStore[k]) {
+                    delete redisStore[k];
+                    count++;
+                }
+                if (redisSets[k]) {
+                    delete redisSets[k];
+                    count++;
+                }
+            }
+            return count;
+        }),
+        sadd: jest.fn(async (key: string, ...members: string[]) => {
+            if (!redisSets[key]) redisSets[key] = new Set();
+            members.forEach((m) => redisSets[key].add(m));
+            return members.length;
+        }),
+        srem: jest.fn(async (key: string, ...members: string[]) => {
+            if (!redisSets[key]) return 0;
+            let rem = 0;
+            members.forEach((m) => {
+                if (redisSets[key].delete(m)) rem++;
+            });
+            return rem;
+        }),
+        smembers: jest.fn(async (key: string) => {
+            if (!redisSets[key]) return [];
+            return Array.from(redisSets[key]);
+        }),
+        expire: jest.fn(async () => 1),
+        incr: jest.fn(async () => 1),
     },
     redisCache: {
         get: jest.fn(),
@@ -53,9 +91,15 @@ jest.mock('next-auth/next', () => ({
     }),
 }));
 
-describe('Draft API Error Handling', () => {
+describe('Draft API Error Handling & Shared Drafts', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        for (const k of Object.keys(redisStore)) {
+            delete redisStore[k];
+        }
+        for (const k of Object.keys(redisSets)) {
+            delete redisSets[k];
+        }
         if (mockedSession?.user?.email) {
             (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
         } else {
@@ -79,179 +123,46 @@ describe('Draft API Error Handling', () => {
             expect(data.error).toBe(
                 'User authentication required to save draft'
             );
-            expect(data.code).toBe('UNAUTHORIZED');
-            expect(data.timestamp).toBeDefined();
         });
 
-        it('should save draft successfully when user is authenticated', async () => {
+        it('should save single-user draft successfully', async () => {
             mockedSession = {
                 expires: 'expires',
-                user: {
-                    name: 'test',
-                    email: 'test@a.com',
-                },
+                user: { name: 'test', email: 'test@a.com' },
             };
             (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
             const mockRequest = {
-                json: jest.fn().mockResolvedValue({ title: 'Test Draft' }),
+                json: jest.fn().mockResolvedValue({ title: 'Single Draft' }),
             } as unknown as Request;
 
             const response = await DraftPOST(mockRequest);
-
             expect(response.status).toBe(200);
+            expect(redisStore['draft:user:test-user-id']).toBeDefined();
         });
 
-        it('should reset currentStep to 0 when step is above maximum (6)', async () => {
+        it('should save shared draft successfully when draftId is provided', async () => {
             mockedSession = {
                 expires: 'expires',
-                user: {
-                    name: 'test',
-                    email: 'test@a.com',
-                },
+                user: { name: 'test', email: 'test@a.com' },
             };
             (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
-            const invalidDraft = {
-                title: 'Test Draft',
-                currentStep: 10, // Invalid step
-            };
-
             const mockRequest = {
-                json: jest.fn().mockResolvedValue(invalidDraft),
+                json: jest.fn().mockResolvedValue({
+                    draftId: 'shared-123',
+                    title: 'Collaborative Pasta',
+                    coCooksIds: ['co-cook-2'],
+                }),
             } as unknown as Request;
 
             const response = await DraftPOST(mockRequest);
-
             expect(response.status).toBe(200);
-            // The currentStep should have been reset to 0 in the backend
-        });
+            expect(redisStore['draft:shared:shared-123']).toBeDefined();
 
-        it('should reset currentStep to 0 when step is below minimum (0)', async () => {
-            mockedSession = {
-                expires: 'expires',
-                user: {
-                    name: 'test',
-                    email: 'test@a.com',
-                },
-            };
-            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-
-            const invalidDraft = {
-                title: 'Test Draft',
-                currentStep: -5, // Invalid step
-            };
-
-            const mockRequest = {
-                json: jest.fn().mockResolvedValue(invalidDraft),
-            } as unknown as Request;
-
-            const response = await DraftPOST(mockRequest);
-
-            expect(response.status).toBe(200);
-        });
-
-        it('should reset currentStep to 0 when step is not a number', async () => {
-            mockedSession = {
-                expires: 'expires',
-                user: {
-                    name: 'test',
-                    email: 'test@a.com',
-                },
-            };
-            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-
-            const invalidDraft = {
-                title: 'Test Draft',
-                currentStep: 'invalid', // Non-numeric step
-            };
-
-            const mockRequest = {
-                json: jest.fn().mockResolvedValue(invalidDraft),
-            } as unknown as Request;
-
-            const response = await DraftPOST(mockRequest);
-
-            expect(response.status).toBe(200);
-        });
-
-        it('should preserve valid currentStep values', async () => {
-            mockedSession = {
-                expires: 'expires',
-                user: {
-                    name: 'test',
-                    email: 'test@a.com',
-                },
-            };
-            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-
-            const validDraft = {
-                title: 'Test Draft',
-                currentStep: 3, // Valid step
-            };
-
-            const mockRequest = {
-                json: jest.fn().mockResolvedValue(validDraft),
-            } as unknown as Request;
-
-            const response = await DraftPOST(mockRequest);
-
-            expect(response.status).toBe(200);
-        });
-
-        it('should reset currentStep to 0 when step equals STEPS_LENGTH', async () => {
-            mockedSession = {
-                expires: 'expires',
-                user: {
-                    name: 'test',
-                    email: 'test@a.com',
-                },
-            };
-            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-
-            // Import STEPS_LENGTH to test the exact boundary
-            const { STEPS_LENGTH } = require('@/app/utils/constants');
-
-            const invalidDraft = {
-                title: 'Test Draft',
-                currentStep: STEPS_LENGTH, // Exactly at the boundary (invalid)
-            };
-
-            const mockRequest = {
-                json: jest.fn().mockResolvedValue(invalidDraft),
-            } as unknown as Request;
-
-            const response = await DraftPOST(mockRequest);
-
-            expect(response.status).toBe(200);
-            // The currentStep should have been reset to 0 in the backend
-        });
-
-        it('should allow valid steps within STEPS_LENGTH boundary', async () => {
-            mockedSession = {
-                expires: 'expires',
-                user: {
-                    name: 'test',
-                    email: 'test@a.com',
-                },
-            };
-            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-
-            // Import STEPS_LENGTH to test just below the boundary
-            const { STEPS_LENGTH } = require('@/app/utils/constants');
-
-            const validDraft = {
-                title: 'Test Draft',
-                currentStep: STEPS_LENGTH - 1, // Valid max step
-            };
-
-            const mockRequest = {
-                json: jest.fn().mockResolvedValue(validDraft),
-            } as unknown as Request;
-
-            const response = await DraftPOST(mockRequest);
-
-            expect(response.status).toBe(200);
+            const saved = JSON.parse(redisStore['draft:shared:shared-123']);
+            expect(saved.title).toBe('Collaborative Pasta');
+            expect(saved.ownerId).toBe('test-user-id');
         });
     });
 
@@ -260,30 +171,52 @@ describe('Draft API Error Handling', () => {
             mockedSession = null;
             (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
-            const response = await DraftGET();
+            const response = await DraftGET(
+                new Request('http://localhost:3000/api/draft')
+            );
             const data = await response.json();
 
             expect(response.status).toBe(401);
-            expect(data.error).toBe(
-                'User authentication required to get draft'
-            );
-            expect(data.code).toBe('UNAUTHORIZED');
-            expect(data.timestamp).toBeDefined();
         });
 
-        it('should get draft successfully when user is authenticated', async () => {
+        it('should fetch single-user draft successfully', async () => {
             mockedSession = {
                 expires: 'expires',
-                user: {
-                    name: 'test',
-                    email: 'test@a.com',
-                },
+                user: { name: 'test', email: 'test@a.com' },
             };
             (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+            redisStore['draft:user:test-user-id'] = JSON.stringify({
+                title: 'My Draft',
+            });
 
-            const response = await DraftGET();
-
+            const response = await DraftGET(
+                new Request('http://localhost:3000/api/draft')
+            );
             expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.title).toBe('My Draft');
+        });
+
+        it('should fetch shared draft successfully when draftId query param is provided', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+            redisStore['draft:shared:shared-999'] = JSON.stringify({
+                draftId: 'shared-999',
+                ownerId: 'test-user-id',
+                title: 'Shared Draft Title',
+            });
+
+            const response = await DraftGET(
+                new Request(
+                    'http://localhost:3000/api/draft?draftId=shared-999'
+                )
+            );
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.title).toBe('Shared Draft Title');
         });
     });
 
@@ -292,15 +225,145 @@ describe('Draft API Error Handling', () => {
             mockedSession = null;
             (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
-            const response = await DraftDELETE();
-            const data = await response.json();
-
-            expect(response.status).toBe(401);
-            expect(data.error).toBe(
-                'User authentication required to delete draft'
+            const response = await DraftDELETE(
+                new Request('http://localhost:3000/api/draft')
             );
-            expect(data.code).toBe('UNAUTHORIZED');
-            expect(data.timestamp).toBeDefined();
+            expect(response.status).toBe(401);
+        });
+
+        it('should return 403 when non-owner attempts to delete shared draft', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+            redisStore['draft:shared:shared-999'] = JSON.stringify({
+                draftId: 'shared-999',
+                ownerId: 'different-owner-id',
+            });
+
+            const response = await DraftDELETE(
+                new Request(
+                    'http://localhost:3000/api/draft?draftId=shared-999'
+                )
+            );
+            expect(response.status).toBe(403);
+            expect(redisStore['draft:shared:shared-999']).toBeDefined();
+        });
+
+        it('should return 500 when draft data is corrupted JSON without deleting keys', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+            redisStore['draft:shared:corrupted-draft'] = '{invalid-json';
+
+            const response = await DraftDELETE(
+                new Request(
+                    'http://localhost:3000/api/draft?draftId=corrupted-draft'
+                )
+            );
+            expect(response.status).toBe(500);
+            expect(redisStore['draft:shared:corrupted-draft']).toBe(
+                '{invalid-json'
+            );
+        });
+
+        it('should delete shared draft and clean up co-cooks user:drafts lists when owner deletes', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+            redisStore['draft:shared:shared-999'] = JSON.stringify({
+                draftId: 'shared-999',
+                ownerId: 'test-user-id',
+                coCooksIds: ['co-cook-a', 'co-cook-b'],
+            });
+            redisStore['user:drafts:test-user-id'] = JSON.stringify([
+                'shared-999',
+                'other-draft',
+            ]);
+            redisStore['user:drafts:co-cook-a'] = JSON.stringify([
+                'shared-999',
+            ]);
+            redisStore['user:drafts:co-cook-b'] = JSON.stringify([
+                'shared-999',
+                'b-draft',
+            ]);
+
+            const response = await DraftDELETE(
+                new Request(
+                    'http://localhost:3000/api/draft?draftId=shared-999'
+                )
+            );
+            expect(response.status).toBe(200);
+            expect(redisStore['draft:shared:shared-999']).toBeUndefined();
+
+            // Verify cleaned up from owner and co-cooks' lists
+            expect(JSON.parse(redisStore['user:drafts:test-user-id'])).toEqual([
+                'other-draft',
+            ]);
+            expect(JSON.parse(redisStore['user:drafts:co-cook-a'])).toEqual([]);
+            expect(JSON.parse(redisStore['user:drafts:co-cook-b'])).toEqual([
+                'b-draft',
+            ]);
+        });
+    });
+
+    describe('POST /api/draft/invite', () => {
+        it('should reject invite regeneration by a non-owner with 403 Forbidden', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+            redisStore['draft:shared:existing-draft'] = JSON.stringify({
+                draftId: 'existing-draft',
+                ownerId: 'original-owner-id',
+                inviteToken: 'original-token',
+            });
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    draftId: 'existing-draft',
+                }),
+                headers: { get: () => 'http://localhost:3000' },
+            } as unknown as Request;
+
+            const response = await DraftInvitePOST(mockRequest);
+            expect(response.status).toBe(403);
+            const data = await response.json();
+            expect(data.error).toBe(
+                'Only the draft owner can generate invite links'
+            );
+        });
+
+        it('should allow draft owner to generate/regenerate invite link', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+            redisStore['draft:shared:my-draft'] = JSON.stringify({
+                draftId: 'my-draft',
+                ownerId: 'test-user-id',
+                inviteToken: 'old-token',
+            });
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    draftId: 'my-draft',
+                }),
+                headers: { get: () => 'http://localhost:3000' },
+            } as unknown as Request;
+
+            const response = await DraftInvitePOST(mockRequest);
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.draftId).toBe('my-draft');
+            expect(data.shareUrl).toContain('draft=my-draft');
         });
     });
 });

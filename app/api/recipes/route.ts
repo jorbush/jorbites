@@ -14,6 +14,8 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import { validateRecipeCreateData } from '@/app/utils/recipeValidation';
 import { contentCreationRatelimit } from '@/app/lib/ratelimit';
+import { MAX_CO_COOKS, MAX_LINKED_RECIPES } from '@/app/utils/constants';
+import { DraftService } from '@/app/services/draftService';
 
 export async function POST(request: Request) {
     try {
@@ -106,8 +108,11 @@ export async function POST(request: Request) {
             ? linkedRecipeIds
             : [];
 
-        const limitedCoCooksIds = finalCoCooksIds.slice(0, 4); // Max 4 co-cooks
-        const limitedLinkedRecipeIds = finalLinkedRecipeIds.slice(0, 2); // Max 2 linked recipes
+        const limitedCoCooksIds = finalCoCooksIds.slice(0, MAX_CO_COOKS);
+        const limitedLinkedRecipeIds = finalLinkedRecipeIds.slice(
+            0,
+            MAX_LINKED_RECIPES
+        );
 
         const finalQuestId = questId && questId.trim() !== '' ? questId : null;
 
@@ -196,6 +201,9 @@ export async function POST(request: Request) {
         try {
             await redisCache.del(`recipes:graph:${currentUser.id}`);
             await redisCache.incr('recipes:global:version');
+            if (body.draftId) {
+                await DraftService.cleanUpDraftOnPublish(body.draftId);
+            }
         } catch (error: any) {
             logger.error('POST /api/recipes - cache invalidation error', {
                 error: error.message,

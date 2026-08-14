@@ -105,3 +105,13 @@ export const RECIPE_CUISINES = [
 ] as const;
 
 export type RecipeCuisineType = (typeof RECIPE_CUISINES)[number];
+
+// Collaborative Cooking & Locking Constants
+export const MAX_CO_COOKS = 4;
+export const MAX_LINKED_RECIPES = 2;
+export const DRAFT_TTL_SECONDS = 604800; // 7 days
+export const USER_DRAFTS_TTL_SECONDS = 2592000; // 30 days
+export const LOCK_TTL_SECONDS = 30; // 30 seconds
+export const LOCK_HEARTBEAT_INTERVAL_MS = 10000; // 10 seconds
+export const LOCK_POLL_INTERVAL_MS = 4000; // 4 seconds
+export const SHARED_DRAFT_POLL_INTERVAL_MS = 8000; // 8 seconds
