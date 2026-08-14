@@ -158,7 +158,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                                       )
                                     : 'write_comment'
                             }
-                            className="min-h-[38px] w-full resize-none overflow-y-auto border-0 bg-transparent p-0 text-base text-neutral-900 placeholder:text-neutral-400 focus:ring-0 focus:outline-hidden sm:text-sm dark:text-neutral-100 dark:placeholder:text-neutral-500"
+                            className="min-h-[38px] w-full resize-none overflow-y-auto border-0 bg-transparent p-0 text-base text-neutral-900 placeholder:text-neutral-400 focus:ring-0 focus:outline-hidden md:text-sm dark:text-neutral-100 dark:placeholder:text-neutral-500"
                             disabled={isSubmitting}
                             maxLength={COMMENT_MAX_LENGTH}
                             dataCy="comment-input"
