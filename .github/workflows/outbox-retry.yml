@@ -1,0 +1,21 @@
+name: Quest Badge Outbox Retry Worker
+
+on:
+  schedule:
+    # Run once daily at 03:00 UTC as a safety fallback
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  retry-evaluations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Quest Badge Outbox
+        env:
+          APP_URL: ${{ secrets.APP_URL || 'https://jorbites.com' }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -X POST "$APP_URL/api/quests/outbox" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "Content-Type: application/json" \
+            --fail

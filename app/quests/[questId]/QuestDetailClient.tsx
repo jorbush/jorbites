@@ -118,6 +118,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
             title: quest.title,
             description: quest.description,
             status: quest.status,
+            recipes: quest.recipes,
         });
     };
 

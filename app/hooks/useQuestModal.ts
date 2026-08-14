@@ -1,10 +1,20 @@
 import { create } from 'zustand';
 
+export interface QuestRecipeReply {
+    id: string;
+    title: string;
+    userId: string;
+    user?: {
+        name: string | null;
+    };
+}
+
 export interface EditQuestData {
     id: string;
     title: string;
     description: string;
     status: string;
+    recipes?: QuestRecipeReply[];
 }
 
 interface QuestModalStore {
