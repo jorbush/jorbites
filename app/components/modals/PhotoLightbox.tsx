@@ -28,7 +28,7 @@ export default function PhotoLightbox({
             aria-label={alt || 'Photo lightbox'}
             tabIndex={-1}
             onKeyDown={(e) => e.key === 'Escape' && onClose()}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 backdrop-blur-xs focus:outline-none sm:p-6"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/85 p-3 backdrop-blur-xs focus:outline-none sm:p-6"
             onClick={onClose}
             data-testid={testId}
         >
@@ -39,7 +39,7 @@ export default function PhotoLightbox({
                 <button
                     type="button"
                     onClick={onClose}
-                    className="absolute top-3 right-3 z-10 flex size-8 items-center justify-center rounded-full bg-black/70 text-white transition hover:bg-black focus:outline-none sm:size-9"
+                    className="absolute top-3 right-3 z-10 flex size-8 items-center justify-center rounded-full bg-neutral-950/70 text-white transition hover:bg-neutral-950 focus:outline-none sm:size-9"
                     aria-label="Close photo lightbox"
                 >
                     <HiX size={20} />
