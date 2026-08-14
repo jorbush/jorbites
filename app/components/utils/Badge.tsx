@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Tooltip from '@/app/components/utils/Tooltip';
 
 interface BadgeProps {
     src: string;
@@ -9,6 +10,7 @@ interface BadgeProps {
     onClick?: () => void;
     className?: string;
     size?: number;
+    tooltipText?: string;
 }
 
 const Badge: React.FC<BadgeProps> = ({
@@ -17,6 +19,7 @@ const Badge: React.FC<BadgeProps> = ({
     onClick,
     className = '',
     size = 50,
+    tooltipText,
 }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
@@ -30,7 +33,7 @@ const Badge: React.FC<BadgeProps> = ({
         setHasError(true);
     };
 
-    return (
+    const badgeContent = (
         <button
             type="button"
             className={`relative flex-shrink-0 cursor-pointer border-0 bg-transparent p-0 focus:outline-hidden ${className}`}
@@ -71,6 +74,12 @@ const Badge: React.FC<BadgeProps> = ({
             )}
         </button>
     );
+
+    if (tooltipText) {
+        return <Tooltip text={tooltipText}>{badgeContent}</Tooltip>;
+    }
+
+    return badgeContent;
 };
 
 export default Badge;

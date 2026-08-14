@@ -122,4 +122,46 @@ describe('Badge Component', () => {
         const image = screen.getByRole('img');
         expect(image.getAttribute('alt')).toBe('Test badge');
     });
+
+    it('renders quest_solver_1.webp, quest_solver_10.webp, and quest_solver_25.webp badge components with tooltips', async () => {
+        const questBadges = [
+            {
+                src: '/badges/quest_solver_1.webp',
+                alt: 'Bronze Quest Solver',
+                tooltipText: 'Quest Solver (Bronze) - 1 Quest Fulfilled',
+            },
+            {
+                src: '/badges/quest_solver_10.webp',
+                alt: 'Silver Quest Solver',
+                tooltipText: 'Quest Veteran (Silver) - 10 Quests Fulfilled',
+            },
+            {
+                src: '/badges/quest_solver_25.webp',
+                alt: 'Gold Quest Master',
+                tooltipText: 'Quest Master (Gold) - 25 Quests Fulfilled',
+            },
+        ];
+
+        for (const badge of questBadges) {
+            const { container, unmount } = render(<Badge {...badge} />);
+
+            const img = screen.getByAltText(badge.alt);
+            expect(img).toBeDefined();
+            expect(img.getAttribute('src')).toBe(badge.src);
+
+            const wrapper = container.firstChild as HTMLElement;
+            fireEvent.mouseEnter(wrapper);
+
+            await waitFor(
+                () => {
+                    const tooltip = screen.getByTestId('tooltip');
+                    expect(tooltip).toBeDefined();
+                    expect(tooltip.textContent).toContain(badge.tooltipText);
+                },
+                { timeout: 1000 }
+            );
+
+            unmount();
+        }
+    });
 });

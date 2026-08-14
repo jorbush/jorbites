@@ -156,5 +156,46 @@ describe('Events API Error Handling', () => {
             expect(data.code).toBe('INTERNAL_SERVER_ERROR');
             expect(data.timestamp).toBeDefined();
         });
+
+        it('should verify /events/quest_badges loads as a permanent event across en, es, and ca locales', async () => {
+            const locales = ['en', 'es', 'ca'];
+
+            for (const lang of locales) {
+                const mockQuestEvent = {
+                    slug: 'quest_badges',
+                    frontmatter: {
+                        title: 'Quest Master Badges',
+                        image: '/images/events/quest_badges/quest_badges.webp',
+                        permanent: true,
+                        description: 'Earn exclusive badges',
+                    },
+                    content: '### 🎯🏅 Quest Solver Badges in Jorbites! 🏅🎯',
+                    language: lang,
+                };
+
+                (getEventBySlug as jest.Mock).mockResolvedValueOnce(
+                    mockQuestEvent
+                );
+
+                const mockParams = {
+                    params: Promise.resolve({ slug: 'quest_badges' }),
+                };
+
+                const request = new NextRequest(
+                    `http://localhost:3000/api/events/quest_badges?lang=${lang}`
+                );
+                const response = await EventSlugGET(request, mockParams);
+                const data = await response.json();
+
+                expect(response.status).toBe(200);
+                expect(data.slug).toBe('quest_badges');
+                expect(data.frontmatter.permanent).toBe(true);
+                expect(data.language).toBe(lang);
+                expect(getEventBySlug).toHaveBeenCalledWith(
+                    'quest_badges',
+                    lang
+                );
+            }
+        });
     });
 });

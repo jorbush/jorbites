@@ -26,13 +26,17 @@ const QuestModal = () => {
         handleSubmit,
         formState: { errors },
         reset,
+        watch,
     } = useForm<FieldValues>({
         defaultValues: {
             title: '',
             description: '',
             status: 'open',
+            recipeId: '',
         },
     });
+
+    const statusValue = watch('status');
 
     useEffect(() => {
         if (!questModal.isOpen) {
@@ -40,6 +44,7 @@ const QuestModal = () => {
                 title: '',
                 description: '',
                 status: 'open',
+                recipeId: '',
             });
         } else if (
             questModal.isOpen &&
@@ -50,6 +55,7 @@ const QuestModal = () => {
                 title: questModal.editQuestData.title,
                 description: questModal.editQuestData.description,
                 status: questModal.editQuestData.status,
+                recipeId: '',
             });
         }
     }, [
@@ -79,6 +85,7 @@ const QuestModal = () => {
                 title: '',
                 description: '',
                 status: 'open',
+                recipeId: '',
             });
             questModal.onClose();
             refresh();
@@ -189,6 +196,41 @@ const QuestModal = () => {
                     </select>
                 </div>
             )}
+
+            {questModal.isEditMode &&
+                statusValue === 'completed' &&
+                questModal.editQuestData?.recipes &&
+                questModal.editQuestData.recipes.length > 0 && (
+                    <div className="relative">
+                        <label
+                            htmlFor="recipeId"
+                            className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                        >
+                            {t('accepted_recipe') || 'Select Accepted Recipe'}
+                        </label>
+                        <select
+                            id="recipeId"
+                            {...register('recipeId')}
+                            disabled={isLoading}
+                            className="w-full rounded-lg border border-neutral-300 p-3 text-neutral-900 transition focus:border-rose-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+                            data-cy="accepted-recipe-select"
+                        >
+                            <option value="">
+                                {t('select_accepted_recipe') ||
+                                    'Select accepted recipe...'}
+                            </option>
+                            {questModal.editQuestData.recipes.map((r) => (
+                                <option
+                                    key={r.id}
+                                    value={r.id}
+                                >
+                                    {r.title}
+                                    {r.user?.name ? ` (by ${r.user.name})` : ''}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
         </div>
     );
 
