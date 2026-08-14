@@ -8,6 +8,8 @@ const mockUser = {
     id: 'user-b-id',
     name: 'User B',
     email: 'userb@test.com',
+    createdAt: new Date('2026-01-01'),
+    updatedAt: new Date('2026-01-01'),
 };
 
 jest.mock('@/app/lib/prismadb', () => ({
@@ -19,6 +21,7 @@ jest.mock('@/app/lib/prismadb', () => ({
 import prisma from '@/app/lib/prismadb';
 
 const store: Record<string, string> = {};
+const sets: Record<string, Set<string>> = {};
 
 jest.mock('@/app/lib/redis', () => ({
     redis: {
@@ -27,15 +30,51 @@ jest.mock('@/app/lib/redis', () => ({
             store[key] = val;
             return 'OK';
         }),
-        del: jest.fn(async (key: string) => {
-            delete store[key];
-            return 1;
+        del: jest.fn(async (...keys: string[]) => {
+            let count = 0;
+            for (const k of keys) {
+                if (store[k]) {
+                    delete store[k];
+                    count++;
+                }
+                if (sets[k]) {
+                    delete sets[k];
+                    count++;
+                }
+            }
+            return count;
         }),
+        sadd: jest.fn(async (key: string, ...members: string[]) => {
+            if (!sets[key]) sets[key] = new Set();
+            members.forEach((m) => sets[key].add(m));
+            return members.length;
+        }),
+        srem: jest.fn(async (key: string, ...members: string[]) => {
+            if (!sets[key]) return 0;
+            let rem = 0;
+            members.forEach((m) => {
+                if (sets[key].delete(m)) rem++;
+            });
+            return rem;
+        }),
+        smembers: jest.fn(async (key: string) => {
+            if (!sets[key]) return [];
+            return Array.from(sets[key]);
+        }),
+        expire: jest.fn(async () => 1),
     },
     redisCache: {
         get: jest.fn(),
         set: jest.fn(),
         del: jest.fn(),
+    },
+}));
+
+jest.mock('@/pages/api/auth/[...nextauth].ts', () => ({
+    authOptions: {
+        adapter: {},
+        providers: [],
+        callbacks: {},
     },
 }));
 
@@ -48,6 +87,9 @@ describe('Draft Join API (/api/draft/join)', () => {
         jest.clearAllMocks();
         for (const key of Object.keys(store)) {
             delete store[key];
+        }
+        for (const key of Object.keys(sets)) {
+            delete sets[key];
         }
     });
 
@@ -142,6 +184,8 @@ describe('Draft Join API (/api/draft/join)', () => {
             id: 'user-5-id',
             name: 'User 5',
             email: 'user5@test.com',
+            createdAt: new Date('2026-01-01'),
+            updatedAt: new Date('2026-01-01'),
         });
 
         store['draft:shared:draft-full'] = JSON.stringify({

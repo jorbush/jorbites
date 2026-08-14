@@ -174,7 +174,6 @@ describe('Draft API Error Handling & Shared Drafts', () => {
             const response = await DraftGET(
                 new Request('http://localhost:3000/api/draft')
             );
-            const data = await response.json();
 
             expect(response.status).toBe(401);
         });

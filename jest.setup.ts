@@ -13,6 +13,16 @@ jest.mock('next/server', () => {
     };
 });
 
+// Mock NextAuth handler and auth options
+jest.mock('@/pages/api/auth/[...nextauth].ts', () => ({
+    authOptions: {
+        adapter: {},
+        providers: [],
+        callbacks: {},
+    },
+    default: jest.fn(() => ({})),
+}));
+
 // Mock Axiom modules to prevent external network calls in tests
 jest.mock('@axiomhq/nextjs', () => ({
     withAxiom: (handler: any) => handler,

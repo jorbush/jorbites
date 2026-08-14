@@ -193,7 +193,7 @@ export class DraftService {
 
                 // Mask inviteToken for non-owners (B4)
                 if (!isOwner) {
-                    const { inviteToken, ...sanitized } = draft;
+                    const { inviteToken: _inviteToken, ...sanitized } = draft;
                     return sanitized as SharedDraft;
                 }
             }
@@ -252,7 +252,7 @@ export class DraftService {
         );
 
         const merged: SharedDraft = {
-            ...(existing || {}),
+            ...existing,
             ...sanitizedPayload,
             draftId,
             ownerId: existing?.ownerId || currentUser.id,

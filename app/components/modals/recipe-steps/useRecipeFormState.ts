@@ -369,7 +369,7 @@ export function useRecipeFormState({
                 setValue('draftId', currentDraftId);
                 setValue('inviteToken', currentToken);
                 mutate('/api/draft', res.data.draft, false);
-            } catch (err) {
+            } catch {
                 toast.error(
                     t('error_generating_link') ||
                         'Failed to generate invite link'
