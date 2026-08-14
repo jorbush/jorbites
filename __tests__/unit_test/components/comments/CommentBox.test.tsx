@@ -360,4 +360,12 @@ describe('CommentBox', () => {
         const rateBtn = screen.getByTestId('rate-toggle-btn');
         expect(rateBtn.querySelector('.hidden.md\\:inline')).toBeDefined();
     });
+
+    it('uses text-base and md:text-sm font size classes on input to prevent auto-zoom on mobile', () => {
+        render(<CommentBox {...mockProps} />);
+
+        const textarea = screen.getByPlaceholderText('write_comment');
+        expect(textarea.className).toContain('text-base');
+        expect(textarea.className).toContain('md:text-sm');
+    });
 });
