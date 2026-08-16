@@ -80,13 +80,34 @@ const RecipeModalContent: React.FC<{
     const isCurrentStepLocked = lock?.isLockedByOther(`step:${step}`);
     const lockOwner = lock?.getLockOwner(`step:${step}`);
 
+    // Active locks on other steps held by co-cooks
+    const otherActiveLocks = Object.entries(lock?.locks || {}).filter(
+        ([key, info]) =>
+            key !== `step:${step}` &&
+            key.startsWith('step:') &&
+            info &&
+            info.userId !== currentUser?.id
+    );
+
+    const isSharedSession = Boolean(
+        draftData?.isShared ||
+        (draftData?.coCooks && draftData.coCooks.length > 0) ||
+        selectedCoCooks.length > 0 ||
+        draftData?.ownerName ||
+        isCurrentStepLocked ||
+        otherActiveLocks.length > 0
+    );
+
     const lockBanner =
         isCurrentStepLocked && lockOwner ? (
             <div
                 data-testid="lock-banner"
-                className="mb-4 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs font-semibold text-amber-800 dark:border-amber-800 dark:bg-amber-950/80 dark:text-amber-200"
+                className="mb-4 flex items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3.5 py-2 text-xs font-medium text-amber-900 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200"
             >
-                <span>🔒</span>
+                <span className="relative flex size-2 shrink-0">
+                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex size-2 rounded-full bg-amber-500"></span>
+                </span>
                 <span>
                     {lockOwner.userName
                         ? t('lock_step_editing', {
@@ -95,6 +116,25 @@ const RecipeModalContent: React.FC<{
                           `@${lockOwner.userName} is currently editing this step`
                         : t('lock_step_editing_generic') ||
                           'A co-cook is currently editing this step'}
+                </span>
+            </div>
+        ) : isSharedSession && otherActiveLocks.length > 0 ? (
+            <div
+                data-testid="co-cook-activity-banner"
+                className="border-green-450/20 bg-green-450/10 dark:border-green-450/20 dark:bg-green-450/10 mb-4 flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-medium text-neutral-800 dark:text-neutral-200"
+            >
+                <span className="relative flex size-2 shrink-0">
+                    <span className="bg-green-450 absolute inline-flex size-full animate-ping rounded-full opacity-75"></span>
+                    <span className="bg-green-450 relative inline-flex size-2 rounded-full"></span>
+                </span>
+                <span>
+                    {otherActiveLocks[0][1].userName
+                        ? t('co_cook_active_other_step', {
+                              userName: otherActiveLocks[0][1].userName,
+                          }) ||
+                          `@${otherActiveLocks[0][1].userName} is currently editing another step`
+                        : t('co_cook_active_other_step_generic') ||
+                          'A co-cook is currently editing another step'}
                 </span>
             </div>
         ) : null;
@@ -239,31 +279,6 @@ const RecipeModalContent: React.FC<{
                             : ''
                     }
                 >
-                    <div className="mb-4 flex items-center justify-between">
-                        <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
-                            {t('collaborative_co_cooking') ||
-                                'Collaborative Co-Cooking'}
-                        </span>
-                        <Tooltip
-                            text={
-                                t('copy_co_cook_link_tooltip') ||
-                                'Copy co-cook invite link'
-                            }
-                        >
-                            <button
-                                type="button"
-                                onClick={copyInviteLink}
-                                data-testid="step-copy-co-cook-link-button"
-                                className="bg-green-450/20 hover:bg-green-450/30 dark:bg-green-450/10 dark:hover:bg-green-450/20 flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-neutral-900 transition dark:text-neutral-100"
-                            >
-                                <FiShare2 className="text-green-450 text-sm" />
-                                <span>
-                                    {t('copy_co_cook_link') ||
-                                        'Copy Invite Link'}
-                                </span>
-                            </button>
-                        </Tooltip>
-                    </div>
                     <RelatedContentStep
                         isLoading={isLoading}
                         selectedCoCooks={selectedCoCooks}

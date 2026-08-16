@@ -132,6 +132,6 @@ All incoming draft payloads are strictly filtered against `ALLOWED_DRAFT_FIELDS`
 
 ## UI Components & Real-Time Indicators
 
-- **Step 0 / Header Invite Action**: "+ Add Co-Cook" search & "Copy Co-Cook Link 🔗" button in `RecipeModal`.
-- **Shared Draft Banner**: `SharedDraftBanner` placed in `Navbar` displaying active co-cooking sessions (*"🥑 You're co-cooking 'Creamy Avocado Pasta' with @jordi! [Open Draft]"*).
-- **Field Lock Banners**: Rendered inside form steps (*"🔒 @maria is currently editing Step 2"*) when another co-cook holds an active soft-lock on that step. Inputs for locked fields are disabled with visual opacity feedback.
+- **Header Invite Action**: Minimalist "Copy Co-Cook Link" icon button with Tooltip in `RecipeModal`.
+- **Step Co-Cooking Indicator**: Minimalist status indicator (*"🥑 @maria is currently editing another step"*) rendered inside `RecipeModal` during multi-user collaborative editing sessions.
+- **Field Lock Banners**: Rendered inside form steps (*"🔒 @maria is currently editing this step"*) when another co-cook holds an active soft-lock on that step. Inputs for locked fields are disabled with visual opacity feedback.

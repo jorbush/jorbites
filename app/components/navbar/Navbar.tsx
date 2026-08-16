@@ -12,8 +12,6 @@ import { SafeUser } from '@/app/types';
 import useTheme from '@/app/hooks/useTheme';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 
-import SharedDraftBanner from '@/app/components/navbar/SharedDraftBanner';
-
 interface NavbarProps {
     currentUser?: SafeUser | null;
 }
@@ -51,7 +49,6 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
 
     return (
         <header className="fixed top-0 right-0 left-0 z-20 w-full transition duration-300">
-            <SharedDraftBanner currentUser={currentUser} />
             <nav aria-label="Main navigation">
                 <div
                     data-testid="navbar-top-row"
