@@ -179,6 +179,7 @@ const RecipeModalContent: React.FC<{
                         setValue={setValue}
                         inputMode={ingredientsInputMode}
                         setInputMode={setIngredientsInputMode}
+                        isLocked={isCurrentStepLocked}
                     />
                 </div>
             </div>
@@ -207,6 +208,7 @@ const RecipeModalContent: React.FC<{
                         setValue={setValue}
                         inputMode={stepsInputMode}
                         setInputMode={setStepsInputMode}
+                        isLocked={isCurrentStepLocked}
                     />
                 </div>
             </div>
@@ -240,6 +242,7 @@ const RecipeModalContent: React.FC<{
                         onCookTimeChange={(value) =>
                             setCustomValue('cookTime', value)
                         }
+                        isLocked={isCurrentStepLocked}
                     />
                 </div>
             </div>

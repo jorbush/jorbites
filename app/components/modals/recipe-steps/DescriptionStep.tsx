@@ -19,6 +19,7 @@ interface DescriptionStepProps {
     onPrepTimeChange?: (prepTime: number | undefined) => void;
     cookTime?: number | null;
     onCookTimeChange?: (cookTime: number | undefined) => void;
+    isLocked?: boolean;
 }
 
 const DescriptionStep: React.FC<DescriptionStepProps> = ({
@@ -31,6 +32,7 @@ const DescriptionStep: React.FC<DescriptionStepProps> = ({
     onPrepTimeChange,
     cookTime,
     onCookTimeChange,
+    isLocked,
 }) => {
     const { t } = useTranslation();
     const [showBreakdown, setShowBreakdown] = useState<boolean>(() => {
@@ -62,7 +64,7 @@ const DescriptionStep: React.FC<DescriptionStepProps> = ({
                 disabled={isLoading}
                 register={register}
                 errors={errors}
-                required
+                required={!isLocked}
                 maxLength={RECIPE_TITLE_MAX_LENGTH}
                 dataCy="recipe-title"
             />
@@ -73,7 +75,7 @@ const DescriptionStep: React.FC<DescriptionStepProps> = ({
                 disabled={isLoading}
                 register={register}
                 errors={errors}
-                required
+                required={!isLocked}
                 maxLength={RECIPE_DESCRIPTION_MAX_LENGTH}
                 dataCy="recipe-description"
             />

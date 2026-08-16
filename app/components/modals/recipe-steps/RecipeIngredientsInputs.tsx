@@ -11,6 +11,7 @@ interface RecipeIngredientsInputsProps {
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
     onRemoveIngredient: (index: number) => void;
+    isLocked?: boolean;
 }
 
 const RecipeIngredientsInputs: React.FC<RecipeIngredientsInputsProps> = ({
@@ -18,6 +19,7 @@ const RecipeIngredientsInputs: React.FC<RecipeIngredientsInputsProps> = ({
     register,
     errors,
     onRemoveIngredient,
+    isLocked,
 }) => {
     const ingredientKeys = Array.from(
         { length: numIngredients },
@@ -36,7 +38,7 @@ const RecipeIngredientsInputs: React.FC<RecipeIngredientsInputsProps> = ({
                             label=""
                             register={register}
                             errors={errors}
-                            required={numIngredients === 1}
+                            required={!isLocked && numIngredients === 1}
                             maxLength={RECIPE_INGREDIENT_MAX_LENGTH}
                             dataCy={`recipe-ingredient-${i}`}
                         />

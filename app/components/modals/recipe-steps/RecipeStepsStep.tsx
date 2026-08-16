@@ -23,6 +23,7 @@ interface RecipeStepsStepProps {
     setValue?: (name: string, value: any) => void;
     inputMode?: 'list' | 'text';
     setInputMode?: (mode: 'list' | 'text') => void;
+    isLocked?: boolean;
 }
 
 const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
@@ -36,6 +37,7 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
     setValue,
     inputMode: propInputMode,
     setInputMode: propSetInputMode,
+    isLocked,
 }) => {
     const { t } = useTranslation();
     const [localInputMode, setLocalInputMode] = useState<'list' | 'text'>(
@@ -108,6 +110,7 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
                             register={register}
                             errors={errors}
                             onRemoveStep={onRemoveStep}
+                            isLocked={isLocked}
                         />
                     </div>
                     <Button

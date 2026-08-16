@@ -11,6 +11,7 @@ interface RecipeStepsInputsProps {
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
     onRemoveStep: (index: number) => void;
+    isLocked?: boolean;
 }
 
 const RecipeStepsInputs: React.FC<RecipeStepsInputsProps> = ({
@@ -18,6 +19,7 @@ const RecipeStepsInputs: React.FC<RecipeStepsInputsProps> = ({
     register,
     errors,
     onRemoveStep,
+    isLocked,
 }) => {
     const stepKeys = Array.from(
         { length: numSteps },
@@ -38,7 +40,7 @@ const RecipeStepsInputs: React.FC<RecipeStepsInputsProps> = ({
                             label=""
                             register={register}
                             errors={errors}
-                            required={numSteps === 1}
+                            required={!isLocked && numSteps === 1}
                             maxLength={RECIPE_STEP_MAX_LENGTH}
                             dataCy={`recipe-step-${i}`}
                         />
