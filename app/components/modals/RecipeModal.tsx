@@ -380,8 +380,8 @@ const RecipeModalContent: React.FC<{
 const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const recipeModal = useRecipeModal();
     const { t } = useTranslation();
-    const searchParams = useSearchParams();
-    const draftQueryParam = searchParams?.get('draft');
+    const { get } = useSearchParams() || {};
+    const draftQueryParam = get?.('draft');
     const currentUserRef = useRef<SafeUser | null>(currentUser || null);
 
     useEffect(() => {
