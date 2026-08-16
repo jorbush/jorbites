@@ -5,25 +5,24 @@ import { DraftService } from '@/app/services/draftService';
 
 export async function GET(request: Request) {
     try {
-        const { searchParams } = new URL(request.url);
-        const draftId = searchParams.get('draft');
-        const token = searchParams.get('token');
-
-        const baseUrl =
-            process.env.NEXT_PUBLIC_APP_URL ||
-            (request.headers.get('origin') ?? 'http://localhost:3000');
+        const url = new URL(request.url);
+        const draftId = url.searchParams.get('draft');
+        const token = url.searchParams.get('token');
 
         if (!draftId || !token) {
             return NextResponse.redirect(
-                `${baseUrl}/?error=invalid_invite_link`
+                new URL('/?error=invalid_invite_link', request.url)
             );
         }
 
         const currentUser = await getCurrentUser();
         if (!currentUser) {
-            const redirectUrl = `${baseUrl}/api/draft/join?draft=${draftId}&token=${token}`;
+            const redirectUrl = `/api/draft/join?draft=${draftId}&token=${token}`;
             return NextResponse.redirect(
-                `${baseUrl}/login?callbackUrl=${encodeURIComponent(redirectUrl)}`
+                new URL(
+                    `/login?callbackUrl=${encodeURIComponent(redirectUrl)}`,
+                    request.url
+                )
             );
         }
 
@@ -38,7 +37,9 @@ export async function GET(request: Request) {
                 draftId,
                 error: result.error,
             });
-            return NextResponse.redirect(`${baseUrl}/?error=${result.error}`);
+            return NextResponse.redirect(
+                new URL(`/?error=${result.error}`, request.url)
+            );
         }
 
         logger.info('GET /api/draft/join - success', {
@@ -47,13 +48,12 @@ export async function GET(request: Request) {
         });
 
         return NextResponse.redirect(
-            `${baseUrl}/recipes/new?draft=${draftId}&joined=true`
+            new URL(`/?draft=${draftId}&joined=true`, request.url)
         );
     } catch (error: any) {
         logger.error('GET /api/draft/join - error', { error: error.message });
-        const baseUrl =
-            process.env.NEXT_PUBLIC_APP_URL ||
-            (request.headers.get('origin') ?? 'http://localhost:3000');
-        return NextResponse.redirect(`${baseUrl}/?error=failed_to_join_draft`);
+        return NextResponse.redirect(
+            new URL('/?error=failed_to_join_draft', request.url)
+        );
     }
 }
