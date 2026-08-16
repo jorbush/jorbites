@@ -168,7 +168,7 @@ describe('Draft Join API (/api/draft/join)', () => {
 
         expect(res.status).toBe(307);
         expect(res.headers.get('location')).toContain(
-            '/recipes/new?draft=draft-1&joined=true'
+            '/?draft=draft-1&joined=true'
         );
 
         const updatedDraft = JSON.parse(store['draft:shared:draft-1']);
