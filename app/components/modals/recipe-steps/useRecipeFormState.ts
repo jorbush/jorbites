@@ -332,6 +332,7 @@ export function useRecipeFormState({
         : watch('draftId') || draftData?.draftId;
 
     const lock = useRecipeLock(lockTargetId, currentUser?.id);
+    const isCurrentStepLocked = Boolean(lock?.isLockedByOther(`step:${step}`));
 
     useEffect(() => {
         if (lockTargetId && currentUser?.id) {
@@ -590,7 +591,7 @@ export function useRecipeFormState({
                     toast.success(
                         `${parsedItems.length} ${t('ingredients_applied')}`
                     );
-                } else {
+                } else if (!isCurrentStepLocked) {
                     toast.error(
                         t('no_ingredients_found') || 'No ingredients found'
                     );
@@ -620,7 +621,7 @@ export function useRecipeFormState({
                     toast.success(
                         `${parsedItems.length} ${t('steps_applied')}`
                     );
-                } else {
+                } else if (!isCurrentStepLocked) {
                     toast.error(t('no_steps_found') || 'No steps found');
                     return false;
                 }
@@ -819,6 +820,7 @@ export function useRecipeFormState({
         saveDraft,
         copyInviteLink,
         lock,
+        isCurrentStepLocked,
         addIngredientInput,
         removeIngredientInput,
         setIngredients,

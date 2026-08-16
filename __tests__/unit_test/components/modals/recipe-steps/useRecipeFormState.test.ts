@@ -142,4 +142,36 @@ describe('useRecipeFormState hook', () => {
             )
         );
     });
+
+    it('allows advancing past a step when locked by another user even if inputs are empty', async () => {
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                draftData: { draftId: 'd1' },
+            })
+        );
+
+        // Advance to ingredients step
+        act(() => {
+            result.current.setStep(1); // STEPS.INGREDIENTS
+            result.current.setIngredientsInputMode('text');
+        });
+
+        // When locked by other user, onNext should succeed even with empty text
+        vi.spyOn(result.current.lock, 'isLockedByOther').mockReturnValue(true);
+
+        await act(async () => {
+            await result.current.onSubmit({});
+        });
+
+        expect(result.current.step).toBe(2);
+    });
 });
