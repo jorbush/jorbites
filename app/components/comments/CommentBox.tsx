@@ -304,6 +304,17 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                                     className="sr-only"
                                     data-testid="cooked-toggle"
                                     data-cy="cooked-toggle"
+                                    aria-label={
+                                        mounted
+                                            ? String(
+                                                  t('i_cooked_this') &&
+                                                      t('i_cooked_this') !==
+                                                          'i_cooked_this'
+                                                      ? t('i_cooked_this')
+                                                      : 'I Cooked This!'
+                                              )
+                                            : 'I Cooked This!'
+                                    }
                                 />
                                 <span>🥑</span>
                                 <span className="md:hidden">
@@ -341,6 +352,17 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                                     id="cooked-photo-input"
                                     data-testid="cooked-photo-input"
                                     data-cy="cooked-photo-input"
+                                    aria-label={
+                                        mounted
+                                            ? String(
+                                                  t('add_photo') &&
+                                                      t('add_photo') !==
+                                                          'add_photo'
+                                                      ? t('add_photo')
+                                                      : 'Add photo'
+                                              )
+                                            : 'Add photo'
+                                    }
                                 />
                                 <label
                                     htmlFor="cooked-photo-input"
