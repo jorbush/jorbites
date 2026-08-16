@@ -21,7 +21,21 @@ const config: Config = {
   // Add more setup options before each test is run
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
-  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  testMatch: [
+    '<rootDir>/__tests__/unit_test/routes/**/*.test.ts',
+    '<rootDir>/__tests__/unit_test/actions/**/*.test.ts',
+    '<rootDir>/__tests__/unit_test/api/**/*.test.ts',
+    '<rootDir>/__tests__/unit_test/lib/**/*.test.ts',
+  ],
+  testPathIgnorePatterns: [
+    '<rootDir>/.next/',
+    '<rootDir>/node_modules/',
+    '<rootDir>/__tests__/e2e/',
+    '<rootDir>/__tests__/unit_test/components/',
+    '<rootDir>/__tests__/unit_test/pages/',
+    '<rootDir>/__tests__/unit_test/utils/',
+    '<rootDir>/__tests__/unit_test/hooks/',
+  ],
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

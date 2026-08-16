@@ -19,6 +19,21 @@ vi.mock('swr', () => ({
     default: () => ({ data: null, isLoading: false }),
 }));
 
+vi.mock('axios', () => ({
+    default: {
+        get: vi.fn().mockResolvedValue({ data: {} }),
+        post: vi.fn().mockResolvedValue({ data: {} }),
+        delete: vi.fn().mockResolvedValue({ data: {} }),
+    },
+}));
+
+vi.mock('react-hot-toast', () => ({
+    toast: {
+        success: vi.fn(),
+        error: vi.fn(),
+    },
+}));
+
 describe('useRecipeFormState hook', () => {
     const mockRecipeModal = {
         isOpen: true,
@@ -86,5 +101,45 @@ describe('useRecipeFormState hook', () => {
         expect(result.current.selectedLinkedRecipes).toEqual([
             { id: 'recipe-2', title: 'Butter' },
         ]);
+    });
+
+    it('copies invite link to clipboard when draftId and inviteToken exist', async () => {
+        const mockWriteText = vi.fn().mockResolvedValue(undefined);
+        Object.assign(navigator, {
+            clipboard: {
+                writeText: mockWriteText,
+            },
+        });
+
+        const mockDraftData = {
+            draftId: 'draft-abc',
+            inviteToken: 'token-xyz',
+            title: 'Tacos',
+        };
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                draftData: mockDraftData,
+            })
+        );
+
+        await act(async () => {
+            await result.current.copyInviteLink();
+        });
+
+        expect(mockWriteText).toHaveBeenCalledWith(
+            expect.stringContaining(
+                '/api/draft/join?draft=draft-abc&token=token-xyz'
+            )
+        );
     });
 });

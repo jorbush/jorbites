@@ -25,6 +25,30 @@ const createMockRedis = (name: string) => {
                 logger.info(`[Redis Disabled] Mock incr on ${name} for ${key}`);
             return 1;
         },
+        keys: async (_pattern: string) => {
+            return [];
+        },
+        scan: async (_cursor: string) => {
+            return ['0', []];
+        },
+        mget: async (..._keys: string[]) => {
+            return [];
+        },
+        sadd: async (_key: string, ..._members: string[]) => {
+            return 1;
+        },
+        srem: async (_key: string, ..._members: string[]) => {
+            return 1;
+        },
+        smembers: async (_key: string) => {
+            return [];
+        },
+        expire: async (_key: string, _seconds: number) => {
+            return 1;
+        },
+        eval: async (_script: string, _numkeys: number, ..._args: any[]) => {
+            return 1;
+        },
     } as unknown as Redis;
 };
 

@@ -8,24 +8,32 @@ jest.mock('@/app/actions/getCurrentUser', () =>
     jest.fn(() => Promise.resolve(mockCurrentUser))
 );
 
-jest.mock('@aws-sdk/client-s3', () => {
-    return {
-        S3Client: jest.fn().mockImplementation(() => ({})),
-        PutObjectCommand: jest.fn().mockImplementation((params) => params),
-    };
-});
+jest.mock(
+    '@aws-sdk/client-s3',
+    () => {
+        return {
+            S3Client: jest.fn().mockImplementation(() => ({})),
+            PutObjectCommand: jest.fn().mockImplementation((params) => params),
+        };
+    },
+    { virtual: true }
+);
 
-jest.mock('@aws-sdk/s3-request-presigner', () => {
-    return {
-        getSignedUrl: jest
-            .fn()
-            .mockImplementation(() =>
-                Promise.resolve(
-                    'https://mock-r2-upload-url.cloudflarestorage.com/remakes/test.webp?signature=123'
-                )
-            ),
-    };
-});
+jest.mock(
+    '@aws-sdk/s3-request-presigner',
+    () => {
+        return {
+            getSignedUrl: jest
+                .fn()
+                .mockImplementation(() =>
+                    Promise.resolve(
+                        'https://mock-r2-upload-url.cloudflarestorage.com/remakes/test.webp?signature=123'
+                    )
+                ),
+        };
+    },
+    { virtual: true }
+);
 
 describe('Cloudflare R2 Upload API', () => {
     beforeEach(() => {
