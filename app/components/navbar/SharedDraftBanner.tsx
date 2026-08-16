@@ -1,6 +1,7 @@
 'use client';
 
 import useSWR from 'swr';
+import { useTranslation } from 'react-i18next';
 import { axiosFetcher } from '@/app/utils/fetcher';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import { SafeUser } from '@/app/types';
@@ -13,6 +14,7 @@ interface SharedDraftBannerProps {
 export default function SharedDraftBanner({
     currentUser,
 }: SharedDraftBannerProps) {
+    const { t } = useTranslation();
     const recipeModal = useRecipeModal();
 
     const { data: activeDrafts } = useSWR<any[]>(
@@ -26,27 +28,29 @@ export default function SharedDraftBanner({
     }
 
     const draft = activeDrafts[0];
-    const title = draft.title || 'Untitled Recipe';
-    const ownerName = draft.ownerName || 'a co-cook';
+    const title = draft.title || t('untitled_recipe') || 'Untitled Recipe';
+    const ownerName = draft.ownerName || t('a_co_cook') || 'a co-cook';
 
     return (
         <div
             data-testid="shared-draft-banner"
-            className="flex w-full items-center justify-between border-b border-emerald-200 bg-emerald-50 px-4 py-2 text-xs text-emerald-800 transition sm:text-sm dark:border-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-200"
+            className="border-green-450/30 bg-green-450/10 dark:border-green-450/20 dark:bg-green-450/10 flex w-full items-center justify-between border-b px-4 py-2 text-xs text-neutral-900 transition sm:text-sm dark:text-neutral-100"
         >
             <div className="flex items-center gap-2 truncate">
                 <span className="text-base">🥑</span>
                 <span className="truncate">
-                    You're co-cooking <strong>"{title}"</strong> with @
-                    {ownerName}!
+                    {t('shared_draft_banner_text', {
+                        title,
+                        ownerName,
+                    }) || `You're co-cooking "${title}" with @${ownerName}!`}
                 </span>
             </div>
             <button
                 type="button"
                 onClick={() => recipeModal.onOpenSharedDraft(draft.draftId)}
-                className="ml-3 shrink-0 rounded-md bg-emerald-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600"
+                className="bg-green-450 dark:bg-green-450 ml-3 shrink-0 rounded-md px-3 py-1 text-xs font-semibold text-green-950 transition hover:opacity-90 dark:text-green-950"
             >
-                Open Draft
+                {t('open_draft') || 'Open Draft'}
             </button>
         </div>
     );

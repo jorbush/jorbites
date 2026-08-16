@@ -8,6 +8,7 @@ import useRecipeModal from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
 import { useTranslation } from 'react-i18next';
 import { FiUploadCloud, FiShare2 } from 'react-icons/fi';
+import Tooltip from '@/app/components/utils/Tooltip';
 import { SafeUser } from '@/app/types';
 import RelatedContentStep from '@/app/components/modals/recipe-steps/RelatedContentStep';
 import CategoryStep from '@/app/components/modals/recipe-steps/CategoryStep';
@@ -87,8 +88,13 @@ const RecipeModalContent: React.FC<{
             >
                 <span>🔒</span>
                 <span>
-                    @{lockOwner.userName || 'A co-cook'} is currently editing
-                    this step
+                    {lockOwner.userName
+                        ? t('lock_step_editing', {
+                              userName: lockOwner.userName,
+                          }) ||
+                          `@${lockOwner.userName} is currently editing this step`
+                        : t('lock_step_editing_generic') ||
+                          'A co-cook is currently editing this step'}
                 </span>
             </div>
         ) : null;
@@ -234,18 +240,29 @@ const RecipeModalContent: React.FC<{
                     }
                 >
                     <div className="mb-4 flex items-center justify-between">
-                        <span className="text-xs font-semibold text-neutral-500">
-                            Collaborative Co-Cooking
+                        <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                            {t('collaborative_co_cooking') ||
+                                'Collaborative Co-Cooking'}
                         </span>
-                        <button
-                            type="button"
-                            onClick={copyInviteLink}
-                            data-testid="step-copy-co-cook-link-button"
-                            className="flex items-center gap-1 rounded-md bg-emerald-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-emerald-700"
+                        <Tooltip
+                            text={
+                                t('copy_co_cook_link_tooltip') ||
+                                'Copy co-cook invite link'
+                            }
                         >
-                            <FiShare2 className="text-xs" />
-                            <span>Copy Invite Link 🔗</span>
-                        </button>
+                            <button
+                                type="button"
+                                onClick={copyInviteLink}
+                                data-testid="step-copy-co-cook-link-button"
+                                className="bg-green-450/20 hover:bg-green-450/30 dark:bg-green-450/10 dark:hover:bg-green-450/20 flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-neutral-900 transition dark:text-neutral-100"
+                            >
+                                <FiShare2 className="text-green-450 text-sm" />
+                                <span>
+                                    {t('copy_co_cook_link') ||
+                                        'Copy Invite Link'}
+                                </span>
+                            </button>
+                        </Tooltip>
                     </div>
                     <RelatedContentStep
                         isLoading={isLoading}
@@ -308,26 +325,36 @@ const RecipeModalContent: React.FC<{
             isLoading={isLoading}
             topButton={
                 !recipeModal.isEditMode ? (
-                    <div className="flex items-center gap-2">
-                        <button
-                            type="button"
-                            onClick={copyInviteLink}
-                            title={
-                                t('copy_co_cook_link') ?? 'Copy Co-Cook Link 🔗'
+                    <div className="flex items-center gap-3">
+                        <Tooltip
+                            text={
+                                t('copy_co_cook_link_tooltip') ||
+                                'Copy co-cook invite link'
                             }
-                            data-testid="copy-co-cook-link-button"
-                            className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 dark:hover:bg-emerald-900"
                         >
-                            <FiShare2 className="text-sm" />
-                            <span className="hidden sm:inline">
-                                Copy Invite Link 🔗
-                            </span>
-                        </button>
-                        <FiUploadCloud
-                            onClick={saveDraft}
-                            className="cursor-pointer text-2xl text-black transition hover:opacity-70 dark:text-neutral-100"
-                            data-testid="load-draft-button"
-                        />
+                            <button
+                                type="button"
+                                onClick={copyInviteLink}
+                                aria-label={
+                                    t('copy_co_cook_link') || 'Copy invite link'
+                                }
+                                data-testid="copy-co-cook-link-button"
+                                className="hover:text-green-450 dark:hover:text-green-450 flex cursor-pointer items-center justify-center text-2xl text-black transition dark:text-neutral-100"
+                            >
+                                <FiShare2 />
+                            </button>
+                        </Tooltip>
+                        <Tooltip text={t('save_draft_tooltip') || 'Save draft'}>
+                            <button
+                                type="button"
+                                onClick={saveDraft}
+                                aria-label={t('save_draft') || 'Save draft'}
+                                data-testid="load-draft-button"
+                                className="hover:text-green-450 dark:hover:text-green-450 flex cursor-pointer items-center justify-center text-2xl text-black transition dark:text-neutral-100"
+                            >
+                                <FiUploadCloud />
+                            </button>
+                        </Tooltip>
                     </div>
                 ) : undefined
             }

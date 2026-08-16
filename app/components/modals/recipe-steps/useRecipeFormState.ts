@@ -386,7 +386,9 @@ export function useRecipeFormState({
                     'Co-cook invite link copied to clipboard! 🔗'
             );
         } catch {
-            toast.error('Could not copy link to clipboard');
+            toast.error(
+                t('could_not_copy_link') || 'Could not copy link to clipboard'
+            );
         }
     };
 
