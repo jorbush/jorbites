@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import useSWR from 'swr';
 import { useSearchParams } from 'next/navigation';
 import { axiosFetcher } from '@/app/utils/fetcher';
@@ -451,24 +451,15 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             revalidateOnReconnect: true,
             refreshInterval: 3000,
             shouldRetryOnError: false,
+            keepPreviousData: true,
         }
     );
-
-    const [hasLoadedInitialDraft, setHasLoadedInitialDraft] = useState(false);
-
-    useEffect(() => {
-        if (!recipeModal.isOpen) {
-            setHasLoadedInitialDraft(false);
-        } else if (!isLoadingDraft) {
-            setHasLoadedInitialDraft(true);
-        }
-    }, [recipeModal.isOpen, isLoadingDraft]);
 
     if (!recipeModal.isOpen) {
         return null;
     }
 
-    if (isLoadingDraft && !hasLoadedInitialDraft) {
+    if (isLoadingDraft && !draftData) {
         return (
             <Modal
                 isOpen={recipeModal.isOpen}
