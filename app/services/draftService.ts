@@ -261,6 +261,69 @@ export class DraftService {
                 currentUser.name ||
                 currentUser.email ||
                 'Chef',
+            ingredients:
+                sanitizedPayload.ingredients &&
+                sanitizedPayload.ingredients.length > 0
+                    ? sanitizedPayload.ingredients
+                    : existing?.ingredients || [],
+            steps:
+                sanitizedPayload.steps && sanitizedPayload.steps.length > 0
+                    ? sanitizedPayload.steps
+                    : existing?.steps || [],
+            categories:
+                sanitizedPayload.categories &&
+                sanitizedPayload.categories.length > 0
+                    ? sanitizedPayload.categories
+                    : existing?.categories || [],
+            title:
+                sanitizedPayload.title !== undefined &&
+                sanitizedPayload.title !== ''
+                    ? sanitizedPayload.title
+                    : existing?.title || '',
+            description:
+                sanitizedPayload.description !== undefined &&
+                sanitizedPayload.description !== ''
+                    ? sanitizedPayload.description
+                    : existing?.description || '',
+            method:
+                sanitizedPayload.method !== undefined &&
+                sanitizedPayload.method !== ''
+                    ? sanitizedPayload.method
+                    : existing?.method || '',
+            imageSrc:
+                sanitizedPayload.imageSrc !== undefined &&
+                sanitizedPayload.imageSrc !== ''
+                    ? sanitizedPayload.imageSrc
+                    : existing?.imageSrc || '',
+            imageSrc1:
+                sanitizedPayload.imageSrc1 !== undefined &&
+                sanitizedPayload.imageSrc1 !== ''
+                    ? sanitizedPayload.imageSrc1
+                    : existing?.imageSrc1 || '',
+            imageSrc2:
+                sanitizedPayload.imageSrc2 !== undefined &&
+                sanitizedPayload.imageSrc2 !== ''
+                    ? sanitizedPayload.imageSrc2
+                    : existing?.imageSrc2 || '',
+            imageSrc3:
+                sanitizedPayload.imageSrc3 !== undefined &&
+                sanitizedPayload.imageSrc3 !== ''
+                    ? sanitizedPayload.imageSrc3
+                    : existing?.imageSrc3 || '',
+            minutes:
+                sanitizedPayload.minutes !== undefined
+                    ? sanitizedPayload.minutes
+                    : existing?.minutes !== undefined
+                      ? existing.minutes
+                      : 30,
+            prepTime:
+                sanitizedPayload.prepTime !== undefined
+                    ? sanitizedPayload.prepTime
+                    : existing?.prepTime,
+            cookTime:
+                sanitizedPayload.cookTime !== undefined
+                    ? sanitizedPayload.cookTime
+                    : existing?.cookTime,
             coCooksIds: limitedCoCooks,
             linkedRecipeIds: limitedLinked,
             inviteToken:

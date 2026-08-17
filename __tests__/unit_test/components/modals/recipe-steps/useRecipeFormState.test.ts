@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useRecipeFormState } from '@/app/components/modals/recipe-steps/useRecipeFormState';
 
 // Mocks
@@ -34,7 +34,23 @@ vi.mock('react-hot-toast', () => ({
     },
 }));
 
+const mockIsLockedByOther = vi.fn().mockReturnValue(false);
+
+vi.mock('@/app/hooks/useRecipeLock', () => ({
+    useRecipeLock: () => ({
+        locks: {},
+        acquire: vi.fn().mockResolvedValue(true),
+        release: vi.fn().mockResolvedValue(undefined),
+        isLockedByOther: mockIsLockedByOther,
+        getLockOwner: vi.fn().mockReturnValue(null),
+        fetchLocks: vi.fn().mockResolvedValue(undefined),
+    }),
+}));
+
 describe('useRecipeFormState hook', () => {
+    beforeEach(() => {
+        mockIsLockedByOther.mockReturnValue(false);
+    });
     const mockRecipeModal = {
         isOpen: true,
         isEditMode: false,
@@ -144,6 +160,7 @@ describe('useRecipeFormState hook', () => {
     });
 
     it('allows advancing past a step when locked by another user even if inputs are empty', async () => {
+        mockIsLockedByOther.mockReturnValue(true);
         const { result } = renderHook(() =>
             useRecipeFormState({
                 recipeModal: mockRecipeModal,
@@ -155,23 +172,65 @@ describe('useRecipeFormState hook', () => {
                     updatedAt: '',
                     favoriteIds: [],
                 },
-                draftData: { draftId: 'd1' },
+                draftData: { draftId: 'd1', currentStep: 1 },
             })
         );
 
-        // Advance to ingredients step
+        expect(result.current.step).toBe(1);
+
         act(() => {
-            result.current.setStep(1); // STEPS.INGREDIENTS
             result.current.setIngredientsInputMode('text');
         });
-
-        // When locked by other user, onNext should succeed even with empty text
-        vi.spyOn(result.current.lock, 'isLockedByOther').mockReturnValue(true);
 
         await act(async () => {
             await result.current.onSubmit({});
         });
 
         expect(result.current.step).toBe(2);
+    });
+
+    it('synchronizes incoming draftData for inactive steps without disturbing current step', async () => {
+        let currentDraftData: any = {
+            draftId: 'd1',
+            ingredients: ['flour'],
+            title: 'Initial Title',
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: currentDraftData } }
+        );
+
+        // User is currently on Step 2 (STEPS)
+        act(() => {
+            result.current.setStep(2);
+        });
+
+        // Co-cook updates ingredients and title in draftData
+        currentDraftData = {
+            draftId: 'd1',
+            ingredients: ['flour', 'sugar', 'eggs'],
+            title: 'Updated Shared Title',
+        };
+
+        await act(async () => {
+            rerender({ draft: currentDraftData });
+        });
+        await act(async () => {});
+
+        expect(result.current.getValues('title')).toBe('Updated Shared Title');
+        expect(result.current.getValues('ingredient-0')).toBe('flour');
     });
 });

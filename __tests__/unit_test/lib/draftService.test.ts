@@ -178,6 +178,35 @@ describe('DraftService', () => {
             expect(updated.title).toBe('Co-Cook Tapas Edit');
             expect(updated.ownerId).toBe('owner-1');
         });
+
+        it('should preserve existing step fields when co-cook updates a different step', async () => {
+            await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Original Title',
+                    ingredients: ['Tomato', 'Garlic'],
+                    steps: ['Chop', 'Fry'],
+                    coCooksIds: [mockCoCook.id],
+                },
+                mockOwner
+            );
+
+            // Co-cook updates only description and steps, sending empty/omitted ingredients
+            const updated = await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    description: 'New Description',
+                    steps: ['Chop finely', 'Fry gently'],
+                },
+                mockCoCook
+            );
+
+            expect(updated.description).toBe('New Description');
+            expect(updated.steps).toEqual(['Chop finely', 'Fry gently']);
+            // Preserves ingredients previously saved by owner
+            expect(updated.ingredients).toEqual(['Tomato', 'Garlic']);
+            expect(updated.title).toBe('Original Title');
+        });
     });
 
     describe('getSharedDraft & token masking', () => {
