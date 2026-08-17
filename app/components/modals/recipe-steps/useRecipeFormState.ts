@@ -351,7 +351,6 @@ export function useRecipeFormState({
     );
 
     const lastSyncedDraftStrRef = useRef<string>('');
-    const hasInitialSyncedRef = useRef<boolean>(false);
 
     const lockTargetId = recipeModal.isEditMode
         ? recipeModal.editRecipeData?.id
@@ -368,17 +367,18 @@ export function useRecipeFormState({
         if (serialized === lastSyncedDraftStrRef.current) return;
         lastSyncedDraftStrRef.current = serialized;
 
-        const isInitialSync = !hasInitialSyncedRef.current;
-        hasInitialSyncedRef.current = true;
-
         const isStepLockedByOther = (stepIndex: number) =>
             Boolean(lock?.isLockedByOther(`step:${stepIndex}`));
 
+        const shouldSyncStep = (stepIndex: number) => {
+            if (isStepLockedByOther(stepIndex)) return true;
+            if (step === stepIndex) return false;
+            return true;
+        };
+
         // Step 0: Category
         if (
-            (isInitialSync ||
-                step !== STEPS.CATEGORY ||
-                isStepLockedByOther(STEPS.CATEGORY)) &&
+            shouldSyncStep(STEPS.CATEGORY) &&
             Array.isArray(draftData.categories) &&
             JSON.stringify(getValues('categories')) !==
                 JSON.stringify(draftData.categories)
@@ -386,64 +386,18 @@ export function useRecipeFormState({
             setCustomValue('categories', draftData.categories);
         }
 
-        // Step 1: Ingredients
-        if (
-            isInitialSync ||
-            step !== STEPS.INGREDIENTS ||
-            isStepLockedByOther(STEPS.INGREDIENTS)
-        ) {
-            if (Array.isArray(draftData.ingredients)) {
-                const incoming = draftData.ingredients;
-                if (
-                    incoming.length > 0 &&
-                    JSON.stringify(getValues('ingredients')) !==
-                        JSON.stringify(incoming)
-                ) {
-                    setNumIngredients(incoming.length);
-                    incoming.forEach((item: string, idx: number) => {
-                        setCustomValue(`ingredient-${idx}`, item);
-                    });
-                    setCustomValue('ingredients', incoming);
-                }
-            }
-        }
-
-        // Step 2: Steps
-        if (
-            isInitialSync ||
-            step !== STEPS.STEPS ||
-            isStepLockedByOther(STEPS.STEPS)
-        ) {
-            if (Array.isArray(draftData.steps)) {
-                const incoming = draftData.steps;
-                if (
-                    incoming.length > 0 &&
-                    JSON.stringify(getValues('steps')) !==
-                        JSON.stringify(incoming)
-                ) {
-                    setNumSteps(incoming.length);
-                    incoming.forEach((item: string, idx: number) => {
-                        setCustomValue(`step-${idx}`, item);
-                    });
-                    setCustomValue('steps', incoming);
-                }
-            }
-        }
-
-        // Step 3: Description & Times
-        if (
-            isInitialSync ||
-            step !== STEPS.DESCRIPTION ||
-            isStepLockedByOther(STEPS.DESCRIPTION)
-        ) {
+        // Step 1: Description & Times
+        if (shouldSyncStep(STEPS.DESCRIPTION)) {
             if (
                 draftData.title !== undefined &&
+                draftData.title !== '' &&
                 getValues('title') !== draftData.title
             ) {
                 setCustomValue('title', draftData.title);
             }
             if (
                 draftData.description !== undefined &&
+                draftData.description !== '' &&
                 getValues('description') !== draftData.description
             ) {
                 setCustomValue('description', draftData.description);
@@ -468,12 +422,26 @@ export function useRecipeFormState({
             }
         }
 
-        // Step 4: Methods
-        if (
-            isInitialSync ||
-            step !== STEPS.METHODS ||
-            isStepLockedByOther(STEPS.METHODS)
-        ) {
+        // Step 2: Ingredients
+        if (shouldSyncStep(STEPS.INGREDIENTS)) {
+            if (Array.isArray(draftData.ingredients)) {
+                const incoming = draftData.ingredients;
+                if (
+                    incoming.length > 0 &&
+                    JSON.stringify(getValues('ingredients')) !==
+                        JSON.stringify(incoming)
+                ) {
+                    setNumIngredients(incoming.length);
+                    incoming.forEach((item: string, idx: number) => {
+                        setCustomValue(`ingredient-${idx}`, item);
+                    });
+                    setCustomValue('ingredients', incoming);
+                }
+            }
+        }
+
+        // Step 3: Methods
+        if (shouldSyncStep(STEPS.METHODS)) {
             if (
                 draftData.method !== undefined &&
                 getValues('method') !== draftData.method
@@ -482,12 +450,26 @@ export function useRecipeFormState({
             }
         }
 
+        // Step 4: Steps
+        if (shouldSyncStep(STEPS.STEPS)) {
+            if (Array.isArray(draftData.steps)) {
+                const incoming = draftData.steps;
+                if (
+                    incoming.length > 0 &&
+                    JSON.stringify(getValues('steps')) !==
+                        JSON.stringify(incoming)
+                ) {
+                    setNumSteps(incoming.length);
+                    incoming.forEach((item: string, idx: number) => {
+                        setCustomValue(`step-${idx}`, item);
+                    });
+                    setCustomValue('steps', incoming);
+                }
+            }
+        }
+
         // Step 5: Related Content
-        if (
-            isInitialSync ||
-            step !== STEPS.RELATED_CONTENT ||
-            isStepLockedByOther(STEPS.RELATED_CONTENT)
-        ) {
+        if (shouldSyncStep(STEPS.RELATED_CONTENT)) {
             if (
                 Array.isArray(draftData.coCooksIds) &&
                 JSON.stringify(getValues('coCooksIds')) !==
@@ -517,11 +499,7 @@ export function useRecipeFormState({
         }
 
         // Step 6: Images
-        if (
-            isInitialSync ||
-            step !== STEPS.IMAGES ||
-            isStepLockedByOther(STEPS.IMAGES)
-        ) {
+        if (shouldSyncStep(STEPS.IMAGES)) {
             if (
                 draftData.imageSrc !== undefined &&
                 getValues('imageSrc') !== draftData.imageSrc
