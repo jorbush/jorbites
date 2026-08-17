@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo, useEffect } from 'react';
+import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import useSWR, { mutate } from 'swr';
@@ -25,12 +25,14 @@ interface UseRecipeFormStateProps {
     recipeModal: any;
     currentUser?: SafeUser | null;
     draftData?: any;
+    mutateDraft?: () => Promise<any>;
 }
 
 export function useRecipeFormState({
     recipeModal,
     currentUser,
     draftData,
+    mutateDraft,
 }: UseRecipeFormStateProps) {
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
@@ -111,6 +113,14 @@ export function useRecipeFormState({
     );
 
     const initialDefaultValues = useMemo(() => {
+        const emptySlots: Record<string, string> = {};
+        for (let i = 0; i < RECIPE_MAX_INGREDIENTS; i++) {
+            emptySlots[`ingredient-${i}`] = '';
+        }
+        for (let i = 0; i < RECIPE_MAX_STEPS; i++) {
+            emptySlots[`step-${i}`] = '';
+        }
+
         if (recipeModal.isEditMode && recipeModal.editRecipeData) {
             const editData = recipeModal.editRecipeData;
             const ingredientsObject: Record<string, string> = {};
@@ -124,6 +134,7 @@ export function useRecipeFormState({
                 stepsObject[`step-${index}`] = step;
             });
             return {
+                ...emptySlots,
                 categories: Array.isArray(editData.categories)
                     ? editData.categories
                     : [],
@@ -167,6 +178,7 @@ export function useRecipeFormState({
                 stepsObject[`step-${index}`] = step;
             });
             return {
+                ...emptySlots,
                 categories: Array.isArray(draftData.categories)
                     ? draftData.categories
                     : [],
@@ -200,6 +212,7 @@ export function useRecipeFormState({
             };
         }
         return {
+            ...emptySlots,
             categories: [],
             method: '',
             imageSrc: '',
@@ -258,13 +271,243 @@ export function useRecipeFormState({
         [rawLinkedRecipeIds]
     );
 
-    const setCustomValue = (id: string, value: any) => {
-        setValue(id, value, {
-            shouldDirty: true,
-            shouldTouch: true,
-            shouldValidate: true,
-        });
-    };
+    const setCustomValue = useCallback(
+        (id: string, value: any) => {
+            setValue(id, value, {
+                shouldDirty: true,
+                shouldTouch: true,
+                shouldValidate: true,
+            });
+        },
+        [setValue]
+    );
+
+    const addIngredientInput = useCallback(() => {
+        if (numIngredients >= RECIPE_MAX_INGREDIENTS) {
+            toast.error(
+                t('max_ingredients_reached') ||
+                    `Maximum of ${RECIPE_MAX_INGREDIENTS} ingredients allowed`
+            );
+            return;
+        }
+        setNumIngredients((value) => value + 1);
+    }, [numIngredients, t]);
+
+    const removeIngredientInput = useCallback(
+        (index: number) => {
+            setNumIngredients((value) => value - 1);
+            setCustomValue(`ingredient-${index}`, '');
+        },
+        [setCustomValue]
+    );
+
+    const setIngredients = useCallback(
+        (ingredients: string[]) => {
+            const maxCount = Math.max(numIngredients, ingredients.length);
+            for (let i = 0; i < maxCount; i++) {
+                setCustomValue(`ingredient-${i}`, '');
+            }
+            setNumIngredients(ingredients.length);
+            ingredients.forEach((ingredient, index) => {
+                setCustomValue(`ingredient-${index}`, ingredient);
+            });
+            setCustomValue('ingredients', ingredients);
+        },
+        [numIngredients, setCustomValue]
+    );
+
+    const addStepInput = useCallback(() => {
+        if (numSteps >= RECIPE_MAX_STEPS) {
+            toast.error(
+                t('max_steps_reached') ||
+                    `Maximum of ${RECIPE_MAX_STEPS} steps allowed`
+            );
+            return;
+        }
+        setNumSteps((value) => value + 1);
+    }, [numSteps, t]);
+
+    const removeStepInput = useCallback(
+        (index: number) => {
+            setNumSteps((value) => value - 1);
+            setCustomValue(`step-${index}`, '');
+        },
+        [setCustomValue]
+    );
+
+    const setSteps = useCallback(
+        (steps: string[]) => {
+            const maxCount = Math.max(numSteps, steps.length);
+            for (let i = 0; i < maxCount; i++) {
+                setCustomValue(`step-${i}`, '');
+            }
+            setNumSteps(steps.length);
+            steps.forEach((step, index) => {
+                setCustomValue(`step-${index}`, step);
+            });
+            setCustomValue('steps', steps);
+        },
+        [numSteps, setCustomValue]
+    );
+
+    const lastSyncedDraftStrRef = useRef<string>('');
+
+    // Smart non-destructive live synchronization from draftData without overwriting active step inputs
+    useEffect(() => {
+        if (!draftData || recipeModal.isEditMode) return;
+
+        const serialized = JSON.stringify(draftData);
+        if (serialized === lastSyncedDraftStrRef.current) return;
+        lastSyncedDraftStrRef.current = serialized;
+
+        // Step 0: Category
+        if (
+            step !== STEPS.CATEGORY &&
+            Array.isArray(draftData.categories) &&
+            JSON.stringify(getValues('categories')) !==
+                JSON.stringify(draftData.categories)
+        ) {
+            setCustomValue('categories', draftData.categories);
+        }
+
+        // Step 1: Ingredients
+        if (
+            step !== STEPS.INGREDIENTS &&
+            Array.isArray(draftData.ingredients)
+        ) {
+            const incoming = draftData.ingredients;
+            if (incoming.length > 0) {
+                setNumIngredients(incoming.length);
+                incoming.forEach((item: string, idx: number) => {
+                    setCustomValue(`ingredient-${idx}`, item);
+                });
+                setCustomValue('ingredients', incoming);
+            }
+        }
+
+        // Step 2: Steps
+        if (step !== STEPS.STEPS && Array.isArray(draftData.steps)) {
+            const incoming = draftData.steps;
+            if (incoming.length > 0) {
+                setNumSteps(incoming.length);
+                incoming.forEach((item: string, idx: number) => {
+                    setCustomValue(`step-${idx}`, item);
+                });
+                setCustomValue('steps', incoming);
+            }
+        }
+
+        // Step 3: Description & Times
+        if (step !== STEPS.DESCRIPTION) {
+            if (
+                draftData.title !== undefined &&
+                getValues('title') !== draftData.title
+            ) {
+                setCustomValue('title', draftData.title);
+            }
+            if (
+                draftData.description !== undefined &&
+                getValues('description') !== draftData.description
+            ) {
+                setCustomValue('description', draftData.description);
+            }
+            if (
+                draftData.minutes !== undefined &&
+                getValues('minutes') !== draftData.minutes
+            ) {
+                setCustomValue('minutes', draftData.minutes);
+            }
+            if (
+                draftData.prepTime !== undefined &&
+                getValues('prepTime') !== draftData.prepTime
+            ) {
+                setCustomValue('prepTime', draftData.prepTime);
+            }
+            if (
+                draftData.cookTime !== undefined &&
+                getValues('cookTime') !== draftData.cookTime
+            ) {
+                setCustomValue('cookTime', draftData.cookTime);
+            }
+        }
+
+        // Step 4: Methods
+        if (
+            step !== STEPS.METHODS &&
+            draftData.method !== undefined &&
+            getValues('method') !== draftData.method
+        ) {
+            setCustomValue('method', draftData.method);
+        }
+
+        // Step 5: Related Content
+        if (step !== STEPS.RELATED_CONTENT) {
+            if (
+                Array.isArray(draftData.coCooksIds) &&
+                JSON.stringify(getValues('coCooksIds')) !==
+                    JSON.stringify(draftData.coCooksIds)
+            ) {
+                setCustomValue('coCooksIds', draftData.coCooksIds);
+            }
+            if (
+                Array.isArray(draftData.linkedRecipeIds) &&
+                JSON.stringify(getValues('linkedRecipeIds')) !==
+                    JSON.stringify(draftData.linkedRecipeIds)
+            ) {
+                setCustomValue('linkedRecipeIds', draftData.linkedRecipeIds);
+            }
+            if (
+                draftData.youtubeUrl !== undefined &&
+                getValues('youtubeUrl') !== draftData.youtubeUrl
+            ) {
+                setCustomValue('youtubeUrl', draftData.youtubeUrl);
+            }
+            if (
+                draftData.questId !== undefined &&
+                getValues('questId') !== draftData.questId
+            ) {
+                setCustomValue('questId', draftData.questId);
+            }
+        }
+
+        // Step 6: Images
+        if (step !== STEPS.IMAGES) {
+            if (
+                draftData.imageSrc !== undefined &&
+                getValues('imageSrc') !== draftData.imageSrc
+            ) {
+                setCustomValue('imageSrc', draftData.imageSrc);
+            }
+            if (
+                draftData.imageSrc1 !== undefined &&
+                getValues('imageSrc1') !== draftData.imageSrc1
+            ) {
+                setCustomValue('imageSrc1', draftData.imageSrc1);
+            }
+            if (
+                draftData.imageSrc2 !== undefined &&
+                getValues('imageSrc2') !== draftData.imageSrc2
+            ) {
+                setCustomValue('imageSrc2', draftData.imageSrc2);
+            }
+            if (
+                draftData.imageSrc3 !== undefined &&
+                getValues('imageSrc3') !== draftData.imageSrc3
+            ) {
+                setCustomValue('imageSrc3', draftData.imageSrc3);
+            }
+        }
+
+        if (draftData.draftId && getValues('draftId') !== draftData.draftId) {
+            setCustomValue('draftId', draftData.draftId);
+        }
+        if (
+            draftData.inviteToken &&
+            getValues('inviteToken') !== draftData.inviteToken
+        ) {
+            setCustomValue('inviteToken', draftData.inviteToken);
+        }
+    }, [draftData, step, recipeModal.isEditMode, setCustomValue, getValues]);
 
     const addCoCook = (user: SafeUser) => {
         if (coCooksIds.length >= MAX_CO_COOKS) {
@@ -434,6 +677,21 @@ export function useRecipeFormState({
             }
         }
 
+        if (step !== STEPS.INGREDIENTS && newIngredients.length === 0) {
+            const existing =
+                getValues('ingredients') || draftData?.ingredients || [];
+            if (existing.length > 0) {
+                newIngredients = existing;
+            }
+        }
+
+        if (step !== STEPS.STEPS && newSteps.length === 0) {
+            const existing = getValues('steps') || draftData?.steps || [];
+            if (existing.length > 0) {
+                newSteps = existing;
+            }
+        }
+
         const currentDraftId = watch('draftId') || draftData?.draftId;
         const currentInviteToken =
             watch('inviteToken') || draftData?.inviteToken;
@@ -469,25 +727,35 @@ export function useRecipeFormState({
             if (res.data?.draftId && !currentDraftId) {
                 setValue('draftId', res.data.draftId);
             }
-            mutate('/api/draft', res.data || data, false);
-            toast.success(t('draft_saved') ?? 'Draft saved!');
+            if (res.data?.inviteToken && !currentInviteToken) {
+                setValue('inviteToken', res.data.inviteToken);
+            }
+            if (res.data?.draftId) {
+                mutateDraft?.();
+            }
+            if (typeof stepOverride !== 'number') {
+                toast.success(t('draft_saved') || 'Draft saved!');
+            }
         } catch (error) {
-            console.error(error);
-            toast.error(t('error_saving_draft') ?? 'Failed to save draft.');
+            console.error('Failed to save draft', error);
+            if (typeof stepOverride !== 'number') {
+                toast.error(t('error_saving_draft') || 'Failed to save draft.');
+            }
         }
     };
 
     const deleteDraft = async () => {
+        const currentDraftId = watch('draftId') || draftData?.draftId;
+        const url = currentDraftId
+            ? `${window.location.origin}/api/draft?draftId=${currentDraftId}`
+            : `${window.location.origin}/api/draft`;
         try {
-            const currentDraftId = watch('draftId') || draftData?.draftId;
-            const url = currentDraftId
-                ? `${window.location.origin}/api/draft?draftId=${currentDraftId}`
-                : `${window.location.origin}/api/draft`;
             await axios.delete(url);
-            mutate('/api/draft', null, false);
+            setValue('draftId', '');
+            setValue('inviteToken', '');
+            mutateDraft?.();
         } catch (error) {
-            console.error(error);
-            toast.error(t('error_deleting_draft') ?? 'Failed to delete draft.');
+            console.error('Failed to delete draft', error);
         }
     };
 
@@ -549,28 +817,65 @@ export function useRecipeFormState({
         }
     }
 
+    const allKnownUsers = useMemo(() => {
+        const map: Record<string, SafeUser> = { ...knownUsers };
+        const items = recipeModal.isEditMode
+            ? recipeModal.editRecipeData?.coCooks
+            : draftData?.coCooks;
+        if (Array.isArray(items)) {
+            items.forEach((user: SafeUser) => {
+                if (user?.id) map[user.id] = user;
+            });
+        }
+        return map;
+    }, [
+        knownUsers,
+        recipeModal.isEditMode,
+        recipeModal.editRecipeData?.coCooks,
+        draftData?.coCooks,
+    ]);
+
+    const allKnownRecipes = useMemo(() => {
+        const map: Record<string, SafeRecipe> = { ...knownRecipes };
+        const items = recipeModal.isEditMode
+            ? recipeModal.editRecipeData?.linkedRecipes
+            : draftData?.linkedRecipes;
+        if (Array.isArray(items)) {
+            items.forEach((recipe: SafeRecipe) => {
+                if (recipe?.id) map[recipe.id] = recipe;
+            });
+        }
+        return map;
+    }, [
+        knownRecipes,
+        recipeModal.isEditMode,
+        recipeModal.editRecipeData?.linkedRecipes,
+        draftData?.linkedRecipes,
+    ]);
+
     const selectedQuest = useMemo<SafeQuest | null>(() => {
         return questId ? (knownQuests[questId] ?? null) : null;
     }, [questId, knownQuests]);
 
     const selectedCoCooks = useMemo<SafeUser[]>(() => {
         return coCooksIds
-            .map((id: string) => knownUsers[id])
+            .map((id: string) => allKnownUsers[id])
             .filter((user: SafeUser | undefined): user is SafeUser =>
                 Boolean(user)
             );
-    }, [coCooksIds, knownUsers]);
+    }, [coCooksIds, allKnownUsers]);
 
     const selectedLinkedRecipes = useMemo<SafeRecipe[]>(() => {
         return linkedRecipeIds
-            .map((id: string) => knownRecipes[id])
+            .map((id: string) => allKnownRecipes[id])
             .filter((recipe: SafeRecipe | undefined): recipe is SafeRecipe =>
                 Boolean(recipe)
             );
-    }, [linkedRecipeIds, knownRecipes]);
+    }, [linkedRecipeIds, allKnownRecipes]);
 
     const onBack = () => {
         setStep((value) => Math.max(value - 1, 0));
+        mutateDraft?.();
     };
 
     const onNext = () => {
@@ -637,6 +942,7 @@ export function useRecipeFormState({
             }
         }
         setStep((value) => value + 1);
+        mutateDraft?.();
         return true;
     };
 
@@ -708,62 +1014,6 @@ export function useRecipeFormState({
         } finally {
             setIsLoading(false);
         }
-    };
-
-    const addIngredientInput = () => {
-        if (numIngredients >= RECIPE_MAX_INGREDIENTS) {
-            toast.error(
-                t('max_ingredients_reached') ||
-                    `Maximum of ${RECIPE_MAX_INGREDIENTS} ingredients allowed`
-            );
-            return;
-        }
-        setNumIngredients((value) => value + 1);
-    };
-
-    const removeIngredientInput = (index: number) => {
-        setNumIngredients((value) => value - 1);
-        setCustomValue(`ingredient-${index}`, '');
-    };
-
-    const setIngredients = (ingredients: string[]) => {
-        const maxCount = Math.max(numIngredients, ingredients.length);
-        for (let i = 0; i < maxCount; i++) {
-            setCustomValue(`ingredient-${i}`, '');
-        }
-        setNumIngredients(ingredients.length);
-        ingredients.forEach((ingredient, index) => {
-            setCustomValue(`ingredient-${index}`, ingredient);
-        });
-        setCustomValue('ingredients', ingredients);
-    };
-
-    const addStepInput = () => {
-        if (numSteps >= RECIPE_MAX_STEPS) {
-            toast.error(
-                t('max_steps_reached') ||
-                    `Maximum of ${RECIPE_MAX_STEPS} steps allowed`
-            );
-            return;
-        }
-        setNumSteps((value) => value + 1);
-    };
-
-    const removeStepInput = (index: number) => {
-        setNumSteps((value) => value - 1);
-        setCustomValue(`step-${index}`, '');
-    };
-
-    const setSteps = (steps: string[]) => {
-        const maxCount = Math.max(numSteps, steps.length);
-        for (let i = 0; i < maxCount; i++) {
-            setCustomValue(`step-${i}`, '');
-        }
-        setNumSteps(steps.length);
-        steps.forEach((step, index) => {
-            setCustomValue(`step-${index}`, step);
-        });
-        setCustomValue('steps', steps);
     };
 
     const actionLabel = useMemo(() => {

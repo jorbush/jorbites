@@ -29,7 +29,8 @@ const RecipeModalContent: React.FC<{
     currentUser?: SafeUser | null;
     recipeModal: any;
     draftData?: any;
-}> = ({ currentUser, recipeModal, draftData }) => {
+    mutateDraft?: () => Promise<any>;
+}> = ({ currentUser, recipeModal, draftData, mutateDraft }) => {
     const { t } = useTranslation();
     const {
         step,
@@ -75,7 +76,12 @@ const RecipeModalContent: React.FC<{
         onBack,
         onSubmit,
         setCustomValue,
-    } = useRecipeFormState({ recipeModal, currentUser, draftData });
+    } = useRecipeFormState({
+        recipeModal,
+        currentUser,
+        draftData,
+        mutateDraft,
+    });
 
     const isCurrentStepLocked = lock?.isLockedByOther(`step:${step}`);
     const lockOwner = lock?.getLockOwner(`step:${step}`);
@@ -407,14 +413,19 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         ? `/api/draft?draftId=${activeDraftId}`
         : `/api/draft`;
 
-    const { data: draftData, isLoading: isLoadingDraft } = useSWR(
+    const {
+        data: draftData,
+        isLoading: isLoadingDraft,
+        mutate: mutateDraft,
+    } = useSWR(
         recipeModal.isOpen && !recipeModal.isEditMode && currentUserRef.current
             ? draftEndpoint
             : null,
         axiosFetcher,
         {
-            revalidateOnFocus: false,
-            revalidateOnReconnect: false,
+            revalidateOnFocus: true,
+            revalidateOnReconnect: true,
+            refreshInterval: 3000,
             shouldRetryOnError: false,
         }
     );
@@ -446,6 +457,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             currentUser={currentUser}
             recipeModal={recipeModal}
             draftData={draftData}
+            mutateDraft={mutateDraft}
         />
     );
 };
