@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import useSWR from 'swr';
 import { useSearchParams } from 'next/navigation';
 import { axiosFetcher } from '@/app/utils/fetcher';
@@ -30,7 +30,8 @@ const RecipeModalContent: React.FC<{
     recipeModal: any;
     draftData?: any;
     mutateDraft?: () => Promise<any>;
-}> = ({ currentUser, recipeModal, draftData, mutateDraft }) => {
+    onClose: () => void;
+}> = ({ currentUser, recipeModal, draftData, mutateDraft, onClose }) => {
     const { t } = useTranslation();
     const {
         step,
@@ -47,7 +48,6 @@ const RecipeModalContent: React.FC<{
         register,
         handleSubmit,
         setValue,
-        watch,
         getValues,
         errors,
         categories,
@@ -320,9 +320,9 @@ const RecipeModalContent: React.FC<{
                 >
                     <ImagesStep
                         imageSrc={imageSrc}
-                        imageSrc1={watch('imageSrc1')}
-                        imageSrc2={watch('imageSrc2')}
-                        imageSrc3={watch('imageSrc3')}
+                        imageSrc1={getValues('imageSrc1')}
+                        imageSrc2={getValues('imageSrc2')}
+                        imageSrc3={getValues('imageSrc3')}
                         onImageChange={(field, value) =>
                             setCustomValue(field, value)
                         }
@@ -335,7 +335,7 @@ const RecipeModalContent: React.FC<{
     return (
         <Modal
             isOpen={recipeModal.isOpen}
-            onClose={recipeModal.onClose}
+            onClose={onClose}
             onSubmit={handleSubmit(onSubmit)}
             actionLabel={actionLabel}
             secondaryActionLabel={secondaryActionLabel}
@@ -392,6 +392,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const searchParams = useSearchParams();
     const draftQueryParam = searchParams?.get('draft');
     const currentUserRef = useRef<SafeUser | null>(currentUser || null);
+    const autoOpenedDraftRef = useRef<string | null>(null);
 
     useEffect(() => {
         currentUserRef.current = currentUser || null;
@@ -404,10 +405,33 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const onOpenSharedDraft = recipeModal.onOpenSharedDraft;
 
     useEffect(() => {
-        if (draftQueryParam && !isOpen && !isEditMode) {
+        if (
+            draftQueryParam &&
+            draftQueryParam !== autoOpenedDraftRef.current &&
+            !isOpen &&
+            !isEditMode
+        ) {
+            autoOpenedDraftRef.current = draftQueryParam;
             onOpenSharedDraft(draftQueryParam);
         }
     }, [draftQueryParam, isOpen, isEditMode, onOpenSharedDraft]);
+
+    const handleClose = useCallback(() => {
+        recipeModal.onClose();
+        if (
+            typeof window !== 'undefined' &&
+            window.location.search.includes('draft=')
+        ) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('draft');
+            url.searchParams.delete('joined');
+            window.history.replaceState(
+                {},
+                '',
+                url.pathname + (url.search ? url.search : '')
+            );
+        }
+    }, [recipeModal]);
 
     const draftEndpoint = activeDraftId
         ? `/api/draft?draftId=${activeDraftId}`
@@ -438,7 +462,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         return (
             <Modal
                 isOpen={recipeModal.isOpen}
-                onClose={recipeModal.onClose}
+                onClose={handleClose}
                 onSubmit={() => {}}
                 actionLabel=""
                 title={
@@ -458,6 +482,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             recipeModal={recipeModal}
             draftData={draftData}
             mutateDraft={mutateDraft}
+            onClose={handleClose}
         />
     );
 };

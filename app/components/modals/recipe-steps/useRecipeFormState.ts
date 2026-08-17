@@ -3,7 +3,7 @@
 import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,41 @@ import {
 import { parseTextToList } from '@/app/utils/textParser';
 
 import { useRecipeLock } from '@/app/hooks/useRecipeLock';
+
+async function copyToClipboard(text: string): Promise<boolean> {
+    if (
+        typeof navigator !== 'undefined' &&
+        navigator.clipboard &&
+        typeof navigator.clipboard.writeText === 'function'
+    ) {
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } catch {
+            // Fallback below
+        }
+    }
+
+    if (typeof document !== 'undefined') {
+        try {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            return successful;
+        } catch {
+            return false;
+        }
+    }
+
+    return false;
+}
 
 interface UseRecipeFormStateProps {
     recipeModal: any;
@@ -351,6 +386,14 @@ export function useRecipeFormState({
     );
 
     const lastSyncedDraftStrRef = useRef<string>('');
+    const hasInitialSyncedRef = useRef<boolean>(false);
+
+    const lockTargetId = recipeModal.isEditMode
+        ? recipeModal.editRecipeData?.id
+        : watch('draftId') || draftData?.draftId || recipeModal.activeDraftId;
+
+    const lock = useRecipeLock(lockTargetId, currentUser?.id);
+    const isCurrentStepLocked = Boolean(lock?.isLockedByOther(`step:${step}`));
 
     // Smart non-destructive live synchronization from draftData without overwriting active step inputs
     useEffect(() => {
@@ -360,9 +403,17 @@ export function useRecipeFormState({
         if (serialized === lastSyncedDraftStrRef.current) return;
         lastSyncedDraftStrRef.current = serialized;
 
+        const isInitialSync = !hasInitialSyncedRef.current;
+        hasInitialSyncedRef.current = true;
+
+        const isStepLockedByOther = (stepIndex: number) =>
+            Boolean(lock?.isLockedByOther(`step:${stepIndex}`));
+
         // Step 0: Category
         if (
-            step !== STEPS.CATEGORY &&
+            (isInitialSync ||
+                step !== STEPS.CATEGORY ||
+                isStepLockedByOther(STEPS.CATEGORY)) &&
             Array.isArray(draftData.categories) &&
             JSON.stringify(getValues('categories')) !==
                 JSON.stringify(draftData.categories)
@@ -372,33 +423,54 @@ export function useRecipeFormState({
 
         // Step 1: Ingredients
         if (
-            step !== STEPS.INGREDIENTS &&
-            Array.isArray(draftData.ingredients)
+            isInitialSync ||
+            step !== STEPS.INGREDIENTS ||
+            isStepLockedByOther(STEPS.INGREDIENTS)
         ) {
-            const incoming = draftData.ingredients;
-            if (incoming.length > 0) {
-                setNumIngredients(incoming.length);
-                incoming.forEach((item: string, idx: number) => {
-                    setCustomValue(`ingredient-${idx}`, item);
-                });
-                setCustomValue('ingredients', incoming);
+            if (Array.isArray(draftData.ingredients)) {
+                const incoming = draftData.ingredients;
+                if (
+                    incoming.length > 0 &&
+                    JSON.stringify(getValues('ingredients')) !==
+                        JSON.stringify(incoming)
+                ) {
+                    setNumIngredients(incoming.length);
+                    incoming.forEach((item: string, idx: number) => {
+                        setCustomValue(`ingredient-${idx}`, item);
+                    });
+                    setCustomValue('ingredients', incoming);
+                }
             }
         }
 
         // Step 2: Steps
-        if (step !== STEPS.STEPS && Array.isArray(draftData.steps)) {
-            const incoming = draftData.steps;
-            if (incoming.length > 0) {
-                setNumSteps(incoming.length);
-                incoming.forEach((item: string, idx: number) => {
-                    setCustomValue(`step-${idx}`, item);
-                });
-                setCustomValue('steps', incoming);
+        if (
+            isInitialSync ||
+            step !== STEPS.STEPS ||
+            isStepLockedByOther(STEPS.STEPS)
+        ) {
+            if (Array.isArray(draftData.steps)) {
+                const incoming = draftData.steps;
+                if (
+                    incoming.length > 0 &&
+                    JSON.stringify(getValues('steps')) !==
+                        JSON.stringify(incoming)
+                ) {
+                    setNumSteps(incoming.length);
+                    incoming.forEach((item: string, idx: number) => {
+                        setCustomValue(`step-${idx}`, item);
+                    });
+                    setCustomValue('steps', incoming);
+                }
             }
         }
 
         // Step 3: Description & Times
-        if (step !== STEPS.DESCRIPTION) {
+        if (
+            isInitialSync ||
+            step !== STEPS.DESCRIPTION ||
+            isStepLockedByOther(STEPS.DESCRIPTION)
+        ) {
             if (
                 draftData.title !== undefined &&
                 getValues('title') !== draftData.title
@@ -433,15 +505,24 @@ export function useRecipeFormState({
 
         // Step 4: Methods
         if (
-            step !== STEPS.METHODS &&
-            draftData.method !== undefined &&
-            getValues('method') !== draftData.method
+            isInitialSync ||
+            step !== STEPS.METHODS ||
+            isStepLockedByOther(STEPS.METHODS)
         ) {
-            setCustomValue('method', draftData.method);
+            if (
+                draftData.method !== undefined &&
+                getValues('method') !== draftData.method
+            ) {
+                setCustomValue('method', draftData.method);
+            }
         }
 
         // Step 5: Related Content
-        if (step !== STEPS.RELATED_CONTENT) {
+        if (
+            isInitialSync ||
+            step !== STEPS.RELATED_CONTENT ||
+            isStepLockedByOther(STEPS.RELATED_CONTENT)
+        ) {
             if (
                 Array.isArray(draftData.coCooksIds) &&
                 JSON.stringify(getValues('coCooksIds')) !==
@@ -471,7 +552,11 @@ export function useRecipeFormState({
         }
 
         // Step 6: Images
-        if (step !== STEPS.IMAGES) {
+        if (
+            isInitialSync ||
+            step !== STEPS.IMAGES ||
+            isStepLockedByOther(STEPS.IMAGES)
+        ) {
             if (
                 draftData.imageSrc !== undefined &&
                 getValues('imageSrc') !== draftData.imageSrc
@@ -507,7 +592,14 @@ export function useRecipeFormState({
         ) {
             setCustomValue('inviteToken', draftData.inviteToken);
         }
-    }, [draftData, step, recipeModal.isEditMode, setCustomValue, getValues]);
+    }, [
+        draftData,
+        step,
+        recipeModal.isEditMode,
+        setCustomValue,
+        getValues,
+        lock,
+    ]);
 
     const addCoCook = (user: SafeUser) => {
         if (coCooksIds.length >= MAX_CO_COOKS) {
@@ -570,13 +662,6 @@ export function useRecipeFormState({
         setValue('questId', '');
     };
 
-    const lockTargetId = recipeModal.isEditMode
-        ? recipeModal.editRecipeData?.id
-        : watch('draftId') || draftData?.draftId;
-
-    const lock = useRecipeLock(lockTargetId, currentUser?.id);
-    const isCurrentStepLocked = Boolean(lock?.isLockedByOther(`step:${step}`));
-
     useEffect(() => {
         if (lockTargetId && currentUser?.id) {
             const stepKey = `step:${step}`;
@@ -591,28 +676,94 @@ export function useRecipeFormState({
         let currentDraftId = getValues('draftId') || draftData?.draftId;
         let currentToken = getValues('inviteToken') || draftData?.inviteToken;
 
+        let newIngredients: string[] = [];
+        if (ingredientsInputMode === 'text') {
+            const textareaValue = getValues('ingredients-plain-text');
+            const parsedItems = parseTextToList(
+                textareaValue,
+                RECIPE_MAX_INGREDIENTS
+            );
+            if (parsedItems.length > 0) {
+                newIngredients = parsedItems;
+            }
+        } else {
+            for (let i = 0; i < numIngredients; i++) {
+                const val = getValues(`ingredient-${i}`);
+                if (typeof val === 'string' && val.trim() !== '') {
+                    newIngredients.push(val);
+                }
+            }
+        }
+
+        let newSteps: string[] = [];
+        if (stepsInputMode === 'text') {
+            const textareaValue = getValues('steps-plain-text');
+            const parsedItems = parseTextToList(
+                textareaValue,
+                RECIPE_MAX_STEPS
+            );
+            if (parsedItems.length > 0) {
+                newSteps = parsedItems;
+            }
+        } else {
+            for (let i = 0; i < numSteps; i++) {
+                const val = getValues(`step-${i}`);
+                if (typeof val === 'string' && val.trim() !== '') {
+                    newSteps.push(val);
+                }
+            }
+        }
+
+        if (step !== STEPS.INGREDIENTS && newIngredients.length === 0) {
+            const existing =
+                getValues('ingredients') || draftData?.ingredients || [];
+            if (existing.length > 0) {
+                newIngredients = existing;
+            }
+        }
+
+        if (step !== STEPS.STEPS && newSteps.length === 0) {
+            const existing = getValues('steps') || draftData?.steps || [];
+            if (existing.length > 0) {
+                newSteps = existing;
+            }
+        }
+
+        const fullDraftData = {
+            draftId: currentDraftId,
+            inviteToken: currentToken,
+            currentStep: step,
+            categories: getValues('categories'),
+            method: getValues('method'),
+            imageSrc: getValues('imageSrc'),
+            imageSrc1: getValues('imageSrc1'),
+            imageSrc2: getValues('imageSrc2'),
+            imageSrc3: getValues('imageSrc3'),
+            title: getValues('title'),
+            description: getValues('description'),
+            ingredients: newIngredients,
+            steps: newSteps,
+            minutes: getValues('minutes'),
+            prepTime: getValues('prepTime'),
+            cookTime: getValues('cookTime'),
+            coCooksIds: getValues('coCooksIds'),
+            linkedRecipeIds: getValues('linkedRecipeIds'),
+            youtubeUrl: getValues('youtubeUrl'),
+            questId: getValues('questId'),
+        };
+
         if (!currentDraftId || !currentToken) {
             try {
-                const formData = {
-                    currentStep: step,
-                    categories: getValues('categories'),
-                    method: getValues('method'),
-                    imageSrc: getValues('imageSrc'),
-                    imageSrc1: getValues('imageSrc1'),
-                    imageSrc2: getValues('imageSrc2'),
-                    imageSrc3: getValues('imageSrc3'),
-                    title: getValues('title'),
-                    description: getValues('description'),
-                    minutes: getValues('minutes'),
-                    coCooksIds: getValues('coCooksIds'),
-                    linkedRecipeIds: getValues('linkedRecipeIds'),
-                };
-                const res = await axios.post('/api/draft/invite', formData);
+                const res = await axios.post(
+                    '/api/draft/invite',
+                    fullDraftData
+                );
                 currentDraftId = res.data.draftId;
                 currentToken = res.data.inviteToken;
                 setValue('draftId', currentDraftId);
                 setValue('inviteToken', currentToken);
-                mutate('/api/draft', res.data.draft, false);
+                recipeModal.onOpenSharedDraft(currentDraftId);
+                mutateDraft?.();
             } catch {
                 toast.error(
                     t('error_generating_link') ||
@@ -620,16 +771,23 @@ export function useRecipeFormState({
                 );
                 return;
             }
+        } else {
+            try {
+                await axios.post('/api/draft', fullDraftData);
+                mutateDraft?.();
+            } catch {
+                // Non-critical background sync
+            }
         }
 
         const shareUrl = `${window.location.origin}/api/draft/join?draft=${currentDraftId}&token=${currentToken}`;
-        try {
-            await navigator.clipboard.writeText(shareUrl);
+        const copied = await copyToClipboard(shareUrl);
+        if (copied) {
             toast.success(
                 t('co_cook_link_copied') ||
                     'Co-cook invite link copied to clipboard! 🔗'
             );
-        } catch {
+        } else {
             toast.error(
                 t('could_not_copy_link') || 'Could not copy link to clipboard'
             );
@@ -724,8 +882,13 @@ export function useRecipeFormState({
                 `${window.location.origin}/api/draft`,
                 data
             );
-            if (res.data?.draftId && !currentDraftId) {
-                setValue('draftId', res.data.draftId);
+            if (res.data?.draftId) {
+                if (!currentDraftId) {
+                    setValue('draftId', res.data.draftId);
+                }
+                if (recipeModal.activeDraftId !== res.data.draftId) {
+                    recipeModal.onOpenSharedDraft(res.data.draftId);
+                }
             }
             if (res.data?.inviteToken && !currentInviteToken) {
                 setValue('inviteToken', res.data.inviteToken);
@@ -873,7 +1036,10 @@ export function useRecipeFormState({
             );
     }, [linkedRecipeIds, allKnownRecipes]);
 
-    const onBack = () => {
+    const onBack = async () => {
+        if (process.env.NODE_ENV === 'production' && !recipeModal.isEditMode) {
+            await saveDraft(step - 1);
+        }
         setStep((value) => Math.max(value - 1, 0));
         mutateDraft?.();
     };

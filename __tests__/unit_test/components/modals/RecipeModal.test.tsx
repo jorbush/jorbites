@@ -20,6 +20,8 @@ vi.mock('@/app/hooks/useRecipeModal', () => ({
     default: vi.fn(() => ({
         isOpen: true,
         onClose: vi.fn(),
+        onOpenSharedDraft: vi.fn(),
+        activeDraftId: null,
     })),
 }));
 
@@ -29,12 +31,13 @@ vi.mock('react-i18next', () => ({
     })),
 }));
 
+const mockGetSearchParams = vi.fn().mockReturnValue(null);
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
         refresh: vi.fn(),
     }),
     useSearchParams: () => ({
-        get: vi.fn().mockReturnValue(null),
+        get: mockGetSearchParams,
     }),
 }));
 
@@ -1341,6 +1344,63 @@ describe('<RecipeModal />', () => {
             const toast = await import('react-hot-toast');
             expect(toast.toast.error).toHaveBeenCalledWith('no_steps_found');
             expect(screen.getByText('title_steps')).toBeDefined(); // Still on steps step
+        });
+    });
+
+    describe('Collaborative Shared Draft URL Lifecycle', () => {
+        it('auto-opens shared draft once when draft param is present in URL', async () => {
+            const mockOpenSharedDraft = vi.fn();
+            const useRecipeModal = (await import('@/app/hooks/useRecipeModal'))
+                .default;
+            (useRecipeModal as any).mockReturnValue({
+                isOpen: false,
+                onClose: vi.fn(),
+                onOpenSharedDraft: mockOpenSharedDraft,
+                activeDraftId: null,
+            });
+
+            mockGetSearchParams.mockImplementation((param: string) =>
+                param === 'draft' ? 'shared-draft-abc' : null
+            );
+
+            renderComponent();
+
+            expect(mockOpenSharedDraft).toHaveBeenCalledWith(
+                'shared-draft-abc'
+            );
+            mockGetSearchParams.mockReturnValue(null);
+        });
+
+        it('cleans up draft and joined search params on modal close without reopening loop', async () => {
+            const mockOnClose = vi.fn();
+            const useRecipeModal = (await import('@/app/hooks/useRecipeModal'))
+                .default;
+            (useRecipeModal as any).mockReturnValue({
+                isOpen: true,
+                onClose: mockOnClose,
+                onOpenSharedDraft: vi.fn(),
+                activeDraftId: 'shared-draft-abc',
+            });
+
+            window.history.pushState(
+                {},
+                '',
+                '/?draft=shared-draft-abc&joined=true'
+            );
+            const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
+
+            renderComponent();
+
+            const closeButton = screen.getByTestId('close-modal-button');
+            act(() => {
+                fireEvent.click(closeButton);
+                vi.advanceTimersByTime(350);
+            });
+
+            expect(mockOnClose).toHaveBeenCalled();
+            expect(replaceStateSpy).toHaveBeenCalled();
+            replaceStateSpy.mockRestore();
+            window.history.pushState({}, '', '/');
         });
     });
 });
