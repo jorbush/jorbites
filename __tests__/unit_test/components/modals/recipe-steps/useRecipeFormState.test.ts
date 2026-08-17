@@ -297,21 +297,19 @@ describe('useRecipeFormState hook', () => {
         );
     });
 
-    it('falls back to document.execCommand when navigator.clipboard.writeText fails', async () => {
+    it('handles clipboard error gracefully when navigator.clipboard.writeText fails', async () => {
         const mockWriteText = vi
             .fn()
-            .mockRejectedValue(new Error('NotAllowedError'));
+            .mockRejectedValue(new Error('Clipboard error'));
         Object.assign(navigator, {
             clipboard: {
                 writeText: mockWriteText,
             },
         });
 
-        document.execCommand = vi.fn().mockReturnValue(true);
-
         const mockDraftData = {
-            draftId: 'draft-fallback',
-            inviteToken: 'token-fallback',
+            draftId: 'draft-err',
+            inviteToken: 'token-err',
             title: 'Pasta',
         };
 
@@ -335,7 +333,8 @@ describe('useRecipeFormState hook', () => {
         });
 
         expect(mockWriteText).toHaveBeenCalled();
-        expect(document.execCommand).toHaveBeenCalledWith('copy');
+        const toast = (await import('react-hot-toast')).toast;
+        expect(toast.error).toHaveBeenCalledWith('could_not_copy_link');
     });
 
     it('syncs draft updates to /api/draft on subsequent copyInviteLink clicks when draftId already exists', async () => {

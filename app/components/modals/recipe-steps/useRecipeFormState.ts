@@ -21,41 +21,6 @@ import { parseTextToList } from '@/app/utils/textParser';
 
 import { useRecipeLock } from '@/app/hooks/useRecipeLock';
 
-async function copyToClipboard(text: string): Promise<boolean> {
-    if (
-        typeof navigator !== 'undefined' &&
-        navigator.clipboard &&
-        typeof navigator.clipboard.writeText === 'function'
-    ) {
-        try {
-            await navigator.clipboard.writeText(text);
-            return true;
-        } catch {
-            // Fallback below
-        }
-    }
-
-    if (typeof document !== 'undefined') {
-        try {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            textArea.style.top = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            const successful = document.execCommand('copy');
-            document.body.removeChild(textArea);
-            return successful;
-        } catch {
-            return false;
-        }
-    }
-
-    return false;
-}
-
 interface UseRecipeFormStateProps {
     recipeModal: any;
     currentUser?: SafeUser | null;
@@ -781,13 +746,13 @@ export function useRecipeFormState({
         }
 
         const shareUrl = `${window.location.origin}/api/draft/join?draft=${currentDraftId}&token=${currentToken}`;
-        const copied = await copyToClipboard(shareUrl);
-        if (copied) {
+        try {
+            await navigator.clipboard.writeText(shareUrl);
             toast.success(
                 t('co_cook_link_copied') ||
                     'Co-cook invite link copied to clipboard! 🔗'
             );
-        } else {
+        } catch {
             toast.error(
                 t('could_not_copy_link') || 'Could not copy link to clipboard'
             );
