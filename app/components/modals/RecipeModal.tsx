@@ -48,7 +48,6 @@ const RecipeModalContent: React.FC<{
         register,
         handleSubmit,
         setValue,
-        watch,
         getValues,
         errors,
         categories,
