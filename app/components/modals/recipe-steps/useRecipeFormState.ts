@@ -21,6 +21,41 @@ import { parseTextToList } from '@/app/utils/textParser';
 
 import { useRecipeLock } from '@/app/hooks/useRecipeLock';
 
+async function copyToClipboard(text: string): Promise<boolean> {
+    if (
+        typeof navigator !== 'undefined' &&
+        navigator.clipboard &&
+        typeof navigator.clipboard.writeText === 'function'
+    ) {
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } catch {
+            // Fallback below
+        }
+    }
+
+    if (typeof document !== 'undefined') {
+        try {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            return successful;
+        } catch {
+            return false;
+        }
+    }
+
+    return false;
+}
+
 interface UseRecipeFormStateProps {
     recipeModal: any;
     currentUser?: SafeUser | null;
@@ -636,41 +671,6 @@ export function useRecipeFormState({
             };
         }
     }, [step, lockTargetId, currentUser?.id, lock.acquire, lock.release]);
-
-    const copyToClipboard = async (text: string): Promise<boolean> => {
-        if (
-            typeof navigator !== 'undefined' &&
-            navigator.clipboard &&
-            typeof navigator.clipboard.writeText === 'function'
-        ) {
-            try {
-                await navigator.clipboard.writeText(text);
-                return true;
-            } catch {
-                // Fallback below
-            }
-        }
-
-        if (typeof document !== 'undefined') {
-            try {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                textArea.style.position = 'fixed';
-                textArea.style.left = '-999999px';
-                textArea.style.top = '-999999px';
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                const successful = document.execCommand('copy');
-                document.body.removeChild(textArea);
-                return successful;
-            } catch {
-                return false;
-            }
-        }
-
-        return false;
-    };
 
     const copyInviteLink = async () => {
         let currentDraftId = getValues('draftId') || draftData?.draftId;
