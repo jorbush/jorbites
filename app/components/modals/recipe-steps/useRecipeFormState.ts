@@ -351,6 +351,14 @@ export function useRecipeFormState({
     );
 
     const lastSyncedDraftStrRef = useRef<string>('');
+    const hasInitialSyncedRef = useRef<boolean>(false);
+
+    const lockTargetId = recipeModal.isEditMode
+        ? recipeModal.editRecipeData?.id
+        : watch('draftId') || draftData?.draftId || recipeModal.activeDraftId;
+
+    const lock = useRecipeLock(lockTargetId, currentUser?.id);
+    const isCurrentStepLocked = Boolean(lock?.isLockedByOther(`step:${step}`));
 
     // Smart non-destructive live synchronization from draftData without overwriting active step inputs
     useEffect(() => {
@@ -360,9 +368,17 @@ export function useRecipeFormState({
         if (serialized === lastSyncedDraftStrRef.current) return;
         lastSyncedDraftStrRef.current = serialized;
 
+        const isInitialSync = !hasInitialSyncedRef.current;
+        hasInitialSyncedRef.current = true;
+
+        const isStepLockedByOther = (stepIndex: number) =>
+            Boolean(lock?.isLockedByOther(`step:${stepIndex}`));
+
         // Step 0: Category
         if (
-            step !== STEPS.CATEGORY &&
+            (isInitialSync ||
+                step !== STEPS.CATEGORY ||
+                isStepLockedByOther(STEPS.CATEGORY)) &&
             Array.isArray(draftData.categories) &&
             JSON.stringify(getValues('categories')) !==
                 JSON.stringify(draftData.categories)
@@ -372,33 +388,54 @@ export function useRecipeFormState({
 
         // Step 1: Ingredients
         if (
-            step !== STEPS.INGREDIENTS &&
-            Array.isArray(draftData.ingredients)
+            isInitialSync ||
+            step !== STEPS.INGREDIENTS ||
+            isStepLockedByOther(STEPS.INGREDIENTS)
         ) {
-            const incoming = draftData.ingredients;
-            if (incoming.length > 0) {
-                setNumIngredients(incoming.length);
-                incoming.forEach((item: string, idx: number) => {
-                    setCustomValue(`ingredient-${idx}`, item);
-                });
-                setCustomValue('ingredients', incoming);
+            if (Array.isArray(draftData.ingredients)) {
+                const incoming = draftData.ingredients;
+                if (
+                    incoming.length > 0 &&
+                    JSON.stringify(getValues('ingredients')) !==
+                        JSON.stringify(incoming)
+                ) {
+                    setNumIngredients(incoming.length);
+                    incoming.forEach((item: string, idx: number) => {
+                        setCustomValue(`ingredient-${idx}`, item);
+                    });
+                    setCustomValue('ingredients', incoming);
+                }
             }
         }
 
         // Step 2: Steps
-        if (step !== STEPS.STEPS && Array.isArray(draftData.steps)) {
-            const incoming = draftData.steps;
-            if (incoming.length > 0) {
-                setNumSteps(incoming.length);
-                incoming.forEach((item: string, idx: number) => {
-                    setCustomValue(`step-${idx}`, item);
-                });
-                setCustomValue('steps', incoming);
+        if (
+            isInitialSync ||
+            step !== STEPS.STEPS ||
+            isStepLockedByOther(STEPS.STEPS)
+        ) {
+            if (Array.isArray(draftData.steps)) {
+                const incoming = draftData.steps;
+                if (
+                    incoming.length > 0 &&
+                    JSON.stringify(getValues('steps')) !==
+                        JSON.stringify(incoming)
+                ) {
+                    setNumSteps(incoming.length);
+                    incoming.forEach((item: string, idx: number) => {
+                        setCustomValue(`step-${idx}`, item);
+                    });
+                    setCustomValue('steps', incoming);
+                }
             }
         }
 
         // Step 3: Description & Times
-        if (step !== STEPS.DESCRIPTION) {
+        if (
+            isInitialSync ||
+            step !== STEPS.DESCRIPTION ||
+            isStepLockedByOther(STEPS.DESCRIPTION)
+        ) {
             if (
                 draftData.title !== undefined &&
                 getValues('title') !== draftData.title
@@ -433,15 +470,24 @@ export function useRecipeFormState({
 
         // Step 4: Methods
         if (
-            step !== STEPS.METHODS &&
-            draftData.method !== undefined &&
-            getValues('method') !== draftData.method
+            isInitialSync ||
+            step !== STEPS.METHODS ||
+            isStepLockedByOther(STEPS.METHODS)
         ) {
-            setCustomValue('method', draftData.method);
+            if (
+                draftData.method !== undefined &&
+                getValues('method') !== draftData.method
+            ) {
+                setCustomValue('method', draftData.method);
+            }
         }
 
         // Step 5: Related Content
-        if (step !== STEPS.RELATED_CONTENT) {
+        if (
+            isInitialSync ||
+            step !== STEPS.RELATED_CONTENT ||
+            isStepLockedByOther(STEPS.RELATED_CONTENT)
+        ) {
             if (
                 Array.isArray(draftData.coCooksIds) &&
                 JSON.stringify(getValues('coCooksIds')) !==
@@ -471,7 +517,11 @@ export function useRecipeFormState({
         }
 
         // Step 6: Images
-        if (step !== STEPS.IMAGES) {
+        if (
+            isInitialSync ||
+            step !== STEPS.IMAGES ||
+            isStepLockedByOther(STEPS.IMAGES)
+        ) {
             if (
                 draftData.imageSrc !== undefined &&
                 getValues('imageSrc') !== draftData.imageSrc
@@ -507,7 +557,14 @@ export function useRecipeFormState({
         ) {
             setCustomValue('inviteToken', draftData.inviteToken);
         }
-    }, [draftData, step, recipeModal.isEditMode, setCustomValue, getValues]);
+    }, [
+        draftData,
+        step,
+        recipeModal.isEditMode,
+        setCustomValue,
+        getValues,
+        lock,
+    ]);
 
     const addCoCook = (user: SafeUser) => {
         if (coCooksIds.length >= MAX_CO_COOKS) {
@@ -570,13 +627,6 @@ export function useRecipeFormState({
         setValue('questId', '');
     };
 
-    const lockTargetId = recipeModal.isEditMode
-        ? recipeModal.editRecipeData?.id
-        : watch('draftId') || draftData?.draftId;
-
-    const lock = useRecipeLock(lockTargetId, currentUser?.id);
-    const isCurrentStepLocked = Boolean(lock?.isLockedByOther(`step:${step}`));
-
     useEffect(() => {
         if (lockTargetId && currentUser?.id) {
             const stepKey = `step:${step}`;
@@ -612,7 +662,8 @@ export function useRecipeFormState({
                 currentToken = res.data.inviteToken;
                 setValue('draftId', currentDraftId);
                 setValue('inviteToken', currentToken);
-                mutate('/api/draft', res.data.draft, false);
+                recipeModal.onOpenSharedDraft(currentDraftId);
+                mutateDraft?.();
             } catch {
                 toast.error(
                     t('error_generating_link') ||
@@ -724,8 +775,13 @@ export function useRecipeFormState({
                 `${window.location.origin}/api/draft`,
                 data
             );
-            if (res.data?.draftId && !currentDraftId) {
-                setValue('draftId', res.data.draftId);
+            if (res.data?.draftId) {
+                if (!currentDraftId) {
+                    setValue('draftId', res.data.draftId);
+                }
+                if (recipeModal.activeDraftId !== res.data.draftId) {
+                    recipeModal.onOpenSharedDraft(res.data.draftId);
+                }
             }
             if (res.data?.inviteToken && !currentInviteToken) {
                 setValue('inviteToken', res.data.inviteToken);
@@ -873,7 +929,10 @@ export function useRecipeFormState({
             );
     }, [linkedRecipeIds, allKnownRecipes]);
 
-    const onBack = () => {
+    const onBack = async () => {
+        if (process.env.NODE_ENV === 'production' && !recipeModal.isEditMode) {
+            await saveDraft(step - 1);
+        }
         setStep((value) => Math.max(value - 1, 0));
         mutateDraft?.();
     };
