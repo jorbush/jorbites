@@ -115,9 +115,13 @@ When co-cooks work on different steps concurrently (e.g. User A on Step 1: Ingre
 
 ### 8. Real-Time State Synchronization & Background SWR Polling
 
-- **Background Polling**: Active shared drafts in `RecipeModal` poll `GET /api/draft` every 3 seconds via SWR (`refreshInterval: 3000`, `revalidateOnFocus: true`).
-- **Selective Form State Sync**: `useRecipeFormState` non-destructively syncs incoming draft updates for all steps _other than_ the active user's current step (`step`). This guarantees that a user's active typing/input state is never clobbered or reset mid-edit.
-- **Immediate Navigation Sync**: Form navigation triggers `mutateDraft?.()` on `onNext()` and `onBack()` to immediately sync destination step data upon entering.
+- **Background Polling & Endpoint Binding**: Active shared drafts in `RecipeModal` poll `GET /api/draft?draftId=<draftId>` every 3 seconds via SWR (`refreshInterval: 3000`, `revalidateOnFocus: true`). When the owner generates an invite link, both owner and co-cook clients immediately bind to the shared draft endpoint.
+- **Selective Form State Sync**: `useRecipeFormState` non-destructively syncs incoming draft updates:
+    - On initial draft load (`isInitialSync = true`).
+    - For all steps other than the active user's current step (`step !== stepIndex`).
+    - On the active user's current step when it is locked by another co-cook (`lock.isLockedByOther('step:' + stepIndex)`), allowing the user to see real-time updates as the other co-cook edits without overwriting local inputs when holding the lock.
+- **Modal Lifecycle & URL Cleanliness**: Tracks auto-open state so `?draft=` in the URL opens the modal once, and cleans up query parameters (`window.history.replaceState`) on modal close to prevent re-opening loops.
+- **Immediate Navigation Sync & Persistence**: Step transitions trigger `mutateDraft?.()` on `onNext()` and `onBack()`, and auto-save draft state in production (`NODE_ENV === 'production'`).
 
 ### 9. Collaborative Step Validation Handling
 
