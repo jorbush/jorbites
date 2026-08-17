@@ -61,7 +61,7 @@ const CommunityGallery: React.FC<CommunityGalleryProps> = ({
                 </div>
             </div>
 
-            <div className="scrollbar-thin scrollbar-thumb-neutral-300 dark:scrollbar-thumb-neutral-700 flex space-x-4 overflow-x-auto pt-1 pb-4">
+            <div className="scrollbar-thin scrollbar-thumb-neutral-300 dark:scrollbar-thumb-neutral-700 flex gap-x-4 overflow-x-auto pt-1 pb-4">
                 {remakes.map((remake) => (
                     <div
                         key={remake.id}

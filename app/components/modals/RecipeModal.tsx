@@ -128,7 +128,7 @@ const RecipeModalContent: React.FC<{
         ) : isSharedSession && otherActiveLocks.length > 0 ? (
             <div
                 data-testid="co-cook-activity-banner"
-                className="border-green-450/20 bg-green-450/10 dark:border-green-450/20 dark:bg-green-450/10 mb-4 flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-medium text-neutral-800 dark:text-neutral-200"
+                className="border-green-450/20 bg-green-450/10 dark:border-green-450/20 dark:bg-green-450/10 mb-4 flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-medium text-green-800 dark:text-green-300"
             >
                 <span className="relative flex size-2 shrink-0">
                     <span className="bg-green-450 absolute inline-flex size-full animate-ping rounded-full opacity-75"></span>
