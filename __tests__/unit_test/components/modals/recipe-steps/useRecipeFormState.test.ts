@@ -233,4 +233,297 @@ describe('useRecipeFormState hook', () => {
         expect(result.current.getValues('title')).toBe('Updated Shared Title');
         expect(result.current.getValues('ingredient-0')).toBe('flour');
     });
+
+    it('generates invite link on first click with full draft data and binds shared draft', async () => {
+        const mockOpenSharedDraft = vi.fn();
+        const mockMutate = vi.fn();
+        const mockWriteText = vi.fn().mockResolvedValue(undefined);
+        Object.assign(navigator, {
+            clipboard: {
+                writeText: mockWriteText,
+            },
+        });
+
+        const axios = (await import('axios')).default;
+        (axios.post as any).mockResolvedValueOnce({
+            data: {
+                draftId: 'generated-draft-123',
+                inviteToken: 'generated-token-456',
+            },
+        });
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: {
+                    ...mockRecipeModal,
+                    onOpenSharedDraft: mockOpenSharedDraft,
+                },
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                mutateDraft: mockMutate,
+            })
+        );
+
+        act(() => {
+            result.current.setValue('title', 'Truffle Pasta');
+            result.current.setValue('categories', ['Dinner']);
+            result.current.setValue('ingredient-0', 'Truffle Oil');
+        });
+
+        await act(async () => {
+            await result.current.copyInviteLink();
+        });
+
+        expect(axios.post).toHaveBeenCalledWith(
+            '/api/draft/invite',
+            expect.objectContaining({
+                title: 'Truffle Pasta',
+                categories: ['Dinner'],
+                ingredients: ['Truffle Oil'],
+            })
+        );
+        expect(mockOpenSharedDraft).toHaveBeenCalledWith('generated-draft-123');
+        expect(mockMutate).toHaveBeenCalled();
+        expect(mockWriteText).toHaveBeenCalledWith(
+            expect.stringContaining(
+                '/api/draft/join?draft=generated-draft-123&token=generated-token-456'
+            )
+        );
+    });
+
+    it('falls back to document.execCommand when navigator.clipboard.writeText fails', async () => {
+        const mockWriteText = vi
+            .fn()
+            .mockRejectedValue(new Error('NotAllowedError'));
+        Object.assign(navigator, {
+            clipboard: {
+                writeText: mockWriteText,
+            },
+        });
+
+        document.execCommand = vi.fn().mockReturnValue(true);
+
+        const mockDraftData = {
+            draftId: 'draft-fallback',
+            inviteToken: 'token-fallback',
+            title: 'Pasta',
+        };
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                draftData: mockDraftData,
+            })
+        );
+
+        await act(async () => {
+            await result.current.copyInviteLink();
+        });
+
+        expect(mockWriteText).toHaveBeenCalled();
+        expect(document.execCommand).toHaveBeenCalledWith('copy');
+    });
+
+    it('syncs draft updates to /api/draft on subsequent copyInviteLink clicks when draftId already exists', async () => {
+        const mockMutate = vi.fn();
+        const mockWriteText = vi.fn().mockResolvedValue(undefined);
+        Object.assign(navigator, {
+            clipboard: {
+                writeText: mockWriteText,
+            },
+        });
+
+        const axios = (await import('axios')).default;
+        (axios.post as any).mockResolvedValueOnce({ data: {} });
+
+        const mockDraftData = {
+            draftId: 'existing-draft-999',
+            inviteToken: 'existing-token-888',
+            title: 'Existing Recipe',
+        };
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                draftData: mockDraftData,
+                mutateDraft: mockMutate,
+            })
+        );
+
+        await act(async () => {
+            await result.current.copyInviteLink();
+        });
+
+        expect(axios.post).toHaveBeenCalledWith(
+            '/api/draft',
+            expect.objectContaining({
+                draftId: 'existing-draft-999',
+                inviteToken: 'existing-token-888',
+            })
+        );
+        expect(mockMutate).toHaveBeenCalled();
+        expect(mockWriteText).toHaveBeenCalledWith(
+            expect.stringContaining(
+                '/api/draft/join?draft=existing-draft-999&token=existing-token-888'
+            )
+        );
+    });
+
+    it('synchronizes incoming draft updates for current step when the step is locked by another co-cook', async () => {
+        mockIsLockedByOther.mockImplementation(
+            (key: string) => key === 'step:2'
+        );
+
+        let currentDraftData: any = {
+            draftId: 'd1',
+            currentStep: 2,
+            ingredients: ['initial flour'],
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: currentDraftData } }
+        );
+
+        // User is currently on Step 2 (INGREDIENTS) which is locked by another cook
+        act(() => {
+            result.current.setStep(2);
+        });
+
+        currentDraftData = {
+            draftId: 'd1',
+            currentStep: 2,
+            ingredients: ['co-cook updated flour', 'co-cook added sugar'],
+        };
+
+        await act(async () => {
+            rerender({ draft: currentDraftData });
+        });
+
+        expect(result.current.getValues('ingredient-0')).toBe(
+            'co-cook updated flour'
+        );
+        expect(result.current.getValues('ingredient-1')).toBe(
+            'co-cook added sugar'
+        );
+    });
+
+    it('does not overwrite current step inputs when the step is NOT locked by another co-cook', async () => {
+        mockIsLockedByOther.mockReturnValue(false);
+
+        let currentDraftData: any = {
+            draftId: 'd1',
+            currentStep: 2,
+            ingredients: ['initial ingredient'],
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: currentDraftData } }
+        );
+
+        act(() => {
+            result.current.setStep(2);
+            result.current.setValue(
+                'ingredient-0',
+                'my local typing ingredient'
+            );
+        });
+
+        currentDraftData = {
+            draftId: 'd1',
+            currentStep: 2,
+            ingredients: ['incoming remote ingredient'],
+        };
+
+        await act(async () => {
+            rerender({ draft: currentDraftData });
+        });
+
+        // Current step inputs preserved for the active user
+        expect(result.current.getValues('ingredient-0')).toBe(
+            'my local typing ingredient'
+        );
+    });
+
+    it('triggers mutateDraft on onNext and onBack step transitions', async () => {
+        const mockMutate = vi.fn();
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                mutateDraft: mockMutate,
+            })
+        );
+
+        act(() => {
+            result.current.setStep(2);
+        });
+        mockMutate.mockClear();
+
+        await act(async () => {
+            await result.current.onBack();
+        });
+        expect(mockMutate).toHaveBeenCalledTimes(1);
+
+        mockMutate.mockClear();
+        await act(async () => {
+            await result.current.onSubmit({});
+        });
+        expect(mockMutate).toHaveBeenCalledTimes(1);
+    });
 });

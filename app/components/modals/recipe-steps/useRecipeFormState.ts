@@ -637,27 +637,127 @@ export function useRecipeFormState({
         }
     }, [step, lockTargetId, currentUser?.id, lock.acquire, lock.release]);
 
+    const copyToClipboard = async (text: string): Promise<boolean> => {
+        if (
+            typeof navigator !== 'undefined' &&
+            navigator.clipboard &&
+            typeof navigator.clipboard.writeText === 'function'
+        ) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch {
+                // Fallback below
+            }
+        }
+
+        if (typeof document !== 'undefined') {
+            try {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                return successful;
+            } catch {
+                return false;
+            }
+        }
+
+        return false;
+    };
+
     const copyInviteLink = async () => {
         let currentDraftId = getValues('draftId') || draftData?.draftId;
         let currentToken = getValues('inviteToken') || draftData?.inviteToken;
 
+        let newIngredients: string[] = [];
+        if (ingredientsInputMode === 'text') {
+            const textareaValue = getValues('ingredients-plain-text');
+            const parsedItems = parseTextToList(
+                textareaValue,
+                RECIPE_MAX_INGREDIENTS
+            );
+            if (parsedItems.length > 0) {
+                newIngredients = parsedItems;
+            }
+        } else {
+            for (let i = 0; i < numIngredients; i++) {
+                const val = getValues(`ingredient-${i}`);
+                if (typeof val === 'string' && val.trim() !== '') {
+                    newIngredients.push(val);
+                }
+            }
+        }
+
+        let newSteps: string[] = [];
+        if (stepsInputMode === 'text') {
+            const textareaValue = getValues('steps-plain-text');
+            const parsedItems = parseTextToList(
+                textareaValue,
+                RECIPE_MAX_STEPS
+            );
+            if (parsedItems.length > 0) {
+                newSteps = parsedItems;
+            }
+        } else {
+            for (let i = 0; i < numSteps; i++) {
+                const val = getValues(`step-${i}`);
+                if (typeof val === 'string' && val.trim() !== '') {
+                    newSteps.push(val);
+                }
+            }
+        }
+
+        if (step !== STEPS.INGREDIENTS && newIngredients.length === 0) {
+            const existing =
+                getValues('ingredients') || draftData?.ingredients || [];
+            if (existing.length > 0) {
+                newIngredients = existing;
+            }
+        }
+
+        if (step !== STEPS.STEPS && newSteps.length === 0) {
+            const existing = getValues('steps') || draftData?.steps || [];
+            if (existing.length > 0) {
+                newSteps = existing;
+            }
+        }
+
+        const fullDraftData = {
+            draftId: currentDraftId,
+            inviteToken: currentToken,
+            currentStep: step,
+            categories: getValues('categories'),
+            method: getValues('method'),
+            imageSrc: getValues('imageSrc'),
+            imageSrc1: getValues('imageSrc1'),
+            imageSrc2: getValues('imageSrc2'),
+            imageSrc3: getValues('imageSrc3'),
+            title: getValues('title'),
+            description: getValues('description'),
+            ingredients: newIngredients,
+            steps: newSteps,
+            minutes: getValues('minutes'),
+            prepTime: getValues('prepTime'),
+            cookTime: getValues('cookTime'),
+            coCooksIds: getValues('coCooksIds'),
+            linkedRecipeIds: getValues('linkedRecipeIds'),
+            youtubeUrl: getValues('youtubeUrl'),
+            questId: getValues('questId'),
+        };
+
         if (!currentDraftId || !currentToken) {
             try {
-                const formData = {
-                    currentStep: step,
-                    categories: getValues('categories'),
-                    method: getValues('method'),
-                    imageSrc: getValues('imageSrc'),
-                    imageSrc1: getValues('imageSrc1'),
-                    imageSrc2: getValues('imageSrc2'),
-                    imageSrc3: getValues('imageSrc3'),
-                    title: getValues('title'),
-                    description: getValues('description'),
-                    minutes: getValues('minutes'),
-                    coCooksIds: getValues('coCooksIds'),
-                    linkedRecipeIds: getValues('linkedRecipeIds'),
-                };
-                const res = await axios.post('/api/draft/invite', formData);
+                const res = await axios.post(
+                    '/api/draft/invite',
+                    fullDraftData
+                );
                 currentDraftId = res.data.draftId;
                 currentToken = res.data.inviteToken;
                 setValue('draftId', currentDraftId);
@@ -671,16 +771,23 @@ export function useRecipeFormState({
                 );
                 return;
             }
+        } else {
+            try {
+                await axios.post('/api/draft', fullDraftData);
+                mutateDraft?.();
+            } catch {
+                // Non-critical background sync
+            }
         }
 
         const shareUrl = `${window.location.origin}/api/draft/join?draft=${currentDraftId}&token=${currentToken}`;
-        try {
-            await navigator.clipboard.writeText(shareUrl);
+        const copied = await copyToClipboard(shareUrl);
+        if (copied) {
             toast.success(
                 t('co_cook_link_copied') ||
                     'Co-cook invite link copied to clipboard! 🔗'
             );
-        } catch {
+        } else {
             toast.error(
                 t('could_not_copy_link') || 'Could not copy link to clipboard'
             );
