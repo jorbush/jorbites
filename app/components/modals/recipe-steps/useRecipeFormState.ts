@@ -717,8 +717,8 @@ export function useRecipeFormState({
             questId: getValues('questId'),
         };
 
-        if (!currentDraftId || !currentToken) {
-            try {
+        const prepareShareUrl = async (): Promise<string> => {
+            if (!currentDraftId || !currentToken) {
                 const res = await axios.post(
                     '/api/draft/invite',
                     fullDraftData
@@ -729,24 +729,44 @@ export function useRecipeFormState({
                 setValue('inviteToken', currentToken);
                 recipeModal.onOpenSharedDraft(currentDraftId);
                 mutateDraft?.();
-            } catch {
-                toast.error(
-                    t('error_generating_link') ||
-                        'Failed to generate invite link'
+            } else {
+                try {
+                    await axios.post('/api/draft', fullDraftData);
+                    mutateDraft?.();
+                } catch {
+                    // Non-critical background sync
+                }
+            }
+            return `${window.location.origin}/api/draft/join?draft=${currentDraftId}&token=${currentToken}`;
+        };
+
+        if (
+            typeof navigator !== 'undefined' &&
+            navigator.clipboard &&
+            typeof ClipboardItem !== 'undefined' &&
+            typeof navigator.clipboard.write === 'function'
+        ) {
+            try {
+                const textPromise = prepareShareUrl();
+                const clipboardItem = new ClipboardItem({
+                    'text/plain': textPromise.then(
+                        (url) => new Blob([url], { type: 'text/plain' })
+                    ),
+                });
+                await navigator.clipboard.write([clipboardItem]);
+                await textPromise;
+                toast.success(
+                    t('co_cook_link_copied') ||
+                        'Co-cook invite link copied to clipboard! 🔗'
                 );
                 return;
-            }
-        } else {
-            try {
-                await axios.post('/api/draft', fullDraftData);
-                mutateDraft?.();
             } catch {
-                // Non-critical background sync
+                // Fall through to writeText
             }
         }
 
-        const shareUrl = `${window.location.origin}/api/draft/join?draft=${currentDraftId}&token=${currentToken}`;
         try {
+            const shareUrl = await prepareShareUrl();
             await navigator.clipboard.writeText(shareUrl);
             toast.success(
                 t('co_cook_link_copied') ||
