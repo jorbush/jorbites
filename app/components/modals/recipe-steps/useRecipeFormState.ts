@@ -31,7 +31,7 @@ async function copyToClipboard(text: string): Promise<boolean> {
             await navigator.clipboard.writeText(text);
             return true;
         } catch {
-            // Fallback below
+            // Fall through to fallback
         }
     }
 
@@ -40,16 +40,29 @@ async function copyToClipboard(text: string): Promise<boolean> {
             const textArea = document.createElement('textarea');
             textArea.value = text;
             textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            textArea.style.top = '-999999px';
+            textArea.style.top = '0';
+            textArea.style.left = '0';
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+            textArea.style.padding = '0';
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+            textArea.style.background = 'transparent';
+            textArea.style.opacity = '0';
+            textArea.style.pointerEvents = 'none';
+            textArea.setAttribute('readonly', '');
+
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
+            textArea.setSelectionRange(0, text.length);
+
             const successful = document.execCommand('copy');
             document.body.removeChild(textArea);
-            return successful;
+            if (successful) return true;
         } catch {
-            return false;
+            // Fall through
         }
     }
 
@@ -781,6 +794,23 @@ export function useRecipeFormState({
         }
 
         const shareUrl = `${window.location.origin}/api/draft/join?draft=${currentDraftId}&token=${currentToken}`;
+        if (typeof navigator !== 'undefined' && navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Jorbites Co-Cooking',
+                    text:
+                        t('copy_co_cook_link_tooltip') ||
+                        'Join me to cook this recipe together on Jorbites!',
+                    url: shareUrl,
+                });
+                return;
+            } catch (error) {
+                if ((error as DOMException)?.name === 'AbortError') {
+                    return;
+                }
+            }
+        }
+
         const copied = await copyToClipboard(shareUrl);
         if (copied) {
             toast.success(
