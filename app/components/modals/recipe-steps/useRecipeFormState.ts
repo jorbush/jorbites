@@ -253,8 +253,6 @@ export function useRecipeFormState({
     });
 
     const categories = watch('categories');
-    const ingredients = watch('ingredients');
-    const steps = watch('steps');
     const minutes = watch('minutes');
     const prepTime = watch('prepTime');
     const cookTime = watch('cookTime');
@@ -500,33 +498,6 @@ export function useRecipeFormState({
             }
         }
 
-        // Sync known users and linked recipes only if new entries exist
-        if (Array.isArray(draftData.coCooks)) {
-            setKnownUsers((prev) => {
-                const hasNew = draftData.coCooks.some(
-                    (u: SafeUser) => u?.id && !prev[u.id]
-                );
-                if (!hasNew) return prev;
-                const updated = { ...prev };
-                draftData.coCooks.forEach((u: SafeUser) => {
-                    if (u?.id) updated[u.id] = u;
-                });
-                return updated;
-            });
-        }
-        if (Array.isArray(draftData.linkedRecipes)) {
-            setKnownRecipes((prev) => {
-                const hasNew = draftData.linkedRecipes.some(
-                    (r: SafeRecipe) => r?.id && !prev[r.id]
-                );
-                if (!hasNew) return prev;
-                const updated = { ...prev };
-                draftData.linkedRecipes.forEach((r: SafeRecipe) => {
-                    if (r?.id) updated[r.id] = r;
-                });
-                return updated;
-            });
-        }
         if (draftData.draftId && getValues('draftId') !== draftData.draftId) {
             setCustomValue('draftId', draftData.draftId);
         }
@@ -536,15 +507,7 @@ export function useRecipeFormState({
         ) {
             setCustomValue('inviteToken', draftData.inviteToken);
         }
-    }, [
-        draftData,
-        step,
-        recipeModal.isEditMode,
-        setCustomValue,
-        setIngredients,
-        setSteps,
-        getValues,
-    ]);
+    }, [draftData, step, recipeModal.isEditMode, setCustomValue, getValues]);
 
     const addCoCook = (user: SafeUser) => {
         if (coCooksIds.length >= MAX_CO_COOKS) {
@@ -854,25 +817,61 @@ export function useRecipeFormState({
         }
     }
 
+    const allKnownUsers = useMemo(() => {
+        const map: Record<string, SafeUser> = { ...knownUsers };
+        const items = recipeModal.isEditMode
+            ? recipeModal.editRecipeData?.coCooks
+            : draftData?.coCooks;
+        if (Array.isArray(items)) {
+            items.forEach((user: SafeUser) => {
+                if (user?.id) map[user.id] = user;
+            });
+        }
+        return map;
+    }, [
+        knownUsers,
+        recipeModal.isEditMode,
+        recipeModal.editRecipeData?.coCooks,
+        draftData?.coCooks,
+    ]);
+
+    const allKnownRecipes = useMemo(() => {
+        const map: Record<string, SafeRecipe> = { ...knownRecipes };
+        const items = recipeModal.isEditMode
+            ? recipeModal.editRecipeData?.linkedRecipes
+            : draftData?.linkedRecipes;
+        if (Array.isArray(items)) {
+            items.forEach((recipe: SafeRecipe) => {
+                if (recipe?.id) map[recipe.id] = recipe;
+            });
+        }
+        return map;
+    }, [
+        knownRecipes,
+        recipeModal.isEditMode,
+        recipeModal.editRecipeData?.linkedRecipes,
+        draftData?.linkedRecipes,
+    ]);
+
     const selectedQuest = useMemo<SafeQuest | null>(() => {
         return questId ? (knownQuests[questId] ?? null) : null;
     }, [questId, knownQuests]);
 
     const selectedCoCooks = useMemo<SafeUser[]>(() => {
         return coCooksIds
-            .map((id: string) => knownUsers[id])
+            .map((id: string) => allKnownUsers[id])
             .filter((user: SafeUser | undefined): user is SafeUser =>
                 Boolean(user)
             );
-    }, [coCooksIds, knownUsers]);
+    }, [coCooksIds, allKnownUsers]);
 
     const selectedLinkedRecipes = useMemo<SafeRecipe[]>(() => {
         return linkedRecipeIds
-            .map((id: string) => knownRecipes[id])
+            .map((id: string) => allKnownRecipes[id])
             .filter((recipe: SafeRecipe | undefined): recipe is SafeRecipe =>
                 Boolean(recipe)
             );
-    }, [linkedRecipeIds, knownRecipes]);
+    }, [linkedRecipeIds, allKnownRecipes]);
 
     const onBack = () => {
         setStep((value) => Math.max(value - 1, 0));
