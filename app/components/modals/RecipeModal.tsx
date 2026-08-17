@@ -451,6 +451,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
             revalidateOnReconnect: true,
             refreshInterval: 3000,
             shouldRetryOnError: false,
+            keepPreviousData: true,
         }
     );
 
@@ -458,7 +459,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         return null;
     }
 
-    if (isLoadingDraft) {
+    if (isLoadingDraft && !draftData) {
         return (
             <Modal
                 isOpen={recipeModal.isOpen}
