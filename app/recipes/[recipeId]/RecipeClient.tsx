@@ -13,7 +13,6 @@ import RecipeHead from '@/app/components/recipes/RecipeHead';
 import RecipeInfo from '@/app/components/recipes/RecipeInfo';
 import { preparationMethods } from '@/app/components/modals/recipe-steps/preparationMethodsData';
 import Comments from '@/app/components/comments/Comments';
-import CommunityGallery from '@/app/components/recipes/CommunityGallery';
 import DeleteRecipeButton from '@/app/components/recipes/DeleteRecipeButton';
 import EditRecipeButton from '@/app/components/recipes/EditRecipeButton';
 import { useTranslation } from 'react-i18next';
@@ -167,7 +166,6 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             ganttTable={recipe.ganttTable}
                         />
                     </div>
-                    <CommunityGallery comments={comments} />
                     <div id="comments-section">
                         <Comments
                             currentUser={currentUser}
