@@ -684,7 +684,7 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
                     url: `/api/draft?draftId=${draftId}`,
                     failOnStatusCode: false,
                 }).then((draftCheck) => {
-                    expect(draftCheck.body).to.be.null;
+                    expect(draftCheck.body).to.equal(null);
                     cy.task(
                         'log',
                         '✓ Shared Redis draft automatically cleaned up upon publishing'
