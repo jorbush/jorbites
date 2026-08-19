@@ -387,17 +387,10 @@ export function useRecipeFormState({
         const isStepLockedByOther = (stepIndex: number) =>
             Boolean(lock?.isLockedByOther(`step:${stepIndex}`));
 
-        const shouldSyncStep = (stepIndex: number) => {
-            if (isStepLockedByOther(stepIndex)) return true;
-            if (stepChanged && step === stepIndex) return true;
-            if (step === stepIndex) return true;
-            return true;
-        };
-
         // Step 0: Category
         if (
-            shouldSyncStep(STEPS.CATEGORY) &&
             Array.isArray(draftData.categories) &&
+            draftData.categories.length > 0 &&
             JSON.stringify(getValues('categories')) !==
                 JSON.stringify(draftData.categories)
         ) {
@@ -405,151 +398,173 @@ export function useRecipeFormState({
         }
 
         // Step 1: Description
-        if (shouldSyncStep(STEPS.DESCRIPTION)) {
-            if (
-                draftData.title !== undefined &&
-                (!getValues('title') ||
-                    isStepLockedByOther(STEPS.DESCRIPTION) ||
-                    stepChanged ||
-                    step !== STEPS.DESCRIPTION)
-            ) {
-                setCustomValue('title', draftData.title);
-            }
-            if (
-                draftData.description !== undefined &&
-                (!getValues('description') ||
-                    isStepLockedByOther(STEPS.DESCRIPTION) ||
-                    stepChanged ||
-                    step !== STEPS.DESCRIPTION)
-            ) {
-                setCustomValue('description', draftData.description);
-            }
-            if (
-                draftData.minutes !== undefined &&
-                getValues('minutes') !== draftData.minutes
-            ) {
-                setCustomValue('minutes', draftData.minutes);
-            }
-            if (
-                draftData.prepTime !== undefined &&
-                getValues('prepTime') !== draftData.prepTime
-            ) {
-                setCustomValue('prepTime', draftData.prepTime);
-            }
-            if (
-                draftData.cookTime !== undefined &&
-                getValues('cookTime') !== draftData.cookTime
-            ) {
-                setCustomValue('cookTime', draftData.cookTime);
-            }
+        if (
+            draftData.title &&
+            draftData.title !== '' &&
+            getValues('title') !== draftData.title &&
+            (step !== STEPS.DESCRIPTION ||
+                stepChanged ||
+                !getValues('title') ||
+                isStepLockedByOther(STEPS.DESCRIPTION))
+        ) {
+            setCustomValue('title', draftData.title);
+        }
+        if (
+            draftData.description &&
+            draftData.description !== '' &&
+            getValues('description') !== draftData.description &&
+            (step !== STEPS.DESCRIPTION ||
+                stepChanged ||
+                !getValues('description') ||
+                isStepLockedByOther(STEPS.DESCRIPTION))
+        ) {
+            setCustomValue('description', draftData.description);
+        }
+        if (
+            draftData.minutes !== undefined &&
+            getValues('minutes') !== draftData.minutes
+        ) {
+            setCustomValue('minutes', draftData.minutes);
+        }
+        if (
+            draftData.prepTime !== undefined &&
+            getValues('prepTime') !== draftData.prepTime
+        ) {
+            setCustomValue('prepTime', draftData.prepTime);
+        }
+        if (
+            draftData.cookTime !== undefined &&
+            getValues('cookTime') !== draftData.cookTime
+        ) {
+            setCustomValue('cookTime', draftData.cookTime);
         }
 
         // Step 2: Ingredients
-        if (Array.isArray(draftData.ingredients)) {
+        if (
+            Array.isArray(draftData.ingredients) &&
+            draftData.ingredients.length > 0
+        ) {
             const incoming = draftData.ingredients;
-            if (incoming.length > 0) {
-                incoming.forEach((item: string, idx: number) => {
-                    const currentVal = getValues(`ingredient-${idx}`);
-                    if (
-                        !currentVal ||
-                        currentVal === '' ||
-                        isStepLockedByOther(STEPS.INGREDIENTS) ||
-                        stepChanged ||
-                        step !== STEPS.INGREDIENTS
-                    ) {
-                        setCustomValue(`ingredient-${idx}`, item);
-                    }
-                });
-                setCustomValue('ingredients', incoming);
-            }
+            incoming.forEach((item: string, idx: number) => {
+                const currentVal = getValues(`ingredient-${idx}`);
+                if (
+                    !currentVal ||
+                    currentVal === '' ||
+                    isStepLockedByOther(STEPS.INGREDIENTS) ||
+                    stepChanged ||
+                    step !== STEPS.INGREDIENTS
+                ) {
+                    setCustomValue(`ingredient-${idx}`, item);
+                }
+            });
+            setCustomValue('ingredients', incoming);
         }
 
         // Step 3: Methods
-        if (shouldSyncStep(STEPS.METHODS)) {
-            if (
-                draftData.method !== undefined &&
-                getValues('method') !== draftData.method
-            ) {
-                setCustomValue('method', draftData.method);
-            }
+        if (
+            draftData.method &&
+            draftData.method !== '' &&
+            getValues('method') !== draftData.method &&
+            (step !== STEPS.METHODS ||
+                stepChanged ||
+                !getValues('method') ||
+                isStepLockedByOther(STEPS.METHODS))
+        ) {
+            setCustomValue('method', draftData.method);
         }
 
         // Step 4: Steps
-        if (Array.isArray(draftData.steps)) {
+        if (Array.isArray(draftData.steps) && draftData.steps.length > 0) {
             const incoming = draftData.steps;
-            if (incoming.length > 0) {
-                incoming.forEach((item: string, idx: number) => {
-                    const currentVal = getValues(`step-${idx}`);
-                    if (
-                        !currentVal ||
-                        currentVal === '' ||
-                        isStepLockedByOther(STEPS.STEPS) ||
-                        stepChanged ||
-                        step !== STEPS.STEPS
-                    ) {
-                        setCustomValue(`step-${idx}`, item);
-                    }
-                });
-                setCustomValue('steps', incoming);
-            }
+            incoming.forEach((item: string, idx: number) => {
+                const currentVal = getValues(`step-${idx}`);
+                if (
+                    !currentVal ||
+                    currentVal === '' ||
+                    isStepLockedByOther(STEPS.STEPS) ||
+                    stepChanged ||
+                    step !== STEPS.STEPS
+                ) {
+                    setCustomValue(`step-${idx}`, item);
+                }
+            });
+            setCustomValue('steps', incoming);
         }
 
         // Step 5: Related Content
-        if (shouldSyncStep(STEPS.RELATED_CONTENT)) {
-            if (
-                Array.isArray(draftData.coCooksIds) &&
-                JSON.stringify(getValues('coCooksIds')) !==
-                    JSON.stringify(draftData.coCooksIds)
-            ) {
-                setCustomValue('coCooksIds', draftData.coCooksIds);
-            }
-            if (
-                Array.isArray(draftData.linkedRecipeIds) &&
-                JSON.stringify(getValues('linkedRecipeIds')) !==
-                    JSON.stringify(draftData.linkedRecipeIds)
-            ) {
-                setCustomValue('linkedRecipeIds', draftData.linkedRecipeIds);
-            }
-            if (
-                draftData.youtubeUrl !== undefined &&
-                getValues('youtubeUrl') !== draftData.youtubeUrl
-            ) {
-                setCustomValue('youtubeUrl', draftData.youtubeUrl);
-            }
-            if (
-                draftData.questId !== undefined &&
-                getValues('questId') !== draftData.questId
-            ) {
-                setCustomValue('questId', draftData.questId);
-            }
+        if (
+            Array.isArray(draftData.coCooksIds) &&
+            JSON.stringify(getValues('coCooksIds')) !==
+                JSON.stringify(draftData.coCooksIds) &&
+            (step !== STEPS.RELATED_CONTENT ||
+                stepChanged ||
+                isStepLockedByOther(STEPS.RELATED_CONTENT))
+        ) {
+            setCustomValue('coCooksIds', draftData.coCooksIds);
+        }
+        if (
+            Array.isArray(draftData.linkedRecipeIds) &&
+            JSON.stringify(getValues('linkedRecipeIds')) !==
+                JSON.stringify(draftData.linkedRecipeIds) &&
+            (step !== STEPS.RELATED_CONTENT ||
+                stepChanged ||
+                isStepLockedByOther(STEPS.RELATED_CONTENT))
+        ) {
+            setCustomValue('linkedRecipeIds', draftData.linkedRecipeIds);
+        }
+        if (
+            draftData.youtubeUrl !== undefined &&
+            getValues('youtubeUrl') !== draftData.youtubeUrl
+        ) {
+            setCustomValue('youtubeUrl', draftData.youtubeUrl);
+        }
+        if (
+            draftData.questId !== undefined &&
+            getValues('questId') !== draftData.questId
+        ) {
+            setCustomValue('questId', draftData.questId);
         }
 
         // Step 6: Images
-        if (shouldSyncStep(STEPS.IMAGES)) {
-            if (
-                draftData.imageSrc !== undefined &&
-                getValues('imageSrc') !== draftData.imageSrc
-            ) {
-                setCustomValue('imageSrc', draftData.imageSrc);
-            }
-            if (
-                draftData.imageSrc1 !== undefined &&
-                getValues('imageSrc1') !== draftData.imageSrc1
-            ) {
-                setCustomValue('imageSrc1', draftData.imageSrc1);
-            }
-            if (
-                draftData.imageSrc2 !== undefined &&
-                getValues('imageSrc2') !== draftData.imageSrc2
-            ) {
-                setCustomValue('imageSrc2', draftData.imageSrc2);
-            }
-            if (
-                draftData.imageSrc3 !== undefined &&
-                getValues('imageSrc3') !== draftData.imageSrc3
-            ) {
-                setCustomValue('imageSrc3', draftData.imageSrc3);
-            }
+        if (
+            draftData.imageSrc &&
+            draftData.imageSrc !== '' &&
+            getValues('imageSrc') !== draftData.imageSrc &&
+            (step !== STEPS.IMAGES ||
+                stepChanged ||
+                isStepLockedByOther(STEPS.IMAGES))
+        ) {
+            setCustomValue('imageSrc', draftData.imageSrc);
+        }
+        if (
+            draftData.imageSrc1 &&
+            draftData.imageSrc1 !== '' &&
+            getValues('imageSrc1') !== draftData.imageSrc1 &&
+            (step !== STEPS.IMAGES ||
+                stepChanged ||
+                isStepLockedByOther(STEPS.IMAGES))
+        ) {
+            setCustomValue('imageSrc1', draftData.imageSrc1);
+        }
+        if (
+            draftData.imageSrc2 &&
+            draftData.imageSrc2 !== '' &&
+            getValues('imageSrc2') !== draftData.imageSrc2 &&
+            (step !== STEPS.IMAGES ||
+                stepChanged ||
+                isStepLockedByOther(STEPS.IMAGES))
+        ) {
+            setCustomValue('imageSrc2', draftData.imageSrc2);
+        }
+        if (
+            draftData.imageSrc3 &&
+            draftData.imageSrc3 !== '' &&
+            getValues('imageSrc3') !== draftData.imageSrc3 &&
+            (step !== STEPS.IMAGES ||
+                stepChanged ||
+                isStepLockedByOther(STEPS.IMAGES))
+        ) {
+            setCustomValue('imageSrc3', draftData.imageSrc3);
         }
 
         if (draftData.draftId && getValues('draftId') !== draftData.draftId) {

@@ -38,7 +38,7 @@ describe('SelectedCoCooksList', () => {
         expect(container.firstChild).toBeNull();
     });
 
-    it('renders cooks list and triggers remove callback', () => {
+    it('renders cooks list, capacity counter, and triggers remove callback via data-testid', () => {
         const mockRemove = vi.fn();
         render(
             <SelectedCoCooksList
@@ -49,9 +49,18 @@ describe('SelectedCoCooksList', () => {
         );
         expect(screen.getByText('Cook 1')).toBeDefined();
         expect(screen.getByText('Cook 2')).toBeDefined();
-        const buttons = screen.getAllByRole('button');
-        expect(buttons).toHaveLength(2);
-        buttons[0].click();
+
+        // Verify capacity counter
+        const countBadge = screen.getByTestId('co-cooks-count');
+        expect(countBadge.textContent).toContain('(2/4)');
+
+        // Verify remove button with data-testid
+        const removeButtonU1 = screen.getByTestId('remove-co-cook-u1');
+        const removeButtonU2 = screen.getByTestId('remove-co-cook-u2');
+        expect(removeButtonU1).toBeDefined();
+        expect(removeButtonU2).toBeDefined();
+
+        removeButtonU1.click();
         expect(mockRemove).toHaveBeenCalledWith('u1');
     });
 });
