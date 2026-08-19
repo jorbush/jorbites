@@ -149,6 +149,7 @@ const Modal: React.FC<ModalProps> = ({
                                         secondaryActionLabel && (
                                             <Button
                                                 data-testid="secondary-action-button"
+                                                dataCy="secondary-action-button"
                                                 disabled={disabled || isLoading}
                                                 label={secondaryActionLabel}
                                                 onClick={handleSecondaryAction}

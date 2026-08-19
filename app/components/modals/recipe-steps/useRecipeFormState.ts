@@ -350,6 +350,7 @@ export function useRecipeFormState({
         [numSteps, setCustomValue]
     );
 
+    const prevStepRef = useRef<number>(step);
     const lastSyncedDraftStrRef = useRef<string>('');
 
     const lockTargetId = recipeModal.isEditMode
@@ -363,8 +364,12 @@ export function useRecipeFormState({
     useEffect(() => {
         if (!draftData || recipeModal.isEditMode) return;
 
+        const stepChanged = prevStepRef.current !== step;
+        prevStepRef.current = step;
+
         const serialized = JSON.stringify(draftData);
-        if (serialized === lastSyncedDraftStrRef.current) return;
+        if (serialized === lastSyncedDraftStrRef.current && !stepChanged)
+            return;
         lastSyncedDraftStrRef.current = serialized;
 
         const isStepLockedByOther = (stepIndex: number) =>
@@ -372,7 +377,8 @@ export function useRecipeFormState({
 
         const shouldSyncStep = (stepIndex: number) => {
             if (isStepLockedByOther(stepIndex)) return true;
-            if (step === stepIndex) return false;
+            if (stepChanged && step === stepIndex) return true;
+            if (step === stepIndex) return true;
             return true;
         };
 
