@@ -13,6 +13,8 @@ interface ButtonProps {
     deleteButton?: boolean;
     rose?: boolean;
     dataCy?: string;
+    dataTestId?: string;
+    'data-testid'?: string;
     type?: 'button' | 'submit' | 'reset';
     className?: string;
 }
@@ -28,6 +30,8 @@ const Button: React.FC<ButtonProps> = ({
     deleteButton,
     rose,
     dataCy,
+    dataTestId,
+    'data-testid': testId,
     type = 'button',
     className,
 }) => {
@@ -83,7 +87,7 @@ const Button: React.FC<ButtonProps> = ({
             onClick={handleButtonClick}
             className={`${getBaseClasses()} ${getRoseButtonClasses()} ${className || ''}`}
             data-cy={dataCy}
-            data-testid={dataCy || 'button-component'}
+            data-testid={testId || dataTestId || dataCy || 'button-component'}
             suppressHydrationWarning
         >
             {Icon && (

@@ -55,6 +55,7 @@ describe('useRecipeFormState hook', () => {
         isOpen: true,
         isEditMode: false,
         onClose: vi.fn(),
+        onOpenSharedDraft: vi.fn(),
     };
 
     it('initializes default values correctly', () => {
@@ -524,5 +525,136 @@ describe('useRecipeFormState hook', () => {
             await result.current.onSubmit({});
         });
         expect(mockMutate).toHaveBeenCalledTimes(1);
+    });
+
+    it('derives effectiveNumIngredients and effectiveNumSteps synchronously during render from incoming draftData', async () => {
+        let currentDraftData: any = {
+            draftId: 'd1',
+            ingredients: ['flour'],
+            steps: ['mix'],
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: currentDraftData } }
+        );
+
+        expect(result.current.numIngredients).toBe(1);
+        expect(result.current.numSteps).toBe(1);
+
+        // Co-cook expands ingredients and steps in Redis
+        currentDraftData = {
+            draftId: 'd1',
+            ingredients: ['flour', 'sugar', 'cocoa powder'],
+            steps: ['mix', 'bake at 180C', 'top with ganache'],
+        };
+
+        await act(async () => {
+            rerender({ draft: currentDraftData });
+        });
+
+        // Derived synchronously during render
+        expect(result.current.numIngredients).toBe(3);
+        expect(result.current.numSteps).toBe(3);
+        expect(result.current.getValues('ingredient-2')).toBe('cocoa powder');
+        expect(result.current.getValues('step-2')).toBe('top with ganache');
+    });
+
+    it('preserves user-selected cooking method on Step 3 and does not overwrite with empty string on step transitions', async () => {
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: null,
+                draftData: {
+                    draftId: 'd-method',
+                    method: '',
+                },
+            })
+        );
+
+        // Advance to Step 3 (Methods) and select Oven
+        act(() => {
+            result.current.setStep(3);
+            result.current.setValue('method', 'Oven');
+        });
+
+        expect(result.current.getValues('method')).toBe('Oven');
+
+        // Advance to Step 4 (Steps)
+        await act(async () => {
+            await result.current.onSubmit({});
+        });
+
+        expect(result.current.step).toBe(4);
+        // Method should NOT be wiped with empty string from draftData
+        expect(result.current.getValues('method')).toBe('Oven');
+    });
+
+    it('preserves remote draftData for inactive steps when saveDraft is invoked', async () => {
+        const axios = (await import('axios')).default;
+        (axios.post as any).mockClear();
+        (axios.post as any).mockResolvedValueOnce({
+            data: { draftId: 'd-save-test', inviteToken: 'tok-123' },
+        });
+
+        const mockDraftData = {
+            draftId: 'd-save-test',
+            inviteToken: 'tok-123',
+            currentStep: 1,
+            title: 'Initial Title',
+            description: 'Initial Description',
+            ingredients: ['2 cups Flour', '1 cup Sugar'],
+            steps: ['Mix well', 'Bake 30m'],
+            method: 'Microwave',
+        };
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                draftData: mockDraftData,
+            })
+        );
+
+        // User edits only Step 1 (Description)
+        act(() => {
+            result.current.setStep(1);
+            result.current.setValue('title', 'Updated Berry Cake Title');
+        });
+
+        // User saves draft
+        await act(async () => {
+            await result.current.saveDraft();
+        });
+
+        expect(axios.post).toHaveBeenCalled();
+        const callPayload = (axios.post as any).mock.calls[0][1] as any;
+        expect(callPayload.title).toBe('Updated Berry Cake Title');
+        // Remote ingredients, steps, and method from inactive steps preserved!
+        expect(callPayload.ingredients).toEqual([
+            '2 cups Flour',
+            '1 cup Sugar',
+        ]);
+        expect(callPayload.steps).toEqual(['Mix well', 'Bake 30m']);
+        expect(callPayload.method).toBe('Microwave');
     });
 });

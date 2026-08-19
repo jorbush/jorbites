@@ -25,6 +25,8 @@ jobs:
             spec: "__tests__/e2e/workshops.cy.ts,__tests__/e2e/quests.cy.ts"
           - name: "User & Basic Specs"
             spec: "__tests__/e2e/user.cy.ts,__tests__/e2e/app.cy.ts"
+          - name: "Collaborative Recipes"
+            spec: "__tests__/e2e/collaborative_recipes.cy.ts"
     services:
       redis:
         image: redis
