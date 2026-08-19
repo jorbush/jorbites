@@ -10,24 +10,23 @@ This document provides architectural and behavioral sequence/flow diagrams for a
 flowchart TD
     subgraph GitHubActions["GitHub Actions CI Matrix (ubuntu-latest)"]
         redisSvc[("Local Redis Service (redis:6379)")]
-        
+
         subgraph Job1["Container 1: Recipes Spec"]
             T1["basic.cy.ts<br/>Full Recipe Lifecycle"]
         end
-        
+
         subgraph Job2["Container 2: Workshops & Quests Specs"]
             T2["workshops.cy.ts<br/>Workshop Lifecycle"]
             T3["quests.cy.ts<br/>Quests Lifecycle"]
         end
-        
+
         subgraph Job3["Container 3: User & Basic Specs"]
             T4["user.cy.ts<br/>Auth & Session"]
             T5["app.cy.ts<br/>App Shell Render"]
         end
-        
-        subgraph Job4["Container 4: Collaborative Recipes & Remakes Specs"]
+
+        subgraph Job4["Container 4: Collaborative Recipes Spec"]
             T6["collaborative_recipes.cy.ts<br/>Co-Cooking & Redis Step Sync"]
-            T7["cooked_remake.cy.ts<br/>I Cooked This & R2 Proof"]
         end
     end
 
@@ -113,6 +112,39 @@ flowchart TD
     FetchRedis --> RenderStep2["Step 2: Ingredients View updated with Co-Cook additions"]
     RenderStep2 --> NavBack["User clicks Back (Backward Navigation)"]
     NavBack --> Preserved["State preserved without data loss"]
+```
+
+### 1.3 Concurrent Multi-Field Merge & Race Condition Resolution
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor UserA as Recipe Author (User A)
+    actor UserB as Co-Cook (User B)
+    participant Redis as Redis (:6379)
+    participant Service as DraftService.saveSharedDraft
+
+    UserA->>UserA: Edits Title & Description in UI
+    UserB->>Redis: POST /api/draft (Updates Ingredients & Cooking Method)
+    Redis-->>UserB: { ingredients: [...], method: "Microwave" }
+    UserA->>Service: POST /api/draft (Saves Title & Description)
+    Service->>Redis: GET draft:shared:<id> (Read User B's latest state)
+    Service->>Service: Non-destructive deep merge (Title + User B's Ingredients & Method)
+    Service->>Redis: SET draft:shared:<id> (Atomic merged payload)
+    Note over UserA,UserB: No race-condition data loss! Both edits preserved.
+```
+
+### 1.4 Collaborator Capacity (MAX_CO_COOKS = 4) & Publish Cleanup
+
+```mermaid
+flowchart TD
+    Add1["Add Chef 1 (1/4)"] --> Add2["Add Chef 2 (2/4)"]
+    Add2 --> Add3["Add Chef 3 (3/4)"]
+    Add3 --> Add4["Add Chef 4 (4/4 Max Capacity)"]
+    Add4 --> Try5["Attempt Add Chef 5 -> Toast: 'Maximum of 4 co-cooks allowed'"]
+    Try5 --> Remove["Remove Chef 4 -> Capacity drops to (3/4)"]
+    Remove --> Publish["Publish Recipe via POST /api/recipes"]
+    Publish --> CleanRedis["DraftService.cleanUpDraftOnPublish deletes draft:shared:id from Redis"]
 ```
 
 ---

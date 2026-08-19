@@ -392,19 +392,23 @@ export function useRecipeFormState({
             setCustomValue('categories', draftData.categories);
         }
 
-        // Step 1: Description & Times
+        // Step 1: Description
         if (shouldSyncStep(STEPS.DESCRIPTION)) {
             if (
                 draftData.title !== undefined &&
-                draftData.title !== '' &&
-                getValues('title') !== draftData.title
+                (!getValues('title') ||
+                    isStepLockedByOther(STEPS.DESCRIPTION) ||
+                    stepChanged ||
+                    step !== STEPS.DESCRIPTION)
             ) {
                 setCustomValue('title', draftData.title);
             }
             if (
                 draftData.description !== undefined &&
-                draftData.description !== '' &&
-                getValues('description') !== draftData.description
+                (!getValues('description') ||
+                    isStepLockedByOther(STEPS.DESCRIPTION) ||
+                    stepChanged ||
+                    step !== STEPS.DESCRIPTION)
             ) {
                 setCustomValue('description', draftData.description);
             }
@@ -429,20 +433,25 @@ export function useRecipeFormState({
         }
 
         // Step 2: Ingredients
-        if (shouldSyncStep(STEPS.INGREDIENTS)) {
-            if (Array.isArray(draftData.ingredients)) {
-                const incoming = draftData.ingredients;
-                if (
-                    incoming.length > 0 &&
-                    JSON.stringify(getValues('ingredients')) !==
-                        JSON.stringify(incoming)
-                ) {
+        if (Array.isArray(draftData.ingredients)) {
+            const incoming = draftData.ingredients;
+            if (incoming.length > 0) {
+                if (numIngredients < incoming.length) {
                     setNumIngredients(incoming.length);
-                    incoming.forEach((item: string, idx: number) => {
-                        setCustomValue(`ingredient-${idx}`, item);
-                    });
-                    setCustomValue('ingredients', incoming);
                 }
+                incoming.forEach((item: string, idx: number) => {
+                    const currentVal = getValues(`ingredient-${idx}`);
+                    if (
+                        !currentVal ||
+                        currentVal === '' ||
+                        isStepLockedByOther(STEPS.INGREDIENTS) ||
+                        stepChanged ||
+                        step !== STEPS.INGREDIENTS
+                    ) {
+                        setCustomValue(`ingredient-${idx}`, item);
+                    }
+                });
+                setCustomValue('ingredients', incoming);
             }
         }
 
@@ -457,20 +466,25 @@ export function useRecipeFormState({
         }
 
         // Step 4: Steps
-        if (shouldSyncStep(STEPS.STEPS)) {
-            if (Array.isArray(draftData.steps)) {
-                const incoming = draftData.steps;
-                if (
-                    incoming.length > 0 &&
-                    JSON.stringify(getValues('steps')) !==
-                        JSON.stringify(incoming)
-                ) {
+        if (Array.isArray(draftData.steps)) {
+            const incoming = draftData.steps;
+            if (incoming.length > 0) {
+                if (numSteps < incoming.length) {
                     setNumSteps(incoming.length);
-                    incoming.forEach((item: string, idx: number) => {
-                        setCustomValue(`step-${idx}`, item);
-                    });
-                    setCustomValue('steps', incoming);
                 }
+                incoming.forEach((item: string, idx: number) => {
+                    const currentVal = getValues(`step-${idx}`);
+                    if (
+                        !currentVal ||
+                        currentVal === '' ||
+                        isStepLockedByOther(STEPS.STEPS) ||
+                        stepChanged ||
+                        step !== STEPS.STEPS
+                    ) {
+                        setCustomValue(`step-${idx}`, item);
+                    }
+                });
+                setCustomValue('steps', incoming);
             }
         }
 
@@ -663,18 +677,30 @@ export function useRecipeFormState({
             }
         }
 
-        if (step !== STEPS.INGREDIENTS && newIngredients.length === 0) {
-            const existing =
-                getValues('ingredients') || draftData?.ingredients || [];
-            if (existing.length > 0) {
-                newIngredients = existing;
+        if (step !== STEPS.INGREDIENTS) {
+            const remoteIngredients = draftData?.ingredients;
+            if (
+                Array.isArray(remoteIngredients) &&
+                remoteIngredients.length > 0
+            ) {
+                newIngredients = remoteIngredients;
+            } else if (newIngredients.length === 0) {
+                const existing = getValues('ingredients') || [];
+                if (existing.length > 0) {
+                    newIngredients = existing;
+                }
             }
         }
 
-        if (step !== STEPS.STEPS && newSteps.length === 0) {
-            const existing = getValues('steps') || draftData?.steps || [];
-            if (existing.length > 0) {
-                newSteps = existing;
+        if (step !== STEPS.STEPS) {
+            const remoteSteps = draftData?.steps;
+            if (Array.isArray(remoteSteps) && remoteSteps.length > 0) {
+                newSteps = remoteSteps;
+            } else if (newSteps.length === 0) {
+                const existing = getValues('steps') || [];
+                if (existing.length > 0) {
+                    newSteps = existing;
+                }
             }
         }
 
@@ -682,8 +708,11 @@ export function useRecipeFormState({
             draftId: currentDraftId,
             inviteToken: currentToken,
             currentStep: step,
-            categories: getValues('categories'),
-            method: getValues('method'),
+            categories: getValues('categories') || draftData?.categories,
+            method:
+                step === STEPS.METHODS
+                    ? getValues('method')
+                    : draftData?.method || getValues('method'),
             imageSrc: getValues('imageSrc'),
             imageSrc1: getValues('imageSrc1'),
             imageSrc2: getValues('imageSrc2'),
@@ -695,8 +724,15 @@ export function useRecipeFormState({
             minutes: getValues('minutes'),
             prepTime: getValues('prepTime'),
             cookTime: getValues('cookTime'),
-            coCooksIds: getValues('coCooksIds'),
-            linkedRecipeIds: getValues('linkedRecipeIds'),
+            coCooksIds:
+                step === STEPS.RELATED_CONTENT
+                    ? getValues('coCooksIds')
+                    : draftData?.coCooksIds || getValues('coCooksIds'),
+            linkedRecipeIds:
+                step === STEPS.RELATED_CONTENT
+                    ? getValues('linkedRecipeIds')
+                    : draftData?.linkedRecipeIds ||
+                      getValues('linkedRecipeIds'),
             youtubeUrl: getValues('youtubeUrl'),
             questId: getValues('questId'),
         };

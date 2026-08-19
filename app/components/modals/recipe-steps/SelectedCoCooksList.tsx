@@ -21,7 +21,10 @@ export const SelectedCoCooksList: React.FC<SelectedCoCooksListProps> = ({
         <div>
             <h3 className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
                 {t('selected_co_cooks') || 'Selected Co-Cooks'}
-                <span className="ml-1 text-xs text-neutral-400 dark:text-neutral-500">
+                <span
+                    className="ml-1 text-xs text-neutral-400 dark:text-neutral-500"
+                    data-testid="co-cooks-count"
+                >
                     ({selectedCoCooks.length}/4)
                 </span>
             </h3>
@@ -43,6 +46,7 @@ export const SelectedCoCooksList: React.FC<SelectedCoCooksListProps> = ({
                             onClick={() => onRemoveCoCook(user.id)}
                             className="ml-1 text-neutral-500 hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-500"
                             aria-label={`Remove ${user.name}`}
+                            data-testid={`remove-co-cook-${user.id}`}
                         >
                             <AiFillDelete size={16} />
                         </button>
