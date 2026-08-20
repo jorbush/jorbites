@@ -109,9 +109,13 @@ All incoming draft payloads are strictly filtered against `ALLOWED_DRAFT_FIELDS`
 
 ---
 
-### 7. Smart Non-Destructive Draft Merging
+### 7. Smart Non-Destructive Draft Merging & Step-Scoped Saves
 
-When co-cooks work on different steps concurrently (e.g. User A on Step 1: Ingredients and User B on Step 3: Description), `DraftService.saveDraft` non-destructively merges incoming field updates with existing Redis draft data rather than replacing the entire object. This prevents partial step saves from overwriting fields authored by other co-cooks.
+When co-cooks work on different steps concurrently (e.g., User A on Step 1: Description and User B on Step 2: Ingredients):
+
+- **Backend Non-Destructive Merge**: `DraftService.saveSharedDraft` non-destructively merges incoming field updates with existing Redis draft data rather than replacing the entire object. Omitted fields (`undefined`) in the request payload preserve the values already stored in Redis.
+- **Step-Scoped Client Saves (`saveDraft`)**: When auto-saving drafts during forward/backward step transitions, `useRecipeFormState` only attaches array fields (`ingredients` or `steps`) to the POST payload if the user is **actively on that specific step** (`step === STEPS.INGREDIENTS` or `step === STEPS.STEPS`). This ensures client transitions through earlier steps never broadcast stale local inputs that could overwrite real-time collaborator additions in Redis.
+- **Empty Array Safety Guards**: Remote collections like `coCooksIds` and `linkedRecipeIds` are only synced into local form state if `draftData.<field>.length > 0`, ensuring empty initial draft arrays never wipe user selections when navigating to subsequent steps.
 
 ### 8. Real-Time State Synchronization & Background SWR Polling
 
@@ -120,6 +124,7 @@ When co-cooks work on different steps concurrently (e.g. User A on Step 1: Ingre
     - On initial draft load (`isInitialSync = true`).
     - For all steps other than the active user's current step (`step !== stepIndex`).
     - On the active user's current step when it is locked by another co-cook (`lock.isLockedByOther('step:' + stepIndex)`), allowing the user to see real-time updates as the other co-cook edits without overwriting local inputs when holding the lock.
+- **Synchronous Input Row Expansion**: Dynamic collaborator additions (such as a co-cook adding a 3rd ingredient or step) expand form inputs synchronously during render via `effectiveNumIngredients` and `effectiveNumSteps` (`Math.max(numInputs, draftData.items.length)`), rendering new fields without layout lag or stale-state clipping.
 - **Modal Lifecycle & URL Cleanliness**: Tracks auto-open state so `?draft=` in the URL opens the modal once, and cleans up query parameters (`window.history.replaceState`) on modal close to prevent re-opening loops.
 - **Immediate Navigation Sync & Persistence**: Step transitions trigger `mutateDraft?.()` on `onNext()` and `onBack()`, and auto-save draft state in production (`NODE_ENV === 'production'`).
 
@@ -177,10 +182,10 @@ When co-cooks work on different steps concurrently (e.g. User A on Step 1: Ingre
 The collaborative cooking architecture is covered by automated Cypress E2E tests in [`__tests__/e2e/collaborative_recipes.cy.ts`](file:///Users/jordi/dev/jorbites/jorbites/__tests__/e2e/collaborative_recipes.cy.ts) running against a local Redis instance (`REDIS_URL=redis://localhost:6379`).
 
 ### Key Test Scenarios:
+
 1. **Multi-User Draft Invitation & Join Flow**: Generating secure tokenized invite links from `RecipeModal` and auto-opening pre-populated drafts via `/?draft=<id>&joined=true`.
 2. **Real-Time Step Synchronization on Forward/Back Navigation**: When User A updates ingredients or steps in a shared draft stored in Redis, User B navigating forward or backward immediately sees those updates reflected in the active modal form without data loss.
 3. **Section Soft-Locking & Activity Banners**: Verifying step inputs are locked with opacity feedback when another collaborator holds an active lock (`[data-testid="lock-banner"]`), and activity banners display on other steps (`[data-testid="co-cook-activity-banner"]`).
 4. **Collaborative Publishing & Credit**: Creating recipes with `coCooksIds` and verifying `RecipeCoCooks` rendering on the recipe page.
 
 For detailed Mermaid diagrams of this and all other E2E test suites, see [`docs/testing/e2e/workflows.md`](file:///Users/jordi/dev/jorbites/jorbites/docs/testing/e2e/workflows.md).
-
