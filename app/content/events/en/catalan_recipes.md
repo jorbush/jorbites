@@ -1,7 +1,7 @@
 ---
 title: 🏴 Catalan Recipes 🥘
-date: 2026-03-03
-endDate: 2026-03-17T21:59:59
+date: 2026-09-10
+endDate: 2026-09-12T21:59:59
 image: /images/events/catalan_recipes.webp
 description: Celebrate Catalan cuisine and help preserve the Catalan language
 ---
