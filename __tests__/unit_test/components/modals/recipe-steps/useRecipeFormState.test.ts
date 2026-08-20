@@ -649,12 +649,10 @@ describe('useRecipeFormState hook', () => {
         expect(axios.post).toHaveBeenCalled();
         const callPayload = (axios.post as any).mock.calls[0][1] as any;
         expect(callPayload.title).toBe('Updated Berry Cake Title');
-        // Remote ingredients, steps, and method from inactive steps preserved!
-        expect(callPayload.ingredients).toEqual([
-            '2 cups Flour',
-            '1 cup Sugar',
-        ]);
-        expect(callPayload.steps).toEqual(['Mix well', 'Bake 30m']);
+        // Remote ingredients, steps, and method from inactive steps are omitted from payload
+        // so DraftService preserves whatever is in Redis without clobbering
+        expect(callPayload.ingredients).toBeUndefined();
+        expect(callPayload.steps).toBeUndefined();
         expect(callPayload.method).toBe('Microwave');
     });
 
@@ -721,8 +719,92 @@ describe('useRecipeFormState hook', () => {
 
         expect(axios.post).toHaveBeenCalled();
         const callPayload = (axios.post as any).mock.calls[0][1] as any;
-        // Verify collaborator's updated steps are preserved and not clobbered by stale 'Mix ingredients'
-        expect(callPayload.steps).toEqual(coCookUpdatedSteps);
+        // Verify collaborator's updated steps are not clobbered by sending stale local arrays
+        expect(callPayload.steps).toBeUndefined();
+    });
+
+    it('includes ingredients in saveDraft payload when actively on ingredients step of shared draft', async () => {
+        const axios = (await import('axios')).default;
+        (axios.post as any).mockClear();
+        (axios.post as any).mockResolvedValueOnce({
+            data: { draftId: 'd-ing-test' },
+        });
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                draftData: {
+                    draftId: 'd-ing-test',
+                    ingredients: ['Old Ingredient'],
+                    steps: ['Step 1'],
+                },
+            })
+        );
+
+        act(() => {
+            result.current.setStep(2); // STEPS.INGREDIENTS
+        });
+
+        act(() => {
+            result.current.setValue('ingredient-0', 'Fresh Basil');
+        });
+
+        await act(async () => {
+            await result.current.saveDraft(3);
+        });
+
+        expect(axios.post).toHaveBeenCalled();
+        const callPayload = (axios.post as any).mock.calls[0][1] as any;
+        expect(callPayload.ingredients).toEqual(['Fresh Basil']);
+        expect(callPayload.steps).toBeUndefined();
+    });
+
+    it('includes both ingredients and steps in saveDraft payload for solo single-user drafts', async () => {
+        const axios = (await import('axios')).default;
+        (axios.post as any).mockClear();
+        (axios.post as any).mockResolvedValueOnce({
+            data: { success: true },
+        });
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                draftData: null,
+            })
+        );
+
+        act(() => {
+            result.current.setStep(1); // STEPS.DESCRIPTION
+            result.current.setValue('title', 'Solo Pizza');
+            result.current.setValue('ingredient-0', 'Dough');
+            result.current.setValue('step-0', 'Bake');
+        });
+
+        await act(async () => {
+            await result.current.saveDraft(2);
+        });
+
+        expect(axios.post).toHaveBeenCalled();
+        const callPayload = (axios.post as any).mock.calls[0][1] as any;
+        expect(callPayload.title).toBe('Solo Pizza');
+        expect(callPayload.ingredients).toBeDefined();
+        expect(callPayload.steps).toBeDefined();
     });
 
     it('preserves user selected coCooksIds and linkedRecipeIds when advancing steps with empty remote draft array', async () => {

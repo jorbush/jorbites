@@ -881,7 +881,9 @@ export function useRecipeFormState({
         const currentInviteToken =
             watch('inviteToken') || draftData?.inviteToken;
 
-        const data = {
+        const isShared = Boolean(currentDraftId);
+
+        const data: any = {
             draftId: currentDraftId,
             inviteToken: currentInviteToken,
             currentStep: stepToSave,
@@ -893,8 +895,6 @@ export function useRecipeFormState({
             imageSrc3: watch('imageSrc3'),
             title: watch('title'),
             description: watch('description'),
-            ingredients: newIngredients,
-            steps: newSteps,
             minutes: watch('minutes'),
             prepTime: watch('prepTime'),
             cookTime: watch('cookTime'),
@@ -903,6 +903,15 @@ export function useRecipeFormState({
             youtubeUrl: watch('youtubeUrl'),
             questId: watch('questId'),
         };
+
+        // For shared drafts, only include ingredients/steps in the payload if actively on that step or if it's a single-user draft.
+        // This guarantees that saving from earlier steps never overwrites remote real-time collaborator additions in Redis.
+        if (step === STEPS.INGREDIENTS || !isShared) {
+            data.ingredients = newIngredients;
+        }
+        if (step === STEPS.STEPS || !isShared) {
+            data.steps = newSteps;
+        }
 
         try {
             const res = await axios.post(
