@@ -23,7 +23,9 @@ export async function backfillQuests() {
         });
 
         if (rawResult.ok !== 1) {
-            throw new Error(`MongoDB raw command failed: ${JSON.stringify(rawResult)}`);
+            throw new Error(
+                `MongoDB raw command failed: ${JSON.stringify(rawResult)}`
+            );
         }
 
         console.log(
