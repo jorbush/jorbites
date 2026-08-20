@@ -18,8 +18,8 @@ export const questsQuestions: Question[] = [
         id: 'q1',
         question: {
             en: 'Who is allowed to open a recipe quest (request a recipe) on Jorbites?',
-            es: '¿Quién tiene permitido abrir una búsqueda de receta (solicitar una receta) en Jorbites?',
-            ca: 'Qui té permès obrir una cerca de recepta (sol·licitar una recepta) a Jorbites?',
+            es: '¿Quién tiene permitido abrir una misión de receta (solicitar una receta) en Jorbites?',
+            ca: 'Qui té permès obrir una missió de recepta (sol·licitar una recepta) a Jorbites?',
         },
         options: {
             en: [
@@ -47,8 +47,8 @@ export const questsQuestions: Question[] = [
         id: 'q2',
         question: {
             en: 'How does a chef suggest their recipe to fulfill an open quest request?',
-            es: '¿Cómo sugiere un chef su receta para cumplir con una solicitud de búsqueda abierta?',
-            ca: 'Com suggereix un xef la seva recepta per complir amb una sol·licitud de cerca oberta?',
+            es: '¿Cómo sugiere un chef su receta para cumplir con una solicitud de misión abierta?',
+            ca: 'Com suggereix un xef la seva recepta per complir amb una sol·licitud de missió oberta?',
         },
         options: {
             en: [
@@ -59,13 +59,13 @@ export const questsQuestions: Question[] = [
             ],
             es: [
                 'Enviando el enlace de la receta por correo a soporte',
-                'Haciendo clic en "Vincular Receta" en la página de la búsqueda y seleccionando una receta publicada',
+                'Haciendo clic en "Vincular Receta" en la página de la misión y seleccionando una receta publicada',
                 'Escribiendo el nombre de la receta en la sección de comentarios',
                 'Publicando la receta únicamente en su página de perfil personal',
             ],
             ca: [
                 "Enviant l'enllaç de la recepta per correu a suport",
-                'Fent clic a "Vincular Recepta" a la pàgina de la cerca i seleccionant una recepta publicada',
+                'Fent clic a "Vincular Recepta" a la pàgina de la missió i seleccionant una recepta publicada',
                 'Escrivint el nom de la recepta a la secció de comentaris',
                 'Publicant la recepta únicament a la seva pàgina de perfil personal',
             ],
@@ -76,8 +76,8 @@ export const questsQuestions: Question[] = [
         id: 'q3',
         question: {
             en: 'What is the correct status progression of a quest from start to finish?',
-            es: '¿Cuál es la progresión de estado correcta de una búsqueda de principio a fin?',
-            ca: "Quina és la progressió d'estat correcta d'una cerca de principi a fi?",
+            es: '¿Cuál es la progresión de estado correcta de una misión de principio a fin?',
+            ca: "Quina és la progressió d'estat correcta d'una missió de principi a fi?",
         },
         options: {
             en: [
@@ -105,8 +105,8 @@ export const questsQuestions: Question[] = [
         id: 'q4',
         question: {
             en: 'Who has the authority to accept a suggested recipe and mark the quest as Completed?',
-            es: '¿Quién tiene la autoridad para aceptar una receta sugerida y marcar la búsqueda como Completada?',
-            ca: "Qui té l'autoritat per acceptar una recepta suggerida i marcar la cerca com a Completada?",
+            es: '¿Quién tiene la autoridad para aceptar una receta sugerida y marcar la misión como Completada?',
+            ca: "Qui té l'autoritat per acceptar una recepta suggerida i marcar la missió com a Completada?",
         },
         options: {
             en: [
@@ -117,13 +117,13 @@ export const questsQuestions: Question[] = [
             ],
             es: [
                 'Cualquier chef registrado de Jorbites',
-                'El creador (organizador) de la búsqueda que solicitó la receta',
+                'El creador (organizador) de la misión que solicitó la receta',
                 'Solo las cuentas de administrador de Jorbites',
                 'El chef que subió la receta de solución',
             ],
             ca: [
                 'Qualsevol xef registrat de Jorbites',
-                'El creador (organitzador) de la cerca que va sol·licitar la recepta',
+                'El creador (organitzador) de la missió que va sol·licitar la recepta',
                 "Només els comptes d'administrador de Jorbites",
                 'El xef que va pujar la recepta de solució',
             ],
@@ -134,8 +134,8 @@ export const questsQuestions: Question[] = [
         id: 'q5',
         question: {
             en: 'What is the main benefit of users liking a quest request on the community board?',
-            es: '¿Cuál es el beneficio principal de que los usuarios den me gusta a una solicitud de búsqueda?',
-            ca: "Quin és el benefici principal que els usuaris donin m'agrada a una sol·licitud de cerca?",
+            es: '¿Cuál es el beneficio principal de que los usuarios den me gusta a una solicitud de misión?',
+            ca: "Quin és el benefici principal que els usuaris donin m'agrada a una sol·licitud de missió?",
         },
         options: {
             en: [
@@ -148,13 +148,13 @@ export const questsQuestions: Question[] = [
                 'Les otorga ingredientes gratuitos',
                 'Publica automáticamente una receta',
                 'Muestra apoyo e incrementa la visibilidad/demanda comunitaria de esa receta',
-                'Cambia el estado de la búsqueda a Completada',
+                'Cambia el estado de la misión a Completada',
             ],
             ca: [
                 'Els atorga ingredients gratuïts',
                 'Publica automàticament una recepta',
                 "Mostra suport i incrementa la visibilitat/demanda comunitària d'aquesta recepta",
-                "Canvia l'estat de la cerca a Completada",
+                "Canvia l'estat de la missió a Completada",
             ],
         },
         correctIndex: 2,
