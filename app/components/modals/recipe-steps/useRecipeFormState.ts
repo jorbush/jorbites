@@ -494,6 +494,7 @@ export function useRecipeFormState({
         // Step 5: Related Content
         if (
             Array.isArray(draftData.coCooksIds) &&
+            draftData.coCooksIds.length > 0 &&
             JSON.stringify(getValues('coCooksIds')) !==
                 JSON.stringify(draftData.coCooksIds) &&
             (step !== STEPS.RELATED_CONTENT ||
@@ -504,6 +505,7 @@ export function useRecipeFormState({
         }
         if (
             Array.isArray(draftData.linkedRecipeIds) &&
+            draftData.linkedRecipeIds.length > 0 &&
             JSON.stringify(getValues('linkedRecipeIds')) !==
                 JSON.stringify(draftData.linkedRecipeIds) &&
             (step !== STEPS.RELATED_CONTENT ||
@@ -824,63 +826,64 @@ export function useRecipeFormState({
         const stepToSave =
             typeof stepOverride === 'number' ? stepOverride : step;
         let newIngredients: string[] = [];
-        if (ingredientsInputMode === 'text') {
-            const textareaValue = getValues('ingredients-plain-text');
-            const parsedItems = parseTextToList(
-                textareaValue,
-                RECIPE_MAX_INGREDIENTS
-            );
-            if (parsedItems.length > 0) {
-                newIngredients = parsedItems;
-            }
-        } else {
-            for (let i = 0; i < effectiveNumIngredients; i++) {
-                const val = getValues(`ingredient-${i}`);
-                if (typeof val === 'string' && val.trim() !== '') {
-                    newIngredients.push(val);
+        if (step === STEPS.INGREDIENTS) {
+            if (ingredientsInputMode === 'text') {
+                const textareaValue = getValues('ingredients-plain-text');
+                const parsedItems = parseTextToList(
+                    textareaValue,
+                    RECIPE_MAX_INGREDIENTS
+                );
+                if (parsedItems.length > 0) {
+                    newIngredients = parsedItems;
+                }
+            } else {
+                for (let i = 0; i < effectiveNumIngredients; i++) {
+                    const val = getValues(`ingredient-${i}`);
+                    if (typeof val === 'string' && val.trim() !== '') {
+                        newIngredients.push(val);
+                    }
                 }
             }
+        } else {
+            newIngredients =
+                draftData?.ingredients && draftData.ingredients.length > 0
+                    ? draftData.ingredients
+                    : getValues('ingredients') || [];
         }
 
         let newSteps: string[] = [];
-        if (stepsInputMode === 'text') {
-            const textareaValue = getValues('steps-plain-text');
-            const parsedItems = parseTextToList(
-                textareaValue,
-                RECIPE_MAX_STEPS
-            );
-            if (parsedItems.length > 0) {
-                newSteps = parsedItems;
-            }
-        } else {
-            for (let i = 0; i < effectiveNumSteps; i++) {
-                const val = getValues(`step-${i}`);
-                if (typeof val === 'string' && val.trim() !== '') {
-                    newSteps.push(val);
+        if (step === STEPS.STEPS) {
+            if (stepsInputMode === 'text') {
+                const textareaValue = getValues('steps-plain-text');
+                const parsedItems = parseTextToList(
+                    textareaValue,
+                    RECIPE_MAX_STEPS
+                );
+                if (parsedItems.length > 0) {
+                    newSteps = parsedItems;
+                }
+            } else {
+                for (let i = 0; i < effectiveNumSteps; i++) {
+                    const val = getValues(`step-${i}`);
+                    if (typeof val === 'string' && val.trim() !== '') {
+                        newSteps.push(val);
+                    }
                 }
             }
-        }
-
-        if (step !== STEPS.INGREDIENTS && newIngredients.length === 0) {
-            const existing =
-                getValues('ingredients') || draftData?.ingredients || [];
-            if (existing.length > 0) {
-                newIngredients = existing;
-            }
-        }
-
-        if (step !== STEPS.STEPS && newSteps.length === 0) {
-            const existing = getValues('steps') || draftData?.steps || [];
-            if (existing.length > 0) {
-                newSteps = existing;
-            }
+        } else {
+            newSteps =
+                draftData?.steps && draftData.steps.length > 0
+                    ? draftData.steps
+                    : getValues('steps') || [];
         }
 
         const currentDraftId = watch('draftId') || draftData?.draftId;
         const currentInviteToken =
             watch('inviteToken') || draftData?.inviteToken;
 
-        const data = {
+        const isShared = Boolean(currentDraftId);
+
+        const data: any = {
             draftId: currentDraftId,
             inviteToken: currentInviteToken,
             currentStep: stepToSave,
@@ -892,8 +895,6 @@ export function useRecipeFormState({
             imageSrc3: watch('imageSrc3'),
             title: watch('title'),
             description: watch('description'),
-            ingredients: newIngredients,
-            steps: newSteps,
             minutes: watch('minutes'),
             prepTime: watch('prepTime'),
             cookTime: watch('cookTime'),
@@ -902,6 +903,15 @@ export function useRecipeFormState({
             youtubeUrl: watch('youtubeUrl'),
             questId: watch('questId'),
         };
+
+        // For shared drafts, only include ingredients/steps in the payload if actively on that step or if it's a single-user draft.
+        // This guarantees that saving from earlier steps never overwrites remote real-time collaborator additions in Redis.
+        if (step === STEPS.INGREDIENTS || !isShared) {
+            data.ingredients = newIngredients;
+        }
+        if (step === STEPS.STEPS || !isShared) {
+            data.steps = newSteps;
+        }
 
         try {
             const res = await axios.post(

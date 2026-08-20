@@ -1,103 +1,131 @@
 name: Cypress E2E Testing
 
 on:
-  workflow_run:
-    workflows: ["Jest Unit Testing (API Routes & Server Actions)"]
-    types:
-      - completed
-  push:
-    branches: main
-  pull_request:
-    branches: main
+    workflow_run:
+        workflows: ['Jest Unit Testing (API Routes & Server Actions)']
+        types:
+            - completed
+    push:
+        branches: main
+    pull_request:
+        branches: main
 
 jobs:
-  cypress:
-    name: Cypress (${{ matrix.containers.name }})
-    runs-on: ubuntu-latest
-    environment: testing
-    strategy:
-      fail-fast: false
-      matrix:
-        containers:
-          - name: "Recipes Spec"
-            spec: "__tests__/e2e/basic.cy.ts"
-          - name: "Workshops & Quests Specs"
-            spec: "__tests__/e2e/workshops.cy.ts,__tests__/e2e/quests.cy.ts"
-          - name: "User & Basic Specs"
-            spec: "__tests__/e2e/user.cy.ts,__tests__/e2e/app.cy.ts"
-          - name: "Collaborative Recipes"
-            spec: "__tests__/e2e/collaborative_recipes.cy.ts"
-    services:
-      redis:
-        image: redis
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    cypress:
+        name: Cypress (${{ matrix.containers.name }})
+        runs-on: ubuntu-latest
+        environment: testing
+        strategy:
+            fail-fast: false
+            matrix:
+                containers:
+                    - name: 'Recipes Spec'
+                      spec: '__tests__/e2e/basic.cy.ts'
+                    - name: 'Workshops & Quests Specs'
+                      spec: '__tests__/e2e/workshops.cy.ts,__tests__/e2e/quests.cy.ts'
+                    - name: 'User & Basic Specs'
+                      spec: '__tests__/e2e/user.cy.ts,__tests__/e2e/app.cy.ts'
+                    - name: 'Collaborative Recipes'
+                      spec: '__tests__/e2e/collaborative_recipes.cy.ts'
+        services:
+            redis:
+                image: redis
+                ports:
+                    - 6379:6379
+                options: >-
+                    --health-cmd "redis-cli ping"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 11
+            - name: Install pnpm
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 11
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22'
-          cache: 'pnpm'
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '22'
+                  cache: 'pnpm'
 
-      - name: Cache Next.js build
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            - name: Cache Next.js build
+              uses: actions/cache@v4
+              with:
+                  path: ${{ github.workspace }}/.next/cache
+                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+                  restore-keys: |
+                      ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
-      - name: Install dependencies with scripts disabled
-        run: pnpm install --ignore-scripts
+            - name: Install dependencies with scripts disabled
+              run: pnpm install --ignore-scripts
 
-      - name: Install Cypress binary
-        run: npx cypress install
+            - name: Install Cypress binary
+              run: npx cypress install
 
-      - name: Generate Prisma Client
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npx prisma generate
+            - name: Start MongoDB Replica Set
+              run: |
+                  docker run -d --name mongodb -p 27017:27017 mongo:6.0 mongod --replSet rs0 --bind_ip_all
+                  until docker exec mongodb mongosh --eval 'db.adminCommand("ping")' > /dev/null 2>&1; do
+                    echo "Waiting for MongoDB to accept connections..."
+                    sleep 1
+                  done
+                  docker exec mongodb mongosh --eval 'rs.initiate({_id: "rs0", members: [{_id: 0, host: "localhost:27017"}]})'
+                  until docker exec mongodb mongosh --eval 'rs.isMaster().ismaster' | grep -q 'true'; do
+                    echo "Waiting for MongoDB replica set to become PRIMARY..."
+                    sleep 1
+                  done
+                  echo "MongoDB Replica Set ready!"
 
-      - name: Create cypress.env.json
-        env:
-          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
-          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
-        run: |
-          echo "{
-            \"userTestEmail\": \"$CYPRESS_USER_EMAIL\",
-            \"userTestPassword\": \"$CYPRESS_USER_PASSWORD\"
-          }" > cypress.env.json
+            - name: Generate Prisma Client
+              env:
+                  DATABASE_URL: mongodb://localhost:27017/jorbites-test?replicaSet=rs0&directConnection=true
+              run: npx prisma generate
 
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          install: false
-          build: pnpm run build
-          start: pnpm start
-          wait-on: 'http://localhost:3000'
-          config-file: cypress.config.ts
-          spec: ${{ matrix.containers.spec }}
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
-          CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
-          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
-          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
-          REDIS_URL: redis://localhost:6379
-          REDIS_URL_CACHING: redis://localhost:6379
-          SKIP_ENV_VALIDATION: 'true'
+            - name: Push Prisma Schema to MongoDB
+              env:
+                  DATABASE_URL: mongodb://localhost:27017/jorbites-test?replicaSet=rs0&directConnection=true
+              run: npx prisma db push --skip-generate
+
+            - name: Seed E2E Database
+              env:
+                  DATABASE_URL: mongodb://localhost:27017/jorbites-test?replicaSet=rs0&directConnection=true
+                  CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+                  CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
+              run: pnpm run seed:e2e
+
+            - name: Create cypress.env.json
+              env:
+                  CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+                  CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
+              run: |
+                  USER_EMAIL="${CYPRESS_USER_EMAIL:-test@jorbites.com}"
+                  USER_PASSWORD="${CYPRESS_USER_PASSWORD:-password123}"
+                  echo "{
+                    \"userTestEmail\": \"$USER_EMAIL\",
+                    \"userTestPassword\": \"$USER_PASSWORD\"
+                  }" > cypress.env.json
+
+            - name: Cypress run
+              uses: cypress-io/github-action@v6
+              with:
+                  install: false
+                  build: pnpm run build
+                  start: pnpm start
+                  wait-on: 'http://localhost:3000'
+                  config-file: cypress.config.ts
+                  spec: ${{ matrix.containers.spec }}
+              env:
+                  DATABASE_URL: mongodb://localhost:27017/jorbites-test?replicaSet=rs0&directConnection=true
+                  CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}
+                  CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
+                  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'supersecretnextauthstring123456789' }}
+                  NEXT_PUBLIC_SKIP_IMAGE_VALIDATION: true
+                  NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+                  NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
+                  REDIS_URL: redis://localhost:6379
+                  REDIS_URL_CACHING: redis://localhost:6379
+                  SKIP_ENV_VALIDATION: 'true'

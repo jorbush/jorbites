@@ -115,6 +115,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                     title={title}
                     subtitle={subtitleText}
                     center
+                    dataCy="recipe-title-display"
                 />
                 <button
                     type="button"

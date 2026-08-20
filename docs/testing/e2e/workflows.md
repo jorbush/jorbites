@@ -10,6 +10,7 @@ This document provides architectural and behavioral sequence/flow diagrams for a
 flowchart TD
     subgraph GitHubActions["GitHub Actions CI Matrix (ubuntu-latest)"]
         redisSvc[("Local Redis Service (redis:6379)")]
+        mongoSvc[("Local MongoDB Service (mongo:27017, rs0)")]
 
         subgraph Job1["Container 1: Recipes Spec"]
             T1["basic.cy.ts<br/>Full Recipe Lifecycle"]
@@ -34,6 +35,11 @@ flowchart TD
     redisSvc -.->|REDIS_URL| Job2
     redisSvc -.->|REDIS_URL| Job3
     redisSvc -.->|REDIS_URL| Job4
+
+    mongoSvc -.->|DATABASE_URL| Job1
+    mongoSvc -.->|DATABASE_URL| Job2
+    mongoSvc -.->|DATABASE_URL| Job3
+    mongoSvc -.->|DATABASE_URL| Job4
 ```
 
 ---
