@@ -43,24 +43,26 @@ async function main() {
         { name: 'Chef Five', email: 'chef.five@jorbites.com' },
     ];
 
-    for (const chef of chefs) {
-        await prisma.user.upsert({
-            where: { email: chef.email },
-            update: {
-                name: chef.name,
-                hashedPassword,
-            },
-            create: {
-                email: chef.email,
-                name: chef.name,
-                hashedPassword,
-                image: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
-                level: 2,
-                verified: true,
-                language: 'en',
-            },
-        });
-    }
+    await Promise.all(
+        chefs.map((chef) =>
+            prisma.user.upsert({
+                where: { email: chef.email },
+                update: {
+                    name: chef.name,
+                    hashedPassword,
+                },
+                create: {
+                    email: chef.email,
+                    name: chef.name,
+                    hashedPassword,
+                    image: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
+                    level: 2,
+                    verified: true,
+                    language: 'en',
+                },
+            })
+        )
+    );
 
     console.log(`✅ ${chefs.length} collaborator chefs seeded.`);
     console.log('🌱 E2E database seeding complete.');

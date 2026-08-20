@@ -42,12 +42,13 @@ graph TD
 ### 2.1 Local MongoDB Service (`mongo:6.0`)
 
 - **Port**: `27017`
-- **Replica Set Configuration**: Prisma ORM with MongoDB strictly requires a Replica Set for transaction and multi-document operation support. The runner converts the container into a single-node replica set (`rs0`) during startup:
+- **Replica Set Configuration**: Prisma ORM with MongoDB strictly requires a Replica Set for transaction and multi-document operation support. The runner starts the container with `--replSet rs0` and initiates `rs0`:
     ```bash
-    docker exec $CONTAINER_ID mongod --shutdown || true
-    docker exec -d $CONTAINER_ID mongod --replSet rs0 --bind_ip_all
-    sleep 2
-    docker exec $CONTAINER_ID mongosh --eval 'rs.initiate({_id: "rs0", members: [{_id: 0, host: "localhost:27017"}]})'
+    docker run -d --name mongodb -p 27017:27017 mongo:6.0 mongod --replSet rs0 --bind_ip_all
+    until docker exec mongodb mongosh --eval 'db.adminCommand("ping")' > /dev/null 2>&1; do
+      sleep 1
+    done
+    docker exec mongodb mongosh --eval 'rs.initiate({_id: "rs0", members: [{_id: 0, host: "localhost:27017"}]})'
     ```
 - **Connection URL**:
   `mongodb://localhost:27017/jorbites-test?replicaSet=rs0&directConnection=true`

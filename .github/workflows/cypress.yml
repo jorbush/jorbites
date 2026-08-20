@@ -37,15 +37,6 @@ jobs:
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 5
-            mongodb:
-                image: mongo:6.0
-                ports:
-                    - 27017:27017
-                options: >-
-                    --health-cmd "mongosh --eval 'db.adminCommand(\"ping\")'"
-                    --health-interval 10s
-                    --health-timeout 5s
-                    --health-retries 5
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -75,13 +66,19 @@ jobs:
             - name: Install Cypress binary
               run: npx cypress install
 
-            - name: Setup MongoDB Replica Set
+            - name: Start MongoDB Replica Set
               run: |
-                  CONTAINER_ID=$(docker ps -q --filter ancestor=mongo:6.0)
-                  docker exec $CONTAINER_ID mongod --shutdown || true
-                  docker exec -d $CONTAINER_ID mongod --replSet rs0 --bind_ip_all
-                  sleep 2
-                  docker exec $CONTAINER_ID mongosh --eval 'rs.initiate({_id: "rs0", members: [{_id: 0, host: "localhost:27017"}]})'
+                  docker run -d --name mongodb -p 27017:27017 mongo:6.0 mongod --replSet rs0 --bind_ip_all
+                  until docker exec mongodb mongosh --eval 'db.adminCommand("ping")' > /dev/null 2>&1; do
+                    echo "Waiting for MongoDB to accept connections..."
+                    sleep 1
+                  done
+                  docker exec mongodb mongosh --eval 'rs.initiate({_id: "rs0", members: [{_id: 0, host: "localhost:27017"}]})'
+                  until docker exec mongodb mongosh --eval 'rs.isMaster().ismaster' | grep -q 'true'; do
+                    echo "Waiting for MongoDB replica set to become PRIMARY..."
+                    sleep 1
+                  done
+                  echo "MongoDB Replica Set ready!"
 
             - name: Generate Prisma Client
               env:
