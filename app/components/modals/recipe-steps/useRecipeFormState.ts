@@ -494,6 +494,7 @@ export function useRecipeFormState({
         // Step 5: Related Content
         if (
             Array.isArray(draftData.coCooksIds) &&
+            draftData.coCooksIds.length > 0 &&
             JSON.stringify(getValues('coCooksIds')) !==
                 JSON.stringify(draftData.coCooksIds) &&
             (step !== STEPS.RELATED_CONTENT ||
@@ -504,6 +505,7 @@ export function useRecipeFormState({
         }
         if (
             Array.isArray(draftData.linkedRecipeIds) &&
+            draftData.linkedRecipeIds.length > 0 &&
             JSON.stringify(getValues('linkedRecipeIds')) !==
                 JSON.stringify(draftData.linkedRecipeIds) &&
             (step !== STEPS.RELATED_CONTENT ||

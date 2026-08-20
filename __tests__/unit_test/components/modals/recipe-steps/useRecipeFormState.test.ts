@@ -657,4 +657,121 @@ describe('useRecipeFormState hook', () => {
         expect(callPayload.steps).toEqual(['Mix well', 'Bake 30m']);
         expect(callPayload.method).toBe('Microwave');
     });
+
+    it('does not overwrite collaborator updated steps with stale local form values when saving draft from earlier steps', async () => {
+        const axios = (await import('axios')).default;
+        (axios.post as any).mockClear();
+        (axios.post as any).mockResolvedValueOnce({
+            data: { draftId: 'd-collab-test', inviteToken: 'tok-456' },
+        });
+
+        // Initial draft with original steps
+        let currentDraftData: any = {
+            draftId: 'd-collab-test',
+            inviteToken: 'tok-456',
+            currentStep: 1,
+            title: 'Collaborative Cake',
+            description: 'Delicious cake',
+            ingredients: ['2 cups Flour', '1 cup Sugar'],
+            steps: ['Mix ingredients', 'Bake at 180C for 30 mins'],
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: currentDraftData } }
+        );
+
+        // User is currently on Step 1 (Description)
+        act(() => {
+            result.current.setStep(1);
+        });
+
+        // Co-cook updates steps in Redis concurrently
+        const coCookUpdatedSteps = [
+            'Mix ingredients thoroughly',
+            'Bake at 180C for 30 mins',
+            'Top with chocolate ganache (added by Co-Cook)',
+        ];
+
+        currentDraftData = {
+            ...currentDraftData,
+            steps: coCookUpdatedSteps,
+        };
+
+        await act(async () => {
+            rerender({ draft: currentDraftData });
+        });
+
+        // User triggers saveDraft while advancing from Step 1
+        await act(async () => {
+            await result.current.saveDraft(2);
+        });
+
+        expect(axios.post).toHaveBeenCalled();
+        const callPayload = (axios.post as any).mock.calls[0][1] as any;
+        // Verify collaborator's updated steps are preserved and not clobbered by stale 'Mix ingredients'
+        expect(callPayload.steps).toEqual(coCookUpdatedSteps);
+    });
+
+    it('preserves user selected coCooksIds and linkedRecipeIds when advancing steps with empty remote draft array', async () => {
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                draftData: {
+                    draftId: 'd-cooks',
+                    coCooksIds: [],
+                    linkedRecipeIds: [],
+                },
+            })
+        );
+
+        // User is on Step 5 (Related Content) and adds Chef Maria
+        act(() => {
+            result.current.setStep(5);
+            result.current.addCoCook({
+                id: '507f1f77bcf86cd799439011',
+                name: 'Chef Maria',
+                email: 'maria@test.com',
+                createdAt: '',
+                updatedAt: '',
+                favoriteIds: [],
+            });
+        });
+
+        expect(result.current.selectedCoCooks).toHaveLength(1);
+        expect(result.current.getValues('coCooksIds')).toEqual([
+            '507f1f77bcf86cd799439011',
+        ]);
+
+        // User advances to Step 6 (Images)
+        await act(async () => {
+            await result.current.onSubmit({});
+        });
+
+        expect(result.current.step).toBe(6);
+        // CoCooksIds should NOT be wiped with [] from draftData
+        expect(result.current.getValues('coCooksIds')).toEqual([
+            '507f1f77bcf86cd799439011',
+        ]);
+    });
 });
