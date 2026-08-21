@@ -7,7 +7,8 @@ import { axiosFetcher } from '@/app/utils/fetcher';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import Modal from '@/app/components/modals/Modal';
 import { useTranslation } from 'react-i18next';
-import { FiUploadCloud, FiShare2 } from 'react-icons/fi';
+import { FiUploadCloud } from 'react-icons/fi';
+import { FaUserPlus } from 'react-icons/fa';
 import Tooltip from '@/app/components/utils/Tooltip';
 import { SafeUser } from '@/app/types';
 import RelatedContentStep from '@/app/components/modals/recipe-steps/RelatedContentStep';
@@ -365,7 +366,7 @@ const RecipeModalContent: React.FC<{
                                 data-testid="copy-co-cook-link-button"
                                 className="hover:text-green-450 dark:hover:text-green-450 flex cursor-pointer items-center justify-center text-2xl text-black transition dark:text-neutral-100"
                             >
-                                <FiShare2 />
+                                <FaUserPlus />
                             </button>
                         </Tooltip>
                         <Tooltip text={t('save_draft_tooltip') || 'Save draft'}>
