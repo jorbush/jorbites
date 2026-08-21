@@ -15,6 +15,7 @@ import { preparationMethods } from '@/app/components/modals/recipe-steps/prepara
 import Comments from '@/app/components/comments/Comments';
 import DeleteRecipeButton from '@/app/components/recipes/DeleteRecipeButton';
 import EditRecipeButton from '@/app/components/recipes/EditRecipeButton';
+import ClientOnly from '@/app/components/utils/ClientOnly';
 import { useTranslation } from 'react-i18next';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
@@ -175,10 +176,10 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                         />
                     </div>
                     {currentUser?.id === recipe.userId && (
-                        <>
+                        <ClientOnly>
                             <EditRecipeButton recipe={recipe} />
                             <DeleteRecipeButton id={recipe.id} />
-                        </>
+                        </ClientOnly>
                     )}
                 </div>
             </div>

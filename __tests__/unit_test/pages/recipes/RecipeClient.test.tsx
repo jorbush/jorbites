@@ -21,6 +21,11 @@ vi.mock('@/app/hooks/useLoginModal', () => ({
     }),
 }));
 
+// Mock ClientOnly to immediately render children in test environment
+vi.mock('@/app/components/utils/ClientOnly', () => ({
+    default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string, options?: { defaultValue?: string }) => {
