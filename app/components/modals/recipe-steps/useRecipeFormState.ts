@@ -280,7 +280,7 @@ export function useRecipeFormState({
         [rawLinkedRecipeIds]
     );
 
-    const setCustomValue = useCallback(
+    const updateFormField = useCallback(
         (id: string, value: any) => {
             setValue(id, value, {
                 shouldDirty: true,
@@ -290,6 +290,8 @@ export function useRecipeFormState({
         },
         [setValue]
     );
+
+    const setCustomValue = updateFormField;
 
     const addIngredientInput = useCallback(() => {
         if (effectiveNumIngredients >= RECIPE_MAX_INGREDIENTS) {
@@ -305,9 +307,9 @@ export function useRecipeFormState({
     const removeIngredientInput = useCallback(
         (index: number) => {
             setNumIngredients(Math.max(1, effectiveNumIngredients - 1));
-            setCustomValue(`ingredient-${index}`, '');
+            updateFormField(`ingredient-${index}`, '');
         },
-        [effectiveNumIngredients, setCustomValue]
+        [effectiveNumIngredients, updateFormField]
     );
 
     const setIngredients = useCallback(
@@ -317,15 +319,15 @@ export function useRecipeFormState({
                 ingredients.length
             );
             for (let i = 0; i < maxCount; i++) {
-                setCustomValue(`ingredient-${i}`, '');
+                updateFormField(`ingredient-${i}`, '');
             }
             setNumIngredients(ingredients.length);
             ingredients.forEach((ingredient, index) => {
-                setCustomValue(`ingredient-${index}`, ingredient);
+                updateFormField(`ingredient-${index}`, ingredient);
             });
-            setCustomValue('ingredients', ingredients);
+            updateFormField('ingredients', ingredients);
         },
-        [effectiveNumIngredients, setCustomValue]
+        [effectiveNumIngredients, updateFormField]
     );
 
     const addStepInput = useCallback(() => {
@@ -342,24 +344,24 @@ export function useRecipeFormState({
     const removeStepInput = useCallback(
         (index: number) => {
             setNumSteps(Math.max(1, effectiveNumSteps - 1));
-            setCustomValue(`step-${index}`, '');
+            updateFormField(`step-${index}`, '');
         },
-        [effectiveNumSteps, setCustomValue]
+        [effectiveNumSteps, updateFormField]
     );
 
     const setSteps = useCallback(
         (steps: string[]) => {
             const maxCount = Math.max(effectiveNumSteps, steps.length);
             for (let i = 0; i < maxCount; i++) {
-                setCustomValue(`step-${i}`, '');
+                updateFormField(`step-${i}`, '');
             }
             setNumSteps(steps.length);
             steps.forEach((step, index) => {
-                setCustomValue(`step-${index}`, step);
+                updateFormField(`step-${index}`, step);
             });
-            setCustomValue('steps', steps);
+            updateFormField('steps', steps);
         },
-        [effectiveNumSteps, setCustomValue]
+        [effectiveNumSteps, updateFormField]
     );
 
     const prevStepRef = useRef<number>(step);
@@ -394,7 +396,7 @@ export function useRecipeFormState({
             JSON.stringify(getValues('categories')) !==
                 JSON.stringify(draftData.categories)
         ) {
-            setCustomValue('categories', draftData.categories);
+            updateFormField('categories', draftData.categories);
         }
 
         // Step 1: Description
@@ -407,7 +409,7 @@ export function useRecipeFormState({
                 !getValues('title') ||
                 isStepLockedByOther(STEPS.DESCRIPTION))
         ) {
-            setCustomValue('title', draftData.title);
+            updateFormField('title', draftData.title);
         }
         if (
             draftData.description &&
@@ -418,25 +420,25 @@ export function useRecipeFormState({
                 !getValues('description') ||
                 isStepLockedByOther(STEPS.DESCRIPTION))
         ) {
-            setCustomValue('description', draftData.description);
+            updateFormField('description', draftData.description);
         }
         if (
             draftData.minutes !== undefined &&
             getValues('minutes') !== draftData.minutes
         ) {
-            setCustomValue('minutes', draftData.minutes);
+            updateFormField('minutes', draftData.minutes);
         }
         if (
             draftData.prepTime !== undefined &&
             getValues('prepTime') !== draftData.prepTime
         ) {
-            setCustomValue('prepTime', draftData.prepTime);
+            updateFormField('prepTime', draftData.prepTime);
         }
         if (
             draftData.cookTime !== undefined &&
             getValues('cookTime') !== draftData.cookTime
         ) {
-            setCustomValue('cookTime', draftData.cookTime);
+            updateFormField('cookTime', draftData.cookTime);
         }
 
         // Step 2: Ingredients
@@ -454,10 +456,10 @@ export function useRecipeFormState({
                     stepChanged ||
                     step !== STEPS.INGREDIENTS
                 ) {
-                    setCustomValue(`ingredient-${idx}`, item);
+                    updateFormField(`ingredient-${idx}`, item);
                 }
             });
-            setCustomValue('ingredients', incoming);
+            updateFormField('ingredients', incoming);
         }
 
         // Step 3: Methods
@@ -470,7 +472,7 @@ export function useRecipeFormState({
                 !getValues('method') ||
                 isStepLockedByOther(STEPS.METHODS))
         ) {
-            setCustomValue('method', draftData.method);
+            updateFormField('method', draftData.method);
         }
 
         // Step 4: Steps
@@ -485,10 +487,10 @@ export function useRecipeFormState({
                     stepChanged ||
                     step !== STEPS.STEPS
                 ) {
-                    setCustomValue(`step-${idx}`, item);
+                    updateFormField(`step-${idx}`, item);
                 }
             });
-            setCustomValue('steps', incoming);
+            updateFormField('steps', incoming);
         }
 
         // Step 5: Related Content
@@ -501,7 +503,7 @@ export function useRecipeFormState({
                 stepChanged ||
                 isStepLockedByOther(STEPS.RELATED_CONTENT))
         ) {
-            setCustomValue('coCooksIds', draftData.coCooksIds);
+            updateFormField('coCooksIds', draftData.coCooksIds);
         }
         if (
             Array.isArray(draftData.linkedRecipeIds) &&
@@ -512,19 +514,19 @@ export function useRecipeFormState({
                 stepChanged ||
                 isStepLockedByOther(STEPS.RELATED_CONTENT))
         ) {
-            setCustomValue('linkedRecipeIds', draftData.linkedRecipeIds);
+            updateFormField('linkedRecipeIds', draftData.linkedRecipeIds);
         }
         if (
             draftData.youtubeUrl !== undefined &&
             getValues('youtubeUrl') !== draftData.youtubeUrl
         ) {
-            setCustomValue('youtubeUrl', draftData.youtubeUrl);
+            updateFormField('youtubeUrl', draftData.youtubeUrl);
         }
         if (
             draftData.questId !== undefined &&
             getValues('questId') !== draftData.questId
         ) {
-            setCustomValue('questId', draftData.questId);
+            updateFormField('questId', draftData.questId);
         }
 
         // Step 6: Images
@@ -536,7 +538,7 @@ export function useRecipeFormState({
                 stepChanged ||
                 isStepLockedByOther(STEPS.IMAGES))
         ) {
-            setCustomValue('imageSrc', draftData.imageSrc);
+            updateFormField('imageSrc', draftData.imageSrc);
         }
         if (
             draftData.imageSrc1 &&
@@ -546,7 +548,7 @@ export function useRecipeFormState({
                 stepChanged ||
                 isStepLockedByOther(STEPS.IMAGES))
         ) {
-            setCustomValue('imageSrc1', draftData.imageSrc1);
+            updateFormField('imageSrc1', draftData.imageSrc1);
         }
         if (
             draftData.imageSrc2 &&
@@ -556,7 +558,7 @@ export function useRecipeFormState({
                 stepChanged ||
                 isStepLockedByOther(STEPS.IMAGES))
         ) {
-            setCustomValue('imageSrc2', draftData.imageSrc2);
+            updateFormField('imageSrc2', draftData.imageSrc2);
         }
         if (
             draftData.imageSrc3 &&
@@ -566,23 +568,23 @@ export function useRecipeFormState({
                 stepChanged ||
                 isStepLockedByOther(STEPS.IMAGES))
         ) {
-            setCustomValue('imageSrc3', draftData.imageSrc3);
+            updateFormField('imageSrc3', draftData.imageSrc3);
         }
 
         if (draftData.draftId && getValues('draftId') !== draftData.draftId) {
-            setCustomValue('draftId', draftData.draftId);
+            updateFormField('draftId', draftData.draftId);
         }
         if (
             draftData.inviteToken &&
             getValues('inviteToken') !== draftData.inviteToken
         ) {
-            setCustomValue('inviteToken', draftData.inviteToken);
+            updateFormField('inviteToken', draftData.inviteToken);
         }
     }, [
         draftData,
         step,
         recipeModal.isEditMode,
-        setCustomValue,
+        updateFormField,
         getValues,
         lock,
     ]);
