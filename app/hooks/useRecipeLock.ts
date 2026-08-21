@@ -109,11 +109,12 @@ export function useRecipeLock(
     useEffect(() => {
         const id = targetId;
         const uid = currentUserId;
+        const activeField = activeLockFieldRef.current;
         return () => {
-            if (activeLockFieldRef.current && id && uid) {
+            if (activeField && id && uid) {
                 axios
                     .delete(
-                        `/api/recipes/${id}/lock?field=${encodeURIComponent(activeLockFieldRef.current)}`
+                        `/api/recipes/${id}/lock?field=${encodeURIComponent(activeField)}`
                     )
                     .catch(() => {});
             }
