@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, Suspense } from 'react';
 import useSWR from 'swr';
 import { useSearchParams } from 'next/navigation';
 import { axiosFetcher } from '@/app/utils/fetcher';
@@ -386,7 +386,7 @@ const RecipeModalContent: React.FC<{
     );
 };
 
-const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
+const RecipeModalComponent: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const recipeModal = useRecipeModal();
     const { t } = useTranslation();
     const searchParams = useSearchParams();
@@ -487,5 +487,11 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ currentUser }) => {
         />
     );
 };
+
+const RecipeModal: React.FC<RecipeModalProps> = (props) => (
+    <Suspense fallback={null}>
+        <RecipeModalComponent {...props} />
+    </Suspense>
+);
 
 export default RecipeModal;
