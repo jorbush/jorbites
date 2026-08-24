@@ -32,7 +32,8 @@ describe('CommentPhotoPreview', () => {
             />
         );
 
-        const img = screen.getByTestId('photo-preview');
+        expect(screen.getByTestId('photo-preview')).toBeDefined();
+        const img = screen.getByAltText('Remake preview');
         expect(img).toBeDefined();
         expect(img).toHaveProperty(
             'src',
