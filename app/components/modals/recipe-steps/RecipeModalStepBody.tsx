@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { STEPS } from '@/app/utils/constants';
+import { SafeUser, SafeRecipe, SafeQuest } from '@/app/types';
 import CategoryStep from '@/app/components/modals/recipe-steps/CategoryStep';
 import DescriptionStep from '@/app/components/modals/recipe-steps/DescriptionStep';
 import IngredientsStep from '@/app/components/modals/recipe-steps/IngredientsStep';
@@ -27,27 +28,27 @@ export interface RecipeModalStepBodyProps {
     setIngredients: (ingredients: string[]) => void;
     getValues: any;
     setValue: any;
-    ingredientsInputMode: string;
-    setIngredientsInputMode: (mode: any) => void;
+    ingredientsInputMode?: 'list' | 'text';
+    setIngredientsInputMode: (mode: 'list' | 'text') => void;
     numSteps: number;
     addStepInput: () => void;
     removeStepInput: (index: number) => void;
     setSteps: (steps: string[]) => void;
-    stepsInputMode: string;
-    setStepsInputMode: (mode: any) => void;
+    stepsInputMode?: 'list' | 'text';
+    setStepsInputMode: (mode: 'list' | 'text') => void;
     isLoading: boolean;
     minutes: number;
-    prepTime: number;
-    cookTime: number;
+    prepTime?: number;
+    cookTime?: number;
     method?: string;
-    selectedCoCooks: string[];
-    selectedLinkedRecipes: string[];
-    selectedQuest: string | null;
-    addCoCook: (name: string) => void;
-    removeCoCook: (name: string) => void;
-    addLinkedRecipe: (recipeId: string) => void;
+    selectedCoCooks: SafeUser[];
+    selectedLinkedRecipes: SafeRecipe[];
+    selectedQuest: SafeQuest | null;
+    addCoCook: (user: SafeUser) => void;
+    removeCoCook: (userId: string) => void;
+    addLinkedRecipe: (recipe: SafeRecipe) => void;
     removeLinkedRecipe: (recipeId: string) => void;
-    selectQuest: (questId: string) => void;
+    selectQuest: (quest: SafeQuest) => void;
     removeQuest: () => void;
     imageSrc?: string;
 }
@@ -150,7 +151,7 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
             case STEPS.METHODS:
                 return (
                     <MethodsStep
-                        selectedMethod={method}
+                        selectedMethod={method || ''}
                         onMethodSelect={(selectedMethod) =>
                             setCustomValue('method', selectedMethod)
                         }
@@ -176,7 +177,7 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
             case STEPS.IMAGES:
                 return (
                     <ImagesStep
-                        imageSrc={imageSrc}
+                        imageSrc={imageSrc || ''}
                         imageSrc1={getValues('imageSrc1')}
                         imageSrc2={getValues('imageSrc2')}
                         imageSrc3={getValues('imageSrc3')}
