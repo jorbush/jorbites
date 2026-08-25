@@ -17,7 +17,11 @@ import {
     MAX_CO_COOKS,
     MAX_LINKED_RECIPES,
 } from '@/app/utils/constants';
-import { parseTextToList } from '@/app/utils/textParser';
+import {
+    parseTextToList,
+    parseIngredientsText,
+    parseStepsText,
+} from '@/app/utils/textParser';
 
 import { useRecipeLock } from '@/app/hooks/useRecipeLock';
 
@@ -1090,7 +1094,7 @@ export function useRecipeFormState({
         if (step === STEPS.INGREDIENTS) {
             if (ingredientsInputMode === 'text') {
                 const textareaValue = getValues('ingredients-plain-text');
-                const parsedItems = parseTextToList(
+                const parsedItems = parseIngredientsText(
                     textareaValue,
                     RECIPE_MAX_INGREDIENTS
                 );
@@ -1107,20 +1111,36 @@ export function useRecipeFormState({
                     return false;
                 }
             } else {
-                const newIngredients: string[] = [];
+                let newIngredients: string[] = [];
                 for (let i = 0; i < effectiveNumIngredients; i++) {
                     const val = getValues(`ingredient-${i}`);
                     if (typeof val === 'string' && val.trim() !== '') {
-                        newIngredients.push(val);
+                        newIngredients.push(val.trim());
                     }
                 }
-                setCustomValue('ingredients', newIngredients);
+                if (newIngredients.length === 1) {
+                    const parsedItems = parseIngredientsText(
+                        newIngredients[0],
+                        RECIPE_MAX_INGREDIENTS
+                    );
+                    if (parsedItems.length > 1) {
+                        newIngredients = parsedItems;
+                        setIngredients(parsedItems);
+                        toast.success(
+                            `${parsedItems.length} ${t('ingredients_applied')}`
+                        );
+                    } else {
+                        setCustomValue('ingredients', newIngredients);
+                    }
+                } else {
+                    setCustomValue('ingredients', newIngredients);
+                }
             }
         }
         if (step === STEPS.STEPS) {
             if (stepsInputMode === 'text') {
                 const textareaValue = getValues('steps-plain-text');
-                const parsedItems = parseTextToList(
+                const parsedItems = parseStepsText(
                     textareaValue,
                     RECIPE_MAX_STEPS
                 );
@@ -1135,14 +1155,30 @@ export function useRecipeFormState({
                     return false;
                 }
             } else {
-                const newSteps: string[] = [];
+                let newSteps: string[] = [];
                 for (let i = 0; i < effectiveNumSteps; i++) {
                     const val = getValues(`step-${i}`);
                     if (typeof val === 'string' && val.trim() !== '') {
-                        newSteps.push(val);
+                        newSteps.push(val.trim());
                     }
                 }
-                setCustomValue('steps', newSteps);
+                if (newSteps.length === 1) {
+                    const parsedItems = parseStepsText(
+                        newSteps[0],
+                        RECIPE_MAX_STEPS
+                    );
+                    if (parsedItems.length > 1) {
+                        newSteps = parsedItems;
+                        setSteps(parsedItems);
+                        toast.success(
+                            `${parsedItems.length} ${t('steps_applied')}`
+                        );
+                    } else {
+                        setCustomValue('steps', newSteps);
+                    }
+                } else {
+                    setCustomValue('steps', newSteps);
+                }
             }
         }
         setStep((value) => value + 1);

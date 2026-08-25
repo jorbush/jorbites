@@ -79,7 +79,8 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
             const textareaValue = getValues('ingredients-plain-text');
             const parsedItems = parseTextToList(
                 textareaValue,
-                RECIPE_MAX_INGREDIENTS
+                RECIPE_MAX_INGREDIENTS,
+                'ingredient'
             );
             if (parsedItems.length > 0) {
                 onSetIngredients(parsedItems);
@@ -144,7 +145,8 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
                                 );
                                 const parsedItems = parseTextToList(
                                     textareaValue,
-                                    RECIPE_MAX_INGREDIENTS
+                                    RECIPE_MAX_INGREDIENTS,
+                                    'ingredient'
                                 );
                                 if (parsedItems.length > 0) {
                                     onSetIngredients(parsedItems);
