@@ -168,22 +168,23 @@ export async function backfillSplitRecipeFields() {
         }
 
         console.log('\n🚀 Updating recipes in database...');
-        let updatedCount = 0;
-
-        for (const candidate of candidates) {
-            await prisma.recipe.update({
-                where: { id: candidate.id },
-                data: {
-                    ingredients: candidate.newIngredients,
-                    steps: candidate.newSteps,
-                },
-            });
-            updatedCount++;
-            console.log(`   ✓ Updated "${candidate.title}" (${candidate.id})`);
-        }
+        await Promise.all(
+            candidates.map(async (candidate) => {
+                await prisma.recipe.update({
+                    where: { id: candidate.id },
+                    data: {
+                        ingredients: candidate.newIngredients,
+                        steps: candidate.newSteps,
+                    },
+                });
+                console.log(
+                    `   ✓ Updated "${candidate.title}" (${candidate.id})`
+                );
+            })
+        );
 
         console.log(
-            `\n✨ Successfully updated ${updatedCount} recipe(s) in the database!`
+            `\n✨ Successfully updated ${candidates.length} recipe(s) in the database!`
         );
     } catch (error) {
         console.error('❌ Backfill failed:', error);
