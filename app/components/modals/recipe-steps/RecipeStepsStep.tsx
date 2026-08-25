@@ -79,7 +79,8 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
             const textareaValue = getValues('steps-plain-text');
             const parsedItems = parseTextToList(
                 textareaValue,
-                RECIPE_MAX_STEPS
+                RECIPE_MAX_STEPS,
+                'step'
             );
             if (parsedItems.length > 0) {
                 onSetSteps(parsedItems);
@@ -143,7 +144,8 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
                                     getValues('steps-plain-text');
                                 const parsedItems = parseTextToList(
                                     textareaValue,
-                                    RECIPE_MAX_STEPS
+                                    RECIPE_MAX_STEPS,
+                                    'step'
                                 );
                                 if (parsedItems.length > 0) {
                                     onSetSteps(parsedItems);

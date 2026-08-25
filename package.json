@@ -11,6 +11,7 @@
         "vitest": "vitest run __tests__/unit_test/components __tests__/unit_test/pages __tests__/unit_test/utils __tests__/unit_test/hooks",
         "jest": "jest __tests__/unit_test/routes __tests__/unit_test/actions __tests__/unit_test/api __tests__/unit_test/lib __tests__/unit_test/api __tests__/unit_test/lib",
         "backfill-quests": "npx tsx prisma/backfill-quests.ts",
+        "backfill-split-recipes": "npx tsx prisma/backfill-split-recipe-fields.ts",
         "seed:e2e": "npx tsx prisma/seed-e2e.ts",
         "cypress:open": "cypress open",
         "cypress": "cypress run"

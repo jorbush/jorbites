@@ -1345,6 +1345,153 @@ describe('<RecipeModal />', () => {
             expect(toast.toast.error).toHaveBeenCalledWith('no_steps_found');
             expect(screen.getByText('title_steps')).toBeDefined(); // Still on steps step
         });
+
+        it('automatically splits single ingredient field with commas in list mode on onNext', async () => {
+            renderComponent();
+            const nextButton = screen.getByRole('button', { name: 'next' });
+
+            // 1. Navigate to DESCRIPTION step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // 2. Fill in description fields
+            const titleInput = document.body.querySelector(
+                'input[data-cy="recipe-title"]'
+            ) as HTMLInputElement;
+            const descriptionInput = document.body.querySelector(
+                'input[data-cy="recipe-description"]'
+            ) as HTMLInputElement;
+            act(() => {
+                fireEvent.change(titleInput, {
+                    target: { value: 'My Recipe Title' },
+                });
+                fireEvent.change(descriptionInput, {
+                    target: { value: 'My Recipe Description' },
+                });
+            });
+
+            // 3. Move to INGREDIENTS step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('title_ingredients')).toBeDefined();
+
+            // 4. Fill in ingredient-0 with comma-separated ingredients
+            const ingredientInput = document.body.querySelector(
+                'input[data-cy="recipe-ingredient-0"]'
+            ) as HTMLInputElement;
+            act(() => {
+                fireEvent.change(ingredientInput, {
+                    target: {
+                        value: 'Dorada, sal y pimienta blanca, aceite, cebolla',
+                    },
+                });
+            });
+
+            // 5. Click Next -> should auto-split into 4 ingredients
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // Should successfully advance to METHODS step
+            expect(screen.getByText('methods_title')).toBeDefined();
+        });
+
+        it('automatically splits single step field with sentences in list mode on onNext', async () => {
+            renderComponent();
+            const nextButton = screen.getByRole('button', { name: 'next' });
+
+            // 1. Navigate to DESCRIPTION step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // 2. Fill in description fields
+            const titleInput = document.body.querySelector(
+                'input[data-cy="recipe-title"]'
+            ) as HTMLInputElement;
+            const descriptionInput = document.body.querySelector(
+                'input[data-cy="recipe-description"]'
+            ) as HTMLInputElement;
+            act(() => {
+                fireEvent.change(titleInput, {
+                    target: { value: 'My Recipe Title' },
+                });
+                fireEvent.change(descriptionInput, {
+                    target: { value: 'My Recipe Description' },
+                });
+            });
+
+            // 3. Move to INGREDIENTS step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            const ingredientInput = document.body.querySelector(
+                'input[data-cy="recipe-ingredient-0"]'
+            ) as HTMLInputElement;
+            act(() => {
+                fireEvent.change(ingredientInput, {
+                    target: { value: 'Flour' },
+                });
+            });
+
+            // 4. Move to METHODS step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // 5. Move to STEPS step
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(screen.getByText('title_steps')).toBeDefined();
+
+            // 6. Fill in step-0 with multiple sentence instructions
+            const stepInput = document.body.querySelector(
+                'input[data-cy="recipe-step-0"]'
+            ) as HTMLInputElement;
+            act(() => {
+                fireEvent.change(stepInput, {
+                    target: {
+                        value: 'Fer fumet amb rap. Desmicolat. Fer massa bunyols. Barrejar tot i reposar.',
+                    },
+                });
+            });
+
+            // 7. Click Next -> should auto-split into 4 steps
+            act(() => {
+                fireEvent.click(nextButton);
+            });
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+
+            // Should successfully advance to RELATED_CONTENT step
+            expect(screen.getByText('related_content')).toBeDefined();
+        });
     });
 
     describe('Collaborative Shared Draft URL Lifecycle', () => {
