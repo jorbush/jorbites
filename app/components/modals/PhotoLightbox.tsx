@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { HiX } from 'react-icons/hi';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 
@@ -19,6 +19,19 @@ export default function PhotoLightbox({
     onClose,
     testId = 'lightbox-modal',
 }: PhotoLightboxProps) {
+    useEffect(() => {
+        if (!isOpen || !src) return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, src, onClose]);
+
     if (!isOpen || !src) return null;
 
     return (
@@ -26,12 +39,17 @@ export default function PhotoLightbox({
             open
             aria-modal="true"
             aria-label={alt || 'Photo lightbox'}
-            tabIndex={-1}
-            onKeyDown={(e) => e.key === 'Escape' && onClose()}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/85 p-3 backdrop-blur-xs focus:outline-none sm:p-6"
-            onClick={onClose}
+            className="fixed inset-0 z-50 flex items-center justify-center border-none bg-neutral-950/85 p-3 backdrop-blur-xs focus:outline-none sm:p-6"
             data-testid={testId}
         >
+            <button
+                type="button"
+                tabIndex={-1}
+                className="fixed inset-0 size-full cursor-default border-none bg-transparent p-0 outline-none"
+                onClick={onClose}
+                aria-label="Close photo lightbox backdrop"
+                data-testid="lightbox-backdrop"
+            />
             <div
                 className="relative flex max-h-[90vh] max-w-[92vw] flex-col items-center justify-center overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/95 p-2 shadow-2xl sm:max-w-[85vw] md:max-w-[800px]"
                 onClick={(e) => e.stopPropagation()}

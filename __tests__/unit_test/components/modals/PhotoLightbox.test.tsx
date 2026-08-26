@@ -64,7 +64,7 @@ describe('PhotoLightbox', () => {
         expect(handleClose).toHaveBeenCalledTimes(1);
     });
 
-    it('calls onClose when clicking backdrop', () => {
+    it('calls onClose when clicking backdrop button', () => {
         const handleClose = vi.fn();
         render(
             <PhotoLightbox
@@ -73,12 +73,12 @@ describe('PhotoLightbox', () => {
             />
         );
 
-        const dialog = screen.getByTestId('lightbox-modal');
-        fireEvent.click(dialog);
+        const backdrop = screen.getByTestId('lightbox-backdrop');
+        fireEvent.click(backdrop);
         expect(handleClose).toHaveBeenCalledTimes(1);
     });
 
-    it('calls onClose when pressing Escape key', () => {
+    it('calls onClose when pressing Escape key on window', () => {
         const handleClose = vi.fn();
         render(
             <PhotoLightbox
@@ -87,8 +87,7 @@ describe('PhotoLightbox', () => {
             />
         );
 
-        const dialog = screen.getByTestId('lightbox-modal');
-        fireEvent.keyDown(dialog, { key: 'Escape' });
+        fireEvent.keyDown(window, { key: 'Escape' });
         expect(handleClose).toHaveBeenCalledTimes(1);
     });
 });
