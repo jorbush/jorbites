@@ -12,9 +12,6 @@ import { compressImage } from '@/app/utils/compressImage';
 import {
     commentBoxReducer,
     initialCommentBoxState,
-    CommentBoxState,
-    CommentBoxAction,
-    DEFAULT_COMMENT_BOX_STATE,
 } from '@/app/hooks/commentBoxReducer';
 
 export interface CommentBoxProps {
@@ -213,10 +210,4 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 };
 
 export default CommentBox;
-export {
-    CommentBox as CommentForm,
-    commentBoxReducer,
-    initialCommentBoxState,
-    DEFAULT_COMMENT_BOX_STATE,
-};
-export type { CommentBoxState, CommentBoxAction };
+export { CommentBox as CommentForm };
