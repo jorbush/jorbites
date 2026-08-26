@@ -5,6 +5,7 @@ import { BiSearch, BiX } from 'react-icons/bi';
 import { FiChevronLeft, FiFilter } from 'react-icons/fi';
 import Logo from '@/app/components/navbar/Logo';
 import AdvancedFilters from '@/app/components/navbar/AdvancedFilters';
+import RecentSearches from '@/app/components/navbar/RecentSearches';
 
 interface SearchFiltersState {
     isOpen?: boolean;
@@ -16,7 +17,7 @@ interface DesktopSearchProps {
     isSearchMode: boolean;
     searchQuery: string;
     onSearchToggle: () => void;
-    onSubmit: (e: React.FormEvent) => void;
+    onSubmit: (e?: React.FormEvent) => void;
     onChange: (value: string) => void;
     onKeyDown: (e: React.KeyboardEvent) => void;
     inputRef: React.RefObject<HTMLInputElement | null>;
@@ -24,6 +25,13 @@ interface DesktopSearchProps {
     filtersState?: SearchFiltersState;
     isFilterablePage: boolean;
     t: (key: string) => string;
+    isInputFocused?: boolean;
+    onInputFocus?: () => void;
+    onInputBlur?: () => void;
+    recentSearches?: string[];
+    onSelectRecentSearch?: (query: string) => void;
+    onRemoveRecentSearch?: (query: string, e: React.MouseEvent) => void;
+    onClearAllRecentSearches?: () => void;
 }
 
 const DEFAULT_FILTERS_STATE: SearchFiltersState = {};
@@ -40,6 +48,13 @@ export const DesktopSearch: React.FC<DesktopSearchProps> = ({
     filtersState = DEFAULT_FILTERS_STATE,
     isFilterablePage,
     t,
+    isInputFocused = false,
+    onInputFocus,
+    onInputBlur,
+    recentSearches = [],
+    onSelectRecentSearch = () => {},
+    onRemoveRecentSearch = () => {},
+    onClearAllRecentSearches = () => {},
 }) => {
     const isFilterOpen = filtersState.isOpen;
     const isFiltering = filtersState.isFiltering;
@@ -100,6 +115,8 @@ export const DesktopSearch: React.FC<DesktopSearchProps> = ({
                             value={searchQuery}
                             onChange={(e) => onChange(e.target.value)}
                             onKeyDown={onKeyDown}
+                            onFocus={onInputFocus}
+                            onBlur={onInputBlur}
                             className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 min-h-[40px] w-48 rounded-full border border-neutral-300 bg-white py-2 pr-10 pl-4 text-sm transition-colors outline-none focus:ring-2 md:w-64 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
                         />
                         {searchQuery && (
@@ -111,6 +128,15 @@ export const DesktopSearch: React.FC<DesktopSearchProps> = ({
                             >
                                 <BiX size={16} />
                             </button>
+                        )}
+                        {isInputFocused && (
+                            <RecentSearches
+                                recentSearches={recentSearches}
+                                onSelectSearch={onSelectRecentSearch}
+                                onRemoveSearch={onRemoveRecentSearch}
+                                onClearAll={onClearAllRecentSearches}
+                                t={t}
+                            />
                         )}
                     </div>
 

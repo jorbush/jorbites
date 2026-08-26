@@ -58,6 +58,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
                         <div className="flex min-h-[48px] flex-row items-center justify-between gap-3 md:gap-0">
                             <Suspense fallback={<SearchFallback />}>
                                 <Search
+                                    currentUser={currentUser}
                                     onSearchModeChange={handleSearchModeChange}
                                     onFilterToggle={toggleFilter}
                                     isFilterOpen={isFilterOpen}
