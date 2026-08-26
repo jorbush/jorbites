@@ -9,7 +9,12 @@ async function main() {
     const testEmail = (
         process.env.CYPRESS_USER_EMAIL || 'test@jorbites.com'
     ).toLowerCase();
-    const testPassword = process.env.CYPRESS_USER_PASSWORD || 'password123';
+    const testPassword = process.env.CYPRESS_USER_PASSWORD;
+    if (!testPassword) {
+        throw new Error(
+            'CYPRESS_USER_PASSWORD environment variable is required'
+        );
+    }
     const hashedPassword = await bcrypt.hash(testPassword, 12);
 
     // 1. Seed main Cypress test user
