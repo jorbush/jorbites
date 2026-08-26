@@ -5,6 +5,7 @@ import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import useSWR from 'swr';
 import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { SafeUser, SafeRecipe, SafeQuest } from '@/app/types';
 import { axiosFetcher } from '@/app/utils/fetcher';
@@ -37,6 +38,7 @@ export function useRecipeFormState({
     draftData,
     mutateDraft,
 }: UseRecipeFormStateProps) {
+    const { refresh } = useRouter() || {};
     const { t } = useTranslation();
 
     const [step, setStep] = useState(() => {
@@ -1238,7 +1240,7 @@ export function useRecipeFormState({
             setKnownRecipes({});
             setKnownQuests({});
             recipeModal.onClose();
-            refresh();
+            refresh?.();
         } catch (error) {
             console.error('Failed to save recipe', error);
             toast.error(t('something_went_wrong') ?? 'Something went wrong');
