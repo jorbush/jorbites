@@ -94,10 +94,26 @@ export default async function getRecipes(
         }
 
         if (typeof search === 'string' && search.trim()) {
-            query.title = {
-                contains: search.trim(),
-                mode: 'insensitive',
-            };
+            const searchTerm = search.trim();
+            query.OR = [
+                {
+                    title: {
+                        contains: searchTerm,
+                        mode: 'insensitive',
+                    },
+                },
+                {
+                    description: {
+                        contains: searchTerm,
+                        mode: 'insensitive',
+                    },
+                },
+                {
+                    ingredients: {
+                        has: searchTerm,
+                    },
+                },
+            ];
         }
 
         const dateRangeFilter = getDateRangeFilter(startDate, endDate);

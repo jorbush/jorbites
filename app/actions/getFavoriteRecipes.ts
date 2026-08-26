@@ -92,10 +92,26 @@ export default async function getFavoriteRecipes(
 
         // Apply search filter
         if (typeof search === 'string' && search.trim()) {
-            whereClause.title = {
-                contains: search.trim(),
-                mode: 'insensitive',
-            };
+            const searchTerm = search.trim();
+            whereClause.OR = [
+                {
+                    title: {
+                        contains: searchTerm,
+                        mode: 'insensitive',
+                    },
+                },
+                {
+                    description: {
+                        contains: searchTerm,
+                        mode: 'insensitive',
+                    },
+                },
+                {
+                    ingredients: {
+                        has: searchTerm,
+                    },
+                },
+            ];
         }
 
         // Apply date range filter
