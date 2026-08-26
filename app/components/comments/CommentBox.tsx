@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useReducer, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import Avatar from '@/app/components/utils/Avatar';
@@ -9,6 +9,13 @@ import CommentPhotoPreview from './CommentPhotoPreview';
 import CommentRatingSection from './CommentRatingSection';
 import CommentActionBar from './CommentActionBar';
 import { compressImage } from '@/app/utils/compressImage';
+import {
+    commentBoxReducer,
+    initialCommentBoxState,
+    CommentBoxState,
+    CommentBoxAction,
+    DEFAULT_COMMENT_BOX_STATE,
+} from '@/app/hooks/commentBoxReducer';
 
 export interface CommentBoxProps {
     userImage: string | undefined | null;
@@ -26,18 +33,24 @@ const CommentBox: React.FC<CommentBoxProps> = ({
     onCreateComment,
     isLoading = false,
 }) => {
-    const [comment, setComment] = useState('');
-    const [rating, setRating] = useState<number | null>(null);
-    const [showRating, setShowRating] = useState(false);
-    const [isCooked, setIsCooked] = useState(false);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [isUploading, setIsUploading] = useState(false);
-    const [isButtonDisabled, setButtonDisabled] = useState(false);
+    const [state, dispatch] = useReducer(
+        commentBoxReducer,
+        initialCommentBoxState
+    );
+    const {
+        comment,
+        rating,
+        showRating,
+        isCooked,
+        selectedFile,
+        previewUrl,
+        isUploading,
+        isButtonDisabled,
+    } = state;
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleInputChange = (value: string) => {
-        setComment(value);
+        dispatch({ type: 'SET_COMMENT', payload: value });
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,10 +62,19 @@ const CommentBox: React.FC<CommentBoxProps> = ({
             return;
         }
 
-        setSelectedFile(file);
-        setIsCooked(true);
+        if (previewUrl) {
+            try {
+                URL.revokeObjectURL(previewUrl);
+            } catch {
+                // Ignore
+            }
+        }
+
         const objectUrl = URL.createObjectURL(file);
-        setPreviewUrl(objectUrl);
+        dispatch({
+            type: 'SELECT_FILE',
+            payload: { file, previewUrl: objectUrl },
+        });
     };
 
     const handleRemoveFile = () => {
@@ -63,8 +85,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 // Ignore
             }
         }
-        setSelectedFile(null);
-        setPreviewUrl(null);
+        dispatch({ type: 'REMOVE_FILE' });
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -72,7 +93,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setButtonDisabled(true);
+        dispatch({ type: 'SET_BUTTON_DISABLED', payload: true });
         try {
             if (comment.trim() === '') {
                 toast.error('Comment cannot be empty');
@@ -82,7 +103,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
             let uploadedImageSrc: string | null = null;
 
             if (selectedFile) {
-                setIsUploading(true);
+                dispatch({ type: 'SET_UPLOADING', payload: true });
                 try {
                     const compressedFile = await compressImage(selectedFile);
                     const response = await axios.post('/api/upload/r2', {
@@ -105,19 +126,25 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                     toast.error('Failed to upload photo proof');
                     return;
                 } finally {
-                    setIsUploading(false);
+                    dispatch({ type: 'SET_UPLOADING', payload: false });
                 }
             }
 
             onCreateComment(comment, rating, isCooked, uploadedImageSrc);
 
-            setComment('');
-            setRating(null);
-            setShowRating(false);
-            setIsCooked(false);
-            handleRemoveFile();
+            if (previewUrl) {
+                try {
+                    URL.revokeObjectURL(previewUrl);
+                } catch {
+                    // Ignore
+                }
+            }
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+            dispatch({ type: 'RESET' });
         } finally {
-            setButtonDisabled(false);
+            dispatch({ type: 'SET_BUTTON_DISABLED', payload: false });
         }
     };
 
@@ -151,19 +178,28 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                     <CommentRatingSection
                         rating={rating}
                         showRating={showRating}
-                        onChange={setRating}
-                        onClear={() => {
-                            setRating(null);
-                            setShowRating(false);
-                        }}
+                        onChange={(newRating) =>
+                            dispatch({
+                                type: 'SET_RATING',
+                                payload: newRating,
+                            })
+                        }
+                        onClear={() => dispatch({ type: 'CLEAR_RATING' })}
                     />
 
                     <CommentActionBar
                         rating={rating}
                         showRating={showRating}
-                        onToggleRating={() => setShowRating((prev) => !prev)}
+                        onToggleRating={() =>
+                            dispatch({ type: 'TOGGLE_RATING' })
+                        }
                         isCooked={isCooked}
-                        onToggleCooked={setIsCooked}
+                        onToggleCooked={(cooked) =>
+                            dispatch({
+                                type: 'SET_COOKED',
+                                payload: cooked,
+                            })
+                        }
                         selectedFile={selectedFile}
                         onFileSelect={handleFileSelect}
                         fileInputRef={fileInputRef}
@@ -177,4 +213,10 @@ const CommentBox: React.FC<CommentBoxProps> = ({
 };
 
 export default CommentBox;
-export { CommentBox as CommentForm };
+export {
+    CommentBox as CommentForm,
+    commentBoxReducer,
+    initialCommentBoxState,
+    DEFAULT_COMMENT_BOX_STATE,
+};
+export type { CommentBoxState, CommentBoxAction };
