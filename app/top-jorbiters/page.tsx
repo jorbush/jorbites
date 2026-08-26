@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const TopJorbitersPage = async () => {
     const [currentUser, topJorbiters] = await Promise.all([
         getCurrentUser(),
-        getTopJorbiters(),
+        getTopJorbiters('week'),
     ]);
 
     if (!topJorbiters) {
