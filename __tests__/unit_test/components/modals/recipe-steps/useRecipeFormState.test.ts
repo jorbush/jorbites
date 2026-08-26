@@ -856,4 +856,212 @@ describe('useRecipeFormState hook', () => {
             '507f1f77bcf86cd799439011',
         ]);
     });
+
+    it('synchronously updates form values during render when draftData changes without act warnings', () => {
+        let currentDraftData: any = {
+            draftId: 'd-sync-render',
+            title: 'Initial Title',
+            description: 'Initial Description',
+            ingredients: ['flour'],
+            currentStep: 0,
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: currentDraftData } }
+        );
+
+        expect(result.current.getValues('title')).toBe('Initial Title');
+        expect(result.current.getValues('description')).toBe(
+            'Initial Description'
+        );
+
+        // New draft data pushed from collaborative partner
+        currentDraftData = {
+            draftId: 'd-sync-render',
+            title: 'Synchronous Title Update',
+            description: 'Synchronous Description Update',
+            ingredients: ['flour', 'water'],
+            currentStep: 0,
+        };
+
+        rerender({ draft: currentDraftData });
+
+        // Synchronously updated during render
+        expect(result.current.getValues('title')).toBe(
+            'Synchronous Title Update'
+        );
+        expect(result.current.getValues('description')).toBe(
+            'Synchronous Description Update'
+        );
+        expect(result.current.getValues('ingredient-1')).toBe('water');
+    });
+
+    it('selectively preserves active step inputs when draftData updates while inactive steps sync', () => {
+        let currentDraftData: any = {
+            draftId: 'd-step-sync',
+            currentStep: 3, // User starts on Step 3 (Methods)
+            title: 'Remote Draft Title',
+            method: 'Bake',
+            imageSrc: 'https://example.com/cake.jpg',
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: currentDraftData } }
+        );
+
+        expect(result.current.step).toBe(3);
+        expect(result.current.getValues('method')).toBe('Bake');
+
+        // User locally types in active step 3 (Methods)
+        act(() => {
+            result.current.setValue('method', 'Grill');
+        });
+        expect(result.current.getValues('method')).toBe('Grill');
+
+        // Co-cook updates title (inactive step 1) and method (active step 3) remotely
+        currentDraftData = {
+            draftId: 'd-step-sync',
+            currentStep: 3,
+            title: 'Co-Cook Updated Title',
+            method: 'Remote Fry',
+            imageSrc: 'https://example.com/new-cake.jpg',
+        };
+
+        rerender({ draft: currentDraftData });
+
+        // Inactive step 1 (Title) and step 6 (imageSrc) sync from remote co-cook
+        expect(result.current.getValues('title')).toBe('Co-Cook Updated Title');
+        expect(result.current.getValues('imageSrc')).toBe(
+            'https://example.com/new-cake.jpg'
+        );
+        // Active step 3 (Method) preserves local typing 'Grill' without being overwritten by 'Remote Fry'
+        expect(result.current.getValues('method')).toBe('Grill');
+    });
+
+    it('is idempotent and avoids redundant updates when re-rendered with identical draftData', () => {
+        const mockDraftData = {
+            draftId: 'd-idempotent',
+            currentStep: 1,
+            title: 'Static Title',
+            ingredients: ['eggs'],
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: mockDraftData } }
+        );
+
+        expect(result.current.getValues('title')).toBe('Static Title');
+
+        // User modifies local field on active step
+        act(() => {
+            result.current.setValue('title', 'Locally Modified Title');
+        });
+
+        // Re-render with structurally identical draftData (new object reference)
+        rerender({
+            draft: {
+                draftId: 'd-idempotent',
+                currentStep: 1,
+                title: 'Static Title',
+                ingredients: ['eggs'],
+            },
+        });
+
+        // Local changes are not clobbered because serialized content did not change
+        expect(result.current.getValues('title')).toBe(
+            'Locally Modified Title'
+        );
+    });
+
+    it('immediately synchronizes remote inputs when user is on a step locked by another co-cook', () => {
+        // Step 1 (DESCRIPTION) is locked by another cook
+        mockIsLockedByOther.mockImplementation(
+            (key: string) => key === 'step:1'
+        );
+
+        let currentDraftData: any = {
+            draftId: 'd-locked-takeover',
+            title: 'Initial Locked Title',
+            description: 'Initial Description',
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: currentDraftData } }
+        );
+
+        act(() => {
+            result.current.setStep(1);
+        });
+
+        expect(result.current.getValues('title')).toBe('Initial Locked Title');
+
+        // Co-cook who owns the lock updates the title in Redis
+        currentDraftData = {
+            draftId: 'd-locked-takeover',
+            title: 'Co-Cook Live Edited Title',
+            description: 'Co-Cook Live Edited Description',
+        };
+
+        rerender({ draft: currentDraftData });
+
+        // Since step 1 is locked by other, the values update immediately even though user is on step 1
+        expect(result.current.getValues('title')).toBe(
+            'Co-Cook Live Edited Title'
+        );
+        expect(result.current.getValues('description')).toBe(
+            'Co-Cook Live Edited Description'
+        );
+    });
 });

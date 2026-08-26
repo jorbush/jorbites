@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import useSWR from 'swr';
@@ -40,6 +40,7 @@ export function useRecipeFormState({
 }: UseRecipeFormStateProps) {
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
+
     const [step, setStep] = useState(() => {
         if (
             !recipeModal.isEditMode &&
@@ -81,10 +82,6 @@ export function useRecipeFormState({
         Array.isArray(draftData?.steps) ? draftData.steps.length : 1
     );
     const [isLoading, setIsLoading] = useState(false);
-    const currentUserRef = useRef<SafeUser | null>(currentUser || null);
-    useEffect(() => {
-        currentUserRef.current = currentUser || null;
-    }, [currentUser]);
     const [knownUsers, setKnownUsers] = useState<Record<string, SafeUser>>(
         () => {
             const initial: Record<string, SafeUser> = {};
@@ -368,8 +365,10 @@ export function useRecipeFormState({
         [effectiveNumSteps, updateFormField]
     );
 
-    const prevStepRef = useRef<number>(step);
-    const lastSyncedDraftStrRef = useRef<string>('');
+    const [prevSyncedDraftStr, setPrevSyncedDraftStr] = useState<string>(() =>
+        draftData ? JSON.stringify(draftData) : ''
+    );
+    const [prevStep, setPrevStep] = useState<number>(step);
 
     const lockTargetId = recipeModal.isEditMode
         ? recipeModal.editRecipeData?.id
@@ -379,17 +378,18 @@ export function useRecipeFormState({
     const isCurrentStepLocked = Boolean(lock?.isLockedByOther(`step:${step}`));
 
     // Smart non-destructive live synchronization from draftData without overwriting active step inputs
-    useEffect(() => {
-        if (!draftData || recipeModal.isEditMode) return;
+    const stepChanged = prevStep !== step;
+    if (stepChanged) {
+        setPrevStep(step);
+    }
 
-        const stepChanged = prevStepRef.current !== step;
-        prevStepRef.current = step;
+    const serialized = draftData ? JSON.stringify(draftData) : '';
+    const draftChanged = serialized !== prevSyncedDraftStr;
+    if (draftChanged) {
+        setPrevSyncedDraftStr(serialized);
+    }
 
-        const serialized = JSON.stringify(draftData);
-        if (serialized === lastSyncedDraftStrRef.current && !stepChanged)
-            return;
-        lastSyncedDraftStrRef.current = serialized;
-
+    if (!recipeModal.isEditMode && draftData && (draftChanged || stepChanged)) {
         const isStepLockedByOther = (stepIndex: number) =>
             Boolean(lock?.isLockedByOther(`step:${stepIndex}`));
 
@@ -400,7 +400,7 @@ export function useRecipeFormState({
             JSON.stringify(getValues('categories')) !==
                 JSON.stringify(draftData.categories)
         ) {
-            updateFormField('categories', draftData.categories);
+            setValue('categories', draftData.categories);
         }
 
         // Step 1: Description
@@ -413,7 +413,7 @@ export function useRecipeFormState({
                 !getValues('title') ||
                 isStepLockedByOther(STEPS.DESCRIPTION))
         ) {
-            updateFormField('title', draftData.title);
+            setValue('title', draftData.title);
         }
         if (
             draftData.description &&
@@ -424,25 +424,25 @@ export function useRecipeFormState({
                 !getValues('description') ||
                 isStepLockedByOther(STEPS.DESCRIPTION))
         ) {
-            updateFormField('description', draftData.description);
+            setValue('description', draftData.description);
         }
         if (
             draftData.minutes !== undefined &&
             getValues('minutes') !== draftData.minutes
         ) {
-            updateFormField('minutes', draftData.minutes);
+            setValue('minutes', draftData.minutes);
         }
         if (
             draftData.prepTime !== undefined &&
             getValues('prepTime') !== draftData.prepTime
         ) {
-            updateFormField('prepTime', draftData.prepTime);
+            setValue('prepTime', draftData.prepTime);
         }
         if (
             draftData.cookTime !== undefined &&
             getValues('cookTime') !== draftData.cookTime
         ) {
-            updateFormField('cookTime', draftData.cookTime);
+            setValue('cookTime', draftData.cookTime);
         }
 
         // Step 2: Ingredients
@@ -460,10 +460,10 @@ export function useRecipeFormState({
                     stepChanged ||
                     step !== STEPS.INGREDIENTS
                 ) {
-                    updateFormField(`ingredient-${idx}`, item);
+                    setValue(`ingredient-${idx}`, item);
                 }
             });
-            updateFormField('ingredients', incoming);
+            setValue('ingredients', incoming);
         }
 
         // Step 3: Methods
@@ -476,7 +476,7 @@ export function useRecipeFormState({
                 !getValues('method') ||
                 isStepLockedByOther(STEPS.METHODS))
         ) {
-            updateFormField('method', draftData.method);
+            setValue('method', draftData.method);
         }
 
         // Step 4: Steps
@@ -491,10 +491,10 @@ export function useRecipeFormState({
                     stepChanged ||
                     step !== STEPS.STEPS
                 ) {
-                    updateFormField(`step-${idx}`, item);
+                    setValue(`step-${idx}`, item);
                 }
             });
-            updateFormField('steps', incoming);
+            setValue('steps', incoming);
         }
 
         // Step 5: Related Content
@@ -507,7 +507,7 @@ export function useRecipeFormState({
                 stepChanged ||
                 isStepLockedByOther(STEPS.RELATED_CONTENT))
         ) {
-            updateFormField('coCooksIds', draftData.coCooksIds);
+            setValue('coCooksIds', draftData.coCooksIds);
         }
         if (
             Array.isArray(draftData.linkedRecipeIds) &&
@@ -518,19 +518,19 @@ export function useRecipeFormState({
                 stepChanged ||
                 isStepLockedByOther(STEPS.RELATED_CONTENT))
         ) {
-            updateFormField('linkedRecipeIds', draftData.linkedRecipeIds);
+            setValue('linkedRecipeIds', draftData.linkedRecipeIds);
         }
         if (
             draftData.youtubeUrl !== undefined &&
             getValues('youtubeUrl') !== draftData.youtubeUrl
         ) {
-            updateFormField('youtubeUrl', draftData.youtubeUrl);
+            setValue('youtubeUrl', draftData.youtubeUrl);
         }
         if (
             draftData.questId !== undefined &&
             getValues('questId') !== draftData.questId
         ) {
-            updateFormField('questId', draftData.questId);
+            setValue('questId', draftData.questId);
         }
 
         // Step 6: Images
@@ -542,7 +542,7 @@ export function useRecipeFormState({
                 stepChanged ||
                 isStepLockedByOther(STEPS.IMAGES))
         ) {
-            updateFormField('imageSrc', draftData.imageSrc);
+            setValue('imageSrc', draftData.imageSrc);
         }
         if (
             draftData.imageSrc1 &&
@@ -552,7 +552,7 @@ export function useRecipeFormState({
                 stepChanged ||
                 isStepLockedByOther(STEPS.IMAGES))
         ) {
-            updateFormField('imageSrc1', draftData.imageSrc1);
+            setValue('imageSrc1', draftData.imageSrc1);
         }
         if (
             draftData.imageSrc2 &&
@@ -562,7 +562,7 @@ export function useRecipeFormState({
                 stepChanged ||
                 isStepLockedByOther(STEPS.IMAGES))
         ) {
-            updateFormField('imageSrc2', draftData.imageSrc2);
+            setValue('imageSrc2', draftData.imageSrc2);
         }
         if (
             draftData.imageSrc3 &&
@@ -572,26 +572,19 @@ export function useRecipeFormState({
                 stepChanged ||
                 isStepLockedByOther(STEPS.IMAGES))
         ) {
-            updateFormField('imageSrc3', draftData.imageSrc3);
+            setValue('imageSrc3', draftData.imageSrc3);
         }
 
         if (draftData.draftId && getValues('draftId') !== draftData.draftId) {
-            updateFormField('draftId', draftData.draftId);
+            setValue('draftId', draftData.draftId);
         }
         if (
             draftData.inviteToken &&
             getValues('inviteToken') !== draftData.inviteToken
         ) {
-            updateFormField('inviteToken', draftData.inviteToken);
+            setValue('inviteToken', draftData.inviteToken);
         }
-    }, [
-        draftData,
-        step,
-        recipeModal.isEditMode,
-        updateFormField,
-        getValues,
-        lock,
-    ]);
+    }
 
     const addCoCook = (user: SafeUser) => {
         if (coCooksIds.length >= MAX_CO_COOKS) {
@@ -1247,7 +1240,7 @@ export function useRecipeFormState({
             setKnownRecipes({});
             setKnownQuests({});
             recipeModal.onClose();
-            refresh();
+            refresh?.();
         } catch (error) {
             console.error('Failed to save recipe', error);
             toast.error(t('something_went_wrong') ?? 'Something went wrong');
