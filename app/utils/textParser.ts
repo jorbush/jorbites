@@ -25,10 +25,10 @@ export function parseIngredientsText(
         return [];
     }
 
-    const rawLines = text
-        .split('\n')
-        .map((l) => l.trim())
-        .filter(Boolean);
+    const rawLines = text.split('\n').flatMap((l) => {
+        const trimmed = l.trim();
+        return trimmed ? [trimmed] : [];
+    });
 
     let itemsToProcess: string[] = [];
 
@@ -38,8 +38,10 @@ export function parseIngredientsText(
         // Split on commas/semicolons not between digits, or period before a capitalized word
         const splitItems = singleLine
             .split(/(?<!\d)[,;](?!\d)|(?<=[a-zÀ-ÿ0-9])\.(?=[A-ZÀ-ÿ])/)
-            .map((item) => cleanItem(item, true))
-            .filter(Boolean);
+            .flatMap((item) => {
+                const cleaned = cleanItem(item, true);
+                return cleaned ? [cleaned] : [];
+            });
 
         if (splitItems.length > 1) {
             itemsToProcess = splitItems;
@@ -74,10 +76,10 @@ export function parseStepsText(text: string, maxItems?: number): string[] {
         return [];
     }
 
-    const rawLines = text
-        .split('\n')
-        .map((l) => l.trim())
-        .filter(Boolean);
+    const rawLines = text.split('\n').flatMap((l) => {
+        const trimmed = l.trim();
+        return trimmed ? [trimmed] : [];
+    });
 
     let itemsToProcess: string[] = [];
 
@@ -92,8 +94,10 @@ export function parseStepsText(text: string, maxItems?: number): string[] {
             .split(
                 /(?<=\D)(?=\d+[.)]\s+)|(?<=[.!?])\s+|(?<=[a-zÀ-ÿ0-9])\.(?=[a-zA-ZÀ-ÿ])/
             )
-            .map((item) => cleanItem(item, true))
-            .filter(Boolean);
+            .flatMap((item) => {
+                const cleaned = cleanItem(item, true);
+                return cleaned ? [cleaned] : [];
+            });
 
         if (splitItems.length > 1) {
             itemsToProcess = splitItems;
