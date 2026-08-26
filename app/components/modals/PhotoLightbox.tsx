@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { HiX } from 'react-icons/hi';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 
@@ -19,18 +19,24 @@ export default function PhotoLightbox({
     onClose,
     testId = 'lightbox-modal',
 }: PhotoLightboxProps) {
+    const onCloseRef = useRef(onClose);
+
+    useEffect(() => {
+        onCloseRef.current = onClose;
+    }, [onClose]);
+
     useEffect(() => {
         if (!isOpen || !src) return;
 
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
-                onClose();
+                onCloseRef.current();
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, src, onClose]);
+    }, [isOpen, src]);
 
     if (!isOpen || !src) return null;
 
