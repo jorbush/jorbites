@@ -171,4 +171,52 @@ describe('Tooltip', () => {
         const container = screen.getByText('Hover me').parentElement;
         expect(container!.className).toContain('custom-class');
     });
+
+    it('prevents showing tooltip when touch event occurs', () => {
+        render(
+            <Tooltip
+                text="Test tooltip"
+                delay={300}
+            >
+                <span>Hover me</span>
+            </Tooltip>
+        );
+
+        const container = screen.getByText('Hover me').parentElement;
+
+        // Touch start fires first on touch devices
+        fireEvent.touchStart(container!);
+        // Synthesized mouseEnter follows touchStart on mobile browsers
+        fireEvent.mouseEnter(container!);
+
+        act(() => {
+            vi.advanceTimersByTime(300);
+        });
+
+        expect(screen.queryByTestId('tooltip')).toBeNull();
+    });
+
+    it('hides tooltip on click or touch start', () => {
+        render(
+            <Tooltip
+                text="Test tooltip"
+                delay={300}
+            >
+                <span>Hover me</span>
+            </Tooltip>
+        );
+
+        const container = screen.getByText('Hover me').parentElement;
+
+        // Show tooltip
+        fireEvent.mouseEnter(container!);
+        act(() => {
+            vi.advanceTimersByTime(300);
+        });
+        expect(screen.getByTestId('tooltip')).toBeDefined();
+
+        // Click hides tooltip
+        fireEvent.click(container!);
+        expect(screen.queryByTestId('tooltip')).toBeNull();
+    });
 });

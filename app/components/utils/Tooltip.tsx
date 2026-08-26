@@ -26,8 +26,11 @@ const Tooltip: React.FC<TooltipProps> = ({
 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const isTouchRef = useRef(false);
 
     const handleMouseEnter = () => {
+        if (isTouchRef.current) return;
         timeoutRef.current = setTimeout(() => setIsVisible(true), delay);
     };
 
@@ -36,11 +39,26 @@ const Tooltip: React.FC<TooltipProps> = ({
         setIsVisible(false);
     };
 
+    const handleTouchStart = () => {
+        isTouchRef.current = true;
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        setIsVisible(false);
+
+        if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+        touchTimeoutRef.current = setTimeout(() => {
+            isTouchRef.current = false;
+        }, 1000);
+    };
+
+    const handleClick = () => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        setIsVisible(false);
+    };
+
     useEffect(() => {
-        const currentTimeoutRef = timeoutRef;
         return () => {
-            if (currentTimeoutRef.current)
-                clearTimeout(currentTimeoutRef.current);
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
         };
     }, []);
 
@@ -49,6 +67,8 @@ const Tooltip: React.FC<TooltipProps> = ({
             className={`group relative inline-block ${className}`}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            onTouchStart={handleTouchStart}
+            onClick={handleClick}
         >
             {children}
             {isVisible && (
