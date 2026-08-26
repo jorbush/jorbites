@@ -22,8 +22,8 @@ export default function PhotoLightbox({
     if (!isOpen || !src) return null;
 
     return (
-        <div
-            role="dialog"
+        <dialog
+            open
             aria-modal="true"
             aria-label={alt || 'Photo lightbox'}
             tabIndex={-1}
@@ -59,6 +59,6 @@ export default function PhotoLightbox({
                     }}
                 />
             </div>
-        </div>
+        </dialog>
     );
 }
