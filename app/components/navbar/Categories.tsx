@@ -1,17 +1,22 @@
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import Container from '@/app/components/utils/Container';
 import CategoryBox from '@/app/components/CategoryBox';
 import { categories } from './categoriesData';
 
 const CategoriesComponent = () => {
     const searchParamsVal = useSearchParams();
-    const get = searchParamsVal
-        ? searchParamsVal.get.bind(searchParamsVal)
-        : () => null;
-    const category = get('category');
+    const selectedCategories = useMemo(() => {
+        if (!searchParamsVal) return [];
+        const categoryParams = searchParamsVal.getAll('category');
+        return categoryParams
+            .flatMap((c) => c.split(','))
+            .map((c) => c.trim())
+            .filter(Boolean);
+    }, [searchParamsVal]);
+
     const pathname = usePathname();
     const isMainPage = pathname === '/';
     const isFavoritesPage = pathname === '/favorites';
@@ -32,7 +37,7 @@ const CategoriesComponent = () => {
                         <CategoryBox
                             label={item.label}
                             icon={item.icon}
-                            selected={category === item.label}
+                            selected={selectedCategories.includes(item.label)}
                         />
                     </Suspense>
                 ))}

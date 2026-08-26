@@ -205,6 +205,30 @@ describe('Recipes API Routes and Server Actions', () => {
         (prisma.recipe.count as jest.Mock).mockResolvedValue(1);
 
         const response = await getRecipes({ category: 'Desserts' });
+        expect(prisma.recipe.findMany).toHaveBeenCalledWith(
+            expect.objectContaining({
+                where: expect.objectContaining({
+                    categories: { hasSome: ['Desserts'] },
+                }),
+            })
+        );
+        expect(response.data?.recipes.length).toBeGreaterThan(0);
+    });
+
+    it('should return the recipes filtered by multiple categories', async () => {
+        (prisma.recipe.findMany as jest.Mock).mockResolvedValue([mockRecipe]);
+        (prisma.recipe.count as jest.Mock).mockResolvedValue(1);
+
+        const response = await getRecipes({
+            category: ['Desserts', 'Fruits'],
+        });
+        expect(prisma.recipe.findMany).toHaveBeenCalledWith(
+            expect.objectContaining({
+                where: expect.objectContaining({
+                    categories: { hasSome: ['Desserts', 'Fruits'] },
+                }),
+            })
+        );
         expect(response.data?.recipes.length).toBeGreaterThan(0);
     });
 
