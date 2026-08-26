@@ -144,7 +144,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                         <div
                             key={format(day, 'yyyy-MM-dd')}
                             suppressHydrationWarning
-                            className={`relative h-[64px] overflow-hidden rounded-lg border p-1 transition-all md:h-[104px] md:p-2 ${
+                            className={`relative h-auto min-h-[64px] rounded-lg border p-1 transition-all md:min-h-[104px] md:p-2 ${
                                 isCurrentMonth
                                     ? 'border-neutral-100 bg-white dark:border-neutral-700 dark:bg-neutral-900'
                                     : 'border-transparent bg-neutral-50 text-neutral-300 dark:bg-neutral-950 dark:text-neutral-600'
@@ -161,7 +161,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                                 {format(day, 'd')}
                             </span>
 
-                            <div className="mt-1 flex flex-wrap gap-1">
+                            <div className="mt-1 flex flex-wrap gap-0.5 sm:gap-1">
                                 {dayEvents.map((event) => (
                                     <Tooltip
                                         key={event.slug}
@@ -172,7 +172,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                                             className="cursor-pointer"
                                             prefetch={false}
                                         >
-                                            <div className="group border-green-450 relative size-6 overflow-hidden rounded-full border bg-neutral-100 md:size-8 dark:bg-neutral-800">
+                                            <div className="group border-green-450 relative size-5 overflow-hidden rounded-full border bg-neutral-100 sm:size-6 md:size-8 dark:bg-neutral-800">
                                                 <Image
                                                     src={
                                                         event.frontmatter
@@ -183,7 +183,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                                                         event.frontmatter.title
                                                     }
                                                     fill
-                                                    sizes="(max-width: 768px) 24px, 32px"
+                                                    sizes="(max-width: 640px) 20px, (max-width: 768px) 24px, 32px"
                                                     className="object-cover"
                                                 />
                                                 <div className="absolute inset-0 bg-neutral-950 opacity-0 transition-opacity group-hover:opacity-20" />

@@ -237,4 +237,29 @@ describe('EventCalendar', () => {
             );
         });
     });
+
+    it('renders multiple event badges on the same day without layout restrictions', () => {
+        render(
+            <EventCalendar
+                currentEvents={mockEvents}
+                upcomingEvents={[]}
+            />
+        );
+
+        expect(screen.getByAltText('Test Event 1')).toBeDefined();
+        expect(screen.getByAltText('Test Event 2')).toBeDefined();
+
+        const eventLinks = screen.getAllByRole('link');
+        const link1 = eventLinks.find(
+            (link) =>
+                link.getAttribute('href') === `/events/${mockEvents[0].slug}`
+        );
+        const link2 = eventLinks.find(
+            (link) =>
+                link.getAttribute('href') === `/events/${mockEvents[1].slug}`
+        );
+
+        expect(link1).toBeDefined();
+        expect(link2).toBeDefined();
+    });
 });
