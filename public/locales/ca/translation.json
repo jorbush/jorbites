@@ -112,11 +112,8 @@
     "level": "Nv.",
     "my_profile": "El meu perfil",
     "of": "de",
-    "draft_saved": "Progrés guardat!",
-    "error_saving_draft": "Error en desar l'esborrany",
     "error_loading_draft": "Error en carregar l'esborrany",
     "loading": "Carregant...",
-    "error_deleting_draft": "Error en eliminar l'esborrany",
     "oldest_first": "Més antic primer",
     "newest_first": "Més nou primer",
     "snacks": "Tapes",
@@ -1339,6 +1336,5 @@
     "draft_days_ago": "Fa {{count}}d",
     "draft_weeks_ago": "Fa {{count}}set",
     "duplicate_draft": "Duplicar",
-    "delete_draft": "Eliminar",
-    "open_draft": "Obrir esborrany"
+    "delete_draft": "Eliminar"
 }

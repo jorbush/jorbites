@@ -5,16 +5,13 @@ import { mutate } from 'swr';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import {
-    STEPS,
-    RECIPE_MAX_INGREDIENTS,
-    RECIPE_MAX_STEPS,
-} from '@/app/utils/constants';
-import { parseTextToList } from '@/app/utils/textParser';
+    FormAccessor,
+    extractIngredientsAndSteps,
+    collectDraftFormData,
+} from '@/app/utils/draftFormUtils';
 
-interface FormAccessor {
-    getValues: (field: string) => any;
-    setValue: (field: string, value: any) => void;
-}
+export type { FormAccessor };
+export { extractIngredientsAndSteps, collectDraftFormData };
 
 interface UseDraftPersistenceOptions {
     recipeModal: any;
@@ -37,95 +34,19 @@ export function useDraftPersistence({
         stepsInputMode: string,
         stepOverride?: number | React.MouseEvent
     ) => {
-        const stepToSave =
-            typeof stepOverride === 'number' ? stepOverride : step;
-
-        let newIngredients: string[] = [];
-        if (step === STEPS.INGREDIENTS) {
-            if (ingredientsInputMode === 'text') {
-                const textareaValue = form.getValues('ingredients-plain-text');
-                const parsedItems = parseTextToList(
-                    textareaValue,
-                    RECIPE_MAX_INGREDIENTS
-                );
-                if (parsedItems.length > 0) {
-                    newIngredients = parsedItems;
-                }
-            } else {
-                for (let i = 0; i < effectiveNumIngredients; i++) {
-                    const val = form.getValues(`ingredient-${i}`);
-                    if (typeof val === 'string' && val.trim() !== '') {
-                        newIngredients.push(val);
-                    }
-                }
-            }
-        } else {
-            newIngredients =
-                draftData?.ingredients && draftData.ingredients.length > 0
-                    ? draftData.ingredients
-                    : form.getValues('ingredients') || [];
-        }
-
-        let newSteps: string[] = [];
-        if (step === STEPS.STEPS) {
-            if (stepsInputMode === 'text') {
-                const textareaValue = form.getValues('steps-plain-text');
-                const parsedItems = parseTextToList(
-                    textareaValue,
-                    RECIPE_MAX_STEPS
-                );
-                if (parsedItems.length > 0) {
-                    newSteps = parsedItems;
-                }
-            } else {
-                for (let i = 0; i < effectiveNumSteps; i++) {
-                    const val = form.getValues(`step-${i}`);
-                    if (typeof val === 'string' && val.trim() !== '') {
-                        newSteps.push(val);
-                    }
-                }
-            }
-        } else {
-            newSteps =
-                draftData?.steps && draftData.steps.length > 0
-                    ? draftData.steps
-                    : form.getValues('steps') || [];
-        }
-
-        const currentDraftId = form.getValues('draftId') || draftData?.draftId;
-        const currentInviteToken =
-            form.getValues('inviteToken') || draftData?.inviteToken;
-
-        const isShared = Boolean(currentDraftId);
-
-        const data: any = {
-            draftId: currentDraftId,
-            inviteToken: currentInviteToken,
-            currentStep: stepToSave,
-            categories: form.getValues('categories'),
-            method: form.getValues('method'),
-            imageSrc: form.getValues('imageSrc'),
-            imageSrc1: form.getValues('imageSrc1'),
-            imageSrc2: form.getValues('imageSrc2'),
-            imageSrc3: form.getValues('imageSrc3'),
-            title: form.getValues('title'),
-            description: form.getValues('description'),
-            minutes: form.getValues('minutes'),
-            prepTime: form.getValues('prepTime'),
-            cookTime: form.getValues('cookTime'),
-            coCooksIds: form.getValues('coCooksIds'),
-            linkedRecipeIds: form.getValues('linkedRecipeIds'),
-            youtubeUrl: form.getValues('youtubeUrl'),
-            questId: form.getValues('questId'),
-            updatedAt: new Date().toISOString(),
-        };
-
-        if (step === STEPS.INGREDIENTS || !isShared) {
-            data.ingredients = newIngredients;
-        }
-        if (step === STEPS.STEPS || !isShared) {
-            data.steps = newSteps;
-        }
+        const stepNum =
+            typeof stepOverride === 'number' ? stepOverride : undefined;
+        const { data, currentDraftId, currentInviteToken } =
+            collectDraftFormData(
+                form,
+                step,
+                draftData,
+                effectiveNumIngredients,
+                effectiveNumSteps,
+                ingredientsInputMode,
+                stepsInputMode,
+                stepNum
+            );
 
         try {
             const res = await axios.post('/api/draft', data);
@@ -164,108 +85,20 @@ export function useDraftPersistence({
         ingredientsInputMode: string,
         stepsInputMode: string
     ) => {
-        let currentDraftId = form.getValues('draftId') || draftData?.draftId;
-        let currentToken =
-            form.getValues('inviteToken') || draftData?.inviteToken;
+        const { data: fullDraftData } = collectDraftFormData(
+            form,
+            step,
+            draftData,
+            effectiveNumIngredients,
+            effectiveNumSteps,
+            ingredientsInputMode,
+            stepsInputMode,
+            undefined,
+            true
+        );
 
-        let newIngredients: string[] = [];
-        if (ingredientsInputMode === 'text') {
-            const textareaValue = form.getValues('ingredients-plain-text');
-            const parsedItems = parseTextToList(
-                textareaValue,
-                RECIPE_MAX_INGREDIENTS
-            );
-            if (parsedItems.length > 0) {
-                newIngredients = parsedItems;
-            }
-        } else {
-            for (let i = 0; i < effectiveNumIngredients; i++) {
-                const val = form.getValues(`ingredient-${i}`);
-                if (typeof val === 'string' && val.trim() !== '') {
-                    newIngredients.push(val);
-                }
-            }
-        }
-
-        let newSteps: string[] = [];
-        if (stepsInputMode === 'text') {
-            const textareaValue = form.getValues('steps-plain-text');
-            const parsedItems = parseTextToList(
-                textareaValue,
-                RECIPE_MAX_STEPS
-            );
-            if (parsedItems.length > 0) {
-                newSteps = parsedItems;
-            }
-        } else {
-            for (let i = 0; i < effectiveNumSteps; i++) {
-                const val = form.getValues(`step-${i}`);
-                if (typeof val === 'string' && val.trim() !== '') {
-                    newSteps.push(val);
-                }
-            }
-        }
-
-        if (step !== STEPS.INGREDIENTS) {
-            const remoteIngredients = draftData?.ingredients;
-            if (
-                Array.isArray(remoteIngredients) &&
-                remoteIngredients.length > 0
-            ) {
-                newIngredients = remoteIngredients;
-            } else if (newIngredients.length === 0) {
-                const existing = form.getValues('ingredients') || [];
-                if (existing.length > 0) {
-                    newIngredients = existing;
-                }
-            }
-        }
-
-        if (step !== STEPS.STEPS) {
-            const remoteSteps = draftData?.steps;
-            if (Array.isArray(remoteSteps) && remoteSteps.length > 0) {
-                newSteps = remoteSteps;
-            } else if (newSteps.length === 0) {
-                const existing = form.getValues('steps') || [];
-                if (existing.length > 0) {
-                    newSteps = existing;
-                }
-            }
-        }
-
-        const fullDraftData = {
-            draftId: currentDraftId,
-            inviteToken: currentToken,
-            currentStep: step,
-            categories: form.getValues('categories') || draftData?.categories,
-            method:
-                step === STEPS.METHODS
-                    ? form.getValues('method')
-                    : draftData?.method || form.getValues('method'),
-            imageSrc: form.getValues('imageSrc'),
-            imageSrc1: form.getValues('imageSrc1'),
-            imageSrc2: form.getValues('imageSrc2'),
-            imageSrc3: form.getValues('imageSrc3'),
-            title: form.getValues('title'),
-            description: form.getValues('description'),
-            ingredients: newIngredients,
-            steps: newSteps,
-            minutes: form.getValues('minutes'),
-            prepTime: form.getValues('prepTime'),
-            cookTime: form.getValues('cookTime'),
-            coCooksIds:
-                step === STEPS.RELATED_CONTENT
-                    ? form.getValues('coCooksIds')
-                    : draftData?.coCooksIds || form.getValues('coCooksIds'),
-            linkedRecipeIds:
-                step === STEPS.RELATED_CONTENT
-                    ? form.getValues('linkedRecipeIds')
-                    : draftData?.linkedRecipeIds ||
-                      form.getValues('linkedRecipeIds'),
-            youtubeUrl: form.getValues('youtubeUrl'),
-            questId: form.getValues('questId'),
-            updatedAt: new Date().toISOString(),
-        };
+        let currentDraftId = fullDraftData.draftId;
+        let currentToken = fullDraftData.inviteToken;
 
         const prepareShareUrl = async (): Promise<string> => {
             if (!currentDraftId || !currentToken) {

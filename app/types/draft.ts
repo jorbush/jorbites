@@ -49,7 +49,11 @@ export interface SingleDraft {
     questId?: string | null;
     draftId?: string;
     inviteToken?: string;
-    [key: string]: any;
+    createdAt?: string;
+    updatedAt?: string;
+    type?: 'solo' | 'shared';
+    ownerId?: string;
+    ownerName?: string;
 }
 
 /** Lightweight draft view for card rendering in DraftsModal */
@@ -75,8 +79,8 @@ export interface DraftTTLInfo {
     label: string;
     /** True when TTL < 24 hours */
     isExpiringSoon: boolean;
-    /** Remaining time in seconds, null if no expiry */
-    remainingSeconds: number | null;
+    /** Remaining time in seconds */
+    remainingSeconds: number;
     /** Translation key for i18n pluralization */
     key?: string;
     /** Count value for i18n pluralization */

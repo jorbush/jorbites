@@ -3,7 +3,7 @@ import { redis } from '@/app/lib/redis';
 import { releaseAllLocks } from '@/app/lib/redisLock';
 import { logger } from '@/app/lib/axiom/server';
 import { SafeUser } from '@/app/types';
-import { SharedDraft, SingleDraft } from '@/app/types/draft';
+import { SharedDraft, SingleDraft, DraftSummary } from '@/app/types/draft';
 import {
     DRAFT_TTL_SECONDS,
     USER_DRAFTS_TTL_SECONDS,
@@ -107,7 +107,7 @@ export class DraftService {
                 await (redis as any).srem(key, draftId);
             }
 
-            // Also check string JSON list for backward compatibility
+            // Also check string JSON list for backward compatibility with legacy storage
             const raw = await redis.get(key);
             if (raw) {
                 try {
@@ -478,7 +478,7 @@ export class DraftService {
     static async getSingleUserDraft(
         userId: string,
         slotId?: string
-    ): Promise<SingleDraft | null> {
+    ): Promise<SingleDraft | SharedDraft | null> {
         let raw;
         if (slotId) {
             raw = await redis.get(`draft:user:${userId}:${slotId}`);
@@ -495,10 +495,17 @@ export class DraftService {
         if (allDrafts && allDrafts.length > 0) {
             const latest = allDrafts[0];
             if (latest.type === 'shared') {
-                return (await this.getSharedDraft(
-                    latest.draftId,
-                    userId
-                )) as any;
+                return await this.getSharedDraft(latest.draftId, userId);
+            }
+            const soloRaw = await redis.get(
+                `draft:user:${userId}:${latest.draftId}`
+            );
+            if (soloRaw) {
+                try {
+                    return JSON.parse(soloRaw);
+                } catch {
+                    // Fallback to latest summary
+                }
             }
             return latest;
         }
@@ -547,8 +554,13 @@ export class DraftService {
         await this.addToUserDrafts(userId, id);
 
         await Promise.all([
-            redis.set(`draft:user:${userId}`, serialized),
-            redis.set(userId, serialized),
+            redis.set(
+                `draft:user:${userId}`,
+                serialized,
+                'EX',
+                SOLO_DRAFT_TTL_SECONDS
+            ),
+            redis.set(userId, serialized, 'EX', SOLO_DRAFT_TTL_SECONDS),
         ]);
 
         return id;
@@ -586,29 +598,56 @@ export class DraftService {
         }
     }
 
-    static async getAllUserDrafts(userId: string): Promise<any[]> {
+    static async getAllUserDrafts(userId: string): Promise<DraftSummary[]> {
         const draftIds = await this.getUserDraftIds(userId);
+        const uniqueDraftIds = Array.from(new Set(draftIds));
 
         const draftItems = await Promise.all(
-            draftIds.map(async (id) => {
-                const shared = await this.getSharedDraft(id);
+            uniqueDraftIds.map(async (id): Promise<DraftSummary | null> => {
+                const shared = await this.getSharedDraft(id, userId);
                 if (shared) {
                     const updatedAt =
-                        shared.updatedAt ||
-                        (shared as any).createdAt ||
-                        new Date().toISOString();
-                    return { ...shared, updatedAt, type: 'shared' };
+                        shared.updatedAt || new Date().toISOString();
+                    return {
+                        draftId: shared.draftId,
+                        type: 'shared',
+                        title: shared.title,
+                        description: shared.description,
+                        categories: shared.categories,
+                        ingredients: shared.ingredients,
+                        steps: shared.steps,
+                        method: shared.method,
+                        coCooksIds: shared.coCooksIds || [],
+                        ownerId: shared.ownerId,
+                        ownerName: shared.ownerName,
+                        updatedAt,
+                        imageSrc: shared.imageSrc,
+                    };
                 }
 
                 const soloRaw = await redis.get(`draft:user:${userId}:${id}`);
                 if (soloRaw) {
                     try {
-                        const solo = JSON.parse(soloRaw);
+                        const solo: SingleDraft = JSON.parse(soloRaw);
                         const updatedAt =
                             solo.updatedAt ||
                             solo.createdAt ||
                             new Date().toISOString();
-                        return { ...solo, updatedAt, type: 'solo' };
+                        return {
+                            draftId: id,
+                            type: 'solo',
+                            title: solo.title,
+                            description: solo.description,
+                            categories: solo.categories,
+                            ingredients: solo.ingredients,
+                            steps: solo.steps,
+                            method: solo.method,
+                            coCooksIds: solo.coCooksIds || [],
+                            ownerId: solo.ownerId || userId,
+                            ownerName: solo.ownerName,
+                            updatedAt,
+                            imageSrc: solo.imageSrc,
+                        };
                     } catch {
                         return null;
                     }
@@ -619,7 +658,9 @@ export class DraftService {
             })
         );
 
-        const results = draftItems.filter(Boolean);
+        const results = draftItems.filter((item): item is DraftSummary =>
+            Boolean(item)
+        );
 
         results.sort((a, b) => {
             const aDate = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;

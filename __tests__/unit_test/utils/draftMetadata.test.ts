@@ -3,6 +3,7 @@ import {
     generateDraftTitle,
     getDraftTTLInfo,
     getDraftProgress,
+    formatTTLText,
 } from '@/app/lib/draftMetadata';
 import { DraftSummary } from '@/app/types/draft';
 import { DRAFT_TTL_SECONDS } from '@/app/utils/constants';
@@ -141,7 +142,7 @@ describe('draftMetadata utility functions', () => {
             expect(info.remainingSeconds).toBe(0);
         });
 
-        it('calculates remaining time for solo drafts (360 days TTL)', () => {
+        it('calculates remaining time for solo drafts (365 days TTL)', () => {
             const now = Date.now();
             // Updated 10 days ago
             const updatedAt = new Date(
@@ -152,8 +153,8 @@ describe('draftMetadata utility functions', () => {
             expect(info.isExpiringSoon).toBe(false);
             expect(info.label).toMatch(/Expires in \d+ weeks/);
             expect(info.key).toBe('draft_time_weeks');
-            expect(info.count).toBeGreaterThan(45);
-            expect(info.remainingSeconds).toBeGreaterThan(340 * 24 * 3600);
+            expect(info.count).toBeGreaterThan(48);
+            expect(info.remainingSeconds).toBeGreaterThan(350 * 24 * 3600);
         });
 
         it('handles undefined, null, and invalid dates without NaN', () => {
@@ -236,6 +237,65 @@ describe('draftMetadata utility functions', () => {
             expect(progress.completedSteps).toBe(7);
             expect(progress.percentage).toBe(100);
             expect(progress.stepDetails.every((s) => s.completed)).toBe(true);
+        });
+    });
+
+    describe('formatTTLText', () => {
+        const mockTranslate = (key: string, options?: any) => {
+            if (key === 'draft_expired') return 'Expired';
+            if (key === 'draft_expires_in')
+                return `Expires in ${options?.time}`;
+            if (key === 'draft_time_minutes')
+                return `${options?.count} minutes`;
+            if (key === 'draft_time_hours') return `${options?.count} hours`;
+            if (key === 'draft_time_days') return `${options?.count} days`;
+            if (key === 'draft_time_weeks') return `${options?.count} weeks`;
+            return options?.defaultValue || key;
+        };
+
+        it('formats expired TTL', () => {
+            const ttlInfo = {
+                label: 'Expired',
+                isExpiringSoon: true,
+                remainingSeconds: 0,
+                key: 'draft_expired',
+            };
+            expect(formatTTLText(ttlInfo, mockTranslate)).toBe('Expired');
+        });
+
+        it('formats localized TTL with hours', () => {
+            const ttlInfo = {
+                label: 'Expires in 5 hours',
+                isExpiringSoon: true,
+                remainingSeconds: 18000,
+                key: 'draft_time_hours',
+                count: 5,
+            };
+            expect(formatTTLText(ttlInfo, mockTranslate)).toBe(
+                'Expires in 5 hours'
+            );
+        });
+
+        it('formats localized TTL with weeks', () => {
+            const ttlInfo = {
+                label: 'Expires in 51 weeks',
+                isExpiringSoon: false,
+                remainingSeconds: 30844800,
+                key: 'draft_time_weeks',
+                count: 51,
+            };
+            expect(formatTTLText(ttlInfo, mockTranslate)).toBe(
+                'Expires in 51 weeks'
+            );
+        });
+
+        it('falls back to label when key/count are missing', () => {
+            const ttlInfo = {
+                label: 'Custom label',
+                isExpiringSoon: false,
+                remainingSeconds: 1000,
+            };
+            expect(formatTTLText(ttlInfo, mockTranslate)).toBe('Custom label');
         });
     });
 });

@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import { UseFormSetValue, UseFormGetValues } from 'react-hook-form';
 import { axiosFetcher } from '@/app/utils/fetcher';
 import { SafeUser } from '@/app/types';
-import { STEPS } from '@/app/utils/constants';
+import { STEPS, SHARED_DRAFT_POLL_INTERVAL_MS } from '@/app/utils/constants';
 
 interface UseDraftSyncOptions {
     activeDraftId: string | null | undefined;
@@ -42,6 +42,8 @@ export function useDraftSync({
         ? `/api/draft?draftId=${activeDraftId}`
         : `/api/draft`;
 
+    const isSharedDraft = Boolean(activeDraftId);
+
     const {
         data: swrDraftData,
         isLoading: isLoadingDraft,
@@ -52,7 +54,7 @@ export function useDraftSync({
         {
             revalidateOnFocus: true,
             revalidateOnReconnect: true,
-            refreshInterval: 3000,
+            refreshInterval: isSharedDraft ? SHARED_DRAFT_POLL_INTERVAL_MS : 0,
             shouldRetryOnError: false,
             keepPreviousData: true,
         }

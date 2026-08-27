@@ -112,11 +112,8 @@
     "level": "Nv.",
     "my_profile": "Mi perfil",
     "of": "de",
-    "draft_saved": "¡Progreso guardado!",
-    "error_saving_draft": "Error al guardar el borrador",
     "error_loading_draft": "Error al cargar el borrador",
     "loading": "Cargando...",
-    "error_deleting_draft": "Error al eliminar el borrador",
     "oldest_first": "Más antiguos primero",
     "newest_first": "Más recientes primero",
     "snacks": "Tapas",
@@ -1340,6 +1337,5 @@
     "draft_days_ago": "Hace {{count}}d",
     "draft_weeks_ago": "Hace {{count}}sem",
     "duplicate_draft": "Duplicar",
-    "delete_draft": "Eliminar",
-    "open_draft": "Abrir borrador"
+    "delete_draft": "Eliminar"
 }

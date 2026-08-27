@@ -96,6 +96,16 @@ const DraftsModal: React.FC<DraftsModalProps> = ({ currentUser }) => {
         [duplicateDraft]
     );
 
+    const uniqueDrafts = React.useMemo(() => {
+        if (!drafts || !Array.isArray(drafts)) return [];
+        const seen = new Set<string>();
+        return drafts.filter((d) => {
+            if (!d?.draftId || seen.has(d.draftId)) return false;
+            seen.add(d.draftId);
+            return true;
+        });
+    }, [drafts]);
+
     const bodyContent = (
         <div
             data-testid="drafts-modal"
@@ -133,11 +143,11 @@ const DraftsModal: React.FC<DraftsModalProps> = ({ currentUser }) => {
                 </div>
             )}
 
-            {isLoading && (!drafts || drafts.length === 0) ? (
+            {isLoading && (!uniqueDrafts || uniqueDrafts.length === 0) ? (
                 <div className="flex h-48 items-center justify-center">
                     <Loader height="100px" />
                 </div>
-            ) : !drafts || drafts.length === 0 ? (
+            ) : !uniqueDrafts || uniqueDrafts.length === 0 ? (
                 <div
                     data-testid="drafts-modal-empty-state"
                     className="flex flex-col items-center justify-center py-12 text-center"
@@ -170,7 +180,7 @@ const DraftsModal: React.FC<DraftsModalProps> = ({ currentUser }) => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    {drafts.map((draft) => (
+                    {uniqueDrafts.map((draft) => (
                         <DraftCard
                             key={draft.draftId}
                             draft={draft}

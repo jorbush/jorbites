@@ -123,10 +123,13 @@ export async function GET(request: Request) {
                     );
                 }
 
-                const draft = await DraftService.getSharedDraft(
-                    draftId,
-                    currentUser.id
-                );
+                const draft = isOwner
+                    ? rawDraft
+                    : (() => {
+                          const { inviteToken: _inviteToken, ...sanitized } =
+                              rawDraft;
+                          return sanitized;
+                      })();
 
                 logger.info('GET /api/draft - success (shared)', {
                     userId: currentUser.id,

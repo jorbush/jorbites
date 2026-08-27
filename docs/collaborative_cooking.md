@@ -67,8 +67,8 @@ sequenceDiagram
 
 | Key Format                                | Purpose                        | TTL                                               | Content / Structure                                                              |
 | ----------------------------------------- | ------------------------------ | ------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `draft:user:<userId>:<slotId>`            | Multi-slot solo draft storage  | **360 Days** (`SOLO_DRAFT_TTL_SECONDS = 31104000`) | Recipe draft JSON (up to 5 slots per user)                                       |
-| `draft:user:<userId>`                     | Legacy single-user draft       | **360 Days** (backward compatible)                | Legacy single draft JSON                                                         |
+| `draft:user:<userId>:<slotId>`            | Multi-slot solo draft storage  | **365 Days** (`SOLO_DRAFT_TTL_SECONDS = 31536000`) | Recipe draft JSON (up to 5 slots per user)                                       |
+| `draft:user:<userId>`                     | Legacy single-user draft       | **365 Days** (backward compatible)                | Legacy single draft JSON                                                         |
 | `draft:shared:<draftId>`                  | Multi-user collaborative draft | **7 Days** (`DRAFT_TTL_SECONDS = 604800`)         | Sanitized shared draft JSON `{ draftId, inviteToken, ownerId, coCooksIds, ... }` |
 | `user:drafts:<userId>`                    | Active draft index per user    | **30 Days** (`USER_DRAFTS_TTL_SECONDS = 2592000`) | **Redis Set** of draft IDs (atomically updated via `SADD`/`SREM`)                |
 | `lock:recipe:<targetId>:field:<fieldKey>` | Section/field soft lock        | **30 Seconds** (`LOCK_TTL_SECONDS = 30`)          | JSON `{ userId, userName, userAvatar, timestamp }`                               |
@@ -145,13 +145,13 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 | `MAX_CO_COOKS`                  | `4`                 | Maximum number of co-cooks per recipe                |
 | `MAX_LINKED_RECIPES`            | `2`                 | Maximum linked recipes per recipe                    |
 | `MAX_SOLO_DRAFT_SLOTS`          | `5`                 | Maximum number of concurrent solo drafts per user    |
-| `SOLO_DRAFT_TTL_SECONDS`        | `31104000` (360 days) | Solo draft persistence TTL in Redis                 |
+| `SOLO_DRAFT_TTL_SECONDS`        | `31536000` (365 days) | Solo draft persistence TTL in Redis                 |
 | `DRAFT_TTL_SECONDS`             | `604800` (7 days)   | Shared draft persistence TTL in Redis                |
 | `USER_DRAFTS_TTL_SECONDS`       | `2592000` (30 days) | User active draft list TTL in Redis                  |
 | `LOCK_TTL_SECONDS`              | `30`                | Soft-lock expiration duration                        |
 | `LOCK_HEARTBEAT_INTERVAL_MS`    | `10000` (10s)       | Heartbeat interval for renewing active section lock  |
 | `LOCK_POLL_INTERVAL_MS`         | `4000` (4s)         | Polling interval for detecting co-cook section locks |
-| `SHARED_DRAFT_POLL_INTERVAL_MS` | `3000` (3s)         | SWR polling interval for active shared drafts        |
+| `SHARED_DRAFT_POLL_INTERVAL_MS` | `8000` (8s)         | SWR polling interval for active shared drafts        |
 
 ---
 

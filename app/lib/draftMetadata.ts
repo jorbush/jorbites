@@ -181,9 +181,6 @@ export function formatTTLText(
     if (ttlInfo.remainingSeconds === 0 || ttlInfo.key === 'draft_expired') {
         return t('draft_expired', { defaultValue: 'Expired' });
     }
-    if (ttlInfo.remainingSeconds === null) {
-        return t('draft_no_expiry', { defaultValue: 'No expiry' });
-    }
     if (ttlInfo.key && ttlInfo.count !== undefined) {
         const timeText = t(ttlInfo.key, {
             count: ttlInfo.count,

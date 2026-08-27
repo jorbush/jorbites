@@ -102,6 +102,18 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
                 'EX',
                 SOLO_DRAFT_TTL_SECONDS
             );
+            expect(redis.set).toHaveBeenCalledWith(
+                'draft:user:user-multi-1',
+                expect.any(String),
+                'EX',
+                SOLO_DRAFT_TTL_SECONDS
+            );
+            expect(redis.set).toHaveBeenCalledWith(
+                'user-multi-1',
+                expect.any(String),
+                'EX',
+                SOLO_DRAFT_TTL_SECONDS
+            );
 
             const draftIds = await DraftService.getUserDraftIds('user-multi-1');
             expect(draftIds).toContain(slotId);

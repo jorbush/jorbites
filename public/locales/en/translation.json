@@ -112,11 +112,8 @@
     "level": "Lv.",
     "my_profile": "My profile",
     "of": "of",
-    "draft_saved": "Progress saved!",
-    "error_saving_draft": "Error saving draft",
     "error_loading_draft": "Error loading draft",
     "loading": "Loading...",
-    "error_deleting_draft": "Error deleting draft",
     "oldest_first": "Oldest first",
     "newest_first": "Newest first",
     "snacks": "Snacks",
@@ -1339,6 +1336,5 @@
     "draft_days_ago": "{{count}}d ago",
     "draft_weeks_ago": "{{count}}w ago",
     "duplicate_draft": "Duplicate",
-    "delete_draft": "Delete",
-    "open_draft": "Open draft"
+    "delete_draft": "Delete"
 }

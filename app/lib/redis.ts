@@ -43,6 +43,9 @@ const createMockRedis = (name: string) => {
         smembers: async (_key: string) => {
             return [];
         },
+        scard: async (_key: string) => {
+            return 0;
+        },
         expire: async (_key: string, _seconds: number) => {
             return 1;
         },

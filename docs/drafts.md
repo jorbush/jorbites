@@ -15,8 +15,8 @@ The **Drafts & Multi-Draft Management** system allows Jorbites users to manage a
 
 | Key Format | Purpose | TTL | Content / Structure |
 |---|---|---|---|
-| `draft:user:<userId>:<slotId>` | Multi-slot solo draft storage | **360 Days** (`SOLO_DRAFT_TTL_SECONDS = 31104000`) | Recipe draft JSON (up to 5 active slots per user) |
-| `draft:user:<userId>` | Legacy solo draft fallback | **360 Days** | Backward-compatible single draft JSON |
+| `draft:user:<userId>:<slotId>` | Multi-slot solo draft storage | **365 Days** (`SOLO_DRAFT_TTL_SECONDS = 31536000`) | Recipe draft JSON (up to 5 active slots per user) |
+| `draft:user:<userId>` | Legacy solo draft fallback | **365 Days** | Backward-compatible single draft JSON |
 | `draft:shared:<draftId>` | Multi-user collaborative draft | **7 Days** (`DRAFT_TTL_SECONDS = 604800`) | Sanitized shared draft JSON with `inviteToken`, `ownerId`, `coCooksIds` |
 | `user:drafts:<userId>` | Active draft index per user | **30 Days** (`USER_DRAFTS_TTL_SECONDS = 2592000`) | **Redis Set** of draft IDs (solo and shared combined) |
 | `lock:recipe:<targetId>:field:<fieldKey>` | Section/field soft lock | **30 Seconds** (`LOCK_TTL_SECONDS = 30`) | Lock metadata JSON `{ userId, userName, userAvatar, timestamp }` |
@@ -87,6 +87,8 @@ sequenceDiagram
 app/
 ├── services/
 │   └── draftService.ts           # Domain service (multi-slot solo drafts, shared drafts, Redis sets)
+├── utils/
+│   └── draftFormUtils.ts         # Form extraction & payload collection helpers (extractIngredientsAndSteps, collectDraftFormData)
 ├── lib/
 │   └── draftMetadata.ts          # Pure metadata utilities (generateDraftTitle, getDraftTTLInfo, getDraftProgress)
 ├── types/
@@ -117,7 +119,7 @@ Defined in [`app/utils/constants.ts`](file:///Users/jordi/.gemini/antigravity/wo
 | Constant | Value | Description |
 |---|---|---|
 | `MAX_SOLO_DRAFT_SLOTS` | `5` | Maximum number of concurrent solo draft slots allowed per user |
-| `SOLO_DRAFT_TTL_SECONDS` | `31104000` (360 days) | Expiration time for private solo drafts in Redis |
+| `SOLO_DRAFT_TTL_SECONDS` | `31536000` (365 days) | Expiration time for private solo drafts in Redis |
 | `DRAFT_TTL_SECONDS` | `604800` (7 days) | Expiration time for shared collaborative drafts in Redis |
 | `USER_DRAFTS_TTL_SECONDS` | `2592000` (30 days) | Expiration time for the user drafts index set in Redis |
 | `LOCK_TTL_SECONDS` | `30` | Expiration time for step/field soft locks |
