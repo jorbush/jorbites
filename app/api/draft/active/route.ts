@@ -6,7 +6,6 @@ import {
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { DraftService } from '@/app/services/draftService';
-import { SharedDraft } from '@/app/types/draft';
 
 export async function GET() {
     try {

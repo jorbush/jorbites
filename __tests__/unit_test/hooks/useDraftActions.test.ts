@@ -1,11 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import axios from 'axios';
+import { mutate } from 'swr';
 import { toast } from 'react-hot-toast';
 import { useDraftActions } from '@/app/hooks/useDraftActions';
 import { SafeUser } from '@/app/types';
 
 vi.mock('axios');
+vi.mock('swr', () => ({
+    mutate: vi.fn(),
+}));
 vi.mock('react-hot-toast', () => ({
     toast: {
         success: vi.fn(),
@@ -64,6 +68,7 @@ describe('useDraftActions hook', () => {
                 '/api/draft',
                 expect.any(Object)
             );
+            expect(mutate).toHaveBeenCalledWith('/api/draft/active');
             expect(onMutate).toHaveBeenCalled();
         });
 
@@ -86,6 +91,7 @@ describe('useDraftActions hook', () => {
                 '/api/draft/invite',
                 expect.any(Object)
             );
+            expect(mutate).toHaveBeenCalledWith('/api/draft/active');
         });
 
         it('handles 409 max drafts limit reached', async () => {
@@ -108,7 +114,7 @@ describe('useDraftActions hook', () => {
     });
 
     describe('deleteDraft', () => {
-        it('deletes draft via DELETE /api/draft', async () => {
+        it('deletes draft via DELETE /api/draft and mutates active drafts', async () => {
             (axios.delete as any).mockResolvedValueOnce({ data: 1 });
             const onMutate = vi.fn();
 
@@ -128,6 +134,7 @@ describe('useDraftActions hook', () => {
             expect(axios.delete).toHaveBeenCalledWith(
                 '/api/draft?draftId=draft-to-delete'
             );
+            expect(mutate).toHaveBeenCalledWith('/api/draft/active');
             expect(toast.success).toHaveBeenCalled();
             expect(onMutate).toHaveBeenCalled();
         });
@@ -189,6 +196,7 @@ describe('useDraftActions hook', () => {
                     ingredients: ['Flour', 'Eggs'],
                 })
             );
+            expect(mutate).toHaveBeenCalledWith('/api/draft/active');
             expect(toast.success).toHaveBeenCalled();
             expect(onMutate).toHaveBeenCalled();
         });
@@ -223,6 +231,7 @@ describe('useDraftActions hook', () => {
                 '/api/draft/join?draft=shared-123&token=tok-abc'
             );
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith(url);
+            expect(mutate).toHaveBeenCalledWith('/api/draft/active');
             expect(toast.success).toHaveBeenCalled();
         });
 
@@ -262,6 +271,7 @@ describe('useDraftActions hook', () => {
                 '/api/draft/invite',
                 expect.any(Object)
             );
+            expect(mutate).toHaveBeenCalledWith('/api/draft/active');
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith(url);
         });
     });

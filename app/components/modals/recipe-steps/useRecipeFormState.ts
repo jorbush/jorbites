@@ -17,11 +17,7 @@ import {
     MAX_CO_COOKS,
     MAX_LINKED_RECIPES,
 } from '@/app/utils/constants';
-import {
-    parseTextToList,
-    parseIngredientsText,
-    parseStepsText,
-} from '@/app/utils/textParser';
+import { parseIngredientsText, parseStepsText } from '@/app/utils/textParser';
 
 import { useRecipeLock } from '@/app/hooks/useRecipeLock';
 import { useDraftSync } from '@/app/hooks/useDraftSync';

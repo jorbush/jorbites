@@ -1,9 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import DraftTTLBadge, {
-    formatTTLText,
-} from '@/app/components/drafts/DraftTTLBadge';
+import DraftTTLBadge from '@/app/components/drafts/DraftTTLBadge';
+import { formatTTLText } from '@/app/lib/draftMetadata';
 import { DraftTTLInfo } from '@/app/types/draft';
 
 describe('DraftTTLBadge and formatTTLText', () => {

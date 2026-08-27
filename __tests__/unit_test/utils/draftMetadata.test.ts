@@ -5,10 +5,7 @@ import {
     getDraftProgress,
 } from '@/app/lib/draftMetadata';
 import { DraftSummary } from '@/app/types/draft';
-import {
-    DRAFT_TTL_SECONDS,
-    SOLO_DRAFT_TTL_SECONDS,
-} from '@/app/utils/constants';
+import { DRAFT_TTL_SECONDS } from '@/app/utils/constants';
 
 describe('draftMetadata utility functions', () => {
     describe('generateDraftTitle', () => {

@@ -1,6 +1,5 @@
 'use client';
 
-import { useCallback } from 'react';
 import axios from 'axios';
 import { mutate } from 'swr';
 import { toast } from 'react-hot-toast';
@@ -13,7 +12,6 @@ import {
 import { parseTextToList } from '@/app/utils/textParser';
 
 interface FormAccessor {
-    watch: (field: string) => any;
     getValues: (field: string) => any;
     setValue: (field: string, value: any) => void;
 }
@@ -94,9 +92,9 @@ export function useDraftPersistence({
                     : form.getValues('steps') || [];
         }
 
-        const currentDraftId = form.watch('draftId') || draftData?.draftId;
+        const currentDraftId = form.getValues('draftId') || draftData?.draftId;
         const currentInviteToken =
-            form.watch('inviteToken') || draftData?.inviteToken;
+            form.getValues('inviteToken') || draftData?.inviteToken;
 
         const isShared = Boolean(currentDraftId);
 
@@ -104,21 +102,21 @@ export function useDraftPersistence({
             draftId: currentDraftId,
             inviteToken: currentInviteToken,
             currentStep: stepToSave,
-            categories: form.watch('categories'),
-            method: form.watch('method'),
-            imageSrc: form.watch('imageSrc'),
-            imageSrc1: form.watch('imageSrc1'),
-            imageSrc2: form.watch('imageSrc2'),
-            imageSrc3: form.watch('imageSrc3'),
-            title: form.watch('title'),
-            description: form.watch('description'),
-            minutes: form.watch('minutes'),
-            prepTime: form.watch('prepTime'),
-            cookTime: form.watch('cookTime'),
-            coCooksIds: form.watch('coCooksIds'),
-            linkedRecipeIds: form.watch('linkedRecipeIds'),
-            youtubeUrl: form.watch('youtubeUrl'),
-            questId: form.watch('questId'),
+            categories: form.getValues('categories'),
+            method: form.getValues('method'),
+            imageSrc: form.getValues('imageSrc'),
+            imageSrc1: form.getValues('imageSrc1'),
+            imageSrc2: form.getValues('imageSrc2'),
+            imageSrc3: form.getValues('imageSrc3'),
+            title: form.getValues('title'),
+            description: form.getValues('description'),
+            minutes: form.getValues('minutes'),
+            prepTime: form.getValues('prepTime'),
+            cookTime: form.getValues('cookTime'),
+            coCooksIds: form.getValues('coCooksIds'),
+            linkedRecipeIds: form.getValues('linkedRecipeIds'),
+            youtubeUrl: form.getValues('youtubeUrl'),
+            questId: form.getValues('questId'),
             updatedAt: new Date().toISOString(),
         };
 
@@ -332,7 +330,7 @@ export function useDraftPersistence({
     };
 
     const deleteDraft = async (form: FormAccessor, draftData: any) => {
-        const currentDraftId = form.watch('draftId') || draftData?.draftId;
+        const currentDraftId = form.getValues('draftId') || draftData?.draftId;
         const url = currentDraftId
             ? `/api/draft?draftId=${currentDraftId}`
             : `/api/draft`;

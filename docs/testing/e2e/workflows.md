@@ -29,17 +29,24 @@ flowchart TD
         subgraph Job4["Container 4: Collaborative Recipes Spec"]
             T6["collaborative_recipes.cy.ts<br/>Co-Cooking & Redis Step Sync"]
         end
+
+        subgraph Job5["Container 5: Drafts Management & Navigation"]
+            T7["drafts_management.cy.ts<br/>Multi-Draft CRUD, SWR & TTL"]
+            T8["drafts_navigation.cy.ts<br/>Category Persistence & Auto-Save"]
+        end
     end
 
     redisSvc -.->|REDIS_URL| Job1
     redisSvc -.->|REDIS_URL| Job2
     redisSvc -.->|REDIS_URL| Job3
     redisSvc -.->|REDIS_URL| Job4
+    redisSvc -.->|REDIS_URL| Job5
 
     mongoSvc -.->|DATABASE_URL| Job1
     mongoSvc -.->|DATABASE_URL| Job2
     mongoSvc -.->|DATABASE_URL| Job3
     mongoSvc -.->|DATABASE_URL| Job4
+    mongoSvc -.->|DATABASE_URL| Job5
 ```
 
 ---
@@ -297,4 +304,87 @@ flowchart TD
     A["Visit Homepage '/'"] --> B["Verify Root Header & Navbar Render"]
     B --> C["Verify Jorbites Logo data-cy='logo' is visible"]
     C --> D["Verify Viewport Responsiveness"]
+```
+
+---
+
+## 8. Drafts Management & Multi-Draft Lifecycle (`drafts_management.cy.ts`)
+
+This spec validates the complete multi-draft lifecycle: empty state in `DraftsModal`, creating and auto-saving solo drafts, indicator dot activation in `RecipeModal`, switching to `DraftsModal` from within the recipe wizard, duplicating drafts, and safely deleting drafts with confirmation.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Authenticated User
+    participant Nav as Navbar / UserMenu
+    participant RM as RecipeModal (Wizard)
+    participant DM as DraftsModal (Grid)
+    participant API as Next.js API (/api/draft)
+    participant Redis as Redis (:6379)
+
+    %% Step 1: Empty State
+    User->>Nav: Click UserMenu -> "My Drafts"
+    Nav->>DM: Opens DraftsModal
+    DM->>API: GET /api/draft/active
+    API-->>DM: [] (0 active drafts)
+    DM-->>User: Render Empty State & "+ New draft" Button
+
+    %% Step 2: Create Draft & Save
+    User->>Nav: Click "Post a recipe"
+    Nav->>RM: Opens RecipeModal
+    User->>RM: Select Category "Desserts" & Enter Title "Berry Pavlova Draft"
+    User->>RM: Click "Save draft" [data-testid="load-draft-button"]
+    RM->>API: POST /api/draft
+    API->>Redis: SET draft:user:<userId>:<slotId> & SADD user:drafts:<userId>
+    API-->>RM: 200 OK -> SWR mutate('/api/draft/active')
+    User->>RM: Close RecipeModal
+
+    %% Step 3: Auto-load on Re-open & Indicator Dot
+    User->>Nav: Click "Post a recipe" again
+    Nav->>RM: Opens RecipeModal
+    RM->>API: GET /api/draft (auto-loads last modified draft)
+    RM-->>User: Form populated with "Berry Pavlova Draft" & Green indicator dot on 📂 folder
+
+    %% Step 4: Open DraftsModal from within RecipeModal
+    User->>RM: Click [data-testid="open-drafts-modal-button"]
+    RM->>DM: Close RecipeModal & Open DraftsModal
+    DM-->>User: Displays DraftCard (Title, 7-dot Progress, TTL Badge, Action Icons)
+
+    %% Step 5: Duplicate Draft
+    User->>DM: Click Duplicate [data-testid="draft-card-duplicate"]
+    DM->>API: POST /api/draft (Payload: "Berry Pavlova Draft (Copy)")
+    API->>Redis: SET new slot & SADD user:drafts:<userId>
+    API-->>DM: 200 OK -> SWR mutate -> Render 2 DraftCards (Copy sorted first by updatedAt)
+
+    %% Step 6: Delete Draft Confirmation
+    User->>DM: Click Delete [data-testid="draft-card-delete"] on copy
+    DM-->>User: Render Delete Confirmation Banner [data-testid="draft-delete-confirmation"]
+    User->>DM: Click Confirm [data-testid="draft-delete-confirm-btn"]
+    DM->>API: DELETE /api/draft?draftId=<copyId>
+    API->>Redis: DEL draft:user:<userId>:<copyId> & SREM user:drafts:<userId>
+    API-->>DM: 200 OK -> SWR mutate -> 1 DraftCard remaining ("Berry Pavlova Draft")
+
+    %% Step 7: Open Remaining Draft
+    User->>DM: Click remaining DraftCard
+    DM->>RM: Close DraftsModal & Open RecipeModal with selected draft
+```
+
+---
+
+## 9. Drafts Navigation & Auto-Save Wizard Persistence (`drafts_navigation.cy.ts`)
+
+This spec validates step-by-step navigation auto-save, category multi-select preservation across re-opening, input modes (plain text vs. multi-row dynamic inputs), and draft data integrity during wizard transitions.
+
+```mermaid
+flowchart TD
+    N1["Open RecipeModal via 'Post a recipe'"] --> N2["Step 1: Select Category 'Desserts'"]
+    N2 --> N3["Click 'Next' -> Step 2: Description"]
+    N3 --> N4["Fill Title 'Persistent Chocolate Cake' & Description"]
+    N4 --> N5["Click 'Save draft' -> Stored in Redis"]
+    N5 --> N6["Close RecipeModal"]
+    N6 --> N7["Re-open RecipeModal -> Auto-loads latest draft"]
+    N7 --> N8["Click 'Back' -> Category 'Desserts' remains selected"]
+    N8 --> N9["Navigate to Ingredients -> Fill items via plain-text mode"]
+    N9 --> N10["Navigate to Steps -> Fill items via list mode"]
+    N10 --> N11["Save Draft -> Navigate across steps without state loss"]
 ```

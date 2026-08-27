@@ -74,7 +74,7 @@ describe('DraftCard', () => {
             />
         );
 
-        fireEvent.click(screen.getByTestId('draft-card'));
+        fireEvent.click(screen.getByTestId('draft-card-title'));
         expect(onOpen).toHaveBeenCalledWith('draft-123');
         expect(onDelete).not.toHaveBeenCalled();
         expect(onDuplicate).not.toHaveBeenCalled();
@@ -139,7 +139,7 @@ describe('DraftCard', () => {
         expect(onOpen).not.toHaveBeenCalled();
     });
 
-    it('safely handles missing or invalid updatedAt without displaying NaN', () => {
+    it('safely handles missing or undefined updatedAt without displaying NaN', () => {
         const draftWithoutDate: DraftSummary = {
             ...mockDraft,
             updatedAt: undefined as any,
@@ -148,6 +148,25 @@ describe('DraftCard', () => {
         render(
             <DraftCard
                 draft={draftWithoutDate}
+                onOpen={vi.fn()}
+                onDelete={vi.fn()}
+                onDuplicate={vi.fn()}
+            />
+        );
+
+        expect(screen.getByText('draft_just_now')).toBeInTheDocument();
+        expect(screen.queryByText(/NaN/)).not.toBeInTheDocument();
+    });
+
+    it('safely handles malformed updatedAt strings without displaying NaN', () => {
+        const draftWithMalformedDate: DraftSummary = {
+            ...mockDraft,
+            updatedAt: 'not-a-valid-date-format',
+        };
+
+        render(
+            <DraftCard
+                draft={draftWithMalformedDate}
                 onOpen={vi.fn()}
                 onDelete={vi.fn()}
                 onDuplicate={vi.fn()}

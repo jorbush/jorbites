@@ -155,7 +155,7 @@ describe('DraftsModal component', () => {
 
         render(<DraftsModal currentUser={mockCurrentUser} />);
 
-        fireEvent.click(screen.getByTestId('draft-card'));
+        fireEvent.click(screen.getByTestId('draft-card-title'));
 
         expect(mockDraftsModal.onClose).toHaveBeenCalled();
         expect(mockRecipeModal.onOpenSharedDraft).toHaveBeenCalledWith(
@@ -187,14 +187,20 @@ describe('DraftsModal component', () => {
         // Click delete on card
         fireEvent.click(screen.getByTestId('draft-card-delete'));
 
-        // Delete confirmation box appears
+        // Delete confirmation box appears with confirm and cancel buttons
         expect(
             screen.getByTestId('draft-delete-confirmation')
         ).toBeInTheDocument();
         expect(screen.getByText('delete_draft_confirm')).toBeInTheDocument();
+        expect(
+            screen.getByTestId('draft-delete-confirm-btn')
+        ).toBeInTheDocument();
+        expect(
+            screen.getByTestId('draft-delete-cancel-btn')
+        ).toBeInTheDocument();
 
-        // Confirm delete
-        fireEvent.click(screen.getByText('delete_draft'));
+        // Confirm delete via testid
+        fireEvent.click(screen.getByTestId('draft-delete-confirm-btn'));
 
         await waitFor(() => {
             expect(mockDeleteDraft).toHaveBeenCalledWith('draft-to-delete');
@@ -227,8 +233,8 @@ describe('DraftsModal component', () => {
             screen.getByTestId('draft-delete-confirmation')
         ).toBeInTheDocument();
 
-        // Click cancel
-        fireEvent.click(screen.getByText('cancel'));
+        // Click cancel via testid
+        fireEvent.click(screen.getByTestId('draft-delete-cancel-btn'));
 
         expect(
             screen.queryByTestId('draft-delete-confirmation')

@@ -109,16 +109,19 @@ const DraftCard: React.FC<DraftCardProps> = ({
     return (
         <div
             data-testid="draft-card"
-            onClick={handleOpen}
-            className="group relative flex cursor-pointer flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:p-5 dark:border-neutral-800 dark:bg-neutral-900"
+            className="group relative flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:p-5 dark:border-neutral-800 dark:bg-neutral-900"
         >
             <div className="flex items-start justify-between gap-2">
-                <h3
-                    data-testid="draft-card-title"
-                    className="truncate text-base font-semibold text-neutral-900 dark:text-neutral-100"
-                    title={title}
-                >
-                    {title}
+                <h3 className="truncate text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                    <button
+                        type="button"
+                        data-testid="draft-card-title"
+                        onClick={handleOpen}
+                        className="cursor-pointer text-left font-semibold after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
+                        title={title}
+                    >
+                        {title}
+                    </button>
                 </h3>
                 <div className="shrink-0">
                     <span
@@ -141,7 +144,7 @@ const DraftCard: React.FC<DraftCardProps> = ({
 
             <div
                 data-testid="draft-card-progress"
-                className="mt-1"
+                className="relative z-10 mt-1"
             >
                 <DraftProgressBar progress={progress} />
             </div>
@@ -166,7 +169,7 @@ const DraftCard: React.FC<DraftCardProps> = ({
                     </div>
                 )}
 
-            <div className="mt-2 flex items-center justify-between">
+            <div className="relative z-10 mt-2 flex items-center justify-between">
                 <div data-testid="draft-card-ttl">
                     <DraftTTLBadge ttlInfo={ttlInfo} />
                 </div>

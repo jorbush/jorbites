@@ -570,15 +570,17 @@ export class DraftService {
 
             const draftIds = await this.getUserDraftIds(userId);
             let deletedAny = Boolean(del1 || del2);
-            for (const id of draftIds) {
-                const soloKey = `draft:user:${userId}:${id}`;
-                const raw = await redis.get(soloKey);
-                if (raw) {
-                    await redis.del(soloKey);
-                    await this.removeFromUserDrafts(userId, id);
-                    deletedAny = true;
-                }
-            }
+            await Promise.all(
+                draftIds.map(async (id) => {
+                    const soloKey = `draft:user:${userId}:${id}`;
+                    const raw = await redis.get(soloKey);
+                    if (raw) {
+                        await redis.del(soloKey);
+                        await this.removeFromUserDrafts(userId, id);
+                        deletedAny = true;
+                    }
+                })
+            );
 
             return deletedAny;
         }
@@ -586,33 +588,38 @@ export class DraftService {
 
     static async getAllUserDrafts(userId: string): Promise<any[]> {
         const draftIds = await this.getUserDraftIds(userId);
-        const results = [];
 
-        for (const id of draftIds) {
-            const shared = await this.getSharedDraft(id);
-            if (shared) {
-                const updatedAt =
-                    shared.updatedAt ||
-                    (shared as any).createdAt ||
-                    new Date().toISOString();
-                results.push({ ...shared, updatedAt, type: 'shared' });
-                continue;
-            }
-
-            const soloRaw = await redis.get(`draft:user:${userId}:${id}`);
-            if (soloRaw) {
-                try {
-                    const solo = JSON.parse(soloRaw);
+        const draftItems = await Promise.all(
+            draftIds.map(async (id) => {
+                const shared = await this.getSharedDraft(id);
+                if (shared) {
                     const updatedAt =
-                        solo.updatedAt ||
-                        solo.createdAt ||
+                        shared.updatedAt ||
+                        (shared as any).createdAt ||
                         new Date().toISOString();
-                    results.push({ ...solo, updatedAt, type: 'solo' });
-                } catch {}
-            } else {
-                await this.removeFromUserDrafts(userId, id);
-            }
-        }
+                    return { ...shared, updatedAt, type: 'shared' };
+                }
+
+                const soloRaw = await redis.get(`draft:user:${userId}:${id}`);
+                if (soloRaw) {
+                    try {
+                        const solo = JSON.parse(soloRaw);
+                        const updatedAt =
+                            solo.updatedAt ||
+                            solo.createdAt ||
+                            new Date().toISOString();
+                        return { ...solo, updatedAt, type: 'solo' };
+                    } catch {
+                        return null;
+                    }
+                } else {
+                    await this.removeFromUserDrafts(userId, id);
+                    return null;
+                }
+            })
+        );
+
+        const results = draftItems.filter(Boolean);
 
         results.sort((a, b) => {
             const aDate = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;

@@ -160,13 +160,10 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
         });
 
         it('loads the most recently updated draft by default when slotId is omitted and multi-slot drafts exist', async () => {
-            const slotOlder = await DraftService.saveSingleUserDraft(
-                'user-multi-1',
-                {
-                    title: 'Older Draft',
-                    updatedAt: '2026-08-10T10:00:00.000Z',
-                }
-            );
+            await DraftService.saveSingleUserDraft('user-multi-1', {
+                title: 'Older Draft',
+                updatedAt: '2026-08-10T10:00:00.000Z',
+            });
 
             const slotNewer = await DraftService.saveSingleUserDraft(
                 'user-multi-1',
@@ -218,6 +215,31 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
             const store = (redis as any)._store;
             expect(store[`draft:user:user-multi-1:${slotId}`]).toBeUndefined();
         });
+
+        it('deleteSharedDraft deletes both shared key and any matching solo slot key', async () => {
+            const draftId = 'shared-and-solo-id';
+            const store = (redis as any)._store;
+            store[`draft:shared:${draftId}`] = JSON.stringify({
+                draftId,
+                ownerId: 'user-multi-1',
+                title: 'Dual Key Draft',
+            });
+            store[`draft:user:user-multi-1:${draftId}`] = JSON.stringify({
+                draftId,
+                title: 'Solo Copy',
+            });
+            await DraftService.addToUserDrafts('user-multi-1', draftId);
+
+            const deleted = await DraftService.deleteSharedDraft(
+                draftId,
+                mockUser
+            );
+            expect(deleted).toBe(true);
+            expect(store[`draft:shared:${draftId}`]).toBeUndefined();
+            expect(store[`draft:user:user-multi-1:${draftId}`]).toBeUndefined();
+            const draftIds = await DraftService.getUserDraftIds('user-multi-1');
+            expect(draftIds).not.toContain(draftId);
+        });
     });
 
     describe('getAllUserDrafts', () => {
@@ -232,7 +254,7 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
             );
 
             // 2. Create a shared draft
-            const sharedDraft = await DraftService.saveSharedDraft(
+            await DraftService.saveSharedDraft(
                 'shared-pizza',
                 {
                     title: 'Shared Pizza',

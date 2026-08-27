@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
+import { mutate } from 'swr';
 import { useRecipeFormState } from '@/app/components/modals/recipe-steps/useRecipeFormState';
 
 // Mocks
@@ -806,6 +807,7 @@ describe('useRecipeFormState hook', () => {
         expect(callPayload.title).toBe('Solo Pizza');
         expect(callPayload.ingredients).toBeDefined();
         expect(callPayload.steps).toBeDefined();
+        expect(mutate).toHaveBeenCalledWith('/api/draft/active');
     });
 
     it('preserves user selected coCooksIds and linkedRecipeIds when advancing steps with empty remote draft array', async () => {

@@ -72,7 +72,6 @@ const RecipeModalContent: React.FC<{
         selectQuest,
         removeQuest,
         saveDraft,
-        copyInviteLink,
         lock,
         addIngredientInput,
         removeIngredientInput,
@@ -202,7 +201,6 @@ const RecipeModalContent: React.FC<{
 
 const RecipeModalComponent: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const recipeModal = useRecipeModal();
-    const { t } = useTranslation();
     const searchParams = useSearchParams();
     const draftQueryParam = searchParams?.get('draft');
     const currentUserRef = useRef<SafeUser | null>(currentUser || null);
@@ -211,8 +209,6 @@ const RecipeModalComponent: React.FC<RecipeModalProps> = ({ currentUser }) => {
     useEffect(() => {
         currentUserRef.current = currentUser || null;
     }, [currentUser]);
-
-    const activeDraftId = recipeModal.activeDraftId || draftQueryParam;
 
     const isOpen = recipeModal.isOpen;
     const isEditMode = recipeModal.isEditMode;

@@ -14,9 +14,9 @@ const DraftProgressBar: React.FC<DraftProgressBarProps> = ({ progress }) => {
             className="flex flex-row items-center gap-1.5"
             data-testid="draft-progress-bar"
         >
-            {progress.stepDetails.map((step, idx) => (
+            {progress.stepDetails.map((step) => (
                 <Tooltip
-                    key={idx}
+                    key={step.name}
                     text={step.name}
                     position="top"
                 >
