@@ -91,6 +91,8 @@ export function useDraftActions({
                     t('draft_deleted', { defaultValue: 'Draft deleted' })
                 );
                 mutate('/api/draft/active');
+                mutate('/api/draft');
+                mutate(`/api/draft?draftId=${encodeURIComponent(draftId)}`);
                 if (onDraftMutate) {
                     await onDraftMutate();
                 }

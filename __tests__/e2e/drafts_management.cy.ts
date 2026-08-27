@@ -123,4 +123,63 @@ describe('Drafts Management & Multi-Draft E2E', () => {
         cy.get('[data-testid="draft-card"]').click();
         cy.get('[data-testid="modal-title"]').should('be.visible');
     });
+
+    it('deleting all drafts completely cleans up state so opening RecipeModal after refresh starts with a clean empty form', () => {
+        // Step 1: Create Draft A
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+        cy.get('[data-cy="category-box-Desserts"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+        cy.get('[data-cy="recipe-title"]').type('Draft A Pavlova');
+        cy.get('[data-cy="recipe-description"]').type('Delicious dessert');
+        cy.intercept('POST', '/api/draft').as('saveDraftA');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveDraftA');
+        cy.get('[data-testid="close-modal-button"]').click();
+
+        // Step 2: Open DraftsModal and duplicate to have multiple drafts
+        cy.get('[data-cy="user-menu"]').click();
+        cy.get('[data-cy="user-menu-my-drafts"]').should('be.visible').click();
+        cy.get('[data-testid="drafts-modal"]').should('be.visible');
+        cy.get('[data-testid="draft-card"]').should('have.length', 1);
+
+        cy.intercept('POST', '/api/draft').as('duplicateDraft');
+        cy.get('[data-testid="draft-card-duplicate"]').first().click();
+        cy.wait('@duplicateDraft');
+        cy.get('[data-testid="draft-card"]').should('have.length', 2);
+
+        // Step 3: Delete first draft
+        cy.intercept('DELETE', '/api/draft*').as('deleteFirst');
+        cy.get('[data-testid="draft-card-delete"]').first().click();
+        cy.get('[data-testid="draft-delete-confirm-btn"]').click();
+        cy.wait('@deleteFirst');
+        cy.get('[data-testid="draft-card"]').should('have.length', 1);
+
+        // Step 4: Delete second (last) draft
+        cy.intercept('DELETE', '/api/draft*').as('deleteLast');
+        cy.get('[data-testid="draft-card-delete"]').first().click();
+        cy.get('[data-testid="draft-delete-confirm-btn"]').click();
+        cy.wait('@deleteLast');
+
+        // Step 5: Verify empty state in DraftsModal
+        cy.get('[data-testid="drafts-modal-empty-state"]').should('be.visible');
+        cy.get('[data-testid="close-modal-button"]').click();
+
+        // Step 6: Reload the page
+        cy.reload();
+        cy.ensureEnglish();
+
+        // Step 7: Open RecipeModal afresh -> should be completely clean (no ghost draft)
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+        cy.get('[data-testid="drafts-indicator-dot"]').should('not.exist');
+        cy.contains('(0/3)').should('be.visible');
+        cy.get('.selected').should('not.exist');
+
+        // Advance to step 1 and verify fields are blank
+        cy.get('[data-cy="category-box-Desserts"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+        cy.get('[data-cy="recipe-title"]').should('have.value', '');
+        cy.get('[data-cy="recipe-description"]').should('have.value', '');
+    });
 });

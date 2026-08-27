@@ -310,5 +310,54 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
                 await DraftService.getUserDraftIds('user-multi-1');
             expect(remaining.length).toBe(0);
         });
+
+        it('cleans up legacy shadow key and returns null when all drafts are deleted', async () => {
+            const store = (redis as any)._store;
+            const slot1 = await DraftService.saveSingleUserDraft(
+                'user-multi-1',
+                {
+                    title: 'Draft 1',
+                    categories: ['dinner'],
+                }
+            );
+            const slot2 = await DraftService.saveSingleUserDraft(
+                'user-multi-1',
+                {
+                    title: 'Draft 2',
+                    categories: ['dessert'],
+                }
+            );
+
+            expect(store['draft:user:user-multi-1']).toBeDefined();
+
+            // Delete slot 1
+            await DraftService.deleteSingleUserDraft('user-multi-1', slot1);
+            expect(store['draft:user:user-multi-1']).toBeDefined();
+
+            // Delete slot 2 (all drafts now deleted)
+            await DraftService.deleteSingleUserDraft('user-multi-1', slot2);
+            expect(store['draft:user:user-multi-1']).toBeUndefined();
+            expect(store['user-multi-1']).toBeUndefined();
+
+            // getSingleUserDraft should return null (no ghost drafts)
+            const draft = await DraftService.getSingleUserDraft('user-multi-1');
+            expect(draft).toBeNull();
+        });
+
+        it('detects and purges stale ghost shadow keys when slotted draft was already deleted', async () => {
+            const store = (redis as any)._store;
+            // Simulate orphaned shadow key pointing to an already-deleted draft
+            store['draft:user:user-ghost-1'] = JSON.stringify({
+                draftId: 'deleted-draft-id',
+                title: 'Ghost Draft',
+                categories: ['quick'],
+            });
+
+            // No active draft IDs in user:drafts:user-ghost-1
+            const draft = await DraftService.getSingleUserDraft('user-ghost-1');
+            expect(draft).toBeNull();
+            expect(store['draft:user:user-ghost-1']).toBeUndefined();
+            expect(store['user-ghost-1']).toBeUndefined();
+        });
     });
 });

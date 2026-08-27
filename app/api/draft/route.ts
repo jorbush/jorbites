@@ -189,7 +189,7 @@ export async function DELETE(request: Request) {
             try {
                 await DraftService.deleteSharedDraft(draftId, currentUser);
 
-                logger.info('DELETE /api/draft - success (shared/slot)', {
+                logger.info('DELETE /api/draft - success (draftId)', {
                     userId: currentUser.id,
                     draftId,
                 });

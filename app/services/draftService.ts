@@ -432,7 +432,16 @@ export class DraftService {
         ]);
 
         await Promise.all(
-            participants.map((uid) => this.removeFromUserDrafts(uid, draftId))
+            participants.map(async (uid) => {
+                await this.removeFromUserDrafts(uid, draftId);
+                const remaining = await this.getUserDraftIds(uid);
+                if (remaining.length === 0) {
+                    await Promise.all([
+                        redis.del(`draft:user:${uid}`),
+                        redis.del(uid),
+                    ]);
+                }
+            })
         );
 
         return true;
@@ -459,9 +468,16 @@ export class DraftService {
 
             if (participants.length > 0) {
                 await Promise.all(
-                    participants.map((uid) =>
-                        this.removeFromUserDrafts(uid, draftId)
-                    )
+                    participants.map(async (uid) => {
+                        await this.removeFromUserDrafts(uid, draftId);
+                        const remaining = await this.getUserDraftIds(uid);
+                        if (remaining.length === 0) {
+                            await Promise.all([
+                                redis.del(`draft:user:${uid}`),
+                                redis.del(uid),
+                            ]);
+                        }
+                    })
                 );
             }
         } catch (error: any) {
@@ -517,7 +533,38 @@ export class DraftService {
         }
         if (!raw) return null;
         try {
-            return JSON.parse(raw);
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') {
+                // If the legacy draft has a draftId, verify that the slotted/shared draft still exists
+                if (parsed.draftId) {
+                    const slottedExists = await redis.get(
+                        `draft:user:${userId}:${parsed.draftId}`
+                    );
+                    const sharedExists = await redis.get(
+                        `draft:shared:${parsed.draftId}`
+                    );
+                    if (!slottedExists && !sharedExists) {
+                        // Stale ghost shadow key from an already-deleted draft! Clean up immediately.
+                        await Promise.all([
+                            redis.del(`draft:user:${userId}`),
+                            redis.del(userId),
+                        ]);
+                        return null;
+                    }
+                } else {
+                    // True un-indexed legacy draft without draftId: migrate to multi-slot
+                    const legacyId = crypto.randomUUID();
+                    parsed.draftId = legacyId;
+                    await this.addToUserDrafts(userId, legacyId);
+                    await redis.set(
+                        `draft:user:${userId}:${legacyId}`,
+                        JSON.stringify(parsed),
+                        'EX',
+                        SOLO_DRAFT_TTL_SECONDS
+                    );
+                }
+            }
+            return parsed;
         } catch {
             return null;
         }
@@ -573,6 +620,47 @@ export class DraftService {
         if (slotId) {
             const del = await redis.del(`draft:user:${userId}:${slotId}`);
             await this.removeFromUserDrafts(userId, slotId);
+
+            const remaining = await this.getUserDraftIds(userId);
+            if (remaining.length === 0) {
+                await Promise.all([
+                    redis.del(`draft:user:${userId}`),
+                    redis.del(userId),
+                ]);
+            } else {
+                // Clean up or update legacy key if it held this draft
+                const legacyRaw = await redis.get(`draft:user:${userId}`);
+                if (legacyRaw) {
+                    try {
+                        const parsed = JSON.parse(legacyRaw);
+                        if (parsed.draftId === slotId) {
+                            const latest = await this.getSingleUserDraft(
+                                userId,
+                                remaining[0]
+                            );
+                            if (latest) {
+                                await redis.set(
+                                    `draft:user:${userId}`,
+                                    JSON.stringify(latest),
+                                    'EX',
+                                    SOLO_DRAFT_TTL_SECONDS
+                                );
+                            } else {
+                                await Promise.all([
+                                    redis.del(`draft:user:${userId}`),
+                                    redis.del(userId),
+                                ]);
+                            }
+                        }
+                    } catch {
+                        await Promise.all([
+                            redis.del(`draft:user:${userId}`),
+                            redis.del(userId),
+                        ]);
+                    }
+                }
+            }
+
             return Boolean(del);
         } else {
             const [del1, del2] = await Promise.all([
