@@ -213,9 +213,19 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
             .click();
         cy.get('[data-cy="recipe-title"]').type('Shared Breakfast Bowl');
 
-        // Click Copy Invite Link button in header
+        // Save draft and wait for save to complete in Redis
+        cy.intercept('POST', '/api/draft').as('saveDraft');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveDraft');
+
+        // Open DraftsModal and copy invite link from draft card
         cy.intercept('POST', '/api/draft/invite').as('generateInvite');
-        cy.get('[data-testid="copy-co-cook-link-button"]').click();
+        cy.get('[data-testid="open-drafts-modal-button"]').click();
+        cy.get('[data-testid="drafts-modal"]').should('be.visible');
+        cy.get('[data-testid="draft-card"]', { timeout: 10000 }).should(
+            'be.visible'
+        );
+        cy.get('[data-testid="draft-card-share"]').first().click();
 
         let generatedDraftId = '';
         let generatedToken = '';
@@ -237,9 +247,8 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
             'be.visible'
         );
 
-        // Close modal and verify query param cleanup
+        // Close drafts modal
         cy.get('[data-testid="close-modal-button"]').click();
-        cy.url().should('not.include', 'draft=');
 
         // Now test joining the shared draft via tokenized URL
         cy.task('log', '=== Joining Shared Draft via Join URL ===');

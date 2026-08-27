@@ -27,6 +27,8 @@ jobs:
                       spec: '__tests__/e2e/user.cy.ts,__tests__/e2e/app.cy.ts'
                     - name: 'Collaborative Recipes'
                       spec: '__tests__/e2e/collaborative_recipes.cy.ts'
+                    - name: 'Drafts Management & Navigation'
+                      spec: '__tests__/e2e/drafts_management.cy.ts,__tests__/e2e/drafts_navigation.cy.ts'
         services:
             redis:
                 image: redis

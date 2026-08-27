@@ -8,11 +8,13 @@ import useLoginModal from '@/app/hooks/useLoginModal';
 import { signOut } from 'next-auth/react';
 import { SafeUser } from '@/app/types';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
+import useDraftsModal from '@/app/hooks/useDraftsModal';
 import useSettingsModal from '@/app/hooks/useSettingsModal';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import {
     FcAddImage,
+    FcDocument,
     FcManager,
     FcLike,
     FcIdea,
@@ -33,6 +35,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
     const registerModal = useRegisterModal();
     const loginModal = useLoginModal();
     const recipeModal = useRecipeModal();
+    const draftsModal = useDraftsModal();
     const settingsModal = useSettingsModal();
     const [isOpen, setIsOpen] = useState(false);
     const { t } = useTranslation();
@@ -116,12 +119,21 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                             <>
                                 <MenuItem
                                     onClick={() => {
-                                        recipeModal.onOpen();
+                                        onPost();
                                         toggleOpen();
                                     }}
                                     label={t('post_recipe')}
                                     extraClasses="sm:hidden"
                                     icon={FcAddImage}
+                                />
+                                <MenuItem
+                                    onClick={() => {
+                                        draftsModal.onOpen();
+                                        toggleOpen();
+                                    }}
+                                    label={t('my_drafts') || 'My Drafts'}
+                                    icon={FcDocument}
+                                    dataCy="user-menu-my-drafts"
                                 />
                                 <MenuItem
                                     onClick={() => {

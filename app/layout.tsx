@@ -38,6 +38,9 @@ const AddToListModal = dynamicImport(
 const RecipeBookModal = dynamicImport(
     () => import('@/app/components/modals/RecipeBookModal')
 );
+const DraftsModal = dynamicImport(
+    () => import('@/app/components/modals/DraftsModal')
+);
 
 const SpeedInsights = dynamicImport<{}>(() =>
     import('@vercel/speed-insights/next').then((mod) => ({
@@ -125,6 +128,7 @@ export default async function RootLayout({
                     <QuestModal />
                     <AddToListModal />
                     <RecipeBookModal />
+                    <DraftsModal currentUser={currentUser} />
                     <Suspense fallback={null}>
                         <Navbar currentUser={currentUser} />
                     </Suspense>

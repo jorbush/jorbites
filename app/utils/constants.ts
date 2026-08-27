@@ -115,3 +115,5 @@ export const LOCK_TTL_SECONDS = 30; // 30 seconds
 export const LOCK_HEARTBEAT_INTERVAL_MS = 10000; // 10 seconds
 export const LOCK_POLL_INTERVAL_MS = 4000; // 4 seconds
 export const SHARED_DRAFT_POLL_INTERVAL_MS = 8000; // 8 seconds
+export const MAX_SOLO_DRAFT_SLOTS = 5;
+export const SOLO_DRAFT_TTL_SECONDS = 31104000; // 360 days

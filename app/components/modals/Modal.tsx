@@ -131,10 +131,12 @@ const Modal: React.FC<ModalProps> = ({
                                 </button>
                                 <div
                                     data-testid="modal-title"
-                                    className="flex items-center justify-center text-lg font-semibold text-black dark:text-neutral-100"
+                                    className="flex max-w-[calc(100%-140px)] items-center justify-center truncate text-lg font-semibold text-black dark:text-neutral-100"
                                 >
-                                    {Icon && <Icon className="mr-2 text-xl" />}
-                                    {title}
+                                    {Icon && (
+                                        <Icon className="mr-2 shrink-0 text-xl" />
+                                    )}
+                                    <span className="truncate">{title}</span>
                                 </div>
                                 <div className="absolute right-9 p-1">
                                     {topButton}

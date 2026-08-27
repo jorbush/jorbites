@@ -1,10 +1,11 @@
 'use client';
 
 import { useRef, useEffect, useCallback, Suspense } from 'react';
-import useSWR from 'swr';
 import { useSearchParams } from 'next/navigation';
+import useSWR from 'swr';
 import { axiosFetcher } from '@/app/utils/fetcher';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
+import useDraftsModal from '@/app/hooks/useDraftsModal';
 import Modal from '@/app/components/modals/Modal';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
@@ -21,11 +22,26 @@ interface RecipeModalProps {
 const RecipeModalContent: React.FC<{
     currentUser?: SafeUser | null;
     recipeModal: any;
-    draftData?: any;
-    mutateDraft?: () => Promise<any>;
     onClose: () => void;
-}> = ({ currentUser, recipeModal, draftData, mutateDraft, onClose }) => {
+}> = ({ currentUser, recipeModal, onClose }) => {
     const { t } = useTranslation();
+    const draftsModal = useDraftsModal();
+    const { data: activeDrafts } = useSWR<any[]>(
+        recipeModal.isOpen && currentUser ? '/api/draft/active' : null,
+        axiosFetcher,
+        {
+            revalidateOnFocus: true,
+            revalidateOnMount: true,
+            dedupingInterval: 0,
+        }
+    );
+    const hasDrafts = Boolean(activeDrafts && activeDrafts.length > 0);
+
+    const handleOpenDrafts = useCallback(() => {
+        onClose();
+        draftsModal.onOpen();
+    }, [onClose, draftsModal]);
+
     const {
         step,
         numIngredients,
@@ -69,11 +85,11 @@ const RecipeModalContent: React.FC<{
         onBack,
         onSubmit,
         setCustomValue,
+        draftData,
+        isLoadingDraft,
     } = useRecipeFormState({
         recipeModal,
         currentUser,
-        draftData,
-        mutateDraft,
     });
 
     const isCurrentStepLocked = lock?.isLockedByOther(`step:${step}`);
@@ -96,6 +112,24 @@ const RecipeModalContent: React.FC<{
         isCurrentStepLocked ||
         otherActiveLocks.length > 0
     );
+
+    if (isLoadingDraft && !draftData) {
+        return (
+            <Modal
+                isOpen={recipeModal.isOpen}
+                onClose={onClose}
+                onSubmit={() => {}}
+                actionLabel=""
+                title={
+                    recipeModal.isEditMode
+                        ? (t('edit_recipe') ?? 'Edit recipe')
+                        : (t('post_recipe') ?? 'Post a recipe')
+                }
+                body={<Loader height="400px" />}
+                isLoading={true}
+            />
+        );
+    }
 
     return (
         <Modal
@@ -156,8 +190,9 @@ const RecipeModalContent: React.FC<{
             topButton={
                 !recipeModal.isEditMode ? (
                     <RecipeModalTopActions
-                        onCopyInviteLink={copyInviteLink}
                         onSaveDraft={saveDraft}
+                        onOpenDrafts={handleOpenDrafts}
+                        hasDrafts={hasDrafts}
                     />
                 ) : undefined
             }
@@ -212,56 +247,14 @@ const RecipeModalComponent: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
     }, [recipeModal]);
 
-    const draftEndpoint = activeDraftId
-        ? `/api/draft?draftId=${activeDraftId}`
-        : `/api/draft`;
-
-    const {
-        data: draftData,
-        isLoading: isLoadingDraft,
-        mutate: mutateDraft,
-    } = useSWR(
-        recipeModal.isOpen && !recipeModal.isEditMode && currentUserRef.current
-            ? draftEndpoint
-            : null,
-        axiosFetcher,
-        {
-            revalidateOnFocus: true,
-            revalidateOnReconnect: true,
-            refreshInterval: 3000,
-            shouldRetryOnError: false,
-            keepPreviousData: true,
-        }
-    );
-
     if (!recipeModal.isOpen) {
         return null;
-    }
-
-    if (isLoadingDraft && !draftData) {
-        return (
-            <Modal
-                isOpen={recipeModal.isOpen}
-                onClose={handleClose}
-                onSubmit={() => {}}
-                actionLabel=""
-                title={
-                    recipeModal.isEditMode
-                        ? (t('edit_recipe') ?? 'Edit recipe')
-                        : (t('post_recipe') ?? 'Post a recipe')
-                }
-                body={<Loader height="400px" />}
-                isLoading={true}
-            />
-        );
     }
 
     return (
         <RecipeModalContent
             currentUser={currentUser}
             recipeModal={recipeModal}
-            draftData={draftData}
-            mutateDraft={mutateDraft}
             onClose={handleClose}
         />
     );

@@ -17,6 +17,7 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('swr', () => ({
     default: () => ({ data: null, isLoading: false }),
+    mutate: vi.fn(),
 }));
 
 vi.mock('axios', () => ({

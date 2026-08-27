@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { redis } from '@/app/lib/redis';
 import { releaseAllLocks } from '@/app/lib/redisLock';
 import { logger } from '@/app/lib/axiom/server';
@@ -8,6 +9,8 @@ import {
     USER_DRAFTS_TTL_SECONDS,
     MAX_CO_COOKS,
     MAX_LINKED_RECIPES,
+    MAX_SOLO_DRAFT_SLOTS,
+    SOLO_DRAFT_TTL_SECONDS,
 } from '@/app/utils/constants';
 
 const ALLOWED_DRAFT_FIELDS: (keyof SharedDraft)[] = [
@@ -422,7 +425,11 @@ export class DraftService {
             ).filter(Boolean);
         }
 
-        await Promise.all([redis.del(key), releaseAllLocks(draftId)]);
+        await Promise.all([
+            redis.del(key),
+            redis.del(`draft:user:${currentUser.id}:${draftId}`),
+            releaseAllLocks(draftId),
+        ]);
 
         await Promise.all(
             participants.map((uid) => this.removeFromUserDrafts(uid, draftId))
@@ -469,9 +476,35 @@ export class DraftService {
      * Single-user draft helpers.
      */
     static async getSingleUserDraft(
-        userId: string
+        userId: string,
+        slotId?: string
     ): Promise<SingleDraft | null> {
-        let raw = await redis.get(`draft:user:${userId}`);
+        let raw;
+        if (slotId) {
+            raw = await redis.get(`draft:user:${userId}:${slotId}`);
+            if (!raw) return null;
+            try {
+                return JSON.parse(raw);
+            } catch {
+                return null;
+            }
+        }
+
+        // When no slotId is specified, load the user's most recently modified draft
+        const allDrafts = await this.getAllUserDrafts(userId);
+        if (allDrafts && allDrafts.length > 0) {
+            const latest = allDrafts[0];
+            if (latest.type === 'shared') {
+                return (await this.getSharedDraft(
+                    latest.draftId,
+                    userId
+                )) as any;
+            }
+            return latest;
+        }
+
+        // Fallback for legacy un-indexed keys
+        raw = await redis.get(`draft:user:${userId}`);
         if (!raw) {
             raw = await redis.get(userId);
         }
@@ -485,20 +518,108 @@ export class DraftService {
 
     static async saveSingleUserDraft(
         userId: string,
-        data: SingleDraft
-    ): Promise<void> {
+        data: SingleDraft,
+        slotId?: string
+    ): Promise<string> {
+        const id = slotId || crypto.randomUUID();
+
+        if (!slotId) {
+            const drafts = await this.getUserDraftIds(userId);
+            if (drafts.length >= MAX_SOLO_DRAFT_SLOTS) {
+                throw new Error('MAX_SOLO_DRAFTS_REACHED');
+            }
+        }
+
+        const nowIso = new Date().toISOString();
+        data.draftId = id;
+        data.updatedAt = data.updatedAt || nowIso;
+        if (!data.createdAt) {
+            data.createdAt = data.updatedAt;
+        }
         const serialized = JSON.stringify(data);
+
+        await redis.set(
+            `draft:user:${userId}:${id}`,
+            serialized,
+            'EX',
+            SOLO_DRAFT_TTL_SECONDS
+        );
+        await this.addToUserDrafts(userId, id);
+
         await Promise.all([
             redis.set(`draft:user:${userId}`, serialized),
             redis.set(userId, serialized),
         ]);
+
+        return id;
     }
 
-    static async deleteSingleUserDraft(userId: string): Promise<boolean> {
-        const [del1, del2] = await Promise.all([
-            redis.del(`draft:user:${userId}`),
-            redis.del(userId),
-        ]);
-        return Boolean(del1 || del2);
+    static async deleteSingleUserDraft(
+        userId: string,
+        slotId?: string
+    ): Promise<boolean> {
+        if (slotId) {
+            const del = await redis.del(`draft:user:${userId}:${slotId}`);
+            await this.removeFromUserDrafts(userId, slotId);
+            return Boolean(del);
+        } else {
+            const [del1, del2] = await Promise.all([
+                redis.del(`draft:user:${userId}`),
+                redis.del(userId),
+            ]);
+
+            const draftIds = await this.getUserDraftIds(userId);
+            let deletedAny = Boolean(del1 || del2);
+            for (const id of draftIds) {
+                const soloKey = `draft:user:${userId}:${id}`;
+                const raw = await redis.get(soloKey);
+                if (raw) {
+                    await redis.del(soloKey);
+                    await this.removeFromUserDrafts(userId, id);
+                    deletedAny = true;
+                }
+            }
+
+            return deletedAny;
+        }
+    }
+
+    static async getAllUserDrafts(userId: string): Promise<any[]> {
+        const draftIds = await this.getUserDraftIds(userId);
+        const results = [];
+
+        for (const id of draftIds) {
+            const shared = await this.getSharedDraft(id);
+            if (shared) {
+                const updatedAt =
+                    shared.updatedAt ||
+                    (shared as any).createdAt ||
+                    new Date().toISOString();
+                results.push({ ...shared, updatedAt, type: 'shared' });
+                continue;
+            }
+
+            const soloRaw = await redis.get(`draft:user:${userId}:${id}`);
+            if (soloRaw) {
+                try {
+                    const solo = JSON.parse(soloRaw);
+                    const updatedAt =
+                        solo.updatedAt ||
+                        solo.createdAt ||
+                        new Date().toISOString();
+                    results.push({ ...solo, updatedAt, type: 'solo' });
+                } catch {}
+            } else {
+                await this.removeFromUserDrafts(userId, id);
+            }
+        }
+
+        results.sort((a, b) => {
+            const aDate = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+            const bDate = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+            return bDate - aDate;
+        });
+
+        return results;
     }
 }

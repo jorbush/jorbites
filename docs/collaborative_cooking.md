@@ -67,10 +67,13 @@ sequenceDiagram
 
 | Key Format                                | Purpose                        | TTL                                               | Content / Structure                                                              |
 | ----------------------------------------- | ------------------------------ | ------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `draft:user:<userId>`                     | Single-user draft storage      | Persistent until publish/delete                   | Recipe draft JSON                                                                |
+| `draft:user:<userId>:<slotId>`            | Multi-slot solo draft storage  | **360 Days** (`SOLO_DRAFT_TTL_SECONDS = 31104000`) | Recipe draft JSON (up to 5 slots per user)                                       |
+| `draft:user:<userId>`                     | Legacy single-user draft       | **360 Days** (backward compatible)                | Legacy single draft JSON                                                         |
 | `draft:shared:<draftId>`                  | Multi-user collaborative draft | **7 Days** (`DRAFT_TTL_SECONDS = 604800`)         | Sanitized shared draft JSON `{ draftId, inviteToken, ownerId, coCooksIds, ... }` |
 | `user:drafts:<userId>`                    | Active draft index per user    | **30 Days** (`USER_DRAFTS_TTL_SECONDS = 2592000`) | **Redis Set** of draft IDs (atomically updated via `SADD`/`SREM`)                |
 | `lock:recipe:<targetId>:field:<fieldKey>` | Section/field soft lock        | **30 Seconds** (`LOCK_TTL_SECONDS = 30`)          | JSON `{ userId, userName, userAvatar, timestamp }`                               |
+
+For comprehensive documentation on multi-draft management and DraftsModal UI, see [`docs/drafts.md`](file:///Users/jordi/.gemini/antigravity/worktrees/jorbites/implement_drafts_collaborative_editing/docs/drafts.md).
 
 ---
 
@@ -141,6 +144,8 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 | ------------------------------- | ------------------- | ---------------------------------------------------- |
 | `MAX_CO_COOKS`                  | `4`                 | Maximum number of co-cooks per recipe                |
 | `MAX_LINKED_RECIPES`            | `2`                 | Maximum linked recipes per recipe                    |
+| `MAX_SOLO_DRAFT_SLOTS`          | `5`                 | Maximum number of concurrent solo drafts per user    |
+| `SOLO_DRAFT_TTL_SECONDS`        | `31104000` (360 days) | Solo draft persistence TTL in Redis                 |
 | `DRAFT_TTL_SECONDS`             | `604800` (7 days)   | Shared draft persistence TTL in Redis                |
 | `USER_DRAFTS_TTL_SECONDS`       | `2592000` (30 days) | User active draft list TTL in Redis                  |
 | `LOCK_TTL_SECONDS`              | `30`                | Soft-lock expiration duration                        |
@@ -167,8 +172,12 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 ## UI Components & Real-Time Indicators
 
 - **Header Top Actions**: Minimalist React Icon buttons with Tooltips in `RecipeModal`:
-    - `FiShare2` ("Copy co-cook invite link")
+    - `FiFolder` ("My Drafts" with green indicator dot when active drafts exist; opens `DraftsModal`)
     - `FiUploadCloud` ("Save draft")
+- **Draft Card Actions**: In `DraftsModal`, each draft card includes:
+    - `FaUserPlus` ("Copy co-cook invite link" to invite collaborative co-cooks to any draft)
+    - `FiCopy` ("Duplicate draft")
+    - `FiTrash2` ("Delete draft")
 - **In-Modal Co-Cooking Status Indicator**: Minimalist status indicator rendered inside `RecipeModal` during multi-user collaborative editing sessions:
     - _`@maria is currently editing another step`_ (Brand `green-450` pill with pulsing dot)
 - **Field Lock Banners**: Rendered inside form steps when another co-cook holds an active soft-lock on that step:

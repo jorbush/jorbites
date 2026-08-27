@@ -35,35 +35,61 @@ export async function POST(request: Request) {
         }
 
         if (body.draftId) {
-            try {
-                const savedDraft = await DraftService.saveSharedDraft(
-                    body.draftId,
-                    body,
-                    currentUser
-                );
-
-                logger.info('POST /api/draft - success (shared)', {
-                    userId: currentUser.id,
-                    draftId: body.draftId,
-                });
-                return NextResponse.json(savedDraft);
-            } catch (err: any) {
-                if (err.message === 'UNAUTHORIZED_DRAFT_UPDATE') {
-                    return forbiddenResponse(
-                        'You are not authorized to update this shared draft'
+            const rawDraft = await DraftService.getSharedDraft(body.draftId);
+            if (
+                rawDraft ||
+                body.inviteToken ||
+                (Array.isArray(body.coCooksIds) && body.coCooksIds.length > 0)
+            ) {
+                try {
+                    const savedDraft = await DraftService.saveSharedDraft(
+                        body.draftId,
+                        body,
+                        currentUser
                     );
+
+                    logger.info('POST /api/draft - success (shared)', {
+                        userId: currentUser.id,
+                        draftId: body.draftId,
+                    });
+                    return NextResponse.json(savedDraft);
+                } catch (err: any) {
+                    if (err.message === 'UNAUTHORIZED_DRAFT_UPDATE') {
+                        return forbiddenResponse(
+                            'You are not authorized to update this shared draft'
+                        );
+                    }
+                    throw err;
                 }
-                throw err;
             }
         }
 
         // Single-user draft
-        await DraftService.saveSingleUserDraft(currentUser.id, body);
-
-        logger.info('POST /api/draft - success (single user)', {
-            userId: currentUser.id,
-        });
-        return NextResponse.json(body);
+        try {
+            const slotId = body.slotId || body.draftId;
+            const id = await DraftService.saveSingleUserDraft(
+                currentUser.id,
+                body,
+                slotId
+            );
+            body.draftId = id;
+            if (!body.updatedAt) {
+                body.updatedAt = new Date().toISOString();
+            }
+            logger.info('POST /api/draft - success (single user)', {
+                userId: currentUser.id,
+                slotId: id,
+            });
+            return NextResponse.json(body);
+        } catch (err: any) {
+            if (err.message === 'MAX_SOLO_DRAFTS_REACHED') {
+                return NextResponse.json(
+                    { error: 'MAX_SOLO_DRAFTS_REACHED' },
+                    { status: 409 }
+                );
+            }
+            throw err;
+        }
     } catch (error: any) {
         logger.error('POST /api/draft - error', { error: error.message });
         return internalServerError('Failed to save draft');
@@ -85,41 +111,56 @@ export async function GET(request: Request) {
 
         if (draftId) {
             const rawDraft = await DraftService.getSharedDraft(draftId);
-            if (!rawDraft) {
-                return NextResponse.json(null);
-            }
+            if (rawDraft) {
+                const isOwner = rawDraft.ownerId === currentUser.id;
+                const isCoCook =
+                    Array.isArray(rawDraft.coCooksIds) &&
+                    rawDraft.coCooksIds.includes(currentUser.id);
 
-            const isOwner = rawDraft.ownerId === currentUser.id;
-            const isCoCook =
-                Array.isArray(rawDraft.coCooksIds) &&
-                rawDraft.coCooksIds.includes(currentUser.id);
+                if (!isOwner && !isCoCook) {
+                    return forbiddenResponse(
+                        'You are not authorized to view this draft'
+                    );
+                }
 
-            if (!isOwner && !isCoCook) {
-                return forbiddenResponse(
-                    'You are not authorized to view this draft'
+                const draft = await DraftService.getSharedDraft(
+                    draftId,
+                    currentUser.id
                 );
+
+                logger.info('GET /api/draft - success (shared)', {
+                    userId: currentUser.id,
+                    draftId,
+                });
+                return NextResponse.json(draft);
             }
 
-            const draft = await DraftService.getSharedDraft(
-                draftId,
-                currentUser.id
+            const soloDraft = await DraftService.getSingleUserDraft(
+                currentUser.id,
+                draftId
             );
+            if (soloDraft) {
+                return NextResponse.json(soloDraft);
+            }
 
-            logger.info('GET /api/draft - success (shared)', {
-                userId: currentUser.id,
-                draftId,
-            });
-            return NextResponse.json(draft);
+            return NextResponse.json(null);
         }
+
+        const slotId = searchParams.get('slotId') || undefined;
 
         logger.info('GET /api/draft - start (single user)', {
             userId: currentUser.id,
+            slotId,
         });
-        const data = await DraftService.getSingleUserDraft(currentUser.id);
+        const data = await DraftService.getSingleUserDraft(
+            currentUser.id,
+            slotId
+        );
 
         logger.info('GET /api/draft - success (single user)', {
             userId: currentUser.id,
             hasDraft: !!data,
+            slotId,
         });
         return NextResponse.json(data);
     } catch (error: any) {
@@ -145,7 +186,7 @@ export async function DELETE(request: Request) {
             try {
                 await DraftService.deleteSharedDraft(draftId, currentUser);
 
-                logger.info('DELETE /api/draft - success (shared)', {
+                logger.info('DELETE /api/draft - success (shared/slot)', {
                     userId: currentUser.id,
                     draftId,
                 });
@@ -163,15 +204,20 @@ export async function DELETE(request: Request) {
             }
         }
 
+        const slotId = searchParams.get('slotId') || undefined;
+
         logger.info('DELETE /api/draft - start (single user)', {
             userId: currentUser.id,
+            slotId,
         });
         const deleted = await DraftService.deleteSingleUserDraft(
-            currentUser.id
+            currentUser.id,
+            slotId
         );
 
         logger.info('DELETE /api/draft - success (single user)', {
             userId: currentUser.id,
+            slotId,
         });
         return NextResponse.json(deleted ? 1 : 0);
     } catch (error: any) {
