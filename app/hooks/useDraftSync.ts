@@ -5,7 +5,12 @@ import useSWR from 'swr';
 import { UseFormSetValue, UseFormGetValues } from 'react-hook-form';
 import { axiosFetcher } from '@/app/utils/fetcher';
 import { SafeUser } from '@/app/types';
-import { STEPS, SHARED_DRAFT_POLL_INTERVAL_MS } from '@/app/utils/constants';
+import {
+    STEPS,
+    SHARED_DRAFT_POLL_INTERVAL_MS,
+    RECIPE_MAX_INGREDIENTS,
+    RECIPE_MAX_STEPS,
+} from '@/app/utils/constants';
 
 interface UseDraftSyncOptions {
     activeDraftId: string | null | undefined;
@@ -82,7 +87,7 @@ export function useDraftSync({
                 prevSyncedDraftStr.current = serialized;
             }
 
-            if (!isEditMode && draftData && (draftChanged || stepChanged)) {
+            if (!isEditMode && draftData && draftChanged) {
                 const isStepLockedByOther = (stepIndex: number) =>
                     Boolean(lock?.isLockedByOther(`step:${stepIndex}`));
 
@@ -102,7 +107,6 @@ export function useDraftSync({
                     draftData.title !== '' &&
                     getValues('title') !== draftData.title &&
                     (step !== STEPS.DESCRIPTION ||
-                        stepChanged ||
                         !getValues('title') ||
                         isStepLockedByOther(STEPS.DESCRIPTION))
                 ) {
@@ -113,7 +117,6 @@ export function useDraftSync({
                     draftData.description !== '' &&
                     getValues('description') !== draftData.description &&
                     (step !== STEPS.DESCRIPTION ||
-                        stepChanged ||
                         !getValues('description') ||
                         isStepLockedByOther(STEPS.DESCRIPTION))
                 ) {
@@ -144,19 +147,32 @@ export function useDraftSync({
                     draftData.ingredients.length > 0
                 ) {
                     const incoming = draftData.ingredients;
-                    incoming.forEach((item: string, idx: number) => {
-                        const currentVal = getValues(`ingredient-${idx}`);
-                        if (
-                            !currentVal ||
-                            currentVal === '' ||
-                            isStepLockedByOther(STEPS.INGREDIENTS) ||
-                            stepChanged ||
-                            step !== STEPS.INGREDIENTS
-                        ) {
-                            setValue(`ingredient-${idx}`, item);
+                    for (let idx = 0; idx < RECIPE_MAX_INGREDIENTS; idx++) {
+                        if (idx < incoming.length) {
+                            const currentVal = getValues(`ingredient-${idx}`);
+                            if (
+                                !currentVal ||
+                                currentVal === '' ||
+                                isStepLockedByOther(STEPS.INGREDIENTS) ||
+                                step !== STEPS.INGREDIENTS
+                            ) {
+                                setValue(`ingredient-${idx}`, incoming[idx]);
+                            }
+                        } else {
+                            if (
+                                step !== STEPS.INGREDIENTS ||
+                                isStepLockedByOther(STEPS.INGREDIENTS)
+                            ) {
+                                setValue(`ingredient-${idx}`, '');
+                            }
                         }
-                    });
-                    setValue('ingredients', incoming);
+                    }
+                    if (
+                        step !== STEPS.INGREDIENTS ||
+                        isStepLockedByOther(STEPS.INGREDIENTS)
+                    ) {
+                        setValue('ingredients', incoming);
+                    }
                 }
 
                 // Step 3: Methods
@@ -165,7 +181,6 @@ export function useDraftSync({
                     draftData.method !== '' &&
                     getValues('method') !== draftData.method &&
                     (step !== STEPS.METHODS ||
-                        stepChanged ||
                         !getValues('method') ||
                         isStepLockedByOther(STEPS.METHODS))
                 ) {
@@ -178,19 +193,32 @@ export function useDraftSync({
                     draftData.steps.length > 0
                 ) {
                     const incoming = draftData.steps;
-                    incoming.forEach((item: string, idx: number) => {
-                        const currentVal = getValues(`step-${idx}`);
-                        if (
-                            !currentVal ||
-                            currentVal === '' ||
-                            isStepLockedByOther(STEPS.STEPS) ||
-                            stepChanged ||
-                            step !== STEPS.STEPS
-                        ) {
-                            setValue(`step-${idx}`, item);
+                    for (let idx = 0; idx < RECIPE_MAX_STEPS; idx++) {
+                        if (idx < incoming.length) {
+                            const currentVal = getValues(`step-${idx}`);
+                            if (
+                                !currentVal ||
+                                currentVal === '' ||
+                                isStepLockedByOther(STEPS.STEPS) ||
+                                step !== STEPS.STEPS
+                            ) {
+                                setValue(`step-${idx}`, incoming[idx]);
+                            }
+                        } else {
+                            if (
+                                step !== STEPS.STEPS ||
+                                isStepLockedByOther(STEPS.STEPS)
+                            ) {
+                                setValue(`step-${idx}`, '');
+                            }
                         }
-                    });
-                    setValue('steps', incoming);
+                    }
+                    if (
+                        step !== STEPS.STEPS ||
+                        isStepLockedByOther(STEPS.STEPS)
+                    ) {
+                        setValue('steps', incoming);
+                    }
                 }
 
                 // Step 5: Related Content
@@ -200,7 +228,6 @@ export function useDraftSync({
                     JSON.stringify(getValues('coCooksIds')) !==
                         JSON.stringify(draftData.coCooksIds) &&
                     (step !== STEPS.RELATED_CONTENT ||
-                        stepChanged ||
                         isStepLockedByOther(STEPS.RELATED_CONTENT))
                 ) {
                     setValue('coCooksIds', draftData.coCooksIds);
@@ -211,7 +238,6 @@ export function useDraftSync({
                     JSON.stringify(getValues('linkedRecipeIds')) !==
                         JSON.stringify(draftData.linkedRecipeIds) &&
                     (step !== STEPS.RELATED_CONTENT ||
-                        stepChanged ||
                         isStepLockedByOther(STEPS.RELATED_CONTENT))
                 ) {
                     setValue('linkedRecipeIds', draftData.linkedRecipeIds);
@@ -234,9 +260,7 @@ export function useDraftSync({
                     draftData.imageSrc &&
                     draftData.imageSrc !== '' &&
                     getValues('imageSrc') !== draftData.imageSrc &&
-                    (step !== STEPS.IMAGES ||
-                        stepChanged ||
-                        isStepLockedByOther(STEPS.IMAGES))
+                    (step !== STEPS.IMAGES || isStepLockedByOther(STEPS.IMAGES))
                 ) {
                     setValue('imageSrc', draftData.imageSrc);
                 }
@@ -244,9 +268,7 @@ export function useDraftSync({
                     draftData.imageSrc1 &&
                     draftData.imageSrc1 !== '' &&
                     getValues('imageSrc1') !== draftData.imageSrc1 &&
-                    (step !== STEPS.IMAGES ||
-                        stepChanged ||
-                        isStepLockedByOther(STEPS.IMAGES))
+                    (step !== STEPS.IMAGES || isStepLockedByOther(STEPS.IMAGES))
                 ) {
                     setValue('imageSrc1', draftData.imageSrc1);
                 }
@@ -254,9 +276,7 @@ export function useDraftSync({
                     draftData.imageSrc2 &&
                     draftData.imageSrc2 !== '' &&
                     getValues('imageSrc2') !== draftData.imageSrc2 &&
-                    (step !== STEPS.IMAGES ||
-                        stepChanged ||
-                        isStepLockedByOther(STEPS.IMAGES))
+                    (step !== STEPS.IMAGES || isStepLockedByOther(STEPS.IMAGES))
                 ) {
                     setValue('imageSrc2', draftData.imageSrc2);
                 }
@@ -264,9 +284,7 @@ export function useDraftSync({
                     draftData.imageSrc3 &&
                     draftData.imageSrc3 !== '' &&
                     getValues('imageSrc3') !== draftData.imageSrc3 &&
-                    (step !== STEPS.IMAGES ||
-                        stepChanged ||
-                        isStepLockedByOther(STEPS.IMAGES))
+                    (step !== STEPS.IMAGES || isStepLockedByOther(STEPS.IMAGES))
                 ) {
                     setValue('imageSrc3', draftData.imageSrc3);
                 }

@@ -12,10 +12,10 @@ export interface FormAccessor {
 
 export function extractIngredientsAndSteps(
     form: FormAccessor,
-    step: number,
+    _step: number,
     draftData: any,
-    effectiveNumIngredients: number,
-    effectiveNumSteps: number,
+    _effectiveNumIngredients: number,
+    _effectiveNumSteps: number,
     ingredientsInputMode: string,
     stepsInputMode: string
 ): { newIngredients: string[]; newSteps: string[] } {
@@ -24,61 +24,75 @@ export function extractIngredientsAndSteps(
         const textareaValue = form.getValues('ingredients-plain-text');
         const parsedItems = parseTextToList(
             textareaValue,
-            RECIPE_MAX_INGREDIENTS
+            RECIPE_MAX_INGREDIENTS,
+            'ingredient'
         );
         if (parsedItems.length > 0) {
             localIngredients = parsedItems;
         }
     } else {
-        for (let i = 0; i < effectiveNumIngredients; i++) {
+        for (let i = 0; i < RECIPE_MAX_INGREDIENTS; i++) {
             const val = form.getValues(`ingredient-${i}`);
             if (typeof val === 'string' && val.trim() !== '') {
-                localIngredients.push(val);
+                localIngredients.push(val.trim());
             }
         }
     }
 
     let newIngredients: string[] = [];
-    if (step === STEPS.INGREDIENTS) {
+    if (localIngredients.length > 0) {
         newIngredients = localIngredients;
     } else {
-        const remoteIngredients = draftData?.ingredients;
-        if (Array.isArray(remoteIngredients) && remoteIngredients.length > 0) {
-            newIngredients = remoteIngredients;
-        } else if (localIngredients.length > 0) {
-            newIngredients = localIngredients;
+        const formIngredients = form.getValues('ingredients');
+        if (Array.isArray(formIngredients) && formIngredients.length > 0) {
+            newIngredients = formIngredients.filter(
+                (item: any) => typeof item === 'string' && item.trim() !== ''
+            );
         } else {
-            newIngredients = form.getValues('ingredients') || [];
+            const remoteIngredients = draftData?.ingredients;
+            if (
+                Array.isArray(remoteIngredients) &&
+                remoteIngredients.length > 0
+            ) {
+                newIngredients = remoteIngredients;
+            }
         }
     }
 
     let localSteps: string[] = [];
     if (stepsInputMode === 'text') {
         const textareaValue = form.getValues('steps-plain-text');
-        const parsedItems = parseTextToList(textareaValue, RECIPE_MAX_STEPS);
+        const parsedItems = parseTextToList(
+            textareaValue,
+            RECIPE_MAX_STEPS,
+            'step'
+        );
         if (parsedItems.length > 0) {
             localSteps = parsedItems;
         }
     } else {
-        for (let i = 0; i < effectiveNumSteps; i++) {
+        for (let i = 0; i < RECIPE_MAX_STEPS; i++) {
             const val = form.getValues(`step-${i}`);
             if (typeof val === 'string' && val.trim() !== '') {
-                localSteps.push(val);
+                localSteps.push(val.trim());
             }
         }
     }
 
     let newSteps: string[] = [];
-    if (step === STEPS.STEPS) {
+    if (localSteps.length > 0) {
         newSteps = localSteps;
     } else {
-        const remoteSteps = draftData?.steps;
-        if (Array.isArray(remoteSteps) && remoteSteps.length > 0) {
-            newSteps = remoteSteps;
-        } else if (localSteps.length > 0) {
-            newSteps = localSteps;
+        const formSteps = form.getValues('steps');
+        if (Array.isArray(formSteps) && formSteps.length > 0) {
+            newSteps = formSteps.filter(
+                (item: any) => typeof item === 'string' && item.trim() !== ''
+            );
         } else {
-            newSteps = form.getValues('steps') || [];
+            const remoteSteps = draftData?.steps;
+            if (Array.isArray(remoteSteps) && remoteSteps.length > 0) {
+                newSteps = remoteSteps;
+            }
         }
     }
 
@@ -94,7 +108,7 @@ export function collectDraftFormData(
     ingredientsInputMode: string,
     stepsInputMode: string,
     stepOverride?: number,
-    isFullPayload = false
+    _isFullPayload = false
 ) {
     const stepToSave = typeof stepOverride === 'number' ? stepOverride : step;
     const { newIngredients, newSteps } = extractIngredientsAndSteps(
@@ -110,7 +124,18 @@ export function collectDraftFormData(
     const currentDraftId = form.getValues('draftId') || draftData?.draftId;
     const currentInviteToken =
         form.getValues('inviteToken') || draftData?.inviteToken;
-    const isShared = Boolean(currentDraftId);
+
+    // For shared (collaborative) drafts we only send the fields belonging to
+    // the step the user is currently editing. Sending stale local values for
+    // other steps would overwrite concurrent co-cook edits stored in Redis.
+    // For solo drafts there is no collaborator risk and the server now merges
+    // with the existing Redis record, so we always send the full payload.
+    const isSharedDraft = Boolean(
+        currentInviteToken ||
+        draftData?.type === 'shared' ||
+        (Array.isArray(draftData?.coCooksIds) &&
+            draftData.coCooksIds.length > 0)
+    );
 
     const data: any = {
         draftId: currentDraftId,
@@ -145,10 +170,12 @@ export function collectDraftFormData(
         updatedAt: new Date().toISOString(),
     };
 
-    if (step === STEPS.INGREDIENTS || !isShared || isFullPayload) {
+    // Include ingredients/steps unconditionally for solo drafts.
+    // For shared drafts, only include them when the user is actively on that step.
+    if (!isSharedDraft || step === STEPS.INGREDIENTS) {
         data.ingredients = newIngredients;
     }
-    if (step === STEPS.STEPS || !isShared || isFullPayload) {
+    if (!isSharedDraft || step === STEPS.STEPS) {
         data.steps = newSteps;
     }
 

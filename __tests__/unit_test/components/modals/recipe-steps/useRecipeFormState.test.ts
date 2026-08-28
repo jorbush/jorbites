@@ -745,6 +745,8 @@ describe('useRecipeFormState hook', () => {
                 },
                 draftData: {
                     draftId: 'd-ing-test',
+                    inviteToken: 'tok-ing-test',
+                    type: 'shared',
                     ingredients: ['Old Ingredient'],
                     steps: ['Step 1'],
                 },
@@ -1066,5 +1068,131 @@ describe('useRecipeFormState hook', () => {
         expect(result.current.getValues('description')).toBe(
             'Co-Cook Live Edited Description'
         );
+    });
+
+    it('preserves ingredients when saving a solo draft from Step 3 (Methods)', async () => {
+        const axios = (await import('axios')).default;
+        (axios.post as any).mockClear();
+        (axios.post as any).mockResolvedValueOnce({
+            data: { draftId: 'solo-draft-subsequent-save' },
+        });
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                draftData: null,
+            })
+        );
+
+        // Step 0: Category
+        act(() => {
+            result.current.setCustomValue('categories', ['Dessert']);
+        });
+
+        // Step 1: Description
+        act(() => {
+            result.current.setStep(1);
+            result.current.setValue('title', 'Strawberry Cheesecake');
+            result.current.setValue('description', 'Rich and creamy cake');
+        });
+
+        // Step 2: Ingredients
+        act(() => {
+            result.current.setStep(2);
+            result.current.setValue('ingredient-0', 'Cream Cheese 500g');
+            result.current.setValue('ingredient-1', 'Fresh Strawberries 200g');
+            result.current.setValue('ingredient-2', 'Graham Crackers 150g');
+        });
+
+        // Step 3: Methods (User navigated to Step 3 and saves draft here)
+        act(() => {
+            result.current.setStep(3);
+            result.current.setValue('method', 'bake');
+        });
+
+        await act(async () => {
+            await result.current.saveDraft();
+        });
+
+        expect(axios.post).toHaveBeenCalled();
+        const callPayload = (axios.post as any).mock.calls[0][1] as any;
+        expect(callPayload.title).toBe('Strawberry Cheesecake');
+        expect(callPayload.categories).toEqual(['Dessert']);
+        expect(callPayload.method).toBe('bake');
+        expect(callPayload.ingredients).toEqual([
+            'Cream Cheese 500g',
+            'Fresh Strawberries 200g',
+            'Graham Crackers 150g',
+        ]);
+        expect(callPayload.currentStep).toBe(3);
+    });
+
+    it('does not wipe local form state during step navigation when remote draftData is stale', () => {
+        // Initial draft has no ingredients
+        const staleRemoteDraft: any = {
+            draftId: 'solo-stale-test',
+            title: 'My Recipe',
+            description: 'My Description',
+            ingredients: [],
+            steps: [],
+        };
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                draftData: staleRemoteDraft,
+            })
+        );
+
+        // User enters ingredients on Step 2
+        act(() => {
+            result.current.setStep(2);
+            result.current.setValue('ingredient-0', '200g Flour');
+            result.current.setValue('ingredient-1', '100g Butter');
+        });
+
+        expect(result.current.getValues('ingredient-0')).toBe('200g Flour');
+        expect(result.current.getValues('ingredient-1')).toBe('100g Butter');
+
+        // User advances to Step 3 (Methods)
+        act(() => {
+            result.current.setStep(3);
+        });
+
+        // Local form state MUST NOT be wiped out by staleRemoteDraft
+        expect(result.current.getValues('ingredient-0')).toBe('200g Flour');
+        expect(result.current.getValues('ingredient-1')).toBe('100g Butter');
+
+        // User advances to Step 4 (Steps) and adds steps
+        act(() => {
+            result.current.setStep(4);
+            result.current.setValue('step-0', 'Knead the dough');
+        });
+
+        // User advances to Step 5 (Related Content)
+        act(() => {
+            result.current.setStep(5);
+        });
+
+        // Both ingredients and steps are preserved intact
+        expect(result.current.getValues('ingredient-0')).toBe('200g Flour');
+        expect(result.current.getValues('ingredient-1')).toBe('100g Butter');
+        expect(result.current.getValues('step-0')).toBe('Knead the dough');
     });
 });

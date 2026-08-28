@@ -152,6 +152,51 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
                 })
             ).rejects.toThrow('MAX_SOLO_DRAFTS_REACHED');
         });
+
+        it('preserves existing ingredients and steps when updating an existing draft slot with partial data', async () => {
+            // Step 1: Save full draft with ingredients and steps
+            const slotId = await DraftService.saveSingleUserDraft(
+                'user-multi-1',
+                {
+                    title: 'Chocolate Cake',
+                    categories: ['desserts'],
+                    ingredients: ['200g Flour', '100g Cocoa Powder', '3 Eggs'],
+                    steps: ['Mix dry ingredients', 'Add eggs', 'Bake 35m'],
+                    method: 'bake',
+                }
+            );
+
+            // Step 2: Later step update with undefined ingredients/steps
+            await DraftService.saveSingleUserDraft(
+                'user-multi-1',
+                {
+                    title: 'Updated Chocolate Cake Title',
+                    categories: ['desserts'],
+                    method: 'bake',
+                } as any,
+                slotId
+            );
+
+            // Retrieve updated draft
+            const updated = await DraftService.getSingleUserDraft(
+                'user-multi-1',
+                slotId
+            );
+
+            expect(updated).not.toBeNull();
+            expect(updated?.title).toBe('Updated Chocolate Cake Title');
+            expect(updated?.ingredients).toEqual([
+                '200g Flour',
+                '100g Cocoa Powder',
+                '3 Eggs',
+            ]);
+            expect(updated?.steps).toEqual([
+                'Mix dry ingredients',
+                'Add eggs',
+                'Bake 35m',
+            ]);
+            expect(updated?.method).toBe('bake');
+        });
     });
 
     describe('getSingleUserDraft with multi-slot and legacy fallback', () => {

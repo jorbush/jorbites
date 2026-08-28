@@ -182,4 +182,118 @@ describe('Drafts Management & Multi-Draft E2E', () => {
         cy.get('[data-cy="recipe-title"]').should('have.value', '');
         cy.get('[data-cy="recipe-description"]').should('have.value', '');
     });
+
+    it('saves full recipe state (including ingredients and steps) when saving draft from later steps, and restores all fields upon reload', () => {
+        // Step 1: Open RecipeModal
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+
+        // Step 0: Category
+        cy.get('[data-cy="category-box-Desserts"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 1: Description
+        cy.get('[data-cy="recipe-title"]').type('Cheesecake Special');
+        cy.get('[data-cy="recipe-description"]').type(
+            'Rich strawberry baked cake'
+        );
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 2: Ingredients
+        cy.get('[data-cy="recipe-ingredient-0"]').type('500g Cream Cheese');
+        cy.get('[data-cy="add-ingredient-button"]').click();
+        cy.get('[data-cy="recipe-ingredient-1"]').type(
+            '200g Fresh Strawberries'
+        );
+        cy.get('[data-cy="add-ingredient-button"]').click();
+        cy.get('[data-cy="recipe-ingredient-2"]').type('150g Graham Crackers');
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 3: Methods
+        cy.get('[data-cy="method-box-Oven"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 4: Steps
+        cy.get('[data-cy="recipe-step-0"]').type(
+            'Crush crackers and press into pan'
+        );
+        cy.get('[data-cy="add-step-button"]').click();
+        cy.get('[data-cy="recipe-step-1"]').type(
+            'Mix cream cheese and bake at 160C for 45 mins'
+        );
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 5: Related Content - Save Draft from here (a later step!)
+        cy.intercept('POST', '/api/draft').as('saveDraftLaterStep');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveDraftLaterStep').then((interception) => {
+            expect(interception.request.body.ingredients).to.deep.equal([
+                '500g Cream Cheese',
+                '200g Fresh Strawberries',
+                '150g Graham Crackers',
+            ]);
+            expect(interception.request.body.steps).to.deep.equal([
+                'Crush crackers and press into pan',
+                'Mix cream cheese and bake at 160C for 45 mins',
+            ]);
+            expect(interception.request.body.title).to.equal(
+                'Cheesecake Special'
+            );
+            expect(interception.request.body.method).to.equal('Oven');
+        });
+
+        // Close RecipeModal
+        cy.get('[data-testid="close-modal-button"]').click();
+
+        // Reload page to verify persistence from Redis
+        cy.reload();
+        cy.ensureEnglish();
+
+        // Re-open RecipeModal -> should auto-load draft
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+        cy.get('[data-testid="drafts-indicator-dot"]').should('be.visible');
+
+        // Navigate back step-by-step and verify all inputs are restored
+        // Back to Step 4: Steps
+        cy.get('[data-cy="secondary-action-button"]').click();
+        cy.get('[data-cy="recipe-step-0"]').should(
+            'have.value',
+            'Crush crackers and press into pan'
+        );
+        cy.get('[data-cy="recipe-step-1"]').should(
+            'have.value',
+            'Mix cream cheese and bake at 160C for 45 mins'
+        );
+
+        // Back to Step 3: Methods
+        cy.get('[data-cy="secondary-action-button"]').click();
+        cy.get('[data-cy="method-box-Oven"]').should('have.class', 'selected');
+
+        // Back to Step 2: Ingredients
+        cy.get('[data-cy="secondary-action-button"]').click();
+        cy.get('[data-cy="recipe-ingredient-0"]').should(
+            'have.value',
+            '500g Cream Cheese'
+        );
+        cy.get('[data-cy="recipe-ingredient-1"]').should(
+            'have.value',
+            '200g Fresh Strawberries'
+        );
+        cy.get('[data-cy="recipe-ingredient-2"]').should(
+            'have.value',
+            '150g Graham Crackers'
+        );
+
+        // Back to Step 1: Description
+        cy.get('[data-cy="secondary-action-button"]').click();
+        cy.get('[data-cy="recipe-title"]').should(
+            'have.value',
+            'Cheesecake Special'
+        );
+        cy.get('[data-cy="recipe-description"]').should(
+            'have.value',
+            'Rich strawberry baked cake'
+        );
+    });
 });

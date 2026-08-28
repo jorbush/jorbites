@@ -584,13 +584,36 @@ export class DraftService {
             }
         }
 
+        let existing: SingleDraft | null = null;
+        if (slotId) {
+            existing = await this.getSingleUserDraft(userId, slotId);
+        }
+
         const nowIso = new Date().toISOString();
         data.draftId = id;
         data.updatedAt = data.updatedAt || nowIso;
         if (!data.createdAt) {
-            data.createdAt = data.updatedAt;
+            data.createdAt = existing?.createdAt || data.updatedAt;
         }
-        const serialized = JSON.stringify(data);
+
+        const merged: SingleDraft = {
+            ...existing,
+            ...data,
+            draftId: id,
+            ingredients:
+                data.ingredients !== undefined
+                    ? data.ingredients
+                    : existing?.ingredients || [],
+            steps:
+                data.steps !== undefined ? data.steps : existing?.steps || [],
+            categories:
+                data.categories !== undefined
+                    ? data.categories
+                    : existing?.categories || [],
+            updatedAt: data.updatedAt,
+        };
+
+        const serialized = JSON.stringify(merged);
 
         await redis.set(
             `draft:user:${userId}:${id}`,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import useSWR from 'swr';
@@ -304,74 +304,83 @@ export function useRecipeFormState({
     const setCustomValue = updateFormField;
 
     const addIngredientInput = useCallback(() => {
-        if (effectiveNumIngredients >= RECIPE_MAX_INGREDIENTS) {
-            toast.error(
-                t('max_ingredients_reached') ||
-                    `Maximum of ${RECIPE_MAX_INGREDIENTS} ingredients allowed`
+        setNumIngredients((prev) => {
+            const current = Math.max(
+                prev,
+                Array.isArray(draftData?.ingredients)
+                    ? draftData.ingredients.length
+                    : 1
             );
-            return;
-        }
-        setNumIngredients(effectiveNumIngredients + 1);
-    }, [effectiveNumIngredients, t]);
+            if (current >= RECIPE_MAX_INGREDIENTS) {
+                toast.error(
+                    t('max_ingredients_reached') ||
+                        `Maximum of ${RECIPE_MAX_INGREDIENTS} ingredients allowed`
+                );
+                return current;
+            }
+            return current + 1;
+        });
+    }, [draftData?.ingredients, t]);
 
     const removeIngredientInput = useCallback(
         (index: number) => {
-            setNumIngredients(Math.max(1, effectiveNumIngredients - 1));
+            setNumIngredients((prev) => Math.max(1, prev - 1));
             updateFormField(`ingredient-${index}`, '');
         },
-        [effectiveNumIngredients, updateFormField]
+        [updateFormField]
     );
 
     const setIngredients = useCallback(
         (ingredients: string[]) => {
-            const maxCount = Math.max(
-                effectiveNumIngredients,
-                ingredients.length
-            );
-            for (let i = 0; i < maxCount; i++) {
+            for (let i = 0; i < RECIPE_MAX_INGREDIENTS; i++) {
                 updateFormField(`ingredient-${i}`, '');
             }
-            setNumIngredients(ingredients.length);
+            setNumIngredients(Math.max(1, ingredients.length));
             ingredients.forEach((ingredient, index) => {
                 updateFormField(`ingredient-${index}`, ingredient);
             });
             updateFormField('ingredients', ingredients);
         },
-        [effectiveNumIngredients, updateFormField]
+        [updateFormField]
     );
 
     const addStepInput = useCallback(() => {
-        if (effectiveNumSteps >= RECIPE_MAX_STEPS) {
-            toast.error(
-                t('max_steps_reached') ||
-                    `Maximum of ${RECIPE_MAX_STEPS} steps allowed`
+        setNumSteps((prev) => {
+            const current = Math.max(
+                prev,
+                Array.isArray(draftData?.steps) ? draftData.steps.length : 1
             );
-            return;
-        }
-        setNumSteps(effectiveNumSteps + 1);
-    }, [effectiveNumSteps, t]);
+            if (current >= RECIPE_MAX_STEPS) {
+                toast.error(
+                    t('max_steps_reached') ||
+                        `Maximum of ${RECIPE_MAX_STEPS} steps allowed`
+                );
+                return current;
+            }
+            return current + 1;
+        });
+    }, [draftData?.steps, t]);
 
     const removeStepInput = useCallback(
         (index: number) => {
-            setNumSteps(Math.max(1, effectiveNumSteps - 1));
+            setNumSteps((prev) => Math.max(1, prev - 1));
             updateFormField(`step-${index}`, '');
         },
-        [effectiveNumSteps, updateFormField]
+        [updateFormField]
     );
 
     const setSteps = useCallback(
         (steps: string[]) => {
-            const maxCount = Math.max(effectiveNumSteps, steps.length);
-            for (let i = 0; i < maxCount; i++) {
+            for (let i = 0; i < RECIPE_MAX_STEPS; i++) {
                 updateFormField(`step-${i}`, '');
             }
-            setNumSteps(steps.length);
+            setNumSteps(Math.max(1, steps.length));
             steps.forEach((step, index) => {
                 updateFormField(`step-${index}`, step);
             });
             updateFormField('steps', steps);
         },
-        [effectiveNumSteps, updateFormField]
+        [updateFormField]
     );
 
     const formAccessor = useMemo(
@@ -398,18 +407,28 @@ export function useRecipeFormState({
     syncFormFromDraft(setValue, getValues, step, lock, stepChanged);
 
     const [initialDraftLoaded, setInitialDraftLoaded] = useState(false);
-    if (draftData && !initialDraftLoaded && !recipeModal.isEditMode) {
+    const lastSyncedDraftIdRef = useRef<string | null>(null);
+    const currentDraftId = draftData?.draftId || null;
+    if (
+        draftData &&
+        !recipeModal.isEditMode &&
+        (lastSyncedDraftIdRef.current !== currentDraftId || !initialDraftLoaded)
+    ) {
+        lastSyncedDraftIdRef.current = currentDraftId;
         setInitialDraftLoaded(true);
         if (draftData.currentStep !== undefined) {
             setStep(
                 Math.max(0, Math.min(draftData.currentStep, STEPS_LENGTH - 1))
             );
         }
-        if (draftData.ingredients) {
-            setNumIngredients(Math.max(1, draftData.ingredients.length));
+        if (
+            Array.isArray(draftData.ingredients) &&
+            draftData.ingredients.length > 0
+        ) {
+            setNumIngredients(draftData.ingredients.length);
         }
-        if (draftData.steps) {
-            setNumSteps(Math.max(1, draftData.steps.length));
+        if (Array.isArray(draftData.steps) && draftData.steps.length > 0) {
+            setNumSteps(draftData.steps.length);
         }
     }
 
@@ -670,7 +689,7 @@ export function useRecipeFormState({
                 }
             } else {
                 let newIngredients: string[] = [];
-                for (let i = 0; i < effectiveNumIngredients; i++) {
+                for (let i = 0; i < RECIPE_MAX_INGREDIENTS; i++) {
                     const val = getValues(`ingredient-${i}`);
                     if (typeof val === 'string' && val.trim() !== '') {
                         newIngredients.push(val.trim());
@@ -714,7 +733,7 @@ export function useRecipeFormState({
                 }
             } else {
                 let newSteps: string[] = [];
-                for (let i = 0; i < effectiveNumSteps; i++) {
+                for (let i = 0; i < RECIPE_MAX_STEPS; i++) {
                     const val = getValues(`step-${i}`);
                     if (typeof val === 'string' && val.trim() !== '') {
                         newSteps.push(val.trim());
