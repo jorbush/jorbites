@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import axios from 'axios';
+import { mutate } from 'swr';
 import { toast } from 'react-hot-toast';
 import { useDraftPersistence } from '@/app/hooks/useDraftPersistence';
 import { STEPS } from '@/app/utils/constants';
@@ -104,7 +105,7 @@ describe('useDraftPersistence hook', () => {
         expect(toast.error).toHaveBeenCalledWith('error_saving_draft');
     });
 
-    it('deletes draft and clears form identifiers', async () => {
+    it('deletes draft and clears form identifiers and immediate SWR cache', async () => {
         const mockedAxios = vi.mocked(axios);
         mockedAxios.delete.mockResolvedValueOnce({ data: { success: true } });
 
@@ -129,5 +130,12 @@ describe('useDraftPersistence hook', () => {
         expect(form.setValue).toHaveBeenCalledWith('draftId', '');
         expect(form.setValue).toHaveBeenCalledWith('inviteToken', '');
         expect(mockMutateDraft).toHaveBeenCalled();
+        expect(mutate).toHaveBeenCalledWith('/api/draft', null, false);
+        expect(mutate).toHaveBeenCalledWith(
+            '/api/draft?draftId=draft-to-delete',
+            null,
+            false
+        );
+        expect(mutate).toHaveBeenCalledWith('/api/draft/active');
     });
 });

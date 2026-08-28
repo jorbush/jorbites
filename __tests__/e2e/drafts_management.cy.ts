@@ -1,5 +1,41 @@
 describe('Drafts Management & Multi-Draft E2E', () => {
-    const cleanupDrafts = () => {
+    let createdRecipeIds: string[] = [];
+
+    const cleanupResources = () => {
+        // Clean up created recipes in database
+        if (createdRecipeIds.length > 0) {
+            createdRecipeIds.forEach((recipeId) => {
+                cy.request({
+                    method: 'DELETE',
+                    url: `/api/recipe/${recipeId}`,
+                    failOnStatusCode: false,
+                });
+            });
+            createdRecipeIds = [];
+        }
+
+        // Clean up any leftover test recipes
+        ['Solo Published Omelette'].forEach((query) => {
+            cy.request({
+                method: 'GET',
+                url: `/api/search?q=${encodeURIComponent(query)}&type=recipes`,
+                failOnStatusCode: false,
+            }).then((res) => {
+                if (res.body?.recipes && Array.isArray(res.body.recipes)) {
+                    res.body.recipes.forEach((recipe: { id: string }) => {
+                        if (recipe?.id) {
+                            cy.request({
+                                method: 'DELETE',
+                                url: `/api/recipe/${recipe.id}`,
+                                failOnStatusCode: false,
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        // Clean up drafts
         cy.request({
             method: 'GET',
             url: '/api/draft/active',
@@ -27,12 +63,16 @@ describe('Drafts Management & Multi-Draft E2E', () => {
     beforeEach(() => {
         cy.login();
         cy.visit('/');
-        cleanupDrafts();
+        cleanupResources();
         cy.ensureEnglish();
     });
 
     afterEach(() => {
-        cleanupDrafts();
+        cleanupResources();
+    });
+
+    after(() => {
+        cleanupResources();
     });
 
     it('opens DraftsModal from UserMenu and displays empty state when no drafts exist', () => {
@@ -295,5 +335,242 @@ describe('Drafts Management & Multi-Draft E2E', () => {
             'have.value',
             'Rich strawberry baked cake'
         );
+    });
+
+    it('switches between distinct drafts in DraftsModal without form state leakage', () => {
+        // Step 1: Create Draft A (Strawberry Tart)
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+        cy.get('[data-cy="category-box-Desserts"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.get('[data-cy="recipe-title"]').type('Strawberry Tart Draft');
+        cy.get('[data-cy="recipe-description"]').type(
+            'Fresh berries with cream'
+        );
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.get('[data-cy="recipe-ingredient-0"]').type('500g Strawberries');
+        cy.get('[data-cy="add-ingredient-button"]').click();
+        cy.get('[data-cy="recipe-ingredient-1"]').type('200g Pastry Crust');
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.get('[data-cy="method-box-Oven"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.get('[data-cy="recipe-step-0"]').type('Bake crust for 20 mins');
+        cy.intercept('POST', '/api/draft').as('saveDraftA');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveDraftA');
+        cy.get('[data-testid="close-modal-button"]').click();
+
+        // Step 2: Open DraftsModal and create Draft B (Garlic Bread)
+        cy.get('[data-cy="user-menu"]').click();
+        cy.get('[data-cy="user-menu-my-drafts"]').should('be.visible').click();
+        cy.get('[data-testid="drafts-modal"]').should('be.visible');
+        cy.get('[data-testid="draft-card"]').should('have.length', 1);
+
+        cy.get('[data-cy="modal-action-button"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+
+        // Draft B: Snacks Category
+        cy.get('[data-cy="category-box-Snacks"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Draft B: Description
+        cy.get('[data-cy="recipe-title"]').type('Garlic Bread Draft');
+        cy.get('[data-cy="recipe-description"]').type(
+            'Crispy toasted baguette'
+        );
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Draft B: Ingredients
+        cy.get('[data-cy="recipe-ingredient-0"]').type('1 Baguette');
+        cy.get('[data-cy="add-ingredient-button"]').click();
+        cy.get('[data-cy="recipe-ingredient-1"]').type('4 Cloves Garlic');
+
+        cy.intercept('POST', '/api/draft').as('saveDraftB');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveDraftB');
+
+        // Step 3: Switch from Draft B to Draft A via in-modal Drafts button
+        cy.get('[data-testid="open-drafts-modal-button"]').click();
+        cy.get('[data-testid="drafts-modal"]').should('be.visible');
+        cy.get('[data-testid="draft-card"]').should('have.length', 2);
+
+        // Click Draft A card
+        cy.contains(
+            '[data-testid="draft-card"]',
+            'Strawberry Tart Draft'
+        ).click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+        cy.get('[data-testid="drafts-indicator-dot"]').should('be.visible');
+
+        // Verify Draft A's ingredients and title
+        cy.get('[data-cy="secondary-action-button"]').click(); // to Step 3
+        cy.get('[data-cy="secondary-action-button"]').click(); // to Step 2
+        cy.get('[data-cy="recipe-ingredient-0"]').should(
+            'have.value',
+            '500g Strawberries'
+        );
+        cy.get('[data-cy="recipe-ingredient-1"]').should(
+            'have.value',
+            '200g Pastry Crust'
+        );
+
+        cy.get('[data-cy="secondary-action-button"]').click(); // to Step 1
+        cy.get('[data-cy="recipe-title"]').should(
+            'have.value',
+            'Strawberry Tart Draft'
+        );
+
+        // Step 4: Switch back from Draft A to Draft B
+        cy.get('[data-testid="open-drafts-modal-button"]').click();
+        cy.get('[data-testid="drafts-modal"]').should('be.visible');
+        cy.contains('[data-testid="draft-card"]', 'Garlic Bread Draft').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+
+        cy.get('[data-cy="secondary-action-button"]').click(); // to Step 1
+        cy.get('[data-cy="recipe-title"]').should(
+            'have.value',
+            'Garlic Bread Draft'
+        );
+        cy.get('[data-cy="recipe-description"]').should(
+            'have.value',
+            'Crispy toasted baguette'
+        );
+
+        cy.get('[data-cy="modal-action-button"]').click(); // to Step 2
+        cy.get('[data-cy="recipe-ingredient-0"]').should(
+            'have.value',
+            '1 Baguette'
+        );
+        cy.get('[data-cy="recipe-ingredient-1"]').should(
+            'have.value',
+            '4 Cloves Garlic'
+        );
+    });
+
+    it('cleans up solo draft completely upon publishing recipe', () => {
+        const recipeName = 'Solo Published Omelette';
+
+        // Step 1: Open RecipeModal and create a draft
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+
+        // Step 0: Category
+        cy.get('[data-cy="category-box-Snacks"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 1: Description
+        cy.get('[data-cy="recipe-title"]').type(recipeName);
+        cy.get('[data-cy="recipe-description"]').type('Fluffy cheese omelette');
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 2: Ingredients
+        cy.get('[data-cy="recipe-ingredient-0"]').type('3 Large Eggs');
+        cy.get('[data-cy="add-ingredient-button"]').click();
+        cy.get('[data-cy="recipe-ingredient-1"]').type('50g Cheddar Cheese');
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 3: Methods
+        cy.get('[data-cy="method-box-Frying pan"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 4: Steps
+        cy.get('[data-cy="recipe-step-0"]').type('Whisk eggs and fry in pan');
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 5: Related Content
+        cy.intercept('POST', '/api/draft').as('saveDraft');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveDraft');
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 6: Images & Publish
+        cy.intercept('POST', '/api/recipes').as('publishRecipe');
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.wait('@publishRecipe').then((interception) => {
+            expect(interception.response?.statusCode).to.be.oneOf([200, 201]);
+            if (interception.response?.body?.id) {
+                createdRecipeIds.push(interception.response.body.id);
+            }
+        });
+
+        cy.get('[class^="go"]', { timeout: 10000 }).should('be.visible');
+        cy.wait(1000);
+
+        // Recipe card should appear in feed
+        cy.get('[data-cy="recipe-card-title"]', { timeout: 10000 })
+            .contains(recipeName)
+            .should('be.visible');
+
+        // Step 2: Open RecipeModal again -> should be fresh and empty
+        cy.get('[data-cy="post-recipe"]').should('be.visible').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+        cy.get('[data-cy^="category-box-"]').first().should('be.visible');
+        cy.get('[data-testid="drafts-indicator-dot"]').should('not.exist');
+        cy.contains('(0/3)').should('be.visible');
+        cy.get('[data-testid="close-modal-button"]').click();
+
+        // Step 3: Open DraftsModal -> should show empty state
+        cy.get('[data-cy="user-menu"]').click();
+        cy.get('[data-cy="user-menu-my-drafts"]').should('be.visible').click();
+        cy.get('[data-testid="drafts-modal"]').should('be.visible');
+        cy.get('[data-testid="drafts-modal-empty-state"]').should('be.visible');
+    });
+
+    it('enforces max solo drafts limit of 5 slots and rejects further creations', () => {
+        // Create initial draft
+        cy.request({
+            method: 'POST',
+            url: '/api/draft',
+            body: {
+                title: 'Draft Slot 1',
+                categories: ['Snacks'],
+                updatedAt: new Date().toISOString(),
+            },
+        });
+
+        // Open DraftsModal via UserMenu
+        cy.get('[data-cy="user-menu"]').click();
+        cy.get('[data-cy="user-menu-my-drafts"]').should('be.visible').click();
+        cy.get('[data-testid="drafts-modal"]').should('be.visible');
+        cy.get('[data-testid="draft-card"]').should('have.length', 1);
+
+        // Duplicate up to 5 drafts
+        for (let i = 2; i <= 5; i++) {
+            cy.intercept('POST', '/api/draft').as(`dup${i}`);
+            cy.get('[data-testid="draft-card-duplicate"]').first().click();
+            cy.wait(`@dup${i}`);
+            cy.get('[data-testid="draft-card"]').should('have.length', i);
+        }
+
+        // Attempt 6th duplicate -> should be rejected by server with 409 Conflict
+        cy.intercept('POST', '/api/draft').as('dupExcess');
+        cy.get('[data-testid="draft-card-duplicate"]').first().click();
+        cy.wait('@dupExcess').then((interception) => {
+            expect(interception.response?.statusCode).to.equal(409);
+            expect(interception.response?.body?.error).to.equal(
+                'MAX_SOLO_DRAFTS_REACHED'
+            );
+        });
+
+        // Still exactly 5 cards
+        cy.get('[data-testid="draft-card"]').should('have.length', 5);
+
+        // Delete 1 draft -> count becomes 4
+        cy.intercept('DELETE', '/api/draft*').as('deleteForSpace');
+        cy.get('[data-testid="draft-card-delete"]').first().click();
+        cy.get('[data-testid="draft-delete-confirm-btn"]').click();
+        cy.wait('@deleteForSpace');
+        cy.get('[data-testid="draft-card"]').should('have.length', 4);
+
+        // Duplicating now succeeds again -> back to 5
+        cy.intercept('POST', '/api/draft').as('dupSlotAvailable');
+        cy.get('[data-testid="draft-card-duplicate"]').first().click();
+        cy.wait('@dupSlotAvailable');
+        cy.get('[data-testid="draft-card"]').should('have.length', 5);
     });
 });

@@ -448,9 +448,12 @@ export class DraftService {
     }
 
     /**
-     * Cleans up a shared draft and locks when a recipe is published.
+     * Cleans up a shared or solo draft and locks when a recipe is published.
      */
-    static async cleanUpDraftOnPublish(draftId: string): Promise<void> {
+    static async cleanUpDraftOnPublish(
+        draftId: string,
+        userId?: string
+    ): Promise<void> {
         const key = `draft:shared:${draftId}`;
         try {
             const raw = await redis.get(key);
@@ -464,19 +467,16 @@ export class DraftService {
                 } catch {}
             }
 
+            if (userId && !participants.includes(userId)) {
+                participants.push(userId);
+            }
+
             await Promise.all([redis.del(key), releaseAllLocks(draftId)]);
 
             if (participants.length > 0) {
                 await Promise.all(
                     participants.map(async (uid) => {
-                        await this.removeFromUserDrafts(uid, draftId);
-                        const remaining = await this.getUserDraftIds(uid);
-                        if (remaining.length === 0) {
-                            await Promise.all([
-                                redis.del(`draft:user:${uid}`),
-                                redis.del(uid),
-                            ]);
-                        }
+                        await this.deleteSingleUserDraft(uid, draftId);
                     })
                 );
             }
@@ -484,6 +484,7 @@ export class DraftService {
             logger.error('DraftService.cleanUpDraftOnPublish error', {
                 error: error.message,
                 draftId,
+                userId,
             });
         }
     }

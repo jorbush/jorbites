@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { mutate } from 'swr';
 import { useRecipeFormState } from '@/app/components/modals/recipe-steps/useRecipeFormState';
+import { STEPS } from '@/app/utils/constants';
 
 // Mocks
 vi.mock('next/navigation', () => ({
@@ -1194,5 +1195,82 @@ describe('useRecipeFormState hook', () => {
         expect(result.current.getValues('ingredient-0')).toBe('200g Flour');
         expect(result.current.getValues('ingredient-1')).toBe('100g Butter');
         expect(result.current.getValues('step-0')).toBe('Knead the dough');
+    });
+
+    it('resets step to STEPS.CATEGORY when draftData transitions from an active draft to null', async () => {
+        let currentDraft: any = {
+            draftId: 'draft-active-step-5',
+            currentStep: 5,
+            title: 'Active Draft Step 5',
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: currentDraft } }
+        );
+
+        // Initially mounted on Step 5
+        expect(result.current.step).toBe(5);
+
+        // Draft is deleted/published -> draftData transitions to null
+        currentDraft = null;
+        await act(async () => {
+            rerender({ draft: currentDraft });
+        });
+
+        // Step should reset back to STEPS.CATEGORY (0)
+        expect(result.current.step).toBe(STEPS.CATEGORY);
+    });
+
+    it('switches active step and updates form state when transitioning between distinct drafts', async () => {
+        let currentDraft: any = {
+            draftId: 'draft-a',
+            currentStep: 4,
+            title: 'Draft A Title',
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: currentDraft } }
+        );
+
+        expect(result.current.step).toBe(4);
+
+        // Switch to Draft B on Step 2
+        currentDraft = {
+            draftId: 'draft-b',
+            currentStep: 2,
+            title: 'Draft B Title',
+        };
+
+        await act(async () => {
+            rerender({ draft: currentDraft });
+        });
+
+        expect(result.current.step).toBe(2);
     });
 });

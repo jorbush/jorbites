@@ -391,15 +391,16 @@ export function useRecipeFormState({
     );
 
     if (
-        draftData &&
         !recipeModal.isEditMode &&
-        (draftData.draftId || null) !== prevDraftId
+        (draftData?.draftId || null) !== prevDraftId
     ) {
-        setPrevDraftId(draftData.draftId || null);
-        if (draftData.currentStep !== undefined) {
+        setPrevDraftId(draftData?.draftId || null);
+        if (draftData && draftData.currentStep !== undefined) {
             setStep(
                 Math.max(0, Math.min(draftData.currentStep, STEPS_LENGTH - 1))
             );
+        } else if (!draftData) {
+            setStep(STEPS.CATEGORY);
         }
     }
 

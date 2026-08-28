@@ -165,13 +165,16 @@ export function useDraftPersistence({
             form.setValue('draftId', '');
             form.setValue('inviteToken', '');
             mutateDraft?.();
-            mutate('/api/draft/active');
-            mutate('/api/draft');
+            mutate('/api/draft', null, false);
             if (currentDraftId) {
                 mutate(
-                    `/api/draft?draftId=${encodeURIComponent(currentDraftId)}`
+                    `/api/draft?draftId=${encodeURIComponent(currentDraftId)}`,
+                    null,
+                    false
                 );
             }
+            mutate('/api/draft/active');
+            mutate('/api/draft');
         } catch (error) {
             console.error('Failed to delete draft', error);
         }

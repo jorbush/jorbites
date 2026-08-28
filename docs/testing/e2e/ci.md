@@ -93,7 +93,7 @@ The test suite is divided across **5 parallel matrix containers** to optimize ex
 | **2**     | `Workshops & Quests Specs`       | [`workshops.cy.ts`](file:///__tests__/e2e/workshops.cy.ts)<br/>[`quests.cy.ts`](file:///__tests__/e2e/quests.cy.ts)       | Workshop and quest creation, editing, participation, and deletion lifecycles.                |
 | **3**     | `User & Basic Specs`             | [`user.cy.ts`](file:///__tests__/e2e/user.cy.ts)<br/>[`app.cy.ts`](file:///__tests__/e2e/app.cy.ts)                       | NextAuth session login/logout flows and core layout/shell component verification.            |
 | **4**     | `Collaborative Recipes`          | [`collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts)                                        | Multi-user co-cooking, invite links, Redis draft syncing, soft-locking, and capacity limits. |
-| **5**     | `Drafts Management & Navigation` | [`drafts_management.cy.ts`](file:///__tests__/e2e/drafts_management.cy.ts)<br/>[`drafts_navigation.cy.ts`](file:///__tests__/e2e/drafts_navigation.cy.ts) | Multi-draft modal dashboard, auto-load on open, indicator dot, TTL, duplication, and deletion. |
+| **5**     | `Drafts Management & Navigation` | [`drafts_management.cy.ts`](file:///__tests__/e2e/drafts_management.cy.ts)<br/>[`drafts_navigation.cy.ts`](file:///__tests__/e2e/drafts_navigation.cy.ts) | Multi-draft modal dashboard, auto-load on open, indicator dot, TTL, duplication, deletion, multi-step state persistence, in-session draft switching, publish cleanup, and 5-slot limits. |
 
 ---
 

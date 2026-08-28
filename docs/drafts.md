@@ -126,3 +126,30 @@ Defined in [`app/utils/constants.ts`](file:///Users/jordi/.gemini/antigravity/wo
 | `LOCK_HEARTBEAT_INTERVAL_MS` | `10000` (10s) | Client lock renewal heartbeat rate |
 | `LOCK_POLL_INTERVAL_MS` | `4000` (4s) | Client polling rate for remote field locks |
 | `SHARED_DRAFT_POLL_INTERVAL_MS` | `8000` (8s) | Client SWR polling rate for shared draft content |
+
+---
+
+## Testing Strategy & Test Suites
+
+The drafts and collaborative editing system is thoroughly verified across unit, integration, and E2E testing layers:
+
+### 1. Unit & Integration Tests (Jest & Vitest)
+
+| Test File | Framework | Scope & Capabilities Tested |
+|---|---|---|
+| [`draftFormUtils.test.ts`](file:///__tests__/unit_test/utils/draftFormUtils.test.ts) | Vitest | Full recipe state extraction from later wizard steps (Step 3 Methods, Step 5 Related Content), 30-slot ingredient & step scanning, fallback array preservation. |
+| [`useRecipeFormState.test.ts`](file:///__tests__/unit_test/components/modals/recipe-steps/useRecipeFormState.test.ts) | Vitest | Wizard step derivation, render-time draft adjustment, pure state updaters, ingredients preservation during step navigation. |
+| [`useDraftPersistence.test.ts`](file:///__tests__/unit_test/hooks/useDraftPersistence.test.ts) | Vitest | Save draft triggers, error handling toasts, mutation revalidation triggers. |
+| [`useDraftActions.test.ts`](file:///__tests__/unit_test/hooks/useDraftActions.test.ts) | Vitest | Modal-level draft actions: duplicate draft, delete draft with optimistic update, share link generation. |
+| [`draftMetadata.test.ts`](file:///__tests__/unit_test/utils/draftMetadata.test.ts) | Vitest | Title generation heuristics, TTL color badge determination, progress calculation (0–7 steps). |
+| [`draftService.multiSlot.test.ts`](file:///__tests__/unit_test/lib/draftService.multiSlot.test.ts) | Jest | Redis multi-slot solo storage, 5-draft slot cap (`MAX_SOLO_DRAFT_SLOTS = 5`), shadow key cleanup, partial update field merging. |
+| [`draft.multiSlot.test.ts`](file:///__tests__/unit_test/routes/draft.multiSlot.test.ts) | Jest | API endpoint `/api/draft` and `/api/draft/active` multi-slot routing, query param slot filtering, error response codes. |
+
+### 2. End-to-End Tests (Cypress)
+
+| Spec File | Test Cases & Key User Flows |
+|---|---|
+| [`drafts_management.cy.ts`](file:///__tests__/e2e/drafts_management.cy.ts) | 1. **Empty State**: Opens `DraftsModal` from `UserMenu` when 0 drafts exist.<br/>2. **Draft Lifecycle**: Creates draft, auto-loads on re-open, accesses `DraftsModal` from inside `RecipeModal`, duplicates, deletes.<br/>3. **Zero-Draft Reset**: Deleting all drafts cleans up Redis shadow keys completely.<br/>4. **Multi-Step Persistence**: Saves draft from Step 5 (Related Content), restores all 5 steps backward upon reload.<br/>5. **In-Session Draft Switching**: Switches between Draft A (Strawberry Tart on Step 4) and Draft B (Garlic Bread on Step 2) without state leakage.<br/>6. **Publish Cleanup**: Solo draft is cleanly purged from Redis upon recipe creation; reopening `RecipeModal` starts with fresh empty state.<br/>7. **Slot Limit Enforcement**: Duplicates up to 5 drafts, rejects 6th with 400 (`MAX_SOLO_DRAFTS_REACHED`), frees slot on delete. |
+| [`drafts_navigation.cy.ts`](file:///__tests__/e2e/drafts_navigation.cy.ts) | 1. **Entry Point Behavior**: Click "Post a recipe" with 0 drafts vs existing draft.<br/>2. **Indicator Dot**: Displays green indicator dot on header folder icon when drafts exist.<br/>3. **User Menu Navigation**: "My Drafts" directly opens `DraftsModal`. |
+| [`collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts) | 1. **Collaborative Lifecycle**: Invites co-cooks, joins via tokenized link, synchronizes steps in real-time, publishes collaborative recipe.<br/>2. **Soft-Locking**: Displays lock banners and disables inputs when a co-cook is editing.<br/>3. **Concurrent Edits**: Non-destructive field merging without race condition loss.<br/>4. **Capacity**: Enforces 4 co-cook limit. |
+

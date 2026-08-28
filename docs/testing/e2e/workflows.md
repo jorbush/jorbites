@@ -310,7 +310,9 @@ flowchart TD
 
 ## 8. Drafts Management & Multi-Draft Lifecycle (`drafts_management.cy.ts`)
 
-This spec validates the complete multi-draft lifecycle: empty state in `DraftsModal`, creating and auto-saving solo drafts, indicator dot activation in `RecipeModal`, switching to `DraftsModal` from within the recipe wizard, duplicating drafts, and safely deleting drafts with confirmation.
+This spec validates the complete multi-draft lifecycle: empty state in `DraftsModal`, creating and auto-saving solo drafts, indicator dot activation in `RecipeModal`, switching to `DraftsModal` from within the recipe wizard, duplicating drafts, safely deleting drafts with confirmation, switching between distinct drafts without form state leakage, full recipe state capture across multi-step wizard navigation, solo draft cleanup upon publishing, and maximum slot limit enforcement (`MAX_SOLO_DRAFT_SLOTS = 5`).
+
+### 8.1 Multi-Draft Lifecycle, Duplication & Deletion Flow
 
 ```mermaid
 sequenceDiagram
@@ -367,6 +369,85 @@ sequenceDiagram
     %% Step 7: Open Remaining Draft
     User->>DM: Click remaining DraftCard
     DM->>RM: Close DraftsModal & Open RecipeModal with selected draft
+```
+
+### 8.2 Full Multi-Step State Persistence Across Wizard Steps
+
+```mermaid
+flowchart TD
+    S0["Step 0: Select Category ('Desserts')"] --> S1["Step 1: Description ('Cheesecake Special')"]
+    S1 --> S2["Step 2: Add 3 Ingredients ('Cream Cheese', 'Strawberries', 'Crackers')"]
+    S2 --> S3["Step 3: Cooking Method ('Oven')"]
+    S3 --> S4["Step 4: Add 2 Steps ('Crush crackers', 'Bake at 160C')"]
+    S4 --> S5["Step 5: Related Content -> Click 'Save draft'"]
+    S5 --> SavePayload["extractIngredientsAndSteps collects all 30 potential slots"]
+    SavePayload --> RedisStore["Redis stores whole recipe state (categories, title, desc, ingredients, method, steps)"]
+    RedisStore --> Reload["Page Reload / Re-open RecipeModal"]
+    Reload --> RestoreSteps["All 5 steps restored completely backward without data loss"]
+```
+
+### 8.3 In-Session Draft Switching & Form State Isolation
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Authenticated User
+    participant RM as RecipeModal (Wizard)
+    participant DM as DraftsModal (Grid)
+
+    Note over User,RM: User edits Draft A ("Strawberry Tart", Step 4, Oven, 2 ingredients)
+    User->>RM: Click [data-testid="open-drafts-modal-button"]
+    RM->>DM: Open DraftsModal
+    User->>DM: Click "+ New draft" -> Create Draft B ("Garlic Bread", Step 2, Quick, 2 ingredients)
+    User->>RM: Save Draft B
+    User->>RM: Click [data-testid="open-drafts-modal-button"]
+    RM->>DM: Open DraftsModal (Shows Draft A and Draft B)
+    User->>DM: Select Draft A
+    DM->>RM: Load Draft A
+    Note over RM: Form resets cleanly: Step 4 active, Oven selected, Strawberry ingredients only (No Garlic Bread fields leak!)
+    User->>RM: Click [data-testid="open-drafts-modal-button"] -> Select Draft B
+    DM->>RM: Load Draft B
+    Note over RM: Form resets cleanly: Step 2 active, Garlic Bread fields restored!
+```
+
+### 8.4 Solo Draft Cleanup on Recipe Publish
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Authenticated User
+    participant RM as RecipeModal
+    participant API as POST /api/recipes
+    participant DS as DraftService.cleanUpDraftOnPublish
+    participant Redis as Redis (:6379)
+    participant DB as MongoDB
+
+    User->>RM: Advance through steps with active solo draft
+    User->>RM: Click "Create" (Publish) on Step 6
+    RM->>API: POST /api/recipes (Payload includes draftId)
+    API->>DB: prisma.recipe.create(...)
+    API->>DS: cleanUpDraftOnPublish(draftId, userId)
+    DS->>Redis: DEL draft:user:<userId>:<draftId>
+    DS->>Redis: SREM user:drafts:<userId> <draftId>
+    Note over DS,Redis: If 0 drafts remain, DEL shadow keys draft:user:<userId> & <userId>
+    API-->>RM: 200 OK -> Recipe created & Modal closes
+    User->>RM: Click "Post a recipe"
+    Note over RM: RecipeModal opens on Step 0 with clean empty form (no indicator dot, 0/3 categories)
+```
+
+### 8.5 Maximum Solo Draft Slots Limit Enforcement (`MAX_SOLO_DRAFT_SLOTS = 5`)
+
+```mermaid
+flowchart TD
+    D1["Draft 1"] --> Dup1["Duplicate -> Drafts: 2/5"]
+    Dup1 --> Dup2["Duplicate -> Drafts: 3/5"]
+    Dup2 --> Dup3["Duplicate -> Drafts: 4/5"]
+    Dup3 --> Dup4["Duplicate -> Drafts: 5/5 (Max Capacity)"]
+    Dup4 --> Attempt6["Attempt 6th Duplicate -> POST /api/draft"]
+    Attempt6 --> Reject["API returns 400 Bad Request: 'MAX_SOLO_DRAFTS_REACHED'"]
+    Reject --> Toast["UI shows limit warning; Card count stays at 5"]
+    Toast --> DeleteOne["Delete 1 Draft -> Capacity drops to 4/5"]
+    DeleteOne --> DupAllowed["Duplicate now succeeds -> Returns to 5/5"]
 ```
 
 ---
