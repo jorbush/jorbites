@@ -4,14 +4,7 @@ import axios from 'axios';
 import { mutate } from 'swr';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import {
-    FormAccessor,
-    extractIngredientsAndSteps,
-    collectDraftFormData,
-} from '@/app/utils/draftFormUtils';
-
-export type { FormAccessor };
-export { extractIngredientsAndSteps, collectDraftFormData };
+import { FormAccessor, collectDraftFormData } from '@/app/utils/draftFormUtils';
 
 interface UseDraftPersistenceOptions {
     recipeModal: any;

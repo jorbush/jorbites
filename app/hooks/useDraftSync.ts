@@ -31,7 +31,7 @@ interface UseDraftSyncReturn {
         getValues: UseFormGetValues<any>,
         step: number,
         lock: any,
-        stepChanged: boolean
+        _stepChanged: boolean
     ) => void;
 }
 
@@ -78,7 +78,7 @@ export function useDraftSync({
             getValues: UseFormGetValues<any>,
             step: number,
             lock: any,
-            stepChanged: boolean
+            _stepChanged: boolean
         ) => {
             const serialized = draftData ? JSON.stringify(draftData) : '';
             const draftChanged = serialized !== prevSyncedDraftStr.current;

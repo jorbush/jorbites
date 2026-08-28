@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import useSWR from 'swr';
@@ -62,7 +62,6 @@ export function useRecipeFormState({
         }
         return STEPS.CATEGORY;
     });
-    const [prevStep, setPrevStep] = useState<number>(step);
     const [numIngredients, setNumIngredients] = useState<number>(() => {
         if (recipeModal.isEditMode && recipeModal.editRecipeData) {
             return recipeModal.editRecipeData.ingredients?.length || 1;
@@ -304,23 +303,15 @@ export function useRecipeFormState({
     const setCustomValue = updateFormField;
 
     const addIngredientInput = useCallback(() => {
-        setNumIngredients((prev) => {
-            const current = Math.max(
-                prev,
-                Array.isArray(draftData?.ingredients)
-                    ? draftData.ingredients.length
-                    : 1
+        if (numIngredients >= RECIPE_MAX_INGREDIENTS) {
+            toast.error(
+                t('max_ingredients_reached') ||
+                    `Maximum of ${RECIPE_MAX_INGREDIENTS} ingredients allowed`
             );
-            if (current >= RECIPE_MAX_INGREDIENTS) {
-                toast.error(
-                    t('max_ingredients_reached') ||
-                        `Maximum of ${RECIPE_MAX_INGREDIENTS} ingredients allowed`
-                );
-                return current;
-            }
-            return current + 1;
-        });
-    }, [draftData?.ingredients, t]);
+            return;
+        }
+        setNumIngredients((prev) => prev + 1);
+    }, [numIngredients, t]);
 
     const removeIngredientInput = useCallback(
         (index: number) => {
@@ -345,21 +336,15 @@ export function useRecipeFormState({
     );
 
     const addStepInput = useCallback(() => {
-        setNumSteps((prev) => {
-            const current = Math.max(
-                prev,
-                Array.isArray(draftData?.steps) ? draftData.steps.length : 1
+        if (numSteps >= RECIPE_MAX_STEPS) {
+            toast.error(
+                t('max_steps_reached') ||
+                    `Maximum of ${RECIPE_MAX_STEPS} steps allowed`
             );
-            if (current >= RECIPE_MAX_STEPS) {
-                toast.error(
-                    t('max_steps_reached') ||
-                        `Maximum of ${RECIPE_MAX_STEPS} steps allowed`
-                );
-                return current;
-            }
-            return current + 1;
-        });
-    }, [draftData?.steps, t]);
+            return;
+        }
+        setNumSteps((prev) => prev + 1);
+    }, [numSteps, t]);
 
     const removeStepInput = useCallback(
         (index: number) => {
@@ -399,36 +384,22 @@ export function useRecipeFormState({
     const lock = useRecipeLock(lockTargetId, currentUser?.id);
     const isCurrentStepLocked = Boolean(lock?.isLockedByOther(`step:${step}`));
 
-    const stepChanged = prevStep !== step;
-    if (stepChanged) {
-        setPrevStep(step);
-    }
+    syncFormFromDraft(setValue, getValues, step, lock, false);
 
-    syncFormFromDraft(setValue, getValues, step, lock, stepChanged);
+    const [prevDraftId, setPrevDraftId] = useState<string | null>(
+        () => draftData?.draftId || null
+    );
 
-    const [initialDraftLoaded, setInitialDraftLoaded] = useState(false);
-    const lastSyncedDraftIdRef = useRef<string | null>(null);
-    const currentDraftId = draftData?.draftId || null;
     if (
         draftData &&
         !recipeModal.isEditMode &&
-        (lastSyncedDraftIdRef.current !== currentDraftId || !initialDraftLoaded)
+        (draftData.draftId || null) !== prevDraftId
     ) {
-        lastSyncedDraftIdRef.current = currentDraftId;
-        setInitialDraftLoaded(true);
+        setPrevDraftId(draftData.draftId || null);
         if (draftData.currentStep !== undefined) {
             setStep(
                 Math.max(0, Math.min(draftData.currentStep, STEPS_LENGTH - 1))
             );
-        }
-        if (
-            Array.isArray(draftData.ingredients) &&
-            draftData.ingredients.length > 0
-        ) {
-            setNumIngredients(draftData.ingredients.length);
-        }
-        if (Array.isArray(draftData.steps) && draftData.steps.length > 0) {
-            setNumSteps(draftData.steps.length);
         }
     }
 
