@@ -573,4 +573,195 @@ describe('Drafts Management & Multi-Draft E2E', () => {
         cy.wait('@dupSlotAvailable');
         cy.get('[data-testid="draft-card"]').should('have.length', 5);
     });
+
+    it('displays mixed solo and collaborative drafts with respective badges, TTLs, and avatars in DraftsModal', () => {
+        // Step 1: Create a Solo Draft via RecipeModal
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+
+        cy.get('[data-cy="category-box-Pasta"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.get('[data-cy="recipe-title"]').type('Solo Truffle Pasta');
+        cy.intercept('POST', '/api/draft').as('saveSoloDraft');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveSoloDraft');
+
+        // Step 2: Open DraftsModal and duplicate to create a second draft
+        cy.intercept('POST', '/api/draft').as('dupDraft');
+        cy.get('[data-testid="open-drafts-modal-button"]').click();
+        cy.get('[data-testid="drafts-modal"]').should('be.visible');
+        cy.get('[data-testid="draft-card"]').should('have.length', 1);
+
+        cy.get('[data-testid="draft-card-duplicate"]').first().click();
+        cy.wait('@dupDraft');
+        cy.get('[data-testid="draft-card"]').should('have.length', 2);
+
+        // Step 3: Convert the first draft into a Shared Collaborative Draft via share button
+        cy.intercept('POST', '/api/draft/invite').as('generateInvite');
+        cy.get('[data-testid="draft-card-share"]').first().click();
+        cy.wait('@generateInvite');
+
+        // Verify toast
+        cy.contains('Co-cook invite link copied to clipboard').should(
+            'be.visible'
+        );
+
+        // Step 4: Verify DraftsModal displays mixed badges
+        // One card has "Shared" badge and 7d TTL, other card has "Solo" badge and 365d TTL
+        cy.get('[data-testid="draft-card"]')
+            .contains('Shared')
+            .should('be.visible');
+        cy.get('[data-testid="draft-card"]')
+            .contains('Solo')
+            .should('be.visible');
+
+        // Verify TTL badges (1 week for 7-day shared draft, 52 weeks for 365-day solo draft)
+        cy.get('[data-testid="draft-ttl-badge"]')
+            .contains('1 week')
+            .should('be.visible');
+        cy.get('[data-testid="draft-ttl-badge"]')
+            .contains('52 weeks')
+            .should('be.visible');
+
+        // Step 5: Open a draft from the mixed grid
+        cy.get('[data-testid="draft-card-title"]').first().click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+        cy.get('[data-cy="recipe-title"]').should(
+            'contain.value',
+            'Solo Truffle Pasta'
+        );
+
+        // Close RecipeModal
+        cy.get('[data-testid="close-modal-button"]').click();
+    });
+
+    it('persists plain-text parsed ingredients and steps across draft save and full page reload', () => {
+        const recipeName = 'Choco Lava Cake';
+
+        // Step 1: Open RecipeModal and fill Category & Title
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+
+        cy.get('[data-cy="category-box-Desserts"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.get('[data-cy="recipe-title"]').type(recipeName);
+        cy.get('[data-cy="recipe-description"]').type(
+            'Rich chocolate fondant with molten core'
+        );
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 2: On Ingredients step, toggle plain-text mode and apply multi-line text
+        cy.get('[data-cy="toggle-input-mode"]').click();
+        cy.get('[data-cy="ingredients-textarea"]').should('be.visible');
+        cy.get('[data-cy="ingredients-textarea"]').type(
+            '1. 200g Dark Chocolate\n2. 100g Butter\n3. 2 Eggs\n4. 50g Sugar'
+        );
+        cy.get('[data-cy="apply-ingredients-button"]').click();
+
+        // Verify mode switched back to list mode with all 4 items
+        cy.get('[data-cy="recipe-ingredient-0"]').should(
+            'have.value',
+            '200g Dark Chocolate'
+        );
+        cy.get('[data-cy="recipe-ingredient-1"]').should(
+            'have.value',
+            '100g Butter'
+        );
+        cy.get('[data-cy="recipe-ingredient-2"]').should(
+            'have.value',
+            '2 Eggs'
+        );
+        cy.get('[data-cy="recipe-ingredient-3"]').should(
+            'have.value',
+            '50g Sugar'
+        );
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 3: On Methods step, select Oven
+        cy.get('[data-cy="method-box-Oven"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 4: On Steps step, toggle plain-text mode and apply multi-line steps
+        cy.get('[data-cy="toggle-input-mode"]').click();
+        cy.get('[data-cy="steps-textarea"]').should('be.visible');
+        cy.get('[data-cy="steps-textarea"]').type(
+            '1. Melt chocolate and butter\n2. Whisk eggs with sugar\n3. Fold together and bake'
+        );
+        cy.get('[data-cy="apply-steps-button"]').click();
+
+        // Verify mode switched back to list mode with all 3 steps
+        cy.get('[data-cy="recipe-step-0"]').should(
+            'have.value',
+            'Melt chocolate and butter'
+        );
+        cy.get('[data-cy="recipe-step-1"]').should(
+            'have.value',
+            'Whisk eggs with sugar'
+        );
+        cy.get('[data-cy="recipe-step-2"]').should(
+            'have.value',
+            'Fold together and bake'
+        );
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 5: On Related Content step, save draft explicitly
+        cy.intercept('POST', '/api/draft').as('saveDraftWithPlainText');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveDraftWithPlainText');
+
+        // Step 6: Hard reload page
+        cy.reload();
+        cy.ensureEnglish();
+
+        // Step 7: Open RecipeModal again -> draft should auto-load all fields
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+
+        // Go back through previous steps to verify all fields are intact
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 4: Steps
+        cy.get('[data-cy="recipe-step-0"]').should(
+            'have.value',
+            'Melt chocolate and butter'
+        );
+        cy.get('[data-cy="recipe-step-1"]').should(
+            'have.value',
+            'Whisk eggs with sugar'
+        );
+        cy.get('[data-cy="recipe-step-2"]').should(
+            'have.value',
+            'Fold together and bake'
+        );
+
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 3: Methods
+        cy.get('[data-cy="method-box-Oven"]').should('have.class', 'selected');
+
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 2: Ingredients
+        cy.get('[data-cy="recipe-ingredient-0"]').should(
+            'have.value',
+            '200g Dark Chocolate'
+        );
+        cy.get('[data-cy="recipe-ingredient-1"]').should(
+            'have.value',
+            '100g Butter'
+        );
+        cy.get('[data-cy="recipe-ingredient-2"]').should(
+            'have.value',
+            '2 Eggs'
+        );
+        cy.get('[data-cy="recipe-ingredient-3"]').should(
+            'have.value',
+            '50g Sugar'
+        );
+
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 1: Description
+        cy.get('[data-cy="recipe-title"]').should('have.value', recipeName);
+
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 0: Category
+        cy.get('[data-cy="category-box-Desserts"]').should(
+            'have.class',
+            'selected'
+        );
+    });
 });

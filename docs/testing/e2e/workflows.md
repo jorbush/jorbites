@@ -444,10 +444,50 @@ flowchart TD
     Dup2 --> Dup3["Duplicate -> Drafts: 4/5"]
     Dup3 --> Dup4["Duplicate -> Drafts: 5/5 (Max Capacity)"]
     Dup4 --> Attempt6["Attempt 6th Duplicate -> POST /api/draft"]
-    Attempt6 --> Reject["API returns 400 Bad Request: 'MAX_SOLO_DRAFTS_REACHED'"]
+    Attempt6 --> Reject["API returns 409 Conflict: 'MAX_SOLO_DRAFTS_REACHED'"]
     Reject --> Toast["UI shows limit warning; Card count stays at 5"]
     Toast --> DeleteOne["Delete 1 Draft -> Capacity drops to 4/5"]
     DeleteOne --> DupAllowed["Duplicate now succeeds -> Returns to 5/5"]
+```
+
+### 8.6 Mixed Solo & Collaborative Drafts Grid (`DraftsModal`)
+
+```mermaid
+flowchart TD
+    SD["Create Solo Draft ('Solo Truffle Pasta')"] --> Dup["Duplicate -> 2 Draft Slots"]
+    Dup --> Conv["Convert 1st Draft to Collaborative via Share Button"]
+    Conv --> Token["POST /api/draft/invite -> Generates Invite Token & Sets Type='shared'"]
+    Token --> Grid["DraftsModal Grid Renders Mixed Draft Cards:"]
+    Grid --> C1["Card 1: 'Shared' Badge | 7d TTL | Invite Share Action"]
+    Grid --> C2["Card 2: 'Solo' Badge | 365d TTL | Standard Solo Actions"]
+    C2 --> OpenSolo["Select Solo Draft -> Loads 'Solo Truffle Pasta' cleanly in RecipeModal"]
+```
+
+### 8.7 Plain-Text Parser Persistence Across Draft Save & Page Reload
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Authenticated User
+    participant RM as RecipeModal
+    participant PTP as Text Parser
+    participant API as POST /api/draft
+    participant Redis as Redis (:6379)
+
+    User->>RM: Step 2 (Ingredients) -> Toggle Plain-Text Mode
+    User->>RM: Paste numbered items ('1. 200g Dark Chocolate\n2. 100g Butter\n...')
+    User->>RM: Click 'Apply'
+    RM->>PTP: parseTextToList(rawText, max, 'ingredient')
+    PTP-->>RM: Populates individual slots (ingredient-0, ingredient-1, etc.)
+    User->>RM: Step 4 (Steps) -> Toggle Plain-Text Mode & Apply steps
+    User->>RM: Step 5 -> Click 'Save draft'
+    RM->>API: POST /api/draft (Whole recipe state extracted)
+    API->>Redis: Saved to user slot
+    User->>User: Hard page reload (F5 / cy.reload())
+    User->>RM: Click 'Post a recipe'
+    RM->>API: GET /api/draft
+    API-->>RM: Complete draft data
+    Note over RM: Step backwards: Step 4 (3 steps), Step 3 (Oven), Step 2 (4 ingredients), Step 1 (Title) all intact!
 ```
 
 ---

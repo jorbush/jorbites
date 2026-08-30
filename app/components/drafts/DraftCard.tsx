@@ -123,7 +123,7 @@ const DraftCard: React.FC<DraftCardProps> = ({
                         {title}
                     </button>
                 </h3>
-                <div className="shrink-0">
+                <div className="relative z-10 shrink-0">
                     <span
                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
                             draft.type === 'shared'
