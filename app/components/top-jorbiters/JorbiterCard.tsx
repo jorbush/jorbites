@@ -37,7 +37,7 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
 
     return (
         <div
-            className={`dark:bg-dark relative overflow-hidden rounded-lg border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-700 ${
+            className={`dark:bg-dark relative overflow-hidden rounded-lg border bg-white p-4 shadow-sm transition duration-200 hover:shadow-md dark:border-neutral-700 ${
                 index < 3
                     ? 'border-2 ' +
                       getMedalColor(index).replace('text', 'border')
@@ -85,8 +85,18 @@ const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
                                 />
                             )}
                         </div>
-                        <div className="sm:text-md text-sm text-neutral-400 md:text-lg">
-                            {`${t('level')} ${jorbiter.level}`}
+                        <div className="sm:text-md flex items-center gap-2 text-sm text-neutral-400 md:text-lg">
+                            <span>{`${t('level')} ${jorbiter.level}`}</span>
+                            {jorbiter.levelDelta !== undefined &&
+                                jorbiter.levelDelta !== null &&
+                                jorbiter.levelDelta > 0 && (
+                                    <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                        +{jorbiter.levelDelta}{' '}
+                                        {jorbiter.levelDelta === 1
+                                            ? t('level_gained')
+                                            : t('levels_gained')}
+                                    </span>
+                                )}
                         </div>
                     </div>
                 </div>

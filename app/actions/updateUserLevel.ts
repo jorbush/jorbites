@@ -1,7 +1,24 @@
+import prisma from '@/app/lib/prismadb';
 import { logger } from '@/app/lib/axiom/server';
 
 interface IParams {
     userId?: string;
+}
+
+export async function createLevelSnapshot(userId: string, level: number) {
+    try {
+        await prisma.levelSnapshot.create({
+            data: {
+                userId,
+                level,
+            },
+        });
+    } catch (error: any) {
+        logger.error('createLevelSnapshot - error', {
+            error: error.message,
+            userId,
+        });
+    }
 }
 
 export default async function updateUserLevel(params: IParams) {
@@ -36,6 +53,16 @@ export default async function updateUserLevel(params: IParams) {
             throw new Error(
                 `Badge Forge service responded with status ${badgeForgeResponse.status}: ${JSON.stringify(errorData)}`
             );
+        }
+
+        if (userId) {
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                select: { level: true },
+            });
+            if (user) {
+                await createLevelSnapshot(userId, user.level);
+            }
         }
 
         logger.info('updateUserLevel - success', { userId });
