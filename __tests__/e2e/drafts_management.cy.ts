@@ -62,8 +62,8 @@ describe('Drafts Management & Multi-Draft E2E', () => {
 
     beforeEach(() => {
         cy.login();
-        cy.visit('/');
         cleanupResources();
+        cy.visit('/');
         cy.ensureEnglish();
     });
 
@@ -373,8 +373,8 @@ describe('Drafts Management & Multi-Draft E2E', () => {
         cy.get('[data-cy="modal-action-button"]').click();
         cy.get('[data-testid="modal-title"]').should('be.visible');
 
-        // Draft B: Snacks Category
-        cy.get('[data-cy="category-box-Snacks"]').click();
+        // Draft B: Vegetarian Category
+        cy.get('[data-cy="category-box-Vegetarian"]').click();
         cy.get('[data-cy="modal-action-button"]').click();
 
         // Draft B: Description
@@ -835,5 +835,122 @@ describe('Drafts Management & Multi-Draft E2E', () => {
         // DraftsModal should open and display the draft with the freshly typed title
         cy.get('[data-testid="drafts-modal"]').should('be.visible');
         cy.contains(recipeName).should('be.visible');
+    });
+
+    it('flushes in-flight draft save synchronously upon rapid Next navigation without dropping edits', () => {
+        const recipeName = `Fast Save ${Date.now()}`;
+
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+
+        cy.get('[data-cy="category-box-Desserts"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.get('[data-cy="recipe-title"]').type(recipeName);
+        cy.get('[data-cy="recipe-description"]').type('Quick recipe');
+        cy.get('[data-cy="modal-action-button"]').click(); // to Step 2: Ingredients
+
+        // Rapid typing into ingredients then immediate Next click
+        cy.get('[data-cy="recipe-ingredient-0"]').type('200g Fresh Berries');
+        cy.get('[data-cy="modal-action-button"]').click(); // to Step 3: Methods
+
+        // Select method and click Save Draft
+        cy.get('[data-cy="method-box-Oven"]').click();
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.get('[data-testid="close-modal-button"]').click();
+
+        // Reload page to verify persistence
+        cy.reload();
+        cy.ensureEnglish();
+
+        // Re-open RecipeModal - auto-resumes on Step 3 (Methods)
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+        cy.get('[data-testid="drafts-indicator-dot"]').should('be.visible');
+
+        cy.get('[data-cy="method-box-Oven"]').should('have.class', 'selected');
+
+        // Navigate back to Ingredients
+        cy.get('[data-cy="secondary-action-button"]').click();
+        cy.get('[data-cy="recipe-ingredient-0"]').should(
+            'have.value',
+            '200g Fresh Berries'
+        );
+
+        // Navigate back to Description
+        cy.get('[data-cy="secondary-action-button"]').click();
+        cy.get('[data-cy="recipe-title"]').should('have.value', recipeName);
+    });
+
+    it('clears all recipe steps in list mode and mode toggle without resurrecting stale step entries', () => {
+        const recipeName = `Steps Clr ${Date.now()}`;
+
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+
+        cy.get('[data-cy="category-box-Desserts"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.get('[data-cy="recipe-title"]').type(recipeName);
+        cy.get('[data-cy="recipe-description"]').type('Steps clearing test');
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.get('[data-cy="recipe-ingredient-0"]').type('1 Apple');
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.get('[data-cy="method-box-Oven"]').click();
+        cy.get('[data-cy="modal-action-button"]').click(); // to Step 4: Steps
+
+        // Add 2 steps
+        cy.get('[data-cy="recipe-step-0"]').type('Slice the apple');
+        cy.get('[data-cy="add-step-button"]').click();
+        cy.get('[data-cy="recipe-step-1"]').type('Bake until golden');
+
+        cy.intercept('POST', '/api/draft').as('saveInitialStepsDraft');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveInitialStepsDraft');
+
+        // Clear both steps
+        cy.get('[data-cy="recipe-step-0"]').clear();
+        cy.get('[data-cy="recipe-step-1"]').clear();
+
+        // Toggle to plain text and verify empty
+        cy.get('[data-cy="toggle-input-mode"]').click();
+        cy.get('[data-cy="steps-textarea"]').should('have.value', '');
+
+        // Toggle back to list mode
+        cy.get('[data-cy="toggle-input-mode"]').click();
+
+        // Save cleared draft
+        cy.intercept('POST', '/api/draft').as('saveClearedStepsDraft');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveClearedStepsDraft');
+
+        cy.get('[data-testid="close-modal-button"]').click();
+
+        // Reload page to verify persistence from Redis
+        cy.reload();
+        cy.ensureEnglish();
+
+        // Re-open RecipeModal - auto-resumes on Step 4 (Steps)
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+        cy.get('[data-testid="drafts-indicator-dot"]').should('be.visible');
+
+        // Verify Step 0 is empty (not restored to "Slice the apple")
+        cy.get('[data-cy="recipe-step-0"]').should('have.value', '');
+
+        // Backwards navigation retains previous data
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 3 Methods
+        cy.get('[data-cy="method-box-Oven"]').should('have.class', 'selected');
+
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 2 Ingredients
+        cy.get('[data-cy="recipe-ingredient-0"]').should(
+            'have.value',
+            '1 Apple'
+        );
+
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 1 Description
+        cy.get('[data-cy="recipe-title"]').should('have.value', recipeName);
     });
 });

@@ -160,6 +160,51 @@ flowchart TD
     Publish --> CleanRedis["DraftService.cleanUpDraftOnPublish deletes draft:shared:id from Redis"]
 ```
 
+### 1.5 Live UI In-Progress Edit Protection during Co-Cooking
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor UserA as Active Typist (User A)
+    actor UserB as Remote Co-Cook (User B)
+    participant Modal as RecipeModal UI (Step 1)
+    participant Sync as syncFormFromDraft Hook
+    participant Redis as Redis (:6379)
+
+    UserA->>Modal: Focusing & typing in Description ('My In-Progress Title Draft')
+    Note over Modal: Form marked dirty / active step = Step 1 (DESCRIPTION)
+    UserB->>Redis: POST /api/draft (Updates ingredients: ['1kg Organic Strawberries', '250g Mascarpone'])
+    Redis-->>Modal: SWR Background Revalidation (/api/draft?draftId=...)
+    Modal->>Sync: syncFormFromDraft(setValue, getValues, currentStep=1, lock, isLocked=false)
+    Note over Sync: Step-scoped sync: Skip Step 1 (User A active typing protected)
+    Sync->>Modal: Synchronize Step 2 Ingredients in background form state!
+    Note over Modal: User A's input is NEVER overwritten or interrupted!
+    UserA->>Modal: Clicks Next -> Step 2 (Ingredients)
+    Note over Modal: Displays User B's synced ingredients: '1kg Organic Strawberries', '250g Mascarpone'
+```
+
+### 1.6 Step Soft-Locking Input Guard & Navigation
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor UserA as Collaborator A (Viewer)
+    actor UserB as Collaborator B (Lock Holder)
+    participant Modal as RecipeModal UI (Step 2)
+    participant Lock as useRecipeLock Hook
+    participant Redis as Redis Lock Key
+
+    UserB->>Redis: POST /api/recipes/<draftId>/lock (field='step:2', userId='user-b')
+    Redis-->>UserB: { success: true } (Lock held for 30s)
+    UserA->>Modal: Navigates to Step 2 (Ingredients)
+    Modal->>Lock: useRecipeLock.isLockedByOther('step:2') -> true
+    Modal-->>UserA: Renders Soft-Lock Banner ("Chef Maria is currently editing this step")
+    Modal-->>UserA: Disables all inputs ([disabled]) & 'Add ingredient' button
+    UserA->>Modal: Clicks Next -> Step 3 (Methods - Unlocked)
+    Modal->>Lock: useRecipeLock.isLockedByOther('step:3') -> false
+    Modal-->>UserA: Inputs and selection controls fully ENABLED and interactive!
+```
+
 ---
 
 ## 2. Recipe Lifecycle Workflow (`basic.cy.ts`)
@@ -529,6 +574,52 @@ sequenceDiagram
     API-->>Hook: 200 OK (draft saved)
     RM->>DM: Opens DraftsModal
     DM-->>User: Displays DraftCard with updated title ('In-Flight Save Test')!
+```
+
+### 8.10 Rapid Keystroke Autosave Queue & Step Navigation
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Fast Typist
+    participant RM as RecipeModal UI
+    participant Hook as useDraftPersistence (saveQueueRef)
+    participant API as POST /api/draft
+    participant Redis as Redis (:6379)
+
+    User->>RM: Rapidly types '200g Fresh Berries' on Step 2 (Ingredients)
+    User->>RM: Instantly clicks 'Next' -> Step 3 (Methods)
+    Note over RM,Hook: Keystroke debounced save & step transitions serialized via saveQueueRef
+    User->>RM: Selects 'Oven' & clicks 'Save draft'
+    Hook->>API: POST /api/draft (All step 1-3 fields serialized in queue)
+    API->>Redis: Saved to user draft slot with currentStep=3
+    User->>RM: Closes modal & reloads page (F5)
+    User->>RM: Re-opens RecipeModal -> Auto-resumes on Step 3 (Methods)
+    User->>RM: Navigates back to Ingredients (Step 2) & Description (Step 1)
+    Note over RM: '200g Fresh Berries', Oven method, and Title are all intact without drop!
+```
+
+### 8.11 Recipe Steps Intentional Empty Deletion & Parser Mode Switch
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Authenticated User
+    participant RM as RecipeModal UI (Step 4)
+    participant Parser as parseStepsText Utility
+    participant API as POST /api/draft
+    participant Redis as Redis (:6379)
+
+    User->>RM: Fill steps in Plain-Text mode ('Step 1: Prep\nStep 2: Bake') & Apply
+    RM->>Parser: parseStepsText converts to ['Step 1: Prep', 'Step 2: Bake']
+    RM->>API: POST /api/draft (steps: ['Step 1: Prep', 'Step 2: Bake'])
+    API->>Redis: Persists initial steps in draft
+    User->>RM: Switch to List Mode & clear all step inputs (step-0='', step-1='')
+    User->>RM: Toggle mode back to Plain-Text (empty textarea) & Save Draft
+    RM->>API: POST /api/draft (steps: [])
+    API->>Redis: Explicit empty array replaces old entries in Redis slot
+    User->>RM: Hard page reload -> Re-open RecipeModal -> Navigate to Steps
+    Note over RM: Steps section is completely clean and empty (no stale resurrection)!
 ```
 
 ---

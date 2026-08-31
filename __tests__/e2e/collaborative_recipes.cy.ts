@@ -43,6 +43,23 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
 
         // Clean up any remaining drafts in Redis
         cy.request({
+            method: 'GET',
+            url: '/api/draft/active',
+            failOnStatusCode: false,
+        }).then((res) => {
+            if (Array.isArray(res.body)) {
+                res.body.forEach((d: { draftId: string }) => {
+                    if (d?.draftId) {
+                        cy.request({
+                            method: 'DELETE',
+                            url: `/api/draft?draftId=${encodeURIComponent(d.draftId)}`,
+                            failOnStatusCode: false,
+                        });
+                    }
+                });
+            }
+        });
+        cy.request({
             method: 'DELETE',
             url: '/api/draft',
             failOnStatusCode: false,
@@ -51,11 +68,9 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
 
     beforeEach(() => {
         cy.login();
-        cy.visit('/');
-
-        // Clear any leftover test recipes and drafts in Redis for clean test isolation
+        // Clear any leftover test recipes and drafts in Redis before visiting
         cleanupResources();
-
+        cy.visit('/');
         cy.ensureEnglish();
     });
 
@@ -70,7 +85,7 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
     });
 
     it('complete collaborative recipe lifecycle - create with co-cook, sync steps, and publish', () => {
-        const recipeName = 'Collaborative Berry Tart';
+        const recipeName = `Collab Tart ${Date.now().toString().slice(-4)}`;
         const recipeDescription =
             'Delicious berry tart created together by culinary co-cooks.';
 
@@ -700,6 +715,134 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
                     );
                 });
             });
+        });
+    });
+
+    it('protects active user typing in current step while synchronizing remote co-cook edits on other steps', () => {
+        cy.task(
+            'log',
+            '=== Testing Live UI In-Progress Edit Protection & Remote Sync ==='
+        );
+
+        // Seed shared draft
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Desserts'],
+            title: 'Cardamom Chai',
+            description: 'Warm spiced tea',
+        }).then((response) => {
+            const draftId = response.body.draftId;
+
+            // Visit shared draft in RecipeModal
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+
+            // Navigate: Step 0 (Category) -> Step 1 (Description) -> Step 2 (Ingredients)
+            cy.get('[data-cy="modal-action-button"]')
+                .should('not.be.disabled')
+                .click(); // to Step 1
+            cy.get('[data-cy="modal-action-button"]')
+                .should('not.be.disabled')
+                .click(); // to Step 2
+
+            // User A actively types ingredients on Step 2
+            cy.get('[data-cy="recipe-ingredient-0"]').type(
+                '1 tsp Ground Cardamom'
+            );
+
+            // Concurrently, Co-Cook User B updates Step 1 (Title and Description) on server
+            cy.request('POST', '/api/draft', {
+                draftId,
+                title: 'Cardamom Brioche',
+                description: 'Enriched buttery cardamom brioche',
+            });
+
+            // Trigger draft save on Step 2 to exchange step updates with backend
+            cy.intercept('POST', '/api/draft').as('syncStep2');
+            cy.get('[data-testid="load-draft-button"]').click();
+            cy.wait('@syncStep2');
+
+            // Verify User A's active ingredient input was NOT overwritten or corrupted
+            cy.get('[data-cy="recipe-ingredient-0"]').should(
+                'have.value',
+                '1 tsp Ground Cardamom'
+            );
+
+            // User A navigates BACK to Step 1 (Description)
+            cy.get('[data-testid="secondary-action-button"]').click();
+
+            // Verify User B's remote title and description were smoothly merged
+            cy.get('[data-cy="recipe-title"]').should(
+                'have.value',
+                'Cardamom Brioche'
+            );
+            cy.get('[data-cy="recipe-description"]').should(
+                'have.value',
+                'Enriched buttery cardamom brioche'
+            );
+
+            cy.task(
+                'log',
+                '✓ Live in-progress input protection and remote step sync verified'
+            );
+        });
+    });
+
+    it('disables controls on soft-locked steps while allowing normal interaction on unlocked steps', () => {
+        cy.task('log', '=== Testing Step Soft-Locking Input Guard ===');
+
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Desserts'],
+            title: 'Soft Lock Guard Recipe',
+            description: 'Testing input lock enforcement',
+        }).then((response) => {
+            const draftId = response.body.draftId;
+
+            // Intercept lock endpoint to simulate Maria locking Step 2 (Ingredients)
+            cy.intercept('GET', `/api/recipes/${draftId}/lock`, {
+                statusCode: 200,
+                body: {
+                    'step:2': {
+                        userId: 'other-user-maria',
+                        userName: 'maria',
+                        timestamp: Date.now(),
+                    },
+                },
+            }).as('getStep2Lock');
+
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+
+            // Step 0 -> Step 1 -> Step 2
+            cy.get('[data-cy="modal-action-button"]')
+                .should('not.be.disabled')
+                .click();
+            cy.get('[data-cy="modal-action-button"]')
+                .should('not.be.disabled')
+                .click();
+
+            // Verify on Step 2 (Ingredients): Lock banner is visible and input is disabled
+            cy.get('[data-testid="lock-banner"]', { timeout: 10000 })
+                .should('be.visible')
+                .and('contain', '@maria is currently editing this step');
+            cy.get('[data-cy="recipe-ingredient-0"]').should('be.disabled');
+
+            // Navigate forward to Step 3 (Methods) - which is unlocked
+            cy.get('[data-cy="modal-action-button"]')
+                .should('not.be.disabled')
+                .click();
+
+            // Verify Step 3: No lock banner, method box is interactive and selectable
+            cy.get('[data-testid="lock-banner"]').should('not.exist');
+            cy.get('[data-cy="method-box-Oven"]').should('be.visible').click();
+            cy.get('[data-cy="method-box-Oven"]').should(
+                'have.class',
+                'selected'
+            );
+
+            cy.task(
+                'log',
+                '✓ Soft-lock input guards and unlocked step interaction verified'
+            );
         });
     });
 });

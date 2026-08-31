@@ -188,13 +188,18 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 
 ## E2E Testing & Step Navigation Synchronization
 
-The collaborative cooking architecture is covered by automated Cypress E2E tests in [`__tests__/e2e/collaborative_recipes.cy.ts`](file:///Users/jordi/dev/jorbites/jorbites/__tests__/e2e/collaborative_recipes.cy.ts) running against a local Redis instance (`REDIS_URL=redis://localhost:6379`).
+The collaborative cooking architecture is covered by automated Cypress E2E tests in [`__tests__/e2e/collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts) running against a local Redis instance (`REDIS_URL=redis://localhost:6379`).
 
-### Key Test Scenarios:
+### Key Test Scenarios (9/9 Passing):
 
 1. **Multi-User Draft Invitation & Join Flow**: Generating secure tokenized invite links from `RecipeModal` and auto-opening pre-populated drafts via `/?draft=<id>&joined=true`.
 2. **Real-Time Step Synchronization on Forward/Back Navigation**: When User A updates ingredients or steps in a shared draft stored in Redis, User B navigating forward or backward immediately sees those updates reflected in the active modal form without data loss.
 3. **Section Soft-Locking & Activity Banners**: Verifying step inputs are locked with opacity feedback when another collaborator holds an active lock (`[data-testid="lock-banner"]`), and activity banners display on other steps (`[data-testid="co-cook-activity-banner"]`).
-4. **Collaborative Publishing & Credit**: Creating recipes with `coCooksIds` and verifying `RecipeCoCooks` rendering on the recipe page.
+4. **Non-Destructive Concurrent Multi-Field Merge**: Resolves concurrent field edits across different sections without race condition data loss.
+5. **Collaborator Limits & Removal**: Enforces the 4 co-cook maximum cap and allows seamless collaborator removal.
+6. **Publish Cleanup**: Completely purges shared drafts and lock keys from Redis upon recipe publication.
+7. **Live UI In-Progress Edit Protection**: Ensures that active typing in an unlocked step is never clobbered or interrupted when remote co-cooks update other steps in the background.
+8. **Soft-Lock Input Guards**: Ensures all text inputs and dynamic row buttons are strictly disabled on soft-locked steps while remaining fully interactive on unlocked steps.
+9. **Collaborative Publishing & Credit**: Creating recipes with `coCooksIds` and verifying `RecipeCoCooks` rendering on the recipe page.
 
-For detailed Mermaid diagrams of this and all other E2E test suites, see [`docs/testing/e2e/workflows.md`](file:///Users/jordi/dev/jorbites/jorbites/docs/testing/e2e/workflows.md).
+For detailed Mermaid diagrams of this and all other E2E test suites, see [`docs/testing/e2e/workflows.md`](file:///docs/testing/e2e/workflows.md).

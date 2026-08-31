@@ -119,6 +119,7 @@ const IngredientsStep: React.FC<IngredientsStepProps> = ({
                         label="+"
                         onClick={handleAddIngredient}
                         dataCy="add-ingredient-button"
+                        disabled={isLocked}
                     />
                 </>
             ) : (

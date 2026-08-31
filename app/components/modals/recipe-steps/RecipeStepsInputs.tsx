@@ -40,6 +40,7 @@ const RecipeStepsInputs: React.FC<RecipeStepsInputsProps> = ({
                             label=""
                             register={register}
                             errors={errors}
+                            disabled={isLocked}
                             required={!isLocked && numSteps === 1}
                             maxLength={RECIPE_STEP_MAX_LENGTH}
                             dataCy={`recipe-step-${i}`}

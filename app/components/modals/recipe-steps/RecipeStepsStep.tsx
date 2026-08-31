@@ -119,6 +119,7 @@ const RecipeStepsStep: React.FC<RecipeStepsStepProps> = ({
                         label="+"
                         onClick={handleAddStep}
                         dataCy="add-step-button"
+                        disabled={isLocked}
                     />
                 </>
             ) : (
