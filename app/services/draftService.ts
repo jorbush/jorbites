@@ -696,20 +696,31 @@ export class DraftService {
 
         // Lightweight Redis mocks may not implement EVAL. Production ioredis
         // always uses the atomic script above.
-        const existingRaw = await redis.get(draftKey);
-        const combinedIds = await this.getUserDraftIds(userId);
-        const soloIds = new Set(await this.getSoloDraftIds(userId));
+        const [existingRaw, combinedIds, initialSoloIds] = await Promise.all([
+            redis.get(draftKey),
+            this.getUserDraftIds(userId),
+            this.getSoloDraftIds(userId),
+        ]);
+        const soloIds = new Set(initialSoloIds);
 
-        for (const id of combinedIds) {
-            if (await redis.get(`${draftKeyPrefix}${id}`)) {
+        const combinedDrafts = await Promise.all(
+            combinedIds.map((id) => redis.get(`${draftKeyPrefix}${id}`))
+        );
+        combinedIds.forEach((id, idx) => {
+            if (combinedDrafts[idx]) {
                 soloIds.add(id);
             }
-        }
-        for (const id of Array.from(soloIds)) {
-            if (!(await redis.get(`${draftKeyPrefix}${id}`))) {
+        });
+
+        const currentSoloList = Array.from(soloIds);
+        const soloDrafts = await Promise.all(
+            currentSoloList.map((id) => redis.get(`${draftKeyPrefix}${id}`))
+        );
+        currentSoloList.forEach((id, idx) => {
+            if (!soloDrafts[idx]) {
                 soloIds.delete(id);
             }
-        }
+        });
 
         if (!existingRaw && soloIds.size >= MAX_SOLO_DRAFT_SLOTS) {
             return false;
@@ -859,28 +870,36 @@ export class DraftService {
                 ]
             );
 
+            const indexedSoloSet = new Set(indexedSoloIds);
             const soloIds = Array.from(
                 new Set([...combinedIds, ...indexedSoloIds])
             );
             let deletedAny = Boolean(del1 || del2);
 
-            for (const id of soloIds) {
-                const soloKey = `draft:user:${userId}:${id}`;
-                const raw = await redis.get(soloKey);
-                if (raw) {
-                    await redis.del(soloKey);
-                    await Promise.all([
-                        this.removeFromUserDrafts(userId, id),
-                        this.removeFromSoloDrafts(userId, id),
-                    ]);
-                    deletedAny = true;
-                } else if (indexedSoloIds.includes(id)) {
-                    await this.removeFromSoloDrafts(userId, id);
-                    const shared = await redis.get(`draft:shared:${id}`);
-                    if (!shared) {
-                        await this.removeFromUserDrafts(userId, id);
+            const deletionResults = await Promise.all(
+                soloIds.map(async (id) => {
+                    const soloKey = `draft:user:${userId}:${id}`;
+                    const raw = await redis.get(soloKey);
+                    if (raw) {
+                        await redis.del(soloKey);
+                        await Promise.all([
+                            this.removeFromUserDrafts(userId, id),
+                            this.removeFromSoloDrafts(userId, id),
+                        ]);
+                        return true;
+                    } else if (indexedSoloSet.has(id)) {
+                        await this.removeFromSoloDrafts(userId, id);
+                        const shared = await redis.get(`draft:shared:${id}`);
+                        if (!shared) {
+                            await this.removeFromUserDrafts(userId, id);
+                        }
                     }
-                }
+                    return false;
+                })
+            );
+
+            if (deletionResults.some(Boolean)) {
+                deletedAny = true;
             }
 
             await redis.del(`user:solo-drafts:${userId}`);

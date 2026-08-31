@@ -29,7 +29,7 @@ export function useDraftPersistence({
     const [isSaving, setIsSaving] = useState(false);
     const isMountedRef = useRef(true);
     const pendingSavesRef = useRef(0);
-    const saveQueueRef = useRef<Promise<boolean>>(Promise.resolve(true));
+    const saveQueueRef = useRef<Promise<boolean> | null>(null);
     const openedDraftIdRef = useRef<string | null>(
         recipeModal.activeDraftId || null
     );
@@ -124,10 +124,8 @@ export function useDraftPersistence({
                 }
             };
 
-            const queuedSave = saveQueueRef.current.then(
-                performSave,
-                performSave
-            );
+            const currentQueue = saveQueueRef.current ?? Promise.resolve(true);
+            const queuedSave = currentQueue.then(performSave, performSave);
             const trackedSave = queuedSave.finally(() => {
                 pendingSavesRef.current = Math.max(
                     0,
@@ -143,7 +141,10 @@ export function useDraftPersistence({
         [mutateDraft, recipeModal, t]
     );
 
-    const flushDraftSaves = useCallback(() => saveQueueRef.current, []);
+    const flushDraftSaves = useCallback(
+        () => saveQueueRef.current ?? Promise.resolve(true),
+        []
+    );
 
     const copyInviteLink = async (
         form: FormAccessor,
@@ -179,7 +180,9 @@ export function useDraftPersistence({
                 currentToken = res.data.inviteToken;
                 form.setValue('draftId', currentDraftId);
                 form.setValue('inviteToken', currentToken);
-                recipeModal.onOpenSharedDraft(currentDraftId);
+                if (currentDraftId) {
+                    recipeModal.onOpenSharedDraft(currentDraftId);
+                }
                 mutateDraft?.();
             } else {
                 try {
@@ -235,9 +238,13 @@ export function useDraftPersistence({
         form: FormAccessor,
         draftData: Partial<DraftData> | null | undefined
     ) => {
-        const currentDraftId = form.getValues('draftId') || draftData?.draftId;
+        const rawDraftId = form.getValues('draftId');
+        const currentDraftId =
+            typeof rawDraftId === 'string' && rawDraftId
+                ? rawDraftId
+                : draftData?.draftId;
         const url = currentDraftId
-            ? `/api/draft?draftId=${currentDraftId}`
+            ? `/api/draft?draftId=${encodeURIComponent(currentDraftId)}`
             : `/api/draft`;
         try {
             await axios.delete(url);

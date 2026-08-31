@@ -113,7 +113,7 @@ const RecipeModalContent: React.FC<{
     );
 
     const isSharedSession = Boolean(
-        draftData?.isShared ||
+        draftData?.type === 'shared' ||
         (draftData?.coCooks && draftData.coCooks.length > 0) ||
         selectedCoCooks.length > 0 ||
         draftData?.ownerName ||

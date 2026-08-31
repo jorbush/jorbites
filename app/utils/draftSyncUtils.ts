@@ -143,10 +143,10 @@ export function syncRemoteDraftToForm(
     getValues: (field: string) => unknown,
     setValue: (field: string, value: unknown, options?: SetValueOptions) => void
 ): void {
-    const remoteRecord = draftData as
-        | Record<string, unknown>
-        | null
-        | undefined;
+    if (!draftData) {
+        return;
+    }
+    const remoteRecord = draftData as Record<string, unknown>;
     const hasRemoteField = (field: string) =>
         remoteRecord
             ? Object.prototype.hasOwnProperty.call(remoteRecord, field)

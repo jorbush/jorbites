@@ -2,6 +2,7 @@ import { SafeUser, SafeRecipe } from '@/app/types';
 
 export interface SharedDraft {
     draftId: string;
+    type?: 'solo' | 'shared';
     inviteToken?: string;
     ownerId: string;
     ownerName: string;
@@ -54,6 +55,8 @@ export interface SingleDraft {
     type?: 'solo' | 'shared';
     ownerId?: string;
     ownerName?: string;
+    coCooks?: SafeUser[];
+    linkedRecipes?: SafeRecipe[];
 }
 
 /** Lightweight draft view for card rendering in DraftsModal */

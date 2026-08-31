@@ -52,9 +52,9 @@ export function useRecipeFormState({
     const { draftData, isLoadingDraft, mutateDraft, syncFormFromDraft } =
         useDraftSync({
             activeDraftId: recipeModal.activeDraftId,
-            isEditMode: recipeModal.isEditMode,
+            isEditMode: Boolean(recipeModal.isEditMode),
             currentUser,
-            isOpen: recipeModal.isOpen,
+            isOpen: Boolean(recipeModal.isOpen),
             initialDraftData: propDraftData,
             initialMutateDraft: propMutateDraft,
         });
@@ -809,7 +809,7 @@ export function useRecipeFormState({
             setKnownUsers({});
             setKnownRecipes({});
             setKnownQuests({});
-            recipeModal.onClose();
+            recipeModal.onClose?.();
             refresh?.();
         } catch (error) {
             console.error('Failed to save recipe', error);
