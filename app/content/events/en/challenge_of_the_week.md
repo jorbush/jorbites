@@ -9,31 +9,37 @@ permanent: true
 
 # 🏆 Challenge of the Week 🏆
 
-Join our weekly cooking challenges and showcase your culinary creativity! Each week, we present a new challenge that will test your skills and inspire you to create amazing dishes.
+Join our weekly cooking challenges and showcase your culinary creativity! Each week, we present a curated challenge designed around creative culinary constraints and inspiring themes that test your skills and spark innovation in the kitchen.
+
+## Core Design Principles
+
+Our weekly challenges are designed to encourage culinary growth and creativity:
+
+- **Creative Constraints over Exclusion**: We emphasize inspiring culinary boundaries—such as 5-ingredient limits, single-pot dishes, zero-waste cooking, or texture fusion—rather than arbitrary ingredient exclusions.
+- **Skill Elevation**: Every prompt encourages mastering techniques, exploring global flavor profiles, and reinventing classic dish formats.
+- **Community Engagement**: Share your creations, exchange tips, and celebrate culinary milestones together.
 
 ## How it works
 
-1. Every week, a new challenge is announced with a specific theme
-2. Create and share your recipe that meets the challenge requirements
-3. Get feedback from the community and improve your skills
-4. Earn recognition for your culinary achievements
-5. Complete the challenge to earn the exclusive Challenge of the Week badge!
+1. Every week, a new challenge is rotated automatically with a specific theme.
+2. Create and share your original recipe that meets the challenge requirements.
+3. Get feedback from the community and refine your cooking techniques.
+4. Complete the challenge to earn recognition and the exclusive Challenge of the Week badge!
 
-## Challenge Types
+## Curated Challenge Categories
 
-- **Ingredient Challenges**: Create recipes featuring specific ingredients
-- **Cuisine Challenges**: Showcase your skills in different world cuisines
-- **Recipe Challenges**: Put your own spin on classic dishes
-- **Technique Challenges**: Master different cooking techniques
-- **Dietary Challenges**: Create recipes for specific dietary requirements
+- **Ingredient Spotlight**: Hero versatile plant-based ingredients (e.g., Jackfruit, Tahini, Wild Mushrooms, Sweet Potato, Tofu, Seitan).
+- **Technique Masterclass**: Elevate your culinary craftsmanship (e.g., Flambé, Emulsification, Fermentation, Smoking, Confit, Slow Braising).
+- **Global Heritage & Street Food**: Recreate authentic regional specialties and iconic street food from around the globe.
+- **Recipe Innovations**: Put your own unique spin on iconic dishes, breakfast classics, or plant-based dessert delights.
+- **Creative Constraints**: Challenge yourself within fun structural parameters (e.g., 5 Ingredients or Less, One-Pot Wonders, 30-Minute Magic, Rainbow Plate, Zero-Waste Cooking, Deconstructed Classics, Texture Fusion).
 
 ## Benefits
 
-- Improve your cooking skills
-- Get inspired by other community members
-- Build your recipe collection
+- Expand your culinary skills and master elevated techniques
+- Get inspired by creative dishes from community chefs
+- Build a diverse, high-quality recipe portfolio
 - Earn recognition in the community
-- Learn new techniques and ingredients
-- Collect the exclusive Challenge of the Week badge for each completed challenge
+- Collect exclusive badges for completed weekly challenges
 
 Join us every week for a new culinary adventure!
