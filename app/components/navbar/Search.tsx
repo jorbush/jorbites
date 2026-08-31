@@ -7,6 +7,8 @@ import MobileSearch from './MobileSearch';
 import { useTranslation } from 'react-i18next';
 import useMediaQuery from '@/app/hooks/useMediaQuery';
 import Logo from './Logo';
+import useRecentSearches from '@/app/hooks/useRecentSearches';
+import { SafeUser } from '@/app/types';
 
 export const SearchFallback = () => {
     return (
@@ -18,12 +20,14 @@ export const SearchFallback = () => {
 };
 
 interface SearchProps {
+    currentUser?: SafeUser | null;
     onFilterToggle?: () => void;
     isFilterOpen?: boolean;
     onSearchModeChange?: (isSearchMode: boolean) => void;
 }
 
 const SearchComponent: React.FC<SearchProps> = ({
+    currentUser,
     onSearchModeChange,
     onFilterToggle,
     isFilterOpen,
@@ -36,8 +40,16 @@ const SearchComponent: React.FC<SearchProps> = ({
     const currentSearch = get('search') || '';
     const [isSearchMode, setIsSearchMode] = useState(Boolean(currentSearch));
     const [searchQuery, setSearchQuery] = useState(currentSearch);
+    const [isInputFocused, setIsInputFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const onSearchModeChangeRef = useRef(onSearchModeChange);
+
+    const {
+        recentSearches,
+        addRecentSearch,
+        removeRecentSearch,
+        clearRecentSearches,
+    } = useRecentSearches(currentUser?.id);
 
     useEffect(() => {
         onSearchModeChangeRef.current = onSearchModeChange;
@@ -93,14 +105,20 @@ const SearchComponent: React.FC<SearchProps> = ({
         }
     }, [currentSearch]);
 
-    const handleSearchSubmit = (e?: React.FormEvent) => {
+    const handleSearchSubmit = (e?: React.FormEvent, customQuery?: string) => {
         if (e) {
             e.preventDefault();
         }
         if (!isFilterablePage) return;
+        const targetQuery = customQuery !== undefined ? customQuery : searchQuery;
+
+        if (targetQuery.trim()) {
+            addRecentSearch(targetQuery.trim());
+        }
+
         const params = new URLSearchParams(searchParams?.toString() || '');
-        if (searchQuery.trim()) {
-            params.set('search', searchQuery.trim());
+        if (targetQuery.trim()) {
+            params.set('search', targetQuery.trim());
         } else {
             params.delete('search');
         }
@@ -113,11 +131,13 @@ const SearchComponent: React.FC<SearchProps> = ({
               ? `${pathname}?${params.toString()}`
               : pathname;
         replace(newUrl);
+        setIsInputFocused(false);
     };
 
     const handleSearchToggle = () => {
         if (isSearchMode) {
             setIsSearchMode(false);
+            setIsInputFocused(false);
             onSearchModeChange?.(false);
             if (isFilterablePage && currentSearch) {
                 const params = new URLSearchParams(
@@ -150,6 +170,27 @@ const SearchComponent: React.FC<SearchProps> = ({
         }
     };
 
+    const handleInputFocus = () => {
+        setIsInputFocused(true);
+    };
+
+    const handleInputBlur = () => {
+        setTimeout(() => {
+            setIsInputFocused(false);
+        }, 150);
+    };
+
+    const handleSelectRecentSearch = (query: string) => {
+        setSearchQuery(query);
+        handleSearchSubmit(undefined, query);
+    };
+
+    const handleRemoveRecentSearch = (query: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        removeRecentSearch(query);
+    };
+
     const filtersState = {
         isOpen: isFilterOpen,
         isFiltering: !!isFiltering,
@@ -170,6 +211,13 @@ const SearchComponent: React.FC<SearchProps> = ({
                 filtersState={filtersState}
                 isFilterablePage={isFilterablePage}
                 t={t}
+                isInputFocused={isInputFocused}
+                onInputFocus={handleInputFocus}
+                onInputBlur={handleInputBlur}
+                recentSearches={recentSearches}
+                onSelectRecentSearch={handleSelectRecentSearch}
+                onRemoveRecentSearch={handleRemoveRecentSearch}
+                onClearAllRecentSearches={clearRecentSearches}
             />
         );
     }
@@ -187,6 +235,13 @@ const SearchComponent: React.FC<SearchProps> = ({
             filtersState={filtersState}
             isFilterablePage={isFilterablePage}
             t={t}
+            isInputFocused={isInputFocused}
+            onInputFocus={handleInputFocus}
+            onInputBlur={handleInputBlur}
+            recentSearches={recentSearches}
+            onSelectRecentSearch={handleSelectRecentSearch}
+            onRemoveRecentSearch={handleRemoveRecentSearch}
+            onClearAllRecentSearches={clearRecentSearches}
         />
     );
 };
