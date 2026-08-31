@@ -21,13 +21,23 @@ import { parseIngredientsText, parseStepsText } from '@/app/utils/textParser';
 
 import { useRecipeLock } from '@/app/hooks/useRecipeLock';
 import { useDraftSync } from '@/app/hooks/useDraftSync';
-import { useDraftPersistence } from '@/app/hooks/useDraftPersistence';
+import {
+    useDraftPersistence,
+    RecipeModalDraftController,
+} from '@/app/hooks/useDraftPersistence';
+import { EditRecipeData } from '@/app/hooks/useRecipeModal';
+import { DraftData } from '@/app/types/draft';
+
+export interface RecipeModalStateLike extends RecipeModalDraftController {
+    editRecipeData?: EditRecipeData | null;
+    questId?: string | null;
+}
 
 interface UseRecipeFormStateProps {
-    recipeModal: any;
+    recipeModal: RecipeModalStateLike;
     currentUser?: SafeUser | null;
-    draftData?: any;
-    mutateDraft?: any;
+    draftData?: Partial<DraftData> | null;
+    mutateDraft?: () => Promise<unknown>;
 }
 
 export function useRecipeFormState({
@@ -264,7 +274,7 @@ export function useRecipeFormState({
         setValue,
         watch,
         getValues,
-        formState: { errors },
+        formState: { errors, isDirty },
         reset,
     } = useForm<FieldValues>({
         defaultValues: initialDefaultValues,
@@ -290,7 +300,7 @@ export function useRecipeFormState({
     );
 
     const updateFormField = useCallback(
-        (id: string, value: any) => {
+        (id: string, value: unknown) => {
             setValue(id, value, {
                 shouldDirty: true,
                 shouldTouch: true,
@@ -419,11 +429,11 @@ export function useRecipeFormState({
             return;
         }
         setKnownUsers((prev) => ({ ...prev, [user.id]: user }));
-        setValue('coCooksIds', [...coCooksIds, user.id]);
+        updateFormField('coCooksIds', [...coCooksIds, user.id]);
     };
 
     const removeCoCook = (userId: string) => {
-        setValue(
+        updateFormField(
             'coCooksIds',
             coCooksIds.filter((id: string) => id !== userId)
         );
@@ -444,11 +454,11 @@ export function useRecipeFormState({
             return;
         }
         setKnownRecipes((prev) => ({ ...prev, [recipe.id]: recipe }));
-        setValue('linkedRecipeIds', [...linkedRecipeIds, recipe.id]);
+        updateFormField('linkedRecipeIds', [...linkedRecipeIds, recipe.id]);
     };
 
     const removeLinkedRecipe = (recipeId: string) => {
-        setValue(
+        updateFormField(
             'linkedRecipeIds',
             linkedRecipeIds.filter((id: string) => id !== recipeId)
         );
@@ -458,11 +468,11 @@ export function useRecipeFormState({
         if (quest?.id) {
             setKnownQuests((prev) => ({ ...prev, [quest.id]: quest }));
         }
-        setValue('questId', quest?.id || '');
+        updateFormField('questId', quest?.id || '');
     };
 
     const removeQuest = () => {
-        setValue('questId', '');
+        updateFormField('questId', '');
     };
 
     useEffect(() => {
@@ -479,6 +489,8 @@ export function useRecipeFormState({
         saveDraft: _saveDraft,
         copyInviteLink: _copyInviteLink,
         deleteDraft: _deleteDraft,
+        isSaving,
+        flushDraftSaves,
     } = useDraftPersistence({
         recipeModal,
         mutateDraft,
@@ -496,8 +508,10 @@ export function useRecipeFormState({
         );
     };
 
-    const saveDraft = async (stepOverride?: number | React.MouseEvent) => {
-        await _saveDraft(
+    const saveDraft = async (
+        stepOverride?: number | React.MouseEvent
+    ): Promise<boolean> => {
+        return _saveDraft(
             formAccessor,
             step,
             draftData,
@@ -830,6 +844,8 @@ export function useRecipeFormState({
         numIngredients: effectiveNumIngredients,
         numSteps: effectiveNumSteps,
         isLoading,
+        isSaving,
+        isDirty,
         selectedCoCooks,
         selectedLinkedRecipes,
         selectedQuest,
@@ -857,6 +873,7 @@ export function useRecipeFormState({
         selectQuest,
         removeQuest,
         saveDraft,
+        flushDraftSaves,
         copyInviteLink,
         lock,
         isCurrentStepLocked,

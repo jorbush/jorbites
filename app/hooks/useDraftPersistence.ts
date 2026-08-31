@@ -3,12 +3,22 @@
 import axios from 'axios';
 import { mutate } from 'swr';
 import { toast } from 'react-hot-toast';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormAccessor, collectDraftFormData } from '@/app/utils/draftFormUtils';
+import { DraftData } from '@/app/types/draft';
+
+export interface RecipeModalDraftController {
+    isOpen?: boolean;
+    isEditMode?: boolean;
+    activeDraftId?: string | null;
+    onOpenSharedDraft: (draftId: string) => void;
+    onClose?: () => void;
+}
 
 interface UseDraftPersistenceOptions {
-    recipeModal: any;
-    mutateDraft?: () => Promise<any>;
+    recipeModal: RecipeModalDraftController;
+    mutateDraft?: () => Promise<unknown>;
 }
 
 export function useDraftPersistence({
@@ -16,63 +26,129 @@ export function useDraftPersistence({
     mutateDraft,
 }: UseDraftPersistenceOptions) {
     const { t } = useTranslation();
+    const [isSaving, setIsSaving] = useState(false);
+    const isMountedRef = useRef(true);
+    const pendingSavesRef = useRef(0);
+    const saveQueueRef = useRef<Promise<boolean>>(Promise.resolve(true));
+    const openedDraftIdRef = useRef<string | null>(
+        recipeModal.activeDraftId || null
+    );
 
-    const saveDraft = async (
-        form: FormAccessor,
-        step: number,
-        draftData: any,
-        effectiveNumIngredients: number,
-        effectiveNumSteps: number,
-        ingredientsInputMode: string,
-        stepsInputMode: string,
-        stepOverride?: number | React.MouseEvent
-    ) => {
-        const stepNum =
-            typeof stepOverride === 'number' ? stepOverride : undefined;
-        const { data, currentDraftId, currentInviteToken } =
-            collectDraftFormData(
-                form,
-                step,
-                draftData,
-                effectiveNumIngredients,
-                effectiveNumSteps,
-                ingredientsInputMode,
-                stepsInputMode,
-                stepNum
-            );
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, []);
 
-        try {
-            const res = await axios.post('/api/draft', data);
-            if (res.data?.draftId) {
-                if (!currentDraftId) {
-                    form.setValue('draftId', res.data.draftId);
-                }
-                if (recipeModal.activeDraftId !== res.data.draftId) {
-                    recipeModal.onOpenSharedDraft(res.data.draftId);
-                }
-            }
-            if (res.data?.inviteToken && !currentInviteToken) {
-                form.setValue('inviteToken', res.data.inviteToken);
-            }
-            if (res.data?.draftId) {
-                mutateDraft?.();
-            }
-            mutate('/api/draft/active');
-            if (typeof stepOverride !== 'number') {
-                toast.success(t('draft_saved') || 'Draft saved!');
-            }
-        } catch (error) {
-            console.error('Failed to save draft', error);
-            if (typeof stepOverride !== 'number') {
-                toast.error(t('error_saving_draft') || 'Failed to save draft.');
-            }
+    useEffect(() => {
+        if (recipeModal.activeDraftId) {
+            openedDraftIdRef.current = recipeModal.activeDraftId;
         }
-    };
+    }, [recipeModal.activeDraftId]);
+
+    const saveDraft = useCallback(
+        (
+            form: FormAccessor,
+            step: number,
+            draftData: Partial<DraftData> | null | undefined,
+            effectiveNumIngredients: number,
+            effectiveNumSteps: number,
+            ingredientsInputMode: string,
+            stepsInputMode: string,
+            stepOverride?: number | React.MouseEvent
+        ): Promise<boolean> => {
+            pendingSavesRef.current += 1;
+            if (isMountedRef.current) {
+                setIsSaving(true);
+            }
+
+            const performSave = async (): Promise<boolean> => {
+                const stepNum =
+                    typeof stepOverride === 'number' ? stepOverride : undefined;
+
+                try {
+                    // Collection intentionally happens inside the queue. In
+                    // particular, a prior create response can bind draftId
+                    // before the next save takes its snapshot.
+                    const { data, currentDraftId, currentInviteToken } =
+                        collectDraftFormData(
+                            form,
+                            step,
+                            draftData,
+                            effectiveNumIngredients,
+                            effectiveNumSteps,
+                            ingredientsInputMode,
+                            stepsInputMode,
+                            stepNum
+                        );
+                    const res = await axios.post('/api/draft', data);
+                    if (res.data?.draftId) {
+                        if (!currentDraftId) {
+                            form.setValue('draftId', res.data.draftId);
+                        }
+                        if (
+                            isMountedRef.current &&
+                            recipeModal.isOpen !== false &&
+                            openedDraftIdRef.current !== res.data.draftId
+                        ) {
+                            openedDraftIdRef.current = res.data.draftId;
+                            recipeModal.onOpenSharedDraft(res.data.draftId);
+                        }
+                    }
+                    if (res.data?.inviteToken && !currentInviteToken) {
+                        form.setValue('inviteToken', res.data.inviteToken);
+                    }
+                    if (isMountedRef.current && res.data?.draftId) {
+                        mutateDraft?.();
+                    }
+                    mutate('/api/draft/active');
+                    if (
+                        isMountedRef.current &&
+                        typeof stepOverride !== 'number'
+                    ) {
+                        toast.success(t('draft_saved') || 'Draft saved!');
+                    }
+                    return true;
+                } catch (error) {
+                    console.error('Failed to save draft', error);
+                    if (
+                        isMountedRef.current &&
+                        typeof stepOverride !== 'number'
+                    ) {
+                        toast.error(
+                            t('error_saving_draft') || 'Failed to save draft.'
+                        );
+                    }
+                    return false;
+                }
+            };
+
+            const queuedSave = saveQueueRef.current.then(
+                performSave,
+                performSave
+            );
+            const trackedSave = queuedSave.finally(() => {
+                pendingSavesRef.current = Math.max(
+                    0,
+                    pendingSavesRef.current - 1
+                );
+                if (isMountedRef.current && pendingSavesRef.current === 0) {
+                    setIsSaving(false);
+                }
+            });
+            saveQueueRef.current = trackedSave;
+            return trackedSave;
+        },
+        [mutateDraft, recipeModal, t]
+    );
+
+    const flushDraftSaves = useCallback(() => saveQueueRef.current, []);
 
     const copyInviteLink = async (
         form: FormAccessor,
         step: number,
-        draftData: any,
+        draftData: Partial<DraftData> | null | undefined,
         effectiveNumIngredients: number,
         effectiveNumSteps: number,
         ingredientsInputMode: string,
@@ -155,7 +231,10 @@ export function useDraftPersistence({
         }
     };
 
-    const deleteDraft = async (form: FormAccessor, draftData: any) => {
+    const deleteDraft = async (
+        form: FormAccessor,
+        draftData: Partial<DraftData> | null | undefined
+    ) => {
         const currentDraftId = form.getValues('draftId') || draftData?.draftId;
         const url = currentDraftId
             ? `/api/draft?draftId=${currentDraftId}`
@@ -184,5 +263,7 @@ export function useDraftPersistence({
         saveDraft,
         copyInviteLink,
         deleteDraft,
+        isSaving,
+        flushDraftSaves,
     };
 }

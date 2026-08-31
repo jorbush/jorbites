@@ -32,7 +32,7 @@ sequenceDiagram
     Modal->>API: POST /api/draft/invite (generates draftId & secure token)
     API->>DS: DraftService.saveSharedDraft(draftId, payload, Owner)
     DS->>Redis: SET draft:shared:<draftId> (TTL 7 days)
-    DS->>Redis: SADD user:drafts:<OwnerId> <draftId> (TTL 30 days)
+    DS->>Redis: SADD user:drafts:<OwnerId> <draftId> (TTL 365 days)
     API-->>Owner: Returns share URL https://jorbites.com/recipes/new?draft=<id>&token=<token>
 
     Owner->>CoCook: Shares Link via WhatsApp / Telegram / Chat
@@ -41,7 +41,7 @@ sequenceDiagram
     DS->>Redis: Append User B to coCooksIds & SADD user:drafts:<CoCookId>
     API-->>CoCook: Redirects & Opens RecipeModal with Shared Draft!
 
-    Note over Owner,CoCook: Concurrent Editing with Fast-Heartbeat Redis Soft-Locking
+    Note over Owner,CoCook: Concurrent Editing with Step-Scoped Patches & Soft-Locking
     Owner->>API: Focus Step 1 (POST /api/recipes/[id]/lock?field=step:1)
     API->>Redis: SET lock:recipe:<id>:step:1 = UserA (TTL 30s) NX
     CoCook->>API: Poll / Lock Status check (GET /api/recipes/[id]/lock via mget)
@@ -70,7 +70,7 @@ sequenceDiagram
 | `draft:user:<userId>:<slotId>`            | Multi-slot solo draft storage  | **365 Days** (`SOLO_DRAFT_TTL_SECONDS = 31536000`) | Recipe draft JSON (up to 5 slots per user)                                       |
 | `draft:user:<userId>`                     | Legacy single-user draft       | **365 Days** (backward compatible)                | Legacy single draft JSON                                                         |
 | `draft:shared:<draftId>`                  | Multi-user collaborative draft | **7 Days** (`DRAFT_TTL_SECONDS = 604800`)         | Sanitized shared draft JSON `{ draftId, inviteToken, ownerId, coCooksIds, ... }` |
-| `user:drafts:<userId>`                    | Active draft index per user    | **30 Days** (`USER_DRAFTS_TTL_SECONDS = 2592000`) | **Redis Set** of draft IDs (atomically updated via `SADD`/`SREM`)                |
+| `user:drafts:<userId>`                    | Active draft index per user    | **365 Days** (`USER_DRAFTS_INDEX_TTL_SECONDS = 31536000`) | **Redis Set** of draft IDs (atomically updated via `SADD`/`SREM`)                |
 | `lock:recipe:<targetId>:field:<fieldKey>` | Section/field soft lock        | **30 Seconds** (`LOCK_TTL_SECONDS = 30`)          | JSON `{ userId, userName, userAvatar, timestamp }`                               |
 
 For comprehensive documentation on multi-draft management and DraftsModal UI, see [`docs/drafts.md`](file:///Users/jordi/.gemini/antigravity/worktrees/jorbites/implement_drafts_collaborative_editing/docs/drafts.md).
@@ -81,7 +81,7 @@ For comprehensive documentation on multi-draft management and DraftsModal UI, se
 
 ### 1. Atomic Draft List Management (Redis Sets)
 
-To eliminate read-modify-write race conditions when multiple concurrent sessions invite or delete drafts, user draft tracking uses atomic **Redis Sets** (`SADD` and `SREM`) with a 30-day rolling expiration. Backward compatibility is maintained for legacy JSON arrays.
+To eliminate read-modify-write race conditions when multiple concurrent sessions invite or delete drafts, user draft tracking uses atomic **Redis Sets** (`SADD` and `SREM`) with a 365-day rolling expiration matching solo draft retention. Backward compatibility is maintained for legacy JSON arrays.
 
 ### 2. Fast Heartbeat Renewal without DB Queries
 

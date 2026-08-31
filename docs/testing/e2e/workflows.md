@@ -477,7 +477,6 @@ sequenceDiagram
     User->>RM: Step 2 (Ingredients) -> Toggle Plain-Text Mode
     User->>RM: Paste numbered items ('1. 200g Dark Chocolate\n2. 100g Butter\n...')
     User->>RM: Click 'Apply'
-    RM->>PTP: parseTextToList(rawText, max, 'ingredient')
     PTP-->>RM: Populates individual slots (ingredient-0, ingredient-1, etc.)
     User->>RM: Step 4 (Steps) -> Toggle Plain-Text Mode & Apply steps
     User->>RM: Step 5 -> Click 'Save draft'
@@ -488,6 +487,48 @@ sequenceDiagram
     RM->>API: GET /api/draft
     API-->>RM: Complete draft data
     Note over RM: Step backwards: Step 4 (3 steps), Step 3 (Oven), Step 2 (4 ingredients), Step 1 (Title) all intact!
+```
+
+### 8.8 Intentional Empty Array Clearing & Persistence
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Authenticated User
+    participant RM as RecipeModal (Wizard)
+    participant API as POST /api/draft
+    participant Redis as Redis (:6379)
+
+    User->>RM: Create draft with Ingredients ('Vanilla Extract', 'Whole Milk') & Save
+    RM->>API: POST /api/draft (ingredients: ['Vanilla Extract', 'Whole Milk'])
+    API->>Redis: Persists draft in slot
+    User->>RM: Navigate to Ingredients Step & explicitly clear all input fields
+    User->>RM: Click 'Save draft'
+    RM->>API: POST /api/draft (ingredients: [])
+    API->>Redis: Overwrites ingredients array with [] (does not restore old items)
+    User->>User: Hard page reload (cy.reload())
+    User->>RM: Re-open RecipeModal -> Navigate to Ingredients
+    Note over RM: Ingredients remain empty [] without ghost item restoration!
+```
+
+### 8.9 In-Flight Save Queue & Modal Transition
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Authenticated User
+    participant RM as RecipeModal
+    participant DM as DraftsModal
+    participant Hook as useDraftPersistence (saveQueueRef)
+    participant API as POST /api/draft
+
+    User->>RM: Fill Title ('In-Flight Save Test') on Step 1
+    User->>RM: Immediately click 'My Drafts' header button (without clicking Save)
+    RM->>Hook: flushDraftSaves() initiates & awaits pending queue
+    Hook->>API: POST /api/draft
+    API-->>Hook: 200 OK (draft saved)
+    RM->>DM: Opens DraftsModal
+    DM-->>User: Displays DraftCard with updated title ('In-Flight Save Test')!
 ```
 
 ---

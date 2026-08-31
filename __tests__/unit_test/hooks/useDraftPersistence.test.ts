@@ -138,4 +138,77 @@ describe('useDraftPersistence hook', () => {
         );
         expect(mutate).toHaveBeenCalledWith('/api/draft/active');
     });
+
+    it('serializes concurrent saves through saveQueue and binds draftId sequentially', async () => {
+        const mockedAxios = vi.mocked(axios);
+        const executionOrder: string[] = [];
+
+        mockedAxios.post
+            .mockImplementationOnce(async () => {
+                executionOrder.push('start-save-1');
+                await new Promise((res) => setTimeout(res, 30));
+                executionOrder.push('end-save-1');
+                return { data: { draftId: 'draft-assigned-1' } };
+            })
+            .mockImplementationOnce(async () => {
+                executionOrder.push('start-save-2');
+                await new Promise((res) => setTimeout(res, 10));
+                executionOrder.push('end-save-2');
+                return { data: { draftId: 'draft-assigned-1' } };
+            });
+
+        const formValues: Record<string, unknown> = {
+            title: 'Initial Title',
+            categories: ['cake'],
+        };
+        const form = {
+            getValues: vi.fn((key: string) => formValues[key]),
+            setValue: vi.fn((key: string, val: unknown) => {
+                formValues[key] = val;
+            }),
+        };
+
+        const { result } = renderHook(() =>
+            useDraftPersistence({ recipeModal, mutateDraft: mockMutateDraft })
+        );
+
+        let save1Promise: Promise<boolean>;
+        let save2Promise: Promise<boolean>;
+
+        await act(async () => {
+            // Trigger rapid concurrent saves
+            save1Promise = result.current.saveDraft(
+                form,
+                STEPS.CATEGORY,
+                null,
+                0,
+                0,
+                'list',
+                'list',
+                STEPS.DESCRIPTION
+            );
+            save2Promise = result.current.saveDraft(
+                form,
+                STEPS.DESCRIPTION,
+                null,
+                0,
+                0,
+                'list',
+                'list',
+                STEPS.INGREDIENTS
+            );
+
+            await Promise.all([save1Promise, save2Promise]);
+            await result.current.flushDraftSaves();
+        });
+
+        // Verify strictly serialized execution order
+        expect(executionOrder).toEqual([
+            'start-save-1',
+            'end-save-1',
+            'start-save-2',
+            'end-save-2',
+        ]);
+        expect(formValues.draftId).toBe('draft-assigned-1');
+    });
 });

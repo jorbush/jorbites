@@ -764,4 +764,76 @@ describe('Drafts Management & Multi-Draft E2E', () => {
             'selected'
         );
     });
+
+    it('clears all ingredients intentionally and persists empty state without restoring old draft items', () => {
+        const recipeName = `Clear Ingr ${Date.now()}`;
+
+        // Step 1: Open modal and create draft with ingredients
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+
+        cy.get('[data-cy="category-box-Desserts"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.get('[data-cy="recipe-title"]').type(recipeName);
+        cy.get('[data-cy="recipe-description"]').type(
+            'Delicious dessert recipe'
+        );
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Fill 2 ingredients
+        cy.get('[data-cy="recipe-ingredient-0"]').type('Vanilla Extract');
+        cy.get('[data-cy="add-ingredient-button"]').click();
+        cy.get('[data-cy="recipe-ingredient-1"]').type('Whole Milk');
+        cy.intercept('POST', '/api/draft').as('saveInitialDraft');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveInitialDraft');
+
+        // Step 2: Clear all ingredient inputs explicitly
+        cy.get('[data-cy="recipe-ingredient-0"]').clear();
+        cy.get('[data-cy="recipe-ingredient-1"]').clear();
+        cy.intercept('POST', '/api/draft').as('saveClearedDraft');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveClearedDraft');
+
+        // Close modal
+        cy.get('[data-testid="close-modal-button"]').click();
+
+        // Step 3: Reload page to verify persistence
+        cy.reload();
+        cy.ensureEnglish();
+
+        // Step 4: Re-open RecipeModal - wait for draft to auto-load
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+        cy.get('[data-testid="drafts-indicator-dot"]').should('be.visible');
+
+        // Verify ingredient inputs are empty (not reverted to old values)
+        cy.get('[data-cy="recipe-ingredient-0"]').should('have.value', '');
+
+        // Verify backwards navigation retains previous steps
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 1: Description
+        cy.get('[data-cy="recipe-title"]').should('have.value', recipeName);
+    });
+
+    it('flushes in-flight draft save when opening DraftsModal from RecipeModal header', () => {
+        const recipeName = `In-Flight Save Test ${Date.now()}`;
+
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+
+        cy.get('[data-cy="category-box-Desserts"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        cy.get('[data-cy="recipe-title"]').type(recipeName);
+
+        // Click "My Drafts" icon button in modal header immediately without clicking Save first
+        cy.intercept('POST', '/api/draft').as('saveBeforeModalOpen');
+        cy.get('[data-testid="open-drafts-modal-button"]').click();
+        cy.wait('@saveBeforeModalOpen');
+
+        // DraftsModal should open and display the draft with the freshly typed title
+        cy.get('[data-testid="drafts-modal"]').should('be.visible');
+        cy.contains(recipeName).should('be.visible');
+    });
 });

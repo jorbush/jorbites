@@ -13,6 +13,58 @@ import {
     SOLO_DRAFT_TTL_SECONDS,
 } from '@/app/utils/constants';
 
+const SAVE_SOLO_DRAFT_SCRIPT = `
+local combinedType = redis.call('TYPE', KEYS[3])
+if type(combinedType) == 'table' then
+    combinedType = combinedType.ok
+end
+
+local function migrateSoloId(id)
+    if redis.call('EXISTS', ARGV[6] .. id) == 1 then
+        redis.call('SADD', KEYS[2], id)
+    end
+end
+
+if combinedType == 'set' then
+    local combinedIds = redis.call('SMEMBERS', KEYS[3])
+    for _, id in ipairs(combinedIds) do
+        migrateSoloId(id)
+    end
+elseif combinedType == 'string' then
+    local rawCombined = redis.call('GET', KEYS[3])
+    local decoded, legacyIds = pcall(cjson.decode, rawCombined)
+    redis.call('DEL', KEYS[3])
+    if decoded and type(legacyIds) == 'table' then
+        for _, id in ipairs(legacyIds) do
+            redis.call('SADD', KEYS[3], id)
+            migrateSoloId(id)
+        end
+    end
+end
+
+local soloIds = redis.call('SMEMBERS', KEYS[2])
+for _, id in ipairs(soloIds) do
+    if redis.call('EXISTS', ARGV[6] .. id) == 0 then
+        redis.call('SREM', KEYS[2], id)
+    end
+end
+
+local draftExists = redis.call('EXISTS', KEYS[1])
+if draftExists == 0 and redis.call('SCARD', KEYS[2]) >= tonumber(ARGV[4]) then
+    if redis.call('SCARD', KEYS[2]) > 0 then
+        redis.call('EXPIRE', KEYS[2], tonumber(ARGV[3]))
+    end
+    return 0
+end
+
+redis.call('SET', KEYS[1], ARGV[2], 'EX', tonumber(ARGV[3]))
+redis.call('SADD', KEYS[2], ARGV[1])
+redis.call('EXPIRE', KEYS[2], tonumber(ARGV[3]))
+redis.call('SADD', KEYS[3], ARGV[1])
+redis.call('EXPIRE', KEYS[3], tonumber(ARGV[5]))
+return 1
+`;
+
 const ALLOWED_DRAFT_FIELDS: (keyof SharedDraft)[] = [
     'currentStep',
     'title',
@@ -163,6 +215,58 @@ export class DraftService {
         }
     }
 
+    static async getSoloDraftIds(userId: string): Promise<string[]> {
+        const key = `user:solo-drafts:${userId}`;
+        try {
+            if (typeof (redis as any).smembers === 'function') {
+                const members = await (redis as any).smembers(key);
+                if (Array.isArray(members)) return members;
+            }
+
+            const raw = await redis.get(key);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (error: any) {
+            logger.error('DraftService.getSoloDraftIds error', {
+                error: error.message,
+                userId,
+            });
+            return [];
+        }
+    }
+
+    static async removeFromSoloDrafts(
+        userId: string,
+        draftId: string
+    ): Promise<void> {
+        const key = `user:solo-drafts:${userId}`;
+        try {
+            if (typeof (redis as any).srem === 'function') {
+                await (redis as any).srem(key, draftId);
+                return;
+            }
+
+            const raw = await redis.get(key);
+            if (!raw) return;
+            const list = JSON.parse(raw);
+            if (Array.isArray(list)) {
+                await redis.set(
+                    key,
+                    JSON.stringify(list.filter((id) => id !== draftId)),
+                    'EX',
+                    SOLO_DRAFT_TTL_SECONDS
+                );
+            }
+        } catch (error: any) {
+            logger.error('DraftService.removeFromSoloDrafts error', {
+                error: error.message,
+                userId,
+                draftId,
+            });
+        }
+    }
+
     /**
      * Retrieves a shared draft by ID.
      * Sanitizes inviteToken if requester is not the draft owner (B4).
@@ -238,17 +342,24 @@ export class DraftService {
 
         const sanitizedPayload = sanitizeDraftPayload(payload);
 
-        const rawCoCooks = [
-            ...(existing?.coCooksIds || []),
-            ...(sanitizedPayload.coCooksIds || []),
-        ];
+        const rawCoCooks =
+            sanitizedPayload.coCooksIds !== undefined
+                ? sanitizedPayload.coCooksIds.length === 0
+                    ? []
+                    : [
+                          ...(existing?.coCooksIds || []),
+                          ...sanitizedPayload.coCooksIds,
+                      ]
+                : existing?.coCooksIds || [];
         const limitedCoCooks = Array.from(new Set(rawCoCooks)).slice(
             0,
             MAX_CO_COOKS
         );
 
         const rawLinked =
-            sanitizedPayload.linkedRecipeIds || existing?.linkedRecipeIds || [];
+            sanitizedPayload.linkedRecipeIds !== undefined
+                ? sanitizedPayload.linkedRecipeIds
+                : existing?.linkedRecipeIds || [];
         const limitedLinked = Array.from(new Set(rawLinked)).slice(
             0,
             MAX_LINKED_RECIPES
@@ -265,52 +376,43 @@ export class DraftService {
                 currentUser.email ||
                 'Chef',
             ingredients:
-                sanitizedPayload.ingredients &&
-                sanitizedPayload.ingredients.length > 0
+                sanitizedPayload.ingredients !== undefined
                     ? sanitizedPayload.ingredients
                     : existing?.ingredients || [],
             steps:
-                sanitizedPayload.steps && sanitizedPayload.steps.length > 0
+                sanitizedPayload.steps !== undefined
                     ? sanitizedPayload.steps
                     : existing?.steps || [],
             categories:
-                sanitizedPayload.categories &&
-                sanitizedPayload.categories.length > 0
+                sanitizedPayload.categories !== undefined
                     ? sanitizedPayload.categories
                     : existing?.categories || [],
             title:
-                sanitizedPayload.title !== undefined &&
-                sanitizedPayload.title !== ''
+                sanitizedPayload.title !== undefined
                     ? sanitizedPayload.title
                     : existing?.title || '',
             description:
-                sanitizedPayload.description !== undefined &&
-                sanitizedPayload.description !== ''
+                sanitizedPayload.description !== undefined
                     ? sanitizedPayload.description
                     : existing?.description || '',
             method:
-                sanitizedPayload.method !== undefined &&
-                sanitizedPayload.method !== ''
+                sanitizedPayload.method !== undefined
                     ? sanitizedPayload.method
                     : existing?.method || '',
             imageSrc:
-                sanitizedPayload.imageSrc !== undefined &&
-                sanitizedPayload.imageSrc !== ''
+                sanitizedPayload.imageSrc !== undefined
                     ? sanitizedPayload.imageSrc
                     : existing?.imageSrc || '',
             imageSrc1:
-                sanitizedPayload.imageSrc1 !== undefined &&
-                sanitizedPayload.imageSrc1 !== ''
+                sanitizedPayload.imageSrc1 !== undefined
                     ? sanitizedPayload.imageSrc1
                     : existing?.imageSrc1 || '',
             imageSrc2:
-                sanitizedPayload.imageSrc2 !== undefined &&
-                sanitizedPayload.imageSrc2 !== ''
+                sanitizedPayload.imageSrc2 !== undefined
                     ? sanitizedPayload.imageSrc2
                     : existing?.imageSrc2 || '',
             imageSrc3:
-                sanitizedPayload.imageSrc3 !== undefined &&
-                sanitizedPayload.imageSrc3 !== ''
+                sanitizedPayload.imageSrc3 !== undefined
                     ? sanitizedPayload.imageSrc3
                     : existing?.imageSrc3 || '',
             minutes:
@@ -428,6 +530,7 @@ export class DraftService {
         await Promise.all([
             redis.del(key),
             redis.del(`draft:user:${currentUser.id}:${draftId}`),
+            this.removeFromSoloDrafts(currentUser.id, draftId),
             releaseAllLocks(draftId),
         ]);
 
@@ -555,14 +658,7 @@ export class DraftService {
                 } else {
                     // True un-indexed legacy draft without draftId: migrate to multi-slot
                     const legacyId = crypto.randomUUID();
-                    parsed.draftId = legacyId;
-                    await this.addToUserDrafts(userId, legacyId);
-                    await redis.set(
-                        `draft:user:${userId}:${legacyId}`,
-                        JSON.stringify(parsed),
-                        'EX',
-                        SOLO_DRAFT_TTL_SECONDS
-                    );
+                    await this.saveSingleUserDraft(userId, parsed, legacyId);
                 }
             }
             return parsed;
@@ -571,19 +667,83 @@ export class DraftService {
         }
     }
 
+    private static async saveSingleUserDraftWithQuota(
+        userId: string,
+        draftId: string,
+        serialized: string
+    ): Promise<boolean> {
+        const draftKey = `draft:user:${userId}:${draftId}`;
+        const soloIndexKey = `user:solo-drafts:${userId}`;
+        const combinedIndexKey = `user:drafts:${userId}`;
+        const draftKeyPrefix = `draft:user:${userId}:`;
+
+        if (typeof (redis as any).eval === 'function') {
+            const result = await (redis as any).eval(
+                SAVE_SOLO_DRAFT_SCRIPT,
+                3,
+                draftKey,
+                soloIndexKey,
+                combinedIndexKey,
+                draftId,
+                serialized,
+                SOLO_DRAFT_TTL_SECONDS,
+                MAX_SOLO_DRAFT_SLOTS,
+                USER_DRAFTS_TTL_SECONDS,
+                draftKeyPrefix
+            );
+            return Number(result) === 1;
+        }
+
+        // Lightweight Redis mocks may not implement EVAL. Production ioredis
+        // always uses the atomic script above.
+        const existingRaw = await redis.get(draftKey);
+        const combinedIds = await this.getUserDraftIds(userId);
+        const soloIds = new Set(await this.getSoloDraftIds(userId));
+
+        for (const id of combinedIds) {
+            if (await redis.get(`${draftKeyPrefix}${id}`)) {
+                soloIds.add(id);
+            }
+        }
+        for (const id of Array.from(soloIds)) {
+            if (!(await redis.get(`${draftKeyPrefix}${id}`))) {
+                soloIds.delete(id);
+            }
+        }
+
+        if (!existingRaw && soloIds.size >= MAX_SOLO_DRAFT_SLOTS) {
+            return false;
+        }
+
+        await redis.set(draftKey, serialized, 'EX', SOLO_DRAFT_TTL_SECONDS);
+        soloIds.add(draftId);
+
+        if (typeof (redis as any).sadd === 'function') {
+            await (redis as any).sadd(soloIndexKey, ...Array.from(soloIds));
+            if (typeof (redis as any).expire === 'function') {
+                await (redis as any).expire(
+                    soloIndexKey,
+                    SOLO_DRAFT_TTL_SECONDS
+                );
+            }
+        } else {
+            await redis.set(
+                soloIndexKey,
+                JSON.stringify(Array.from(soloIds)),
+                'EX',
+                SOLO_DRAFT_TTL_SECONDS
+            );
+        }
+        await this.addToUserDrafts(userId, draftId);
+        return true;
+    }
+
     static async saveSingleUserDraft(
         userId: string,
         data: SingleDraft,
         slotId?: string
     ): Promise<string> {
         const id = slotId || crypto.randomUUID();
-
-        if (!slotId) {
-            const drafts = await this.getUserDraftIds(userId);
-            if (drafts.length >= MAX_SOLO_DRAFT_SLOTS) {
-                throw new Error('MAX_SOLO_DRAFTS_REACHED');
-            }
-        }
 
         let existing: SingleDraft | null = null;
         if (slotId) {
@@ -615,14 +775,14 @@ export class DraftService {
         };
 
         const serialized = JSON.stringify(merged);
-
-        await redis.set(
-            `draft:user:${userId}:${id}`,
-            serialized,
-            'EX',
-            SOLO_DRAFT_TTL_SECONDS
+        const saved = await this.saveSingleUserDraftWithQuota(
+            userId,
+            id,
+            serialized
         );
-        await this.addToUserDrafts(userId, id);
+        if (!saved) {
+            throw new Error('MAX_SOLO_DRAFTS_REACHED');
+        }
 
         await Promise.all([
             redis.set(
@@ -643,9 +803,12 @@ export class DraftService {
     ): Promise<boolean> {
         if (slotId) {
             const del = await redis.del(`draft:user:${userId}:${slotId}`);
-            await this.removeFromUserDrafts(userId, slotId);
+            await Promise.all([
+                this.removeFromUserDrafts(userId, slotId),
+                this.removeFromSoloDrafts(userId, slotId),
+            ]);
 
-            const remaining = await this.getUserDraftIds(userId);
+            const remaining = await this.getSoloDraftIds(userId);
             if (remaining.length === 0) {
                 await Promise.all([
                     redis.del(`draft:user:${userId}`),
@@ -687,25 +850,40 @@ export class DraftService {
 
             return Boolean(del);
         } else {
-            const [del1, del2] = await Promise.all([
-                redis.del(`draft:user:${userId}`),
-                redis.del(userId),
-            ]);
-
-            const draftIds = await this.getUserDraftIds(userId);
-            let deletedAny = Boolean(del1 || del2);
-            await Promise.all(
-                draftIds.map(async (id) => {
-                    const soloKey = `draft:user:${userId}:${id}`;
-                    const raw = await redis.get(soloKey);
-                    if (raw) {
-                        await redis.del(soloKey);
-                        await this.removeFromUserDrafts(userId, id);
-                        deletedAny = true;
-                    }
-                })
+            const [del1, del2, combinedIds, indexedSoloIds] = await Promise.all(
+                [
+                    redis.del(`draft:user:${userId}`),
+                    redis.del(userId),
+                    this.getUserDraftIds(userId),
+                    this.getSoloDraftIds(userId),
+                ]
             );
 
+            const soloIds = Array.from(
+                new Set([...combinedIds, ...indexedSoloIds])
+            );
+            let deletedAny = Boolean(del1 || del2);
+
+            for (const id of soloIds) {
+                const soloKey = `draft:user:${userId}:${id}`;
+                const raw = await redis.get(soloKey);
+                if (raw) {
+                    await redis.del(soloKey);
+                    await Promise.all([
+                        this.removeFromUserDrafts(userId, id),
+                        this.removeFromSoloDrafts(userId, id),
+                    ]);
+                    deletedAny = true;
+                } else if (indexedSoloIds.includes(id)) {
+                    await this.removeFromSoloDrafts(userId, id);
+                    const shared = await redis.get(`draft:shared:${id}`);
+                    if (!shared) {
+                        await this.removeFromUserDrafts(userId, id);
+                    }
+                }
+            }
+
+            await redis.del(`user:solo-drafts:${userId}`);
             return deletedAny;
         }
     }
@@ -764,7 +942,10 @@ export class DraftService {
                         return null;
                     }
                 } else {
-                    await this.removeFromUserDrafts(userId, id);
+                    await Promise.all([
+                        this.removeFromUserDrafts(userId, id),
+                        this.removeFromSoloDrafts(userId, id),
+                    ]);
                     return null;
                 }
             })

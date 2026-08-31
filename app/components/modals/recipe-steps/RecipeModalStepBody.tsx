@@ -1,6 +1,13 @@
 'use client';
 
 import React from 'react';
+import {
+    FieldErrors,
+    UseFormRegister,
+    UseFormSetValue,
+    UseFormGetValues,
+    FieldValues,
+} from 'react-hook-form';
 import { STEPS } from '@/app/utils/constants';
 import { SafeUser, SafeRecipe, SafeQuest } from '@/app/types';
 import CategoryStep from '@/app/components/modals/recipe-steps/CategoryStep';
@@ -17,17 +24,17 @@ export interface RecipeModalStepBodyProps {
     isCurrentStepLocked: boolean;
     lockOwner?: { userName?: string; userId?: string } | null;
     isSharedSession: boolean;
-    otherActiveLocks: Array<[string, any]>;
+    otherActiveLocks: Array<[string, { userId?: string; userName?: string }]>;
     categories?: string[];
-    setCustomValue: (id: string, value: any) => void;
+    setCustomValue: (id: string, value: unknown) => void;
     numIngredients: number;
-    register: any;
-    errors: any;
+    register: UseFormRegister<FieldValues>;
+    errors: FieldErrors;
     addIngredientInput: () => void;
     removeIngredientInput: (index: number) => void;
     setIngredients: (ingredients: string[]) => void;
-    getValues: any;
-    setValue: any;
+    getValues: UseFormGetValues<FieldValues>;
+    setValue: UseFormSetValue<FieldValues>;
     ingredientsInputMode?: 'list' | 'text';
     setIngredientsInputMode: (mode: 'list' | 'text') => void;
     numSteps: number;

@@ -37,16 +37,13 @@ const RecipeModalContent: React.FC<{
     );
     const hasDrafts = Boolean(activeDrafts && activeDrafts.length > 0);
 
-    const handleOpenDrafts = useCallback(() => {
-        onClose();
-        draftsModal.onOpen();
-    }, [onClose, draftsModal]);
-
     const {
         step,
         numIngredients,
         numSteps,
         isLoading,
+        isSaving,
+        isDirty,
         selectedCoCooks,
         selectedLinkedRecipes,
         selectedQuest,
@@ -72,6 +69,7 @@ const RecipeModalContent: React.FC<{
         selectQuest,
         removeQuest,
         saveDraft,
+        flushDraftSaves,
         lock,
         addIngredientInput,
         removeIngredientInput,
@@ -90,6 +88,17 @@ const RecipeModalContent: React.FC<{
         recipeModal,
         currentUser,
     });
+
+    const handleOpenDrafts = useCallback(async () => {
+        if (isDirty) {
+            const saved = await saveDraft();
+            await flushDraftSaves();
+            if (!saved) return;
+        }
+
+        onClose();
+        draftsModal.onOpen();
+    }, [draftsModal, flushDraftSaves, isDirty, onClose, saveDraft]);
 
     const isCurrentStepLocked = lock?.isLockedByOther(`step:${step}`);
     const lockOwner = lock?.getLockOwner(`step:${step}`);
@@ -192,6 +201,7 @@ const RecipeModalContent: React.FC<{
                         onSaveDraft={saveDraft}
                         onOpenDrafts={handleOpenDrafts}
                         hasDrafts={hasDrafts}
+                        isSaving={isSaving}
                     />
                 ) : undefined
             }

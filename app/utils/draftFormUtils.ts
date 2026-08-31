@@ -4,16 +4,17 @@ import {
     RECIPE_MAX_STEPS,
 } from '@/app/utils/constants';
 import { parseTextToList } from '@/app/utils/textParser';
+import { DraftData, SaveDraftPayload } from '@/app/types/draft';
 
 export interface FormAccessor {
-    getValues: (field: string) => any;
-    setValue: (field: string, value: any) => void;
+    getValues: (field: string) => unknown;
+    setValue: (field: string, value: unknown) => void;
 }
 
 export function extractIngredientsAndSteps(
     form: FormAccessor,
     _step: number,
-    draftData: any,
+    draftData: Partial<DraftData> | null | undefined,
     _effectiveNumIngredients: number,
     _effectiveNumSteps: number,
     ingredientsInputMode: string,
@@ -21,7 +22,9 @@ export function extractIngredientsAndSteps(
 ): { newIngredients: string[]; newSteps: string[] } {
     let localIngredients: string[] = [];
     if (ingredientsInputMode === 'text') {
-        const textareaValue = form.getValues('ingredients-plain-text');
+        const textareaValue = String(
+            form.getValues('ingredients-plain-text') || ''
+        );
         const parsedItems = parseTextToList(
             textareaValue,
             RECIPE_MAX_INGREDIENTS,
@@ -42,11 +45,12 @@ export function extractIngredientsAndSteps(
     let newIngredients: string[] = [];
     if (localIngredients.length > 0) {
         newIngredients = localIngredients;
-    } else {
+    } else if (_step !== STEPS.INGREDIENTS) {
         const formIngredients = form.getValues('ingredients');
         if (Array.isArray(formIngredients) && formIngredients.length > 0) {
             newIngredients = formIngredients.filter(
-                (item: any) => typeof item === 'string' && item.trim() !== ''
+                (item: unknown): item is string =>
+                    typeof item === 'string' && item.trim() !== ''
             );
         } else {
             const remoteIngredients = draftData?.ingredients;
@@ -61,7 +65,7 @@ export function extractIngredientsAndSteps(
 
     let localSteps: string[] = [];
     if (stepsInputMode === 'text') {
-        const textareaValue = form.getValues('steps-plain-text');
+        const textareaValue = String(form.getValues('steps-plain-text') || '');
         const parsedItems = parseTextToList(
             textareaValue,
             RECIPE_MAX_STEPS,
@@ -82,11 +86,12 @@ export function extractIngredientsAndSteps(
     let newSteps: string[] = [];
     if (localSteps.length > 0) {
         newSteps = localSteps;
-    } else {
+    } else if (_step !== STEPS.STEPS) {
         const formSteps = form.getValues('steps');
         if (Array.isArray(formSteps) && formSteps.length > 0) {
             newSteps = formSteps.filter(
-                (item: any) => typeof item === 'string' && item.trim() !== ''
+                (item: unknown): item is string =>
+                    typeof item === 'string' && item.trim() !== ''
             );
         } else {
             const remoteSteps = draftData?.steps;
@@ -102,14 +107,18 @@ export function extractIngredientsAndSteps(
 export function collectDraftFormData(
     form: FormAccessor,
     step: number,
-    draftData: any,
+    draftData: Partial<DraftData> | null | undefined,
     effectiveNumIngredients: number,
     effectiveNumSteps: number,
     ingredientsInputMode: string,
     stepsInputMode: string,
     stepOverride?: number,
     _isFullPayload = false
-) {
+): {
+    data: SaveDraftPayload;
+    currentDraftId?: string;
+    currentInviteToken?: string;
+} {
     const stepToSave = typeof stepOverride === 'number' ? stepOverride : step;
     const { newIngredients, newSteps } = extractIngredientsAndSteps(
         form,
@@ -121,9 +130,17 @@ export function collectDraftFormData(
         stepsInputMode
     );
 
-    const currentDraftId = form.getValues('draftId') || draftData?.draftId;
+    const formDraftId = form.getValues('draftId');
+    const currentDraftId =
+        typeof formDraftId === 'string' && formDraftId
+            ? formDraftId
+            : draftData?.draftId;
+
+    const formInviteToken = form.getValues('inviteToken');
     const currentInviteToken =
-        form.getValues('inviteToken') || draftData?.inviteToken;
+        typeof formInviteToken === 'string' && formInviteToken
+            ? formInviteToken
+            : draftData?.inviteToken;
 
     // For shared (collaborative) drafts we only send the fields belonging to
     // the step the user is currently editing. Sending stale local values for
@@ -133,50 +150,100 @@ export function collectDraftFormData(
     const isSharedDraft = Boolean(
         currentInviteToken ||
         draftData?.type === 'shared' ||
+        (draftData as { isShared?: boolean } | null | undefined)?.isShared ||
+        (draftData?.type !== 'solo' &&
+            (draftData?.ownerId || draftData?.ownerName)) ||
         (Array.isArray(draftData?.coCooksIds) &&
-            draftData.coCooksIds.length > 0)
+            draftData.coCooksIds.length > 0) ||
+        (Array.isArray(draftData?.coCooks) && draftData.coCooks.length > 0)
     );
 
-    const data: any = {
+    const data: SaveDraftPayload = {
         draftId: currentDraftId,
         inviteToken: currentInviteToken,
         currentStep: stepToSave,
-        categories: form.getValues('categories') || draftData?.categories || [],
-        method:
-            step === STEPS.METHODS
-                ? form.getValues('method')
-                : draftData?.method || form.getValues('method') || '',
-        imageSrc: form.getValues('imageSrc'),
-        imageSrc1: form.getValues('imageSrc1'),
-        imageSrc2: form.getValues('imageSrc2'),
-        imageSrc3: form.getValues('imageSrc3'),
-        title: form.getValues('title'),
-        description: form.getValues('description'),
-        minutes: form.getValues('minutes'),
-        prepTime: form.getValues('prepTime'),
-        cookTime: form.getValues('cookTime'),
-        coCooksIds:
-            step === STEPS.RELATED_CONTENT
-                ? form.getValues('coCooksIds')
-                : draftData?.coCooksIds || form.getValues('coCooksIds') || [],
-        linkedRecipeIds:
-            step === STEPS.RELATED_CONTENT
-                ? form.getValues('linkedRecipeIds')
-                : draftData?.linkedRecipeIds ||
-                  form.getValues('linkedRecipeIds') ||
-                  [],
-        youtubeUrl: form.getValues('youtubeUrl'),
-        questId: form.getValues('questId'),
         updatedAt: new Date().toISOString(),
     };
 
-    // Include ingredients/steps unconditionally for solo drafts.
-    // For shared drafts, only include them when the user is actively on that step.
-    if (!isSharedDraft || step === STEPS.INGREDIENTS) {
+    const addCategoryFields = () => {
+        const categories = form.getValues('categories');
+        data.categories = Array.isArray(categories) ? categories : [];
+    };
+    const addDescriptionFields = () => {
+        const title = form.getValues('title');
+        data.title = typeof title === 'string' ? title : undefined;
+        const description = form.getValues('description');
+        data.description =
+            typeof description === 'string' ? description : undefined;
+        const minutes = form.getValues('minutes');
+        data.minutes = typeof minutes === 'number' ? minutes : undefined;
+        const prepTime = form.getValues('prepTime');
+        data.prepTime =
+            typeof prepTime === 'number' || prepTime === null
+                ? prepTime
+                : undefined;
+        const cookTime = form.getValues('cookTime');
+        data.cookTime =
+            typeof cookTime === 'number' || cookTime === null
+                ? cookTime
+                : undefined;
+    };
+    const addIngredientsFields = () => {
         data.ingredients = newIngredients;
-    }
-    if (!isSharedDraft || step === STEPS.STEPS) {
+    };
+    const addMethodsFields = () => {
+        const method = form.getValues('method');
+        data.method = typeof method === 'string' ? method : '';
+    };
+    const addStepsFields = () => {
         data.steps = newSteps;
+    };
+    const addRelatedContentFields = () => {
+        const coCooks = form.getValues('coCooksIds');
+        data.coCooksIds = Array.isArray(coCooks) ? coCooks : [];
+        const linked = form.getValues('linkedRecipeIds');
+        data.linkedRecipeIds = Array.isArray(linked) ? linked : [];
+        const youtubeUrl = form.getValues('youtubeUrl');
+        data.youtubeUrl =
+            typeof youtubeUrl === 'string' || youtubeUrl === null
+                ? youtubeUrl
+                : undefined;
+        const questId = form.getValues('questId');
+        data.questId =
+            typeof questId === 'string' || questId === null
+                ? questId
+                : undefined;
+    };
+    const addImageFields = () => {
+        const imageSrc = form.getValues('imageSrc');
+        data.imageSrc = typeof imageSrc === 'string' ? imageSrc : undefined;
+        const imageSrc1 = form.getValues('imageSrc1');
+        data.imageSrc1 = typeof imageSrc1 === 'string' ? imageSrc1 : undefined;
+        const imageSrc2 = form.getValues('imageSrc2');
+        data.imageSrc2 = typeof imageSrc2 === 'string' ? imageSrc2 : undefined;
+        const imageSrc3 = form.getValues('imageSrc3');
+        data.imageSrc3 = typeof imageSrc3 === 'string' ? imageSrc3 : undefined;
+    };
+
+    if (!isSharedDraft || _isFullPayload) {
+        addCategoryFields();
+        addDescriptionFields();
+        addIngredientsFields();
+        addMethodsFields();
+        addStepsFields();
+        addRelatedContentFields();
+        addImageFields();
+    } else {
+        const addFieldsForStep: Record<number, () => void> = {
+            [STEPS.CATEGORY]: addCategoryFields,
+            [STEPS.DESCRIPTION]: addDescriptionFields,
+            [STEPS.INGREDIENTS]: addIngredientsFields,
+            [STEPS.METHODS]: addMethodsFields,
+            [STEPS.STEPS]: addStepsFields,
+            [STEPS.RELATED_CONTENT]: addRelatedContentFields,
+            [STEPS.IMAGES]: addImageFields,
+        };
+        addFieldsForStep[step]?.();
     }
 
     return {

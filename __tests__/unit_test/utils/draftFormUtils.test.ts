@@ -8,7 +8,7 @@ import { STEPS } from '@/app/utils/constants';
 describe('draftFormUtils helper functions', () => {
     describe('extractIngredientsAndSteps', () => {
         it('extracts ingredients in list mode', () => {
-            const values: Record<string, any> = {
+            const values: Record<string, unknown> = {
                 'ingredient-0': 'Tomato',
                 'ingredient-1': 'Mozzarella',
                 'ingredient-2': '',
@@ -32,7 +32,7 @@ describe('draftFormUtils helper functions', () => {
         });
 
         it('extracts ingredients in plain text mode', () => {
-            const values: Record<string, any> = {
+            const values: Record<string, unknown> = {
                 'ingredients-plain-text': '1 cup Flour\n2 eggs\n1/2 cup Milk',
             };
             const form = {
@@ -58,7 +58,7 @@ describe('draftFormUtils helper functions', () => {
         });
 
         it('extracts steps in list mode', () => {
-            const values: Record<string, any> = {
+            const values: Record<string, unknown> = {
                 'step-0': 'Boil water',
                 'step-1': 'Add pasta',
                 'step-2': '',
@@ -82,7 +82,7 @@ describe('draftFormUtils helper functions', () => {
         });
 
         it('extracts steps in text mode', () => {
-            const values: Record<string, any> = {
+            const values: Record<string, unknown> = {
                 'steps-plain-text': '1. Heat pan\n2. Sauté garlic',
             };
             const form = {
@@ -130,7 +130,7 @@ describe('draftFormUtils helper functions', () => {
 
     describe('collectDraftFormData', () => {
         it('constructs a complete draft payload with override step', () => {
-            const values: Record<string, any> = {
+            const values: Record<string, unknown> = {
                 title: 'Pasta al Pesto',
                 description: 'Delicious pesto pasta',
                 categories: ['pasta', 'italian'],
@@ -160,7 +160,8 @@ describe('draftFormUtils helper functions', () => {
                 1,
                 'list',
                 'list',
-                STEPS.DESCRIPTION
+                STEPS.DESCRIPTION,
+                true
             );
 
             expect(result.currentDraftId).toBe('draft-123');
@@ -171,12 +172,10 @@ describe('draftFormUtils helper functions', () => {
             expect(result.data.minutes).toBe(20);
             expect(result.data.coCooksIds).toEqual(['cook-1']);
             expect(result.data.linkedRecipeIds).toEqual(['recipe-1']);
-            expect(result.data.ingredients).toBeUndefined();
-            expect(result.data.steps).toBeUndefined();
         });
 
         it('always includes ingredients and steps in payload even on Step 0 or Step 1', () => {
-            const values: Record<string, any> = {
+            const values: Record<string, unknown> = {
                 title: 'Cake',
                 'ingredient-0': 'Flour',
                 'ingredient-1': 'Sugar',
@@ -203,7 +202,7 @@ describe('draftFormUtils helper functions', () => {
         });
 
         it('preserves form ingredients array when individual slots are empty on later steps', () => {
-            const values: Record<string, any> = {
+            const values: Record<string, unknown> = {
                 title: 'Cake',
                 ingredients: ['Flour', 'Eggs'],
                 steps: ['Mix', 'Bake'],
@@ -228,7 +227,7 @@ describe('draftFormUtils helper functions', () => {
         });
 
         it('saves complete whole recipe state when saving draft from Step 3 (Methods)', () => {
-            const values: Record<string, any> = {
+            const values: Record<string, unknown> = {
                 title: 'Paella Valenciana',
                 description: 'Authentic Spanish rice dish',
                 categories: ['rice', 'spanish'],
@@ -270,7 +269,7 @@ describe('draftFormUtils helper functions', () => {
         });
 
         it('saves complete whole recipe state when saving draft from Step 5 (Related Content)', () => {
-            const values: Record<string, any> = {
+            const values: Record<string, unknown> = {
                 title: 'Tiramisu',
                 description: 'Classic Italian dessert',
                 categories: ['desserts', 'italian'],
@@ -322,7 +321,7 @@ describe('draftFormUtils helper functions', () => {
         });
 
         it('extracts ingredients across higher indices beyond initial count', () => {
-            const values: Record<string, any> = {
+            const values: Record<string, unknown> = {
                 'ingredient-0': 'First',
                 'ingredient-5': 'Sixth',
                 'ingredient-29': 'Thirtieth',
@@ -346,6 +345,163 @@ describe('draftFormUtils helper functions', () => {
 
             expect(newIngredients).toEqual(['First', 'Sixth', 'Thirtieth']);
             expect(newSteps).toEqual(['Step One', 'Step Thirty']);
+        });
+
+        it('returns empty array on active ingredients/steps step when inputs are cleared, without restoring draftData', () => {
+            const form = {
+                getValues: (key: string) => (key === 'ingredients' ? [] : ''),
+                setValue: vi.fn(),
+            };
+            const remoteDraft = {
+                ingredients: ['Old Ingredient 1', 'Old Ingredient 2'],
+                steps: ['Old Step 1', 'Old Step 2'],
+            };
+
+            const resultIngredients = extractIngredientsAndSteps(
+                form,
+                STEPS.INGREDIENTS,
+                remoteDraft,
+                0,
+                0,
+                'list',
+                'list'
+            );
+            expect(resultIngredients.newIngredients).toEqual([]);
+
+            const resultSteps = extractIngredientsAndSteps(
+                form,
+                STEPS.STEPS,
+                remoteDraft,
+                0,
+                0,
+                'list',
+                'list'
+            );
+            expect(resultSteps.newSteps).toEqual([]);
+        });
+
+        it('packages strictly step-scoped fields for shared drafts across all wizard steps', () => {
+            const values: Record<string, unknown> = {
+                title: 'Collaborative Curry',
+                description: 'Fragrant spicy curry',
+                categories: ['curry', 'asian'],
+                method: 'simmer',
+                'ingredient-0': 'Curry paste',
+                'step-0': 'Fry paste in oil',
+                coCooksIds: ['cook-1'],
+                linkedRecipeIds: ['recipe-1'],
+                youtubeUrl: 'https://youtube.com/v/123',
+                questId: 'quest-1',
+                imageSrc: 'https://img.com/1.jpg',
+                imageSrc1: 'https://img.com/2.jpg',
+                draftId: 'shared-curry-1',
+                inviteToken: 'tok-curry',
+            };
+            const form = {
+                getValues: (key: string) => values[key],
+                setValue: vi.fn(),
+            };
+            const sharedDraftData = {
+                draftId: 'shared-curry-1',
+                inviteToken: 'tok-curry',
+                type: 'shared' as const,
+            };
+
+            // Category Step
+            const catRes = collectDraftFormData(
+                form,
+                STEPS.CATEGORY,
+                sharedDraftData,
+                1,
+                1,
+                'list',
+                'list'
+            );
+            expect(catRes.data.categories).toEqual(['curry', 'asian']);
+            expect(catRes.data.title).toBeUndefined();
+            expect(catRes.data.imageSrc).toBeUndefined();
+
+            // Description Step
+            const descRes = collectDraftFormData(
+                form,
+                STEPS.DESCRIPTION,
+                sharedDraftData,
+                1,
+                1,
+                'list',
+                'list'
+            );
+            expect(descRes.data.title).toBe('Collaborative Curry');
+            expect(descRes.data.description).toBe('Fragrant spicy curry');
+            expect(descRes.data.categories).toBeUndefined();
+            expect(descRes.data.method).toBeUndefined();
+
+            // Ingredients Step
+            const ingRes = collectDraftFormData(
+                form,
+                STEPS.INGREDIENTS,
+                sharedDraftData,
+                1,
+                1,
+                'list',
+                'list'
+            );
+            expect(ingRes.data.ingredients).toEqual(['Curry paste']);
+            expect(ingRes.data.steps).toBeUndefined();
+
+            // Methods Step
+            const methRes = collectDraftFormData(
+                form,
+                STEPS.METHODS,
+                sharedDraftData,
+                1,
+                1,
+                'list',
+                'list'
+            );
+            expect(methRes.data.method).toBe('simmer');
+            expect(methRes.data.title).toBeUndefined();
+
+            // Steps Step
+            const stepRes = collectDraftFormData(
+                form,
+                STEPS.STEPS,
+                sharedDraftData,
+                1,
+                1,
+                'list',
+                'list'
+            );
+            expect(stepRes.data.steps).toEqual(['Fry paste in oil']);
+            expect(stepRes.data.ingredients).toBeUndefined();
+
+            // Related Content Step
+            const relRes = collectDraftFormData(
+                form,
+                STEPS.RELATED_CONTENT,
+                sharedDraftData,
+                1,
+                1,
+                'list',
+                'list'
+            );
+            expect(relRes.data.coCooksIds).toEqual(['cook-1']);
+            expect(relRes.data.youtubeUrl).toBe('https://youtube.com/v/123');
+            expect(relRes.data.imageSrc).toBeUndefined();
+
+            // Images Step
+            const imgRes = collectDraftFormData(
+                form,
+                STEPS.IMAGES,
+                sharedDraftData,
+                1,
+                1,
+                'list',
+                'list'
+            );
+            expect(imgRes.data.imageSrc).toBe('https://img.com/1.jpg');
+            expect(imgRes.data.imageSrc1).toBe('https://img.com/2.jpg');
+            expect(imgRes.data.title).toBeUndefined();
         });
     });
 });

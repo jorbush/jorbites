@@ -656,7 +656,7 @@ describe('useRecipeFormState hook', () => {
         // so DraftService preserves whatever is in Redis without clobbering
         expect(callPayload.ingredients).toBeUndefined();
         expect(callPayload.steps).toBeUndefined();
-        expect(callPayload.method).toBe('Microwave');
+        expect(callPayload.method).toBeUndefined();
     });
 
     it('does not overwrite collaborator updated steps with stale local form values when saving draft from earlier steps', async () => {

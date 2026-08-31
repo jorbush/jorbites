@@ -48,6 +48,49 @@ jest.mock('@/app/lib/redis', () => {
                 return Array.from(sets[key]);
             }),
             expire: jest.fn(async () => 1),
+            eval: jest.fn(
+                async (
+                    _script: string,
+                    _numKeys: number,
+                    draftKey: string,
+                    soloIndexKey: string,
+                    combinedIndexKey: string,
+                    draftId: string,
+                    serialized: string,
+                    _soloTtl: number,
+                    maxSlots: number,
+                    _combinedTtl: number,
+                    draftKeyPrefix: string
+                ) => {
+                    if (!sets[soloIndexKey]) sets[soloIndexKey] = new Set();
+                    if (!sets[combinedIndexKey]) {
+                        sets[combinedIndexKey] = new Set();
+                    }
+
+                    for (const id of sets[combinedIndexKey]) {
+                        if (store[`${draftKeyPrefix}${id}`]) {
+                            sets[soloIndexKey].add(id);
+                        }
+                    }
+                    for (const id of Array.from(sets[soloIndexKey])) {
+                        if (!store[`${draftKeyPrefix}${id}`]) {
+                            sets[soloIndexKey].delete(id);
+                        }
+                    }
+
+                    if (
+                        !store[draftKey] &&
+                        sets[soloIndexKey].size >= Number(maxSlots)
+                    ) {
+                        return 0;
+                    }
+
+                    store[draftKey] = serialized;
+                    sets[soloIndexKey].add(draftId);
+                    sets[combinedIndexKey].add(draftId);
+                    return 1;
+                }
+            ),
             _store: store,
             _sets: sets,
         },
@@ -96,11 +139,18 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
             expect(saved.title).toBe('Slot 1 Recipe');
             expect(saved.draftId).toBe(slotId);
 
-            expect(redis.set).toHaveBeenCalledWith(
-                `draft:user:user-multi-1:${slotId}`,
+            expect(redis.eval).toHaveBeenCalledWith(
                 expect.any(String),
-                'EX',
-                SOLO_DRAFT_TTL_SECONDS
+                3,
+                `draft:user:user-multi-1:${slotId}`,
+                'user:solo-drafts:user-multi-1',
+                'user:drafts:user-multi-1',
+                slotId,
+                expect.any(String),
+                SOLO_DRAFT_TTL_SECONDS,
+                MAX_SOLO_DRAFT_SLOTS,
+                SOLO_DRAFT_TTL_SECONDS,
+                'draft:user:user-multi-1:'
             );
             expect(redis.set).toHaveBeenCalledWith(
                 'draft:user:user-multi-1',
@@ -134,23 +184,106 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
             ).toBeDefined();
         });
 
-        it('enforces maximum solo draft slots cap (5)', async () => {
-            // Fill 5 slots
+        it('rejects a sixth new explicit slotId', async () => {
             for (let i = 0; i < MAX_SOLO_DRAFT_SLOTS; i++) {
-                await DraftService.saveSingleUserDraft('user-multi-1', {
-                    title: `Draft ${i + 1}`,
-                });
+                await DraftService.saveSingleUserDraft(
+                    'user-multi-1',
+                    { title: `Draft ${i + 1}` },
+                    `explicit-slot-${i + 1}`
+                );
             }
 
-            const draftIds = await DraftService.getUserDraftIds('user-multi-1');
-            expect(draftIds.length).toBe(5);
-
-            // Attempt to create 6th slot should throw
             await expect(
-                DraftService.saveSingleUserDraft('user-multi-1', {
-                    title: 'Draft 6 Overflow',
-                })
+                DraftService.saveSingleUserDraft(
+                    'user-multi-1',
+                    { title: 'Draft 6 Overflow' },
+                    'explicit-slot-6'
+                )
             ).rejects.toThrow('MAX_SOLO_DRAFTS_REACHED');
+
+            const soloIds = await DraftService.getSoloDraftIds('user-multi-1');
+            expect(soloIds).toHaveLength(MAX_SOLO_DRAFT_SLOTS);
+            expect(soloIds).not.toContain('explicit-slot-6');
+        });
+
+        it('does not count shared drafts against the solo draft quota', async () => {
+            for (let i = 0; i < MAX_SOLO_DRAFT_SLOTS; i++) {
+                await DraftService.saveSharedDraft(
+                    `shared-slot-${i + 1}`,
+                    { title: `Shared ${i + 1}` },
+                    mockUser
+                );
+            }
+
+            await expect(
+                DraftService.saveSingleUserDraft(
+                    'user-multi-1',
+                    { title: 'First Solo' },
+                    'first-solo'
+                )
+            ).resolves.toBe('first-solo');
+
+            expect(await DraftService.getSoloDraftIds('user-multi-1')).toEqual([
+                'first-solo',
+            ]);
+            expect(
+                await DraftService.getUserDraftIds('user-multi-1')
+            ).toHaveLength(MAX_SOLO_DRAFT_SLOTS + 1);
+        });
+
+        it('atomically prevents concurrent new creates from exceeding the quota', async () => {
+            const results = await Promise.allSettled(
+                Array.from({ length: 12 }, (_, i) =>
+                    DraftService.saveSingleUserDraft(
+                        'user-multi-1',
+                        { title: `Concurrent ${i + 1}` },
+                        `concurrent-slot-${i + 1}`
+                    )
+                )
+            );
+
+            expect(
+                results.filter((result) => result.status === 'fulfilled')
+            ).toHaveLength(MAX_SOLO_DRAFT_SLOTS);
+            expect(
+                results.filter((result) => result.status === 'rejected')
+            ).toHaveLength(12 - MAX_SOLO_DRAFT_SLOTS);
+            expect(
+                await DraftService.getSoloDraftIds('user-multi-1')
+            ).toHaveLength(MAX_SOLO_DRAFT_SLOTS);
+
+            const store = (redis as any)._store;
+            const persistedSlots = Object.keys(store).filter((key) =>
+                key.startsWith('draft:user:user-multi-1:')
+            );
+            expect(persistedSlots).toHaveLength(MAX_SOLO_DRAFT_SLOTS);
+        });
+
+        it('allows an existing explicit slot update while at quota', async () => {
+            for (let i = 0; i < MAX_SOLO_DRAFT_SLOTS; i++) {
+                await DraftService.saveSingleUserDraft(
+                    'user-multi-1',
+                    { title: `Draft ${i + 1}` },
+                    `existing-slot-${i + 1}`
+                );
+            }
+
+            await expect(
+                DraftService.saveSingleUserDraft(
+                    'user-multi-1',
+                    { title: 'Updated At Quota' },
+                    'existing-slot-3'
+                )
+            ).resolves.toBe('existing-slot-3');
+
+            const updated = await DraftService.getSingleUserDraft(
+                'user-multi-1',
+                'existing-slot-3'
+            );
+            expect(updated?.title).toBe('Updated At Quota');
+            expect(
+                await DraftService.getSoloDraftIds('user-multi-1')
+            ).toHaveLength(MAX_SOLO_DRAFT_SLOTS);
         });
 
         it('preserves existing ingredients and steps when updating an existing draft slot with partial data', async () => {
@@ -268,6 +401,9 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
 
             draftIds = await DraftService.getUserDraftIds('user-multi-1');
             expect(draftIds).not.toContain(slotId);
+            expect(
+                await DraftService.getSoloDraftIds('user-multi-1')
+            ).not.toContain(slotId);
 
             const store = (redis as any)._store;
             expect(store[`draft:user:user-multi-1:${slotId}`]).toBeUndefined();
@@ -403,6 +539,105 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
             expect(draft).toBeNull();
             expect(store['draft:user:user-ghost-1']).toBeUndefined();
             expect(store['user-ghost-1']).toBeUndefined();
+        });
+
+        it('refreshes index TTL to SOLO_DRAFT_TTL_SECONDS on addToUserDrafts', async () => {
+            await DraftService.addToUserDrafts('user-ttl-1', 'draft-ttl-1');
+
+            expect(redis.expire).toHaveBeenCalledWith(
+                'user:drafts:user-ttl-1',
+                SOLO_DRAFT_TTL_SECONDS
+            );
+        });
+
+        it('prevents quota bypass when passing non-existent arbitrary draftId at max capacity', async () => {
+            // Fill 5 slots
+            for (let i = 0; i < MAX_SOLO_DRAFT_SLOTS; i++) {
+                await DraftService.saveSingleUserDraft('user-quota-bypass', {
+                    title: `Draft ${i + 1}`,
+                });
+            }
+
+            // Attempt to update a non-existent draft ID (attacker trying to bypass quota check)
+            await expect(
+                DraftService.saveSingleUserDraft(
+                    'user-quota-bypass',
+                    { title: 'Exploit Draft' },
+                    'fake-non-existent-id'
+                )
+            ).rejects.toThrow('MAX_SOLO_DRAFTS_REACHED');
+
+            const drafts =
+                await DraftService.getAllUserDrafts('user-quota-bypass');
+            expect(drafts.length).toBe(MAX_SOLO_DRAFT_SLOTS);
+        });
+
+        it('isolates shared drafts quota from solo drafts quota', async () => {
+            const store = (redis as any)._store;
+            const sets = (redis as any)._sets;
+
+            // Simulate user participating in 5 shared drafts
+            for (let i = 0; i < 5; i++) {
+                const sharedDraftId = `shared-d-${i}`;
+                store[`draft:shared:${sharedDraftId}`] = JSON.stringify({
+                    draftId: sharedDraftId,
+                    title: `Shared Recipe ${i}`,
+                    ownerId: 'other-owner',
+                    coCooksIds: ['user-isolated-quota'],
+                    type: 'shared',
+                });
+                if (!sets['user:drafts:user-isolated-quota']) {
+                    sets['user:drafts:user-isolated-quota'] = new Set();
+                }
+                sets['user:drafts:user-isolated-quota'].add(sharedDraftId);
+            }
+
+            // User should still be able to create their 5 solo drafts without quota block
+            for (let i = 0; i < MAX_SOLO_DRAFT_SLOTS; i++) {
+                const soloId = await DraftService.saveSingleUserDraft(
+                    'user-isolated-quota',
+                    {
+                        title: `Solo Recipe ${i}`,
+                    }
+                );
+                expect(soloId).toBeDefined();
+            }
+
+            // Attempting 6th solo draft should now hit quota
+            await expect(
+                DraftService.saveSingleUserDraft('user-isolated-quota', {
+                    title: 'Excess Solo Draft',
+                })
+            ).rejects.toThrow('MAX_SOLO_DRAFTS_REACHED');
+        });
+
+        it('persists intentional empty arrays for ingredients and steps on update', async () => {
+            const slotId = await DraftService.saveSingleUserDraft(
+                'user-empty-arrays',
+                {
+                    title: 'Recipe With Items',
+                    ingredients: ['Salt', 'Sugar'],
+                    steps: ['Step 1', 'Step 2'],
+                }
+            );
+
+            // Update with explicitly cleared ingredients and steps
+            await DraftService.saveSingleUserDraft(
+                'user-empty-arrays',
+                {
+                    title: 'Recipe Cleared Items',
+                    ingredients: [],
+                    steps: [],
+                },
+                slotId
+            );
+
+            const updated = await DraftService.getSingleUserDraft(
+                'user-empty-arrays',
+                slotId
+            );
+            expect(updated?.ingredients).toEqual([]);
+            expect(updated?.steps).toEqual([]);
         });
     });
 });

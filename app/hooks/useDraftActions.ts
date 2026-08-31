@@ -9,7 +9,7 @@ import { SafeUser } from '@/app/types';
 
 interface UseDraftActionsProps {
     currentUser?: SafeUser | null;
-    onDraftMutate?: () => void | Promise<any>;
+    onDraftMutate?: () => void | Promise<unknown>;
 }
 
 export function useDraftActions({
@@ -56,8 +56,11 @@ export function useDraftActions({
                     }
                     return draftId;
                 }
-            } catch (error: any) {
-                if (error?.response?.status === 409) {
+            } catch (error: unknown) {
+                if (
+                    axios.isAxiosError(error) &&
+                    error.response?.status === 409
+                ) {
                     toast.error(
                         t('max_drafts_reached', {
                             defaultValue: 'Maximum drafts reached',
@@ -171,9 +174,12 @@ export function useDraftActions({
                     await onDraftMutate();
                 }
                 return newDraftId;
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error('Failed to duplicate draft', error);
-                if (error?.response?.status === 409) {
+                if (
+                    axios.isAxiosError(error) &&
+                    error.response?.status === 409
+                ) {
                     toast.error(
                         t('max_drafts_reached', {
                             defaultValue: 'Maximum drafts reached',

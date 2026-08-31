@@ -98,3 +98,34 @@ export interface DraftProgress {
     /** Per-step completion status */
     stepDetails: { step: number; name: string; completed: boolean }[];
 }
+
+/** Union type representing either a solo or shared draft record */
+export type DraftData = SingleDraft | SharedDraft;
+
+/** Payload sent to draft create and update API endpoints */
+export interface SaveDraftPayload {
+    draftId?: string;
+    inviteToken?: string;
+    currentStep?: number;
+    title?: string;
+    description?: string;
+    categories?: string[];
+    method?: string;
+    imageSrc?: string;
+    imageSrc1?: string;
+    imageSrc2?: string;
+    imageSrc3?: string;
+    ingredients?: string[];
+    steps?: string[];
+    minutes?: number;
+    prepTime?: number | null;
+    cookTime?: number | null;
+    coCooksIds?: string[];
+    linkedRecipeIds?: string[];
+    youtubeUrl?: string | null;
+    questId?: string | null;
+    updatedAt?: string;
+    type?: 'solo' | 'shared';
+    ownerId?: string;
+    ownerName?: string;
+}

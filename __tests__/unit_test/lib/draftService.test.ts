@@ -2,6 +2,7 @@ import { DraftService } from '@/app/services/draftService';
 import { redis } from '@/app/lib/redis';
 import { releaseAllLocks } from '@/app/lib/redisLock';
 import { SafeUser } from '@/app/types';
+import { SOLO_DRAFT_TTL_SECONDS } from '@/app/utils/constants';
 
 jest.mock('@/app/lib/redis', () => {
     const store: Record<string, any> = {};
@@ -45,6 +46,49 @@ jest.mock('@/app/lib/redis', () => {
                 return Array.from(sets[key]);
             }),
             expire: jest.fn(async () => 1),
+            eval: jest.fn(
+                async (
+                    _script: string,
+                    _numKeys: number,
+                    draftKey: string,
+                    soloIndexKey: string,
+                    combinedIndexKey: string,
+                    draftId: string,
+                    serialized: string,
+                    _soloTtl: number,
+                    maxSlots: number,
+                    _combinedTtl: number,
+                    draftKeyPrefix: string
+                ) => {
+                    if (!sets[soloIndexKey]) sets[soloIndexKey] = new Set();
+                    if (!sets[combinedIndexKey]) {
+                        sets[combinedIndexKey] = new Set();
+                    }
+
+                    for (const id of sets[combinedIndexKey]) {
+                        if (store[`${draftKeyPrefix}${id}`]) {
+                            sets[soloIndexKey].add(id);
+                        }
+                    }
+                    for (const id of Array.from(sets[soloIndexKey])) {
+                        if (!store[`${draftKeyPrefix}${id}`]) {
+                            sets[soloIndexKey].delete(id);
+                        }
+                    }
+
+                    if (
+                        !store[draftKey] &&
+                        sets[soloIndexKey].size >= Number(maxSlots)
+                    ) {
+                        return 0;
+                    }
+
+                    store[draftKey] = serialized;
+                    sets[soloIndexKey].add(draftId);
+                    sets[combinedIndexKey].add(draftId);
+                    return 1;
+                }
+            ),
             _store: store,
             _sets: sets,
         },
@@ -97,7 +141,10 @@ describe('DraftService', () => {
                 'user:drafts:user-1',
                 'draft-abc'
             );
-            expect(redis.expire).toHaveBeenCalled();
+            expect(redis.expire).toHaveBeenCalledWith(
+                'user:drafts:user-1',
+                SOLO_DRAFT_TTL_SECONDS
+            );
         });
 
         it('should remove draftId from user drafts set', async () => {
@@ -177,6 +224,63 @@ describe('DraftService', () => {
 
             expect(updated.title).toBe('Co-Cook Tapas Edit');
             expect(updated.ownerId).toBe('owner-1');
+        });
+
+        it('should clear explicitly empty arrays and strings', async () => {
+            await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Original Title',
+                    description: 'Original Description',
+                    categories: ['dinner'],
+                    ingredients: ['Tomato', 'Garlic'],
+                    steps: ['Chop', 'Fry'],
+                    method: 'stovetop',
+                },
+                mockOwner
+            );
+
+            const updated = await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: '',
+                    description: '',
+                    categories: [],
+                    ingredients: [],
+                    steps: [],
+                    method: '',
+                },
+                mockOwner
+            );
+
+            expect(updated.title).toBe('');
+            expect(updated.description).toBe('');
+            expect(updated.categories).toEqual([]);
+            expect(updated.ingredients).toEqual([]);
+            expect(updated.steps).toEqual([]);
+            expect(updated.method).toBe('');
+        });
+
+        it('should preserve omitted arrays', async () => {
+            await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    categories: ['dinner'],
+                    ingredients: ['Tomato', 'Garlic'],
+                    steps: ['Chop', 'Fry'],
+                },
+                mockOwner
+            );
+
+            const updated = await DraftService.saveSharedDraft(
+                'draft-1',
+                { description: 'Only this field changed' },
+                mockOwner
+            );
+
+            expect(updated.categories).toEqual(['dinner']);
+            expect(updated.ingredients).toEqual(['Tomato', 'Garlic']);
+            expect(updated.steps).toEqual(['Chop', 'Fry']);
         });
 
         it('should preserve existing step fields when co-cook updates a different step', async () => {
