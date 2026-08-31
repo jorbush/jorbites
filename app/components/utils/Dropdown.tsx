@@ -195,6 +195,7 @@ function Dropdown<T extends string>({
                         animation: 'dropdownFadeIn 0.2s ease-out forwards',
                     }}
                 >
+                    {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
                     <div
                         ref={listboxRef}
                         role="listbox"
