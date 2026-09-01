@@ -205,6 +205,62 @@ sequenceDiagram
     Modal-->>UserA: Inputs and selection controls fully ENABLED and interactive!
 ```
 
+### 1.7 Live Soft-Lock Auto-Recovery on Lock Release
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor UserA as Active Viewer (User A)
+    actor UserB as Remote Co-Cook (User B)
+    participant Modal as RecipeModal UI (Step 2: Ingredients)
+    participant LockHook as useRecipeLock Hook
+    participant Redis as Redis Lock Key (:6379)
+
+    UserB->>Redis: Holds lock:recipe:<draftId>:field:step:2 (User B)
+    UserA->>Modal: Navigates to Step 2 (Ingredients)
+    LockHook->>Redis: Polls GET /api/recipes/<draftId>/lock
+    LockHook-->>Modal: Lock active (isLockedByOther = true)
+    Modal-->>UserA: Displays Soft-Lock Banner ("Chef Maria is currently editing this step")
+    Modal-->>UserA: All ingredient inputs & 'Add ingredient' button DISABLED
+
+    Note over UserB,Redis: User B finishes editing and releases lock
+    UserB->>Redis: DELETE /api/recipes/<draftId>/lock (field='step:2')
+    Redis-->>UserB: Lock deleted from Redis
+
+    Note over Modal,LockHook: Next polling cycle automatically detects lock release
+    LockHook->>Redis: Polls GET /api/recipes/<draftId>/lock
+    Redis-->>LockHook: Lock is null / empty
+    LockHook-->>Modal: Lock cleared (isLockedByOther = false)
+    Modal-->>UserA: Soft-Lock Banner vanishes dynamically!
+    Modal-->>UserA: All ingredient inputs & 'Add ingredient' button immediately RE-ENABLED!
+```
+
+### 1.8 Dynamic Row Expansion on Remote Co-Cook Additions
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor UserA as Active Viewer (User A)
+    actor UserB as Remote Co-Cook (User B)
+    participant Modal as RecipeModal UI
+    participant Sync as syncRemoteDraftToForm / SWR
+    participant Redis as Redis Shared Draft (:6379)
+
+    Note over UserA,Modal: User A is viewing Step 1 (Description) with 1 ingredient slot
+    UserB->>Redis: POST /api/draft (Appends 3 new ingredients & 2 new steps)
+    Redis-->>Redis: SET draft:shared:<id> ({ ingredients: ['200g Dark Chocolate', '100g Butter', '3 Eggs'], steps: ['Step 1: Melt', 'Step 2: Whisk'] })
+    
+    Modal->>Sync: SWR Revalidates GET /api/draft?draftId=<id>
+    Sync->>Modal: syncRemoteDraftToForm detects expanded array lengths
+    Modal->>Modal: Dynamically expands ingredient array from 1 to 3 slots
+    Modal->>Modal: Dynamically expands step array from 1 to 2 slots
+    
+    UserA->>Modal: Clicks Next -> Step 2 (Ingredients)
+    Modal-->>UserA: Renders all 3 dynamic ingredient inputs populated with remote data!
+    UserA->>Modal: Clicks Next -> Step 4 (Steps)
+    Modal-->>UserA: Renders both dynamic step inputs populated with remote data!
+```
+
 ---
 
 ## 2. Recipe Lifecycle Workflow (`basic.cy.ts`)
@@ -620,6 +676,73 @@ sequenceDiagram
     API->>Redis: Explicit empty array replaces old entries in Redis slot
     User->>RM: Hard page reload -> Re-open RecipeModal -> Navigate to Steps
     Note over RM: Steps section is completely clean and empty (no stale resurrection)!
+```
+
+### 8.12 Deep Form State Persistence Across Page Reload
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Authenticated User
+    participant RM as RecipeModal (Wizard)
+    participant API as POST /api/draft
+    participant Redis as Redis (:6379)
+
+    User->>RM: Complete Steps 0-4 (Desserts, Title, Ingredients, Oven, Steps)
+    User->>RM: Step 5 (Related Content) -> Switch to 'Videos' Tab
+    User->>RM: Type YouTube URL ('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+    User->>RM: Click 'Save draft'
+    RM->>API: POST /api/draft (Full deep metadata payload serialized)
+    API->>Redis: Saved to user draft slot
+    User->>User: Hard page reload (cy.reload())
+    User->>RM: Re-open RecipeModal -> Draft auto-loads on Step 5
+    User->>RM: Switch to 'Videos' Tab -> YouTube URL is perfectly preserved!
+    User->>RM: Step backwards 5 -> 4 -> 3 -> 2 -> 1 -> 0
+    Note over RM: Every step retains all nested inputs, method selections, and titles!
+```
+
+### 8.13 Solo vs Shared Quota Isolation in Unified DraftsModal
+
+```mermaid
+flowchart TD
+    subgraph SoloFlow["Solo Drafts Flow (Cap = 5)"]
+        S1["Create 5 Solo Drafts<br/>(user:solo-drafts:id)"] --> SMax["Reach Quota 5/5"]
+        SMax --> S6["Attempt 6th Solo Draft -> Rejection 409 Conflict"]
+        SMax --> SDel["Delete 1 Solo Draft -> Capacity drops to 4/5"]
+        SDel --> SNew["Create New Solo Draft -> Succeeded (200 OK)"]
+    end
+
+    subgraph SharedFlow["Shared Collaborative Drafts Flow (Uncapped)"]
+        Col1["Create Collab Draft 1<br/>(draft:shared:id1)"]
+        Col2["Create Collab Draft 2<br/>(draft:shared:id2)"]
+    end
+
+    SoloFlow --> Modal["DraftsModal Unified Grid View"]
+    SharedFlow --> Modal
+    Modal --> Total["Displays all 7 Drafts seamlessly (5 Solo + 2 Shared)"]
+    Total --> Badges["Clear Visual Badging:<br/>- Solo: 365-day TTL Badge<br/>- Shared: 7-day TTL Badge + Co-Cook Avatars"]
+```
+
+### 8.14 Near-Expiration TTL Visual Warning Badge (< 24h)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Authenticated User
+    participant DM as DraftsModal
+    participant Card as DraftCard / DraftTTLBadge
+    participant API as GET /api/draft/active
+    participant Meta as getDraftTTLInfo / formatTTLText
+
+    User->>DM: Opens 'My Drafts' from UserMenu
+    DM->>API: GET /api/draft/active
+    API-->>DM: Return drafts (including shared draft with 2h remaining TTL)
+    DM->>Card: Renders DraftCard for 'Expiring Soon Berry Tart'
+    Card->>Meta: getDraftTTLInfo(updatedAt, type='shared')
+    Note over Meta: remainingSeconds = 7200 < 86400 (24h) -> isExpiringSoon = true
+    Meta-->>Card: { label: 'Expires in 2 hours', isExpiringSoon: true }
+    Card-->>DM: Renders amber warning badge (bg-amber-50 text-amber-600) with 'Expires in 2 hours'!
+    User->>Card: Clicks card -> Opens RecipeModal directly to continue editing
 ```
 
 ---

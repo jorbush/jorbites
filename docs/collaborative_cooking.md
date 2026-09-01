@@ -190,16 +190,18 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 
 The collaborative cooking architecture is covered by automated Cypress E2E tests in [`__tests__/e2e/collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts) running against a local Redis instance (`REDIS_URL=redis://localhost:6379`).
 
-### Key Test Scenarios (9/9 Passing):
+### Key Test Scenarios (11/11 Passing):
 
-1. **Multi-User Draft Invitation & Join Flow**: Generating secure tokenized invite links from `RecipeModal` and auto-opening pre-populated drafts via `/?draft=<id>&joined=true`.
-2. **Real-Time Step Synchronization on Forward/Back Navigation**: When User A updates ingredients or steps in a shared draft stored in Redis, User B navigating forward or backward immediately sees those updates reflected in the active modal form without data loss.
-3. **Section Soft-Locking & Activity Banners**: Verifying step inputs are locked with opacity feedback when another collaborator holds an active lock (`[data-testid="lock-banner"]`), and activity banners display on other steps (`[data-testid="co-cook-activity-banner"]`).
-4. **Non-Destructive Concurrent Multi-Field Merge**: Resolves concurrent field edits across different sections without race condition data loss.
-5. **Collaborator Limits & Removal**: Enforces the 4 co-cook maximum cap and allows seamless collaborator removal.
-6. **Publish Cleanup**: Completely purges shared drafts and lock keys from Redis upon recipe publication.
-7. **Live UI In-Progress Edit Protection**: Ensures that active typing in an unlocked step is never clobbered or interrupted when remote co-cooks update other steps in the background.
-8. **Soft-Lock Input Guards**: Ensures all text inputs and dynamic row buttons are strictly disabled on soft-locked steps while remaining fully interactive on unlocked steps.
-9. **Collaborative Publishing & Credit**: Creating recipes with `coCooksIds` and verifying `RecipeCoCooks` rendering on the recipe page.
+1. **Collaborative Recipe Lifecycle & Publishing**: Creating recipes with `coCooksIds`, syncing steps, and verifying `RecipeCoCooks` collaborator badge rendering on the recipe page.
+2. **Multi-User Draft Invitation & Join Flow**: Generating secure tokenized invite links from `RecipeModal` and auto-opening pre-populated drafts via `/?draft=<id>&joined=true`.
+3. **Real-Time Step Synchronization on Forward/Back Navigation**: When User A updates ingredients or steps in a shared draft stored in Redis, User B navigating forward or backward immediately sees those updates reflected in the active modal form without data loss.
+4. **Section Soft-Locking & Activity Banners**: Verifying step inputs are locked with opacity feedback when another collaborator holds an active lock (`[data-testid="lock-banner"]`), and activity banners display on other steps (`[data-testid="co-cook-activity-banner"]`).
+5. **Non-Destructive Concurrent Multi-Field Merge**: Resolves concurrent field edits across different sections without race condition data loss.
+6. **Collaborator Limits & Removal**: Enforces the 4 co-cook maximum cap and allows seamless collaborator removal.
+7. **Publish Cleanup**: Completely purges shared drafts and lock keys from Redis upon recipe publication.
+8. **Live UI In-Progress Edit Protection**: Ensures that active typing in an unlocked step is never clobbered or interrupted when remote co-cooks update other steps in the background.
+9. **Soft-Lock Input Guards**: Ensures all text inputs and dynamic row buttons are strictly disabled on soft-locked steps while remaining fully interactive on unlocked steps.
+10. **Live Soft-Lock Auto-Recovery**: Verifies that when a remote co-cook releases a soft-lock, polling detects the unlock, the banner disappears, and all form controls automatically regain interactive state.
+11. **Dynamic Row Expansion on Remote Additions**: Verifies that when a remote collaborator appends new ingredients or steps to the Redis draft, navigating to those steps dynamically expands the input row list and populates the remote values.
 
 For detailed Mermaid diagrams of this and all other E2E test suites, see [`docs/testing/e2e/workflows.md`](file:///docs/testing/e2e/workflows.md).

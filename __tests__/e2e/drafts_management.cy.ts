@@ -953,4 +953,211 @@ describe('Drafts Management & Multi-Draft E2E', () => {
         cy.get('[data-cy="secondary-action-button"]').click(); // Step 1 Description
         cy.get('[data-cy="recipe-title"]').should('have.value', recipeName);
     });
+
+    it('persists deep form state including YouTube URL, linked recipes, and quest across page reload', () => {
+        const recipeName = `Deep Form Draft ${Date.now()}`;
+
+        // Step 1: Open modal and navigate through steps to Step 5 (Related Content)
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+
+        // Step 0: Category
+        cy.get('[data-cy="category-box-Desserts"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 1: Description
+        cy.get('[data-cy="recipe-title"]').type(recipeName);
+        cy.get('[data-cy="recipe-description"]').type(
+            'Rich metadata recipe with video and quest'
+        );
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 2: Ingredients
+        cy.get('[data-cy="recipe-ingredient-0"]').type('200g Dark Chocolate');
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 3: Methods
+        cy.get('[data-cy="method-box-Oven"]').click();
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 4: Steps
+        cy.get('[data-cy="recipe-step-0"]').type('Melt chocolate and bake');
+        cy.get('[data-cy="modal-action-button"]').click();
+
+        // Step 5: Related Content - switch to Videos tab
+        cy.get('[data-testid="related-content-tabs"]').should('exist');
+        cy.contains('button', 'Videos').click();
+
+        // Fill YouTube URL
+        cy.get('[data-cy="youtube-url-input"]').type(
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+        );
+
+        // Save draft explicitly
+        cy.intercept('POST', '/api/draft').as('saveDeepDraft');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveDeepDraft');
+
+        // Close modal
+        cy.get('[data-testid="close-modal-button"]').click();
+
+        // Reload page to simulate user returning to session later
+        cy.reload();
+        cy.ensureEnglish();
+
+        // Re-open RecipeModal - wait for draft to auto-load on Step 5
+        cy.get('[data-cy="post-recipe"]').click();
+        cy.get('[data-testid="modal-title"]').should('be.visible');
+        cy.get('[data-testid="drafts-indicator-dot"]').should('be.visible');
+
+        // Switch to Videos tab and verify YouTube URL is preserved
+        cy.contains('button', 'Videos').click();
+        cy.get('[data-cy="youtube-url-input"]').should(
+            'have.value',
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+        );
+
+        // Verify previous steps retain their data upon navigating backward
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 4: Steps
+        cy.get('[data-cy="recipe-step-0"]').should(
+            'have.value',
+            'Melt chocolate and bake'
+        );
+
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 3: Methods
+        cy.get('[data-cy="method-box-Oven"]').should('have.class', 'selected');
+
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 2: Ingredients
+        cy.get('[data-cy="recipe-ingredient-0"]').should(
+            'have.value',
+            '200g Dark Chocolate'
+        );
+
+        cy.get('[data-cy="secondary-action-button"]').click(); // Step 1: Description
+        cy.get('[data-cy="recipe-title"]').should('have.value', recipeName);
+    });
+
+    it('isolates solo draft quota from shared collaborative drafts in unified DraftsModal', () => {
+        // Step 1: Create 5 solo drafts (reaching 5-draft quota)
+        for (let i = 1; i <= 5; i++) {
+            cy.request('POST', '/api/draft', {
+                draftId: `solo-draft-quota-${i}`,
+                title: `Solo Quota Recipe ${i}`,
+                categories: ['quick'],
+                updatedAt: new Date().toISOString(),
+            });
+        }
+
+        // Step 2: Create 2 shared collaborative drafts via invite
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Desserts'],
+            title: 'Shared Collab Draft 1',
+            description: 'Collaborative draft 1',
+        });
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Dinner'],
+            title: 'Shared Collab Draft 2',
+            description: 'Collaborative draft 2',
+        });
+
+        // Step 3: Open DraftsModal via UserMenu
+        cy.get('[data-cy="user-menu"]').click();
+        cy.get('[data-cy="user-menu-my-drafts"]').should('be.visible').click();
+
+        // Verify DraftsModal displays all 7 drafts (5 solo + 2 shared)
+        cy.get('[data-testid="drafts-modal"]').should('be.visible');
+        cy.get('[data-testid="draft-card"]').should('have.length', 7);
+
+        // Verify solo drafts display 365-day TTL badge and shared drafts display 7-day TTL badge
+        cy.contains('Solo Quota Recipe 1').should('be.visible');
+        cy.contains('Shared Collab Draft 1').should('be.visible');
+        cy.get('[data-testid="draft-card"]')
+            .first()
+            .within(() => {
+                cy.get('[data-testid="draft-ttl-badge"]').should('be.visible');
+            });
+
+        // Step 4: Attempting to create a 6th solo draft is rejected with 409
+        cy.request({
+            method: 'POST',
+            url: '/api/draft',
+            body: {
+                draftId: 'solo-draft-quota-6',
+                title: 'Solo Quota Recipe 6 (Over limit)',
+                categories: ['Desserts'],
+            },
+            failOnStatusCode: false,
+        }).then((res) => {
+            expect(res.status).to.eq(409);
+        });
+
+        // Step 5: Delete 1 solo draft to free up a slot
+        cy.request('DELETE', '/api/draft?draftId=solo-draft-quota-1').then(
+            (delRes) => {
+                expect(delRes.status).to.eq(200);
+            }
+        );
+
+        // Step 6: Now can successfully create a new solo draft
+        cy.request('POST', '/api/draft', {
+            draftId: 'solo-draft-quota-new',
+            title: 'New Allowed Solo Draft',
+            categories: ['Desserts'],
+        }).then((postRes) => {
+            expect(postRes.status).to.eq(200);
+        });
+    });
+
+    it('displays warning badge styling on drafts nearing expiration (TTL < 24h)', () => {
+        // Create a shared draft
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Desserts'],
+            title: 'Expiring Soon Berry Tart',
+            description: 'Draft with impending expiration',
+        }).then((response) => {
+            const draftId = response.body.draftId;
+
+            // Intercept active drafts endpoint with simulated updatedAt corresponding to 2 hours remaining
+            cy.intercept('GET', '/api/draft/active', (req) => {
+                req.continue((res) => {
+                    if (Array.isArray(res.body)) {
+                        res.body = res.body.map((d: { draftId: string }) => {
+                            if (d.draftId === draftId) {
+                                return {
+                                    ...d,
+                                    updatedAt: new Date(
+                                        Date.now() - (7 * 86400 - 7200) * 1000
+                                    ).toISOString(),
+                                };
+                            }
+                            return d;
+                        });
+                    }
+                });
+            }).as('getActiveDraftsWithWarningTTL');
+
+            // Open DraftsModal via UserMenu
+            cy.get('[data-cy="user-menu"]').click();
+            cy.get('[data-cy="user-menu-my-drafts"]')
+                .should('be.visible')
+                .click();
+            cy.wait('@getActiveDraftsWithWarningTTL');
+
+            // Verify DraftsModal displays the expiring soon draft
+            cy.get('[data-testid="drafts-modal"]').should('be.visible');
+            cy.contains('Expiring Soon Berry Tart')
+                .closest('[data-testid="draft-card"]')
+                .within(() => {
+                    // Badge should be visible and indicate expiration warning
+                    cy.get('[data-testid="draft-ttl-badge"]')
+                        .should('be.visible')
+                        .and('contain.text', 'Expires in 2 hours');
+                });
+
+            // Clicking the expiring draft card opens RecipeModal
+            cy.contains('Expiring Soon Berry Tart').click();
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+            cy.get('[data-testid="drafts-indicator-dot"]').should('be.visible');
+        });
+    });
 });

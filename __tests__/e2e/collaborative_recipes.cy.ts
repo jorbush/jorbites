@@ -845,4 +845,175 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
             );
         });
     });
+
+    it('automatically recovers input interactivity when co-cook releases soft-lock on active step', () => {
+        cy.task(
+            'log',
+            '=== Testing Soft-Lock Auto-Recovery on Lock Release ==='
+        );
+
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Desserts'],
+            title: 'Auto Recovery Lock Recipe',
+            description: 'Testing live unlock reactivity',
+        }).then((response) => {
+            const draftId = response.body.draftId;
+            let lockActive = true;
+
+            // Intercept lock endpoint dynamically based on lockActive state
+            cy.intercept('GET', `/api/recipes/${draftId}/lock`, (req) => {
+                if (lockActive) {
+                    req.reply({
+                        statusCode: 200,
+                        body: {
+                            'step:2': {
+                                userId: 'other-user-maria',
+                                userName: 'maria',
+                                timestamp: Date.now(),
+                            },
+                        },
+                    });
+                } else {
+                    req.reply({
+                        statusCode: 200,
+                        body: {},
+                    });
+                }
+            }).as('dynamicStepLock');
+
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+
+            // Navigate: Step 0 (Category) -> Step 1 (Description) -> Step 2 (Ingredients)
+            cy.get('[data-cy="modal-action-button"]')
+                .should('not.be.disabled')
+                .click();
+            cy.get('[data-cy="modal-action-button"]')
+                .should('not.be.disabled')
+                .click();
+
+            // Verify Step 2 is initially soft-locked by Maria
+            cy.get('[data-testid="lock-banner"]', { timeout: 10000 })
+                .should('be.visible')
+                .and('contain', '@maria is currently editing this step');
+            cy.get('[data-cy="recipe-ingredient-0"]').should('be.disabled');
+
+            // Maria finishes editing and releases her lock
+            cy.then(() => {
+                lockActive = false;
+            });
+
+            // On next polling cycle, verify the lock banner disappears and the input becomes interactive
+            cy.get('[data-testid="lock-banner"]', { timeout: 10000 }).should(
+                'not.exist'
+            );
+            cy.get('[data-cy="recipe-ingredient-0"]')
+                .should('not.be.disabled')
+                .type('2 tsp Vanilla Extract');
+            cy.get('[data-cy="recipe-ingredient-0"]').should(
+                'have.value',
+                '2 tsp Vanilla Extract'
+            );
+
+            cy.task('log', '✓ Live soft-lock auto-recovery verified');
+        });
+    });
+
+    it('dynamically expands ingredient and step rows when remote co-cook appends items', () => {
+        cy.task(
+            'log',
+            '=== Testing Dynamic Row Expansion on Remote Co-Cook Additions ==='
+        );
+
+        // Seed draft with 1 ingredient and 1 step
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Desserts'],
+            title: 'Dynamic Rows Pancake',
+            description: 'Fluffy pancake recipe',
+            ingredients: ['1 cup Flour'],
+            steps: ['Mix dry ingredients'],
+        }).then((response) => {
+            const draftId = response.body.draftId;
+
+            // Visit draft on Step 0
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+
+            // Navigate to Step 1 (Description)
+            cy.get('[data-cy="modal-action-button"]')
+                .should('not.be.disabled')
+                .click();
+            cy.get('[data-cy="recipe-title"]').should(
+                'have.value',
+                'Dynamic Rows Pancake'
+            );
+
+            // While Author is on Step 1, Co-Cook updates draft in Redis with 4 ingredients and 3 steps
+            cy.request('POST', '/api/draft', {
+                draftId,
+                ingredients: [
+                    '1 cup Flour',
+                    '1 cup Milk',
+                    '2 Large Eggs',
+                    '2 tbsp Melted Butter',
+                ],
+                steps: [
+                    'Mix dry ingredients',
+                    'Whisk in milk and eggs until smooth',
+                    'Cook on hot buttered skillet until golden',
+                ],
+            });
+
+            // Author advances to Step 2 (Ingredients)
+            cy.get('[data-cy="modal-action-button"]')
+                .should('not.be.disabled')
+                .click();
+
+            // Verify all 4 ingredient inputs are rendered and populated without truncation
+            cy.get('[data-cy="recipe-ingredient-0"]').should(
+                'have.value',
+                '1 cup Flour'
+            );
+            cy.get('[data-cy="recipe-ingredient-1"]').should(
+                'have.value',
+                '1 cup Milk'
+            );
+            cy.get('[data-cy="recipe-ingredient-2"]').should(
+                'have.value',
+                '2 Large Eggs'
+            );
+            cy.get('[data-cy="recipe-ingredient-3"]').should(
+                'have.value',
+                '2 tbsp Melted Butter'
+            );
+
+            // Advance to Method, select method and advance to Step 4 (Steps)
+            cy.get('[data-cy="modal-action-button"]')
+                .should('not.be.disabled')
+                .click();
+            cy.get('[data-cy="method-box-Oven"]').click();
+            cy.get('[data-cy="modal-action-button"]')
+                .should('not.be.disabled')
+                .click();
+
+            // Verify all 3 step inputs are rendered and populated
+            cy.get('[data-cy="recipe-step-0"]').should(
+                'have.value',
+                'Mix dry ingredients'
+            );
+            cy.get('[data-cy="recipe-step-1"]').should(
+                'have.value',
+                'Whisk in milk and eggs until smooth'
+            );
+            cy.get('[data-cy="recipe-step-2"]').should(
+                'have.value',
+                'Cook on hot buttered skillet until golden'
+            );
+
+            cy.task(
+                'log',
+                '✓ Dynamic row expansion for multi-ingredient and multi-step sync verified'
+            );
+        });
+    });
 });
