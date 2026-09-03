@@ -109,8 +109,8 @@ export function useRecipeLock(
     useEffect(() => {
         const id = targetId;
         const uid = currentUserId;
-        const activeField = activeLockFieldRef.current;
         return () => {
+            const activeField = activeLockFieldRef.current;
             if (activeField && id && uid) {
                 axios
                     .delete(

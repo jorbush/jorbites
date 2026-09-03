@@ -1,12 +1,12 @@
 import { SafeUser, SafeRecipe } from '@/app/types';
 
-export interface SharedDraft {
-    draftId: string;
+export interface BaseDraft {
+    draftId?: string;
     type?: 'solo' | 'shared';
     inviteToken?: string;
-    ownerId: string;
-    ownerName: string;
-    coCooksIds: string[];
+    ownerId?: string;
+    ownerName?: string;
+    coCooksIds?: string[];
     title?: string;
     description?: string;
     categories?: string[];
@@ -24,39 +24,22 @@ export interface SharedDraft {
     youtubeUrl?: string | null;
     questId?: string | null;
     currentStep?: number;
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
     coCooks?: SafeUser[];
     linkedRecipes?: SafeRecipe[];
 }
 
-export interface SingleDraft {
-    currentStep?: number;
-    title?: string;
-    description?: string;
-    categories?: string[];
-    method?: string;
-    imageSrc?: string;
-    imageSrc1?: string;
-    imageSrc2?: string;
-    imageSrc3?: string;
-    ingredients?: string[];
-    steps?: string[];
-    minutes?: number;
-    prepTime?: number | null;
-    cookTime?: number | null;
-    coCooksIds?: string[];
-    linkedRecipeIds?: string[];
-    youtubeUrl?: string | null;
-    questId?: string | null;
-    draftId?: string;
-    inviteToken?: string;
-    createdAt?: string;
-    updatedAt?: string;
-    type?: 'solo' | 'shared';
-    ownerId?: string;
-    ownerName?: string;
-    coCooks?: SafeUser[];
-    linkedRecipes?: SafeRecipe[];
+export interface SharedDraft extends BaseDraft {
+    draftId: string;
+    ownerId: string;
+    ownerName: string;
+    coCooksIds: string[];
+    updatedAt: string;
+}
+
+export interface SingleDraft extends BaseDraft {
+    // Single drafts can have optional draftId before being assigned or saved
 }
 
 /** Lightweight draft view for card rendering in DraftsModal */
@@ -106,29 +89,4 @@ export interface DraftProgress {
 export type DraftData = SingleDraft | SharedDraft;
 
 /** Payload sent to draft create and update API endpoints */
-export interface SaveDraftPayload {
-    draftId?: string;
-    inviteToken?: string;
-    currentStep?: number;
-    title?: string;
-    description?: string;
-    categories?: string[];
-    method?: string;
-    imageSrc?: string;
-    imageSrc1?: string;
-    imageSrc2?: string;
-    imageSrc3?: string;
-    ingredients?: string[];
-    steps?: string[];
-    minutes?: number;
-    prepTime?: number | null;
-    cookTime?: number | null;
-    coCooksIds?: string[];
-    linkedRecipeIds?: string[];
-    youtubeUrl?: string | null;
-    questId?: string | null;
-    updatedAt?: string;
-    type?: 'solo' | 'shared';
-    ownerId?: string;
-    ownerName?: string;
-}
+export type SaveDraftPayload = Partial<BaseDraft>;

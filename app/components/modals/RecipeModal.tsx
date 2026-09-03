@@ -4,7 +4,7 @@ import { useRef, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import { axiosFetcher } from '@/app/utils/fetcher';
-import useRecipeModal from '@/app/hooks/useRecipeModal';
+import useRecipeModal, { RecipeModalStore } from '@/app/hooks/useRecipeModal';
 import useDraftsModal from '@/app/hooks/useDraftsModal';
 import Modal from '@/app/components/modals/Modal';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ import { STEPS } from '@/app/utils/constants';
 import { useRecipeFormState } from './recipe-steps/useRecipeFormState';
 import RecipeModalTopActions from './recipe-steps/RecipeModalTopActions';
 import RecipeModalStepBody from './recipe-steps/RecipeModalStepBody';
+import { DraftSummary } from '@/app/types/draft';
 
 interface RecipeModalProps {
     currentUser?: SafeUser | null;
@@ -21,12 +22,12 @@ interface RecipeModalProps {
 
 const RecipeModalContent: React.FC<{
     currentUser?: SafeUser | null;
-    recipeModal: any;
+    recipeModal: RecipeModalStore;
     onClose: () => void;
 }> = ({ currentUser, recipeModal, onClose }) => {
     const { t } = useTranslation();
     const draftsModal = useDraftsModal();
-    const { data: activeDrafts } = useSWR<any[]>(
+    const { data: activeDrafts } = useSWR<DraftSummary[]>(
         recipeModal.isOpen && currentUser ? '/api/draft/active' : null,
         axiosFetcher,
         {

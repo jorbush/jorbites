@@ -151,14 +151,16 @@ export function useRecipeFormState({
 
         if (recipeModal.isEditMode && recipeModal.editRecipeData) {
             const editData = recipeModal.editRecipeData;
+            const ingredients = Array.isArray(editData.ingredients)
+                ? editData.ingredients
+                : [];
             const ingredientsObject: Record<string, string> = {};
-            editData.ingredients.forEach(
-                (ingredient: string, index: number) => {
-                    ingredientsObject[`ingredient-${index}`] = ingredient;
-                }
-            );
+            ingredients.forEach((ingredient: string, index: number) => {
+                ingredientsObject[`ingredient-${index}`] = ingredient;
+            });
+            const steps = Array.isArray(editData.steps) ? editData.steps : [];
             const stepsObject: Record<string, string> = {};
-            editData.steps.forEach((step: string, index: number) => {
+            steps.forEach((step: string, index: number) => {
                 stepsObject[`step-${index}`] = step;
             });
             return {
@@ -173,8 +175,8 @@ export function useRecipeFormState({
                 imageSrc3: editData.imageSrc3 || '',
                 title: editData.title,
                 description: editData.description,
-                ingredients: editData.ingredients,
-                steps: editData.steps,
+                ingredients,
+                steps,
                 minutes: editData.minutes,
                 prepTime: editData.prepTime ?? undefined,
                 cookTime: editData.cookTime ?? undefined,
@@ -195,12 +197,14 @@ export function useRecipeFormState({
             };
         }
         if (draftData) {
-            const ingredients = draftData.ingredients || [];
+            const ingredients = Array.isArray(draftData.ingredients)
+                ? draftData.ingredients
+                : [];
             const ingredientsObject: Record<string, string> = {};
             ingredients.forEach((ingredient: string, index: number) => {
                 ingredientsObject[`ingredient-${index}`] = ingredient;
             });
-            const steps = draftData.steps || [];
+            const steps = Array.isArray(draftData.steps) ? draftData.steps : [];
             const stepsObject: Record<string, string> = {};
             steps.forEach((step: string, index: number) => {
                 stepsObject[`step-${index}`] = step;
@@ -217,8 +221,8 @@ export function useRecipeFormState({
                 imageSrc3: draftData.imageSrc3 || '',
                 title: draftData.title || '',
                 description: draftData.description || '',
-                ingredients: draftData.ingredients || [],
-                steps: draftData.steps || [],
+                ingredients,
+                steps,
                 minutes:
                     draftData.minutes !== undefined ? draftData.minutes : 30,
                 prepTime: draftData.prepTime ?? undefined,
@@ -394,25 +398,32 @@ export function useRecipeFormState({
     const lock = useRecipeLock(lockTargetId, currentUser?.id);
     const isCurrentStepLocked = Boolean(lock?.isLockedByOther(`step:${step}`));
 
-    syncFormFromDraft(setValue, getValues, step, lock, false);
+    useEffect(() => {
+        syncFormFromDraft(setValue, getValues, step, lock, false);
+    }, [draftData, syncFormFromDraft, setValue, getValues, step, lock]);
 
     const [prevDraftId, setPrevDraftId] = useState<string | null>(
         () => draftData?.draftId || null
     );
 
-    if (
-        !recipeModal.isEditMode &&
-        (draftData?.draftId || null) !== prevDraftId
-    ) {
-        setPrevDraftId(draftData?.draftId || null);
-        if (draftData && draftData.currentStep !== undefined) {
-            setStep(
-                Math.max(0, Math.min(draftData.currentStep, STEPS_LENGTH - 1))
-            );
-        } else if (!draftData) {
-            setStep(STEPS.CATEGORY);
+    useEffect(() => {
+        if (
+            !recipeModal.isEditMode &&
+            (draftData?.draftId || null) !== prevDraftId
+        ) {
+            setPrevDraftId(draftData?.draftId || null);
+            if (draftData && draftData.currentStep !== undefined) {
+                setStep(
+                    Math.max(
+                        0,
+                        Math.min(draftData.currentStep, STEPS_LENGTH - 1)
+                    )
+                );
+            } else if (!draftData) {
+                setStep(STEPS.CATEGORY);
+            }
         }
-    }
+    }, [draftData, prevDraftId, recipeModal.isEditMode]);
 
     const addCoCook = (user: SafeUser) => {
         if (coCooksIds.length >= MAX_CO_COOKS) {

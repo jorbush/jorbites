@@ -53,8 +53,10 @@ export async function POST(request: Request) {
                         draftId: body.draftId,
                     });
                     return NextResponse.json(savedDraft);
-                } catch (err: any) {
-                    if (err.message === 'UNAUTHORIZED_DRAFT_UPDATE') {
+                } catch (err: unknown) {
+                    const message =
+                        err instanceof Error ? err.message : String(err);
+                    if (message === 'UNAUTHORIZED_DRAFT_UPDATE') {
                         return forbiddenResponse(
                             'You are not authorized to update this shared draft'
                         );
@@ -81,8 +83,9 @@ export async function POST(request: Request) {
                 slotId: id,
             });
             return NextResponse.json(body);
-        } catch (err: any) {
-            if (err.message === 'MAX_SOLO_DRAFTS_REACHED') {
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err);
+            if (message === 'MAX_SOLO_DRAFTS_REACHED') {
                 return NextResponse.json(
                     { error: 'MAX_SOLO_DRAFTS_REACHED' },
                     { status: 409 }
@@ -90,8 +93,9 @@ export async function POST(request: Request) {
             }
             throw err;
         }
-    } catch (error: any) {
-        logger.error('POST /api/draft - error', { error: error.message });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error('POST /api/draft - error', { error: message });
         return internalServerError('Failed to save draft');
     }
 }
@@ -166,8 +170,9 @@ export async function GET(request: Request) {
             slotId,
         });
         return NextResponse.json(data);
-    } catch (error: any) {
-        logger.error('GET /api/draft - error', { error: error.message });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error('GET /api/draft - error', { error: message });
         return internalServerError('Failed to retrieve draft');
     }
 }
@@ -194,13 +199,15 @@ export async function DELETE(request: Request) {
                     draftId,
                 });
                 return NextResponse.json(1);
-            } catch (err: any) {
-                if (err.message === 'ONLY_OWNER_CAN_DELETE') {
+            } catch (err: unknown) {
+                const message =
+                    err instanceof Error ? err.message : String(err);
+                if (message === 'ONLY_OWNER_CAN_DELETE') {
                     return forbiddenResponse(
                         'Only the draft owner can delete this shared draft'
                     );
                 }
-                if (err.message === 'CORRUPTED_DRAFT_DATA') {
+                if (message === 'CORRUPTED_DRAFT_DATA') {
                     return internalServerError('Draft data is corrupted');
                 }
                 throw err;
@@ -223,8 +230,9 @@ export async function DELETE(request: Request) {
             slotId,
         });
         return NextResponse.json(deleted ? 1 : 0);
-    } catch (error: any) {
-        logger.error('DELETE /api/draft - error', { error: error.message });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error('DELETE /api/draft - error', { error: message });
         return internalServerError('Failed to delete draft');
     }
 }

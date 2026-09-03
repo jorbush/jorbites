@@ -260,7 +260,6 @@ export function useDraftPersistence({
                 );
             }
             mutate('/api/draft/active');
-            mutate('/api/draft');
         } catch (error) {
             console.error('Failed to delete draft', error);
         }

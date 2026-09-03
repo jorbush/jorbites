@@ -13,35 +13,29 @@ import {
     SOLO_DRAFT_TTL_SECONDS,
 } from '@/app/utils/constants';
 
+interface RedisClient {
+    get(key: string): Promise<string | null>;
+    set(
+        key: string,
+        value: string,
+        mode?: string,
+        duration?: number
+    ): Promise<string | null>;
+    del(...keys: string[]): Promise<number>;
+    sadd(key: string, ...members: string[]): Promise<number>;
+    srem(key: string, ...members: string[]): Promise<number>;
+    smembers(key: string): Promise<string[]>;
+    expire(key: string, seconds: number): Promise<number>;
+    eval(
+        script: string,
+        numKeys: number,
+        ...args: (string | number)[]
+    ): Promise<unknown>;
+}
+
+const redisClient = redis as unknown as RedisClient;
+
 const SAVE_SOLO_DRAFT_SCRIPT = `
-local combinedType = redis.call('TYPE', KEYS[3])
-if type(combinedType) == 'table' then
-    combinedType = combinedType.ok
-end
-
-local function migrateSoloId(id)
-    if redis.call('EXISTS', ARGV[6] .. id) == 1 then
-        redis.call('SADD', KEYS[2], id)
-    end
-end
-
-if combinedType == 'set' then
-    local combinedIds = redis.call('SMEMBERS', KEYS[3])
-    for _, id in ipairs(combinedIds) do
-        migrateSoloId(id)
-    end
-elseif combinedType == 'string' then
-    local rawCombined = redis.call('GET', KEYS[3])
-    local decoded, legacyIds = pcall(cjson.decode, rawCombined)
-    redis.call('DEL', KEYS[3])
-    if decoded and type(legacyIds) == 'table' then
-        for _, id in ipairs(legacyIds) do
-            redis.call('SADD', KEYS[3], id)
-            migrateSoloId(id)
-        end
-    end
-end
-
 local soloIds = redis.call('SMEMBERS', KEYS[2])
 for _, id in ipairs(soloIds) do
     if redis.call('EXISTS', ARGV[6] .. id) == 0 then
@@ -63,6 +57,52 @@ redis.call('EXPIRE', KEYS[2], tonumber(ARGV[3]))
 redis.call('SADD', KEYS[3], ARGV[1])
 redis.call('EXPIRE', KEYS[3], tonumber(ARGV[5]))
 return 1
+`;
+
+const JOIN_SHARED_DRAFT_SCRIPT = `
+local raw = redis.call('GET', KEYS[1])
+if not raw then
+    return cjson.encode({ ok = 0, error = 'draft_not_found' })
+end
+
+local decoded, draft = pcall(cjson.decode, raw)
+if not decoded or type(draft) ~= 'table' then
+    return cjson.encode({ ok = 0, error = 'invalid_draft_data' })
+end
+
+if draft.inviteToken ~= ARGV[1] then
+    return cjson.encode({ ok = 0, error = 'invalid_invite_token' })
+end
+
+local userId = ARGV[2]
+local maxCoCooks = tonumber(ARGV[3])
+local coCooks = draft.coCooksIds or {}
+
+local isOwner = (draft.ownerId == userId)
+local alreadyMember = false
+
+for _, id in ipairs(coCooks) do
+    if id == userId then
+        alreadyMember = true
+        break
+    end
+end
+
+if not isOwner and not alreadyMember then
+    if #coCooks >= maxCoCooks then
+        return cjson.encode({ ok = 0, error = 'co_cook_limit_reached' })
+    end
+    table.insert(coCooks, userId)
+    draft.coCooksIds = coCooks
+end
+
+draft.updatedAt = ARGV[5]
+local updatedRaw = cjson.encode(draft)
+redis.call('SET', KEYS[1], updatedRaw, 'EX', tonumber(ARGV[4]))
+redis.call('SADD', KEYS[2], draft.draftId or ARGV[7])
+redis.call('EXPIRE', KEYS[2], tonumber(ARGV[6]))
+
+return cjson.encode({ ok = 1, draft = draft })
 `;
 
 const ALLOWED_DRAFT_FIELDS: (keyof SharedDraft)[] = [
@@ -90,13 +130,14 @@ const ALLOWED_DRAFT_FIELDS: (keyof SharedDraft)[] = [
 /**
  * Filter an arbitrary payload to only allowed draft fields to prevent field pollution (C3).
  */
-function sanitizeDraftPayload(body: any): Partial<SharedDraft> {
+function sanitizeDraftPayload(body: unknown): Partial<SharedDraft> {
     const sanitized: Partial<SharedDraft> = {};
     if (!body || typeof body !== 'object') return sanitized;
+    const rec = body as Record<string, unknown>;
 
     for (const field of ALLOWED_DRAFT_FIELDS) {
-        if (body[field] !== undefined) {
-            (sanitized as any)[field] = body[field];
+        if (rec[field] !== undefined) {
+            (sanitized as Record<string, unknown>)[field] = rec[field];
         }
     }
     return sanitized;
@@ -104,7 +145,7 @@ function sanitizeDraftPayload(body: any): Partial<SharedDraft> {
 
 export class DraftService {
     /**
-     * Atomically adds a draft ID to a user's active drafts set/list (A1).
+     * Atomically adds a draft ID to a user's active drafts set (A1).
      */
     static async addToUserDrafts(
         userId: string,
@@ -112,34 +153,17 @@ export class DraftService {
     ): Promise<void> {
         const key = `user:drafts:${userId}`;
         try {
-            if (typeof (redis as any).sadd === 'function') {
-                await (redis as any).sadd(key, draftId);
-                if (typeof (redis as any).expire === 'function') {
-                    await (redis as any).expire(key, USER_DRAFTS_TTL_SECONDS);
+            if (typeof redisClient.sadd === 'function') {
+                await redisClient.sadd(key, draftId);
+                if (typeof redisClient.expire === 'function') {
+                    await redisClient.expire(key, USER_DRAFTS_TTL_SECONDS);
                 }
-                return;
             }
-
-            // Fallback for mock environments
-            const raw = await redis.get(key);
-            let list: string[] = [];
-            if (raw) {
-                try {
-                    list = JSON.parse(raw);
-                } catch {}
-            }
-            if (!list.includes(draftId)) {
-                list.push(draftId);
-                await redis.set(
-                    key,
-                    JSON.stringify(list),
-                    'EX',
-                    USER_DRAFTS_TTL_SECONDS
-                );
-            }
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
             logger.error('DraftService.addToUserDrafts error', {
-                error: error.message,
+                error: message,
                 userId,
                 draftId,
             });
@@ -147,7 +171,7 @@ export class DraftService {
     }
 
     /**
-     * Atomically removes a draft ID from a user's active drafts set/list (A1).
+     * Atomically removes a draft ID from a user's active drafts set (A1, M2).
      */
     static async removeFromUserDrafts(
         userId: string,
@@ -155,29 +179,14 @@ export class DraftService {
     ): Promise<void> {
         const key = `user:drafts:${userId}`;
         try {
-            if (typeof (redis as any).srem === 'function') {
-                await (redis as any).srem(key, draftId);
+            if (typeof redisClient.srem === 'function') {
+                await redisClient.srem(key, draftId);
             }
-
-            // Also check string JSON list for backward compatibility with legacy storage
-            const raw = await redis.get(key);
-            if (raw) {
-                try {
-                    const list: string[] = JSON.parse(raw);
-                    if (Array.isArray(list)) {
-                        const filtered = list.filter((id) => id !== draftId);
-                        await redis.set(
-                            key,
-                            JSON.stringify(filtered),
-                            'EX',
-                            USER_DRAFTS_TTL_SECONDS
-                        );
-                    }
-                } catch {}
-            }
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
             logger.error('DraftService.removeFromUserDrafts error', {
-                error: error.message,
+                error: message,
                 userId,
                 draftId,
             });
@@ -190,25 +199,18 @@ export class DraftService {
     static async getUserDraftIds(userId: string): Promise<string[]> {
         const key = `user:drafts:${userId}`;
         try {
-            if (typeof (redis as any).smembers === 'function') {
-                const members = await (redis as any).smembers(key);
-                if (Array.isArray(members) && members.length > 0) {
+            if (typeof redisClient.smembers === 'function') {
+                const members = await redisClient.smembers(key);
+                if (Array.isArray(members)) {
                     return members;
                 }
             }
-
-            // Fallback for string JSON list
-            const raw = await redis.get(key);
-            if (raw) {
-                try {
-                    const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed)) return parsed;
-                } catch {}
-            }
             return [];
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
             logger.error('DraftService.getUserDraftIds error', {
-                error: error.message,
+                error: message,
                 userId,
             });
             return [];
@@ -218,18 +220,16 @@ export class DraftService {
     static async getSoloDraftIds(userId: string): Promise<string[]> {
         const key = `user:solo-drafts:${userId}`;
         try {
-            if (typeof (redis as any).smembers === 'function') {
-                const members = await (redis as any).smembers(key);
+            if (typeof redisClient.smembers === 'function') {
+                const members = await redisClient.smembers(key);
                 if (Array.isArray(members)) return members;
             }
-
-            const raw = await redis.get(key);
-            if (!raw) return [];
-            const parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? parsed : [];
-        } catch (error: any) {
+            return [];
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
             logger.error('DraftService.getSoloDraftIds error', {
-                error: error.message,
+                error: message,
                 userId,
             });
             return [];
@@ -242,25 +242,14 @@ export class DraftService {
     ): Promise<void> {
         const key = `user:solo-drafts:${userId}`;
         try {
-            if (typeof (redis as any).srem === 'function') {
-                await (redis as any).srem(key, draftId);
-                return;
+            if (typeof redisClient.srem === 'function') {
+                await redisClient.srem(key, draftId);
             }
-
-            const raw = await redis.get(key);
-            if (!raw) return;
-            const list = JSON.parse(raw);
-            if (Array.isArray(list)) {
-                await redis.set(
-                    key,
-                    JSON.stringify(list.filter((id) => id !== draftId)),
-                    'EX',
-                    SOLO_DRAFT_TTL_SECONDS
-                );
-            }
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
             logger.error('DraftService.removeFromSoloDrafts error', {
-                error: error.message,
+                error: message,
                 userId,
                 draftId,
             });
@@ -306,9 +295,11 @@ export class DraftService {
             }
 
             return draft;
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
             logger.error('DraftService.getSharedDraft error', {
-                error: error.message,
+                error: message,
                 draftId,
             });
             return null;
@@ -316,12 +307,12 @@ export class DraftService {
     }
 
     /**
-     * Saves or merges a shared draft (B2, C3).
+     * Saves or merges a shared draft (B2, C3, H1).
      * Enforces MAX_CO_COOKS and MAX_LINKED_RECIPES (B3).
      */
     static async saveSharedDraft(
         draftId: string,
-        payload: Partial<SharedDraft> | any,
+        payload: Partial<SharedDraft>,
         currentUser: SafeUser
     ): Promise<SharedDraft> {
         const key = `draft:shared:${draftId}`;
@@ -431,14 +422,16 @@ export class DraftService {
                     : existing?.cookTime,
             coCooksIds: limitedCoCooks,
             linkedRecipeIds: limitedLinked,
-            inviteToken:
-                existing?.inviteToken ||
-                sanitizedPayload.inviteToken ||
-                payload.inviteToken,
+            inviteToken: existing?.inviteToken || sanitizedPayload.inviteToken,
             updatedAt: new Date().toISOString(),
         };
 
-        await redis.set(key, JSON.stringify(merged), 'EX', DRAFT_TTL_SECONDS);
+        await redisClient.set(
+            key,
+            JSON.stringify(merged),
+            'EX',
+            DRAFT_TTL_SECONDS
+        );
 
         await this.addToUserDrafts(currentUser.id, draftId);
 
@@ -446,14 +439,56 @@ export class DraftService {
     }
 
     /**
-     * Joins a user to a shared draft via invite token (B2).
+     * Joins a user to a shared draft via invite token atomically (B2, H2).
      */
     static async joinSharedDraft(
         draftId: string,
         token: string,
         currentUser: SafeUser
     ): Promise<{ success: boolean; error?: string; draft?: SharedDraft }> {
-        const raw = await redis.get(`draft:shared:${draftId}`);
+        const nowIso = new Date().toISOString();
+        const draftKey = `draft:shared:${draftId}`;
+        const userDraftsKey = `user:drafts:${currentUser.id}`;
+
+        // Atomic join via Redis Lua script
+        if (typeof redisClient.eval === 'function') {
+            try {
+                const evalResult = await redisClient.eval(
+                    JOIN_SHARED_DRAFT_SCRIPT,
+                    2,
+                    draftKey,
+                    userDraftsKey,
+                    token,
+                    currentUser.id,
+                    MAX_CO_COOKS,
+                    DRAFT_TTL_SECONDS,
+                    nowIso,
+                    USER_DRAFTS_TTL_SECONDS,
+                    draftId
+                );
+
+                if (typeof evalResult === 'string') {
+                    const parsed = JSON.parse(evalResult);
+                    if (parsed.ok === 1 && parsed.draft) {
+                        return { success: true, draft: parsed.draft };
+                    }
+                    if (parsed.error) {
+                        return { success: false, error: parsed.error };
+                    }
+                }
+            } catch (err: unknown) {
+                // If EVAL fails (e.g. lightweight mock environment), gracefully fall through to standard handler
+                const message =
+                    err instanceof Error ? err.message : String(err);
+                logger.warn('DraftService.joinSharedDraft eval fallback', {
+                    error: message,
+                    draftId,
+                });
+            }
+        }
+
+        // Fallback for mock environments without EVAL support
+        const raw = await redisClient.get(draftKey);
         if (!raw) {
             return { success: false, error: 'draft_not_found' };
         }
@@ -481,10 +516,10 @@ export class DraftService {
         }
 
         draft.coCooksIds = Array.from(coCooksSet);
-        draft.updatedAt = new Date().toISOString();
+        draft.updatedAt = nowIso;
 
-        await redis.set(
-            `draft:shared:${draftId}`,
+        await redisClient.set(
+            draftKey,
             JSON.stringify(draft),
             'EX',
             DRAFT_TTL_SECONDS
@@ -503,7 +538,7 @@ export class DraftService {
         currentUser: SafeUser
     ): Promise<boolean> {
         const key = `draft:shared:${draftId}`;
-        const raw = await redis.get(key);
+        const raw = await redisClient.get(key);
         let participants: string[] = [currentUser.id];
 
         if (raw) {
@@ -528,8 +563,8 @@ export class DraftService {
         }
 
         await Promise.all([
-            redis.del(key),
-            redis.del(`draft:user:${currentUser.id}:${draftId}`),
+            redisClient.del(key),
+            redisClient.del(`draft:user:${currentUser.id}:${draftId}`),
             this.removeFromSoloDrafts(currentUser.id, draftId),
             releaseAllLocks(draftId),
         ]);
@@ -537,13 +572,6 @@ export class DraftService {
         await Promise.all(
             participants.map(async (uid) => {
                 await this.removeFromUserDrafts(uid, draftId);
-                const remaining = await this.getUserDraftIds(uid);
-                if (remaining.length === 0) {
-                    await Promise.all([
-                        redis.del(`draft:user:${uid}`),
-                        redis.del(uid),
-                    ]);
-                }
             })
         );
 
@@ -559,7 +587,7 @@ export class DraftService {
     ): Promise<void> {
         const key = `draft:shared:${draftId}`;
         try {
-            const raw = await redis.get(key);
+            const raw = await redisClient.get(key);
             let participants: string[] = [];
             if (raw) {
                 try {
@@ -574,7 +602,7 @@ export class DraftService {
                 participants.push(userId);
             }
 
-            await Promise.all([redis.del(key), releaseAllLocks(draftId)]);
+            await Promise.all([redisClient.del(key), releaseAllLocks(draftId)]);
 
             if (participants.length > 0) {
                 await Promise.all(
@@ -583,9 +611,11 @@ export class DraftService {
                     })
                 );
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
             logger.error('DraftService.cleanUpDraftOnPublish error', {
-                error: error.message,
+                error: message,
                 draftId,
                 userId,
             });
@@ -593,15 +623,14 @@ export class DraftService {
     }
 
     /**
-     * Single-user draft helpers.
+     * Single-user draft helpers (M1 deprecated legacy un-indexed keys).
      */
     static async getSingleUserDraft(
         userId: string,
         slotId?: string
     ): Promise<SingleDraft | SharedDraft | null> {
-        let raw;
         if (slotId) {
-            raw = await redis.get(`draft:user:${userId}:${slotId}`);
+            const raw = await redisClient.get(`draft:user:${userId}:${slotId}`);
             if (!raw) return null;
             try {
                 return JSON.parse(raw);
@@ -617,7 +646,7 @@ export class DraftService {
             if (latest.type === 'shared') {
                 return await this.getSharedDraft(latest.draftId, userId);
             }
-            const soloRaw = await redis.get(
+            const soloRaw = await redisClient.get(
                 `draft:user:${userId}:${latest.draftId}`
             );
             if (soloRaw) {
@@ -630,41 +659,7 @@ export class DraftService {
             return latest;
         }
 
-        // Fallback for legacy un-indexed keys
-        raw = await redis.get(`draft:user:${userId}`);
-        if (!raw) {
-            raw = await redis.get(userId);
-        }
-        if (!raw) return null;
-        try {
-            const parsed = JSON.parse(raw);
-            if (parsed && typeof parsed === 'object') {
-                // If the legacy draft has a draftId, verify that the slotted/shared draft still exists
-                if (parsed.draftId) {
-                    const slottedExists = await redis.get(
-                        `draft:user:${userId}:${parsed.draftId}`
-                    );
-                    const sharedExists = await redis.get(
-                        `draft:shared:${parsed.draftId}`
-                    );
-                    if (!slottedExists && !sharedExists) {
-                        // Stale ghost shadow key from an already-deleted draft! Clean up immediately.
-                        await Promise.all([
-                            redis.del(`draft:user:${userId}`),
-                            redis.del(userId),
-                        ]);
-                        return null;
-                    }
-                } else {
-                    // True un-indexed legacy draft without draftId: migrate to multi-slot
-                    const legacyId = crypto.randomUUID();
-                    await this.saveSingleUserDraft(userId, parsed, legacyId);
-                }
-            }
-            return parsed;
-        } catch {
-            return null;
-        }
+        return null;
     }
 
     private static async saveSingleUserDraftWithQuota(
@@ -677,8 +672,8 @@ export class DraftService {
         const combinedIndexKey = `user:drafts:${userId}`;
         const draftKeyPrefix = `draft:user:${userId}:`;
 
-        if (typeof (redis as any).eval === 'function') {
-            const result = await (redis as any).eval(
+        if (typeof redisClient.eval === 'function') {
+            const result = await redisClient.eval(
                 SAVE_SOLO_DRAFT_SCRIPT,
                 3,
                 draftKey,
@@ -694,27 +689,18 @@ export class DraftService {
             return Number(result) === 1;
         }
 
-        // Lightweight Redis mocks may not implement EVAL. Production ioredis
-        // always uses the atomic script above.
-        const [existingRaw, combinedIds, initialSoloIds] = await Promise.all([
-            redis.get(draftKey),
-            this.getUserDraftIds(userId),
+        // Fallback for lightweight Redis mocks that do not implement EVAL
+        const [existingRaw, initialSoloIds] = await Promise.all([
+            redisClient.get(draftKey),
             this.getSoloDraftIds(userId),
         ]);
         const soloIds = new Set(initialSoloIds);
 
-        const combinedDrafts = await Promise.all(
-            combinedIds.map((id) => redis.get(`${draftKeyPrefix}${id}`))
-        );
-        combinedIds.forEach((id, idx) => {
-            if (combinedDrafts[idx]) {
-                soloIds.add(id);
-            }
-        });
-
         const currentSoloList = Array.from(soloIds);
         const soloDrafts = await Promise.all(
-            currentSoloList.map((id) => redis.get(`${draftKeyPrefix}${id}`))
+            currentSoloList.map((id) =>
+                redisClient.get(`${draftKeyPrefix}${id}`)
+            )
         );
         currentSoloList.forEach((id, idx) => {
             if (!soloDrafts[idx]) {
@@ -726,24 +712,19 @@ export class DraftService {
             return false;
         }
 
-        await redis.set(draftKey, serialized, 'EX', SOLO_DRAFT_TTL_SECONDS);
+        await redisClient.set(
+            draftKey,
+            serialized,
+            'EX',
+            SOLO_DRAFT_TTL_SECONDS
+        );
         soloIds.add(draftId);
 
-        if (typeof (redis as any).sadd === 'function') {
-            await (redis as any).sadd(soloIndexKey, ...Array.from(soloIds));
-            if (typeof (redis as any).expire === 'function') {
-                await (redis as any).expire(
-                    soloIndexKey,
-                    SOLO_DRAFT_TTL_SECONDS
-                );
+        if (typeof redisClient.sadd === 'function') {
+            await redisClient.sadd(soloIndexKey, ...Array.from(soloIds));
+            if (typeof redisClient.expire === 'function') {
+                await redisClient.expire(soloIndexKey, SOLO_DRAFT_TTL_SECONDS);
             }
-        } else {
-            await redis.set(
-                soloIndexKey,
-                JSON.stringify(Array.from(soloIds)),
-                'EX',
-                SOLO_DRAFT_TTL_SECONDS
-            );
         }
         await this.addToUserDrafts(userId, draftId);
         return true;
@@ -758,7 +739,10 @@ export class DraftService {
 
         let existing: SingleDraft | null = null;
         if (slotId) {
-            existing = await this.getSingleUserDraft(userId, slotId);
+            existing = (await this.getSingleUserDraft(
+                userId,
+                slotId
+            )) as SingleDraft | null;
         }
 
         const nowIso = new Date().toISOString();
@@ -795,16 +779,6 @@ export class DraftService {
             throw new Error('MAX_SOLO_DRAFTS_REACHED');
         }
 
-        await Promise.all([
-            redis.set(
-                `draft:user:${userId}`,
-                serialized,
-                'EX',
-                SOLO_DRAFT_TTL_SECONDS
-            ),
-            redis.set(userId, serialized, 'EX', SOLO_DRAFT_TTL_SECONDS),
-        ]);
-
         return id;
     }
 
@@ -813,86 +787,35 @@ export class DraftService {
         slotId?: string
     ): Promise<boolean> {
         if (slotId) {
-            const del = await redis.del(`draft:user:${userId}:${slotId}`);
+            const del = await redisClient.del(`draft:user:${userId}:${slotId}`);
             await Promise.all([
                 this.removeFromUserDrafts(userId, slotId),
                 this.removeFromSoloDrafts(userId, slotId),
             ]);
 
-            const remaining = await this.getSoloDraftIds(userId);
-            if (remaining.length === 0) {
-                await Promise.all([
-                    redis.del(`draft:user:${userId}`),
-                    redis.del(userId),
-                ]);
-            } else {
-                // Clean up or update legacy key if it held this draft
-                const legacyRaw = await redis.get(`draft:user:${userId}`);
-                if (legacyRaw) {
-                    try {
-                        const parsed = JSON.parse(legacyRaw);
-                        if (parsed.draftId === slotId) {
-                            const latest = await this.getSingleUserDraft(
-                                userId,
-                                remaining[0]
-                            );
-                            if (latest) {
-                                await redis.set(
-                                    `draft:user:${userId}`,
-                                    JSON.stringify(latest),
-                                    'EX',
-                                    SOLO_DRAFT_TTL_SECONDS
-                                );
-                            } else {
-                                await Promise.all([
-                                    redis.del(`draft:user:${userId}`),
-                                    redis.del(userId),
-                                ]);
-                            }
-                        }
-                    } catch {
-                        await Promise.all([
-                            redis.del(`draft:user:${userId}`),
-                            redis.del(userId),
-                        ]);
-                    }
-                }
-            }
-
             return Boolean(del);
         } else {
-            const [del1, del2, combinedIds, indexedSoloIds] = await Promise.all(
-                [
-                    redis.del(`draft:user:${userId}`),
-                    redis.del(userId),
-                    this.getUserDraftIds(userId),
-                    this.getSoloDraftIds(userId),
-                ]
-            );
+            const [combinedIds, indexedSoloIds] = await Promise.all([
+                this.getUserDraftIds(userId),
+                this.getSoloDraftIds(userId),
+            ]);
 
-            const indexedSoloSet = new Set(indexedSoloIds);
             const soloIds = Array.from(
                 new Set([...combinedIds, ...indexedSoloIds])
             );
-            let deletedAny = Boolean(del1 || del2);
+            let deletedAny = false;
 
             const deletionResults = await Promise.all(
                 soloIds.map(async (id) => {
                     const soloKey = `draft:user:${userId}:${id}`;
-                    const raw = await redis.get(soloKey);
+                    const raw = await redisClient.get(soloKey);
                     if (raw) {
-                        await redis.del(soloKey);
+                        await redisClient.del(soloKey);
                         await Promise.all([
                             this.removeFromUserDrafts(userId, id),
                             this.removeFromSoloDrafts(userId, id),
                         ]);
                         return true;
-                    } else if (indexedSoloSet.has(id)) {
-                        await this.removeFromSoloDrafts(userId, id);
-                        const shared = await redis.get(`draft:shared:${id}`);
-                        if (!shared) {
-                            await this.removeFromUserDrafts(userId, id);
-                        }
                     }
                     return false;
                 })
@@ -902,7 +825,7 @@ export class DraftService {
                 deletedAny = true;
             }
 
-            await redis.del(`user:solo-drafts:${userId}`);
+            await redisClient.del(`user:solo-drafts:${userId}`);
             return deletedAny;
         }
     }
@@ -934,7 +857,9 @@ export class DraftService {
                     };
                 }
 
-                const soloRaw = await redis.get(`draft:user:${userId}:${id}`);
+                const soloRaw = await redisClient.get(
+                    `draft:user:${userId}:${id}`
+                );
                 if (soloRaw) {
                     try {
                         const solo: SingleDraft = JSON.parse(soloRaw);

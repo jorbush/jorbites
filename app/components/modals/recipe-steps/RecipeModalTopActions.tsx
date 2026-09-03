@@ -45,6 +45,7 @@ const RecipeModalTopActions: React.FC<RecipeModalTopActionsProps> = ({
                     disabled={isSaving}
                     aria-label={t('save_draft') || 'Save draft'}
                     data-testid="load-draft-button"
+                    data-cy="save-draft-button"
                     className="hover:text-green-450 dark:hover:text-green-450 flex cursor-pointer items-center justify-center text-xl text-black transition disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-100"
                 >
                     <FiUploadCloud />

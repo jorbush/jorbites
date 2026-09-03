@@ -27,35 +27,21 @@ export function useDraftActions({
 
             setIsLoading(true);
             try {
-                if (type === 'shared') {
-                    const response = await axios.post('/api/draft/invite', {
-                        title: '',
-                        categories: [],
-                        ingredients: [],
-                        steps: [],
-                        currentStep: 0,
-                    });
-                    const draftId = response.data?.draftId;
-                    mutate('/api/draft/active');
-                    if (onDraftMutate) {
-                        await onDraftMutate();
-                    }
-                    return draftId;
-                } else {
-                    const response = await axios.post('/api/draft', {
-                        title: '',
-                        categories: [],
-                        ingredients: [],
-                        steps: [],
-                        currentStep: 0,
-                    });
-                    const draftId = response.data?.draftId;
-                    mutate('/api/draft/active');
-                    if (onDraftMutate) {
-                        await onDraftMutate();
-                    }
-                    return draftId;
+                const endpoint =
+                    type === 'shared' ? '/api/draft/invite' : '/api/draft';
+                const response = await axios.post(endpoint, {
+                    title: '',
+                    categories: [],
+                    ingredients: [],
+                    steps: [],
+                    currentStep: 0,
+                });
+                const draftId = response.data?.draftId;
+                mutate('/api/draft/active');
+                if (onDraftMutate) {
+                    await onDraftMutate();
                 }
+                return draftId;
             } catch (error: unknown) {
                 if (
                     axios.isAxiosError(error) &&

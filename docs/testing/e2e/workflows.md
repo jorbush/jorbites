@@ -261,6 +261,51 @@ sequenceDiagram
     Modal-->>UserA: Renders both dynamic step inputs populated with remote data!
 ```
 
+### 1.9 Atomic Co-Cook Join & Quota Enforcement Workflow (Test 12)
+
+This workflow validates that co-cook join requests use an atomic Redis Lua script (`JOIN_SHARED_DRAFT_SCRIPT`) to prevent TOCTOU race conditions and strictly enforce the `MAX_CO_COOKS = 4` limit under high concurrency.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Owner as Recipe Owner (User A)
+    actor CoCooks as Concurrent Joiners (Users B, C, D, E)
+    participant JoinAPI as GET /api/draft/join
+    participant Lua as Redis Lua Engine (JOIN_SHARED_DRAFT_SCRIPT)
+    participant Redis as Redis Keys (:6379)
+    participant Modal as RecipeModal UI
+
+    Owner->>JoinAPI: POST /api/draft/invite
+    JoinAPI->>Redis: SET draft:shared:<id> (inviteToken, maxCoCooks: 4)
+    JoinAPI-->>Owner: { draftId, inviteToken }
+
+    Note over CoCooks,Lua: Concurrent Joins executed simultaneously
+    par Concurrent Join Valid Token
+        CoCooks->>JoinAPI: GET /api/draft/join?draft=<id>&token=<token>
+        JoinAPI->>Lua: EVAL JOIN_SHARED_DRAFT_SCRIPT 2 draftKey userDraftsKey token userId 4 ttl
+        Lua->>Lua: Validate token matches inviteToken
+        Lua->>Lua: Check coCooksIds.length < 4
+        Lua->>Redis: Atomically append userId to coCooksIds & SADD user:drafts:<userId>
+        Lua-->>JoinAPI: Return { ok: 1, draft }
+        JoinAPI-->>CoCooks: Redirect 307 -> /?draft=<id>&joined=true
+    and Concurrent Join Invalid Token
+        CoCooks->>JoinAPI: GET /api/draft/join?draft=<id>&token=bad-token
+        JoinAPI->>Lua: EVAL JOIN_SHARED_DRAFT_SCRIPT
+        Lua-->>JoinAPI: Return { ok: 0, error: 'invalid_invite_token' }
+        JoinAPI-->>CoCooks: Redirect 307 -> /?error=invalid_invite_token
+    and 5th Join Attempt Exceeding Max Capacity
+        CoCooks->>JoinAPI: GET /api/draft/join?draft=<id>&token=<token>
+        JoinAPI->>Lua: EVAL JOIN_SHARED_DRAFT_SCRIPT
+        Lua->>Lua: coCooksIds.length >= 4 -> Quota full
+        Lua-->>JoinAPI: Return { ok: 0, error: 'co_cook_limit_reached' }
+        JoinAPI-->>CoCooks: Redirect 307 -> /?error=co_cook_limit_reached
+    end
+
+    Note over Owner,Modal: Owner navigates to Step 5 (Related Content)
+    Owner->>Modal: Advance to Step 5
+    Modal-->>Owner: Displays co-cook count `(4/4)` with all participants retained!
+```
+
 ---
 
 ## 2. Recipe Lifecycle Workflow (`basic.cy.ts`)

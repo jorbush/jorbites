@@ -60,6 +60,51 @@ jest.mock('@/app/lib/redis', () => {
                     _combinedTtl: number,
                     draftKeyPrefix: string
                 ) => {
+                    if (_numKeys === 2) {
+                        const raw = store[draftKey];
+                        if (!raw)
+                            return JSON.stringify({
+                                ok: 0,
+                                error: 'draft_not_found',
+                            });
+                        let draft;
+                        try {
+                            draft = JSON.parse(raw);
+                        } catch {
+                            return JSON.stringify({
+                                ok: 0,
+                                error: 'invalid_draft_data',
+                            });
+                        }
+                        if (draft.inviteToken !== combinedIndexKey) {
+                            return JSON.stringify({
+                                ok: 0,
+                                error: 'invalid_invite_token',
+                            });
+                        }
+                        const coCooks = draft.coCooksIds || [];
+                        const userId = draftId;
+                        const maxCoCooks = Number(serialized);
+                        if (
+                            draft.ownerId !== userId &&
+                            !coCooks.includes(userId)
+                        ) {
+                            if (coCooks.length >= maxCoCooks) {
+                                return JSON.stringify({
+                                    ok: 0,
+                                    error: 'co_cook_limit_reached',
+                                });
+                            }
+                            coCooks.push(userId);
+                            draft.coCooksIds = coCooks;
+                        }
+                        draft.updatedAt = String(_soloTtl);
+                        store[draftKey] = JSON.stringify(draft);
+                        if (!sets[soloIndexKey]) sets[soloIndexKey] = new Set();
+                        sets[soloIndexKey].add(draft.draftId || draftKey);
+                        return JSON.stringify({ ok: 1, draft });
+                    }
+
                     if (!sets[soloIndexKey]) sets[soloIndexKey] = new Set();
                     if (!sets[combinedIndexKey]) {
                         sets[combinedIndexKey] = new Set();
@@ -412,6 +457,49 @@ describe('DraftService', () => {
 
             expect(result.success).toBe(false);
             expect(result.error).toBe('co_cook_limit_reached');
+        });
+
+        it('should handle concurrent join requests without race conditions or losing participants', async () => {
+            const user2: SafeUser = {
+                id: 'cocook-2',
+                name: 'Chef CoCook 2',
+                email: 'cocook2@test.com',
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+            };
+            const user3: SafeUser = {
+                id: 'cocook-3',
+                name: 'Chef CoCook 3',
+                email: 'cocook3@test.com',
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+            };
+
+            const results = await Promise.all([
+                DraftService.joinSharedDraft(
+                    'draft-1',
+                    'join-token-123',
+                    mockCoCook
+                ),
+                DraftService.joinSharedDraft(
+                    'draft-1',
+                    'join-token-123',
+                    user2
+                ),
+                DraftService.joinSharedDraft(
+                    'draft-1',
+                    'join-token-123',
+                    user3
+                ),
+            ]);
+
+            expect(results.every((r) => r.success)).toBe(true);
+
+            const draft = await DraftService.getSharedDraft('draft-1');
+            expect(draft?.coCooksIds).toContain(mockCoCook.id);
+            expect(draft?.coCooksIds).toContain(user2.id);
+            expect(draft?.coCooksIds).toContain(user3.id);
+            expect(draft?.coCooksIds?.length).toBe(3);
         });
     });
 

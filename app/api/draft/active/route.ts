@@ -26,8 +26,9 @@ export async function GET() {
         });
 
         return NextResponse.json(activeDrafts);
-    } catch (error: any) {
-        logger.error('GET /api/draft/active - error', { error: error.message });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error('GET /api/draft/active - error', { error: message });
         return internalServerError('Failed to retrieve active drafts');
     }
 }

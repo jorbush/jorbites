@@ -50,8 +50,9 @@ export async function GET(request: Request) {
         return NextResponse.redirect(
             new URL(`/?draft=${draftId}&joined=true`, request.url)
         );
-    } catch (error: any) {
-        logger.error('GET /api/draft/join - error', { error: error.message });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error('GET /api/draft/join - error', { error: message });
         return NextResponse.redirect(
             new URL('/?error=failed_to_join_draft', request.url)
         );

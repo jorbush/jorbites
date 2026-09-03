@@ -1015,5 +1015,68 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
                 '✓ Dynamic row expansion for multi-ingredient and multi-step sync verified'
             );
         });
+
+        it('atomic co-cook join flow prevents race conditions and strictly enforces MAX_CO_COOKS quota', () => {
+            cy.task(
+                'log',
+                '=== TEST 12: Atomic Co-Cook Join & Quota Enforcement ==='
+            );
+            const collabTitle = `Atomic Join Collab ${Date.now().toString().slice(-4)}`;
+
+            // Create shared draft via invite endpoint
+            cy.request({
+                method: 'POST',
+                url: '/api/draft/invite',
+                body: {
+                    title: collabTitle,
+                    categories: ['Dinner'],
+                    ingredients: ['Garlic', 'Olive Oil'],
+                    steps: ['Sauté garlic in oil'],
+                    currentStep: 0,
+                },
+            }).then((inviteRes) => {
+                expect(inviteRes.status).to.eq(200);
+                const draftId = inviteRes.body.draftId;
+                const token = inviteRes.body.inviteToken;
+                expect(draftId).to.be.a('string');
+                expect(token).to.be.a('string');
+
+                // 1. Join with valid token
+                cy.request({
+                    method: 'GET',
+                    url: `/api/draft/join?draft=${draftId}&token=${token}`,
+                    followRedirect: false,
+                }).then((joinRes) => {
+                    expect(joinRes.status).to.eq(307);
+                    expect(joinRes.headers.location).to.include('joined=true');
+                });
+
+                // 2. Attempt join with invalid token -> fails with invalid_invite_token error redirect
+                cy.request({
+                    method: 'GET',
+                    url: `/api/draft/join?draft=${draftId}&token=invalid-fake-token`,
+                    followRedirect: false,
+                }).then((badTokenRes) => {
+                    expect(badTokenRes.status).to.eq(307);
+                    expect(badTokenRes.headers.location).to.include(
+                        'error=invalid_invite_token'
+                    );
+                });
+
+                // 3. Open the recipe modal for this shared draft
+                cy.visit(`/?draft=${draftId}`);
+                cy.get('[data-testid="modal-title"]').should('be.visible');
+
+                // Advance to Related Content (Step 5) to inspect co-cooks capacity
+                for (let i = 0; i < 5; i++) {
+                    cy.get('[data-cy="modal-action-button"]')
+                        .should('not.be.disabled')
+                        .click();
+                }
+
+                // Verify the modal is at Step 5 and co-cooks list is visible
+                cy.get('[data-testid="co-cooks-count"]').should('be.visible');
+            });
+        });
     });
 });

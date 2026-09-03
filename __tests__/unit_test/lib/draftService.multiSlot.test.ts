@@ -152,18 +152,8 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
                 SOLO_DRAFT_TTL_SECONDS,
                 'draft:user:user-multi-1:'
             );
-            expect(redis.set).toHaveBeenCalledWith(
-                'draft:user:user-multi-1',
-                expect.any(String),
-                'EX',
-                SOLO_DRAFT_TTL_SECONDS
-            );
-            expect(redis.set).toHaveBeenCalledWith(
-                'user-multi-1',
-                expect.any(String),
-                'EX',
-                SOLO_DRAFT_TTL_SECONDS
-            );
+            expect(store[`draft:user:user-multi-1`]).toBeUndefined();
+            expect(store[`user-multi-1`]).toBeUndefined();
 
             const draftIds = await DraftService.getUserDraftIds('user-multi-1');
             expect(draftIds).toContain(slotId);
@@ -369,15 +359,9 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
             expect(draft?.draftId).toBe(slotNewer);
         });
 
-        it('falls back to legacy draft:user:{userId} when slotId is omitted and no indexed drafts exist', async () => {
-            const store = (redis as any)._store;
-            store['draft:user:user-multi-1'] = JSON.stringify({
-                title: 'Legacy Draft',
-            });
-
+        it('returns null when slotId is omitted and no indexed drafts exist', async () => {
             const draft = await DraftService.getSingleUserDraft('user-multi-1');
-            expect(draft).not.toBeNull();
-            expect(draft?.title).toBe('Legacy Draft');
+            expect(draft).toBeNull();
         });
     });
 
@@ -509,36 +493,20 @@ describe('DraftService Multi-Slot Solo Drafts', () => {
                 }
             );
 
-            expect(store['draft:user:user-multi-1']).toBeDefined();
-
             // Delete slot 1
             await DraftService.deleteSingleUserDraft('user-multi-1', slot1);
-            expect(store['draft:user:user-multi-1']).toBeDefined();
+            expect(store[`draft:user:user-multi-1:${slot1}`]).toBeUndefined();
+            expect(store[`draft:user:user-multi-1:${slot2}`]).toBeDefined();
 
             // Delete slot 2 (all drafts now deleted)
             await DraftService.deleteSingleUserDraft('user-multi-1', slot2);
+            expect(store[`draft:user:user-multi-1:${slot2}`]).toBeUndefined();
             expect(store['draft:user:user-multi-1']).toBeUndefined();
             expect(store['user-multi-1']).toBeUndefined();
 
-            // getSingleUserDraft should return null (no ghost drafts)
+            // getSingleUserDraft should return null
             const draft = await DraftService.getSingleUserDraft('user-multi-1');
             expect(draft).toBeNull();
-        });
-
-        it('detects and purges stale ghost shadow keys when slotted draft was already deleted', async () => {
-            const store = (redis as any)._store;
-            // Simulate orphaned shadow key pointing to an already-deleted draft
-            store['draft:user:user-ghost-1'] = JSON.stringify({
-                draftId: 'deleted-draft-id',
-                title: 'Ghost Draft',
-                categories: ['quick'],
-            });
-
-            // No active draft IDs in user:drafts:user-ghost-1
-            const draft = await DraftService.getSingleUserDraft('user-ghost-1');
-            expect(draft).toBeNull();
-            expect(store['draft:user:user-ghost-1']).toBeUndefined();
-            expect(store['user-ghost-1']).toBeUndefined();
         });
 
         it('refreshes index TTL to SOLO_DRAFT_TTL_SECONDS on addToUserDrafts', async () => {

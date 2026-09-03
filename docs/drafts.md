@@ -16,10 +16,13 @@ The **Drafts & Multi-Draft Management** system allows Jorbites users to manage a
 | Key Format | Purpose | TTL | Content / Structure |
 |---|---|---|---|
 | `draft:user:<userId>:<slotId>` | Multi-slot solo draft storage | **365 Days** (`SOLO_DRAFT_TTL_SECONDS = 31536000`) | Recipe draft JSON (up to 5 active slots per user) |
-| `draft:user:<userId>` | Legacy solo draft fallback | **365 Days** | Backward-compatible single draft JSON |
 | `draft:shared:<draftId>` | Multi-user collaborative draft | **7 Days** (`DRAFT_TTL_SECONDS = 604800`) | Sanitized shared draft JSON with `inviteToken`, `ownerId`, `coCooksIds` |
-| `user:drafts:<userId>` | Active draft index per user | **365 Days** (`USER_DRAFTS_INDEX_TTL_SECONDS = 31536000`) | **Redis Set** of draft IDs (solo and shared combined, matching solo draft lifetime) |
+| `user:solo-drafts:<userId>` | Active solo draft index | **365 Days** (`SOLO_DRAFT_TTL_SECONDS = 31536000`) | **Redis Set** of solo draft IDs per user |
+| `user:drafts:<userId>` | Combined active draft index per user | **365 Days** (`USER_DRAFTS_INDEX_TTL_SECONDS = 31536000`) | **Redis Set** of draft IDs (solo and shared combined, matching solo draft lifetime) |
 | `lock:recipe:<targetId>:field:<fieldKey>` | Section/field soft lock | **30 Seconds** (`LOCK_TTL_SECONDS = 30`) | Lock metadata JSON `{ userId, userName, userAvatar, timestamp }` |
+
+> [!NOTE]
+> Legacy un-slotted storage keys (`draft:user:<userId>` and raw `<userId>`) have been deprecated and eliminated. All drafts are indexed cleanly via native Redis sets. Co-cook joins use an atomic Lua script (`JOIN_SHARED_DRAFT_SCRIPT`) to prevent TOCTOU race conditions and strictly enforce `MAX_CO_COOKS = 4`.
 
 ---
 

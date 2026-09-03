@@ -24,7 +24,7 @@ export interface EditRecipeData {
     questId?: string;
 }
 
-interface RecipeModalStore {
+export interface RecipeModalStore {
     isOpen: boolean;
     isEditMode: boolean;
     editRecipeData: EditRecipeData | null;

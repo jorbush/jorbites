@@ -150,9 +150,6 @@ export function collectDraftFormData(
     const isSharedDraft = Boolean(
         currentInviteToken ||
         draftData?.type === 'shared' ||
-        (draftData as { isShared?: boolean } | null | undefined)?.isShared ||
-        (draftData?.type !== 'solo' &&
-            (draftData?.ownerId || draftData?.ownerName)) ||
         (Array.isArray(draftData?.coCooksIds) &&
             draftData.coCooksIds.length > 0) ||
         (Array.isArray(draftData?.coCooks) && draftData.coCooks.length > 0)

@@ -61,9 +61,10 @@ export async function POST(request: Request) {
             shareUrl,
             draft: savedDraft,
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
         logger.error('POST /api/draft/invite - error', {
-            error: error.message,
+            error: message,
         });
         return internalServerError('Failed to generate invite link');
     }

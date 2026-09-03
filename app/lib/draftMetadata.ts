@@ -176,7 +176,7 @@ export function getDraftProgress(draft: DraftSummary): DraftProgress {
  */
 export function formatTTLText(
     ttlInfo: DraftTTLInfo,
-    t: (key: string, options?: any) => string
+    t: (key: string, options?: Record<string, unknown>) => string
 ): string {
     if (ttlInfo.remainingSeconds === 0 || ttlInfo.key === 'draft_expired') {
         return t('draft_expired', { defaultValue: 'Expired' });

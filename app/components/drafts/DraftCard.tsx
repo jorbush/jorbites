@@ -2,6 +2,7 @@
 
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { FiTrash2, FiCopy } from 'react-icons/fi';
 import { FaUserPlus } from 'react-icons/fa';
 import { DraftSummary } from '@/app/types/draft';
@@ -21,7 +22,7 @@ interface DraftCardProps {
     onShare?: (draftId: string) => void;
 }
 
-function getRelativeTime(dateStr?: string | null, t?: any): string {
+function getRelativeTime(dateStr?: string | null, t?: TFunction): string {
     if (!dateStr) {
         return t
             ? t('draft_just_now', { defaultValue: 'Just now' })
@@ -40,28 +41,39 @@ function getRelativeTime(dateStr?: string | null, t?: any): string {
             : 'Just now';
     }
     const minutes = Math.floor(seconds / 60);
-    if (minutes < 60)
-        return t('draft_minutes_ago', {
-            count: minutes,
-            defaultValue: `${minutes}m ago`,
-        });
+    if (minutes < 60) {
+        return t
+            ? t('draft_minutes_ago', {
+                  count: minutes,
+                  defaultValue: `${minutes}m ago`,
+              })
+            : `${minutes}m ago`;
+    }
     const hours = Math.floor(minutes / 60);
-    if (hours < 24)
-        return t('draft_hours_ago', {
-            count: hours,
-            defaultValue: `${hours}h ago`,
-        });
+    if (hours < 24) {
+        return t
+            ? t('draft_hours_ago', {
+                  count: hours,
+                  defaultValue: `${hours}h ago`,
+              })
+            : `${hours}h ago`;
+    }
     const days = Math.floor(hours / 24);
-    if (days < 7)
-        return t('draft_days_ago', {
-            count: days,
-            defaultValue: `${days}d ago`,
-        });
+    if (days < 7) {
+        return t
+            ? t('draft_days_ago', {
+                  count: days,
+                  defaultValue: `${days}d ago`,
+              })
+            : `${days}d ago`;
+    }
     const weeks = Math.floor(days / 7);
-    return t('draft_weeks_ago', {
-        count: weeks,
-        defaultValue: `${weeks}w ago`,
-    });
+    return t
+        ? t('draft_weeks_ago', {
+              count: weeks,
+              defaultValue: `${weeks}w ago`,
+          })
+        : `${weeks}w ago`;
 }
 
 const DraftCard: React.FC<DraftCardProps> = ({
