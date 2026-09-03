@@ -124,7 +124,6 @@ const ALLOWED_DRAFT_FIELDS: (keyof SharedDraft)[] = [
     'linkedRecipeIds',
     'youtubeUrl',
     'questId',
-    'inviteToken',
 ];
 
 /**
@@ -257,6 +256,14 @@ export class DraftService {
     }
 
     /**
+     * Masks sensitive fields like inviteToken for non-owner participants (B4).
+     */
+    static maskSharedDraft(draft: SharedDraft): SharedDraft {
+        const { inviteToken: _inviteToken, ...sanitized } = draft;
+        return sanitized as SharedDraft;
+    }
+
+    /**
      * Retrieves a shared draft by ID.
      * Sanitizes inviteToken if requester is not the draft owner (B4).
      */
@@ -289,8 +296,7 @@ export class DraftService {
 
                 // Mask inviteToken for non-owners (B4)
                 if (!isOwner) {
-                    const { inviteToken: _inviteToken, ...sanitized } = draft;
-                    return sanitized as SharedDraft;
+                    return this.maskSharedDraft(draft);
                 }
             }
 
@@ -333,16 +339,26 @@ export class DraftService {
 
         const sanitizedPayload = sanitizeDraftPayload(payload);
 
-        const rawCoCooks =
-            sanitizedPayload.coCooksIds !== undefined
-                ? sanitizedPayload.coCooksIds.length === 0
-                    ? []
-                    : [
-                          ...(existing?.coCooksIds || []),
-                          ...sanitizedPayload.coCooksIds,
-                      ]
-                : existing?.coCooksIds || [];
-        const limitedCoCooks = Array.from(new Set(rawCoCooks)).slice(
+        let finalCoCooks: string[];
+        if (existing && currentUser.id !== existing.ownerId) {
+            // Non-owners (co-cooks) can never modify or wipe the co-cooks roster
+            finalCoCooks = existing.coCooksIds || [];
+        } else if (sanitizedPayload.coCooksIds !== undefined) {
+            // Owner update: if coCooksIds is empty array but existing draft has co-cooks,
+            // only wipe if explicitly on the RELATED_CONTENT step; otherwise preserve.
+            if (
+                sanitizedPayload.coCooksIds.length === 0 &&
+                (existing?.coCooksIds?.length || 0) > 0 &&
+                sanitizedPayload.currentStep !== 5 // STEPS.RELATED_CONTENT
+            ) {
+                finalCoCooks = existing?.coCooksIds || [];
+            } else {
+                finalCoCooks = sanitizedPayload.coCooksIds;
+            }
+        } else {
+            finalCoCooks = existing?.coCooksIds || [];
+        }
+        const limitedCoCooks = Array.from(new Set(finalCoCooks)).slice(
             0,
             MAX_CO_COOKS
         );
@@ -422,8 +438,12 @@ export class DraftService {
                     : existing?.cookTime,
             coCooksIds: limitedCoCooks,
             linkedRecipeIds: limitedLinked,
-            inviteToken: existing?.inviteToken || sanitizedPayload.inviteToken,
-            updatedAt: new Date().toISOString(),
+            inviteToken:
+                existing?.inviteToken ||
+                (payload as { inviteToken?: string }).inviteToken,
+            updatedAt:
+                (payload as { updatedAt?: string }).updatedAt ||
+                new Date().toISOString(),
         };
 
         await redisClient.set(
@@ -595,7 +615,19 @@ export class DraftService {
                     participants = Array.from(
                         new Set([draft.ownerId, ...(draft.coCooksIds || [])])
                     ).filter(Boolean);
-                } catch {}
+                } catch (parseError: unknown) {
+                    const parseMessage =
+                        parseError instanceof Error
+                            ? parseError.message
+                            : String(parseError);
+                    logger.warn(
+                        'DraftService.cleanUpDraftOnPublish corrupted draft data',
+                        {
+                            draftId,
+                            error: parseMessage,
+                        }
+                    );
+                }
             }
 
             if (userId && !participants.includes(userId)) {
@@ -746,28 +778,39 @@ export class DraftService {
         }
 
         const nowIso = new Date().toISOString();
-        data.draftId = id;
-        data.updatedAt = data.updatedAt || nowIso;
-        if (!data.createdAt) {
-            data.createdAt = existing?.createdAt || data.updatedAt;
-        }
+        const sanitized = sanitizeDraftPayload(data);
+        const createdAt =
+            existing?.createdAt || (data.createdAt as string) || nowIso;
+        const updatedAt = data.updatedAt || nowIso;
 
         const merged: SingleDraft = {
             ...existing,
-            ...data,
+            ...sanitized,
             draftId: id,
+            type: 'solo',
+            ownerId: userId,
+            createdAt,
+            updatedAt,
             ingredients:
-                data.ingredients !== undefined
-                    ? data.ingredients
+                sanitized.ingredients !== undefined
+                    ? sanitized.ingredients
                     : existing?.ingredients || [],
             steps:
-                data.steps !== undefined ? data.steps : existing?.steps || [],
+                sanitized.steps !== undefined
+                    ? sanitized.steps
+                    : existing?.steps || [],
             categories:
-                data.categories !== undefined
-                    ? data.categories
+                sanitized.categories !== undefined
+                    ? sanitized.categories
                     : existing?.categories || [],
-            updatedAt: data.updatedAt,
         };
+
+        // Mutate caller's data object with assigned draftId and updatedAt
+        data.draftId = id;
+        data.updatedAt = updatedAt;
+        if (!data.createdAt) {
+            data.createdAt = createdAt;
+        }
 
         const serialized = JSON.stringify(merged);
         const saved = await this.saveSingleUserDraftWithQuota(

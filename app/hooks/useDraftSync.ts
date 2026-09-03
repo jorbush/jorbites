@@ -71,7 +71,8 @@ export function useDraftSync({
     const mutateDraft =
         initialMutateDraft !== undefined ? initialMutateDraft : swrMutateDraft;
 
-    const prevSyncedDraftStr = useRef<string>('');
+    const prevDraftRef = useRef<Partial<DraftData> | null>(null);
+    const prevDraftStrRef = useRef<string>('');
 
     const syncFormFromDraft = useCallback(
         (
@@ -80,24 +81,20 @@ export function useDraftSync({
             step: number,
             lock: LockChecker | null | undefined
         ) => {
-            const serialized = draftData ? JSON.stringify(draftData) : '';
-            const draftChanged = serialized !== prevSyncedDraftStr.current;
-
-            const prevDraft = prevSyncedDraftStr.current
-                ? (() => {
-                      try {
-                          return JSON.parse(prevSyncedDraftStr.current);
-                      } catch {
-                          return null;
-                      }
-                  })()
-                : null;
-
-            if (draftChanged) {
-                prevSyncedDraftStr.current = serialized;
+            if (!draftData) {
+                return;
             }
 
-            if (!isEditMode && draftData && draftChanged) {
+            const serialized = JSON.stringify(draftData);
+            if (serialized === prevDraftStrRef.current) {
+                return;
+            }
+
+            const prevDraft = prevDraftRef.current;
+            prevDraftStrRef.current = serialized;
+            prevDraftRef.current = draftData;
+
+            if (!isEditMode) {
                 syncRemoteDraftToForm(
                     draftData,
                     prevDraft,

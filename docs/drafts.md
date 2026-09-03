@@ -134,7 +134,20 @@ Defined in [`app/utils/constants.ts`](file:///Users/jordi/.gemini/antigravity/wo
 
 ---
 
-## Testing Strategy & Test Suites
+## Security & Data Integrity Protections
+
+1. **Client Payload Sanitization**:
+   - Both shared (`saveSharedDraft`) and solo (`saveSingleUserDraft`) draft paths enforce strict field allowlists (`ALLOWED_DRAFT_FIELDS`), stripping prototype pollution and arbitrary injected fields.
+   - `inviteToken` is removed from client-updatable fields: invite tokens can only be generated server-side during draft creation via `/api/draft/invite`.
+2. **Safe Co-Cook Roster Management**:
+   - Non-owners (co-cooks) can never modify or wipe the `coCooksIds` roster when saving their edits.
+   - Owners saving steps other than the Related Content step will not accidentally overwrite existing joined co-cooks with an empty array.
+3. **Atomic Joining & Quota Guard**:
+   - `DraftService.joinSharedDraft` uses an atomic Redis Lua script (`JOIN_SHARED_DRAFT_SCRIPT`) enforcing `MAX_CO_COOKS = 4` without TOCTOU race conditions.
+4. **Stable Lock Handlers & Render Thrashing Elimination**:
+   - `useRecipeLock` keeps stable functional references for `acquire` and `release` via refs, preventing infinite or repeated re-render acquire/release cycles during step lock management.
+
+---
 
 The drafts and collaborative editing system is thoroughly verified across unit, integration, and E2E testing layers:
 

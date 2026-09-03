@@ -356,6 +356,99 @@ describe('DraftService', () => {
             expect(updated.ingredients).toEqual(['Tomato', 'Garlic']);
             expect(updated.title).toBe('Original Title');
         });
+
+        it('should prevent non-owners from modifying or wiping the co-cooks roster (C3)', async () => {
+            await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Paella Draft',
+                    coCooksIds: [mockCoCook.id, 'another-chef'],
+                },
+                mockOwner
+            );
+
+            // Co-cook attempts to wipe coCooksIds or remove another participant
+            const updated = await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Paella Edit by CoCook',
+                    coCooksIds: [],
+                } as any,
+                mockCoCook
+            );
+
+            // Co-cooks cannot alter the roster
+            expect(updated.coCooksIds).toEqual([mockCoCook.id, 'another-chef']);
+        });
+
+        it('should preserve existing co-cooks when owner updates a step other than RELATED_CONTENT with empty array (C3)', async () => {
+            await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Paella Draft',
+                    coCooksIds: [mockCoCook.id],
+                    currentStep: 0, // Category step
+                },
+                mockOwner
+            );
+
+            // Owner saves Step 0 or 1 with an empty coCooksIds from non-related step form state
+            const updated = await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Paella Draft Updated',
+                    coCooksIds: [],
+                    currentStep: 1, // Description step
+                } as any,
+                mockOwner
+            );
+
+            // Co-cooks are preserved!
+            expect(updated.coCooksIds).toEqual([mockCoCook.id]);
+        });
+
+        it('should not allow client payloads to overwrite inviteToken in saveSharedDraft (C1)', async () => {
+            const initial = await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Paella',
+                    inviteToken: 'original-token-123',
+                } as any,
+                mockOwner
+            );
+            expect(initial.inviteToken).toBe('original-token-123');
+
+            // Malicious or accidental update attempt with a forged token
+            const updated = await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Paella Renamed',
+                    inviteToken: 'hacked-token-999',
+                } as any,
+                mockOwner
+            );
+
+            // Preserves original token
+            expect(updated.inviteToken).toBe('original-token-123');
+        });
+
+        it('should sanitize single-user draft payloads to prevent arbitrary field pollution (C2)', async () => {
+            const slotId = await DraftService.saveSingleUserDraft('owner-1', {
+                title: 'Solo Tapas',
+                ingredients: ['Ham', 'Bread'],
+                ['__proto__' as any]: { polluted: true },
+                ['arbitraryField' as any]: 'malicious-data',
+            } as any);
+
+            const fetched: any = await DraftService.getSingleUserDraft(
+                'owner-1',
+                slotId
+            );
+            expect(fetched).toBeDefined();
+            expect(fetched.title).toBe('Solo Tapas');
+            expect(fetched.arbitraryField).toBeUndefined();
+            expect(fetched.polluted).toBeUndefined();
+        });
     });
 
     describe('getSharedDraft & token masking', () => {

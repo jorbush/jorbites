@@ -559,9 +559,7 @@ export function useRecipeFormState({
         axiosFetcher
     );
 
-    const [prevCoCooksData, setPrevCoCooksData] = useState(coCooksData);
-    if (coCooksData && coCooksData !== prevCoCooksData) {
-        setPrevCoCooksData(coCooksData);
+    useEffect(() => {
         if (Array.isArray(coCooksData)) {
             setKnownUsers((prev) => {
                 const next = { ...prev };
@@ -571,12 +569,9 @@ export function useRecipeFormState({
                 return next;
             });
         }
-    }
+    }, [coCooksData]);
 
-    const [prevLinkedRecipesData, setPrevLinkedRecipesData] =
-        useState(linkedRecipesData);
-    if (linkedRecipesData && linkedRecipesData !== prevLinkedRecipesData) {
-        setPrevLinkedRecipesData(linkedRecipesData);
+    useEffect(() => {
         if (Array.isArray(linkedRecipesData)) {
             setKnownRecipes((prev) => {
                 const next = { ...prev };
@@ -586,15 +581,13 @@ export function useRecipeFormState({
                 return next;
             });
         }
-    }
+    }, [linkedRecipesData]);
 
-    const [prevQuestData, setPrevQuestData] = useState(questData);
-    if (questData && questData !== prevQuestData) {
-        setPrevQuestData(questData);
+    useEffect(() => {
         if (questData?.id) {
             setKnownQuests((prev) => ({ ...prev, [questData.id]: questData }));
         }
-    }
+    }, [questData]);
 
     const allKnownUsers = useMemo(() => {
         const map: Record<string, SafeUser> = { ...knownUsers };

@@ -215,8 +215,11 @@ export function useDraftPersistence({
                         'Co-cook invite link copied to clipboard! 🔗'
                 );
                 return;
-            } catch {
-                // Fall through to writeText
+            } catch (clipError) {
+                console.warn(
+                    'ClipboardItem API failed, falling back to writeText',
+                    clipError
+                );
             }
         }
 

@@ -20,31 +20,38 @@ export function useRecipeLock(
 ) {
     const [locks, setLocks] = useState<Record<string, LockOwnerInfo>>({});
     const activeLockFieldRef = useRef<string | null>(null);
+    const targetIdRef = useRef(targetId);
+    const currentUserIdRef = useRef(currentUserId);
+
+    useEffect(() => {
+        targetIdRef.current = targetId;
+        currentUserIdRef.current = currentUserId;
+    }, [targetId, currentUserId]);
 
     const fetchLocks = useCallback(async () => {
-        if (!targetId) return;
+        const id = targetIdRef.current;
+        if (!id) return;
         try {
-            const response = await axios.get(`/api/recipes/${targetId}/lock`);
-            if (response.data && typeof response.data === 'object') {
+            const response = await axios.get(`/api/recipes/${id}/lock`);
+            if (response?.data && typeof response.data === 'object') {
                 setLocks(response.data);
             }
         } catch (error) {
             console.error('Failed to fetch recipe locks', error);
         }
-    }, [targetId]);
+    }, []);
 
     const acquire = useCallback(
         async (fieldKey: string) => {
-            if (!targetId || !currentUserId) return false;
+            const id = targetIdRef.current;
+            const uid = currentUserIdRef.current;
+            if (!id || !uid) return false;
             try {
-                const response = await axios.post(
-                    `/api/recipes/${targetId}/lock`,
-                    {
-                        field: fieldKey,
-                    }
-                );
+                const response = await axios.post(`/api/recipes/${id}/lock`, {
+                    field: fieldKey,
+                });
 
-                if (response.data?.success) {
+                if (response?.data?.success) {
                     activeLockFieldRef.current = fieldKey;
                     await fetchLocks();
                     return true;
@@ -57,17 +64,19 @@ export function useRecipeLock(
                 return false;
             }
         },
-        [targetId, currentUserId, fetchLocks]
+        [fetchLocks]
     );
 
     const release = useCallback(
         async (fieldKey?: string) => {
+            const id = targetIdRef.current;
+            const uid = currentUserIdRef.current;
             const fieldToRelease = fieldKey || activeLockFieldRef.current;
-            if (!targetId || !currentUserId || !fieldToRelease) return;
+            if (!id || !uid || !fieldToRelease) return;
 
             try {
                 await axios.delete(
-                    `/api/recipes/${targetId}/lock?field=${encodeURIComponent(fieldToRelease)}`
+                    `/api/recipes/${id}/lock?field=${encodeURIComponent(fieldToRelease)}`
                 );
                 if (activeLockFieldRef.current === fieldToRelease) {
                     activeLockFieldRef.current = null;
@@ -77,7 +86,7 @@ export function useRecipeLock(
                 console.error('Failed to release section lock', error);
             }
         },
-        [targetId, currentUserId, fetchLocks]
+        [fetchLocks]
     );
 
     // Heartbeat renewal for active lock

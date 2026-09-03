@@ -147,6 +147,9 @@ export function getDraftProgress(draft: DraftSummary): DraftProgress {
             name: 'Steps',
             completed: !!(draft.steps && draft.steps.length > 0),
         },
+        // Step 5 (Related Content: co-cooks, linked recipes, YouTube, quests)
+        // is completely optional in the recipe creation wizard and has no
+        // mandatory fields, so it is considered satisfied by default.
         { step: 5, name: 'Related', completed: true },
         {
             step: 6,

@@ -237,8 +237,9 @@ const RecipeModalComponent: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
     }, [draftQueryParam, isOpen, isEditMode, onOpenSharedDraft]);
 
+    const onClose = recipeModal.onClose;
     const handleClose = useCallback(() => {
-        recipeModal.onClose();
+        onClose();
         if (
             typeof window !== 'undefined' &&
             window.location.search.includes('draft=')
@@ -252,7 +253,7 @@ const RecipeModalComponent: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 url.pathname + (url.search ? url.search : '')
             );
         }
-    }, [recipeModal]);
+    }, [onClose]);
 
     if (!recipeModal.isOpen) {
         return null;

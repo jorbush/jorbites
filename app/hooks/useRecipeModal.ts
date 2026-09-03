@@ -32,6 +32,7 @@ export interface RecipeModalStore {
     activeDraftId: string | null;
     onOpen: () => void;
     onOpenCreate: (questId?: string) => void;
+    onOpenDraft: (draftId: string) => void;
     onOpenSharedDraft: (draftId: string) => void;
     onOpenEdit: (recipeData: EditRecipeData) => void;
     onClose: () => void;
@@ -58,6 +59,14 @@ const useRecipeModal = create<RecipeModalStore>((set) => ({
             editRecipeData: null,
             questId: questId || null,
             activeDraftId: null,
+        }),
+    onOpenDraft: (draftId: string) =>
+        set({
+            isOpen: true,
+            isEditMode: false,
+            editRecipeData: null,
+            questId: null,
+            activeDraftId: draftId,
         }),
     onOpenSharedDraft: (draftId: string) =>
         set({

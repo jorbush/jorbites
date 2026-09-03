@@ -19,10 +19,24 @@ export interface SetValueOptions {
  * Deep equality check for primitives, arrays, and plain objects.
  */
 export function valuesEqual(current: unknown, incoming: unknown): boolean {
-    if (Array.isArray(current) || Array.isArray(incoming)) {
-        return JSON.stringify(current) === JSON.stringify(incoming);
+    if (Object.is(current, incoming)) {
+        return true;
     }
-    return Object.is(current, incoming);
+    if (Array.isArray(current) && Array.isArray(incoming)) {
+        if (current.length !== incoming.length) {
+            return false;
+        }
+        for (let i = 0; i < current.length; i++) {
+            if (!valuesEqual(current[i], incoming[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    if (Array.isArray(current) || Array.isArray(incoming)) {
+        return false;
+    }
+    return false;
 }
 
 /**

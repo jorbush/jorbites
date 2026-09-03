@@ -129,11 +129,7 @@ export async function GET(request: Request) {
 
                 const draft = isOwner
                     ? rawDraft
-                    : (() => {
-                          const { inviteToken: _inviteToken, ...sanitized } =
-                              rawDraft;
-                          return sanitized;
-                      })();
+                    : DraftService.maskSharedDraft(rawDraft);
 
                 logger.info('GET /api/draft - success (shared)', {
                     userId: currentUser.id,

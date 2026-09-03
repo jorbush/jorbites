@@ -39,6 +39,7 @@ const RecipeModalTopActions: React.FC<RecipeModalTopActionsProps> = ({
                 </button>
             </Tooltip>
             <Tooltip text={t('save_draft_tooltip') || 'Save draft'}>
+                {/* load-draft-button retained for backward compatibility with existing tests; data-cy is preferred */}
                 <button
                     type="button"
                     onClick={onSaveDraft}
