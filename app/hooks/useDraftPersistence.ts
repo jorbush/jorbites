@@ -197,6 +197,9 @@ export function useDraftPersistence({
                     // Non-critical background sync
                 }
             }
+            if (!currentDraftId || !currentToken) {
+                throw new Error('Failed to obtain draft ID or invite token');
+            }
             return `${window.location.origin}/api/draft/join?draft=${encodeURIComponent(currentDraftId)}&token=${encodeURIComponent(currentToken)}`;
         };
 

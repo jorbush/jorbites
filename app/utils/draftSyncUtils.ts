@@ -81,6 +81,7 @@ export function shouldApplyStep(
     prevDraft: Partial<DraftData> | null | undefined,
     lock?: LockChecker | null
 ): boolean {
+    if (!prevDraft) return true;
     if (currentStep !== stepIndex) return true;
     if (lock?.isLockedByOther?.(`step:${stepIndex}`)) return true;
     const locallyEdited = fields.some((field) =>
@@ -101,6 +102,7 @@ export function isIngredientsLocallyEdited(
     prevDraft: Partial<DraftData> | null | undefined,
     lock?: LockChecker | null
 ): boolean {
+    if (!prevDraft) return false;
     if (currentStep !== STEPS.INGREDIENTS) return false;
     if (lock?.isLockedByOther?.(`step:${STEPS.INGREDIENTS}`)) return false;
     const currentList = getValues('ingredients');
@@ -131,6 +133,7 @@ export function isStepsLocallyEdited(
     prevDraft: Partial<DraftData> | null | undefined,
     lock?: LockChecker | null
 ): boolean {
+    if (!prevDraft) return false;
     if (currentStep !== STEPS.STEPS) return false;
     if (lock?.isLockedByOther?.(`step:${STEPS.STEPS}`)) return false;
     const currentList = getValues('steps');
@@ -186,8 +189,15 @@ export function syncRemoteDraftToForm(
         }
     };
 
+    const isDraftSwitch = Boolean(
+        prevDraft?.draftId &&
+        draftData?.draftId &&
+        prevDraft.draftId !== draftData.draftId
+    );
+
     const applyStepFields = (stepIndex: number, fields: string[]) => {
         if (
+            !isDraftSwitch &&
             !shouldApplyStep(
                 stepIndex,
                 step,
@@ -211,7 +221,8 @@ export function syncRemoteDraftToForm(
     ]);
 
     if (
-        !isIngredientsLocallyEdited(step, getValues, prevDraft, lock) &&
+        (isDraftSwitch ||
+            !isIngredientsLocallyEdited(step, getValues, prevDraft, lock)) &&
         hasRemoteField('ingredients') &&
         Array.isArray(draftData.ingredients)
     ) {
@@ -238,7 +249,8 @@ export function syncRemoteDraftToForm(
     applyStepFields(STEPS.METHODS, ['method']);
 
     if (
-        !isStepsLocallyEdited(step, getValues, prevDraft, lock) &&
+        (isDraftSwitch ||
+            !isStepsLocallyEdited(step, getValues, prevDraft, lock)) &&
         hasRemoteField('steps') &&
         Array.isArray(draftData.steps)
     ) {

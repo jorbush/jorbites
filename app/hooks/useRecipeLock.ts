@@ -14,25 +14,52 @@ export interface LockOwnerInfo {
     timestamp: number;
 }
 
+const EMPTY_LOCKS: Record<string, LockOwnerInfo> = {};
+
 export function useRecipeLock(
     targetId: string | null | undefined,
     currentUserId: string | null | undefined,
     activeField?: string | null
 ) {
-    const [locks, setLocks] = useState<Record<string, LockOwnerInfo>>({});
+    const [locksState, setLocksState] = useState<{
+        targetId: string | null | undefined;
+        locks: Record<string, LockOwnerInfo>;
+    }>({ targetId, locks: EMPTY_LOCKS });
+
+    // Derive locks during render: if targetId has changed, locks is immediately empty without waiting for an effect
+    const locks =
+        locksState.targetId === targetId ? locksState.locks : EMPTY_LOCKS;
+
+    const setLocks = useCallback(
+        (
+            newLocks:
+                | Record<string, LockOwnerInfo>
+                | ((
+                      prev: Record<string, LockOwnerInfo>
+                  ) => Record<string, LockOwnerInfo>)
+        ) => {
+            setLocksState((prev) => ({
+                targetId: targetIdRef.current,
+                locks:
+                    typeof newLocks === 'function'
+                        ? newLocks(
+                              prev.targetId === targetIdRef.current
+                                  ? prev.locks
+                                  : {}
+                          )
+                        : newLocks,
+            }));
+        },
+        []
+    );
+
     const activeLockFieldRef = useRef<string | null>(null);
     const lastHeldTargetIdRef = useRef<string | null>(null);
     const targetIdRef = useRef(targetId);
     const currentUserIdRef = useRef(currentUserId);
     const activeFieldRef = useRef(activeField);
 
-    const prevTargetIdRef = useRef<string | null>(null);
-
     useEffect(() => {
-        if (targetId !== prevTargetIdRef.current) {
-            setLocks({});
-            prevTargetIdRef.current = targetId;
-        }
         targetIdRef.current = targetId;
         currentUserIdRef.current = currentUserId;
         activeFieldRef.current = activeField;

@@ -66,8 +66,15 @@ export function useDraftSync({
         }
     );
 
-    const draftData =
+    const rawDraftData =
         initialDraftData !== undefined ? initialDraftData : swrDraftData;
+
+    const draftData =
+        activeDraftId &&
+        rawDraftData?.draftId &&
+        rawDraftData.draftId !== activeDraftId
+            ? null
+            : rawDraftData;
     const mutateDraft =
         initialMutateDraft !== undefined ? initialMutateDraft : swrMutateDraft;
 

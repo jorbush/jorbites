@@ -298,32 +298,30 @@ export function useRecipeFormState({
         () => draftData?.draftId || null
     );
 
-    useEffect(() => {
-        if (
-            !recipeModal.isEditMode &&
-            (draftData?.draftId || null) !== prevDraftId
-        ) {
-            setPrevDraftId(draftData?.draftId || null);
-            if (draftData && Array.isArray(draftData.ingredients)) {
+    const currentDraftId = draftData?.draftId || null;
+    if (!recipeModal.isEditMode && currentDraftId !== prevDraftId) {
+        setPrevDraftId(currentDraftId);
+        if (draftData) {
+            if (Array.isArray(draftData.ingredients)) {
                 setNumIngredients(Math.max(1, draftData.ingredients.length));
             }
-            if (draftData && Array.isArray(draftData.steps)) {
+            if (Array.isArray(draftData.steps)) {
                 setNumSteps(Math.max(1, draftData.steps.length));
             }
-            if (draftData && draftData.currentStep !== undefined) {
+            if (draftData.currentStep !== undefined) {
                 setStep(
                     Math.max(
                         0,
                         Math.min(draftData.currentStep, STEPS_LENGTH - 1)
                     )
                 );
-            } else if (!draftData) {
-                setStep(STEPS.CATEGORY);
-                setNumIngredients(1);
-                setNumSteps(1);
             }
+        } else {
+            setStep(STEPS.CATEGORY);
+            setNumIngredients(1);
+            setNumSteps(1);
         }
-    }, [draftData, prevDraftId, recipeModal.isEditMode]);
+    }
 
     const {
         selectedCoCooks,

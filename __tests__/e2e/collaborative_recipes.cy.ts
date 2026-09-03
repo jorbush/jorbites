@@ -1352,8 +1352,9 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
             cy.get('[data-testid="locked-step-container"]')
                 .should('exist')
                 .and(($el) => {
-                    expect($el[0].inert || $el.attr('inert') !== undefined).to
-                        .be.ok;
+                    expect(
+                        Boolean($el[0].inert || $el.attr('inert') !== undefined)
+                    ).to.equal(true);
                 });
 
             cy.task(
