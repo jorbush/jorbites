@@ -75,7 +75,96 @@ export async function isLockHeldByUser(
 }
 
 /**
+ * Fast atomic renewal check to verify and renew lock if currently held by userId.
+ * Used by heartbeat endpoints to renew in 1 network roundtrip without hitting the DB.
+ */
+export async function renewLockIfHeld(
+    targetId: string,
+    fieldKey: string,
+    userId: string,
+    userName?: string,
+    userAvatar?: string
+): Promise<{
+    renewed: boolean;
+    lockResult?: {
+        success: boolean;
+        lockedBy: string;
+        userName?: string;
+        userAvatar?: string;
+    };
+}> {
+    const key = getLockKey(targetId, fieldKey);
+    const renewPayload: LockInfo = {
+        userId,
+        userName,
+        userAvatar,
+        timestamp: Date.now(),
+    };
+
+    try {
+        if (typeof (redis as any).eval === 'function') {
+            const luaScript = `
+                local val = redis.call("GET", KEYS[1])
+                if not val then return 0 end
+                local ok, data = pcall(cjson.decode, val)
+                local lockUser = (ok and data and data.userId) or val
+                if lockUser == ARGV[3] then
+                    redis.call("SET", KEYS[1], ARGV[1], "EX", ARGV[2])
+                    return 1
+                end
+                return 0
+            `;
+            const res = await (redis as any).eval(
+                luaScript,
+                1,
+                key,
+                JSON.stringify(renewPayload),
+                LOCK_TTL_SECONDS,
+                userId
+            );
+
+            if (res === 1) {
+                return {
+                    renewed: true,
+                    lockResult: {
+                        success: true,
+                        lockedBy: userId,
+                        userName,
+                        userAvatar,
+                    },
+                };
+            }
+            return { renewed: false };
+        }
+
+        // Fallback for non-eval environments
+        const isHeld = await isLockHeldByUser(targetId, fieldKey, userId);
+        if (isHeld) {
+            await redis.set(
+                key,
+                JSON.stringify(renewPayload),
+                'EX',
+                LOCK_TTL_SECONDS
+            );
+            return {
+                renewed: true,
+                lockResult: {
+                    success: true,
+                    lockedBy: userId,
+                    userName,
+                    userAvatar,
+                },
+            };
+        }
+        return { renewed: false };
+    } catch {
+        return { renewed: false };
+    }
+}
+
+/**
  * Acquires or renews a soft lock on a specific field/step for a recipe or draft.
+ * Uses atomic Lua script when available to eliminate TOCTOU race conditions (C1 & H8).
  */
 export async function acquireLock(
     targetId: string,
@@ -99,7 +188,61 @@ export async function acquireLock(
             timestamp: Date.now(),
         };
 
-        // Try atomic set-if-not-exists
+        // Atomic Lua path (C1 & H8)
+        if (typeof (redis as any).eval === 'function') {
+            const luaScript = `
+                local val = redis.call("GET", KEYS[1])
+                if not val then
+                    redis.call("SET", KEYS[1], ARGV[1], "EX", ARGV[2])
+                    return {1, ARGV[3], ARGV[4], ARGV[5]}
+                end
+
+                local ok, data = pcall(cjson.decode, val)
+                local lockUser = ""
+                local lockName = ""
+                local lockAvatar = ""
+
+                if ok and data then
+                    lockUser = data.userId or ""
+                    lockName = data.userName or ""
+                    lockAvatar = data.userAvatar or ""
+                else
+                    lockUser = val
+                end
+
+                if lockUser == ARGV[3] then
+                    redis.call("SET", KEYS[1], ARGV[1], "EX", ARGV[2])
+                    local finalName = ARGV[4] ~= "" and ARGV[4] or lockName
+                    local finalAvatar = ARGV[5] ~= "" and ARGV[5] or lockAvatar
+                    return {1, ARGV[3], finalName, finalAvatar}
+                else
+                    return {0, lockUser, lockName, lockAvatar}
+                end
+            `;
+
+            const res = await (redis as any).eval(
+                luaScript,
+                1,
+                key,
+                JSON.stringify(payload),
+                LOCK_TTL_SECONDS,
+                userId,
+                userName || '',
+                userAvatar || ''
+            );
+
+            if (Array.isArray(res) && res.length >= 2) {
+                const isSuccess = res[0] === 1;
+                return {
+                    success: isSuccess,
+                    lockedBy: res[1] || '',
+                    userName: res[2] || undefined,
+                    userAvatar: res[3] || undefined,
+                };
+            }
+        }
+
+        // Fallback for non-eval environments
         const setNxResult = await redis.set(
             key,
             JSON.stringify(payload),
@@ -117,7 +260,6 @@ export async function acquireLock(
             };
         }
 
-        // Key already exists: check if held by same user for TTL renewal
         const existingData = await redis.get(key);
         if (existingData) {
             let lockData: LockInfo;
@@ -128,7 +270,6 @@ export async function acquireLock(
             }
 
             if (lockData.userId === userId) {
-                // Renew TTL for existing lock owner
                 const renewPayload: LockInfo = {
                     userId,
                     userName: userName || lockData.userName,
@@ -149,7 +290,6 @@ export async function acquireLock(
                 };
             }
 
-            // Lock is held by another user
             return {
                 success: false,
                 lockedBy: lockData.userId,
@@ -158,43 +298,7 @@ export async function acquireLock(
             };
         }
 
-        // Lock expired between NX check and GET fallback: retry set with NX (C5)
-        const retryResult = await redis.set(
-            key,
-            JSON.stringify(payload),
-            'EX',
-            LOCK_TTL_SECONDS,
-            'NX'
-        );
-        if (retryResult === 'OK') {
-            return {
-                success: true,
-                lockedBy: userId,
-                userName,
-                userAvatar,
-            };
-        }
-
-        // Retry failed because another user acquired in the meantime
-        const retryExisting = await redis.get(key);
-        let retryLockData: LockInfo = { userId: '', timestamp: Date.now() };
-        if (retryExisting) {
-            try {
-                retryLockData = JSON.parse(retryExisting);
-            } catch {
-                retryLockData = {
-                    userId: retryExisting,
-                    timestamp: Date.now(),
-                };
-            }
-        }
-
-        return {
-            success: false,
-            lockedBy: retryLockData.userId,
-            userName: retryLockData.userName,
-            userAvatar: retryLockData.userAvatar,
-        };
+        return { success: false, lockedBy: '' };
     } catch (error: any) {
         logger.error('acquireLock error', {
             error: error.message,
@@ -337,7 +441,10 @@ export async function getActiveLocks(
  * Releases all locks associated with a targetId.
  */
 export async function releaseAllLocks(targetId: string): Promise<void> {
-    const pattern = `lock:recipe:${targetId}:field:*`;
+    if (!targetId || typeof targetId !== 'string') return;
+    // Security (M2): Escape glob special characters in targetId to prevent matching unintended keys
+    const escapedTargetId = targetId.replace(/[*?[\]]/g, '\\$&');
+    const pattern = `lock:recipe:${escapedTargetId}:field:*`;
     try {
         const keys = await findMatchingKeys(pattern);
         if (keys && keys.length > 0) {

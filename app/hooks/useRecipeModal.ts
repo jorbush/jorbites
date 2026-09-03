@@ -81,7 +81,7 @@ const useRecipeModal = create<RecipeModalStore>((set) => ({
             isOpen: true,
             isEditMode: true,
             editRecipeData: recipeData,
-            questId: null,
+            questId: recipeData.questId ?? null,
             activeDraftId: null,
         }),
     onClose: () =>

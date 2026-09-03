@@ -1160,4 +1160,85 @@ describe('Drafts Management & Multi-Draft E2E', () => {
             cy.get('[data-testid="drafts-indicator-dot"]').should('be.visible');
         });
     });
+
+    it('does not acquire or poll locks when editing solo drafts (H10)', () => {
+        // Create a solo draft
+        cy.request('POST', '/api/draft', {
+            draftId: 'solo-isolation-test',
+            title: 'Solo Draft Without Locks',
+            categories: ['Desserts'],
+        }).then((response) => {
+            expect(response.status).to.eq(200);
+
+            let lockCallsCount = 0;
+            cy.intercept('/api/recipes/*/lock*', (req) => {
+                lockCallsCount++;
+                req.reply({ statusCode: 200, body: {} });
+            }).as('lockRoute');
+
+            // Open DraftsModal via UserMenu
+            cy.get('[data-cy="user-menu"]').click();
+            cy.get('[data-cy="user-menu-my-drafts"]')
+                .should('be.visible')
+                .click();
+
+            // Click the solo draft card
+            cy.contains('Solo Draft Without Locks').click();
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+
+            // Navigate to next step
+            cy.get('[data-cy="modal-action-button"]').click();
+            cy.get('[data-cy="recipe-title"]').should('be.visible');
+
+            // Verify no lock calls occurred
+            cy.wait(1000).then(() => {
+                expect(lockCallsCount).to.eq(0);
+            });
+        });
+    });
+
+    it('immediately appends new ingredient row upon first click when loading multi-ingredient draft (H11)', () => {
+        cy.task(
+            'log',
+            '=== TEST 18: Immediate ingredient addition on async draft ==='
+        );
+
+        cy.request('POST', '/api/draft', {
+            categories: ['Desserts'],
+            title: 'Async Multi-Ingredient Draft',
+            description: 'A delicious test cake',
+            ingredients: ['Flour', 'Sugar', 'Butter', 'Eggs', 'Milk'],
+            currentStep: 2,
+        }).then((response) => {
+            const draftId = response.body.draftId;
+
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+
+            // Directly on Step 2 (Ingredients)
+            cy.get('[data-cy="recipe-ingredient-0"]', { timeout: 10000 })
+                .should('be.visible')
+                .and('have.value', 'Flour');
+
+            // Verify all 5 ingredients are loaded
+            cy.get('[data-cy="recipe-ingredient-4"]').should(
+                'have.value',
+                'Milk'
+            );
+            cy.get('[data-cy="recipe-ingredient-5"]').should('not.exist');
+
+            // Click add ingredient button once
+            cy.get('[data-cy="add-ingredient-button"]').click();
+
+            // Row 6 (ingredient-5) should immediately exist on the very first click
+            cy.get('[data-cy="recipe-ingredient-5"]')
+                .scrollIntoView()
+                .should('be.visible');
+
+            cy.task(
+                'log',
+                '✓ Ingredient row 6 added immediately on first click without lag'
+            );
+        });
+    });
 });

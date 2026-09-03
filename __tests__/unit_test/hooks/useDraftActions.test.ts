@@ -69,6 +69,7 @@ describe('useDraftActions hook', () => {
                 expect.any(Object)
             );
             expect(mutate).toHaveBeenCalledWith('/api/draft/active');
+            expect(mutate).toHaveBeenCalledWith('/api/draft');
             expect(onMutate).toHaveBeenCalled();
         });
 
@@ -197,6 +198,7 @@ describe('useDraftActions hook', () => {
                 })
             );
             expect(mutate).toHaveBeenCalledWith('/api/draft/active');
+            expect(mutate).toHaveBeenCalledWith('/api/draft');
             expect(toast.success).toHaveBeenCalled();
             expect(onMutate).toHaveBeenCalled();
         });
@@ -232,6 +234,7 @@ describe('useDraftActions hook', () => {
             );
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith(url);
             expect(mutate).toHaveBeenCalledWith('/api/draft/active');
+            expect(mutate).toHaveBeenCalledWith('/api/draft');
             expect(toast.success).toHaveBeenCalled();
         });
 
@@ -273,6 +276,90 @@ describe('useDraftActions hook', () => {
             );
             expect(mutate).toHaveBeenCalledWith('/api/draft/active');
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith(url);
+        });
+
+        it('uses Safari-compatible ClipboardItem with promise when supported', async () => {
+            const writeMock = vi.fn().mockResolvedValue(undefined);
+            Object.defineProperty(navigator, 'clipboard', {
+                value: {
+                    write: writeMock,
+                    writeText: vi.fn().mockResolvedValue(undefined),
+                },
+                configurable: true,
+                writable: true,
+            });
+            class MockClipboardItem {
+                items: any;
+                constructor(items: any) {
+                    this.items = items;
+                }
+            }
+            (window as any).ClipboardItem = MockClipboardItem;
+            (globalThis as any).ClipboardItem = MockClipboardItem;
+
+            (axios.get as any).mockResolvedValueOnce({
+                data: {
+                    draftId: 'safari-draft-1',
+                    inviteToken: 'safari-tok',
+                    type: 'shared',
+                },
+            });
+
+            const { result } = renderHook(() =>
+                useDraftActions({ currentUser: mockUser })
+            );
+
+            let url: string | null = null;
+            await act(async () => {
+                url = await result.current.shareDraft('safari-draft-1');
+            });
+
+            expect(url).toContain(
+                '/api/draft/join?draft=safari-draft-1&token=safari-tok'
+            );
+            expect(writeMock).toHaveBeenCalled();
+            expect(toast.success).toHaveBeenCalled();
+
+            // Clean up global mock
+            delete (window as any).ClipboardItem;
+            delete (globalThis as any).ClipboardItem;
+        });
+
+        it('falls back to execCommand copy when writeText throws NotAllowedError (Safari legacy fallback)', async () => {
+            Object.assign(navigator, {
+                clipboard: {
+                    writeText: vi
+                        .fn()
+                        .mockRejectedValue(
+                            new Error('NotAllowedError: permission denied')
+                        ),
+                },
+            });
+
+            document.execCommand = vi.fn().mockReturnValue(true);
+
+            (axios.get as any).mockResolvedValueOnce({
+                data: {
+                    draftId: 'fallback-draft-1',
+                    inviteToken: 'fallback-tok',
+                    type: 'shared',
+                },
+            });
+
+            const { result } = renderHook(() =>
+                useDraftActions({ currentUser: mockUser })
+            );
+
+            let url: string | null = null;
+            await act(async () => {
+                url = await result.current.shareDraft('fallback-draft-1');
+            });
+
+            expect(url).toContain(
+                '/api/draft/join?draft=fallback-draft-1&token=fallback-tok'
+            );
+            expect(document.execCommand).toHaveBeenCalledWith('copy');
+            expect(toast.success).toHaveBeenCalled();
         });
     });
 });

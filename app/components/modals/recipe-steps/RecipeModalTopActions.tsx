@@ -8,6 +8,7 @@ export interface RecipeModalTopActionsProps {
     onOpenDrafts: () => void;
     hasDrafts?: boolean;
     isSaving?: boolean;
+    isLocked?: boolean;
 }
 
 const RecipeModalTopActions: React.FC<RecipeModalTopActionsProps> = ({
@@ -15,6 +16,7 @@ const RecipeModalTopActions: React.FC<RecipeModalTopActionsProps> = ({
     onOpenDrafts,
     hasDrafts,
     isSaving = false,
+    isLocked = false,
 }) => {
     const { t } = useTranslation();
 
@@ -43,7 +45,7 @@ const RecipeModalTopActions: React.FC<RecipeModalTopActionsProps> = ({
                 <button
                     type="button"
                     onClick={onSaveDraft}
-                    disabled={isSaving}
+                    disabled={isSaving || isLocked}
                     aria-label={t('save_draft') || 'Save draft'}
                     data-testid="load-draft-button"
                     data-cy="save-draft-button"

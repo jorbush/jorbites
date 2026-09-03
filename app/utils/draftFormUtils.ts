@@ -113,7 +113,8 @@ export function collectDraftFormData(
     ingredientsInputMode: string,
     stepsInputMode: string,
     stepOverride?: number,
-    _isFullPayload = false
+    _isFullPayload = false,
+    isLocked = false
 ): {
     data: SaveDraftPayload;
     currentDraftId?: string;
@@ -172,18 +173,19 @@ export function collectDraftFormData(
         const description = form.getValues('description');
         data.description =
             typeof description === 'string' ? description : undefined;
-        const minutes = form.getValues('minutes');
+        const parseOptionalNumber = (
+            val: unknown
+        ): number | null | undefined => {
+            if (val === null) return null;
+            if (val === '' || val === undefined) return undefined;
+            const parsed = typeof val === 'number' ? val : Number(val);
+            return !Number.isNaN(parsed) ? parsed : undefined;
+        };
+
+        const minutes = parseOptionalNumber(form.getValues('minutes'));
         data.minutes = typeof minutes === 'number' ? minutes : undefined;
-        const prepTime = form.getValues('prepTime');
-        data.prepTime =
-            typeof prepTime === 'number' || prepTime === null
-                ? prepTime
-                : undefined;
-        const cookTime = form.getValues('cookTime');
-        data.cookTime =
-            typeof cookTime === 'number' || cookTime === null
-                ? cookTime
-                : undefined;
+        data.prepTime = parseOptionalNumber(form.getValues('prepTime'));
+        data.cookTime = parseOptionalNumber(form.getValues('cookTime'));
     };
     const addIngredientsFields = () => {
         data.ingredients = newIngredients;
@@ -230,7 +232,7 @@ export function collectDraftFormData(
         addStepsFields();
         addRelatedContentFields();
         addImageFields();
-    } else {
+    } else if (!isLocked) {
         const addFieldsForStep: Record<number, () => void> = {
             [STEPS.CATEGORY]: addCategoryFields,
             [STEPS.DESCRIPTION]: addDescriptionFields,

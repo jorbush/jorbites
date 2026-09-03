@@ -197,6 +197,10 @@ const DraftCard: React.FC<DraftCardProps> = ({
                                 (t('copy_co_cook_link') ??
                                     'Copy invite link') as string
                             }
+                            aria-label={
+                                (t('copy_co_cook_link') ??
+                                    'Copy invite link') as string
+                            }
                         >
                             <FaUserPlus size={16} />
                         </button>
@@ -207,6 +211,9 @@ const DraftCard: React.FC<DraftCardProps> = ({
                         onClick={handleDuplicate}
                         className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
                         title={(t('duplicate_draft') ?? 'Duplicate') as string}
+                        aria-label={
+                            (t('duplicate_draft') ?? 'Duplicate') as string
+                        }
                     >
                         <FiCopy size={16} />
                     </button>
@@ -216,6 +223,7 @@ const DraftCard: React.FC<DraftCardProps> = ({
                         onClick={handleDelete}
                         className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-red-50 hover:text-red-600 dark:text-neutral-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                         title={(t('delete_draft') ?? 'Delete') as string}
+                        aria-label={(t('delete_draft') ?? 'Delete') as string}
                     >
                         <FiTrash2 size={16} />
                     </button>

@@ -4,13 +4,14 @@ import {
     unauthorizedResponse,
     badRequest,
     forbiddenResponse,
+    notFoundResponse,
     internalServerError,
 } from '@/app/utils/apiErrors';
 import {
     acquireLock,
     releaseLock,
     getActiveLocks,
-    isLockHeldByUser,
+    renewLockIfHeld,
 } from '@/app/lib/redisLock';
 import { logger } from '@/app/lib/axiom/server';
 import getRecipeById from '@/app/actions/getRecipeById';
@@ -47,17 +48,16 @@ export async function POST(
             return badRequest('Field key is required');
         }
 
-        // Fast path (A2): If lock is already held by currentUser, renew immediately without DB hit
-        const isHeld = await isLockHeldByUser(targetId, field, currentUser.id);
-        if (isHeld) {
-            const lockResult = await acquireLock(
-                targetId,
-                field,
-                currentUser.id,
-                currentUser.name || currentUser.email || 'Co-cook',
-                currentUser.image || undefined
-            );
-            return NextResponse.json(lockResult);
+        // Fast path (A2 & H8): Try atomic renewal in 1 round trip if lock is already held by currentUser
+        const renewResult = await renewLockIfHeld(
+            targetId,
+            field,
+            currentUser.id,
+            currentUser.name || currentUser.email || 'Co-cook',
+            currentUser.image || undefined
+        );
+        if (renewResult.renewed && renewResult.lockResult) {
+            return NextResponse.json(renewResult.lockResult);
         }
 
         // Initial acquisition authorization check
@@ -87,6 +87,10 @@ export async function POST(
                         'You are not authorized to lock this draft'
                     );
                 }
+            } else {
+                return notFoundResponse(
+                    'Target recipe or shared draft not found'
+                );
             }
         }
 
@@ -164,10 +168,54 @@ export async function GET(
     props: { params: Promise<IParams> }
 ) {
     try {
-        const params = await props.params;
+        const [params, currentUser] = await Promise.all([
+            props.params,
+            getCurrentUser(),
+        ]);
+
+        if (!currentUser) {
+            return unauthorizedResponse(
+                'User authentication required to view locks'
+            );
+        }
+
         const { id: targetId } = params;
         if (!targetId || typeof targetId !== 'string') {
             return badRequest('Target ID is required');
+        }
+
+        // Authorize access to target recipe or shared draft
+        const recipe = await getRecipeById({ recipeId: targetId }).catch(
+            () => null
+        );
+
+        if (recipe) {
+            const isOwner = recipe.userId === currentUser.id;
+            const isCoCook =
+                Array.isArray(recipe.coCooksIds) &&
+                recipe.coCooksIds.includes(currentUser.id);
+            if (!isOwner && !isCoCook) {
+                return forbiddenResponse(
+                    'You are not authorized to view locks for this recipe'
+                );
+            }
+        } else {
+            const draft = await DraftService.getSharedDraft(targetId);
+            if (draft) {
+                const isOwner = draft.ownerId === currentUser.id;
+                const isCoCook =
+                    Array.isArray(draft.coCooksIds) &&
+                    draft.coCooksIds.includes(currentUser.id);
+                if (!isOwner && !isCoCook) {
+                    return forbiddenResponse(
+                        'You are not authorized to view locks for this draft'
+                    );
+                }
+            } else {
+                return notFoundResponse(
+                    'Target recipe or shared draft not found'
+                );
+            }
         }
 
         const locks = await getActiveLocks(targetId);

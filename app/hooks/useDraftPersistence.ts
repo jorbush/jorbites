@@ -42,10 +42,12 @@ export function useDraftPersistence({
     }, []);
 
     useEffect(() => {
-        if (recipeModal.activeDraftId) {
+        if (recipeModal.isOpen && recipeModal.activeDraftId) {
             openedDraftIdRef.current = recipeModal.activeDraftId;
+        } else if (!recipeModal.isOpen) {
+            openedDraftIdRef.current = null;
         }
-    }, [recipeModal.activeDraftId]);
+    }, [recipeModal.isOpen, recipeModal.activeDraftId]);
 
     const saveDraft = useCallback(
         (
@@ -56,7 +58,8 @@ export function useDraftPersistence({
             effectiveNumSteps: number,
             ingredientsInputMode: string,
             stepsInputMode: string,
-            stepOverride?: number | React.MouseEvent
+            stepOverride?: number | React.MouseEvent,
+            isLocked?: boolean
         ): Promise<boolean> => {
             pendingSavesRef.current += 1;
             if (isMountedRef.current) {
@@ -80,7 +83,9 @@ export function useDraftPersistence({
                             effectiveNumSteps,
                             ingredientsInputMode,
                             stepsInputMode,
-                            stepNum
+                            stepNum,
+                            false,
+                            Boolean(isLocked)
                         );
                     const res = await axios.post('/api/draft', data);
                     if (res.data?.draftId) {
@@ -192,7 +197,15 @@ export function useDraftPersistence({
                     // Non-critical background sync
                 }
             }
-            return `${window.location.origin}/api/draft/join?draft=${currentDraftId}&token=${currentToken}`;
+            return `${window.location.origin}/api/draft/join?draft=${encodeURIComponent(currentDraftId)}&token=${encodeURIComponent(currentToken)}`;
+        };
+
+        let shareUrlPromise: Promise<string> | null = null;
+        const getShareUrl = () => {
+            if (!shareUrlPromise) {
+                shareUrlPromise = prepareShareUrl();
+            }
+            return shareUrlPromise;
         };
 
         if (
@@ -202,7 +215,7 @@ export function useDraftPersistence({
             typeof navigator.clipboard.write === 'function'
         ) {
             try {
-                const textPromise = prepareShareUrl();
+                const textPromise = getShareUrl();
                 const clipboardItem = new ClipboardItem({
                     'text/plain': textPromise.then(
                         (url) => new Blob([url], { type: 'text/plain' })
@@ -224,7 +237,7 @@ export function useDraftPersistence({
         }
 
         try {
-            const shareUrl = await prepareShareUrl();
+            const shareUrl = await getShareUrl();
             await navigator.clipboard.writeText(shareUrl);
             toast.success(
                 t('co_cook_link_copied') ||

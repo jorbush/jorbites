@@ -256,6 +256,45 @@ export class DraftService {
     }
 
     /**
+     * Normalizes shared draft array properties to ensure they are always valid arrays,
+     * protecting against Redis Lua cjson empty-table `{}` conversions.
+     */
+    static normalizeSharedDraft(draft: SharedDraft): SharedDraft {
+        if (!draft || typeof draft !== 'object') return draft;
+        return {
+            ...draft,
+            categories: Array.isArray(draft.categories) ? draft.categories : [],
+            ingredients: Array.isArray(draft.ingredients)
+                ? draft.ingredients
+                : [],
+            steps: Array.isArray(draft.steps) ? draft.steps : [],
+            coCooksIds: Array.isArray(draft.coCooksIds) ? draft.coCooksIds : [],
+            linkedRecipeIds: Array.isArray(draft.linkedRecipeIds)
+                ? draft.linkedRecipeIds
+                : [],
+        };
+    }
+
+    /**
+     * Normalizes single-user draft array properties to ensure they are always valid arrays.
+     */
+    static normalizeSingleDraft(draft: SingleDraft): SingleDraft {
+        if (!draft || typeof draft !== 'object') return draft;
+        return {
+            ...draft,
+            categories: Array.isArray(draft.categories) ? draft.categories : [],
+            ingredients: Array.isArray(draft.ingredients)
+                ? draft.ingredients
+                : [],
+            steps: Array.isArray(draft.steps) ? draft.steps : [],
+            coCooksIds: Array.isArray(draft.coCooksIds) ? draft.coCooksIds : [],
+            linkedRecipeIds: Array.isArray(draft.linkedRecipeIds)
+                ? draft.linkedRecipeIds
+                : [],
+        };
+    }
+
+    /**
      * Masks sensitive fields like inviteToken for non-owner participants (B4).
      */
     static maskSharedDraft(draft: SharedDraft): SharedDraft {
@@ -282,6 +321,8 @@ export class DraftService {
             } catch {
                 return null;
             }
+
+            draft = this.normalizeSharedDraft(draft);
 
             // Authorization check if requester is provided
             if (requesterUserId) {
@@ -322,7 +363,10 @@ export class DraftService {
         currentUser: SafeUser
     ): Promise<SharedDraft> {
         const key = `draft:shared:${draftId}`;
-        const existing = await this.getSharedDraft(draftId);
+        const rawExisting = await this.getSharedDraft(draftId);
+        const existing = rawExisting
+            ? this.normalizeSharedDraft(rawExisting)
+            : null;
 
         if (
             existing &&
@@ -342,21 +386,30 @@ export class DraftService {
         let finalCoCooks: string[];
         if (existing && currentUser.id !== existing.ownerId) {
             // Non-owners (co-cooks) can never modify or wipe the co-cooks roster
-            finalCoCooks = existing.coCooksIds || [];
+            finalCoCooks = Array.isArray(existing.coCooksIds)
+                ? existing.coCooksIds
+                : [];
         } else if (sanitizedPayload.coCooksIds !== undefined) {
+            const incomingCoCooks = Array.isArray(sanitizedPayload.coCooksIds)
+                ? sanitizedPayload.coCooksIds
+                : [];
             // Owner update: if coCooksIds is empty array but existing draft has co-cooks,
             // only wipe if explicitly on the RELATED_CONTENT step; otherwise preserve.
             if (
-                sanitizedPayload.coCooksIds.length === 0 &&
+                incomingCoCooks.length === 0 &&
                 (existing?.coCooksIds?.length || 0) > 0 &&
                 sanitizedPayload.currentStep !== 5 // STEPS.RELATED_CONTENT
             ) {
-                finalCoCooks = existing?.coCooksIds || [];
+                finalCoCooks = Array.isArray(existing?.coCooksIds)
+                    ? existing.coCooksIds
+                    : [];
             } else {
-                finalCoCooks = sanitizedPayload.coCooksIds;
+                finalCoCooks = incomingCoCooks;
             }
         } else {
-            finalCoCooks = existing?.coCooksIds || [];
+            finalCoCooks = Array.isArray(existing?.coCooksIds)
+                ? existing.coCooksIds
+                : [];
         }
         const limitedCoCooks = Array.from(new Set(finalCoCooks)).slice(
             0,
@@ -367,7 +420,8 @@ export class DraftService {
             sanitizedPayload.linkedRecipeIds !== undefined
                 ? sanitizedPayload.linkedRecipeIds
                 : existing?.linkedRecipeIds || [];
-        const limitedLinked = Array.from(new Set(rawLinked)).slice(
+        const safeRawLinked = Array.isArray(rawLinked) ? rawLinked : [];
+        const limitedLinked = Array.from(new Set(safeRawLinked)).slice(
             0,
             MAX_LINKED_RECIPES
         );
@@ -383,17 +437,26 @@ export class DraftService {
                 currentUser.email ||
                 'Chef',
             ingredients:
-                sanitizedPayload.ingredients !== undefined
+                sanitizedPayload.ingredients !== undefined &&
+                Array.isArray(sanitizedPayload.ingredients)
                     ? sanitizedPayload.ingredients
-                    : existing?.ingredients || [],
+                    : Array.isArray(existing?.ingredients)
+                      ? existing.ingredients
+                      : [],
             steps:
-                sanitizedPayload.steps !== undefined
+                sanitizedPayload.steps !== undefined &&
+                Array.isArray(sanitizedPayload.steps)
                     ? sanitizedPayload.steps
-                    : existing?.steps || [],
+                    : Array.isArray(existing?.steps)
+                      ? existing.steps
+                      : [],
             categories:
-                sanitizedPayload.categories !== undefined
+                sanitizedPayload.categories !== undefined &&
+                Array.isArray(sanitizedPayload.categories)
                     ? sanitizedPayload.categories
-                    : existing?.categories || [],
+                    : Array.isArray(existing?.categories)
+                      ? existing.categories
+                      : [],
             title:
                 sanitizedPayload.title !== undefined
                     ? sanitizedPayload.title
@@ -490,7 +553,16 @@ export class DraftService {
                 if (typeof evalResult === 'string') {
                     const parsed = JSON.parse(evalResult);
                     if (parsed.ok === 1 && parsed.draft) {
-                        return { success: true, draft: parsed.draft };
+                        const normalizedDraft = this.normalizeSharedDraft(
+                            parsed.draft
+                        );
+                        await redisClient.set(
+                            draftKey,
+                            JSON.stringify(normalizedDraft),
+                            'EX',
+                            DRAFT_TTL_SECONDS
+                        );
+                        return { success: true, draft: normalizedDraft };
                     }
                     if (parsed.error) {
                         return { success: false, error: parsed.error };
@@ -524,7 +596,9 @@ export class DraftService {
             return { success: false, error: 'invalid_invite_token' };
         }
 
-        const coCooksSet = new Set<string>(draft.coCooksIds || []);
+        const coCooksSet = new Set<string>(
+            Array.isArray(draft.coCooksIds) ? draft.coCooksIds : []
+        );
         if (currentUser.id !== draft.ownerId) {
             if (
                 !coCooksSet.has(currentUser.id) &&
@@ -537,17 +611,18 @@ export class DraftService {
 
         draft.coCooksIds = Array.from(coCooksSet);
         draft.updatedAt = nowIso;
+        const normalizedDraft = this.normalizeSharedDraft(draft);
 
         await redisClient.set(
             draftKey,
-            JSON.stringify(draft),
+            JSON.stringify(normalizedDraft),
             'EX',
             DRAFT_TTL_SECONDS
         );
 
         await this.addToUserDrafts(currentUser.id, draftId);
 
-        return { success: true, draft };
+        return { success: true, draft: normalizedDraft };
     }
 
     /**
@@ -665,7 +740,8 @@ export class DraftService {
             const raw = await redisClient.get(`draft:user:${userId}:${slotId}`);
             if (!raw) return null;
             try {
-                return JSON.parse(raw);
+                const parsed = JSON.parse(raw);
+                return this.normalizeSingleDraft(parsed);
             } catch {
                 return null;
             }
@@ -683,7 +759,8 @@ export class DraftService {
             );
             if (soloRaw) {
                 try {
-                    return JSON.parse(soloRaw);
+                    const parsed = JSON.parse(soloRaw);
+                    return this.normalizeSingleDraft(parsed);
                 } catch {
                     // Fallback to latest summary
                 }
@@ -792,17 +869,25 @@ export class DraftService {
             createdAt,
             updatedAt,
             ingredients:
-                sanitized.ingredients !== undefined
+                sanitized.ingredients !== undefined &&
+                Array.isArray(sanitized.ingredients)
                     ? sanitized.ingredients
-                    : existing?.ingredients || [],
+                    : Array.isArray(existing?.ingredients)
+                      ? existing.ingredients
+                      : [],
             steps:
-                sanitized.steps !== undefined
+                sanitized.steps !== undefined && Array.isArray(sanitized.steps)
                     ? sanitized.steps
-                    : existing?.steps || [],
+                    : Array.isArray(existing?.steps)
+                      ? existing.steps
+                      : [],
             categories:
-                sanitized.categories !== undefined
+                sanitized.categories !== undefined &&
+                Array.isArray(sanitized.categories)
                     ? sanitized.categories
-                    : existing?.categories || [],
+                    : Array.isArray(existing?.categories)
+                      ? existing.categories
+                      : [],
         };
 
         // Mutate caller's data object with assigned draftId and updatedAt
@@ -905,7 +990,9 @@ export class DraftService {
                 );
                 if (soloRaw) {
                     try {
-                        const solo: SingleDraft = JSON.parse(soloRaw);
+                        const parsed = JSON.parse(soloRaw);
+                        const solo: SingleDraft =
+                            this.normalizeSingleDraft(parsed);
                         const updatedAt =
                             solo.updatedAt ||
                             solo.createdAt ||
@@ -915,9 +1002,9 @@ export class DraftService {
                             type: 'solo',
                             title: solo.title,
                             description: solo.description,
-                            categories: solo.categories,
-                            ingredients: solo.ingredients,
-                            steps: solo.steps,
+                            categories: solo.categories || [],
+                            ingredients: solo.ingredients || [],
+                            steps: solo.steps || [],
                             method: solo.method,
                             coCooksIds: solo.coCooksIds || [],
                             ownerId: solo.ownerId || userId,

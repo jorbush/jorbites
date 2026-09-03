@@ -47,15 +47,22 @@ export function isFieldLocallyEdited(
     currentVal: unknown,
     prevValue: unknown
 ): boolean {
-    if (currentVal === undefined || currentVal === null || currentVal === '') {
+    const isCurrentEmpty =
+        currentVal === undefined ||
+        currentVal === null ||
+        currentVal === '' ||
+        (Array.isArray(currentVal) && currentVal.length === 0);
+    const isPrevEmpty =
+        prevValue === undefined ||
+        prevValue === null ||
+        prevValue === '' ||
+        (Array.isArray(prevValue) && prevValue.length === 0);
+
+    // If both values are empty, it is not a local edit
+    if (isCurrentEmpty && isPrevEmpty) {
         return false;
     }
-    if (Array.isArray(currentVal) && currentVal.length === 0) {
-        return false;
-    }
-    if (prevValue === undefined || prevValue === null) {
-        return false;
-    }
+    // If one is empty and the other is not, or both have non-empty distinct content, it is a local edit (H4)
     return !valuesEqual(currentVal, prevValue);
 }
 
@@ -172,8 +179,8 @@ export function syncRemoteDraftToForm(
             !valuesEqual(getValues(field), remoteRecord?.[field])
         ) {
             setValue(field, remoteRecord?.[field], {
-                shouldDirty: true,
-                shouldTouch: true,
+                shouldDirty: false,
+                shouldTouch: false,
                 shouldValidate: true,
             });
         }
@@ -213,16 +220,16 @@ export function syncRemoteDraftToForm(
             const value = incoming[idx] ?? '';
             if (getValues(`ingredient-${idx}`) !== value) {
                 setValue(`ingredient-${idx}`, value, {
-                    shouldDirty: true,
-                    shouldTouch: true,
+                    shouldDirty: false,
+                    shouldTouch: false,
                     shouldValidate: true,
                 });
             }
         }
         if (!valuesEqual(getValues('ingredients'), incoming)) {
             setValue('ingredients', incoming, {
-                shouldDirty: true,
-                shouldTouch: true,
+                shouldDirty: false,
+                shouldTouch: false,
                 shouldValidate: true,
             });
         }
@@ -240,16 +247,16 @@ export function syncRemoteDraftToForm(
             const value = incoming[idx] ?? '';
             if (getValues(`step-${idx}`) !== value) {
                 setValue(`step-${idx}`, value, {
-                    shouldDirty: true,
-                    shouldTouch: true,
+                    shouldDirty: false,
+                    shouldTouch: false,
                     shouldValidate: true,
                 });
             }
         }
         if (!valuesEqual(getValues('steps'), incoming)) {
             setValue('steps', incoming, {
-                shouldDirty: true,
-                shouldTouch: true,
+                shouldDirty: false,
+                shouldTouch: false,
                 shouldValidate: true,
             });
         }

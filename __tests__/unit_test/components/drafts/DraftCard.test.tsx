@@ -176,4 +176,26 @@ describe('DraftCard', () => {
         expect(screen.getByText('draft_just_now')).toBeInTheDocument();
         expect(screen.queryByText(/NaN/)).not.toBeInTheDocument();
     });
+
+    it('provides accessible aria-label attributes on action buttons (H12)', () => {
+        render(
+            <DraftCard
+                draft={mockDraft}
+                onOpen={vi.fn()}
+                onDelete={vi.fn()}
+                onDuplicate={vi.fn()}
+                onShare={vi.fn()}
+            />
+        );
+
+        expect(screen.getByTestId('draft-card-share')).toHaveAttribute(
+            'aria-label'
+        );
+        expect(screen.getByTestId('draft-card-duplicate')).toHaveAttribute(
+            'aria-label'
+        );
+        expect(screen.getByTestId('draft-card-delete')).toHaveAttribute(
+            'aria-label'
+        );
+    });
 });

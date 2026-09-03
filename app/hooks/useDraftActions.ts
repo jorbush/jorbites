@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { mutate } from 'swr';
 import { toast } from 'react-hot-toast';
@@ -18,6 +18,14 @@ export function useDraftActions({
 }: UseDraftActionsProps = {}) {
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
+    const isMountedRef = useRef(true);
+
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, []);
 
     const createDraft = useCallback(
         async (type: 'solo' | 'shared' = 'solo'): Promise<string | null> => {
@@ -38,6 +46,7 @@ export function useDraftActions({
                 });
                 const draftId = response.data?.draftId;
                 mutate('/api/draft/active');
+                mutate('/api/draft');
                 if (onDraftMutate) {
                     await onDraftMutate();
                 }
@@ -61,7 +70,9 @@ export function useDraftActions({
                 }
                 return null;
             } finally {
-                setIsLoading(false);
+                if (isMountedRef.current) {
+                    setIsLoading(false);
+                }
             }
         },
         [currentUser, onDraftMutate, t]
@@ -95,7 +106,9 @@ export function useDraftActions({
                 );
                 return false;
             } finally {
-                setIsLoading(false);
+                if (isMountedRef.current) {
+                    setIsLoading(false);
+                }
             }
         },
         [currentUser, onDraftMutate, t]
@@ -156,6 +169,7 @@ export function useDraftActions({
                     t('draft_duplicated', { defaultValue: 'Draft duplicated' })
                 );
                 mutate('/api/draft/active');
+                mutate('/api/draft');
                 if (onDraftMutate) {
                     await onDraftMutate();
                 }
@@ -180,7 +194,9 @@ export function useDraftActions({
                 }
                 return null;
             } finally {
-                setIsLoading(false);
+                if (isMountedRef.current) {
+                    setIsLoading(false);
+                }
             }
         },
         [currentUser, onDraftMutate, t]
@@ -192,40 +208,120 @@ export function useDraftActions({
 
             setIsLoading(true);
             try {
-                const res = await axios.get(
-                    `/api/draft?draftId=${encodeURIComponent(draftId)}`
-                );
-                const draft = res.data;
-                if (!draft) throw new Error('Draft not found');
-
-                let targetDraftId = draft.draftId;
-                let token = draft.inviteToken;
-
-                if (!token) {
-                    const inviteRes = await axios.post('/api/draft/invite', {
-                        ...draft,
-                        draftId: draft.draftId,
-                    });
-                    token = inviteRes.data?.inviteToken;
-                    targetDraftId = inviteRes.data?.draftId || targetDraftId;
-                }
-
-                const shareUrl = `${window.location.origin}/api/draft/join?draft=${targetDraftId}&token=${token}`;
-
-                if (navigator?.clipboard) {
-                    await navigator.clipboard.writeText(shareUrl);
-                    toast.success(
-                        t('co_cook_link_copied', {
-                            defaultValue:
-                                'Co-cook invite link copied to clipboard! 🔗',
-                        })
+                const prepareShareUrl = async (): Promise<string> => {
+                    const res = await axios.get(
+                        `/api/draft?draftId=${encodeURIComponent(draftId)}`
                     );
+                    const draft = res.data;
+                    if (!draft) throw new Error('Draft not found');
+
+                    let targetDraftId = draft.draftId;
+                    let token = draft.inviteToken;
+
+                    if (!token) {
+                        const inviteRes = await axios.post(
+                            '/api/draft/invite',
+                            {
+                                ...draft,
+                                draftId: draft.draftId,
+                            }
+                        );
+                        token = inviteRes.data?.inviteToken;
+                        targetDraftId =
+                            inviteRes.data?.draftId || targetDraftId;
+                    }
+
+                    const shareUrl = `${window.location.origin}/api/draft/join?draft=${encodeURIComponent(targetDraftId)}&token=${encodeURIComponent(token)}`;
+
+                    mutate('/api/draft/active');
+                    mutate('/api/draft');
+                    if (onDraftMutate) {
+                        await onDraftMutate();
+                    }
+
+                    return shareUrl;
+                };
+
+                let shareUrlPromise: Promise<string> | null = null;
+                const getShareUrl = () => {
+                    if (!shareUrlPromise) {
+                        shareUrlPromise = prepareShareUrl();
+                    }
+                    return shareUrlPromise;
+                };
+
+                const ClipboardItemClass =
+                    typeof ClipboardItem !== 'undefined'
+                        ? ClipboardItem
+                        : typeof window !== 'undefined'
+                          ? (
+                                window as unknown as {
+                                    ClipboardItem: typeof ClipboardItem;
+                                }
+                            ).ClipboardItem
+                          : undefined;
+
+                // Safari / WebKit blocks navigator.clipboard.writeText after an async await because
+                // transient user gesture activation expires. Safari 13.1+ explicitly supports passing
+                // a Promise to new ClipboardItem and calling navigator.clipboard.write synchronously.
+                if (
+                    typeof navigator !== 'undefined' &&
+                    navigator.clipboard &&
+                    ClipboardItemClass &&
+                    typeof navigator.clipboard.write === 'function'
+                ) {
+                    try {
+                        const textPromise = getShareUrl();
+                        const clipboardItem = new ClipboardItemClass({
+                            'text/plain': textPromise.then(
+                                (url) => new Blob([url], { type: 'text/plain' })
+                            ),
+                        });
+                        await navigator.clipboard.write([clipboardItem]);
+                        const finalUrl = await textPromise;
+                        toast.success(
+                            t('co_cook_link_copied', {
+                                defaultValue:
+                                    'Co-cook invite link copied to clipboard! 🔗',
+                            })
+                        );
+                        return finalUrl;
+                    } catch (clipError) {
+                        console.warn(
+                            'ClipboardItem API failed, falling back to writeText',
+                            clipError
+                        );
+                    }
                 }
 
-                mutate('/api/draft/active');
-                if (onDraftMutate) {
-                    await onDraftMutate();
+                // Fallback for Chrome/Firefox or if ClipboardItem is not available/failed
+                const shareUrl = await getShareUrl();
+                try {
+                    if (navigator?.clipboard?.writeText) {
+                        await navigator.clipboard.writeText(shareUrl);
+                    } else {
+                        throw new Error('Clipboard writeText not available');
+                    }
+                } catch (writeErr) {
+                    // Fallback using textarea execCommand for legacy environments
+                    const textarea = document.createElement('textarea');
+                    textarea.value = shareUrl;
+                    textarea.style.position = 'fixed';
+                    textarea.style.opacity = '0';
+                    document.body.appendChild(textarea);
+                    textarea.focus();
+                    textarea.select();
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    if (!successful) throw writeErr;
                 }
+
+                toast.success(
+                    t('co_cook_link_copied', {
+                        defaultValue:
+                            'Co-cook invite link copied to clipboard! 🔗',
+                    })
+                );
 
                 return shareUrl;
             } catch (error) {
@@ -237,7 +333,9 @@ export function useDraftActions({
                 );
                 return null;
             } finally {
-                setIsLoading(false);
+                if (isMountedRef.current) {
+                    setIsLoading(false);
+                }
             }
         },
         [currentUser, onDraftMutate, t]

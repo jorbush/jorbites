@@ -7,6 +7,7 @@ import {
     releaseAllLocks,
     getLockKey,
     isLockHeldByUser,
+    renewLockIfHeld,
 } from '@/app/lib/redisLock';
 
 jest.mock('@/app/lib/redis', () => {
@@ -107,6 +108,37 @@ describe('Redis Soft-Locking Service (redisLock)', () => {
                 'user-a'
             );
             expect(isHeld).toBe(false);
+        });
+    });
+
+    describe('renewLockIfHeld', () => {
+        it('should renew lock atomically if held by the caller', async () => {
+            await acquireLock('recipe-123', 'step:1', 'user-a', 'User A');
+            const res = await renewLockIfHeld(
+                'recipe-123',
+                'step:1',
+                'user-a',
+                'User A Renewer'
+            );
+            expect(res.renewed).toBe(true);
+            expect(res.lockResult?.success).toBe(true);
+            expect(res.lockResult?.userName).toBe('User A Renewer');
+        });
+
+        it('should return renewed: false if lock is held by another user', async () => {
+            await acquireLock('recipe-123', 'step:1', 'user-a', 'User A');
+            const res = await renewLockIfHeld(
+                'recipe-123',
+                'step:1',
+                'user-b',
+                'User B'
+            );
+            expect(res.renewed).toBe(false);
+        });
+
+        it('should return renewed: false if lock does not exist', async () => {
+            const res = await renewLockIfHeld('recipe-123', 'step:1', 'user-a');
+            expect(res.renewed).toBe(false);
         });
     });
 
@@ -227,6 +259,25 @@ describe('Redis Soft-Locking Service (redisLock)', () => {
 
             const activeLocks = await getActiveLocks('recipe-123');
             expect(activeLocks).toEqual({});
+        });
+
+        it('should properly escape glob wildcard characters to prevent accidental key deletion (M2)', async () => {
+            await acquireLock('recipe-123', 'step:1', 'user-a');
+            await acquireLock('other-456', 'step:1', 'user-b');
+
+            // Trying to delete using glob pattern '*'
+            await releaseAllLocks('*');
+
+            // Existing locks should NOT be deleted
+            const active123 = await getActiveLocks('recipe-123');
+            const active456 = await getActiveLocks('other-456');
+            expect(active123).toHaveProperty('step:1');
+            expect(active456).toHaveProperty('step:1');
+        });
+
+        it('should do nothing if targetId is empty or not a string', async () => {
+            await releaseAllLocks('' as any);
+            await releaseAllLocks(null as any);
         });
     });
 });

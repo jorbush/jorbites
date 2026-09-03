@@ -3,21 +3,16 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
-import useSWR from 'swr';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { SafeUser, SafeRecipe, SafeQuest } from '@/app/types';
-import { axiosFetcher } from '@/app/utils/fetcher';
+import { SafeUser } from '@/app/types';
 import {
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
     STEPS,
     STEPS_LENGTH,
-    MAX_CO_COOKS,
-    MAX_LINKED_RECIPES,
 } from '@/app/utils/constants';
-import { parseIngredientsText, parseStepsText } from '@/app/utils/textParser';
 
 import { useRecipeLock } from '@/app/hooks/useRecipeLock';
 import { useDraftSync } from '@/app/hooks/useDraftSync';
@@ -27,6 +22,12 @@ import {
 } from '@/app/hooks/useDraftPersistence';
 import { EditRecipeData } from '@/app/hooks/useRecipeModal';
 import { DraftData } from '@/app/types/draft';
+import { buildInitialRecipeDefaultValues } from './recipeFormDefaults';
+import { useRecipeRelatedContent } from './useRecipeRelatedContent';
+import {
+    processIngredientsOnStepAdvance,
+    processStepsOnStepAdvance,
+} from './recipeStepProcessors';
 
 export interface RecipeModalStateLike extends RecipeModalDraftController {
     editRecipeData?: EditRecipeData | null;
@@ -38,6 +39,28 @@ interface UseRecipeFormStateProps {
     currentUser?: SafeUser | null;
     draftData?: Partial<DraftData> | null;
     mutateDraft?: () => Promise<unknown>;
+}
+
+function checkIsCollaborativeSession({
+    isEditMode,
+    draftType,
+    coCooksIds,
+    hasDraftCoCooks,
+    hasInviteToken,
+}: {
+    isEditMode?: boolean;
+    draftType?: string;
+    coCooksIds?: string[];
+    hasDraftCoCooks?: boolean;
+    hasInviteToken?: boolean;
+    activeDraftId?: string | null;
+}): boolean {
+    if (isEditMode) return true;
+    if (draftType === 'shared') return true;
+    if (hasDraftCoCooks) return true;
+    if (Array.isArray(coCooksIds) && coCooksIds.length > 0) return true;
+    if (hasInviteToken) return true;
+    return false;
 }
 
 export function useRecipeFormState({
@@ -72,6 +95,7 @@ export function useRecipeFormState({
         }
         return STEPS.CATEGORY;
     });
+
     const [numIngredients, setNumIngredients] = useState<number>(() => {
         if (recipeModal.isEditMode && recipeModal.editRecipeData) {
             return recipeModal.editRecipeData.ingredients?.length || 1;
@@ -81,6 +105,7 @@ export function useRecipeFormState({
         }
         return 1;
     });
+
     const [numSteps, setNumSteps] = useState<number>(() => {
         if (recipeModal.isEditMode && recipeModal.editRecipeData) {
             return recipeModal.editRecipeData.steps?.length || 1;
@@ -99,40 +124,8 @@ export function useRecipeFormState({
         numSteps,
         Array.isArray(draftData?.steps) ? draftData.steps.length : 1
     );
+
     const [isLoading, setIsLoading] = useState(false);
-    const [knownUsers, setKnownUsers] = useState<Record<string, SafeUser>>(
-        () => {
-            const initial: Record<string, SafeUser> = {};
-            const items = recipeModal.isEditMode
-                ? recipeModal.editRecipeData?.coCooks
-                : draftData?.coCooks;
-            if (Array.isArray(items)) {
-                items.forEach((user: SafeUser) => {
-                    if (user?.id) initial[user.id] = user;
-                });
-            }
-            return initial;
-        }
-    );
-    const [knownRecipes, setKnownRecipes] = useState<
-        Record<string, SafeRecipe>
-    >(() => {
-        const initial: Record<string, SafeRecipe> = {};
-        const items = recipeModal.isEditMode
-            ? recipeModal.editRecipeData?.linkedRecipes
-            : draftData?.linkedRecipes;
-        if (Array.isArray(items)) {
-            items.forEach((recipe: SafeRecipe) => {
-                if (recipe?.id) initial[recipe.id] = recipe;
-            });
-        }
-        return initial;
-    });
-    const [knownQuests, setKnownQuests] = useState<Record<string, SafeQuest>>(
-        () => {
-            return {};
-        }
-    );
     const [ingredientsInputMode, setIngredientsInputMode] = useState<
         'list' | 'text'
     >('list');
@@ -140,137 +133,10 @@ export function useRecipeFormState({
         'list'
     );
 
-    const initialDefaultValues = useMemo(() => {
-        const emptySlots: Record<string, string> = {};
-        for (let i = 0; i < RECIPE_MAX_INGREDIENTS; i++) {
-            emptySlots[`ingredient-${i}`] = '';
-        }
-        for (let i = 0; i < RECIPE_MAX_STEPS; i++) {
-            emptySlots[`step-${i}`] = '';
-        }
-
-        if (recipeModal.isEditMode && recipeModal.editRecipeData) {
-            const editData = recipeModal.editRecipeData;
-            const ingredients = Array.isArray(editData.ingredients)
-                ? editData.ingredients
-                : [];
-            const ingredientsObject: Record<string, string> = {};
-            ingredients.forEach((ingredient: string, index: number) => {
-                ingredientsObject[`ingredient-${index}`] = ingredient;
-            });
-            const steps = Array.isArray(editData.steps) ? editData.steps : [];
-            const stepsObject: Record<string, string> = {};
-            steps.forEach((step: string, index: number) => {
-                stepsObject[`step-${index}`] = step;
-            });
-            return {
-                ...emptySlots,
-                categories: Array.isArray(editData.categories)
-                    ? editData.categories
-                    : [],
-                method: editData.method,
-                imageSrc: editData.imageSrc,
-                imageSrc1: editData.imageSrc1 || '',
-                imageSrc2: editData.imageSrc2 || '',
-                imageSrc3: editData.imageSrc3 || '',
-                title: editData.title,
-                description: editData.description,
-                ingredients,
-                steps,
-                minutes: editData.minutes,
-                prepTime: editData.prepTime ?? undefined,
-                cookTime: editData.cookTime ?? undefined,
-                coCooksIds:
-                    editData.coCooksIds ||
-                    editData.coCooks?.map((c: SafeUser) => c.id) ||
-                    [],
-                linkedRecipeIds:
-                    editData.linkedRecipeIds ||
-                    editData.linkedRecipes?.map((r: SafeRecipe) => r.id) ||
-                    [],
-                youtubeUrl: editData.youtubeUrl || '',
-                questId: editData.questId || recipeModal.questId || '',
-                draftId: '',
-                inviteToken: '',
-                ...ingredientsObject,
-                ...stepsObject,
-            };
-        }
-        if (draftData) {
-            const ingredients = Array.isArray(draftData.ingredients)
-                ? draftData.ingredients
-                : [];
-            const ingredientsObject: Record<string, string> = {};
-            ingredients.forEach((ingredient: string, index: number) => {
-                ingredientsObject[`ingredient-${index}`] = ingredient;
-            });
-            const steps = Array.isArray(draftData.steps) ? draftData.steps : [];
-            const stepsObject: Record<string, string> = {};
-            steps.forEach((step: string, index: number) => {
-                stepsObject[`step-${index}`] = step;
-            });
-            return {
-                ...emptySlots,
-                categories: Array.isArray(draftData.categories)
-                    ? draftData.categories
-                    : [],
-                method: draftData.method || '',
-                imageSrc: draftData.imageSrc || '',
-                imageSrc1: draftData.imageSrc1 || '',
-                imageSrc2: draftData.imageSrc2 || '',
-                imageSrc3: draftData.imageSrc3 || '',
-                title: draftData.title || '',
-                description: draftData.description || '',
-                ingredients,
-                steps,
-                minutes:
-                    draftData.minutes !== undefined ? draftData.minutes : 30,
-                prepTime: draftData.prepTime ?? undefined,
-                cookTime: draftData.cookTime ?? undefined,
-                coCooksIds:
-                    draftData.coCooksIds ||
-                    draftData.coCooks?.map((c: SafeUser) => c.id) ||
-                    [],
-                linkedRecipeIds:
-                    draftData.linkedRecipeIds ||
-                    draftData.linkedRecipes?.map((r: SafeRecipe) => r.id) ||
-                    [],
-                youtubeUrl: draftData.youtubeUrl || '',
-                questId: draftData.questId || recipeModal.questId || '',
-                draftId: draftData.draftId || '',
-                inviteToken: draftData.inviteToken || '',
-                ...ingredientsObject,
-                ...stepsObject,
-            };
-        }
-        return {
-            ...emptySlots,
-            categories: [],
-            method: '',
-            imageSrc: '',
-            imageSrc1: '',
-            imageSrc2: '',
-            imageSrc3: '',
-            title: '',
-            description: '',
-            ingredients: [],
-            steps: [],
-            minutes: 30,
-            prepTime: undefined,
-            cookTime: undefined,
-            coCooksIds: [],
-            linkedRecipeIds: [],
-            youtubeUrl: '',
-            questId: recipeModal.questId || '',
-            draftId: '',
-            inviteToken: '',
-        };
-    }, [
-        recipeModal.isEditMode,
-        recipeModal.editRecipeData,
-        recipeModal.questId,
-        draftData,
-    ]);
+    const initialDefaultValues = useMemo(
+        () => buildInitialRecipeDefaultValues(recipeModal, draftData),
+        [recipeModal, draftData]
+    );
 
     const {
         register,
@@ -278,8 +144,8 @@ export function useRecipeFormState({
         setValue,
         watch,
         getValues,
-        formState: { errors, isDirty },
         reset,
+        formState: { errors, isDirty },
     } = useForm<FieldValues>({
         defaultValues: initialDefaultValues,
     });
@@ -292,6 +158,7 @@ export function useRecipeFormState({
     const method = watch('method');
     const rawCoCooksIds = watch('coCooksIds');
     const rawLinkedRecipeIds = watch('linkedRecipeIds');
+    const questId = watch('questId');
 
     const coCooksIds: string[] = useMemo(
         () => (Array.isArray(rawCoCooksIds) ? rawCoCooksIds : []),
@@ -317,22 +184,22 @@ export function useRecipeFormState({
     const setCustomValue = updateFormField;
 
     const addIngredientInput = useCallback(() => {
-        if (numIngredients >= RECIPE_MAX_INGREDIENTS) {
+        if (effectiveNumIngredients >= RECIPE_MAX_INGREDIENTS) {
             toast.error(
                 t('max_ingredients_reached') ||
                     `Maximum of ${RECIPE_MAX_INGREDIENTS} ingredients allowed`
             );
             return;
         }
-        setNumIngredients((prev) => prev + 1);
-    }, [numIngredients, t]);
+        setNumIngredients(effectiveNumIngredients + 1);
+    }, [effectiveNumIngredients, t]);
 
     const removeIngredientInput = useCallback(
         (index: number) => {
-            setNumIngredients((prev) => Math.max(1, prev - 1));
+            setNumIngredients(Math.max(1, effectiveNumIngredients - 1));
             updateFormField(`ingredient-${index}`, '');
         },
-        [updateFormField]
+        [effectiveNumIngredients, updateFormField]
     );
 
     const setIngredients = useCallback(
@@ -350,22 +217,22 @@ export function useRecipeFormState({
     );
 
     const addStepInput = useCallback(() => {
-        if (numSteps >= RECIPE_MAX_STEPS) {
+        if (effectiveNumSteps >= RECIPE_MAX_STEPS) {
             toast.error(
                 t('max_steps_reached') ||
                     `Maximum of ${RECIPE_MAX_STEPS} steps allowed`
             );
             return;
         }
-        setNumSteps((prev) => prev + 1);
-    }, [numSteps, t]);
+        setNumSteps(effectiveNumSteps + 1);
+    }, [effectiveNumSteps, t]);
 
     const removeStepInput = useCallback(
         (index: number) => {
-            setNumSteps((prev) => Math.max(1, prev - 1));
+            setNumSteps(Math.max(1, effectiveNumSteps - 1));
             updateFormField(`step-${index}`, '');
         },
-        [updateFormField]
+        [effectiveNumSteps, updateFormField]
     );
 
     const setSteps = useCallback(
@@ -395,7 +262,32 @@ export function useRecipeFormState({
         ? recipeModal.editRecipeData?.id
         : watch('draftId') || draftData?.draftId || recipeModal.activeDraftId;
 
-    const lock = useRecipeLock(lockTargetId, currentUser?.id);
+    const hasDraftCoCooks = Boolean(
+        (draftData?.coCooksIds && draftData.coCooksIds.length > 0) ||
+        (draftData?.coCooks && draftData.coCooks.length > 0)
+    );
+    const hasInviteToken = Boolean(
+        draftData?.inviteToken || watch('inviteToken')
+    );
+    const isCollaborativeSession = checkIsCollaborativeSession({
+        isEditMode: recipeModal.isEditMode,
+        draftType: draftData?.type,
+        coCooksIds,
+        hasDraftCoCooks,
+        hasInviteToken,
+        activeDraftId: recipeModal.activeDraftId,
+    });
+
+    const activeLockField =
+        recipeModal.isOpen && isCollaborativeSession && lockTargetId
+            ? `step:${step}`
+            : null;
+
+    const lock = useRecipeLock(
+        isCollaborativeSession ? lockTargetId : null,
+        currentUser?.id,
+        activeLockField
+    );
     const isCurrentStepLocked = Boolean(lock?.isLockedByOther(`step:${step}`));
 
     useEffect(() => {
@@ -412,6 +304,12 @@ export function useRecipeFormState({
             (draftData?.draftId || null) !== prevDraftId
         ) {
             setPrevDraftId(draftData?.draftId || null);
+            if (draftData && Array.isArray(draftData.ingredients)) {
+                setNumIngredients(Math.max(1, draftData.ingredients.length));
+            }
+            if (draftData && Array.isArray(draftData.steps)) {
+                setNumSteps(Math.max(1, draftData.steps.length));
+            }
             if (draftData && draftData.currentStep !== undefined) {
                 setStep(
                     Math.max(
@@ -421,80 +319,31 @@ export function useRecipeFormState({
                 );
             } else if (!draftData) {
                 setStep(STEPS.CATEGORY);
+                setNumIngredients(1);
+                setNumSteps(1);
             }
         }
     }, [draftData, prevDraftId, recipeModal.isEditMode]);
 
-    const addCoCook = (user: SafeUser) => {
-        if (coCooksIds.length >= MAX_CO_COOKS) {
-            toast.error(
-                t('max_cooks_reached') ||
-                    `Maximum of ${MAX_CO_COOKS} co-cooks allowed`
-            );
-            return;
-        }
-        if (coCooksIds.includes(user.id)) {
-            toast.error(
-                t('cook_already_added') || 'This cook is already added'
-            );
-            return;
-        }
-        setKnownUsers((prev) => ({ ...prev, [user.id]: user }));
-        updateFormField('coCooksIds', [...coCooksIds, user.id]);
-    };
-
-    const removeCoCook = (userId: string) => {
-        updateFormField(
-            'coCooksIds',
-            coCooksIds.filter((id: string) => id !== userId)
-        );
-    };
-
-    const addLinkedRecipe = (recipe: SafeRecipe) => {
-        if (linkedRecipeIds.length >= MAX_LINKED_RECIPES) {
-            toast.error(
-                t('max_recipes_reached') ||
-                    `Maximum of ${MAX_LINKED_RECIPES} linked recipes allowed`
-            );
-            return;
-        }
-        if (linkedRecipeIds.includes(recipe.id)) {
-            toast.error(
-                t('recipe_already_added') || 'This recipe is already added'
-            );
-            return;
-        }
-        setKnownRecipes((prev) => ({ ...prev, [recipe.id]: recipe }));
-        updateFormField('linkedRecipeIds', [...linkedRecipeIds, recipe.id]);
-    };
-
-    const removeLinkedRecipe = (recipeId: string) => {
-        updateFormField(
-            'linkedRecipeIds',
-            linkedRecipeIds.filter((id: string) => id !== recipeId)
-        );
-    };
-
-    const selectQuest = (quest: SafeQuest) => {
-        if (quest?.id) {
-            setKnownQuests((prev) => ({ ...prev, [quest.id]: quest }));
-        }
-        updateFormField('questId', quest?.id || '');
-    };
-
-    const removeQuest = () => {
-        updateFormField('questId', '');
-    };
-
-    useEffect(() => {
-        if (lockTargetId && currentUser?.id) {
-            const stepKey = `step:${step}`;
-            lock.acquire(stepKey);
-            return () => {
-                lock.release(stepKey);
-            };
-        }
-    }, [step, lockTargetId, currentUser?.id, lock.acquire, lock.release]);
+    const {
+        selectedCoCooks,
+        selectedLinkedRecipes,
+        selectedQuest,
+        addCoCook,
+        removeCoCook,
+        addLinkedRecipe,
+        removeLinkedRecipe,
+        selectQuest,
+        removeQuest,
+    } = useRecipeRelatedContent({
+        recipeModal,
+        draftData,
+        coCooksIds,
+        linkedRecipeIds,
+        questId,
+        updateFormField,
+        t,
+    });
 
     const {
         saveDraft: _saveDraft,
@@ -538,119 +387,14 @@ export function useRecipeFormState({
         await _deleteDraft(formAccessor, draftData);
     };
 
-    const questId = watch('questId');
-
-    const { data: questData } = useSWR<SafeQuest>(
-        questId ? `/api/quest/${questId}` : null,
-        axiosFetcher
-    );
-
-    const { data: coCooksData } = useSWR<SafeUser[]>(
-        coCooksIds.length > 0
-            ? `/api/users/multiple?ids=${coCooksIds.join(',')}`
-            : null,
-        axiosFetcher
-    );
-
-    const { data: linkedRecipesData } = useSWR<SafeRecipe[]>(
-        linkedRecipeIds.length > 0
-            ? `/api/recipes/multiple?ids=${linkedRecipeIds.join(',')}`
-            : null,
-        axiosFetcher
-    );
-
-    useEffect(() => {
-        if (Array.isArray(coCooksData)) {
-            setKnownUsers((prev) => {
-                const next = { ...prev };
-                coCooksData.forEach((user: SafeUser) => {
-                    if (user?.id) next[user.id] = user;
-                });
-                return next;
-            });
-        }
-    }, [coCooksData]);
-
-    useEffect(() => {
-        if (Array.isArray(linkedRecipesData)) {
-            setKnownRecipes((prev) => {
-                const next = { ...prev };
-                linkedRecipesData.forEach((recipe: SafeRecipe) => {
-                    if (recipe?.id) next[recipe.id] = recipe;
-                });
-                return next;
-            });
-        }
-    }, [linkedRecipesData]);
-
-    useEffect(() => {
-        if (questData?.id) {
-            setKnownQuests((prev) => ({ ...prev, [questData.id]: questData }));
-        }
-    }, [questData]);
-
-    const allKnownUsers = useMemo(() => {
-        const map: Record<string, SafeUser> = { ...knownUsers };
-        const items = recipeModal.isEditMode
-            ? recipeModal.editRecipeData?.coCooks
-            : draftData?.coCooks;
-        if (Array.isArray(items)) {
-            items.forEach((user: SafeUser) => {
-                if (user?.id) map[user.id] = user;
-            });
-        }
-        return map;
-    }, [
-        knownUsers,
-        recipeModal.isEditMode,
-        recipeModal.editRecipeData?.coCooks,
-        draftData?.coCooks,
-    ]);
-
-    const allKnownRecipes = useMemo(() => {
-        const map: Record<string, SafeRecipe> = { ...knownRecipes };
-        const items = recipeModal.isEditMode
-            ? recipeModal.editRecipeData?.linkedRecipes
-            : draftData?.linkedRecipes;
-        if (Array.isArray(items)) {
-            items.forEach((recipe: SafeRecipe) => {
-                if (recipe?.id) map[recipe.id] = recipe;
-            });
-        }
-        return map;
-    }, [
-        knownRecipes,
-        recipeModal.isEditMode,
-        recipeModal.editRecipeData?.linkedRecipes,
-        draftData?.linkedRecipes,
-    ]);
-
-    const selectedQuest = useMemo<SafeQuest | null>(() => {
-        return questId ? (knownQuests[questId] ?? null) : null;
-    }, [questId, knownQuests]);
-
-    const selectedCoCooks = useMemo<SafeUser[]>(() => {
-        return coCooksIds
-            .map((id: string) => allKnownUsers[id])
-            .filter((user: SafeUser | undefined): user is SafeUser =>
-                Boolean(user)
-            );
-    }, [coCooksIds, allKnownUsers]);
-
-    const selectedLinkedRecipes = useMemo<SafeRecipe[]>(() => {
-        return linkedRecipeIds
-            .map((id: string) => allKnownRecipes[id])
-            .filter((recipe: SafeRecipe | undefined): recipe is SafeRecipe =>
-                Boolean(recipe)
-            );
-    }, [linkedRecipeIds, allKnownRecipes]);
-
     const onBack = async () => {
         if (process.env.NODE_ENV === 'production' && !recipeModal.isEditMode) {
             await saveDraft(step - 1);
         }
         setStep((value) => Math.max(value - 1, 0));
-        mutateDraft?.();
+        if (mutateDraft) {
+            void mutateDraft();
+        }
     };
 
     const onNext = () => {
@@ -659,97 +403,35 @@ export function useRecipeFormState({
         }
 
         if (step === STEPS.INGREDIENTS) {
-            if (ingredientsInputMode === 'text') {
-                const textareaValue = getValues('ingredients-plain-text');
-                const parsedItems = parseIngredientsText(
-                    textareaValue,
-                    RECIPE_MAX_INGREDIENTS
-                );
-                if (parsedItems.length > 0) {
-                    setIngredients(parsedItems);
-                    setIngredientsInputMode('list');
-                    toast.success(
-                        `${parsedItems.length} ${t('ingredients_applied')}`
-                    );
-                } else if (!isCurrentStepLocked) {
-                    toast.error(
-                        t('no_ingredients_found') || 'No ingredients found'
-                    );
-                    return false;
-                }
-            } else {
-                let newIngredients: string[] = [];
-                for (let i = 0; i < RECIPE_MAX_INGREDIENTS; i++) {
-                    const val = getValues(`ingredient-${i}`);
-                    if (typeof val === 'string' && val.trim() !== '') {
-                        newIngredients.push(val.trim());
-                    }
-                }
-                if (newIngredients.length === 1) {
-                    const parsedItems = parseIngredientsText(
-                        newIngredients[0],
-                        RECIPE_MAX_INGREDIENTS
-                    );
-                    if (parsedItems.length > 1) {
-                        newIngredients = parsedItems;
-                        setIngredients(parsedItems);
-                        toast.success(
-                            `${parsedItems.length} ${t('ingredients_applied')}`
-                        );
-                    } else {
-                        setCustomValue('ingredients', newIngredients);
-                    }
-                } else {
-                    setCustomValue('ingredients', newIngredients);
-                }
-            }
+            const ok = processIngredientsOnStepAdvance({
+                ingredientsInputMode,
+                getValues,
+                setIngredients,
+                setIngredientsInputMode,
+                setCustomValue,
+                isCurrentStepLocked,
+                t,
+            });
+            if (!ok) return false;
         }
+
         if (step === STEPS.STEPS) {
-            if (stepsInputMode === 'text') {
-                const textareaValue = getValues('steps-plain-text');
-                const parsedItems = parseStepsText(
-                    textareaValue,
-                    RECIPE_MAX_STEPS
-                );
-                if (parsedItems.length > 0) {
-                    setSteps(parsedItems);
-                    setStepsInputMode('list');
-                    toast.success(
-                        `${parsedItems.length} ${t('steps_applied')}`
-                    );
-                } else if (!isCurrentStepLocked) {
-                    toast.error(t('no_steps_found') || 'No steps found');
-                    return false;
-                }
-            } else {
-                let newSteps: string[] = [];
-                for (let i = 0; i < RECIPE_MAX_STEPS; i++) {
-                    const val = getValues(`step-${i}`);
-                    if (typeof val === 'string' && val.trim() !== '') {
-                        newSteps.push(val.trim());
-                    }
-                }
-                if (newSteps.length === 1) {
-                    const parsedItems = parseStepsText(
-                        newSteps[0],
-                        RECIPE_MAX_STEPS
-                    );
-                    if (parsedItems.length > 1) {
-                        newSteps = parsedItems;
-                        setSteps(parsedItems);
-                        toast.success(
-                            `${parsedItems.length} ${t('steps_applied')}`
-                        );
-                    } else {
-                        setCustomValue('steps', newSteps);
-                    }
-                } else {
-                    setCustomValue('steps', newSteps);
-                }
-            }
+            const ok = processStepsOnStepAdvance({
+                stepsInputMode,
+                getValues,
+                setSteps,
+                setStepsInputMode,
+                setCustomValue,
+                isCurrentStepLocked,
+                t,
+            });
+            if (!ok) return false;
         }
+
         setStep((value) => value + 1);
-        mutateDraft?.();
+        if (mutateDraft) {
+            void mutateDraft();
+        }
         return true;
     };
 
@@ -799,25 +481,23 @@ export function useRecipeFormState({
                 description: '',
                 ingredients: [],
                 steps: [],
-                minutes: 10,
+                minutes: 30,
                 prepTime: undefined,
                 cookTime: undefined,
                 coCooksIds: [],
                 linkedRecipeIds: [],
                 youtubeUrl: '',
                 questId: '',
+                draftId: '',
+                inviteToken: '',
             });
             setStep(STEPS.CATEGORY);
-            setNumIngredients(1);
-            setNumSteps(1);
-            setKnownUsers({});
-            setKnownRecipes({});
-            setKnownQuests({});
             recipeModal.onClose?.();
-            refresh?.();
-        } catch (error) {
-            console.error('Failed to save recipe', error);
-            toast.error(t('something_went_wrong') ?? 'Something went wrong');
+            if (refresh) {
+                refresh();
+            }
+        } catch {
+            toast.error(t('something_went_wrong'));
         } finally {
             setIsLoading(false);
         }

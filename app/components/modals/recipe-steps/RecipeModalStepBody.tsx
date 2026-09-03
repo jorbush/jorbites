@@ -215,6 +215,8 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
                 otherActiveLocks={otherActiveLocks}
             />
             <div
+                data-testid="locked-step-container"
+                inert={isCurrentStepLocked ? true : undefined}
                 className={
                     isCurrentStepLocked ? 'pointer-events-none opacity-60' : ''
                 }

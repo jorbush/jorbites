@@ -60,16 +60,21 @@ const DraftsModal: React.FC<DraftsModalProps> = ({ currentUser }) => {
     const handleOpenDraft = useCallback(
         (draftId: string) => {
             draftsModal.onClose();
-            recipeModal.onOpenSharedDraft(draftId);
+            const targetDraft = drafts?.find((d) => d.draftId === draftId);
+            if (targetDraft?.type === 'shared') {
+                recipeModal.onOpenSharedDraft(draftId);
+            } else {
+                recipeModal.onOpenDraft(draftId);
+            }
         },
-        [draftsModal, recipeModal]
+        [draftsModal, recipeModal, drafts]
     );
 
     const handleCreateNewDraft = useCallback(async () => {
         const newDraftId = await createDraft('solo');
         if (newDraftId) {
             draftsModal.onClose();
-            recipeModal.onOpenSharedDraft(newDraftId);
+            recipeModal.onOpenDraft(newDraftId);
         }
     }, [createDraft, draftsModal, recipeModal]);
 

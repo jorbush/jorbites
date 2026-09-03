@@ -654,4 +654,93 @@ describe('DraftService', () => {
             expect(afterDelete).toBeNull();
         });
     });
+
+    describe('Array normalization against Redis Lua cjson empty table conversions', () => {
+        it('should normalize non-array fields ({}) to empty arrays in normalizeSharedDraft', () => {
+            const corrupted: any = {
+                draftId: 'corrupted-1',
+                categories: {},
+                ingredients: {},
+                steps: {},
+                coCooksIds: {},
+                linkedRecipeIds: {},
+            };
+            const normalized = DraftService.normalizeSharedDraft(corrupted);
+            expect(Array.isArray(normalized.categories)).toBe(true);
+            expect(Array.isArray(normalized.ingredients)).toBe(true);
+            expect(Array.isArray(normalized.steps)).toBe(true);
+            expect(Array.isArray(normalized.coCooksIds)).toBe(true);
+            expect(Array.isArray(normalized.linkedRecipeIds)).toBe(true);
+        });
+
+        it('should allow the owner to save any step when Redis has corrupted object fields for linkedRecipeIds', async () => {
+            // Seed a corrupted draft in Redis directly (mimicking Lua cjson encode of empty tables)
+            const corruptedJson = JSON.stringify({
+                draftId: 'corrupted-shared-draft',
+                ownerId: mockOwner.id,
+                title: 'Collaborative Curry',
+                categories: {},
+                ingredients: {},
+                steps: {},
+                coCooksIds: ['user-2'],
+                linkedRecipeIds: {},
+                inviteToken: 'test-token',
+            });
+            await redis.set(
+                'draft:shared:corrupted-shared-draft',
+                corruptedJson
+            );
+
+            // Owner attempts to save on step 1 (Description) - without sending linkedRecipeIds
+            const saved = await DraftService.saveSharedDraft(
+                'corrupted-shared-draft',
+                {
+                    currentStep: 1,
+                    title: 'Updated Curry Title',
+                },
+                mockOwner
+            );
+
+            expect(saved.title).toBe('Updated Curry Title');
+            expect(Array.isArray(saved.linkedRecipeIds)).toBe(true);
+            expect(Array.isArray(saved.coCooksIds)).toBe(true);
+            expect(saved.coCooksIds).toContain('user-2');
+        });
+
+        it('should normalize and re-save clean JSON arrays when joinSharedDraft completes', async () => {
+            await DraftService.saveSharedDraft(
+                'join-test-draft',
+                {
+                    title: 'Shared Paella',
+                    inviteToken: 'valid-invite-token',
+                },
+                mockOwner
+            );
+
+            const result = await DraftService.joinSharedDraft(
+                'join-test-draft',
+                'valid-invite-token',
+                mockCoCook
+            );
+
+            expect(result.success).toBe(true);
+            expect(Array.isArray(result.draft?.categories)).toBe(true);
+            expect(Array.isArray(result.draft?.ingredients)).toBe(true);
+            expect(Array.isArray(result.draft?.steps)).toBe(true);
+            expect(Array.isArray(result.draft?.linkedRecipeIds)).toBe(true);
+            expect(result.draft?.coCooksIds).toContain(mockCoCook.id);
+
+            // Now owner can save on any step without throwing
+            const ownerSave = await DraftService.saveSharedDraft(
+                'join-test-draft',
+                {
+                    currentStep: 2,
+                    ingredients: ['Rice', 'Saffron'],
+                },
+                mockOwner
+            );
+            expect(ownerSave.ingredients).toEqual(['Rice', 'Saffron']);
+            expect(ownerSave.coCooksIds).toContain(mockCoCook.id);
+        });
+    });
 });

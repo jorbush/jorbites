@@ -211,4 +211,117 @@ describe('useDraftPersistence hook', () => {
         ]);
         expect(formValues.draftId).toBe('draft-assigned-1');
     });
+
+    it('calls POST /api/draft/invite only once in copyInviteLink even if ClipboardItem throws (H9)', async () => {
+        const mockedAxios = vi.mocked(axios);
+        mockedAxios.post.mockResolvedValueOnce({
+            data: { draftId: 'draft-invite-1', inviteToken: 'token-xyz' },
+        });
+
+        const writeMock = vi
+            .fn()
+            .mockRejectedValue(new Error('ClipboardItem not supported'));
+        const writeTextMock = vi.fn().mockResolvedValue(undefined);
+
+        Object.assign(navigator, {
+            clipboard: {
+                write: writeMock,
+                writeText: writeTextMock,
+            },
+        });
+        (global as any).ClipboardItem = vi.fn();
+
+        const formValues: Record<string, any> = {};
+        const form = {
+            getValues: vi.fn((key: string) => formValues[key]),
+            setValue: vi.fn((key: string, val: any) => {
+                formValues[key] = val;
+            }),
+        };
+
+        const { result } = renderHook(() =>
+            useDraftPersistence({ recipeModal, mutateDraft: mockMutateDraft })
+        );
+
+        await act(async () => {
+            await result.current.copyInviteLink(
+                form,
+                STEPS.CATEGORY,
+                0,
+                0,
+                'list',
+                'list'
+            );
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/api/draft/invite',
+            expect.anything()
+        );
+        expect(writeTextMock).toHaveBeenCalledWith(
+            expect.stringContaining('draft=draft-invite-1&token=token-xyz')
+        );
+    });
+
+    it('resets openedDraftIdRef when modal closes, allowing re-opened draft to trigger onOpenSharedDraft (M6)', async () => {
+        const mockedAxios = vi.mocked(axios);
+        mockedAxios.post.mockResolvedValue({
+            data: {
+                type: 'shared',
+                draftId: 'draft-shared-1',
+                inviteToken: 'token-xyz',
+            },
+        });
+
+        const form = {
+            getValues: vi.fn(() => ({})),
+            setValue: vi.fn(),
+        };
+
+        let modalState = {
+            isOpen: true,
+            activeDraftId: 'draft-shared-1',
+            onOpenSharedDraft: mockOnOpenSharedDraft,
+        };
+
+        const { result, rerender } = renderHook(
+            ({ modal }) =>
+                useDraftPersistence({
+                    recipeModal: modal as any,
+                    mutateDraft: mockMutateDraft,
+                }),
+            { initialProps: { modal: modalState } }
+        );
+
+        // Modal closes
+        modalState = {
+            isOpen: false,
+            activeDraftId: undefined as any,
+            onOpenSharedDraft: mockOnOpenSharedDraft,
+        };
+        rerender({ modal: modalState });
+
+        // Modal reopens and saves shared draft
+        modalState = {
+            isOpen: true,
+            activeDraftId: undefined as any,
+            onOpenSharedDraft: mockOnOpenSharedDraft,
+        };
+        rerender({ modal: modalState });
+
+        await act(async () => {
+            await result.current.saveDraft(
+                form,
+                STEPS.DESCRIPTION,
+                null,
+                0,
+                0,
+                'list',
+                'list'
+            );
+        });
+
+        expect(mockOnOpenSharedDraft).toHaveBeenCalledWith('draft-shared-1');
+    });
 });

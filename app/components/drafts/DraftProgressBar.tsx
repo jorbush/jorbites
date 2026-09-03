@@ -13,6 +13,11 @@ const DraftProgressBar: React.FC<DraftProgressBarProps> = ({ progress }) => {
         <div
             className="flex flex-row items-center gap-1.5"
             data-testid="draft-progress-bar"
+            role="progressbar"
+            aria-valuenow={progress.completedSteps}
+            aria-valuemin={0}
+            aria-valuemax={progress.totalSteps}
+            aria-label="Draft completion progress"
         >
             {progress.stepDetails.map((step) => (
                 <Tooltip

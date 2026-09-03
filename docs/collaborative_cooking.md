@@ -136,6 +136,18 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 - While co-cooking, step inputs are marked required only when `!isCurrentStepLocked`. If a step is actively locked by another collaborator, other co-cooks can advance past that step without triggering false form validation errors.
 - Final recipe completeness and data integrity validation remains 100% strictly enforced upon recipe submission at `STEPS.IMAGES` and on backend recipe creation.
 
+### 10. Automated Section Soft-Locking Lifecycle (`useRecipeLock`)
+
+To guarantee that collaborators cannot concurrently edit or overwrite the same recipe step:
+- **Automatic Step Acquisition & Atomic Lua Renewal**: When entering a step in a collaborative session (`draftData.type === 'shared'`, co-cooks present, invite token active, or edit mode), `useRecipeLock` automatically acquires a soft lock for `step:${step}` (`POST /api/recipes/[id]/lock`). Lock acquisition and renewals execute via an atomic Lua script (`ACQUIRE_OR_RENEW_SCRIPT` / `renewLockIfHeld`) that eliminates TOCTOU lock stealing and enables 1-roundtrip heartbeat renewals without database hits.
+- **Strict Endpoint Security Boundaries**: Both `GET` and `POST` on `/api/recipes/[id]/lock` require authenticated session context (`getCurrentUser()`). The endpoint validates that the target recipe or shared draft exists (returning `404 Not Found` otherwise) and verifies that the caller is the owner or an active co-cook (returning `403 Forbidden` for unauthorized actors).
+- **Atomic Concurrency Protection & Banner Feedback**: Redis evaluates lock acquisition atomically. If User A is on Step 1, User B's acquisition attempt for Step 1 fails. User B's UI immediately displays the `RecipeLockBanner` (`@UserA is currently editing this step`), disables step inputs (`pointer-events-none opacity-60`, `disabled={isLocked}`), and disables both the primary action button ("Next") and the top "Save draft" button (`actionDisabled={isCurrentStepLocked}`).
+- **Automatic Release on Navigation**: When a user advances or navigates back (`step` changes), `useRecipeLock` automatically releases the old step lock (`DELETE /api/recipes/[id]/lock?field=step:${old}`) and acquires the new step lock (`POST /api/recipes/[id]/lock?field=step:${new}`). Active lock refs are cleared synchronously before network calls to prevent duplicate release storms.
+- **Automatic Lock Recovery & Retry**: While waiting on a locked step, `useRecipeLock` polls active locks every 4 seconds (`LOCK_POLL_INTERVAL_MS = 4000`). As soon as the holding collaborator moves to another step or closes their modal, the waiting collaborator's client automatically acquires the freed step lock, dismissing the lock banner and restoring full input interactivity.
+- **Modal Close Immediate Release**: When the modal closes or unmounts, the active step lock is released immediately on the server using the captured target ID, freeing the section for collaborators without waiting for the 30-second Redis TTL.
+- **Token Privacy on Save Responses**: When non-owner co-cooks save intermediate steps via `POST /api/draft`, the server response sanitizes `inviteToken` using `DraftService.maskSharedDraft`, protecting owner invite tokens.
+- **Solo Draft Isolation**: Solo drafts completely bypass the lock subsystem. Opening and editing solo drafts never acquires or polls locks, keeping single-user editing lightweight.
+
 ---
 
 ## Centralized Constants Reference
@@ -190,7 +202,7 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 
 The collaborative cooking architecture is covered by automated Cypress E2E tests in [`__tests__/e2e/collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts) running against a local Redis instance (`REDIS_URL=redis://localhost:6379`).
 
-### Key Test Scenarios (11/11 Passing):
+### Key Test Scenarios (17/17 Passing):
 
 1. **Collaborative Recipe Lifecycle & Publishing**: Creating recipes with `coCooksIds`, syncing steps, and verifying `RecipeCoCooks` collaborator badge rendering on the recipe page.
 2. **Multi-User Draft Invitation & Join Flow**: Generating secure tokenized invite links from `RecipeModal` and auto-opening pre-populated drafts via `/?draft=<id>&joined=true`.
@@ -203,5 +215,11 @@ The collaborative cooking architecture is covered by automated Cypress E2E tests
 9. **Soft-Lock Input Guards**: Ensures all text inputs and dynamic row buttons are strictly disabled on soft-locked steps while remaining fully interactive on unlocked steps.
 10. **Live Soft-Lock Auto-Recovery**: Verifies that when a remote co-cook releases a soft-lock, polling detects the unlock, the banner disappears, and all form controls automatically regain interactive state.
 11. **Dynamic Row Expansion on Remote Additions**: Verifies that when a remote collaborator appends new ingredients or steps to the Redis draft, navigating to those steps dynamically expands the input row list and populates the remote values.
+12. **Atomic Co-Cook Join Flow & Quota**: Verifies atomic Lua joining prevents race conditions and strictly rejects excess collaborators beyond `MAX_CO_COOKS = 4`.
+13. **Multi-Step Save Resilience**: Verifies saving across multiple steps works cleanly without 500 errors after co-cooks join.
+14. **Automatic Lock Acquisition on Navigation**: Automatically locks current step on entry and prevents concurrent edits by disabling inputs for other viewers.
+15. **Locked Step Action Button Guards**: Disables the Save draft button on locked steps and omits locked fields to prevent data clobbering, while permitting wizard navigation.
+16. **Immediate Lock Release on Close**: Releases step locks immediately on modal close without waiting for the 30-second TTL to expire.
+17. **Keyboard Inert Container Trapping**: Applies native `inert` attribute to locked step container, preventing keyboard users from tabbing into locked inputs.
 
 For detailed Mermaid diagrams of this and all other E2E test suites, see [`docs/testing/e2e/workflows.md`](file:///docs/testing/e2e/workflows.md).

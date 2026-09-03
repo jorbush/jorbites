@@ -63,9 +63,20 @@ if (
     throw new Error('REDIS_URL is required in production');
 }
 
-export const redis = process.env.REDIS_URL
-    ? new Redis(process.env.REDIS_URL)
-    : createMockRedis('redis');
+const globalForRedis = globalThis as unknown as {
+    redis: Redis | undefined;
+    redisCache: Redis | undefined;
+};
+
+export const redis =
+    globalForRedis.redis ??
+    (process.env.REDIS_URL
+        ? new Redis(process.env.REDIS_URL)
+        : createMockRedis('redis'));
+
+if (process.env.NODE_ENV !== 'production') {
+    globalForRedis.redis = redis;
+}
 
 if (!process.env.REDIS_URL_CACHING && process.env.NODE_ENV === 'production') {
     logger.warn(
@@ -73,6 +84,12 @@ if (!process.env.REDIS_URL_CACHING && process.env.NODE_ENV === 'production') {
     );
 }
 
-export const redisCache = process.env.REDIS_URL_CACHING
-    ? new Redis(process.env.REDIS_URL_CACHING)
-    : createMockRedis('redisCache');
+export const redisCache =
+    globalForRedis.redisCache ??
+    (process.env.REDIS_URL_CACHING
+        ? new Redis(process.env.REDIS_URL_CACHING)
+        : createMockRedis('redisCache'));
+
+if (process.env.NODE_ENV !== 'production') {
+    globalForRedis.redisCache = redisCache;
+}

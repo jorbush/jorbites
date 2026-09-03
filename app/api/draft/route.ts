@@ -52,7 +52,11 @@ export async function POST(request: Request) {
                         userId: currentUser.id,
                         draftId: body.draftId,
                     });
-                    return NextResponse.json(savedDraft);
+                    const responseDraft =
+                        currentUser.id === savedDraft.ownerId
+                            ? savedDraft
+                            : DraftService.maskSharedDraft(savedDraft);
+                    return NextResponse.json(responseDraft);
                 } catch (err: unknown) {
                     const message =
                         err instanceof Error ? err.message : String(err);

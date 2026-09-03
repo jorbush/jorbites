@@ -503,5 +503,67 @@ describe('draftFormUtils helper functions', () => {
             expect(imgRes.data.imageSrc1).toBe('https://img.com/2.jpg');
             expect(imgRes.data.title).toBeUndefined();
         });
+
+        it('omits step fields when isLocked is true in shared draft mode (H6)', () => {
+            const formValues: Record<string, unknown> = {
+                title: 'Stale Local Title',
+                description: 'Stale Local Description',
+            };
+            const form = {
+                getValues: (key: string) => formValues[key],
+                setValue: vi.fn(),
+            };
+
+            const sharedDraftData = {
+                draftId: 'shared-999',
+                type: 'shared',
+                inviteToken: 'tok-123',
+            };
+
+            const res = collectDraftFormData(
+                form,
+                STEPS.DESCRIPTION,
+                sharedDraftData,
+                1,
+                1,
+                'list',
+                'list',
+                undefined,
+                false,
+                true // isLocked
+            );
+
+            expect(res.data.draftId).toBe('shared-999');
+            expect(res.data.title).toBeUndefined();
+            expect(res.data.description).toBeUndefined();
+        });
+
+        it('coerces string numeric inputs for minutes, prepTime, and cookTime to numbers (M7)', () => {
+            const formValues: Record<string, any> = {
+                title: 'Parsed Time Recipe',
+                description: 'Description',
+                minutes: '45',
+                prepTime: '15',
+                cookTime: '30',
+            };
+            const form = {
+                getValues: (key: string) => formValues[key],
+                setValue: vi.fn(),
+            };
+
+            const res = collectDraftFormData(
+                form,
+                STEPS.DESCRIPTION,
+                null,
+                1,
+                1,
+                'list',
+                'list'
+            );
+
+            expect(res.data.minutes).toBe(45);
+            expect(res.data.prepTime).toBe(15);
+            expect(res.data.cookTime).toBe(30);
+        });
     });
 });

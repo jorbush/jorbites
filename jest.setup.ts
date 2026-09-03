@@ -106,6 +106,7 @@ jest.mock('@/app/lib/redisLock', () => ({
     getActiveLocks: jest.fn().mockResolvedValue({}),
     releaseAllLocks: jest.fn().mockResolvedValue(undefined),
     isLockHeldByUser: jest.fn().mockResolvedValue(false),
+    renewLockIfHeld: jest.fn().mockResolvedValue({ renewed: false }),
     getLockKey: (targetId: string, fieldKey: string) => `lock:recipe:${targetId}:field:${fieldKey}`,
 }));
 

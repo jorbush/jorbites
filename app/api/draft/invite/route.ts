@@ -20,8 +20,6 @@ export async function POST(request: Request) {
 
         const body = await request.json().catch(() => ({}));
         const draftId = body.draftId || crypto.randomUUID();
-        const inviteToken =
-            body.inviteToken || crypto.randomBytes(16).toString('hex');
 
         // Check if existing draft belongs to another owner
         const existing = await DraftService.getSharedDraft(draftId);
@@ -34,6 +32,11 @@ export async function POST(request: Request) {
                 'Only the draft owner can generate invite links'
             );
         }
+
+        // Security: Always enforce server-side cryptographically secure token generation (M4)
+        // Reuse existing token if already generated for this draft, otherwise generate new 16-byte hex
+        const inviteToken =
+            existing?.inviteToken || crypto.randomBytes(16).toString('hex');
 
         const savedDraft = await DraftService.saveSharedDraft(
             draftId,

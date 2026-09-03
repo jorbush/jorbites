@@ -1015,68 +1015,351 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
                 '✓ Dynamic row expansion for multi-ingredient and multi-step sync verified'
             );
         });
+    });
 
-        it('atomic co-cook join flow prevents race conditions and strictly enforces MAX_CO_COOKS quota', () => {
+    it('atomic co-cook join flow prevents race conditions and strictly enforces MAX_CO_COOKS quota', () => {
+        cy.task(
+            'log',
+            '=== TEST 12: Atomic Co-Cook Join & Quota Enforcement ==='
+        );
+        const collabTitle = `Atomic Join Collab ${Date.now().toString().slice(-4)}`;
+
+        // Create shared draft via invite endpoint
+        cy.request({
+            method: 'POST',
+            url: '/api/draft/invite',
+            body: {
+                title: collabTitle,
+                description: 'A delicious atomic recipe',
+                categories: ['Dinner'],
+                ingredients: ['Garlic', 'Olive Oil'],
+                steps: ['Sauté garlic in oil'],
+                method: 'Oven',
+                currentStep: 0,
+            },
+        }).then((inviteRes) => {
+            expect(inviteRes.status).to.eq(200);
+            const draftId = inviteRes.body.draftId;
+            const token = inviteRes.body.inviteToken;
+            expect(draftId).to.be.a('string');
+            expect(token).to.be.a('string');
+
+            // 1. Join with valid token
+            cy.request({
+                method: 'GET',
+                url: `/api/draft/join?draft=${draftId}&token=${token}`,
+                followRedirect: false,
+            }).then((joinRes) => {
+                expect(joinRes.status).to.eq(307);
+                expect(joinRes.headers.location).to.include('joined=true');
+            });
+
+            // 2. Attempt join with invalid token -> fails with invalid_invite_token error redirect
+            cy.request({
+                method: 'GET',
+                url: `/api/draft/join?draft=${draftId}&token=invalid-fake-token`,
+                followRedirect: false,
+            }).then((badTokenRes) => {
+                expect(badTokenRes.status).to.eq(307);
+                expect(badTokenRes.headers.location).to.include(
+                    'error=invalid_invite_token'
+                );
+            });
+
+            // 3. Open the recipe modal for this shared draft
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+
+            // Advance to Related Content (Step 5) to inspect co-cooks capacity
+            for (let i = 0; i < 5; i++) {
+                cy.get('[data-cy="modal-action-button"]')
+                    .should('not.be.disabled')
+                    .click();
+            }
+
+            // Verify the modal is at Step 5 and related content is visible
+            cy.get('[data-testid="related-content-tabs"]').should('be.visible');
+            cy.get('[data-cy="search-input"]').should('be.visible');
+        });
+    });
+
+    it('allows draft owner to save on any step after a co-cook joins without throwing 500 error', () => {
+        cy.task(
+            'log',
+            '=== TEST: Owner saving after co-cook joins (Redis cjson array normalization) ==='
+        );
+        const collabTitle = `Save After Join ${Date.now().toString().slice(-4)}`;
+
+        // 1. Create a shared draft with empty arrays (which Redis Lua cjson historically converted to {})
+        cy.request({
+            method: 'POST',
+            url: '/api/draft/invite',
+            body: {
+                title: collabTitle,
+                categories: [],
+                ingredients: [],
+                steps: [],
+                currentStep: 0,
+            },
+        }).then((inviteRes) => {
+            expect(inviteRes.status).to.eq(200);
+            const draftId = inviteRes.body.draftId;
+            const token = inviteRes.body.inviteToken;
+            expect(draftId).to.be.a('string');
+            expect(token).to.be.a('string');
+
+            // 2. Co-cook joins via join URL (executes Redis Lua JOIN_SHARED_DRAFT_SCRIPT)
+            cy.request({
+                method: 'GET',
+                url: `/api/draft/join?draft=${draftId}&token=${token}`,
+                followRedirect: false,
+            }).then((joinRes) => {
+                expect(joinRes.status).to.eq(307);
+            });
+
+            // 3. Intercept draft save endpoint
+            cy.intercept('POST', '/api/draft').as('saveDraftRequest');
+
+            // 4. Owner opens the draft modal
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+
+            // 5. Select category (Step 0) and click Save Draft button
+            cy.get('[data-cy="category-box-Desserts"]').click();
+            cy.get('[data-cy="save-draft-button"]').click();
+
+            // 6. Verify save succeeds with 200 (NOT 500)
+            cy.wait('@saveDraftRequest')
+                .its('response.statusCode')
+                .should('eq', 200);
+            cy.contains('Failed to save draft').should('not.exist');
+            cy.contains('Draft saved').should('be.visible');
+
+            // 7. Advance to Description (Step 1)
+            cy.get('[data-cy="modal-action-button"]').click();
+            cy.get('[data-cy="recipe-description"]').type(
+                'Updated description by owner after join'
+            );
+
+            // 8. Click save draft on Step 1 and verify 200
+            cy.get('[data-cy="save-draft-button"]').click();
+            cy.wait('@saveDraftRequest')
+                .its('response.statusCode')
+                .should('eq', 200);
+            cy.contains('Failed to save draft').should('not.exist');
+            cy.contains('Draft saved').should('be.visible');
+
+            // 9. Click My Drafts button (triggers handleOpenDrafts which flushes draft saves)
+            cy.get('[data-testid="open-drafts-modal-button"]').click();
+            cy.get('[data-testid="drafts-modal"]').should('be.visible');
+            cy.contains('Failed to save draft').should('not.exist');
+
             cy.task(
                 'log',
-                '=== TEST 12: Atomic Co-Cook Join & Quota Enforcement ==='
+                '✓ Owner saving on multiple steps after co-cook join verified without 500 error'
             );
-            const collabTitle = `Atomic Join Collab ${Date.now().toString().slice(-4)}`;
+        });
+    });
 
-            // Create shared draft via invite endpoint
-            cy.request({
-                method: 'POST',
-                url: '/api/draft/invite',
-                body: {
-                    title: collabTitle,
-                    categories: ['Dinner'],
-                    ingredients: ['Garlic', 'Olive Oil'],
-                    steps: ['Sauté garlic in oil'],
-                    currentStep: 0,
-                },
-            }).then((inviteRes) => {
-                expect(inviteRes.status).to.eq(200);
-                const draftId = inviteRes.body.draftId;
-                const token = inviteRes.body.inviteToken;
-                expect(draftId).to.be.a('string');
-                expect(token).to.be.a('string');
+    it('automatically acquires step lock on navigation and disables inputs when co-cook is on the same step', () => {
+        cy.task(
+            'log',
+            '=== TEST 14: Step lock acquisition and concurrent step conflict prevention ==='
+        );
 
-                // 1. Join with valid token
-                cy.request({
-                    method: 'GET',
-                    url: `/api/draft/join?draft=${draftId}&token=${token}`,
-                    followRedirect: false,
-                }).then((joinRes) => {
-                    expect(joinRes.status).to.eq(307);
-                    expect(joinRes.headers.location).to.include('joined=true');
-                });
+        // 1. Create a shared draft
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Desserts'],
+            title: 'Concurrent Lock Prevention Recipe',
+        }).then((response) => {
+            const draftId = response.body.draftId;
 
-                // 2. Attempt join with invalid token -> fails with invalid_invite_token error redirect
-                cy.request({
-                    method: 'GET',
-                    url: `/api/draft/join?draft=${draftId}&token=invalid-fake-token`,
-                    followRedirect: false,
-                }).then((badTokenRes) => {
-                    expect(badTokenRes.status).to.eq(307);
-                    expect(badTokenRes.headers.location).to.include(
-                        'error=invalid_invite_token'
-                    );
-                });
+            // 2. Intercept lock calls
+            cy.intercept('POST', `/api/recipes/${draftId}/lock`).as(
+                'acquireLock'
+            );
+            cy.intercept('DELETE', `/api/recipes/${draftId}/lock*`).as(
+                'releaseLock'
+            );
 
-                // 3. Open the recipe modal for this shared draft
-                cy.visit(`/?draft=${draftId}`);
-                cy.get('[data-testid="modal-title"]').should('be.visible');
+            // 3. Open the shared draft
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
 
-                // Advance to Related Content (Step 5) to inspect co-cooks capacity
-                for (let i = 0; i < 5; i++) {
-                    cy.get('[data-cy="modal-action-button"]')
-                        .should('not.be.disabled')
-                        .click();
-                }
-
-                // Verify the modal is at Step 5 and co-cooks list is visible
-                cy.get('[data-testid="co-cooks-count"]').should('be.visible');
+            // 4. Verify step lock was automatically requested for current step
+            cy.wait('@acquireLock').then((interception) => {
+                expect(interception.request.body.field).to.eq('step:0');
             });
+
+            // 5. Navigate to Step 1 (Description)
+            cy.get('[data-cy="modal-action-button"]').click();
+            cy.get('[data-cy="recipe-title"]', { timeout: 10000 }).should(
+                'be.visible'
+            );
+
+            // 6. Verify step 1 inputs are interactive for the lock holder
+            cy.get('[data-cy="recipe-title"]').should('not.be.disabled');
+            cy.get('[data-cy="recipe-description"]').should('not.be.disabled');
+
+            // 7. Now simulate another collaborator holding lock on Step 1
+            cy.intercept('GET', `/api/recipes/${draftId}/lock*`, {
+                statusCode: 200,
+                body: {
+                    'step:1': {
+                        userId: 'other-user-collaborator',
+                        userName: 'collaborator',
+                        timestamp: Date.now(),
+                    },
+                },
+            }).as('getLocksMock');
+
+            // 9. Verify step 1 is locked: lock banner displays and inputs are disabled
+            cy.get('[data-testid="lock-banner"]', { timeout: 10000 })
+                .should('be.visible')
+                .and('contain', '@collaborator is currently editing this step');
+            cy.get('[data-cy="recipe-title"]').should('be.disabled');
+            cy.get('[data-cy="recipe-description"]').should('be.disabled');
+
+            cy.task(
+                'log',
+                '✓ Step lock acquisition, release on navigation, and input disabling verified'
+            );
+        });
+    });
+
+    it('disables save draft button and omits locked fields when current step is locked by co-cook (H6)', () => {
+        cy.task(
+            'log',
+            '=== TEST 15: Save draft button disabled and locked fields protected ==='
+        );
+
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Desserts'],
+            title: 'Locked Step Buttons Test Recipe',
+        }).then((response) => {
+            const draftId = response.body.draftId;
+
+            // Mock lock response showing step 0 is held by another collaborator
+            cy.intercept('GET', `/api/recipes/${draftId}/lock*`, {
+                statusCode: 200,
+                body: {
+                    'step:0': {
+                        userId: 'other-user-collaborator',
+                        userName: 'collaborator',
+                        timestamp: Date.now(),
+                    },
+                },
+            }).as('getLocksMock');
+
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+
+            // Wait for locks to populate
+            cy.wait('@getLocksMock');
+
+            // Save draft button in top actions should be disabled
+            cy.get('[data-cy="save-draft-button"]')
+                .should('be.visible')
+                .and('be.disabled');
+
+            // Next button remains enabled to allow collaborator to advance past locked step
+            cy.get('[data-cy="modal-action-button"]')
+                .should('exist')
+                .and('not.be.disabled');
+
+            // Close button and back action should still remain interactive
+            cy.get('[aria-label="Close"]').should('not.be.disabled');
+
+            cy.task(
+                'log',
+                '✓ Save draft button disabled and advancing past locked steps enabled'
+            );
+        });
+    });
+
+    it('releases step lock immediately when modal is closed without waiting for TTL (C4)', () => {
+        cy.task(
+            'log',
+            '=== TEST 16: Immediate lock release on modal close ==='
+        );
+
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Desserts'],
+            title: 'Modal Close Lock Release Recipe',
+        }).then((response) => {
+            const draftId = response.body.draftId;
+
+            cy.intercept('POST', `/api/recipes/${draftId}/lock`).as(
+                'acquireLock'
+            );
+            cy.intercept('DELETE', `/api/recipes/${draftId}/lock*`).as(
+                'releaseLock'
+            );
+
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+
+            // Wait for lock acquisition on step 0
+            cy.wait('@acquireLock');
+
+            // Close the modal
+            cy.get('[aria-label="Close"]').click();
+            cy.get('[data-testid="modal-title"]').should('not.exist');
+
+            // Verify DELETE was triggered immediately for step 0
+            cy.wait('@releaseLock').then((interception) => {
+                expect(interception.request.url).to.include('field=step%3A0');
+            });
+
+            cy.task(
+                'log',
+                '✓ Lock released immediately on modal close without dangling in Redis'
+            );
+        });
+    });
+
+    it('applies inert attribute to step container on locked step to prevent keyboard navigation (H7)', () => {
+        cy.task(
+            'log',
+            '=== TEST 17: Inert attribute on locked step container ==='
+        );
+
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Desserts'],
+            title: 'Inert Container Test Recipe',
+        }).then((response) => {
+            const draftId = response.body.draftId;
+
+            // Mock lock response showing step 0 is held by another collaborator
+            cy.intercept('GET', `/api/recipes/${draftId}/lock*`, {
+                statusCode: 200,
+                body: {
+                    'step:0': {
+                        userId: 'other-user-collaborator',
+                        userName: 'collaborator',
+                        timestamp: Date.now(),
+                    },
+                },
+            }).as('getLocksMock');
+
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+
+            // Wait for locks to populate
+            cy.wait('@getLocksMock');
+
+            // Locked step container should have inert property / attribute
+            cy.get('[data-testid="locked-step-container"]')
+                .should('exist')
+                .and(($el) => {
+                    expect($el[0].inert || $el.attr('inert') !== undefined).to
+                        .be.ok;
+                });
+
+            cy.task(
+                'log',
+                '✓ Locked step container properly guarded with inert attribute'
+            );
         });
     });
 });

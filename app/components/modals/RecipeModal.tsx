@@ -14,10 +14,105 @@ import { STEPS } from '@/app/utils/constants';
 import { useRecipeFormState } from './recipe-steps/useRecipeFormState';
 import RecipeModalTopActions from './recipe-steps/RecipeModalTopActions';
 import RecipeModalStepBody from './recipe-steps/RecipeModalStepBody';
-import { DraftSummary } from '@/app/types/draft';
+import { useRecipeLock } from '@/app/hooks/useRecipeLock';
+import { DraftData, DraftSummary } from '@/app/types/draft';
 
 interface RecipeModalProps {
     currentUser?: SafeUser | null;
+}
+
+interface LoadingFallbackProps {
+    isOpen: boolean;
+    isEditMode?: boolean;
+    onClose: () => void;
+}
+
+const RecipeModalLoadingFallback: React.FC<LoadingFallbackProps> = ({
+    isOpen,
+    isEditMode,
+    onClose,
+}) => {
+    const { t } = useTranslation();
+    return (
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            onSubmit={() => {}}
+            actionLabel=""
+            title={
+                isEditMode
+                    ? (t('edit_recipe') ?? 'Edit recipe')
+                    : (t('post_recipe') ?? 'Post a recipe')
+            }
+            body={<Loader height="400px" />}
+            isLoading={true}
+        />
+    );
+};
+
+function useHasActiveDrafts(isOpen: boolean, hasUser: boolean): boolean {
+    const { data: activeDrafts } = useSWR<DraftSummary[]>(
+        isOpen && hasUser ? '/api/draft/active' : null,
+        axiosFetcher,
+        {
+            revalidateOnFocus: true,
+            revalidateOnMount: true,
+            dedupingInterval: 0,
+        }
+    );
+    return Boolean(activeDrafts && activeDrafts.length > 0);
+}
+
+interface CollaborativeSessionProps {
+    draftData?: Partial<DraftData> | null;
+    selectedCoCooks: SafeUser[];
+    lock?: ReturnType<typeof useRecipeLock>;
+    step: number;
+    currentUserId?: string;
+}
+
+function deriveCollaborativeSessionState({
+    draftData,
+    selectedCoCooks,
+    lock,
+    step,
+    currentUserId,
+}: CollaborativeSessionProps) {
+    const isCurrentStepLocked = Boolean(lock?.isLockedByOther(`step:${step}`));
+    const lockOwner = lock?.getLockOwner(`step:${step}`);
+
+    const locks = (lock?.locks || {}) as Record<
+        string,
+        { userId?: string; userName?: string }
+    >;
+    const otherActiveLocks: [string, { userId?: string; userName?: string }][] =
+        Object.entries(locks).filter(
+            ([key, info]) =>
+                key !== `step:${step}` &&
+                key.startsWith('step:') &&
+                Boolean(info) &&
+                info.userId !== currentUserId
+        );
+
+    const hasCoCooks = Boolean(
+        (draftData?.coCooks && draftData.coCooks.length > 0) ||
+        selectedCoCooks.length > 0
+    );
+
+    const isSharedSession = Boolean(
+        draftData?.type === 'shared' ||
+        hasCoCooks ||
+        draftData?.ownerName ||
+        isCurrentStepLocked ||
+        otherActiveLocks.length > 0
+    );
+
+    return {
+        isCurrentStepLocked,
+        lockOwner,
+        otherActiveLocks,
+        isSharedSession,
+    };
 }
 
 const RecipeModalContent: React.FC<{
@@ -27,16 +122,10 @@ const RecipeModalContent: React.FC<{
 }> = ({ currentUser, recipeModal, onClose }) => {
     const { t } = useTranslation();
     const draftsModal = useDraftsModal();
-    const { data: activeDrafts } = useSWR<DraftSummary[]>(
-        recipeModal.isOpen && currentUser ? '/api/draft/active' : null,
-        axiosFetcher,
-        {
-            revalidateOnFocus: true,
-            revalidateOnMount: true,
-            dedupingInterval: 0,
-        }
+    const hasDrafts = useHasActiveDrafts(
+        Boolean(recipeModal.isOpen),
+        Boolean(currentUser)
     );
-    const hasDrafts = Boolean(activeDrafts && activeDrafts.length > 0);
 
     const {
         step,
@@ -101,44 +190,32 @@ const RecipeModalContent: React.FC<{
         draftsModal.onOpen();
     }, [draftsModal, flushDraftSaves, isDirty, onClose, saveDraft]);
 
-    const isCurrentStepLocked = lock?.isLockedByOther(`step:${step}`);
-    const lockOwner = lock?.getLockOwner(`step:${step}`);
-
-    // Active locks on other steps held by co-cooks
-    const otherActiveLocks = Object.entries(lock?.locks || {}).filter(
-        ([key, info]) =>
-            key !== `step:${step}` &&
-            key.startsWith('step:') &&
-            info &&
-            info.userId !== currentUser?.id
-    );
-
-    const isSharedSession = Boolean(
-        draftData?.type === 'shared' ||
-        (draftData?.coCooks && draftData.coCooks.length > 0) ||
-        selectedCoCooks.length > 0 ||
-        draftData?.ownerName ||
-        isCurrentStepLocked ||
-        otherActiveLocks.length > 0
-    );
+    const {
+        isCurrentStepLocked,
+        lockOwner,
+        otherActiveLocks,
+        isSharedSession,
+    } = deriveCollaborativeSessionState({
+        draftData,
+        selectedCoCooks,
+        lock,
+        step,
+        currentUserId: currentUser?.id,
+    });
 
     if (isLoadingDraft && !draftData) {
         return (
-            <Modal
+            <RecipeModalLoadingFallback
                 isOpen={recipeModal.isOpen}
+                isEditMode={recipeModal.isEditMode}
                 onClose={onClose}
-                onSubmit={() => {}}
-                actionLabel=""
-                title={
-                    recipeModal.isEditMode
-                        ? (t('edit_recipe') ?? 'Edit recipe')
-                        : (t('post_recipe') ?? 'Post a recipe')
-                }
-                body={<Loader height="400px" />}
-                isLoading={true}
             />
         );
     }
+
+    const modalTitle = recipeModal.isEditMode
+        ? (t('edit_recipe') ?? 'Edit recipe')
+        : (t('post_recipe') ?? 'Post a recipe');
 
     return (
         <Modal
@@ -146,13 +223,10 @@ const RecipeModalContent: React.FC<{
             onClose={onClose}
             onSubmit={handleSubmit(onSubmit)}
             actionLabel={actionLabel}
+            actionDisabled={isCurrentStepLocked && step === STEPS.IMAGES}
             secondaryActionLabel={secondaryActionLabel}
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
-            title={
-                recipeModal.isEditMode
-                    ? (t('edit_recipe') ?? 'Edit recipe')
-                    : (t('post_recipe') ?? 'Post a recipe')
-            }
+            title={modalTitle}
             body={
                 <RecipeModalStepBody
                     step={step}
@@ -203,6 +277,7 @@ const RecipeModalContent: React.FC<{
                         onOpenDrafts={handleOpenDrafts}
                         hasDrafts={hasDrafts}
                         isSaving={isSaving}
+                        isLocked={isCurrentStepLocked}
                     />
                 ) : undefined
             }
@@ -214,12 +289,7 @@ const RecipeModalComponent: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const recipeModal = useRecipeModal();
     const searchParams = useSearchParams();
     const draftQueryParam = searchParams?.get('draft');
-    const currentUserRef = useRef<SafeUser | null>(currentUser || null);
     const autoOpenedDraftRef = useRef<string | null>(null);
-
-    useEffect(() => {
-        currentUserRef.current = currentUser || null;
-    }, [currentUser]);
 
     const isOpen = recipeModal.isOpen;
     const isEditMode = recipeModal.isEditMode;

@@ -44,6 +44,7 @@ describe('DraftsModal component', () => {
     const mockRecipeModal = {
         isOpen: false,
         onOpen: vi.fn(),
+        onOpenDraft: vi.fn(),
         onOpenSharedDraft: vi.fn(),
         onOpenCreate: vi.fn(),
         onClose: vi.fn(),
@@ -89,7 +90,7 @@ describe('DraftsModal component', () => {
         await waitFor(() => {
             expect(mockCreateDraft).toHaveBeenCalledWith('solo');
             expect(mockDraftsModal.onClose).toHaveBeenCalled();
-            expect(mockRecipeModal.onOpenSharedDraft).toHaveBeenCalledWith(
+            expect(mockRecipeModal.onOpenDraft).toHaveBeenCalledWith(
                 'new-draft-123'
             );
         });
@@ -158,8 +159,36 @@ describe('DraftsModal component', () => {
         fireEvent.click(screen.getByTestId('draft-card-title'));
 
         expect(mockDraftsModal.onClose).toHaveBeenCalled();
-        expect(mockRecipeModal.onOpenSharedDraft).toHaveBeenCalledWith(
+        expect(mockRecipeModal.onOpenDraft).toHaveBeenCalledWith(
             'draft-target'
+        );
+    });
+
+    it('opens shared draft via onOpenSharedDraft when a shared draft card is clicked', () => {
+        const mockDrafts = [
+            {
+                draftId: 'draft-shared-target',
+                type: 'shared',
+                title: 'Shared Ramen',
+                ownerId: 'user-1',
+                coCooksIds: ['user-2'],
+                updatedAt: new Date().toISOString(),
+            },
+        ];
+
+        (useSWR as any).mockReturnValue({
+            data: mockDrafts,
+            isLoading: false,
+            mutate: mockMutate,
+        });
+
+        render(<DraftsModal currentUser={mockCurrentUser} />);
+
+        fireEvent.click(screen.getByTestId('draft-card-title'));
+
+        expect(mockDraftsModal.onClose).toHaveBeenCalled();
+        expect(mockRecipeModal.onOpenSharedDraft).toHaveBeenCalledWith(
+            'draft-shared-target'
         );
     });
 

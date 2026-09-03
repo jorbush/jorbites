@@ -33,16 +33,18 @@ describe('draftSyncUtils', () => {
     });
 
     describe('isFieldLocallyEdited', () => {
-        it('returns false when current value is empty, null, undefined, or empty array', () => {
-            expect(isFieldLocallyEdited('', 'previous')).toBe(false);
-            expect(isFieldLocallyEdited(null, 'previous')).toBe(false);
-            expect(isFieldLocallyEdited(undefined, 'previous')).toBe(false);
-            expect(isFieldLocallyEdited([], ['item'])).toBe(false);
+        it('returns false when both current value and previous value are empty', () => {
+            expect(isFieldLocallyEdited('', '')).toBe(false);
+            expect(isFieldLocallyEdited(null, null)).toBe(false);
+            expect(isFieldLocallyEdited(undefined, undefined)).toBe(false);
+            expect(isFieldLocallyEdited([], [])).toBe(false);
+            expect(isFieldLocallyEdited('', null)).toBe(false);
+            expect(isFieldLocallyEdited([], null)).toBe(false);
         });
 
-        it('returns false when previous value is null or undefined', () => {
-            expect(isFieldLocallyEdited('new val', null)).toBe(false);
-            expect(isFieldLocallyEdited('new val', undefined)).toBe(false);
+        it('returns true when user intentionally clears a field that had previous content (H4 ghost write prevention)', () => {
+            expect(isFieldLocallyEdited('', 'previous')).toBe(true);
+            expect(isFieldLocallyEdited([], ['item'])).toBe(true);
         });
 
         it('returns false when current value equals previous value', () => {
@@ -273,40 +275,40 @@ describe('draftSyncUtils', () => {
                 'title',
                 'Remote Pasta',
                 expect.objectContaining({
-                    shouldDirty: true,
-                    shouldTouch: true,
+                    shouldDirty: false,
+                    shouldTouch: false,
                 })
             );
             expect(setValue).toHaveBeenCalledWith(
                 'method',
                 'Boil',
                 expect.objectContaining({
-                    shouldDirty: true,
-                    shouldTouch: true,
+                    shouldDirty: false,
+                    shouldTouch: false,
                 })
             );
             expect(setValue).toHaveBeenCalledWith(
                 'ingredient-0',
                 'Pasta',
                 expect.objectContaining({
-                    shouldDirty: true,
-                    shouldTouch: true,
+                    shouldDirty: false,
+                    shouldTouch: false,
                 })
             );
             expect(setValue).toHaveBeenCalledWith(
                 'ingredient-1',
                 'Salt',
                 expect.objectContaining({
-                    shouldDirty: true,
-                    shouldTouch: true,
+                    shouldDirty: false,
+                    shouldTouch: false,
                 })
             );
             expect(setValue).toHaveBeenCalledWith(
                 'step-0',
                 'Boil water',
                 expect.objectContaining({
-                    shouldDirty: true,
-                    shouldTouch: true,
+                    shouldDirty: false,
+                    shouldTouch: false,
                 })
             );
             expect(setValue).toHaveBeenCalledWith(
@@ -385,8 +387,8 @@ describe('draftSyncUtils', () => {
                 'title',
                 'Collaborator Remote Title',
                 expect.objectContaining({
-                    shouldDirty: true,
-                    shouldTouch: true,
+                    shouldDirty: false,
+                    shouldTouch: false,
                 })
             );
         });

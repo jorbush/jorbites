@@ -45,7 +45,7 @@ export function useDraftSync({
     initialMutateDraft,
 }: UseDraftSyncOptions): UseDraftSyncReturn {
     const draftEndpoint = activeDraftId
-        ? `/api/draft?draftId=${activeDraftId}`
+        ? `/api/draft?draftId=${encodeURIComponent(activeDraftId)}`
         : `/api/draft`;
 
     const isSharedDraft = Boolean(activeDraftId);

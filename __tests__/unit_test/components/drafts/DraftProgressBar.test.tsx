@@ -64,4 +64,30 @@ describe('DraftProgressBar', () => {
             expect(dot.className).toContain('bg-green-450');
         });
     });
+
+    it('provides accessible role and range attributes (M12)', () => {
+        const mockProgress: DraftProgress = {
+            completedSteps: 4,
+            totalSteps: 7,
+            percentage: 57,
+            stepDetails: [
+                { step: 0, name: 'Category', completed: true },
+                { step: 1, name: 'Description', completed: true },
+                { step: 2, name: 'Ingredients', completed: true },
+                { step: 3, name: 'Method', completed: true },
+                { step: 4, name: 'Steps', completed: false },
+                { step: 5, name: 'Related', completed: false },
+                { step: 6, name: 'Images', completed: false },
+            ],
+        };
+
+        render(<DraftProgressBar progress={mockProgress} />);
+
+        const bar = screen.getByRole('progressbar');
+        expect(bar).toBeInTheDocument();
+        expect(bar).toHaveAttribute('aria-valuenow', '4');
+        expect(bar).toHaveAttribute('aria-valuemin', '0');
+        expect(bar).toHaveAttribute('aria-valuemax', '7');
+        expect(bar).toHaveAttribute('aria-label', 'Draft completion progress');
+    });
 });
