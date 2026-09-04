@@ -6,8 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import { STEPS, STEPS_LENGTH } from '@/app/utils/constants';
-
-import { useRecipeLock } from '@/app/hooks/useRecipeLock';
 import { useDraftSync } from '@/app/hooks/useDraftSync';
 import {
     useDraftPersistence,
@@ -19,6 +17,8 @@ import { buildInitialRecipeDefaultValues } from './recipeFormDefaults';
 import { useRecipeRelatedContent } from './useRecipeRelatedContent';
 import { useRecipeItemsState } from './useRecipeItemsState';
 import { useRecipeStepNavigation } from './useRecipeStepNavigation';
+import { useRecipeFormLock } from './useRecipeFormLock';
+import { useDraftSwitchSync } from './useDraftSwitchSync';
 
 export interface RecipeModalStateLike extends RecipeModalDraftController {
     isEditMode?: boolean;
@@ -156,69 +156,26 @@ export function useRecipeFormState({
         [watch, getValues, setValue]
     );
 
-    const lockTargetId = recipeModal.isEditMode
-        ? recipeModal.editRecipeData?.id
-        : watch('draftId') || draftData?.draftId || recipeModal.activeDraftId;
-
-    const hasDraftCoCooks = Boolean(
-        (draftData?.coCooksIds && draftData.coCooksIds.length > 0) ||
-        (draftData?.coCooks && draftData.coCooks.length > 0)
-    );
-    const hasInviteToken = Boolean(
-        draftData?.inviteToken || watch('inviteToken')
-    );
-    const isCollaborativeSession = checkIsCollaborativeSession({
-        isEditMode: recipeModal.isEditMode,
-        draftType: draftData?.type,
+    const { lock, isCurrentStepLocked } = useRecipeFormLock({
+        recipeModal,
+        draftData,
         coCooksIds,
-        hasDraftCoCooks,
-        hasInviteToken,
+        watch,
+        step,
+        currentUser,
     });
-
-    const activeLockField =
-        recipeModal.isOpen && isCollaborativeSession && lockTargetId
-            ? `step:${step}`
-            : null;
-
-    const lock = useRecipeLock(
-        isCollaborativeSession ? lockTargetId : null,
-        currentUser?.id,
-        activeLockField
-    );
-    const isCurrentStepLocked = Boolean(lock?.isLockedByOther(`step:${step}`));
 
     useEffect(() => {
         syncFormFromDraft(setValue, getValues, step, lock, false);
     }, [draftData, syncFormFromDraft, setValue, getValues, step, lock]);
 
-    const [prevDraftId, setPrevDraftId] = useState<string | null>(
-        () => draftData?.draftId || null
-    );
-
-    const currentDraftId = draftData?.draftId || null;
-    if (!recipeModal.isEditMode && currentDraftId !== prevDraftId) {
-        setPrevDraftId(currentDraftId);
-        if (draftData) {
-            if (Array.isArray(draftData.ingredients)) {
-                setNumIngredients(Math.max(1, draftData.ingredients.length));
-            }
-            if (Array.isArray(draftData.steps)) {
-                setNumSteps(Math.max(1, draftData.steps.length));
-            }
-            if (draftData.currentStep !== undefined) {
-                setStep(
-                    Math.max(
-                        0,
-                        Math.min(draftData.currentStep, STEPS_LENGTH - 1)
-                    )
-                );
-            }
-        } else {
-            setStep(STEPS.CATEGORY);
-            setNumIngredients(1);
-            setNumSteps(1);
-        }
-    }
+    useDraftSwitchSync({
+        isEditMode: recipeModal.isEditMode,
+        draftData,
+        setStep,
+        setNumIngredients,
+        setNumSteps,
+    });
 
     const {
         selectedCoCooks,
