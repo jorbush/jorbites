@@ -1,10 +1,40 @@
+const BULLET_PATTERN = /[•⋅◦▪▫●○◆◇➔➢]|(?<![a-zA-ZÀ-ÿ0-9])·|·(?![a-zA-ZÀ-ÿ0-9])/;
+const BULLET_SPLIT_REGEX =
+    /\s*(?:[•⋅◦▪▫●○◆◇➔➢]|(?<![a-zA-ZÀ-ÿ0-9])·|·(?![a-zA-ZÀ-ÿ0-9]))\s*/;
+
+/**
+ * Checks if a string is an introductory header rather than an item.
+ * e.g., "Solo necesitas:", "Ingredientes:", "Para la masa:"
+ */
+function isHeader(item: string): boolean {
+    const trimmed = item.trim();
+    if (!trimmed) return false;
+    if (/:\s*$/.test(trimmed)) return true;
+    return /^(?:solo necesitas|només necessites|nomes necessites|ingredientes|ingredients|necesitas|you (?:will )?need|things you need|pasos(?: a seguir)?|steps|instrucciones|instructions)\s*:?$/i.test(
+        trimmed
+    );
+}
+
+/**
+ * Removes introductory labels from an item if present.
+ * e.g., "Solo necesitas: 2 plátanos" -> "2 plátanos"
+ */
+function stripIntroPrefix(text: string): string {
+    return text.replace(
+        /^(?:solo necesitas|només necessites|nomes necessites|ingredientes|ingredients|necesitas|you (?:will )?need|things you need|pasos(?: a seguir)?|steps|instrucciones|instructions)\s*:\s*/i,
+        ''
+    );
+}
+
 /**
  * Cleans an item by removing common bullet/number prefixes and trailing punctuation.
  */
 function cleanItem(line: string, removeTrailingPeriod = true): string {
     let trimmed = line.trim();
-    // Remove prefixes: "1.", "1)", "1 -", "-", "*", "•", "→", "⋅"
-    trimmed = trimmed.replace(/^(?:\d+[.)]\s*|[-*•→⋅]\s*)/, '').trim();
+    // Remove prefixes: "1.", "1)", "1 -", "-", "*", "•", "→", "⋅", etc.
+    trimmed = trimmed
+        .replace(/^(?:\d+[.)]\s*|[-*•→⋅·◦▪▫●○◆◇➔➢]\s*)/, '')
+        .trim();
     if (removeTrailingPeriod) {
         trimmed = trimmed.replace(/\.$/, '').trim();
     }
@@ -12,10 +42,23 @@ function cleanItem(line: string, removeTrailingPeriod = true): string {
 }
 
 /**
+ * Splits a text containing inline bullets into cleaned non-header items.
+ */
+function splitByBullets(text: string): string[] {
+    return text.split(BULLET_SPLIT_REGEX).flatMap((item) => {
+        const trimmed = item.trim();
+        if (!trimmed || isHeader(trimmed)) return [];
+        const stripped = stripIntroPrefix(trimmed);
+        const cleaned = cleanItem(stripped, true);
+        return cleaned && !isHeader(cleaned) ? [cleaned] : [];
+    });
+}
+
+/**
  * Parses plain text ingredients into an array of strings.
  * - Handles multiline inputs (one per line, numbered, bullets)
- * - If single line/paragraph, intelligently splits by commas/semicolons (protecting decimal numbers like 1,5 kg)
- *   or sentence boundaries.
+ * - If single line/paragraph, intelligently splits by inline bullets (e.g. "Solo necesitas: • item 1 • item 2"),
+ *   commas/semicolons (protecting decimal numbers like 1,5 kg), or sentence boundaries.
  */
 export function parseIngredientsText(
     text: string,
@@ -32,30 +75,51 @@ export function parseIngredientsText(
 
     let itemsToProcess: string[] = [];
 
-    // If single line or all content is in one line, check for comma/semicolon separation
+    // If single line or all content is in one line, check for bullet or comma/semicolon separation
     if (rawLines.length === 1) {
         const singleLine = rawLines[0];
-        // Split on commas/semicolons not between digits, or period before a capitalized word
-        const splitItems = singleLine
-            .split(/(?<!\d)[,;](?!\d)|(?<=[a-zÀ-ÿ0-9])\.(?=[A-ZÀ-ÿ])/)
-            .flatMap((item) => {
-                const cleaned = cleanItem(item, true);
-                return cleaned ? [cleaned] : [];
-            });
-
-        if (splitItems.length > 1) {
-            itemsToProcess = splitItems;
+        if (BULLET_PATTERN.test(singleLine)) {
+            const bulletItems = splitByBullets(singleLine);
+            if (bulletItems.length > 0) {
+                itemsToProcess = bulletItems;
+            } else {
+                itemsToProcess = rawLines;
+            }
         } else {
-            itemsToProcess = rawLines;
+            // Split on commas/semicolons not between digits, or period before a capitalized word
+            const splitItems = singleLine
+                .split(/(?<!\d)[,;](?!\d)|(?<=[a-zÀ-ÿ0-9])\.(?=[A-ZÀ-ÿ])/)
+                .flatMap((item) => {
+                    const trimmed = item.trim();
+                    if (!trimmed || isHeader(trimmed)) return [];
+                    const stripped = stripIntroPrefix(trimmed);
+                    const cleaned = cleanItem(stripped, true);
+                    return cleaned && !isHeader(cleaned) ? [cleaned] : [];
+                });
+
+            if (splitItems.length > 1) {
+                itemsToProcess = splitItems;
+            } else {
+                itemsToProcess = rawLines;
+            }
         }
     } else {
-        itemsToProcess = rawLines;
+        itemsToProcess = rawLines.flatMap((line) => {
+            const trimmed = line.trim();
+            if (!trimmed || isHeader(trimmed)) return [];
+            if (BULLET_PATTERN.test(trimmed)) {
+                return splitByBullets(trimmed);
+            }
+            const stripped = stripIntroPrefix(trimmed);
+            const cleaned = cleanItem(stripped, true);
+            return cleaned && !isHeader(cleaned) ? [cleaned] : [];
+        });
     }
 
     const items: string[] = [];
     for (const rawItem of itemsToProcess) {
         const cleaned = cleanItem(rawItem, true);
-        if (cleaned) {
+        if (cleaned && !isHeader(cleaned)) {
             items.push(cleaned);
             if (maxItems && items.length >= maxItems) {
                 break;
@@ -69,7 +133,7 @@ export function parseIngredientsText(
 /**
  * Parses plain text steps into an array of strings.
  * - Handles multiline inputs (one per line, numbered, bullets)
- * - If single line/paragraph, splits by sentence delimiters (. ! ?) and inline numbers.
+ * - If single line/paragraph, splits by inline bullets, sentence delimiters (. ! ?) and inline numbers.
  */
 export function parseStepsText(text: string, maxItems?: number): string[] {
     if (!text || typeof text !== 'string') {
@@ -83,35 +147,56 @@ export function parseStepsText(text: string, maxItems?: number): string[] {
 
     let itemsToProcess: string[] = [];
 
-    // If single line or all content is in one line, check for sentence/period separation
+    // If single line or all content is in one line, check for bullet or sentence/period separation
     if (rawLines.length === 1) {
         const singleLine = rawLines[0];
-        // Split by:
-        // 1. Inline numbering (e.g. "1. First step 2. Second step")
-        // 2. Sentence end followed by space/punctuation: (?<=[.!?])\s+
-        // 3. Period between word and letter/digit without space (e.g. "35mn.a Mèdia" or "horno.Poner")
-        const splitItems = singleLine
-            .split(
-                /(?<=\D)(?=\d+[.)]\s+)|(?<=[.!?])\s+|(?<=[a-zÀ-ÿ0-9])\.(?=[a-zA-ZÀ-ÿ])/
-            )
-            .flatMap((item) => {
-                const cleaned = cleanItem(item, true);
-                return cleaned ? [cleaned] : [];
-            });
-
-        if (splitItems.length > 1) {
-            itemsToProcess = splitItems;
+        if (BULLET_PATTERN.test(singleLine)) {
+            const bulletItems = splitByBullets(singleLine);
+            if (bulletItems.length > 0) {
+                itemsToProcess = bulletItems;
+            } else {
+                itemsToProcess = rawLines;
+            }
         } else {
-            itemsToProcess = rawLines;
+            // Split by:
+            // 1. Inline numbering (e.g. "1. First step 2. Second step")
+            // 2. Sentence end followed by space/punctuation: (?<=[.!?])\s+
+            // 3. Period between word and letter/digit without space (e.g. "35mn.a Mèdia" or "horno.Poner")
+            const splitItems = singleLine
+                .split(
+                    /(?<=\D)(?=\d+[.)]\s+)|(?<=[.!?])\s+|(?<=[a-zÀ-ÿ0-9])\.(?=[a-zA-ZÀ-ÿ])/
+                )
+                .flatMap((item) => {
+                    const trimmed = item.trim();
+                    if (!trimmed || isHeader(trimmed)) return [];
+                    const stripped = stripIntroPrefix(trimmed);
+                    const cleaned = cleanItem(stripped, true);
+                    return cleaned && !isHeader(cleaned) ? [cleaned] : [];
+                });
+
+            if (splitItems.length > 1) {
+                itemsToProcess = splitItems;
+            } else {
+                itemsToProcess = rawLines;
+            }
         }
     } else {
-        itemsToProcess = rawLines;
+        itemsToProcess = rawLines.flatMap((line) => {
+            const trimmed = line.trim();
+            if (!trimmed || isHeader(trimmed)) return [];
+            if (BULLET_PATTERN.test(trimmed)) {
+                return splitByBullets(trimmed);
+            }
+            const stripped = stripIntroPrefix(trimmed);
+            const cleaned = cleanItem(stripped, true);
+            return cleaned && !isHeader(cleaned) ? [cleaned] : [];
+        });
     }
 
     const items: string[] = [];
     for (const rawItem of itemsToProcess) {
         const cleaned = cleanItem(rawItem, true);
-        if (cleaned) {
+        if (cleaned && !isHeader(cleaned)) {
             items.push(cleaned);
             if (maxItems && items.length >= maxItems) {
                 break;

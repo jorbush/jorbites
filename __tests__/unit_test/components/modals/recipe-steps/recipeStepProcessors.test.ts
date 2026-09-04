@@ -123,6 +123,38 @@ describe('recipeStepProcessors', () => {
             expect(toast.success).toHaveBeenCalledWith('4 ingredients_applied');
         });
 
+        it('automatically splits single ingredient field with bullets and intro text in list mode', () => {
+            const mockGetValues = vi.fn().mockImplementation((key: string) => {
+                if (key === 'ingredient-0') {
+                    return 'Solo necesitas: • 2 plátanos maduros 🍌 • 1 vaso de harina integral de avena • 2 huevos 🥚 • 1 cucharada de levadura • Pepitas de choc';
+                }
+                return '';
+            });
+            const mockSetIngredients = vi.fn();
+            const mockSetIngredientsInputMode = vi.fn();
+            const mockSetCustomValue = vi.fn();
+
+            const result = processIngredientsOnStepAdvance({
+                ingredientsInputMode: 'list',
+                getValues: mockGetValues,
+                setIngredients: mockSetIngredients,
+                setIngredientsInputMode: mockSetIngredientsInputMode,
+                setCustomValue: mockSetCustomValue,
+                isCurrentStepLocked: false,
+                t: mockT,
+            });
+
+            expect(result).toBe(true);
+            expect(mockSetIngredients).toHaveBeenCalledWith([
+                '2 plátanos maduros 🍌',
+                '1 vaso de harina integral de avena',
+                '2 huevos 🥚',
+                '1 cucharada de levadura',
+                'Pepitas de choc',
+            ]);
+            expect(toast.success).toHaveBeenCalledWith('5 ingredients_applied');
+        });
+
         it('collects multiple list slots and updates ingredients form value', () => {
             const mockGetValues = vi.fn().mockImplementation((key: string) => {
                 if (key === 'ingredient-0') return '1 Apple';
@@ -147,6 +179,35 @@ describe('recipeStepProcessors', () => {
             expect(mockSetCustomValue).toHaveBeenCalledWith('ingredients', [
                 '1 Apple',
                 '2 Bananas',
+            ]);
+        });
+
+        it('does not split or remove headers when multiple ingredient items exist (e.g. "for the sauce: ketchup and mayonese")', () => {
+            const mockGetValues = vi.fn().mockImplementation((key: string) => {
+                if (key === 'ingredient-0') return '200g flour';
+                if (key === 'ingredient-1')
+                    return 'for the sauce: ketchup and mayonese';
+                return '';
+            });
+            const mockSetIngredients = vi.fn();
+            const mockSetIngredientsInputMode = vi.fn();
+            const mockSetCustomValue = vi.fn();
+
+            const result = processIngredientsOnStepAdvance({
+                ingredientsInputMode: 'list',
+                getValues: mockGetValues,
+                setIngredients: mockSetIngredients,
+                setIngredientsInputMode: mockSetIngredientsInputMode,
+                setCustomValue: mockSetCustomValue,
+                isCurrentStepLocked: false,
+                t: mockT,
+            });
+
+            expect(result).toBe(true);
+            expect(mockSetIngredients).not.toHaveBeenCalled();
+            expect(mockSetCustomValue).toHaveBeenCalledWith('ingredients', [
+                '200g flour',
+                'for the sauce: ketchup and mayonese',
             ]);
         });
     });
@@ -249,6 +310,36 @@ describe('recipeStepProcessors', () => {
                 'Preheat oven to',
                 'Mix the dry ingredients together',
                 'Pour into baking pan',
+            ]);
+            expect(toast.success).toHaveBeenCalledWith('3 steps_applied');
+        });
+
+        it('automatically splits single step field with bullets and intro text in list mode', () => {
+            const mockGetValues = vi.fn().mockImplementation((key: string) => {
+                if (key === 'step-0') {
+                    return 'Solo necesitas seguir estos pasos: • Pelar las patatas • Cortar en rodajas • Freír en abundante aceite';
+                }
+                return '';
+            });
+            const mockSetSteps = vi.fn();
+            const mockSetStepsInputMode = vi.fn();
+            const mockSetCustomValue = vi.fn();
+
+            const result = processStepsOnStepAdvance({
+                stepsInputMode: 'list',
+                getValues: mockGetValues,
+                setSteps: mockSetSteps,
+                setStepsInputMode: mockSetStepsInputMode,
+                setCustomValue: mockSetCustomValue,
+                isCurrentStepLocked: false,
+                t: mockT,
+            });
+
+            expect(result).toBe(true);
+            expect(mockSetSteps).toHaveBeenCalledWith([
+                'Pelar las patatas',
+                'Cortar en rodajas',
+                'Freír en abundante aceite',
             ]);
             expect(toast.success).toHaveBeenCalledWith('3 steps_applied');
         });
