@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import {
     extractIngredientsAndSteps,
     collectDraftFormData,
+    checkIsCollaborativeSession,
 } from '@/app/utils/draftFormUtils';
 import { STEPS } from '@/app/utils/constants';
 
@@ -564,6 +565,65 @@ describe('draftFormUtils helper functions', () => {
             expect(res.data.minutes).toBe(45);
             expect(res.data.prepTime).toBe(15);
             expect(res.data.cookTime).toBe(30);
+        });
+    });
+
+    describe('checkIsCollaborativeSession', () => {
+        it('returns true when in edit mode', () => {
+            expect(
+                checkIsCollaborativeSession({
+                    isEditMode: true,
+                })
+            ).toBe(true);
+        });
+
+        it('returns true when draftType is shared', () => {
+            expect(
+                checkIsCollaborativeSession({
+                    isEditMode: false,
+                    draftType: 'shared',
+                })
+            ).toBe(true);
+        });
+
+        it('returns true when hasDraftCoCooks is true', () => {
+            expect(
+                checkIsCollaborativeSession({
+                    isEditMode: false,
+                    hasDraftCoCooks: true,
+                })
+            ).toBe(true);
+        });
+
+        it('returns true when coCooksIds has items', () => {
+            expect(
+                checkIsCollaborativeSession({
+                    isEditMode: false,
+                    coCooksIds: ['user-1'],
+                })
+            ).toBe(true);
+        });
+
+        it('returns true when hasInviteToken is true', () => {
+            expect(
+                checkIsCollaborativeSession({
+                    isEditMode: false,
+                    hasInviteToken: true,
+                })
+            ).toBe(true);
+        });
+
+        it('returns false for solo recipe with no collaborators or tokens even if activeDraftId is provided', () => {
+            expect(
+                checkIsCollaborativeSession({
+                    isEditMode: false,
+                    draftType: 'solo',
+                    coCooksIds: [],
+                    hasDraftCoCooks: false,
+                    hasInviteToken: false,
+                    activeDraftId: 'solo-draft-123',
+                })
+            ).toBe(false);
         });
     });
 });

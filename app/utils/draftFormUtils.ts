@@ -251,3 +251,26 @@ export function collectDraftFormData(
         currentInviteToken,
     };
 }
+
+export interface CheckIsCollaborativeSessionProps {
+    isEditMode?: boolean;
+    draftType?: string;
+    coCooksIds?: string[];
+    hasDraftCoCooks?: boolean;
+    hasInviteToken?: boolean;
+}
+
+export function checkIsCollaborativeSession({
+    isEditMode,
+    draftType,
+    coCooksIds,
+    hasDraftCoCooks,
+    hasInviteToken,
+}: CheckIsCollaborativeSessionProps): boolean {
+    if (isEditMode) return true;
+    if (draftType === 'shared') return true;
+    if (hasDraftCoCooks) return true;
+    if (Array.isArray(coCooksIds) && coCooksIds.length > 0) return true;
+    if (hasInviteToken) return true;
+    return false;
+}

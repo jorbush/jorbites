@@ -1,18 +1,11 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
+import { useForm, FieldValues } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
-import {
-    RECIPE_MAX_INGREDIENTS,
-    RECIPE_MAX_STEPS,
-    STEPS,
-    STEPS_LENGTH,
-} from '@/app/utils/constants';
+import { STEPS, STEPS_LENGTH } from '@/app/utils/constants';
 
 import { useRecipeLock } from '@/app/hooks/useRecipeLock';
 import { useDraftSync } from '@/app/hooks/useDraftSync';
@@ -24,12 +17,12 @@ import { EditRecipeData } from '@/app/hooks/useRecipeModal';
 import { DraftData } from '@/app/types/draft';
 import { buildInitialRecipeDefaultValues } from './recipeFormDefaults';
 import { useRecipeRelatedContent } from './useRecipeRelatedContent';
-import {
-    processIngredientsOnStepAdvance,
-    processStepsOnStepAdvance,
-} from './recipeStepProcessors';
+import { useRecipeItemsState } from './useRecipeItemsState';
+import { useRecipeStepNavigation } from './useRecipeStepNavigation';
 
 export interface RecipeModalStateLike extends RecipeModalDraftController {
+    isEditMode?: boolean;
+    onClose?: () => void;
     editRecipeData?: EditRecipeData | null;
     questId?: string | null;
 }
@@ -41,27 +34,13 @@ interface UseRecipeFormStateProps {
     mutateDraft?: () => Promise<unknown>;
 }
 
-function checkIsCollaborativeSession({
-    isEditMode,
-    draftType,
-    coCooksIds,
-    hasDraftCoCooks,
-    hasInviteToken,
-}: {
-    isEditMode?: boolean;
-    draftType?: string;
-    coCooksIds?: string[];
-    hasDraftCoCooks?: boolean;
-    hasInviteToken?: boolean;
-    activeDraftId?: string | null;
-}): boolean {
-    if (isEditMode) return true;
-    if (draftType === 'shared') return true;
-    if (hasDraftCoCooks) return true;
-    if (Array.isArray(coCooksIds) && coCooksIds.length > 0) return true;
-    if (hasInviteToken) return true;
-    return false;
-}
+import {
+    checkIsCollaborativeSession,
+    CheckIsCollaborativeSessionProps,
+} from '@/app/utils/draftFormUtils';
+
+export { checkIsCollaborativeSession };
+export type { CheckIsCollaborativeSessionProps };
 
 export function useRecipeFormState({
     recipeModal,
@@ -95,43 +74,6 @@ export function useRecipeFormState({
         }
         return STEPS.CATEGORY;
     });
-
-    const [numIngredients, setNumIngredients] = useState<number>(() => {
-        if (recipeModal.isEditMode && recipeModal.editRecipeData) {
-            return recipeModal.editRecipeData.ingredients?.length || 1;
-        }
-        if (draftData && draftData.ingredients) {
-            return draftData.ingredients.length || 1;
-        }
-        return 1;
-    });
-
-    const [numSteps, setNumSteps] = useState<number>(() => {
-        if (recipeModal.isEditMode && recipeModal.editRecipeData) {
-            return recipeModal.editRecipeData.steps?.length || 1;
-        }
-        if (draftData && draftData.steps) {
-            return draftData.steps.length || 1;
-        }
-        return 1;
-    });
-
-    const effectiveNumIngredients = Math.max(
-        numIngredients,
-        Array.isArray(draftData?.ingredients) ? draftData.ingredients.length : 1
-    );
-    const effectiveNumSteps = Math.max(
-        numSteps,
-        Array.isArray(draftData?.steps) ? draftData.steps.length : 1
-    );
-
-    const [isLoading, setIsLoading] = useState(false);
-    const [ingredientsInputMode, setIngredientsInputMode] = useState<
-        'list' | 'text'
-    >('list');
-    const [stepsInputMode, setStepsInputMode] = useState<'list' | 'text'>(
-        'list'
-    );
 
     const initialDefaultValues = useMemo(
         () => buildInitialRecipeDefaultValues(recipeModal, draftData),
@@ -183,71 +125,27 @@ export function useRecipeFormState({
 
     const setCustomValue = updateFormField;
 
-    const addIngredientInput = useCallback(() => {
-        if (effectiveNumIngredients >= RECIPE_MAX_INGREDIENTS) {
-            toast.error(
-                t('max_ingredients_reached') ||
-                    `Maximum of ${RECIPE_MAX_INGREDIENTS} ingredients allowed`
-            );
-            return;
-        }
-        setNumIngredients(effectiveNumIngredients + 1);
-    }, [effectiveNumIngredients, t]);
-
-    const removeIngredientInput = useCallback(
-        (index: number) => {
-            setNumIngredients(Math.max(1, effectiveNumIngredients - 1));
-            updateFormField(`ingredient-${index}`, '');
-        },
-        [effectiveNumIngredients, updateFormField]
-    );
-
-    const setIngredients = useCallback(
-        (ingredients: string[]) => {
-            for (let i = 0; i < RECIPE_MAX_INGREDIENTS; i++) {
-                updateFormField(`ingredient-${i}`, '');
-            }
-            setNumIngredients(Math.max(1, ingredients.length));
-            ingredients.forEach((ingredient, index) => {
-                updateFormField(`ingredient-${index}`, ingredient);
-            });
-            updateFormField('ingredients', ingredients);
-        },
-        [updateFormField]
-    );
-
-    const addStepInput = useCallback(() => {
-        if (effectiveNumSteps >= RECIPE_MAX_STEPS) {
-            toast.error(
-                t('max_steps_reached') ||
-                    `Maximum of ${RECIPE_MAX_STEPS} steps allowed`
-            );
-            return;
-        }
-        setNumSteps(effectiveNumSteps + 1);
-    }, [effectiveNumSteps, t]);
-
-    const removeStepInput = useCallback(
-        (index: number) => {
-            setNumSteps(Math.max(1, effectiveNumSteps - 1));
-            updateFormField(`step-${index}`, '');
-        },
-        [effectiveNumSteps, updateFormField]
-    );
-
-    const setSteps = useCallback(
-        (steps: string[]) => {
-            for (let i = 0; i < RECIPE_MAX_STEPS; i++) {
-                updateFormField(`step-${i}`, '');
-            }
-            setNumSteps(Math.max(1, steps.length));
-            steps.forEach((step, index) => {
-                updateFormField(`step-${index}`, step);
-            });
-            updateFormField('steps', steps);
-        },
-        [updateFormField]
-    );
+    const {
+        numIngredients,
+        numSteps,
+        setNumIngredients,
+        setNumSteps,
+        ingredientsInputMode,
+        setIngredientsInputMode,
+        stepsInputMode,
+        setStepsInputMode,
+        addIngredientInput,
+        removeIngredientInput,
+        setIngredients,
+        addStepInput,
+        removeStepInput,
+        setSteps,
+    } = useRecipeItemsState({
+        recipeModal,
+        draftData,
+        updateFormField,
+        t,
+    });
 
     const formAccessor = useMemo(
         () => ({
@@ -275,7 +173,6 @@ export function useRecipeFormState({
         coCooksIds,
         hasDraftCoCooks,
         hasInviteToken,
-        activeDraftId: recipeModal.activeDraftId,
     });
 
     const activeLockField =
@@ -359,8 +256,8 @@ export function useRecipeFormState({
             formAccessor,
             step,
             draftData,
-            effectiveNumIngredients,
-            effectiveNumSteps,
+            numIngredients,
+            numSteps,
             ingredientsInputMode,
             stepsInputMode
         );
@@ -373,8 +270,8 @@ export function useRecipeFormState({
             formAccessor,
             step,
             draftData,
-            effectiveNumIngredients,
-            effectiveNumSteps,
+            numIngredients,
+            numSteps,
             ingredientsInputMode,
             stepsInputMode,
             stepOverride
@@ -385,146 +282,40 @@ export function useRecipeFormState({
         await _deleteDraft(formAccessor, draftData);
     };
 
-    const onBack = async () => {
-        if (process.env.NODE_ENV === 'production' && !recipeModal.isEditMode) {
-            await saveDraft(step - 1);
-        }
-        setStep((value) => Math.max(value - 1, 0));
-        if (mutateDraft) {
-            void mutateDraft();
-        }
-    };
-
-    const onNext = () => {
-        if (step >= STEPS_LENGTH - 1) {
-            return false;
-        }
-
-        if (step === STEPS.INGREDIENTS) {
-            const ok = processIngredientsOnStepAdvance({
-                ingredientsInputMode,
-                getValues,
-                setIngredients,
-                setIngredientsInputMode,
-                setCustomValue,
-                isCurrentStepLocked,
-                t,
-            });
-            if (!ok) return false;
-        }
-
-        if (step === STEPS.STEPS) {
-            const ok = processStepsOnStepAdvance({
-                stepsInputMode,
-                getValues,
-                setSteps,
-                setStepsInputMode,
-                setCustomValue,
-                isCurrentStepLocked,
-                t,
-            });
-            if (!ok) return false;
-        }
-
-        setStep((value) => value + 1);
-        if (mutateDraft) {
-            void mutateDraft();
-        }
-        return true;
-    };
-
-    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-        if (step !== STEPS.IMAGES) {
-            const success = onNext();
-            if (
-                success &&
-                process.env.NODE_ENV === 'production' &&
-                !recipeModal.isEditMode
-            ) {
-                await saveDraft(step + 1);
-            }
-            return;
-        }
-
-        if (
-            process.env.NEXT_PUBLIC_SKIP_IMAGE_VALIDATION !== 'true' &&
-            imageSrc === ''
-        ) {
-            toast.error('You must upload an image');
-            return;
-        }
-
-        setIsLoading(true);
-
-        try {
-            if (recipeModal.isEditMode && recipeModal.editRecipeData) {
-                const url = `${window.location.origin}/api/recipe/${recipeModal.editRecipeData.id}`;
-                await axios.patch(url, data);
-                toast.success(t('recipe_updated'));
-            } else {
-                const url = `${window.location.origin}/api/recipes`;
-                await axios.post(url, data);
-                await deleteDraft();
-                toast.success(t('recipe_posted'));
-            }
-
-            reset({
-                categories: [],
-                method: '',
-                imageSrc: '',
-                imageSrc1: '',
-                imageSrc2: '',
-                imageSrc3: '',
-                title: '',
-                description: '',
-                ingredients: [],
-                steps: [],
-                minutes: 30,
-                prepTime: undefined,
-                cookTime: undefined,
-                coCooksIds: [],
-                linkedRecipeIds: [],
-                youtubeUrl: '',
-                questId: '',
-                draftId: '',
-                inviteToken: '',
-            });
-            setStep(STEPS.CATEGORY);
-            recipeModal.onClose?.();
-            if (refresh) {
-                refresh();
-            }
-        } catch {
-            toast.error(t('something_went_wrong'));
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const actionLabel = useMemo(() => {
-        if (step === STEPS.IMAGES) {
-            if (isLoading) {
-                return recipeModal.isEditMode
-                    ? t('updating_recipe') || 'Updating...'
-                    : t('creating_recipe') || 'Creating...';
-            }
-            return recipeModal.isEditMode ? t('update') : t('create');
-        }
-        return t('next');
-    }, [step, t, recipeModal.isEditMode, isLoading]);
-
-    const secondaryActionLabel = useMemo(() => {
-        if (step === STEPS.CATEGORY) {
-            return undefined;
-        }
-        return t('back');
-    }, [step, t]);
+    const {
+        isLoading,
+        onBack,
+        onNext,
+        onSubmit,
+        actionLabel,
+        secondaryActionLabel,
+    } = useRecipeStepNavigation({
+        step,
+        setStep,
+        recipeModal,
+        mutateDraft,
+        saveDraft,
+        deleteDraft,
+        reset,
+        imageSrc,
+        ingredientsInputMode,
+        stepsInputMode,
+        setIngredients,
+        setSteps,
+        setIngredientsInputMode,
+        setStepsInputMode,
+        setCustomValue,
+        getValues,
+        isCurrentStepLocked,
+        t,
+        refresh,
+    });
 
     return {
         step,
         setStep,
-        numIngredients: effectiveNumIngredients,
-        numSteps: effectiveNumSteps,
+        numIngredients,
+        numSteps,
         isLoading,
         isSaving,
         isDirty,
@@ -567,6 +358,7 @@ export function useRecipeFormState({
         setSteps,
         actionLabel,
         secondaryActionLabel,
+        onNext,
         onBack,
         onSubmit,
         setCustomValue,
