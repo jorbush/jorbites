@@ -13,6 +13,9 @@ Welcome to the Jorbites documentation! This directory contains comprehensive doc
 - **[API Error Handling](api-error-handling.md)** - API endpoint documentation and error handling patterns
 
 ### Technical Implementation
+- **[Collaborative Cooking](collaborative_cooking.md)** - Multi-author recipe creation and editing workflow
+- **[Recipe Drafts System](drafts.md)** - Multi-slot drafts persistence, quota, and lifecycle
+- **[Redis Soft-Locking in Recipe Collaboration](redis_lock_recipes_collaboration.md)** - Step-level soft-locking mechanics, atomic Lua scripts, and Redis architecture
 - **[Quest Fulfillment Badges Workflow](quest_badges_workflow.md)** - System design, Mermaid sequence diagrams, and microservice communication for quest badges
 - **[Automated Top Recipe Voting](top_recipe_voting.md)** - System design and implementation details for the in-app voting system
 - **[Image Optimization](image_optimization.md)** - Custom image proxy implementation and optimization techniques
