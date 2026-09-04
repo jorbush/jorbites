@@ -11,7 +11,7 @@
 
 **Search** — Prisma `title: { contains, mode: 'insensitive' }` (regex on title only). Filters: 1 category, cuisine, calorie range, yield range, date range. Sort: newest/oldest/title/most-liked/best-rated. Results cached in Redis (24 h). **Gaps**: can't search by ingredient or description; no dietary/time filters (fields don't exist on schema); no relevance scoring; no autocomplete on the main search; no recent/trending searches; zero MongoDB indexes on Recipe.
 
-**Drafts & Collaboration** — Drafts live entirely in Redis: solo drafts at `draft:user:{userId}` (1 slot), shared drafts at `draft:shared:{draftId}` (7-day TTL). Multi-draft backend exists (`user:drafts:{userId}` set + `GET /api/draft/active`). Collaboration uses SWR polling (3 s) + step-level soft-locks (30 s TTL, heartbeat every 10 s, atomic Lua release). Smart non-destructive field sync and step-scoped saves prevent overwrites. Max 4 co-cooks. **Gaps**: no drafts dashboard UI (can't browse/switch drafts); solo drafts limited to 1 slot; no version history; no field-level presence (only step-level locking); invite is link-only with no in-app management.
+**Drafts & Collaboration** — Full multi-slot draft management and real-time collaboration are active. Solo drafts support up to 5 slots at `draft:user:{userId}:{slotId}` tracked in `user:drafts:{userId}`, and shared collaborative drafts live at `draft:shared:{draftId}` (7-day TTL). The unified `DraftsModal` dashboard allows users to browse, switch, duplicate, delete, and create drafts with progress pills, co-cook avatars, and TTL countdowns. Collaboration features SWR sync (3 s) + step-level soft-locks (30 s TTL, heartbeat every 10 s, atomic Lua release, locked step container `inert` guard) and link-based invite/join flows (`/api/draft/invite`, `/api/draft/join`). **Gaps**: in-app co-cook role permissions (editor vs viewer); sub-step field-level presence dots; change feed log panel; scheduled publishing; version history/restore.
 
 ---
 
@@ -121,37 +121,37 @@ Each issue is tagged with **Value** (how much the user benefits) and **Effort** 
 
 The backend already supports multiple shared drafts via `user:drafts:{userId}` and `GET /api/draft/active`. The gap is entirely in the frontend.
 
-| # | Issue | Description | Scope |
-|---|-------|-------------|-------|
-| D-01 | **Multi-slot solo drafts backend** | Change the solo draft Redis key from `draft:user:{userId}` to `draft:user:{userId}:{slotId}`. Add the slot to the `user:drafts:{userId}` set. Cap at 5 solo draft slots per user. Backward-compatible with existing solo drafts. | Backend |
-| D-02 | **Draft metadata & title utilities** | Add helper utilities: auto-generate a scannable placeholder (e.g. *"Untitled — Pasta"*, *"Untitled — 3 ingredients"*) when title is empty; calculate draft TTL remaining from Redis (e.g. "Expires in 5 days" for shared, "No expiry" for solo, amber warning when < 24 h). | Frontend |
-| D-03 | **Draft card component & quick actions** | Build reusable draft card component displaying title, last edited timestamp, step completion progress pills, co-cook avatars, and TTL badge. Add quick actions on each card: Delete (`DELETE /api/draft`), Duplicate (clone draft payload in Redis). Hover on desktop, swipe on mobile. | Frontend |
-| D-04 | **"New draft" creation action** | Add helper / action to initialize a fresh solo or shared draft in a new Redis slot and navigate directly into the `RecipeModal` wizard with the new `draftId`. | Frontend |
-| D-05 | **Drafts dashboard page** | New `/recipes/drafts` page. Clean card grid assembling D-03 cards from `GET /api/draft/active`, "New draft" button (D-04), and an empty state illustration. Standalone page is now fully functional and testable in production. | Frontend |
-| D-06 | **Navigation entry point to drafts** | Now that `/recipes/drafts` exists: when user clicks "Post a recipe" in the navbar, if they have ≥ 1 existing draft → route to `/recipes/drafts`; if 0 drafts → create fresh draft and open `RecipeModal` directly. Add "My Drafts" link in the `UserMenu` dropdown for direct access. | Frontend |
-| D-07 | **Remove `DraftRecoveryDialog`** | With the drafts dashboard live and navigation connected (D-06), safely remove the legacy binary recovery dialog. | Frontend |
+| # | Issue | Description | Scope | Status |
+|---|-------|-------------|-------|:------:|
+| D-01 | **Multi-slot solo drafts backend** | Change the solo draft Redis key from `draft:user:{userId}` to `draft:user:{userId}:{slotId}`. Add the slot to the `user:drafts:{userId}` set. Cap at 5 solo draft slots per user. Backward-compatible with existing solo drafts. | Backend | ✅ Completed (PR #1642) |
+| D-02 | **Draft metadata & title utilities** | Add helper utilities: auto-generate a scannable placeholder (e.g. *"Untitled — Pasta"*, *"Untitled — 3 ingredients"*) when title is empty; calculate draft TTL remaining from Redis (e.g. "Expires in 5 days" for shared, "No expiry" for solo, amber warning when < 24 h). | Frontend | ✅ Completed (PR #1642) |
+| D-03 | **Draft card component & quick actions** | Build reusable draft card component displaying title, last edited timestamp, step completion progress pills, co-cook avatars, and TTL badge. Add quick actions on each card: Delete (`DELETE /api/draft`), Duplicate (clone draft payload in Redis). Hover on desktop, swipe on mobile. | Frontend | ✅ Completed (PR #1642) |
+| D-04 | **"New draft" creation action** | Add helper / action to initialize a fresh solo or shared draft in a new Redis slot and navigate directly into the `RecipeModal` wizard with the new `draftId`. | Frontend | ✅ Completed (PR #1642) |
+| D-05 | **Drafts dashboard modal UI** | Unified `DraftsModal` dashboard. Clean card grid assembling D-03 cards from `GET /api/draft/active`, "New draft" button (D-04), quota counter ("X/5 solo drafts"), and empty state. Seamless in-app switching without full-page navigation context loss. | Frontend | ✅ Completed (PR #1642) |
+| D-06 | **Navigation entry point to drafts** | Added "My Drafts" action in `UserMenu` dropdown with dynamic active count badge, and a "My Drafts" button in `RecipeModalTopActions` for switching active drafts mid-edit. | Frontend | ✅ Completed (PR #1642) |
+| D-07 | **Remove `DraftRecoveryDialog`** | With the drafts dashboard live and navigation connected (D-06), safely remove the legacy binary recovery dialog. | Frontend | ✅ Completed (PR #1642) |
 
 ### Phase 2 — Collaboration UX improvements _(Oct–Nov 2026)_
 
-| # | Issue | Description | Scope |
-|---|-------|-------------|-------|
-| D-08 | **In-app invite management** | Instead of only clipboard-copied links, add an in-modal panel to see pending/active co-cooks, copy/regenerate invite link, and remove co-cooks. Reuse `RelatedContentStep` patterns. | Frontend |
-| D-09 | **Conflict notification toast** | When SWR sync detects a field was changed by a co-cook on the step the user is currently editing, show a subtle inline toast: "Maria updated ingredients — tap to refresh". Non-blocking. | Frontend |
-| D-10 | **Co-cook role management** | Allow the draft owner to toggle co-cook permissions (editor / viewer) from the in-app invite panel (D-08). Viewer can browse but inputs are disabled. | Full-stack |
-| D-11 | **Field-level presence indicators** | Augment step-level locking with sub-step field granularity. Track which specific field (title, description, ingredient row N, step row N) a co-cook is editing. Show a coloured dot + tiny avatar next to the active field. Use the existing Redis lock key pattern: `lock:recipe:{id}:field:ingredient:{index}`. | Full-stack |
-| D-12 | **Change feed panel** | Slim collapsible panel in `RecipeModal` listing recent edits: "Ana added 'garlic' — 2 min ago". Populated from a lightweight `edit:{draftId}` Redis list (capped at last 30 events, TTL = draft TTL). | Full-stack |
+| # | Issue | Description | Scope | Status |
+|---|-------|-------------|-------|:------:|
+| D-08 | **In-app invite management** | Instead of only clipboard-copied links, add an in-modal panel to see pending/active co-cooks, copy/regenerate invite link, and remove co-cooks. Reuse `RelatedContentStep` patterns. | Frontend | ⏳ Pending |
+| D-09 | **Conflict notification toast** | When SWR sync detects a field was changed by a co-cook on the step the user is currently editing, show a subtle inline toast: "Maria updated ingredients — tap to refresh". Non-blocking. | Frontend | ⏳ Pending |
+| D-10 | **Co-cook role management** | Allow the draft owner to toggle co-cook permissions (editor / viewer) from the in-app invite panel (D-08). Viewer can browse but inputs are disabled. | Full-stack | ⏳ Pending |
+| D-11 | **Field-level presence indicators** | Augment step-level locking with sub-step field granularity. Track which specific field (title, description, ingredient row N, step row N) a co-cook is editing. Show a coloured dot + tiny avatar next to the active field. Use the existing Redis lock key pattern: `lock:recipe:{id}:field:ingredient:{index}`. | Full-stack | ⏳ Pending |
+| D-12 | **Change feed panel** | Slim collapsible panel in `RecipeModal` listing recent edits: "Ana added 'garlic' — 2 min ago". Populated from a lightweight `edit:{draftId}` Redis list (capped at last 30 events, TTL = draft TTL). | Full-stack | ⏳ Pending |
 
 ### Phase 3 — History, scheduling & polish _(Nov–Dec 2026)_
 
-| # | Issue | Description | Scope |
-|---|-------|-------------|-------|
-| D-13 | **Scheduled recipe publication** | Add a `scheduledPublishAt` `DateTime?` field on Recipe. In the final step of the recipe wizard, let the user pick a future date/time to publish instead of publishing immediately. Once scheduled, the recipe is locked from editing (show a "Scheduled for Oct 15" badge on the draft card). User can undo the scheduling to re-enable editing. | Full-stack |
-| D-14 | **Scheduled publication cron job** | GitHub Actions cron (daily at 06:00 UTC) that calls `POST /api/recipes/publish-scheduled` with `CRON_SECRET`. The endpoint queries recipes where `scheduledPublishAt <= now()` and `status = "draft"`, publishes them (status → published, trigger `badge_forge` level recalc, invalidate Redis cache), and sends a push notification to the author: "Your recipe is now live!". | Backend + CI |
-| D-15 | **Version snapshots** | Auto-save a full draft snapshot to a `RecipeVersion` Prisma model every 10 meaningful field changes or on manual "Save version". Store `recipeId` (or `draftId`), `data` (JSON), `createdBy`, `createdAt`, `label?`. Cap at 50 versions. | Backend |
-| D-16 | **Version history viewer** | Timeline rail in the editor sidebar with dots per version. Click → inline diff view (text diff for description/steps, list diff for ingredients). Minimal UI. | Frontend |
-| D-17 | **Restore version** | One-click restore. Auto-creates a snapshot of the current state first. | Full-stack |
-| D-18 | **Draft status labels** | Optional labels on draft cards: *In Progress*, *Ready for Review*, *Needs Photos*, *Scheduled*. Useful when author and photographer are different co-cooks. | Full-stack |
-| D-19 | **Offline draft editing** | Cache the active draft in IndexedDB via a service worker. Queue saves and sync to Redis when back online. Subtle "offline — changes will sync" indicator. | Frontend |
+| # | Issue | Description | Scope | Status |
+|---|-------|-------------|-------|:------:|
+| D-13 | **Scheduled recipe publication** | Add a `scheduledPublishAt` `DateTime?` field on Recipe. In the final step of the recipe wizard, let the user pick a future date/time to publish instead of publishing immediately. Once scheduled, the recipe is locked from editing (show a "Scheduled for Oct 15" badge on the draft card). User can undo the scheduling to re-enable editing. | Full-stack | ⏳ Pending |
+| D-14 | **Scheduled publication cron job** | GitHub Actions cron (daily at 06:00 UTC) that calls `POST /api/recipes/publish-scheduled` with `CRON_SECRET`. The endpoint queries recipes where `scheduledPublishAt <= now()` and `status = "draft"`, publishes them (status → published, trigger `badge_forge` level recalc, invalidate Redis cache), and sends a push notification to the author: "Your recipe is now live!". | Backend + CI | ⏳ Pending |
+| D-15 | **Version snapshots** | Auto-save a full draft snapshot to a `RecipeVersion` Prisma model every 10 meaningful field changes or on manual "Save version". Store `recipeId` (or `draftId`), `data` (JSON), `createdBy`, `createdAt`, `label?`. Cap at 50 versions. | Backend | ⏳ Pending |
+| D-16 | **Version history viewer** | Timeline rail in the editor sidebar with dots per version. Click → inline diff view (text diff for description/steps, list diff for ingredients). Minimal UI. | Frontend | ⏳ Pending |
+| D-17 | **Restore version** | One-click restore. Auto-creates a snapshot of the current state first. | Full-stack | ⏳ Pending |
+| D-18 | **Draft status labels** | Optional labels on draft cards: *In Progress*, *Ready for Review*, *Needs Photos*, *Scheduled*. Useful when author and photographer are different co-cooks. | Full-stack | ⏳ Pending |
+| D-19 | **Offline draft editing** | Cache the active draft in IndexedDB via a service worker. Queue saves and sync to Redis when back online. Subtle "offline — changes will sync" indicator. | Frontend | ⏳ Pending |
 
 ---
 
@@ -229,27 +229,27 @@ The backend already supports multiple shared drafts via `user:drafts:{userId}` a
 
 ### Drafts & Collaboration
 
-| # | Issue | Value | Effort | Priority |
-|---|-------|:-----:|:------:|----------|
-| D-01 | Multi-slot solo drafts backend | 🔴 3 | 🟢 1 | 🔧 Foundation — Redis key update, backwards-compatible |
-| D-02 | Draft metadata & title utilities | 🟡 2 | 🟢 1 | 🏆 Quick Win — auto-title placeholder + TTL helper |
-| D-03 | Draft card component & quick actions | 🟡 2 | 🟢 1 | 🏆 Quick Win — card UI with delete/duplicate actions |
-| D-04 | "New draft" creation action | 🟡 2 | 🟢 1 | 🏆 Quick Win — action to open modal with new slot |
-| D-05 | Drafts dashboard page | 🔴 3 | 🟡 2 | ⭐ High Value — `/recipes/drafts` grid page |
-| D-06 | Navigation entry point to drafts | 🔴 3 | 🟢 1 | 🏆 Quick Win — routes navbar/menu to `/recipes/drafts` |
-| D-07 | Remove `DraftRecoveryDialog` | 🟢 1 | 🟢 1 | 🏆 Quick Win — safely delete legacy dialog |
-| D-08 | In-app invite management | 🟡 2 | 🟡 2 | ⭐ High Value — better collab onboarding in modal |
-| D-09 | Conflict notification toast | 🟡 2 | 🟢 1 | 🏆 Quick Win — SWR diff check + inline alert |
-| D-10 | Co-cook role management | 🟢 1 | 🟢 1 | 💎 Nice-to-Have — editor/viewer toggle |
-| D-11 | Field-level presence indicators | 🟡 2 | 🔴 3 | 💎 Nice-to-Have — complex for incremental gain |
-| D-12 | Change feed panel | 🟢 1 | 🟡 2 | 💎 Nice-to-Have — collapsible log in modal |
-| D-13 | Scheduled recipe publication | 🔴 3 | 🟡 2 | ⭐ High Value — unique feature for creators |
-| D-14 | Scheduled publication cron job | 🔴 3 | 🟢 1 | 🏆 Quick Win — GitHub Actions daily cron + API |
-| D-15 | Version snapshots | 🟡 2 | 🟡 2 | ⭐ High Value — safety net for collab edits |
-| D-16 | Version history viewer | 🟡 2 | 🔴 3 | 💎 Nice-to-Have — complex diff UI |
-| D-17 | Restore version | 🟡 2 | 🟢 1 | 🏆 Quick Win — rollback action (needs D-15) |
-| D-18 | Draft status labels | 🟢 1 | 🟢 1 | 💎 Nice-to-Have — collab workflow tags |
-| D-19 | Offline draft editing | 🟢 1 | 🔴 3 | 💎 Nice-to-Have — heavy effort, edge case |
+| # | Issue | Value | Effort | Priority | Status |
+|---|-------|:-----:|:------:|----------|:------:|
+| D-01 | Multi-slot solo drafts backend | 🔴 3 | 🟢 1 | 🔧 Foundation — Redis key update, backwards-compatible | ✅ Completed (PR #1642) |
+| D-02 | Draft metadata & title utilities | 🟡 2 | 🟢 1 | 🏆 Quick Win — auto-title placeholder + TTL helper | ✅ Completed (PR #1642) |
+| D-03 | Draft card component & quick actions | 🟡 2 | 🟢 1 | 🏆 Quick Win — card UI with delete/duplicate actions | ✅ Completed (PR #1642) |
+| D-04 | "New draft" creation action | 🟡 2 | 🟢 1 | 🏆 Quick Win — action to open modal with new slot | ✅ Completed (PR #1642) |
+| D-05 | Drafts dashboard modal / UI | 🔴 3 | 🟡 2 | ⭐ High Value — unified DraftsModal dashboard | ✅ Completed (PR #1642) |
+| D-06 | Navigation entry point to drafts | 🔴 3 | 🟢 1 | 🏆 Quick Win — routes navbar/menu to drafts modal | ✅ Completed (PR #1642) |
+| D-07 | Remove `DraftRecoveryDialog` | 🟢 1 | 🟢 1 | 🏆 Quick Win — safely delete legacy dialog | ✅ Completed (PR #1642) |
+| D-08 | In-app invite management | 🟡 2 | 🟡 2 | ⭐ High Value — better collab onboarding in modal | ⏳ Pending |
+| D-09 | Conflict notification toast | 🟡 2 | 🟢 1 | 🏆 Quick Win — SWR diff check + inline alert | ⏳ Pending |
+| D-10 | Co-cook role management | 🟢 1 | 🟢 1 | 💎 Nice-to-Have — editor/viewer toggle | ⏳ Pending |
+| D-11 | Field-level presence indicators | 🟡 2 | 🔴 3 | 💎 Nice-to-Have — complex for incremental gain | ⏳ Pending |
+| D-12 | Change feed panel | 🟢 1 | 🟡 2 | 💎 Nice-to-Have — collapsible log in modal | ⏳ Pending |
+| D-13 | Scheduled recipe publication | 🔴 3 | 🟡 2 | ⭐ High Value — unique feature for creators | ⏳ Pending |
+| D-14 | Scheduled publication cron job | 🔴 3 | 🟢 1 | 🏆 Quick Win — GitHub Actions daily cron + API | ⏳ Pending |
+| D-15 | Version snapshots | 🟡 2 | 🟡 2 | ⭐ High Value — safety net for collab edits | ⏳ Pending |
+| D-16 | Version history viewer | 🟡 2 | 🔴 3 | 💎 Nice-to-Have — complex diff UI | ⏳ Pending |
+| D-17 | Restore version | 🟡 2 | 🟢 1 | 🏆 Quick Win — rollback action (needs D-15) | ⏳ Pending |
+| D-18 | Draft status labels | 🟢 1 | 🟢 1 | 💎 Nice-to-Have — collab workflow tags | ⏳ Pending |
+| D-19 | Offline draft editing | 🟢 1 | 🔴 3 | 💎 Nice-to-Have — heavy effort, edge case | ⏳ Pending |
 
 ### Cross-cutting
 
@@ -280,7 +280,7 @@ The backend already supports multiple shared drafts via `user:drafts:{userId}` a
                                                  │
                                                  ▼
                   ┌─────────────────────────────────────────────────────────────┐
-                  │ SPRINT 2: Multi-Draft Dashboard (Safe Sequential Flow)      │
+                  │ SPRINT 2: Multi-Draft Dashboard [COMPLETED ✅ — PR #1642]    │
                   │   D-01 ──▶ D-02 ──▶ D-03 ──▶ D-04 ──▶ D-05 ──▶ D-06 ──▶ D-07│
                   └──────────────────────────────┬──────────────────────────────┘
                                                  │
@@ -333,15 +333,15 @@ The backend already supports multiple shared drafts via `user:drafts:{userId}` a
 6. **`G-08`**: Audit & redesign weekly challenges (DB/content curation) → *Immediate challenge quality improvement without code risks.*
 7. **`G-15`**: Time-scoped leaderboard tabs on `/top-jorbiters` (Week / Month / All Time) → *Self-contained page upgrade.*
 
-#### **Sprint 2 — Multi-Draft Dashboard _(~2 weeks)_**
-*Strict deployable order: Backend → Utilities → Components → Page → Navigation Redirect → Cleanup:*
-1. **`D-01`**: Multi-slot solo drafts backend (Redis key `draft:user:{userId}:{slotId}`) → *Backend safely supports up to 5 drafts per user.*
-2. **`D-02`**: Draft metadata utilities (Auto-title placeholder + TTL countdown helper) → *Shared helpers in codebase.*
-3. **`D-03`**: Draft card component & quick actions (`RecipeDraftCard.tsx` with Delete & Duplicate) → *Component ready & tested.*
-4. **`D-04`**: "New draft" creation action (Initialize slot in Redis & open wizard) → *Draft creation flow ready.*
-5. **`D-05`**: Drafts dashboard page (`/recipes/drafts`) → *The full page is now live, complete with cards, actions, and empty state.*
-6. **`D-06`**: Navigation entry point (Redirect navbar "Post a recipe" if ≥ 1 draft; add "My Drafts" to `UserMenu`) → *Safely expose `/recipes/drafts` to users without 404 risks.*
-7. **`D-07`**: Remove obsolete `DraftRecoveryDialog` → *Clean up legacy recovery popup now that the dashboard handles draft selection.*
+#### **Sprint 2 — Multi-Draft Dashboard _(COMPLETED ✅ — PR #1642)_**
+*Strict deployable order: Backend → Utilities → Components → Dashboard Modal → Navigation Entry Points → Cleanup:*
+- [x] **`D-01`**: Multi-slot solo drafts backend (Redis key `draft:user:{userId}:{slotId}` + `user:drafts:{userId}`, 5-slot quota) → *Backend safely supports up to 5 drafts per user with backward compatibility.*
+- [x] **`D-02`**: Draft metadata utilities (Auto-title placeholder + TTL countdown helper + badge styling in `draftMetadata.ts`) → *Shared helpers in codebase.*
+- [x] **`D-03`**: Draft card component & quick actions (`DraftCard.tsx`, `DraftProgressBar.tsx`, `DraftTTLBadge.tsx` with Delete & Duplicate) → *Component ready & tested.*
+- [x] **`D-04`**: "New draft" creation action (Initialize slot in Redis & open wizard via `useDraftActions.ts`) → *Draft creation flow ready with quota validation.*
+- [x] **`D-05`**: Drafts dashboard UI (`DraftsModal.tsx`) → *Unified dashboard assembling draft cards, solo/collab distinction, progress pills, and empty state.*
+- [x] **`D-06`**: Navigation entry points ("My Drafts" with active count badge in `UserMenu.tsx`, and in `RecipeModalTopActions.tsx`) → *Seamless draft switching without modal lock-in.*
+- [x] **`D-07`**: Remove obsolete `DraftRecoveryDialog` → *Cleaned up legacy recovery popup now that the dashboard handles draft selection.*
 
 #### **Sprint 3 — Ingredient Search & "What Can I Cook?" _(~2.5 weeks)_**
 *Strict deployable order: Schema → API → Input Component → Query Engine → Card Pill → Main Search Integration → Fridge Page:*
@@ -407,9 +407,78 @@ The backend already supports multiple shared drafts via `user:drafts:{userId}` a
 Sep 2026            Oct 2026            Nov 2026            Dec 2026
 ─────────────────── ─────────────────── ─────────────────── ───────────────────
 Sprint 1 (QuickWins)Sprint 3 (Ingredient)Sprint 5 (Rust/AI)  Sprint 6 (Collab/Sched)
-Sprint 2 (Drafts)   Sprint 4 (Unlocks+Notif)                Sprint 7 (Polish)
+Sprint 2 [DONE ✅]  Sprint 4 (Unlocks+Notif)                Sprint 7 (Polish)
 ```
 
 > **Total: 70 issues** organized into strict, dependency-safe deployable sequences.
-> Every sprint ends with functional, tested features running in production.
+> **Current Progress**: **7 / 70 issues completed (10%)** — Sprint 2 is 100% delivered in PR #1642.
+
+---
+
+## Remaining Tasks & Roadmap Next Steps
+
+### Progress Summary by Pillar
+
+| Pillar / Track | Completed | Pending | Total Issues | Completion % |
+|---|:---:|:---:|:---:|:---:|
+| **Pillar 1: Gamification** | 0 | 23 | 23 | 0% |
+| **Pillar 2: Search** | 0 | 18 | 18 | 0% |
+| **Pillar 3: Drafts & Collaboration** | **7** (Phase 1) | 12 (Phases 2 & 3) | 19 | **37%** |
+| **Cross-cutting & Infrastructure** | 0 | 10 | 10 | 0% |
+| **Overall** | **7** | **63** | **70** | **10%** |
+
+### Remaining Sprints Breakdown
+
+#### 1. **Sprint 1 — Zero-Dependency Quick Wins _(7 tasks pending)_**
+*Immediate high-impact wins requiring 0 schema changes:*
+- `S-01`: Add MongoDB indexes on `Recipe` (Prisma) — `title`, `createdAt`, `likesCount`, `category`, `cuisine`.
+- `S-08`: Search `description` and `ingredients` in `getRecipes.ts` (Prisma `OR` clause).
+- `S-09`: Cooking time filter slider in `AdvancedFilters.tsx` and `getRecipes.ts`.
+- `S-11`: Multi-category selection (`hasSome` in `getRecipes.ts`).
+- `S-13`: Recent searches chip list in `SearchBar.tsx` (`localStorage`).
+- `G-08`: Audit & redesign weekly challenges (DB/content curation).
+- `G-15`: Time-scoped leaderboard tabs on `/top-jorbiters` (Week / Month / All Time).
+
+#### 2. **Sprint 3 — Ingredient Search & "What Can I Cook?" _(7 tasks pending)_**
+*Transforms recipe discovery by matching available ingredients:*
+- `S-02`: Ingredient normalisation on save (`ingredientsNormalized String[]` field on `Recipe`).
+- `S-03`: Distinct ingredients endpoint (`GET /api/ingredients/distinct` + Redis cache).
+- `S-04`: Ingredient autocomplete chip input component.
+- `S-05`: Ingredient-match query API (`GET /api/recipes/search/by-ingredients` with match % scoring).
+- `S-06`: Match indicator on result cards ("4/5 ingredients" pill on `RecipeCard`).
+- `S-07`: "Search by ingredients" toggle in search UI (Integrates S-04, S-05, S-06).
+- `S-15`: "What can I cook?" fridge page (`/recipes/whats-in-my-fridge` reusing S-05 API).
+
+#### 3. **Sprint 4 — Level Unlocks & In-App Notifications _(12 tasks pending)_**
+*Tangible rewards for levelling up and persistent in-app notifications:*
+- `G-01` to `G-07`: `Reward` Prisma model & seeding, profile titles (`activeTitle`), recipe card accent themes, badge frame unlocks, unlocks section on profile, progress-to-next hints, level-up celebration modal with confetti.
+- `X-01a` to `X-01e`: `Notification` Prisma model & indexes, event persistence via `POST /notify`, notifications API (`GET`, `PATCH /read`, `GET /unread-count`), notification bell row inside `UserMenu` & mobile profile dot badge, notification slide-over panel with click routing.
+
+#### 4. **Sprint 5 — Challenge Centralisation & Dietary AI Enrichment _(9 tasks pending)_**
+*Rust gamification microservice expansion and AI-powered dietary tags:*
+- `G-09` to `G-13`: Centralise challenge criteria in `badge_forge` (`challenges.json` in Rust), `WeeklyChallengeEntry` tracking, tiered challenge completion badges (1/5/15), challenge progress banner on `WeeklyChallenge.tsx`, streak rewards at milestones.
+- `S-10a` to `S-10c`: Canonical `DIETARY_TAGS` list + schema, `tagatoni` dietary tag enrichment, dietary tags filter in search UI.
+- `S-12`: Allergen exclusion filter (`allergens` field + toggle group).
+
+#### 5. **Sprint 6 — Collaboration, Scheduling & Seasonal Events _(8 tasks pending)_**
+*Advanced collaborative workflows, scheduled publishing, and admin-driven events:*
+- `D-08`: In-app invite management (view/manage active co-cooks in `RecipeModal`).
+- `D-09`: Conflict notification toast (SWR diff detection + "tap to refresh").
+- `D-13`: Scheduled recipe publication field & wizard UI (`scheduledPublishAt`).
+- `D-14`: Scheduled publication cron job (GitHub Actions cron + API handler).
+- `G-16` to `G-19`: Admin role on `User`, `SeasonalEvent` Prisma model, seasonal badge auto-evaluation in `badge_forge`, admin UI for seasonal events (`/admin/events`).
+
+#### 6. **Sprint 7 — History, Polish & Nice-to-Haves _(11 tasks pending)_**
+*Non-critical polish and advanced capabilities:*
+- `D-15` to `D-18`: Version snapshots model, one-click restore, version history viewer, draft status labels.
+- `S-16` & `S-17`: Search empty state redesign, saved filter presets.
+- `G-20` to `G-23`: Level flair on recipe cards, achievement share cards, featured jorbiter rotation, badge categorisation.
+- `X-03` to `X-05`: Accessibility audit, mobile gesture polish, performance budget.
+
+---
+
+### Recommended Immediate Next Step
+1. **Option A (Quick Wins)**: Tackle **Sprint 1 (Zero-Dependency Quick Wins)**. These 7 tasks (`S-01`, `S-08`, `S-09`, `S-11`, `S-13`, `G-08`, `G-15`) can be completed rapidly without migrations or complex dependencies, providing immediate speed and search quality improvements.
+2. **Option B (Feature Depth)**: Proceed directly to **Sprint 3 (Ingredient Search)** to give users the ability to search by pantry ingredients and use the "What can I cook?" fridge feature.
+
 

@@ -517,7 +517,7 @@ describe('draftFormUtils helper functions', () => {
 
             const sharedDraftData = {
                 draftId: 'shared-999',
-                type: 'shared',
+                type: 'shared' as const,
                 inviteToken: 'tok-123',
             };
 
@@ -613,7 +613,7 @@ describe('draftFormUtils helper functions', () => {
             ).toBe(true);
         });
 
-        it('returns false for solo recipe with no collaborators or tokens even if activeDraftId is provided', () => {
+        it('returns false for solo recipe with no collaborators or tokens', () => {
             expect(
                 checkIsCollaborativeSession({
                     isEditMode: false,
@@ -621,7 +621,6 @@ describe('draftFormUtils helper functions', () => {
                     coCooksIds: [],
                     hasDraftCoCooks: false,
                     hasInviteToken: false,
-                    activeDraftId: 'solo-draft-123',
                 })
             ).toBe(false);
         });
