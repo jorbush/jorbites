@@ -1,5 +1,18 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { getVapidEmail } from '@/app/utils/constants';
+import { getVapidEmail, STEPS, STEPS_LENGTH } from '@/app/utils/constants';
+
+describe('STEPS and STEPS_LENGTH', () => {
+    it('STEPS_LENGTH should evaluate to exactly 7 and match distinct wizard steps', () => {
+        expect(STEPS_LENGTH).toBe(7);
+        expect(STEPS.CATEGORY).toBe(0);
+        expect(STEPS.DESCRIPTION).toBe(1);
+        expect(STEPS.INGREDIENTS).toBe(2);
+        expect(STEPS.METHODS).toBe(3);
+        expect(STEPS.STEPS).toBe(4);
+        expect(STEPS.RELATED_CONTENT).toBe(5);
+        expect(STEPS.IMAGES).toBe(6);
+    });
+});
 
 describe('VAPID Contact Email Resolution', () => {
     let originalVapidEmail: string | undefined;

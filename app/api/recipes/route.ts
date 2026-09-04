@@ -202,7 +202,10 @@ export async function POST(request: Request) {
             await redisCache.del(`recipes:graph:${currentUser.id}`);
             await redisCache.incr('recipes:global:version');
             if (body.draftId) {
-                await DraftService.cleanUpDraftOnPublish(body.draftId);
+                await DraftService.cleanUpDraftOnPublish(
+                    body.draftId,
+                    currentUser.id
+                );
             }
         } catch (error: any) {
             logger.error('POST /api/recipes - cache invalidation error', {

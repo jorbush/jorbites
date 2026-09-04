@@ -46,7 +46,9 @@ export enum STEPS {
     RELATED_CONTENT = 5,
     IMAGES = 6,
 }
-export const STEPS_LENGTH = Object.keys(STEPS).length;
+export const STEPS_LENGTH = Object.values(STEPS).filter(
+    (v) => typeof v === 'number'
+).length;
 export const QUEST_TITLE_MAX_LENGTH = 200;
 export const QUEST_DESCRIPTION_MAX_LENGTH = 1000;
 
@@ -110,8 +112,10 @@ export type RecipeCuisineType = (typeof RECIPE_CUISINES)[number];
 export const MAX_CO_COOKS = 4;
 export const MAX_LINKED_RECIPES = 2;
 export const DRAFT_TTL_SECONDS = 604800; // 7 days
-export const USER_DRAFTS_TTL_SECONDS = 2592000; // 30 days
+export const SOLO_DRAFT_TTL_SECONDS = 31536000; // 365 days (1 year)
+export const USER_DRAFTS_TTL_SECONDS = SOLO_DRAFT_TTL_SECONDS;
 export const LOCK_TTL_SECONDS = 30; // 30 seconds
 export const LOCK_HEARTBEAT_INTERVAL_MS = 10000; // 10 seconds
 export const LOCK_POLL_INTERVAL_MS = 4000; // 4 seconds
 export const SHARED_DRAFT_POLL_INTERVAL_MS = 8000; // 8 seconds
+export const MAX_SOLO_DRAFT_SLOTS = 5;

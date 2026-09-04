@@ -16,6 +16,7 @@ interface ModalProps {
     footer?: React.ReactElement<object>;
     actionLabel: string;
     disabled?: boolean;
+    actionDisabled?: boolean;
     isLoading?: boolean;
     secondaryAction?: () => void;
     secondaryActionLabel?: string;
@@ -33,6 +34,7 @@ const Modal: React.FC<ModalProps> = ({
     actionLabel,
     footer,
     disabled,
+    actionDisabled,
     isLoading,
     secondaryAction,
     secondaryActionLabel,
@@ -59,12 +61,12 @@ const Modal: React.FC<ModalProps> = ({
     }, [onClose, disabled]);
 
     const handleSubmit = useCallback(() => {
-        if (disabled) {
+        if (disabled || actionDisabled || isLoading) {
             return;
         }
 
         onSubmit();
-    }, [onSubmit, disabled]);
+    }, [onSubmit, disabled, actionDisabled, isLoading]);
 
     const handleSecondaryAction = useCallback(() => {
         if (disabled || !secondaryAction) {
@@ -76,10 +78,12 @@ const Modal: React.FC<ModalProps> = ({
 
     const handleSubmitRef = useRef(handleSubmit);
     const disabledRef = useRef(disabled);
+    const actionDisabledRef = useRef(actionDisabled || isLoading);
 
     useEffect(() => {
         handleSubmitRef.current = handleSubmit;
         disabledRef.current = disabled;
+        actionDisabledRef.current = actionDisabled || isLoading;
     });
 
     useEffect(() => {
@@ -96,6 +100,7 @@ const Modal: React.FC<ModalProps> = ({
                 event.key === 'Enter' &&
                 !event.shiftKey &&
                 !disabledRef.current &&
+                !actionDisabledRef.current &&
                 !isTextarea
             ) {
                 handleSubmitRef.current();
@@ -131,10 +136,12 @@ const Modal: React.FC<ModalProps> = ({
                                 </button>
                                 <div
                                     data-testid="modal-title"
-                                    className="flex items-center justify-center text-lg font-semibold text-black dark:text-neutral-100"
+                                    className="flex max-w-[calc(100%-140px)] items-center justify-center truncate text-lg font-semibold text-black dark:text-neutral-100"
                                 >
-                                    {Icon && <Icon className="mr-2 text-xl" />}
-                                    {title}
+                                    {Icon && (
+                                        <Icon className="mr-2 shrink-0 text-xl" />
+                                    )}
+                                    <span className="truncate">{title}</span>
                                 </div>
                                 <div className="absolute right-9 p-1">
                                     {topButton}
@@ -158,7 +165,11 @@ const Modal: React.FC<ModalProps> = ({
                                         )}
                                     <Button
                                         data-testid="modal-action-button"
-                                        disabled={disabled || isLoading}
+                                        disabled={
+                                            disabled ||
+                                            actionDisabled ||
+                                            isLoading
+                                        }
                                         label={actionLabel}
                                         onClick={handleSubmit}
                                         withDelay

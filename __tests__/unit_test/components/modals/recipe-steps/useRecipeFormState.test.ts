@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
+import { mutate } from 'swr';
 import { useRecipeFormState } from '@/app/components/modals/recipe-steps/useRecipeFormState';
+import { STEPS } from '@/app/utils/constants';
 
 // Mocks
 vi.mock('next/navigation', () => ({
@@ -17,6 +19,7 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('swr', () => ({
     default: () => ({ data: null, isLoading: false }),
+    mutate: vi.fn(),
 }));
 
 vi.mock('axios', () => ({
@@ -653,7 +656,7 @@ describe('useRecipeFormState hook', () => {
         // so DraftService preserves whatever is in Redis without clobbering
         expect(callPayload.ingredients).toBeUndefined();
         expect(callPayload.steps).toBeUndefined();
-        expect(callPayload.method).toBe('Microwave');
+        expect(callPayload.method).toBeUndefined();
     });
 
     it('does not overwrite collaborator updated steps with stale local form values when saving draft from earlier steps', async () => {
@@ -743,6 +746,8 @@ describe('useRecipeFormState hook', () => {
                 },
                 draftData: {
                     draftId: 'd-ing-test',
+                    inviteToken: 'tok-ing-test',
+                    type: 'shared',
                     ingredients: ['Old Ingredient'],
                     steps: ['Step 1'],
                 },
@@ -805,6 +810,7 @@ describe('useRecipeFormState hook', () => {
         expect(callPayload.title).toBe('Solo Pizza');
         expect(callPayload.ingredients).toBeDefined();
         expect(callPayload.steps).toBeDefined();
+        expect(mutate).toHaveBeenCalledWith('/api/draft/active');
     });
 
     it('preserves user selected coCooksIds and linkedRecipeIds when advancing steps with empty remote draft array', async () => {
@@ -1063,5 +1069,208 @@ describe('useRecipeFormState hook', () => {
         expect(result.current.getValues('description')).toBe(
             'Co-Cook Live Edited Description'
         );
+    });
+
+    it('preserves ingredients when saving a solo draft from Step 3 (Methods)', async () => {
+        const axios = (await import('axios')).default;
+        (axios.post as any).mockClear();
+        (axios.post as any).mockResolvedValueOnce({
+            data: { draftId: 'solo-draft-subsequent-save' },
+        });
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                draftData: null,
+            })
+        );
+
+        // Step 0: Category
+        act(() => {
+            result.current.setCustomValue('categories', ['Dessert']);
+        });
+
+        // Step 1: Description
+        act(() => {
+            result.current.setStep(1);
+            result.current.setValue('title', 'Strawberry Cheesecake');
+            result.current.setValue('description', 'Rich and creamy cake');
+        });
+
+        // Step 2: Ingredients
+        act(() => {
+            result.current.setStep(2);
+            result.current.setValue('ingredient-0', 'Cream Cheese 500g');
+            result.current.setValue('ingredient-1', 'Fresh Strawberries 200g');
+            result.current.setValue('ingredient-2', 'Graham Crackers 150g');
+        });
+
+        // Step 3: Methods (User navigated to Step 3 and saves draft here)
+        act(() => {
+            result.current.setStep(3);
+            result.current.setValue('method', 'bake');
+        });
+
+        await act(async () => {
+            await result.current.saveDraft();
+        });
+
+        expect(axios.post).toHaveBeenCalled();
+        const callPayload = (axios.post as any).mock.calls[0][1] as any;
+        expect(callPayload.title).toBe('Strawberry Cheesecake');
+        expect(callPayload.categories).toEqual(['Dessert']);
+        expect(callPayload.method).toBe('bake');
+        expect(callPayload.ingredients).toEqual([
+            'Cream Cheese 500g',
+            'Fresh Strawberries 200g',
+            'Graham Crackers 150g',
+        ]);
+        expect(callPayload.currentStep).toBe(3);
+    });
+
+    it('does not wipe local form state during step navigation when remote draftData is stale', () => {
+        // Initial draft has no ingredients
+        const staleRemoteDraft: any = {
+            draftId: 'solo-stale-test',
+            title: 'My Recipe',
+            description: 'My Description',
+            ingredients: [],
+            steps: [],
+        };
+
+        const { result } = renderHook(() =>
+            useRecipeFormState({
+                recipeModal: mockRecipeModal,
+                currentUser: {
+                    id: 'u1',
+                    name: 'Chef',
+                    email: 'c@test.com',
+                    createdAt: '',
+                    updatedAt: '',
+                    favoriteIds: [],
+                },
+                draftData: staleRemoteDraft,
+            })
+        );
+
+        // User enters ingredients on Step 2
+        act(() => {
+            result.current.setStep(2);
+            result.current.setValue('ingredient-0', '200g Flour');
+            result.current.setValue('ingredient-1', '100g Butter');
+        });
+
+        expect(result.current.getValues('ingredient-0')).toBe('200g Flour');
+        expect(result.current.getValues('ingredient-1')).toBe('100g Butter');
+
+        // User advances to Step 3 (Methods)
+        act(() => {
+            result.current.setStep(3);
+        });
+
+        // Local form state MUST NOT be wiped out by staleRemoteDraft
+        expect(result.current.getValues('ingredient-0')).toBe('200g Flour');
+        expect(result.current.getValues('ingredient-1')).toBe('100g Butter');
+
+        // User advances to Step 4 (Steps) and adds steps
+        act(() => {
+            result.current.setStep(4);
+            result.current.setValue('step-0', 'Knead the dough');
+        });
+
+        // User advances to Step 5 (Related Content)
+        act(() => {
+            result.current.setStep(5);
+        });
+
+        // Both ingredients and steps are preserved intact
+        expect(result.current.getValues('ingredient-0')).toBe('200g Flour');
+        expect(result.current.getValues('ingredient-1')).toBe('100g Butter');
+        expect(result.current.getValues('step-0')).toBe('Knead the dough');
+    });
+
+    it('resets step to STEPS.CATEGORY when draftData transitions from an active draft to null', async () => {
+        let currentDraft: any = {
+            draftId: 'draft-active-step-5',
+            currentStep: 5,
+            title: 'Active Draft Step 5',
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: currentDraft } }
+        );
+
+        // Initially mounted on Step 5
+        expect(result.current.step).toBe(5);
+
+        // Draft is deleted/published -> draftData transitions to null
+        currentDraft = null;
+        await act(async () => {
+            rerender({ draft: currentDraft });
+        });
+
+        // Step should reset back to STEPS.CATEGORY (0)
+        expect(result.current.step).toBe(STEPS.CATEGORY);
+    });
+
+    it('switches active step and updates form state when transitioning between distinct drafts', async () => {
+        let currentDraft: any = {
+            draftId: 'draft-a',
+            currentStep: 4,
+            title: 'Draft A Title',
+        };
+
+        const { result, rerender } = renderHook(
+            (props: { draft: any }) =>
+                useRecipeFormState({
+                    recipeModal: mockRecipeModal,
+                    currentUser: {
+                        id: 'u1',
+                        name: 'Chef',
+                        email: 'c@test.com',
+                        createdAt: '',
+                        updatedAt: '',
+                        favoriteIds: [],
+                    },
+                    draftData: props.draft,
+                }),
+            { initialProps: { draft: currentDraft } }
+        );
+
+        expect(result.current.step).toBe(4);
+
+        // Switch to Draft B on Step 2
+        currentDraft = {
+            draftId: 'draft-b',
+            currentStep: 2,
+            title: 'Draft B Title',
+        };
+
+        await act(async () => {
+            rerender({ draft: currentDraft });
+        });
+
+        expect(result.current.step).toBe(2);
     });
 });

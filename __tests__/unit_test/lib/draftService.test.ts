@@ -2,6 +2,7 @@ import { DraftService } from '@/app/services/draftService';
 import { redis } from '@/app/lib/redis';
 import { releaseAllLocks } from '@/app/lib/redisLock';
 import { SafeUser } from '@/app/types';
+import { SOLO_DRAFT_TTL_SECONDS } from '@/app/utils/constants';
 
 jest.mock('@/app/lib/redis', () => {
     const store: Record<string, any> = {};
@@ -45,6 +46,94 @@ jest.mock('@/app/lib/redis', () => {
                 return Array.from(sets[key]);
             }),
             expire: jest.fn(async () => 1),
+            eval: jest.fn(
+                async (
+                    _script: string,
+                    _numKeys: number,
+                    draftKey: string,
+                    soloIndexKey: string,
+                    combinedIndexKey: string,
+                    draftId: string,
+                    serialized: string,
+                    _soloTtl: number,
+                    maxSlots: number,
+                    _combinedTtl: number,
+                    draftKeyPrefix: string
+                ) => {
+                    if (_numKeys === 2) {
+                        const raw = store[draftKey];
+                        if (!raw)
+                            return JSON.stringify({
+                                ok: 0,
+                                error: 'draft_not_found',
+                            });
+                        let draft;
+                        try {
+                            draft = JSON.parse(raw);
+                        } catch {
+                            return JSON.stringify({
+                                ok: 0,
+                                error: 'invalid_draft_data',
+                            });
+                        }
+                        if (draft.inviteToken !== combinedIndexKey) {
+                            return JSON.stringify({
+                                ok: 0,
+                                error: 'invalid_invite_token',
+                            });
+                        }
+                        const coCooks = draft.coCooksIds || [];
+                        const userId = draftId;
+                        const maxCoCooks = Number(serialized);
+                        if (
+                            draft.ownerId !== userId &&
+                            !coCooks.includes(userId)
+                        ) {
+                            if (coCooks.length >= maxCoCooks) {
+                                return JSON.stringify({
+                                    ok: 0,
+                                    error: 'co_cook_limit_reached',
+                                });
+                            }
+                            coCooks.push(userId);
+                            draft.coCooksIds = coCooks;
+                        }
+                        draft.updatedAt = String(_soloTtl);
+                        store[draftKey] = JSON.stringify(draft);
+                        if (!sets[soloIndexKey]) sets[soloIndexKey] = new Set();
+                        sets[soloIndexKey].add(draft.draftId || draftKey);
+                        return JSON.stringify({ ok: 1, draft });
+                    }
+
+                    if (!sets[soloIndexKey]) sets[soloIndexKey] = new Set();
+                    if (!sets[combinedIndexKey]) {
+                        sets[combinedIndexKey] = new Set();
+                    }
+
+                    for (const id of sets[combinedIndexKey]) {
+                        if (store[`${draftKeyPrefix}${id}`]) {
+                            sets[soloIndexKey].add(id);
+                        }
+                    }
+                    for (const id of Array.from(sets[soloIndexKey])) {
+                        if (!store[`${draftKeyPrefix}${id}`]) {
+                            sets[soloIndexKey].delete(id);
+                        }
+                    }
+
+                    if (
+                        !store[draftKey] &&
+                        sets[soloIndexKey].size >= Number(maxSlots)
+                    ) {
+                        return 0;
+                    }
+
+                    store[draftKey] = serialized;
+                    sets[soloIndexKey].add(draftId);
+                    sets[combinedIndexKey].add(draftId);
+                    return 1;
+                }
+            ),
             _store: store,
             _sets: sets,
         },
@@ -97,7 +186,10 @@ describe('DraftService', () => {
                 'user:drafts:user-1',
                 'draft-abc'
             );
-            expect(redis.expire).toHaveBeenCalled();
+            expect(redis.expire).toHaveBeenCalledWith(
+                'user:drafts:user-1',
+                SOLO_DRAFT_TTL_SECONDS
+            );
         });
 
         it('should remove draftId from user drafts set', async () => {
@@ -179,6 +271,63 @@ describe('DraftService', () => {
             expect(updated.ownerId).toBe('owner-1');
         });
 
+        it('should clear explicitly empty arrays and strings', async () => {
+            await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Original Title',
+                    description: 'Original Description',
+                    categories: ['dinner'],
+                    ingredients: ['Tomato', 'Garlic'],
+                    steps: ['Chop', 'Fry'],
+                    method: 'stovetop',
+                },
+                mockOwner
+            );
+
+            const updated = await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: '',
+                    description: '',
+                    categories: [],
+                    ingredients: [],
+                    steps: [],
+                    method: '',
+                },
+                mockOwner
+            );
+
+            expect(updated.title).toBe('');
+            expect(updated.description).toBe('');
+            expect(updated.categories).toEqual([]);
+            expect(updated.ingredients).toEqual([]);
+            expect(updated.steps).toEqual([]);
+            expect(updated.method).toBe('');
+        });
+
+        it('should preserve omitted arrays', async () => {
+            await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    categories: ['dinner'],
+                    ingredients: ['Tomato', 'Garlic'],
+                    steps: ['Chop', 'Fry'],
+                },
+                mockOwner
+            );
+
+            const updated = await DraftService.saveSharedDraft(
+                'draft-1',
+                { description: 'Only this field changed' },
+                mockOwner
+            );
+
+            expect(updated.categories).toEqual(['dinner']);
+            expect(updated.ingredients).toEqual(['Tomato', 'Garlic']);
+            expect(updated.steps).toEqual(['Chop', 'Fry']);
+        });
+
         it('should preserve existing step fields when co-cook updates a different step', async () => {
             await DraftService.saveSharedDraft(
                 'draft-1',
@@ -206,6 +355,99 @@ describe('DraftService', () => {
             // Preserves ingredients previously saved by owner
             expect(updated.ingredients).toEqual(['Tomato', 'Garlic']);
             expect(updated.title).toBe('Original Title');
+        });
+
+        it('should prevent non-owners from modifying or wiping the co-cooks roster (C3)', async () => {
+            await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Paella Draft',
+                    coCooksIds: [mockCoCook.id, 'another-chef'],
+                },
+                mockOwner
+            );
+
+            // Co-cook attempts to wipe coCooksIds or remove another participant
+            const updated = await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Paella Edit by CoCook',
+                    coCooksIds: [],
+                } as any,
+                mockCoCook
+            );
+
+            // Co-cooks cannot alter the roster
+            expect(updated.coCooksIds).toEqual([mockCoCook.id, 'another-chef']);
+        });
+
+        it('should preserve existing co-cooks when owner updates a step other than RELATED_CONTENT with empty array (C3)', async () => {
+            await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Paella Draft',
+                    coCooksIds: [mockCoCook.id],
+                    currentStep: 0, // Category step
+                },
+                mockOwner
+            );
+
+            // Owner saves Step 0 or 1 with an empty coCooksIds from non-related step form state
+            const updated = await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Paella Draft Updated',
+                    coCooksIds: [],
+                    currentStep: 1, // Description step
+                } as any,
+                mockOwner
+            );
+
+            // Co-cooks are preserved!
+            expect(updated.coCooksIds).toEqual([mockCoCook.id]);
+        });
+
+        it('should not allow client payloads to overwrite inviteToken in saveSharedDraft (C1)', async () => {
+            const initial = await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Paella',
+                    inviteToken: 'original-token-123',
+                } as any,
+                mockOwner
+            );
+            expect(initial.inviteToken).toBe('original-token-123');
+
+            // Malicious or accidental update attempt with a forged token
+            const updated = await DraftService.saveSharedDraft(
+                'draft-1',
+                {
+                    title: 'Paella Renamed',
+                    inviteToken: 'hacked-token-999',
+                } as any,
+                mockOwner
+            );
+
+            // Preserves original token
+            expect(updated.inviteToken).toBe('original-token-123');
+        });
+
+        it('should sanitize single-user draft payloads to prevent arbitrary field pollution (C2)', async () => {
+            const slotId = await DraftService.saveSingleUserDraft('owner-1', {
+                title: 'Solo Tapas',
+                ingredients: ['Ham', 'Bread'],
+                ['__proto__' as any]: { polluted: true },
+                ['arbitraryField' as any]: 'malicious-data',
+            } as any);
+
+            const fetched: any = await DraftService.getSingleUserDraft(
+                'owner-1',
+                slotId
+            );
+            expect(fetched).toBeDefined();
+            expect(fetched.title).toBe('Solo Tapas');
+            expect(fetched.arbitraryField).toBeUndefined();
+            expect(fetched.polluted).toBeUndefined();
         });
     });
 
@@ -309,6 +551,49 @@ describe('DraftService', () => {
             expect(result.success).toBe(false);
             expect(result.error).toBe('co_cook_limit_reached');
         });
+
+        it('should handle concurrent join requests without race conditions or losing participants', async () => {
+            const user2: SafeUser = {
+                id: 'cocook-2',
+                name: 'Chef CoCook 2',
+                email: 'cocook2@test.com',
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+            };
+            const user3: SafeUser = {
+                id: 'cocook-3',
+                name: 'Chef CoCook 3',
+                email: 'cocook3@test.com',
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+            };
+
+            const results = await Promise.all([
+                DraftService.joinSharedDraft(
+                    'draft-1',
+                    'join-token-123',
+                    mockCoCook
+                ),
+                DraftService.joinSharedDraft(
+                    'draft-1',
+                    'join-token-123',
+                    user2
+                ),
+                DraftService.joinSharedDraft(
+                    'draft-1',
+                    'join-token-123',
+                    user3
+                ),
+            ]);
+
+            expect(results.every((r) => r.success)).toBe(true);
+
+            const draft = await DraftService.getSharedDraft('draft-1');
+            expect(draft?.coCooksIds).toContain(mockCoCook.id);
+            expect(draft?.coCooksIds).toContain(user2.id);
+            expect(draft?.coCooksIds).toContain(user3.id);
+            expect(draft?.coCooksIds?.length).toBe(3);
+        });
     });
 
     describe('deleteSharedDraft & cleanup on publish', () => {
@@ -367,6 +652,95 @@ describe('DraftService', () => {
             expect(deleted).toBe(true);
             const afterDelete = await DraftService.getSingleUserDraft('user-1');
             expect(afterDelete).toBeNull();
+        });
+    });
+
+    describe('Array normalization against Redis Lua cjson empty table conversions', () => {
+        it('should normalize non-array fields ({}) to empty arrays in normalizeSharedDraft', () => {
+            const corrupted: any = {
+                draftId: 'corrupted-1',
+                categories: {},
+                ingredients: {},
+                steps: {},
+                coCooksIds: {},
+                linkedRecipeIds: {},
+            };
+            const normalized = DraftService.normalizeSharedDraft(corrupted);
+            expect(Array.isArray(normalized.categories)).toBe(true);
+            expect(Array.isArray(normalized.ingredients)).toBe(true);
+            expect(Array.isArray(normalized.steps)).toBe(true);
+            expect(Array.isArray(normalized.coCooksIds)).toBe(true);
+            expect(Array.isArray(normalized.linkedRecipeIds)).toBe(true);
+        });
+
+        it('should allow the owner to save any step when Redis has corrupted object fields for linkedRecipeIds', async () => {
+            // Seed a corrupted draft in Redis directly (mimicking Lua cjson encode of empty tables)
+            const corruptedJson = JSON.stringify({
+                draftId: 'corrupted-shared-draft',
+                ownerId: mockOwner.id,
+                title: 'Collaborative Curry',
+                categories: {},
+                ingredients: {},
+                steps: {},
+                coCooksIds: ['user-2'],
+                linkedRecipeIds: {},
+                inviteToken: 'test-token',
+            });
+            await redis.set(
+                'draft:shared:corrupted-shared-draft',
+                corruptedJson
+            );
+
+            // Owner attempts to save on step 1 (Description) - without sending linkedRecipeIds
+            const saved = await DraftService.saveSharedDraft(
+                'corrupted-shared-draft',
+                {
+                    currentStep: 1,
+                    title: 'Updated Curry Title',
+                },
+                mockOwner
+            );
+
+            expect(saved.title).toBe('Updated Curry Title');
+            expect(Array.isArray(saved.linkedRecipeIds)).toBe(true);
+            expect(Array.isArray(saved.coCooksIds)).toBe(true);
+            expect(saved.coCooksIds).toContain('user-2');
+        });
+
+        it('should normalize and re-save clean JSON arrays when joinSharedDraft completes', async () => {
+            await DraftService.saveSharedDraft(
+                'join-test-draft',
+                {
+                    title: 'Shared Paella',
+                    inviteToken: 'valid-invite-token',
+                },
+                mockOwner
+            );
+
+            const result = await DraftService.joinSharedDraft(
+                'join-test-draft',
+                'valid-invite-token',
+                mockCoCook
+            );
+
+            expect(result.success).toBe(true);
+            expect(Array.isArray(result.draft?.categories)).toBe(true);
+            expect(Array.isArray(result.draft?.ingredients)).toBe(true);
+            expect(Array.isArray(result.draft?.steps)).toBe(true);
+            expect(Array.isArray(result.draft?.linkedRecipeIds)).toBe(true);
+            expect(result.draft?.coCooksIds).toContain(mockCoCook.id);
+
+            // Now owner can save on any step without throwing
+            const ownerSave = await DraftService.saveSharedDraft(
+                'join-test-draft',
+                {
+                    currentStep: 2,
+                    ingredients: ['Rice', 'Saffron'],
+                },
+                mockOwner
+            );
+            expect(ownerSave.ingredients).toEqual(['Rice', 'Saffron']);
+            expect(ownerSave.coCooksIds).toContain(mockCoCook.id);
         });
     });
 });

@@ -32,7 +32,7 @@ sequenceDiagram
     Modal->>API: POST /api/draft/invite (generates draftId & secure token)
     API->>DS: DraftService.saveSharedDraft(draftId, payload, Owner)
     DS->>Redis: SET draft:shared:<draftId> (TTL 7 days)
-    DS->>Redis: SADD user:drafts:<OwnerId> <draftId> (TTL 30 days)
+    DS->>Redis: SADD user:drafts:<OwnerId> <draftId> (TTL 365 days)
     API-->>Owner: Returns share URL https://jorbites.com/recipes/new?draft=<id>&token=<token>
 
     Owner->>CoCook: Shares Link via WhatsApp / Telegram / Chat
@@ -41,7 +41,7 @@ sequenceDiagram
     DS->>Redis: Append User B to coCooksIds & SADD user:drafts:<CoCookId>
     API-->>CoCook: Redirects & Opens RecipeModal with Shared Draft!
 
-    Note over Owner,CoCook: Concurrent Editing with Fast-Heartbeat Redis Soft-Locking
+    Note over Owner,CoCook: Concurrent Editing with Step-Scoped Patches & Soft-Locking
     Owner->>API: Focus Step 1 (POST /api/recipes/[id]/lock?field=step:1)
     API->>Redis: SET lock:recipe:<id>:step:1 = UserA (TTL 30s) NX
     CoCook->>API: Poll / Lock Status check (GET /api/recipes/[id]/lock via mget)
@@ -67,10 +67,13 @@ sequenceDiagram
 
 | Key Format                                | Purpose                        | TTL                                               | Content / Structure                                                              |
 | ----------------------------------------- | ------------------------------ | ------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `draft:user:<userId>`                     | Single-user draft storage      | Persistent until publish/delete                   | Recipe draft JSON                                                                |
+| `draft:user:<userId>:<slotId>`            | Multi-slot solo draft storage  | **365 Days** (`SOLO_DRAFT_TTL_SECONDS = 31536000`) | Recipe draft JSON (up to 5 slots per user)                                       |
+| `draft:user:<userId>`                     | Legacy single-user draft       | **365 Days** (backward compatible)                | Legacy single draft JSON                                                         |
 | `draft:shared:<draftId>`                  | Multi-user collaborative draft | **7 Days** (`DRAFT_TTL_SECONDS = 604800`)         | Sanitized shared draft JSON `{ draftId, inviteToken, ownerId, coCooksIds, ... }` |
-| `user:drafts:<userId>`                    | Active draft index per user    | **30 Days** (`USER_DRAFTS_TTL_SECONDS = 2592000`) | **Redis Set** of draft IDs (atomically updated via `SADD`/`SREM`)                |
+| `user:drafts:<userId>`                    | Active draft index per user    | **365 Days** (`USER_DRAFTS_INDEX_TTL_SECONDS = 31536000`) | **Redis Set** of draft IDs (atomically updated via `SADD`/`SREM`)                |
 | `lock:recipe:<targetId>:field:<fieldKey>` | Section/field soft lock        | **30 Seconds** (`LOCK_TTL_SECONDS = 30`)          | JSON `{ userId, userName, userAvatar, timestamp }`                               |
+
+For comprehensive documentation on multi-draft management and DraftsModal UI, see [`docs/drafts.md`](file:///Users/jordi/.gemini/antigravity/worktrees/jorbites/implement_drafts_collaborative_editing/docs/drafts.md).
 
 ---
 
@@ -78,7 +81,7 @@ sequenceDiagram
 
 ### 1. Atomic Draft List Management (Redis Sets)
 
-To eliminate read-modify-write race conditions when multiple concurrent sessions invite or delete drafts, user draft tracking uses atomic **Redis Sets** (`SADD` and `SREM`) with a 30-day rolling expiration. Backward compatibility is maintained for legacy JSON arrays.
+To eliminate read-modify-write race conditions when multiple concurrent sessions invite or delete drafts, user draft tracking uses atomic **Redis Sets** (`SADD` and `SREM`) with a 365-day rolling expiration matching solo draft retention. Backward compatibility is maintained for legacy JSON arrays.
 
 ### 2. Fast Heartbeat Renewal without DB Queries
 
@@ -133,6 +136,18 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 - While co-cooking, step inputs are marked required only when `!isCurrentStepLocked`. If a step is actively locked by another collaborator, other co-cooks can advance past that step without triggering false form validation errors.
 - Final recipe completeness and data integrity validation remains 100% strictly enforced upon recipe submission at `STEPS.IMAGES` and on backend recipe creation.
 
+### 10. Automated Section Soft-Locking Lifecycle (`useRecipeLock`)
+
+To guarantee that collaborators cannot concurrently edit or overwrite the same recipe step:
+- **Automatic Step Acquisition & Atomic Lua Renewal**: When entering a step in a collaborative session (`draftData.type === 'shared'`, co-cooks present, invite token active, or edit mode), `useRecipeLock` automatically acquires a soft lock for `step:${step}` (`POST /api/recipes/[id]/lock`). Lock acquisition and renewals execute via an atomic Lua script (`ACQUIRE_OR_RENEW_SCRIPT` / `renewLockIfHeld`) that eliminates TOCTOU lock stealing and enables 1-roundtrip heartbeat renewals without database hits.
+- **Strict Endpoint Security Boundaries**: Both `GET` and `POST` on `/api/recipes/[id]/lock` require authenticated session context (`getCurrentUser()`). The endpoint validates that the target recipe or shared draft exists (returning `404 Not Found` otherwise) and verifies that the caller is the owner or an active co-cook (returning `403 Forbidden` for unauthorized actors).
+- **Atomic Concurrency Protection & Banner Feedback**: Redis evaluates lock acquisition atomically. If User A is on Step 1, User B's acquisition attempt for Step 1 fails. User B's UI immediately displays the `RecipeLockBanner` (`@UserA is currently editing this step`), disables step inputs (`pointer-events-none opacity-60`, `disabled={isLocked}`), and disables both the primary action button ("Next") and the top "Save draft" button (`actionDisabled={isCurrentStepLocked}`).
+- **Automatic Release on Navigation**: When a user advances or navigates back (`step` changes), `useRecipeLock` automatically releases the old step lock (`DELETE /api/recipes/[id]/lock?field=step:${old}`) and acquires the new step lock (`POST /api/recipes/[id]/lock?field=step:${new}`). Active lock refs are cleared synchronously before network calls to prevent duplicate release storms.
+- **Automatic Lock Recovery & Retry**: While waiting on a locked step, `useRecipeLock` polls active locks every 4 seconds (`LOCK_POLL_INTERVAL_MS = 4000`). As soon as the holding collaborator moves to another step or closes their modal, the waiting collaborator's client automatically acquires the freed step lock, dismissing the lock banner and restoring full input interactivity.
+- **Modal Close Immediate Release**: When the modal closes or unmounts, the active step lock is released immediately on the server using the captured target ID, freeing the section for collaborators without waiting for the 30-second Redis TTL.
+- **Token Privacy on Save Responses**: When non-owner co-cooks save intermediate steps via `POST /api/draft`, the server response sanitizes `inviteToken` using `DraftService.maskSharedDraft`, protecting owner invite tokens.
+- **Solo Draft Isolation**: Solo drafts completely bypass the lock subsystem. Opening and editing solo drafts never acquires or polls locks, keeping single-user editing lightweight.
+
 ---
 
 ## Centralized Constants Reference
@@ -141,12 +156,14 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 | ------------------------------- | ------------------- | ---------------------------------------------------- |
 | `MAX_CO_COOKS`                  | `4`                 | Maximum number of co-cooks per recipe                |
 | `MAX_LINKED_RECIPES`            | `2`                 | Maximum linked recipes per recipe                    |
+| `MAX_SOLO_DRAFT_SLOTS`          | `5`                 | Maximum number of concurrent solo drafts per user    |
+| `SOLO_DRAFT_TTL_SECONDS`        | `31536000` (365 days) | Solo draft persistence TTL in Redis                 |
 | `DRAFT_TTL_SECONDS`             | `604800` (7 days)   | Shared draft persistence TTL in Redis                |
 | `USER_DRAFTS_TTL_SECONDS`       | `2592000` (30 days) | User active draft list TTL in Redis                  |
 | `LOCK_TTL_SECONDS`              | `30`                | Soft-lock expiration duration                        |
 | `LOCK_HEARTBEAT_INTERVAL_MS`    | `10000` (10s)       | Heartbeat interval for renewing active section lock  |
 | `LOCK_POLL_INTERVAL_MS`         | `4000` (4s)         | Polling interval for detecting co-cook section locks |
-| `SHARED_DRAFT_POLL_INTERVAL_MS` | `3000` (3s)         | SWR polling interval for active shared drafts        |
+| `SHARED_DRAFT_POLL_INTERVAL_MS` | `8000` (8s)         | SWR polling interval for active shared drafts        |
 
 ---
 
@@ -167,8 +184,12 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 ## UI Components & Real-Time Indicators
 
 - **Header Top Actions**: Minimalist React Icon buttons with Tooltips in `RecipeModal`:
-    - `FiShare2` ("Copy co-cook invite link")
+    - `FiFolder` ("My Drafts" with green indicator dot when active drafts exist; opens `DraftsModal`)
     - `FiUploadCloud` ("Save draft")
+- **Draft Card Actions**: In `DraftsModal`, each draft card includes:
+    - `FaUserPlus` ("Copy co-cook invite link" to invite collaborative co-cooks to any draft)
+    - `FiCopy` ("Duplicate draft")
+    - `FiTrash2` ("Delete draft")
 - **In-Modal Co-Cooking Status Indicator**: Minimalist status indicator rendered inside `RecipeModal` during multi-user collaborative editing sessions:
     - _`@maria is currently editing another step`_ (Brand `green-450` pill with pulsing dot)
 - **Field Lock Banners**: Rendered inside form steps when another co-cook holds an active soft-lock on that step:
@@ -179,13 +200,26 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 
 ## E2E Testing & Step Navigation Synchronization
 
-The collaborative cooking architecture is covered by automated Cypress E2E tests in [`__tests__/e2e/collaborative_recipes.cy.ts`](file:///Users/jordi/dev/jorbites/jorbites/__tests__/e2e/collaborative_recipes.cy.ts) running against a local Redis instance (`REDIS_URL=redis://localhost:6379`).
+The collaborative cooking architecture is covered by automated Cypress E2E tests in [`__tests__/e2e/collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts) running against a local Redis instance (`REDIS_URL=redis://localhost:6379`).
 
-### Key Test Scenarios:
+### Key Test Scenarios (17/17 Passing):
 
-1. **Multi-User Draft Invitation & Join Flow**: Generating secure tokenized invite links from `RecipeModal` and auto-opening pre-populated drafts via `/?draft=<id>&joined=true`.
-2. **Real-Time Step Synchronization on Forward/Back Navigation**: When User A updates ingredients or steps in a shared draft stored in Redis, User B navigating forward or backward immediately sees those updates reflected in the active modal form without data loss.
-3. **Section Soft-Locking & Activity Banners**: Verifying step inputs are locked with opacity feedback when another collaborator holds an active lock (`[data-testid="lock-banner"]`), and activity banners display on other steps (`[data-testid="co-cook-activity-banner"]`).
-4. **Collaborative Publishing & Credit**: Creating recipes with `coCooksIds` and verifying `RecipeCoCooks` rendering on the recipe page.
+1. **Collaborative Recipe Lifecycle & Publishing**: Creating recipes with `coCooksIds`, syncing steps, and verifying `RecipeCoCooks` collaborator badge rendering on the recipe page.
+2. **Multi-User Draft Invitation & Join Flow**: Generating secure tokenized invite links from `RecipeModal` and auto-opening pre-populated drafts via `/?draft=<id>&joined=true`.
+3. **Real-Time Step Synchronization on Forward/Back Navigation**: When User A updates ingredients or steps in a shared draft stored in Redis, User B navigating forward or backward immediately sees those updates reflected in the active modal form without data loss.
+4. **Section Soft-Locking & Activity Banners**: Verifying step inputs are locked with opacity feedback when another collaborator holds an active lock (`[data-testid="lock-banner"]`), and activity banners display on other steps (`[data-testid="co-cook-activity-banner"]`).
+5. **Non-Destructive Concurrent Multi-Field Merge**: Resolves concurrent field edits across different sections without race condition data loss.
+6. **Collaborator Limits & Removal**: Enforces the 4 co-cook maximum cap and allows seamless collaborator removal.
+7. **Publish Cleanup**: Completely purges shared drafts and lock keys from Redis upon recipe publication.
+8. **Live UI In-Progress Edit Protection**: Ensures that active typing in an unlocked step is never clobbered or interrupted when remote co-cooks update other steps in the background.
+9. **Soft-Lock Input Guards**: Ensures all text inputs and dynamic row buttons are strictly disabled on soft-locked steps while remaining fully interactive on unlocked steps.
+10. **Live Soft-Lock Auto-Recovery**: Verifies that when a remote co-cook releases a soft-lock, polling detects the unlock, the banner disappears, and all form controls automatically regain interactive state.
+11. **Dynamic Row Expansion on Remote Additions**: Verifies that when a remote collaborator appends new ingredients or steps to the Redis draft, navigating to those steps dynamically expands the input row list and populates the remote values.
+12. **Atomic Co-Cook Join Flow & Quota**: Verifies atomic Lua joining prevents race conditions and strictly rejects excess collaborators beyond `MAX_CO_COOKS = 4`.
+13. **Multi-Step Save Resilience**: Verifies saving across multiple steps works cleanly without 500 errors after co-cooks join.
+14. **Automatic Lock Acquisition on Navigation**: Automatically locks current step on entry and prevents concurrent edits by disabling inputs for other viewers.
+15. **Locked Step Action Button Guards**: Disables the Save draft button on locked steps and omits locked fields to prevent data clobbering, while permitting wizard navigation.
+16. **Immediate Lock Release on Close**: Releases step locks immediately on modal close without waiting for the 30-second TTL to expire.
+17. **Keyboard Inert Container Trapping**: Applies native `inert` attribute to locked step container, preventing keyboard users from tabbing into locked inputs.
 
-For detailed Mermaid diagrams of this and all other E2E test suites, see [`docs/testing/e2e/workflows.md`](file:///Users/jordi/dev/jorbites/jorbites/docs/testing/e2e/workflows.md).
+For detailed Mermaid diagrams of this and all other E2E test suites, see [`docs/testing/e2e/workflows.md`](file:///docs/testing/e2e/workflows.md).

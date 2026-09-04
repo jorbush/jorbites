@@ -1,6 +1,6 @@
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RecipeModalTopActions from '@/app/components/modals/recipe-steps/RecipeModalTopActions';
 
 vi.mock('react-i18next', () => ({
@@ -10,54 +10,78 @@ vi.mock('react-i18next', () => ({
 }));
 
 vi.mock('@/app/components/utils/Tooltip', () => ({
-    default: ({ children }: any) => <>{children}</>,
+    __esModule: true,
+    default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 describe('RecipeModalTopActions', () => {
-    const mockOnCopyInviteLink = vi.fn();
-    const mockOnSaveDraft = vi.fn();
+    it('renders both action buttons: My Drafts and Save Draft', () => {
+        const onSave = vi.fn();
+        const onOpenDrafts = vi.fn();
 
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
-
-    afterEach(() => {
-        cleanup();
-    });
-
-    it('renders both buttons correctly', () => {
         render(
             <RecipeModalTopActions
-                onCopyInviteLink={mockOnCopyInviteLink}
-                onSaveDraft={mockOnSaveDraft}
+                onSaveDraft={onSave}
+                onOpenDrafts={onOpenDrafts}
+                hasDrafts={false}
             />
         );
 
-        expect(screen.getByTestId('copy-co-cook-link-button')).toBeDefined();
-        expect(screen.getByTestId('load-draft-button')).toBeDefined();
+        expect(
+            screen.getByTestId('open-drafts-modal-button')
+        ).toBeInTheDocument();
+        expect(screen.getByTestId('load-draft-button')).toBeInTheDocument();
+        expect(
+            screen.queryByTestId('copy-co-cook-link-button')
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByTestId('drafts-indicator-dot')
+        ).not.toBeInTheDocument();
     });
 
-    it('calls onCopyInviteLink when copy button is clicked', () => {
+    it('renders the drafts indicator dot when hasDrafts is true', () => {
+        const onSave = vi.fn();
+        const onOpenDrafts = vi.fn();
+
         render(
             <RecipeModalTopActions
-                onCopyInviteLink={mockOnCopyInviteLink}
-                onSaveDraft={mockOnSaveDraft}
+                onSaveDraft={onSave}
+                onOpenDrafts={onOpenDrafts}
+                hasDrafts={true}
             />
         );
 
-        fireEvent.click(screen.getByTestId('copy-co-cook-link-button'));
-        expect(mockOnCopyInviteLink).toHaveBeenCalledTimes(1);
+        expect(screen.getByTestId('drafts-indicator-dot')).toBeInTheDocument();
     });
 
-    it('calls onSaveDraft when save draft button is clicked', () => {
+    it('triggers onOpenDrafts when the drafts folder icon is clicked', () => {
+        const onSave = vi.fn();
+        const onOpenDrafts = vi.fn();
+
         render(
             <RecipeModalTopActions
-                onCopyInviteLink={mockOnCopyInviteLink}
-                onSaveDraft={mockOnSaveDraft}
+                onSaveDraft={onSave}
+                onOpenDrafts={onOpenDrafts}
+                hasDrafts={true}
+            />
+        );
+
+        fireEvent.click(screen.getByTestId('open-drafts-modal-button'));
+        expect(onOpenDrafts).toHaveBeenCalledTimes(1);
+    });
+
+    it('triggers onSaveDraft when the save button is clicked', () => {
+        const onSave = vi.fn();
+        const onOpenDrafts = vi.fn();
+
+        render(
+            <RecipeModalTopActions
+                onSaveDraft={onSave}
+                onOpenDrafts={onOpenDrafts}
             />
         );
 
         fireEvent.click(screen.getByTestId('load-draft-button'));
-        expect(mockOnSaveDraft).toHaveBeenCalledTimes(1);
+        expect(onSave).toHaveBeenCalledTimes(1);
     });
 });

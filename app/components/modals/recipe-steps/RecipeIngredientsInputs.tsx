@@ -38,6 +38,7 @@ const RecipeIngredientsInputs: React.FC<RecipeIngredientsInputsProps> = ({
                             label=""
                             register={register}
                             errors={errors}
+                            disabled={isLocked}
                             required={!isLocked && numIngredients === 1}
                             maxLength={RECIPE_INGREDIENT_MAX_LENGTH}
                             dataCy={`recipe-ingredient-${i}`}

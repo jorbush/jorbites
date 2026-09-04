@@ -1,10 +1,11 @@
 'use client';
 
 import { useRef, useEffect, useCallback, Suspense } from 'react';
-import useSWR from 'swr';
 import { useSearchParams } from 'next/navigation';
+import useSWR from 'swr';
 import { axiosFetcher } from '@/app/utils/fetcher';
-import useRecipeModal from '@/app/hooks/useRecipeModal';
+import useRecipeModal, { RecipeModalStore } from '@/app/hooks/useRecipeModal';
+import useDraftsModal from '@/app/hooks/useDraftsModal';
 import Modal from '@/app/components/modals/Modal';
 import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
@@ -13,24 +14,126 @@ import { STEPS } from '@/app/utils/constants';
 import { useRecipeFormState } from './recipe-steps/useRecipeFormState';
 import RecipeModalTopActions from './recipe-steps/RecipeModalTopActions';
 import RecipeModalStepBody from './recipe-steps/RecipeModalStepBody';
+import { useRecipeLock } from '@/app/hooks/useRecipeLock';
+import { DraftData, DraftSummary } from '@/app/types/draft';
 
 interface RecipeModalProps {
     currentUser?: SafeUser | null;
 }
 
+interface LoadingFallbackProps {
+    isOpen: boolean;
+    isEditMode?: boolean;
+    onClose: () => void;
+}
+
+const RecipeModalLoadingFallback: React.FC<LoadingFallbackProps> = ({
+    isOpen,
+    isEditMode,
+    onClose,
+}) => {
+    const { t } = useTranslation();
+    return (
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            onSubmit={() => {}}
+            actionLabel=""
+            title={
+                isEditMode
+                    ? (t('edit_recipe') ?? 'Edit recipe')
+                    : (t('post_recipe') ?? 'Post a recipe')
+            }
+            body={<Loader height="400px" />}
+            isLoading={true}
+        />
+    );
+};
+
+function useHasActiveDrafts(isOpen: boolean, hasUser: boolean): boolean {
+    const { data: activeDrafts } = useSWR<DraftSummary[]>(
+        isOpen && hasUser ? '/api/draft/active' : null,
+        axiosFetcher,
+        {
+            revalidateOnFocus: true,
+            revalidateOnMount: true,
+            dedupingInterval: 0,
+        }
+    );
+    return Boolean(activeDrafts && activeDrafts.length > 0);
+}
+
+interface CollaborativeSessionProps {
+    draftData?: Partial<DraftData> | null;
+    selectedCoCooks: SafeUser[];
+    lock?: ReturnType<typeof useRecipeLock>;
+    step: number;
+    currentUserId?: string;
+}
+
+function deriveCollaborativeSessionState({
+    draftData,
+    selectedCoCooks,
+    lock,
+    step,
+    currentUserId,
+}: CollaborativeSessionProps) {
+    const isCurrentStepLocked = Boolean(lock?.isLockedByOther(`step:${step}`));
+    const lockOwner = lock?.getLockOwner(`step:${step}`);
+
+    const locks = (lock?.locks || {}) as Record<
+        string,
+        { userId?: string; userName?: string }
+    >;
+    const otherActiveLocks: [string, { userId?: string; userName?: string }][] =
+        Object.entries(locks).filter(
+            ([key, info]) =>
+                key !== `step:${step}` &&
+                key.startsWith('step:') &&
+                Boolean(info) &&
+                info.userId !== currentUserId
+        );
+
+    const hasCoCooks = Boolean(
+        (draftData?.coCooks && draftData.coCooks.length > 0) ||
+        selectedCoCooks.length > 0
+    );
+
+    const isSharedSession = Boolean(
+        draftData?.type === 'shared' ||
+        hasCoCooks ||
+        draftData?.ownerName ||
+        isCurrentStepLocked ||
+        otherActiveLocks.length > 0
+    );
+
+    return {
+        isCurrentStepLocked,
+        lockOwner,
+        otherActiveLocks,
+        isSharedSession,
+    };
+}
+
 const RecipeModalContent: React.FC<{
     currentUser?: SafeUser | null;
-    recipeModal: any;
-    draftData?: any;
-    mutateDraft?: () => Promise<any>;
+    recipeModal: RecipeModalStore;
     onClose: () => void;
-}> = ({ currentUser, recipeModal, draftData, mutateDraft, onClose }) => {
+}> = ({ currentUser, recipeModal, onClose }) => {
     const { t } = useTranslation();
+    const draftsModal = useDraftsModal();
+    const hasDrafts = useHasActiveDrafts(
+        Boolean(recipeModal.isOpen),
+        Boolean(currentUser)
+    );
+
     const {
         step,
         numIngredients,
         numSteps,
         isLoading,
+        isSaving,
+        isDirty,
         selectedCoCooks,
         selectedLinkedRecipes,
         selectedQuest,
@@ -56,7 +159,7 @@ const RecipeModalContent: React.FC<{
         selectQuest,
         removeQuest,
         saveDraft,
-        copyInviteLink,
+        flushDraftSaves,
         lock,
         addIngredientInput,
         removeIngredientInput,
@@ -69,33 +172,50 @@ const RecipeModalContent: React.FC<{
         onBack,
         onSubmit,
         setCustomValue,
+        draftData,
+        isLoadingDraft,
     } = useRecipeFormState({
         recipeModal,
         currentUser,
-        draftData,
-        mutateDraft,
     });
 
-    const isCurrentStepLocked = lock?.isLockedByOther(`step:${step}`);
-    const lockOwner = lock?.getLockOwner(`step:${step}`);
+    const handleOpenDrafts = useCallback(async () => {
+        if (isDirty) {
+            const saved = await saveDraft();
+            await flushDraftSaves();
+            if (!saved) return;
+        }
 
-    // Active locks on other steps held by co-cooks
-    const otherActiveLocks = Object.entries(lock?.locks || {}).filter(
-        ([key, info]) =>
-            key !== `step:${step}` &&
-            key.startsWith('step:') &&
-            info &&
-            info.userId !== currentUser?.id
-    );
+        onClose();
+        draftsModal.onOpen();
+    }, [draftsModal, flushDraftSaves, isDirty, onClose, saveDraft]);
 
-    const isSharedSession = Boolean(
-        draftData?.isShared ||
-        (draftData?.coCooks && draftData.coCooks.length > 0) ||
-        selectedCoCooks.length > 0 ||
-        draftData?.ownerName ||
-        isCurrentStepLocked ||
-        otherActiveLocks.length > 0
-    );
+    const {
+        isCurrentStepLocked,
+        lockOwner,
+        otherActiveLocks,
+        isSharedSession,
+    } = deriveCollaborativeSessionState({
+        draftData,
+        selectedCoCooks,
+        lock,
+        step,
+        currentUserId: currentUser?.id,
+    });
+
+    if (isLoadingDraft && !draftData) {
+        return (
+            <RecipeModalLoadingFallback
+                isOpen={recipeModal.isOpen}
+                isEditMode={recipeModal.isEditMode}
+                onClose={onClose}
+            />
+        );
+    }
+
+    const modalTitle = recipeModal.isEditMode
+        ? (t('edit_recipe') ?? 'Edit recipe')
+        : (t('post_recipe') ?? 'Post a recipe');
 
     return (
         <Modal
@@ -103,13 +223,10 @@ const RecipeModalContent: React.FC<{
             onClose={onClose}
             onSubmit={handleSubmit(onSubmit)}
             actionLabel={actionLabel}
+            actionDisabled={isCurrentStepLocked && step === STEPS.IMAGES}
             secondaryActionLabel={secondaryActionLabel}
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
-            title={
-                recipeModal.isEditMode
-                    ? (t('edit_recipe') ?? 'Edit recipe')
-                    : (t('post_recipe') ?? 'Post a recipe')
-            }
+            title={modalTitle}
             body={
                 <RecipeModalStepBody
                     step={step}
@@ -156,8 +273,11 @@ const RecipeModalContent: React.FC<{
             topButton={
                 !recipeModal.isEditMode ? (
                     <RecipeModalTopActions
-                        onCopyInviteLink={copyInviteLink}
                         onSaveDraft={saveDraft}
+                        onOpenDrafts={handleOpenDrafts}
+                        hasDrafts={hasDrafts}
+                        isSaving={isSaving}
+                        isLocked={isCurrentStepLocked}
                     />
                 ) : undefined
             }
@@ -167,17 +287,9 @@ const RecipeModalContent: React.FC<{
 
 const RecipeModalComponent: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const recipeModal = useRecipeModal();
-    const { t } = useTranslation();
     const searchParams = useSearchParams();
     const draftQueryParam = searchParams?.get('draft');
-    const currentUserRef = useRef<SafeUser | null>(currentUser || null);
     const autoOpenedDraftRef = useRef<string | null>(null);
-
-    useEffect(() => {
-        currentUserRef.current = currentUser || null;
-    }, [currentUser]);
-
-    const activeDraftId = recipeModal.activeDraftId || draftQueryParam;
 
     const isOpen = recipeModal.isOpen;
     const isEditMode = recipeModal.isEditMode;
@@ -195,8 +307,9 @@ const RecipeModalComponent: React.FC<RecipeModalProps> = ({ currentUser }) => {
         }
     }, [draftQueryParam, isOpen, isEditMode, onOpenSharedDraft]);
 
+    const onClose = recipeModal.onClose;
     const handleClose = useCallback(() => {
-        recipeModal.onClose();
+        onClose();
         if (
             typeof window !== 'undefined' &&
             window.location.search.includes('draft=')
@@ -210,58 +323,16 @@ const RecipeModalComponent: React.FC<RecipeModalProps> = ({ currentUser }) => {
                 url.pathname + (url.search ? url.search : '')
             );
         }
-    }, [recipeModal]);
-
-    const draftEndpoint = activeDraftId
-        ? `/api/draft?draftId=${activeDraftId}`
-        : `/api/draft`;
-
-    const {
-        data: draftData,
-        isLoading: isLoadingDraft,
-        mutate: mutateDraft,
-    } = useSWR(
-        recipeModal.isOpen && !recipeModal.isEditMode && currentUserRef.current
-            ? draftEndpoint
-            : null,
-        axiosFetcher,
-        {
-            revalidateOnFocus: true,
-            revalidateOnReconnect: true,
-            refreshInterval: 3000,
-            shouldRetryOnError: false,
-            keepPreviousData: true,
-        }
-    );
+    }, [onClose]);
 
     if (!recipeModal.isOpen) {
         return null;
-    }
-
-    if (isLoadingDraft && !draftData) {
-        return (
-            <Modal
-                isOpen={recipeModal.isOpen}
-                onClose={handleClose}
-                onSubmit={() => {}}
-                actionLabel=""
-                title={
-                    recipeModal.isEditMode
-                        ? (t('edit_recipe') ?? 'Edit recipe')
-                        : (t('post_recipe') ?? 'Post a recipe')
-                }
-                body={<Loader height="400px" />}
-                isLoading={true}
-            />
-        );
     }
 
     return (
         <RecipeModalContent
             currentUser={currentUser}
             recipeModal={recipeModal}
-            draftData={draftData}
-            mutateDraft={mutateDraft}
             onClose={handleClose}
         />
     );

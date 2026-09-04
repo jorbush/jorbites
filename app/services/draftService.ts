@@ -1,14 +1,109 @@
+import crypto from 'crypto';
 import { redis } from '@/app/lib/redis';
 import { releaseAllLocks } from '@/app/lib/redisLock';
 import { logger } from '@/app/lib/axiom/server';
 import { SafeUser } from '@/app/types';
-import { SharedDraft, SingleDraft } from '@/app/types/draft';
+import { SharedDraft, SingleDraft, DraftSummary } from '@/app/types/draft';
 import {
     DRAFT_TTL_SECONDS,
     USER_DRAFTS_TTL_SECONDS,
     MAX_CO_COOKS,
     MAX_LINKED_RECIPES,
+    MAX_SOLO_DRAFT_SLOTS,
+    SOLO_DRAFT_TTL_SECONDS,
 } from '@/app/utils/constants';
+
+interface RedisClient {
+    get(key: string): Promise<string | null>;
+    set(
+        key: string,
+        value: string,
+        mode?: string,
+        duration?: number
+    ): Promise<string | null>;
+    del(...keys: string[]): Promise<number>;
+    sadd(key: string, ...members: string[]): Promise<number>;
+    srem(key: string, ...members: string[]): Promise<number>;
+    smembers(key: string): Promise<string[]>;
+    expire(key: string, seconds: number): Promise<number>;
+    eval(
+        script: string,
+        numKeys: number,
+        ...args: (string | number)[]
+    ): Promise<unknown>;
+}
+
+const redisClient = redis as unknown as RedisClient;
+
+const SAVE_SOLO_DRAFT_SCRIPT = `
+local soloIds = redis.call('SMEMBERS', KEYS[2])
+for _, id in ipairs(soloIds) do
+    if redis.call('EXISTS', ARGV[6] .. id) == 0 then
+        redis.call('SREM', KEYS[2], id)
+    end
+end
+
+local draftExists = redis.call('EXISTS', KEYS[1])
+if draftExists == 0 and redis.call('SCARD', KEYS[2]) >= tonumber(ARGV[4]) then
+    if redis.call('SCARD', KEYS[2]) > 0 then
+        redis.call('EXPIRE', KEYS[2], tonumber(ARGV[3]))
+    end
+    return 0
+end
+
+redis.call('SET', KEYS[1], ARGV[2], 'EX', tonumber(ARGV[3]))
+redis.call('SADD', KEYS[2], ARGV[1])
+redis.call('EXPIRE', KEYS[2], tonumber(ARGV[3]))
+redis.call('SADD', KEYS[3], ARGV[1])
+redis.call('EXPIRE', KEYS[3], tonumber(ARGV[5]))
+return 1
+`;
+
+const JOIN_SHARED_DRAFT_SCRIPT = `
+local raw = redis.call('GET', KEYS[1])
+if not raw then
+    return cjson.encode({ ok = 0, error = 'draft_not_found' })
+end
+
+local decoded, draft = pcall(cjson.decode, raw)
+if not decoded or type(draft) ~= 'table' then
+    return cjson.encode({ ok = 0, error = 'invalid_draft_data' })
+end
+
+if draft.inviteToken ~= ARGV[1] then
+    return cjson.encode({ ok = 0, error = 'invalid_invite_token' })
+end
+
+local userId = ARGV[2]
+local maxCoCooks = tonumber(ARGV[3])
+local coCooks = draft.coCooksIds or {}
+
+local isOwner = (draft.ownerId == userId)
+local alreadyMember = false
+
+for _, id in ipairs(coCooks) do
+    if id == userId then
+        alreadyMember = true
+        break
+    end
+end
+
+if not isOwner and not alreadyMember then
+    if #coCooks >= maxCoCooks then
+        return cjson.encode({ ok = 0, error = 'co_cook_limit_reached' })
+    end
+    table.insert(coCooks, userId)
+    draft.coCooksIds = coCooks
+end
+
+draft.updatedAt = ARGV[5]
+local updatedRaw = cjson.encode(draft)
+redis.call('SET', KEYS[1], updatedRaw, 'EX', tonumber(ARGV[4]))
+redis.call('SADD', KEYS[2], draft.draftId or ARGV[7])
+redis.call('EXPIRE', KEYS[2], tonumber(ARGV[6]))
+
+return cjson.encode({ ok = 1, draft = draft })
+`;
 
 const ALLOWED_DRAFT_FIELDS: (keyof SharedDraft)[] = [
     'currentStep',
@@ -29,19 +124,19 @@ const ALLOWED_DRAFT_FIELDS: (keyof SharedDraft)[] = [
     'linkedRecipeIds',
     'youtubeUrl',
     'questId',
-    'inviteToken',
 ];
 
 /**
  * Filter an arbitrary payload to only allowed draft fields to prevent field pollution (C3).
  */
-function sanitizeDraftPayload(body: any): Partial<SharedDraft> {
+function sanitizeDraftPayload(body: unknown): Partial<SharedDraft> {
     const sanitized: Partial<SharedDraft> = {};
     if (!body || typeof body !== 'object') return sanitized;
+    const rec = body as Record<string, unknown>;
 
     for (const field of ALLOWED_DRAFT_FIELDS) {
-        if (body[field] !== undefined) {
-            (sanitized as any)[field] = body[field];
+        if (rec[field] !== undefined) {
+            (sanitized as Record<string, unknown>)[field] = rec[field];
         }
     }
     return sanitized;
@@ -49,7 +144,7 @@ function sanitizeDraftPayload(body: any): Partial<SharedDraft> {
 
 export class DraftService {
     /**
-     * Atomically adds a draft ID to a user's active drafts set/list (A1).
+     * Atomically adds a draft ID to a user's active drafts set (A1).
      */
     static async addToUserDrafts(
         userId: string,
@@ -57,34 +152,17 @@ export class DraftService {
     ): Promise<void> {
         const key = `user:drafts:${userId}`;
         try {
-            if (typeof (redis as any).sadd === 'function') {
-                await (redis as any).sadd(key, draftId);
-                if (typeof (redis as any).expire === 'function') {
-                    await (redis as any).expire(key, USER_DRAFTS_TTL_SECONDS);
+            if (typeof redisClient.sadd === 'function') {
+                await redisClient.sadd(key, draftId);
+                if (typeof redisClient.expire === 'function') {
+                    await redisClient.expire(key, USER_DRAFTS_TTL_SECONDS);
                 }
-                return;
             }
-
-            // Fallback for mock environments
-            const raw = await redis.get(key);
-            let list: string[] = [];
-            if (raw) {
-                try {
-                    list = JSON.parse(raw);
-                } catch {}
-            }
-            if (!list.includes(draftId)) {
-                list.push(draftId);
-                await redis.set(
-                    key,
-                    JSON.stringify(list),
-                    'EX',
-                    USER_DRAFTS_TTL_SECONDS
-                );
-            }
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
             logger.error('DraftService.addToUserDrafts error', {
-                error: error.message,
+                error: message,
                 userId,
                 draftId,
             });
@@ -92,7 +170,7 @@ export class DraftService {
     }
 
     /**
-     * Atomically removes a draft ID from a user's active drafts set/list (A1).
+     * Atomically removes a draft ID from a user's active drafts set (A1, M2).
      */
     static async removeFromUserDrafts(
         userId: string,
@@ -100,29 +178,14 @@ export class DraftService {
     ): Promise<void> {
         const key = `user:drafts:${userId}`;
         try {
-            if (typeof (redis as any).srem === 'function') {
-                await (redis as any).srem(key, draftId);
+            if (typeof redisClient.srem === 'function') {
+                await redisClient.srem(key, draftId);
             }
-
-            // Also check string JSON list for backward compatibility
-            const raw = await redis.get(key);
-            if (raw) {
-                try {
-                    const list: string[] = JSON.parse(raw);
-                    if (Array.isArray(list)) {
-                        const filtered = list.filter((id) => id !== draftId);
-                        await redis.set(
-                            key,
-                            JSON.stringify(filtered),
-                            'EX',
-                            USER_DRAFTS_TTL_SECONDS
-                        );
-                    }
-                } catch {}
-            }
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
             logger.error('DraftService.removeFromUserDrafts error', {
-                error: error.message,
+                error: message,
                 userId,
                 draftId,
             });
@@ -135,29 +198,108 @@ export class DraftService {
     static async getUserDraftIds(userId: string): Promise<string[]> {
         const key = `user:drafts:${userId}`;
         try {
-            if (typeof (redis as any).smembers === 'function') {
-                const members = await (redis as any).smembers(key);
-                if (Array.isArray(members) && members.length > 0) {
+            if (typeof redisClient.smembers === 'function') {
+                const members = await redisClient.smembers(key);
+                if (Array.isArray(members)) {
                     return members;
                 }
             }
-
-            // Fallback for string JSON list
-            const raw = await redis.get(key);
-            if (raw) {
-                try {
-                    const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed)) return parsed;
-                } catch {}
-            }
             return [];
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
             logger.error('DraftService.getUserDraftIds error', {
-                error: error.message,
+                error: message,
                 userId,
             });
             return [];
         }
+    }
+
+    static async getSoloDraftIds(userId: string): Promise<string[]> {
+        const key = `user:solo-drafts:${userId}`;
+        try {
+            if (typeof redisClient.smembers === 'function') {
+                const members = await redisClient.smembers(key);
+                if (Array.isArray(members)) return members;
+            }
+            return [];
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
+            logger.error('DraftService.getSoloDraftIds error', {
+                error: message,
+                userId,
+            });
+            return [];
+        }
+    }
+
+    static async removeFromSoloDrafts(
+        userId: string,
+        draftId: string
+    ): Promise<void> {
+        const key = `user:solo-drafts:${userId}`;
+        try {
+            if (typeof redisClient.srem === 'function') {
+                await redisClient.srem(key, draftId);
+            }
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
+            logger.error('DraftService.removeFromSoloDrafts error', {
+                error: message,
+                userId,
+                draftId,
+            });
+        }
+    }
+
+    /**
+     * Normalizes shared draft array properties to ensure they are always valid arrays,
+     * protecting against Redis Lua cjson empty-table `{}` conversions.
+     */
+    static normalizeSharedDraft(draft: SharedDraft): SharedDraft {
+        if (!draft || typeof draft !== 'object') return draft;
+        return {
+            ...draft,
+            categories: Array.isArray(draft.categories) ? draft.categories : [],
+            ingredients: Array.isArray(draft.ingredients)
+                ? draft.ingredients
+                : [],
+            steps: Array.isArray(draft.steps) ? draft.steps : [],
+            coCooksIds: Array.isArray(draft.coCooksIds) ? draft.coCooksIds : [],
+            linkedRecipeIds: Array.isArray(draft.linkedRecipeIds)
+                ? draft.linkedRecipeIds
+                : [],
+        };
+    }
+
+    /**
+     * Normalizes single-user draft array properties to ensure they are always valid arrays.
+     */
+    static normalizeSingleDraft(draft: SingleDraft): SingleDraft {
+        if (!draft || typeof draft !== 'object') return draft;
+        return {
+            ...draft,
+            categories: Array.isArray(draft.categories) ? draft.categories : [],
+            ingredients: Array.isArray(draft.ingredients)
+                ? draft.ingredients
+                : [],
+            steps: Array.isArray(draft.steps) ? draft.steps : [],
+            coCooksIds: Array.isArray(draft.coCooksIds) ? draft.coCooksIds : [],
+            linkedRecipeIds: Array.isArray(draft.linkedRecipeIds)
+                ? draft.linkedRecipeIds
+                : [],
+        };
+    }
+
+    /**
+     * Masks sensitive fields like inviteToken for non-owner participants (B4).
+     */
+    static maskSharedDraft(draft: SharedDraft): SharedDraft {
+        const { inviteToken: _inviteToken, ...sanitized } = draft;
+        return sanitized as SharedDraft;
     }
 
     /**
@@ -180,6 +322,8 @@ export class DraftService {
                 return null;
             }
 
+            draft = this.normalizeSharedDraft(draft);
+
             // Authorization check if requester is provided
             if (requesterUserId) {
                 const isOwner = draft.ownerId === requesterUserId;
@@ -193,15 +337,16 @@ export class DraftService {
 
                 // Mask inviteToken for non-owners (B4)
                 if (!isOwner) {
-                    const { inviteToken: _inviteToken, ...sanitized } = draft;
-                    return sanitized as SharedDraft;
+                    return this.maskSharedDraft(draft);
                 }
             }
 
             return draft;
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
             logger.error('DraftService.getSharedDraft error', {
-                error: error.message,
+                error: message,
                 draftId,
             });
             return null;
@@ -209,16 +354,19 @@ export class DraftService {
     }
 
     /**
-     * Saves or merges a shared draft (B2, C3).
+     * Saves or merges a shared draft (B2, C3, H1).
      * Enforces MAX_CO_COOKS and MAX_LINKED_RECIPES (B3).
      */
     static async saveSharedDraft(
         draftId: string,
-        payload: Partial<SharedDraft> | any,
+        payload: Partial<SharedDraft>,
         currentUser: SafeUser
     ): Promise<SharedDraft> {
         const key = `draft:shared:${draftId}`;
-        const existing = await this.getSharedDraft(draftId);
+        const rawExisting = await this.getSharedDraft(draftId);
+        const existing = rawExisting
+            ? this.normalizeSharedDraft(rawExisting)
+            : null;
 
         if (
             existing &&
@@ -235,18 +383,45 @@ export class DraftService {
 
         const sanitizedPayload = sanitizeDraftPayload(payload);
 
-        const rawCoCooks = [
-            ...(existing?.coCooksIds || []),
-            ...(sanitizedPayload.coCooksIds || []),
-        ];
-        const limitedCoCooks = Array.from(new Set(rawCoCooks)).slice(
+        let finalCoCooks: string[];
+        if (existing && currentUser.id !== existing.ownerId) {
+            // Non-owners (co-cooks) can never modify or wipe the co-cooks roster
+            finalCoCooks = Array.isArray(existing.coCooksIds)
+                ? existing.coCooksIds
+                : [];
+        } else if (sanitizedPayload.coCooksIds !== undefined) {
+            const incomingCoCooks = Array.isArray(sanitizedPayload.coCooksIds)
+                ? sanitizedPayload.coCooksIds
+                : [];
+            // Owner update: if coCooksIds is empty array but existing draft has co-cooks,
+            // only wipe if explicitly on the RELATED_CONTENT step; otherwise preserve.
+            if (
+                incomingCoCooks.length === 0 &&
+                (existing?.coCooksIds?.length || 0) > 0 &&
+                sanitizedPayload.currentStep !== 5 // STEPS.RELATED_CONTENT
+            ) {
+                finalCoCooks = Array.isArray(existing?.coCooksIds)
+                    ? existing.coCooksIds
+                    : [];
+            } else {
+                finalCoCooks = incomingCoCooks;
+            }
+        } else {
+            finalCoCooks = Array.isArray(existing?.coCooksIds)
+                ? existing.coCooksIds
+                : [];
+        }
+        const limitedCoCooks = Array.from(new Set(finalCoCooks)).slice(
             0,
             MAX_CO_COOKS
         );
 
         const rawLinked =
-            sanitizedPayload.linkedRecipeIds || existing?.linkedRecipeIds || [];
-        const limitedLinked = Array.from(new Set(rawLinked)).slice(
+            sanitizedPayload.linkedRecipeIds !== undefined
+                ? sanitizedPayload.linkedRecipeIds
+                : existing?.linkedRecipeIds || [];
+        const safeRawLinked = Array.isArray(rawLinked) ? rawLinked : [];
+        const limitedLinked = Array.from(new Set(safeRawLinked)).slice(
             0,
             MAX_LINKED_RECIPES
         );
@@ -262,52 +437,52 @@ export class DraftService {
                 currentUser.email ||
                 'Chef',
             ingredients:
-                sanitizedPayload.ingredients &&
-                sanitizedPayload.ingredients.length > 0
+                sanitizedPayload.ingredients !== undefined &&
+                Array.isArray(sanitizedPayload.ingredients)
                     ? sanitizedPayload.ingredients
-                    : existing?.ingredients || [],
+                    : Array.isArray(existing?.ingredients)
+                      ? existing.ingredients
+                      : [],
             steps:
-                sanitizedPayload.steps && sanitizedPayload.steps.length > 0
+                sanitizedPayload.steps !== undefined &&
+                Array.isArray(sanitizedPayload.steps)
                     ? sanitizedPayload.steps
-                    : existing?.steps || [],
+                    : Array.isArray(existing?.steps)
+                      ? existing.steps
+                      : [],
             categories:
-                sanitizedPayload.categories &&
-                sanitizedPayload.categories.length > 0
+                sanitizedPayload.categories !== undefined &&
+                Array.isArray(sanitizedPayload.categories)
                     ? sanitizedPayload.categories
-                    : existing?.categories || [],
+                    : Array.isArray(existing?.categories)
+                      ? existing.categories
+                      : [],
             title:
-                sanitizedPayload.title !== undefined &&
-                sanitizedPayload.title !== ''
+                sanitizedPayload.title !== undefined
                     ? sanitizedPayload.title
                     : existing?.title || '',
             description:
-                sanitizedPayload.description !== undefined &&
-                sanitizedPayload.description !== ''
+                sanitizedPayload.description !== undefined
                     ? sanitizedPayload.description
                     : existing?.description || '',
             method:
-                sanitizedPayload.method !== undefined &&
-                sanitizedPayload.method !== ''
+                sanitizedPayload.method !== undefined
                     ? sanitizedPayload.method
                     : existing?.method || '',
             imageSrc:
-                sanitizedPayload.imageSrc !== undefined &&
-                sanitizedPayload.imageSrc !== ''
+                sanitizedPayload.imageSrc !== undefined
                     ? sanitizedPayload.imageSrc
                     : existing?.imageSrc || '',
             imageSrc1:
-                sanitizedPayload.imageSrc1 !== undefined &&
-                sanitizedPayload.imageSrc1 !== ''
+                sanitizedPayload.imageSrc1 !== undefined
                     ? sanitizedPayload.imageSrc1
                     : existing?.imageSrc1 || '',
             imageSrc2:
-                sanitizedPayload.imageSrc2 !== undefined &&
-                sanitizedPayload.imageSrc2 !== ''
+                sanitizedPayload.imageSrc2 !== undefined
                     ? sanitizedPayload.imageSrc2
                     : existing?.imageSrc2 || '',
             imageSrc3:
-                sanitizedPayload.imageSrc3 !== undefined &&
-                sanitizedPayload.imageSrc3 !== ''
+                sanitizedPayload.imageSrc3 !== undefined
                     ? sanitizedPayload.imageSrc3
                     : existing?.imageSrc3 || '',
             minutes:
@@ -328,12 +503,18 @@ export class DraftService {
             linkedRecipeIds: limitedLinked,
             inviteToken:
                 existing?.inviteToken ||
-                sanitizedPayload.inviteToken ||
-                payload.inviteToken,
-            updatedAt: new Date().toISOString(),
+                (payload as { inviteToken?: string }).inviteToken,
+            updatedAt:
+                (payload as { updatedAt?: string }).updatedAt ||
+                new Date().toISOString(),
         };
 
-        await redis.set(key, JSON.stringify(merged), 'EX', DRAFT_TTL_SECONDS);
+        await redisClient.set(
+            key,
+            JSON.stringify(merged),
+            'EX',
+            DRAFT_TTL_SECONDS
+        );
 
         await this.addToUserDrafts(currentUser.id, draftId);
 
@@ -341,14 +522,65 @@ export class DraftService {
     }
 
     /**
-     * Joins a user to a shared draft via invite token (B2).
+     * Joins a user to a shared draft via invite token atomically (B2, H2).
      */
     static async joinSharedDraft(
         draftId: string,
         token: string,
         currentUser: SafeUser
     ): Promise<{ success: boolean; error?: string; draft?: SharedDraft }> {
-        const raw = await redis.get(`draft:shared:${draftId}`);
+        const nowIso = new Date().toISOString();
+        const draftKey = `draft:shared:${draftId}`;
+        const userDraftsKey = `user:drafts:${currentUser.id}`;
+
+        // Atomic join via Redis Lua script
+        if (typeof redisClient.eval === 'function') {
+            try {
+                const evalResult = await redisClient.eval(
+                    JOIN_SHARED_DRAFT_SCRIPT,
+                    2,
+                    draftKey,
+                    userDraftsKey,
+                    token,
+                    currentUser.id,
+                    MAX_CO_COOKS,
+                    DRAFT_TTL_SECONDS,
+                    nowIso,
+                    USER_DRAFTS_TTL_SECONDS,
+                    draftId
+                );
+
+                if (typeof evalResult === 'string') {
+                    const parsed = JSON.parse(evalResult);
+                    if (parsed.ok === 1 && parsed.draft) {
+                        const normalizedDraft = this.normalizeSharedDraft(
+                            parsed.draft
+                        );
+                        await redisClient.set(
+                            draftKey,
+                            JSON.stringify(normalizedDraft),
+                            'EX',
+                            DRAFT_TTL_SECONDS
+                        );
+                        return { success: true, draft: normalizedDraft };
+                    }
+                    if (parsed.error) {
+                        return { success: false, error: parsed.error };
+                    }
+                }
+            } catch (err: unknown) {
+                // If EVAL fails (e.g. lightweight mock environment), gracefully fall through to standard handler
+                const message =
+                    err instanceof Error ? err.message : String(err);
+                logger.warn('DraftService.joinSharedDraft eval fallback', {
+                    error: message,
+                    draftId,
+                });
+            }
+        }
+
+        // Fallback for mock environments without EVAL support
+        const raw = await redisClient.get(draftKey);
         if (!raw) {
             return { success: false, error: 'draft_not_found' };
         }
@@ -364,7 +596,9 @@ export class DraftService {
             return { success: false, error: 'invalid_invite_token' };
         }
 
-        const coCooksSet = new Set<string>(draft.coCooksIds || []);
+        const coCooksSet = new Set<string>(
+            Array.isArray(draft.coCooksIds) ? draft.coCooksIds : []
+        );
         if (currentUser.id !== draft.ownerId) {
             if (
                 !coCooksSet.has(currentUser.id) &&
@@ -376,18 +610,19 @@ export class DraftService {
         }
 
         draft.coCooksIds = Array.from(coCooksSet);
-        draft.updatedAt = new Date().toISOString();
+        draft.updatedAt = nowIso;
+        const normalizedDraft = this.normalizeSharedDraft(draft);
 
-        await redis.set(
-            `draft:shared:${draftId}`,
-            JSON.stringify(draft),
+        await redisClient.set(
+            draftKey,
+            JSON.stringify(normalizedDraft),
             'EX',
             DRAFT_TTL_SECONDS
         );
 
         await this.addToUserDrafts(currentUser.id, draftId);
 
-        return { success: true, draft };
+        return { success: true, draft: normalizedDraft };
     }
 
     /**
@@ -398,7 +633,7 @@ export class DraftService {
         currentUser: SafeUser
     ): Promise<boolean> {
         const key = `draft:shared:${draftId}`;
-        const raw = await redis.get(key);
+        const raw = await redisClient.get(key);
         let participants: string[] = [currentUser.id];
 
         if (raw) {
@@ -422,22 +657,32 @@ export class DraftService {
             ).filter(Boolean);
         }
 
-        await Promise.all([redis.del(key), releaseAllLocks(draftId)]);
+        await Promise.all([
+            redisClient.del(key),
+            redisClient.del(`draft:user:${currentUser.id}:${draftId}`),
+            this.removeFromSoloDrafts(currentUser.id, draftId),
+            releaseAllLocks(draftId),
+        ]);
 
         await Promise.all(
-            participants.map((uid) => this.removeFromUserDrafts(uid, draftId))
+            participants.map(async (uid) => {
+                await this.removeFromUserDrafts(uid, draftId);
+            })
         );
 
         return true;
     }
 
     /**
-     * Cleans up a shared draft and locks when a recipe is published.
+     * Cleans up a shared or solo draft and locks when a recipe is published.
      */
-    static async cleanUpDraftOnPublish(draftId: string): Promise<void> {
+    static async cleanUpDraftOnPublish(
+        draftId: string,
+        userId?: string
+    ): Promise<void> {
         const key = `draft:shared:${draftId}`;
         try {
-            const raw = await redis.get(key);
+            const raw = await redisClient.get(key);
             let participants: string[] = [];
             if (raw) {
                 try {
@@ -445,60 +690,351 @@ export class DraftService {
                     participants = Array.from(
                         new Set([draft.ownerId, ...(draft.coCooksIds || [])])
                     ).filter(Boolean);
-                } catch {}
+                } catch (parseError: unknown) {
+                    const parseMessage =
+                        parseError instanceof Error
+                            ? parseError.message
+                            : String(parseError);
+                    logger.warn(
+                        'DraftService.cleanUpDraftOnPublish corrupted draft data',
+                        {
+                            draftId,
+                            error: parseMessage,
+                        }
+                    );
+                }
             }
 
-            await Promise.all([redis.del(key), releaseAllLocks(draftId)]);
+            if (userId && !participants.includes(userId)) {
+                participants.push(userId);
+            }
+
+            await Promise.all([redisClient.del(key), releaseAllLocks(draftId)]);
 
             if (participants.length > 0) {
                 await Promise.all(
-                    participants.map((uid) =>
-                        this.removeFromUserDrafts(uid, draftId)
-                    )
+                    participants.map(async (uid) => {
+                        await this.deleteSingleUserDraft(uid, draftId);
+                    })
                 );
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : String(error);
             logger.error('DraftService.cleanUpDraftOnPublish error', {
-                error: error.message,
+                error: message,
                 draftId,
+                userId,
             });
         }
     }
 
     /**
-     * Single-user draft helpers.
+     * Single-user draft helpers (M1 deprecated legacy un-indexed keys).
      */
     static async getSingleUserDraft(
-        userId: string
-    ): Promise<SingleDraft | null> {
-        let raw = await redis.get(`draft:user:${userId}`);
-        if (!raw) {
-            raw = await redis.get(userId);
+        userId: string,
+        slotId?: string
+    ): Promise<SingleDraft | SharedDraft | null> {
+        if (slotId) {
+            const raw = await redisClient.get(`draft:user:${userId}:${slotId}`);
+            if (!raw) return null;
+            try {
+                const parsed = JSON.parse(raw);
+                return this.normalizeSingleDraft(parsed);
+            } catch {
+                return null;
+            }
         }
-        if (!raw) return null;
-        try {
-            return JSON.parse(raw);
-        } catch {
-            return null;
+
+        // When no slotId is specified, load the user's most recently modified draft
+        const allDrafts = await this.getAllUserDrafts(userId);
+        if (allDrafts && allDrafts.length > 0) {
+            const latest = allDrafts[0];
+            if (latest.type === 'shared') {
+                return await this.getSharedDraft(latest.draftId, userId);
+            }
+            const soloRaw = await redisClient.get(
+                `draft:user:${userId}:${latest.draftId}`
+            );
+            if (soloRaw) {
+                try {
+                    const parsed = JSON.parse(soloRaw);
+                    return this.normalizeSingleDraft(parsed);
+                } catch {
+                    // Fallback to latest summary
+                }
+            }
+            return latest;
         }
+
+        return null;
+    }
+
+    private static async saveSingleUserDraftWithQuota(
+        userId: string,
+        draftId: string,
+        serialized: string
+    ): Promise<boolean> {
+        const draftKey = `draft:user:${userId}:${draftId}`;
+        const soloIndexKey = `user:solo-drafts:${userId}`;
+        const combinedIndexKey = `user:drafts:${userId}`;
+        const draftKeyPrefix = `draft:user:${userId}:`;
+
+        if (typeof redisClient.eval === 'function') {
+            const result = await redisClient.eval(
+                SAVE_SOLO_DRAFT_SCRIPT,
+                3,
+                draftKey,
+                soloIndexKey,
+                combinedIndexKey,
+                draftId,
+                serialized,
+                SOLO_DRAFT_TTL_SECONDS,
+                MAX_SOLO_DRAFT_SLOTS,
+                USER_DRAFTS_TTL_SECONDS,
+                draftKeyPrefix
+            );
+            return Number(result) === 1;
+        }
+
+        // Fallback for lightweight Redis mocks that do not implement EVAL
+        const [existingRaw, initialSoloIds] = await Promise.all([
+            redisClient.get(draftKey),
+            this.getSoloDraftIds(userId),
+        ]);
+        const soloIds = new Set(initialSoloIds);
+
+        const currentSoloList = Array.from(soloIds);
+        const soloDrafts = await Promise.all(
+            currentSoloList.map((id) =>
+                redisClient.get(`${draftKeyPrefix}${id}`)
+            )
+        );
+        currentSoloList.forEach((id, idx) => {
+            if (!soloDrafts[idx]) {
+                soloIds.delete(id);
+            }
+        });
+
+        if (!existingRaw && soloIds.size >= MAX_SOLO_DRAFT_SLOTS) {
+            return false;
+        }
+
+        await redisClient.set(
+            draftKey,
+            serialized,
+            'EX',
+            SOLO_DRAFT_TTL_SECONDS
+        );
+        soloIds.add(draftId);
+
+        if (typeof redisClient.sadd === 'function') {
+            await redisClient.sadd(soloIndexKey, ...Array.from(soloIds));
+            if (typeof redisClient.expire === 'function') {
+                await redisClient.expire(soloIndexKey, SOLO_DRAFT_TTL_SECONDS);
+            }
+        }
+        await this.addToUserDrafts(userId, draftId);
+        return true;
     }
 
     static async saveSingleUserDraft(
         userId: string,
-        data: SingleDraft
-    ): Promise<void> {
-        const serialized = JSON.stringify(data);
-        await Promise.all([
-            redis.set(`draft:user:${userId}`, serialized),
-            redis.set(userId, serialized),
-        ]);
+        data: SingleDraft,
+        slotId?: string
+    ): Promise<string> {
+        const id = slotId || crypto.randomUUID();
+
+        let existing: SingleDraft | null = null;
+        if (slotId) {
+            existing = (await this.getSingleUserDraft(
+                userId,
+                slotId
+            )) as SingleDraft | null;
+        }
+
+        const nowIso = new Date().toISOString();
+        const sanitized = sanitizeDraftPayload(data);
+        const createdAt =
+            existing?.createdAt || (data.createdAt as string) || nowIso;
+        const updatedAt = data.updatedAt || nowIso;
+
+        const merged: SingleDraft = {
+            ...existing,
+            ...sanitized,
+            draftId: id,
+            type: 'solo',
+            ownerId: userId,
+            createdAt,
+            updatedAt,
+            ingredients:
+                sanitized.ingredients !== undefined &&
+                Array.isArray(sanitized.ingredients)
+                    ? sanitized.ingredients
+                    : Array.isArray(existing?.ingredients)
+                      ? existing.ingredients
+                      : [],
+            steps:
+                sanitized.steps !== undefined && Array.isArray(sanitized.steps)
+                    ? sanitized.steps
+                    : Array.isArray(existing?.steps)
+                      ? existing.steps
+                      : [],
+            categories:
+                sanitized.categories !== undefined &&
+                Array.isArray(sanitized.categories)
+                    ? sanitized.categories
+                    : Array.isArray(existing?.categories)
+                      ? existing.categories
+                      : [],
+        };
+
+        // Mutate caller's data object with assigned draftId and updatedAt
+        data.draftId = id;
+        data.updatedAt = updatedAt;
+        if (!data.createdAt) {
+            data.createdAt = createdAt;
+        }
+
+        const serialized = JSON.stringify(merged);
+        const saved = await this.saveSingleUserDraftWithQuota(
+            userId,
+            id,
+            serialized
+        );
+        if (!saved) {
+            throw new Error('MAX_SOLO_DRAFTS_REACHED');
+        }
+
+        return id;
     }
 
-    static async deleteSingleUserDraft(userId: string): Promise<boolean> {
-        const [del1, del2] = await Promise.all([
-            redis.del(`draft:user:${userId}`),
-            redis.del(userId),
-        ]);
-        return Boolean(del1 || del2);
+    static async deleteSingleUserDraft(
+        userId: string,
+        slotId?: string
+    ): Promise<boolean> {
+        if (slotId) {
+            const del = await redisClient.del(`draft:user:${userId}:${slotId}`);
+            await Promise.all([
+                this.removeFromUserDrafts(userId, slotId),
+                this.removeFromSoloDrafts(userId, slotId),
+            ]);
+
+            return Boolean(del);
+        } else {
+            const [combinedIds, indexedSoloIds] = await Promise.all([
+                this.getUserDraftIds(userId),
+                this.getSoloDraftIds(userId),
+            ]);
+
+            const soloIds = Array.from(
+                new Set([...combinedIds, ...indexedSoloIds])
+            );
+            let deletedAny = false;
+
+            const deletionResults = await Promise.all(
+                soloIds.map(async (id) => {
+                    const soloKey = `draft:user:${userId}:${id}`;
+                    const raw = await redisClient.get(soloKey);
+                    if (raw) {
+                        await redisClient.del(soloKey);
+                        await Promise.all([
+                            this.removeFromUserDrafts(userId, id),
+                            this.removeFromSoloDrafts(userId, id),
+                        ]);
+                        return true;
+                    }
+                    return false;
+                })
+            );
+
+            if (deletionResults.some(Boolean)) {
+                deletedAny = true;
+            }
+
+            await redisClient.del(`user:solo-drafts:${userId}`);
+            return deletedAny;
+        }
+    }
+
+    static async getAllUserDrafts(userId: string): Promise<DraftSummary[]> {
+        const draftIds = await this.getUserDraftIds(userId);
+        const uniqueDraftIds = Array.from(new Set(draftIds));
+
+        const draftItems = await Promise.all(
+            uniqueDraftIds.map(async (id): Promise<DraftSummary | null> => {
+                const shared = await this.getSharedDraft(id, userId);
+                if (shared) {
+                    const updatedAt =
+                        shared.updatedAt || new Date().toISOString();
+                    return {
+                        draftId: shared.draftId,
+                        type: 'shared',
+                        title: shared.title,
+                        description: shared.description,
+                        categories: shared.categories,
+                        ingredients: shared.ingredients,
+                        steps: shared.steps,
+                        method: shared.method,
+                        coCooksIds: shared.coCooksIds || [],
+                        ownerId: shared.ownerId,
+                        ownerName: shared.ownerName,
+                        updatedAt,
+                        imageSrc: shared.imageSrc,
+                    };
+                }
+
+                const soloRaw = await redisClient.get(
+                    `draft:user:${userId}:${id}`
+                );
+                if (soloRaw) {
+                    try {
+                        const parsed = JSON.parse(soloRaw);
+                        const solo: SingleDraft =
+                            this.normalizeSingleDraft(parsed);
+                        const updatedAt =
+                            solo.updatedAt ||
+                            solo.createdAt ||
+                            new Date().toISOString();
+                        return {
+                            draftId: id,
+                            type: 'solo',
+                            title: solo.title,
+                            description: solo.description,
+                            categories: solo.categories || [],
+                            ingredients: solo.ingredients || [],
+                            steps: solo.steps || [],
+                            method: solo.method,
+                            coCooksIds: solo.coCooksIds || [],
+                            ownerId: solo.ownerId || userId,
+                            ownerName: solo.ownerName,
+                            updatedAt,
+                            imageSrc: solo.imageSrc,
+                        };
+                    } catch {
+                        return null;
+                    }
+                } else {
+                    await Promise.all([
+                        this.removeFromUserDrafts(userId, id),
+                        this.removeFromSoloDrafts(userId, id),
+                    ]);
+                    return null;
+                }
+            })
+        );
+
+        const results = draftItems.filter((item): item is DraftSummary =>
+            Boolean(item)
+        );
+
+        results.sort((a, b) => {
+            const aDate = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+            const bDate = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+            return bDate - aDate;
+        });
+
+        return results;
     }
 }

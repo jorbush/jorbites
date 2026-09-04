@@ -85,14 +85,15 @@ pnpm run seed:e2e
 
 ## 4. CI Matrix Sharding Strategy
 
-The test suite is divided across **4 parallel matrix containers** to optimize execution time and resource utilization:
+The test suite is divided across **5 parallel matrix containers** to optimize execution time and resource utilization:
 
-| Container | Name                       | Spec Files                                                                                                          | Primary Focus Areas                                                                          |
-| :-------- | :------------------------- | :------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------- |
-| **1**     | `Recipes Spec`             | [`basic.cy.ts`](file:///__tests__/e2e/basic.cy.ts)                                                                  | Full recipe creation, liking, unliking, commenting, comment deletion, editing, and deletion. |
-| **2**     | `Workshops & Quests Specs` | [`workshops.cy.ts`](file:///__tests__/e2e/workshops.cy.ts)<br/>[`quests.cy.ts`](file:///__tests__/e2e/quests.cy.ts) | Workshop and quest creation, editing, participation, and deletion lifecycles.                |
-| **3**     | `User & Basic Specs`       | [`user.cy.ts`](file:///__tests__/e2e/user.cy.ts)<br/>[`app.cy.ts`](file:///__tests__/e2e/app.cy.ts)                 | NextAuth session login/logout flows and core layout/shell component verification.            |
-| **4**     | `Collaborative Recipes`    | [`collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts)                                  | Multi-user co-cooking, invite links, Redis draft syncing, soft-locking, and capacity limits. |
+| Container | Name                             | Spec Files                                                                                                                | Primary Focus Areas                                                                          |
+| :-------- | :------------------------------- | :------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------- |
+| **1**     | `Recipes Spec`                   | [`basic.cy.ts`](file:///__tests__/e2e/basic.cy.ts)                                                                        | Full recipe creation, liking, unliking, commenting, comment deletion, editing, and deletion. |
+| **2**     | `Workshops & Quests Specs`       | [`workshops.cy.ts`](file:///__tests__/e2e/workshops.cy.ts)<br/>[`quests.cy.ts`](file:///__tests__/e2e/quests.cy.ts)       | Workshop and quest creation, editing, participation, and deletion lifecycles.                |
+| **3**     | `User & Basic Specs`             | [`user.cy.ts`](file:///__tests__/e2e/user.cy.ts)<br/>[`app.cy.ts`](file:///__tests__/e2e/app.cy.ts)                       | NextAuth session login/logout flows and core layout/shell component verification.            |
+| **4**     | `Collaborative Recipes`          | [`collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts)                                        | Multi-user co-cooking, invite links, Redis draft syncing, soft-locking, and capacity limits. |
+| **5**     | `Drafts Management & Navigation` | [`drafts_management.cy.ts`](file:///__tests__/e2e/drafts_management.cy.ts)<br/>[`drafts_navigation.cy.ts`](file:///__tests__/e2e/drafts_navigation.cy.ts) | Multi-draft modal dashboard, auto-load on open, indicator dot, TTL, duplication, deletion, multi-step state persistence, in-session draft switching, publish cleanup, 5-slot limits, mixed solo/collaborative cards, and plain-text mode persistence across reload. |
 
 ---
 

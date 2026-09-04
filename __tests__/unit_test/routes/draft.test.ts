@@ -138,7 +138,11 @@ describe('Draft API Error Handling & Shared Drafts', () => {
 
             const response = await DraftPOST(mockRequest);
             expect(response.status).toBe(200);
-            expect(redisStore['draft:user:test-user-id']).toBeDefined();
+            const data = await response.json();
+            expect(data.draftId).toBeDefined();
+            expect(
+                redisStore[`draft:user:test-user-id:${data.draftId}`]
+            ).toBeDefined();
         });
 
         it('should save shared draft successfully when draftId is provided', async () => {
@@ -164,6 +168,41 @@ describe('Draft API Error Handling & Shared Drafts', () => {
             expect(saved.title).toBe('Collaborative Pasta');
             expect(saved.ownerId).toBe('test-user-id');
         });
+
+        it('should mask inviteToken in save response when user is a co-cook and not the owner (H2)', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'co-cook', email: 'cook@a.com' },
+            };
+            const coCookUser = {
+                ...mockUser,
+                id: 'co-cook-2',
+                email: 'cook@a.com',
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(coCookUser);
+
+            redisStore['draft:shared:shared-456'] = JSON.stringify({
+                draftId: 'shared-456',
+                ownerId: 'owner-id',
+                inviteToken: 'secret-invite-token-abc',
+                coCooksIds: ['co-cook-2'],
+                title: 'Team Recipe',
+            });
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    draftId: 'shared-456',
+                    description: 'Updated by co-cook',
+                }),
+            } as unknown as Request;
+
+            const response = await DraftPOST(mockRequest);
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.draftId).toBe('shared-456');
+            // Must NOT leak inviteToken to co-cook!
+            expect(data.inviteToken).toBeUndefined();
+        });
     });
 
     describe('GET /api/draft', () => {
@@ -184,12 +223,18 @@ describe('Draft API Error Handling & Shared Drafts', () => {
                 user: { name: 'test', email: 'test@a.com' },
             };
             (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-            redisStore['draft:user:test-user-id'] = JSON.stringify({
+            redisStore['draft:user:test-user-id:slot-1'] = JSON.stringify({
+                draftId: 'slot-1',
                 title: 'My Draft',
+                updatedAt: new Date().toISOString(),
             });
+            if (!redisSets['user:drafts:test-user-id']) {
+                redisSets['user:drafts:test-user-id'] = new Set();
+            }
+            redisSets['user:drafts:test-user-id'].add('slot-1');
 
             const response = await DraftGET(
-                new Request('http://localhost:3000/api/draft')
+                new Request('http://localhost:3000/api/draft?slotId=slot-1')
             );
             expect(response.status).toBe(200);
             const data = await response.json();
@@ -280,14 +325,12 @@ describe('Draft API Error Handling & Shared Drafts', () => {
                 ownerId: 'test-user-id',
                 coCooksIds: ['co-cook-a', 'co-cook-b'],
             });
-            redisStore['user:drafts:test-user-id'] = JSON.stringify([
+            redisSets['user:drafts:test-user-id'] = new Set([
                 'shared-999',
                 'other-draft',
             ]);
-            redisStore['user:drafts:co-cook-a'] = JSON.stringify([
-                'shared-999',
-            ]);
-            redisStore['user:drafts:co-cook-b'] = JSON.stringify([
+            redisSets['user:drafts:co-cook-a'] = new Set(['shared-999']);
+            redisSets['user:drafts:co-cook-b'] = new Set([
                 'shared-999',
                 'b-draft',
             ]);
@@ -301,11 +344,11 @@ describe('Draft API Error Handling & Shared Drafts', () => {
             expect(redisStore['draft:shared:shared-999']).toBeUndefined();
 
             // Verify cleaned up from owner and co-cooks' lists
-            expect(JSON.parse(redisStore['user:drafts:test-user-id'])).toEqual([
+            expect(Array.from(redisSets['user:drafts:test-user-id'])).toEqual([
                 'other-draft',
             ]);
-            expect(JSON.parse(redisStore['user:drafts:co-cook-a'])).toEqual([]);
-            expect(JSON.parse(redisStore['user:drafts:co-cook-b'])).toEqual([
+            expect(Array.from(redisSets['user:drafts:co-cook-a'])).toEqual([]);
+            expect(Array.from(redisSets['user:drafts:co-cook-b'])).toEqual([
                 'b-draft',
             ]);
         });
@@ -363,6 +406,31 @@ describe('Draft API Error Handling & Shared Drafts', () => {
             const data = await response.json();
             expect(data.draftId).toBe('my-draft');
             expect(data.shareUrl).toContain('draft=my-draft');
+        });
+
+        it('should ignore client-supplied inviteToken and generate or reuse a server token (M4)', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    draftId: 'custom-token-draft',
+                    inviteToken: 'injected-attacker-token',
+                }),
+                headers: { get: () => 'http://localhost:3000' },
+            } as unknown as Request;
+
+            const response = await DraftInvitePOST(mockRequest);
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.inviteToken).not.toBe('injected-attacker-token');
+            expect(data.inviteToken).toMatch(/^[a-f0-9]{32}$/);
+            expect(data.shareUrl).not.toContain(
+                'token=injected-attacker-token'
+            );
         });
     });
 });

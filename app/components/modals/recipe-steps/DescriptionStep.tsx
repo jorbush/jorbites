@@ -22,6 +22,15 @@ interface DescriptionStepProps {
     isLocked?: boolean;
 }
 
+function hasInitialTimeBreakdown(
+    prepTime?: number | null,
+    cookTime?: number | null
+): boolean {
+    const hasPrep = typeof prepTime === 'number' && prepTime > 0;
+    const hasCook = typeof cookTime === 'number' && cookTime > 0;
+    return hasPrep || hasCook;
+}
+
 const DescriptionStep: React.FC<DescriptionStepProps> = ({
     isLoading,
     register,
@@ -35,12 +44,10 @@ const DescriptionStep: React.FC<DescriptionStepProps> = ({
     isLocked,
 }) => {
     const { t } = useTranslation();
-    const [showBreakdown, setShowBreakdown] = useState<boolean>(() => {
-        return (
-            (prepTime !== undefined && prepTime !== null && prepTime > 0) ||
-            (cookTime !== undefined && cookTime !== null && cookTime > 0)
-        );
-    });
+    const [showBreakdown, setShowBreakdown] = useState<boolean>(() =>
+        hasInitialTimeBreakdown(prepTime, cookTime)
+    );
+    const isInputDisabled = Boolean(isLoading || isLocked);
 
     const toggleBreakdown = () => {
         if (showBreakdown) {
@@ -49,6 +56,20 @@ const DescriptionStep: React.FC<DescriptionStepProps> = ({
             setShowBreakdown(false);
         } else {
             setShowBreakdown(true);
+        }
+    };
+
+    const handlePrepChange = (val: number) => {
+        onPrepTimeChange?.(val);
+        if (typeof cookTime === 'number' && val + cookTime > minutes) {
+            onMinutesChange(val + cookTime);
+        }
+    };
+
+    const handleCookChange = (val: number) => {
+        onCookTimeChange?.(val);
+        if (typeof prepTime === 'number' && val + prepTime > minutes) {
+            onMinutesChange(val + prepTime);
         }
     };
 
@@ -61,7 +82,7 @@ const DescriptionStep: React.FC<DescriptionStepProps> = ({
             <Input
                 id="title"
                 label={t('title')}
-                disabled={isLoading}
+                disabled={isInputDisabled}
                 register={register}
                 errors={errors}
                 required={!isLocked}
@@ -72,7 +93,7 @@ const DescriptionStep: React.FC<DescriptionStepProps> = ({
             <Input
                 id="description"
                 label={t('description')}
-                disabled={isLoading}
+                disabled={isInputDisabled}
                 register={register}
                 errors={errors}
                 required={!isLocked}
@@ -108,17 +129,7 @@ const DescriptionStep: React.FC<DescriptionStepProps> = ({
                                 'Preparation or resting time (optional)'
                             }
                             value={prepTime || 0}
-                            onChange={(val) => {
-                                onPrepTimeChange?.(val);
-                                if (
-                                    cookTime !== undefined &&
-                                    cookTime !== null
-                                ) {
-                                    if (val + cookTime > minutes) {
-                                        onMinutesChange(val + cookTime);
-                                    }
-                                }
-                            }}
+                            onChange={handlePrepChange}
                             minValue={0}
                         />
                         <Counter
@@ -128,17 +139,7 @@ const DescriptionStep: React.FC<DescriptionStepProps> = ({
                                 'Cooking or baking time (optional)'
                             }
                             value={cookTime || 0}
-                            onChange={(val) => {
-                                onCookTimeChange?.(val);
-                                if (
-                                    prepTime !== undefined &&
-                                    prepTime !== null
-                                ) {
-                                    if (val + prepTime > minutes) {
-                                        onMinutesChange(val + prepTime);
-                                    }
-                                }
-                            }}
+                            onChange={handleCookChange}
                             minValue={0}
                         />
                     </div>

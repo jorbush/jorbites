@@ -35,37 +35,71 @@ export async function POST(request: Request) {
         }
 
         if (body.draftId) {
-            try {
-                const savedDraft = await DraftService.saveSharedDraft(
-                    body.draftId,
-                    body,
-                    currentUser
-                );
-
-                logger.info('POST /api/draft - success (shared)', {
-                    userId: currentUser.id,
-                    draftId: body.draftId,
-                });
-                return NextResponse.json(savedDraft);
-            } catch (err: any) {
-                if (err.message === 'UNAUTHORIZED_DRAFT_UPDATE') {
-                    return forbiddenResponse(
-                        'You are not authorized to update this shared draft'
+            const rawDraft = await DraftService.getSharedDraft(body.draftId);
+            if (
+                rawDraft ||
+                body.inviteToken ||
+                (Array.isArray(body.coCooksIds) && body.coCooksIds.length > 0)
+            ) {
+                try {
+                    const savedDraft = await DraftService.saveSharedDraft(
+                        body.draftId,
+                        body,
+                        currentUser
                     );
+
+                    logger.info('POST /api/draft - success (shared)', {
+                        userId: currentUser.id,
+                        draftId: body.draftId,
+                    });
+                    const responseDraft =
+                        currentUser.id === savedDraft.ownerId
+                            ? savedDraft
+                            : DraftService.maskSharedDraft(savedDraft);
+                    return NextResponse.json(responseDraft);
+                } catch (err: unknown) {
+                    const message =
+                        err instanceof Error ? err.message : String(err);
+                    if (message === 'UNAUTHORIZED_DRAFT_UPDATE') {
+                        return forbiddenResponse(
+                            'You are not authorized to update this shared draft'
+                        );
+                    }
+                    throw err;
                 }
-                throw err;
             }
         }
 
         // Single-user draft
-        await DraftService.saveSingleUserDraft(currentUser.id, body);
-
-        logger.info('POST /api/draft - success (single user)', {
-            userId: currentUser.id,
-        });
-        return NextResponse.json(body);
-    } catch (error: any) {
-        logger.error('POST /api/draft - error', { error: error.message });
+        try {
+            const slotId = body.slotId || body.draftId;
+            const id = await DraftService.saveSingleUserDraft(
+                currentUser.id,
+                body,
+                slotId
+            );
+            body.draftId = id;
+            if (!body.updatedAt) {
+                body.updatedAt = new Date().toISOString();
+            }
+            logger.info('POST /api/draft - success (single user)', {
+                userId: currentUser.id,
+                slotId: id,
+            });
+            return NextResponse.json(body);
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err);
+            if (message === 'MAX_SOLO_DRAFTS_REACHED') {
+                return NextResponse.json(
+                    { error: 'MAX_SOLO_DRAFTS_REACHED' },
+                    { status: 409 }
+                );
+            }
+            throw err;
+        }
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error('POST /api/draft - error', { error: message });
         return internalServerError('Failed to save draft');
     }
 }
@@ -85,45 +119,60 @@ export async function GET(request: Request) {
 
         if (draftId) {
             const rawDraft = await DraftService.getSharedDraft(draftId);
-            if (!rawDraft) {
-                return NextResponse.json(null);
+            if (rawDraft) {
+                const isOwner = rawDraft.ownerId === currentUser.id;
+                const isCoCook =
+                    Array.isArray(rawDraft.coCooksIds) &&
+                    rawDraft.coCooksIds.includes(currentUser.id);
+
+                if (!isOwner && !isCoCook) {
+                    return forbiddenResponse(
+                        'You are not authorized to view this draft'
+                    );
+                }
+
+                const draft = isOwner
+                    ? rawDraft
+                    : DraftService.maskSharedDraft(rawDraft);
+
+                logger.info('GET /api/draft - success (shared)', {
+                    userId: currentUser.id,
+                    draftId,
+                });
+                return NextResponse.json(draft);
             }
 
-            const isOwner = rawDraft.ownerId === currentUser.id;
-            const isCoCook =
-                Array.isArray(rawDraft.coCooksIds) &&
-                rawDraft.coCooksIds.includes(currentUser.id);
-
-            if (!isOwner && !isCoCook) {
-                return forbiddenResponse(
-                    'You are not authorized to view this draft'
-                );
-            }
-
-            const draft = await DraftService.getSharedDraft(
-                draftId,
-                currentUser.id
+            const soloDraft = await DraftService.getSingleUserDraft(
+                currentUser.id,
+                draftId
             );
+            if (soloDraft) {
+                return NextResponse.json(soloDraft);
+            }
 
-            logger.info('GET /api/draft - success (shared)', {
-                userId: currentUser.id,
-                draftId,
-            });
-            return NextResponse.json(draft);
+            return NextResponse.json(null);
         }
+
+        const slotId = searchParams.get('slotId') || undefined;
 
         logger.info('GET /api/draft - start (single user)', {
             userId: currentUser.id,
+            slotId,
         });
-        const data = await DraftService.getSingleUserDraft(currentUser.id);
+        const data = await DraftService.getSingleUserDraft(
+            currentUser.id,
+            slotId
+        );
 
         logger.info('GET /api/draft - success (single user)', {
             userId: currentUser.id,
             hasDraft: !!data,
+            slotId,
         });
         return NextResponse.json(data);
-    } catch (error: any) {
-        logger.error('GET /api/draft - error', { error: error.message });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error('GET /api/draft - error', { error: message });
         return internalServerError('Failed to retrieve draft');
     }
 }
@@ -145,37 +194,45 @@ export async function DELETE(request: Request) {
             try {
                 await DraftService.deleteSharedDraft(draftId, currentUser);
 
-                logger.info('DELETE /api/draft - success (shared)', {
+                logger.info('DELETE /api/draft - success (draftId)', {
                     userId: currentUser.id,
                     draftId,
                 });
                 return NextResponse.json(1);
-            } catch (err: any) {
-                if (err.message === 'ONLY_OWNER_CAN_DELETE') {
+            } catch (err: unknown) {
+                const message =
+                    err instanceof Error ? err.message : String(err);
+                if (message === 'ONLY_OWNER_CAN_DELETE') {
                     return forbiddenResponse(
                         'Only the draft owner can delete this shared draft'
                     );
                 }
-                if (err.message === 'CORRUPTED_DRAFT_DATA') {
+                if (message === 'CORRUPTED_DRAFT_DATA') {
                     return internalServerError('Draft data is corrupted');
                 }
                 throw err;
             }
         }
 
+        const slotId = searchParams.get('slotId') || undefined;
+
         logger.info('DELETE /api/draft - start (single user)', {
             userId: currentUser.id,
+            slotId,
         });
         const deleted = await DraftService.deleteSingleUserDraft(
-            currentUser.id
+            currentUser.id,
+            slotId
         );
 
         logger.info('DELETE /api/draft - success (single user)', {
             userId: currentUser.id,
+            slotId,
         });
         return NextResponse.json(deleted ? 1 : 0);
-    } catch (error: any) {
-        logger.error('DELETE /api/draft - error', { error: error.message });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error('DELETE /api/draft - error', { error: message });
         return internalServerError('Failed to delete draft');
     }
 }
