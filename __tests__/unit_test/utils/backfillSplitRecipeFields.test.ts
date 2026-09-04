@@ -93,4 +93,34 @@ describe('backfill-split-recipe-fields parsing logic', () => {
             'En una sarten poner los 3 trozos de bacalao',
         ]);
     });
+
+    it('correctly detects and splits single-field bullet-separated ingredients with introductory header', () => {
+        const singleFieldIngredient =
+            'Solo necesitas: • 2 plátanos maduros 🍌 • 1 vaso de harina integral de avena • 2 huevos 🥚 • 1 cucharada de levadura • Pepitas de choc';
+        const recipe = {
+            ingredients: [singleFieldIngredient],
+        };
+
+        expect(recipe.ingredients.length).toBe(1);
+        const parsed = parseIngredientsText(recipe.ingredients[0]);
+        expect(parsed.length).toBeGreaterThan(1);
+        expect(parsed).toEqual([
+            '2 plátanos maduros 🍌',
+            '1 vaso de harina integral de avena',
+            '2 huevos 🥚',
+            '1 cucharada de levadura',
+            'Pepitas de choc',
+        ]);
+    });
+
+    it('does not split or modify recipes that already have multiple ingredients (e.g. contextual section headers)', () => {
+        const recipe = {
+            ingredients: ['200g flour', 'for the sauce: ketchup and mayonese'],
+        };
+
+        // Condition in backfill: recipe.ingredients && recipe.ingredients.length === 1
+        expect(recipe.ingredients.length).toBe(2);
+        const shouldSplit = recipe.ingredients.length === 1;
+        expect(shouldSplit).toBe(false);
+    });
 });

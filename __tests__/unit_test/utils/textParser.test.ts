@@ -247,6 +247,110 @@ describe('parseIngredientsText', () => {
             '3 eggs',
         ]);
     });
+
+    it('splits inline bullet-separated ingredients with introductory header', () => {
+        const text =
+            'Solo necesitas: • 2 plátanos maduros 🍌 • 1 vaso de harina integral de avena • 2 huevos 🥚 • 1 cucharada de levadura • Pepitas de choc';
+        const result = parseIngredientsText(text);
+        expect(result).toEqual([
+            '2 plátanos maduros 🍌',
+            '1 vaso de harina integral de avena',
+            '2 huevos 🥚',
+            '1 cucharada de levadura',
+            'Pepitas de choc',
+        ]);
+    });
+
+    it('splits bullet-separated ingredients without bullet after intro colon', () => {
+        const text =
+            'Solo necesitas: 2 plátanos maduros 🍌 • 1 vaso de harina integral de avena • 2 huevos 🥚';
+        const result = parseIngredientsText(text);
+        expect(result).toEqual([
+            '2 plátanos maduros 🍌',
+            '1 vaso de harina integral de avena',
+            '2 huevos 🥚',
+        ]);
+    });
+
+    it('splits bullet-separated ingredients without intro header', () => {
+        const text =
+            '• 2 plátanos maduros 🍌 • 1 vaso de harina integral de avena • 2 huevos 🥚';
+        const result = parseIngredientsText(text);
+        expect(result).toEqual([
+            '2 plátanos maduros 🍌',
+            '1 vaso de harina integral de avena',
+            '2 huevos 🥚',
+        ]);
+    });
+
+    it('splits bullet-separated ingredients when first item has no leading bullet', () => {
+        const text =
+            '2 plátanos maduros 🍌 • 1 vaso de harina integral de avena • 2 huevos 🥚';
+        const result = parseIngredientsText(text);
+        expect(result).toEqual([
+            '2 plátanos maduros 🍌',
+            '1 vaso de harina integral de avena',
+            '2 huevos 🥚',
+        ]);
+    });
+
+    it('handles various intro headers such as Ingredientes, Només necessites, and Ingredients', () => {
+        const esText =
+            'Ingredientes: • 200g harina • 100g mantequilla • 2 huevos';
+        expect(parseIngredientsText(esText)).toEqual([
+            '200g harina',
+            '100g mantequilla',
+            '2 huevos',
+        ]);
+
+        const catText = 'Només necessites: • 2 plàtans • 1 got de farina';
+        expect(parseIngredientsText(catText)).toEqual([
+            '2 plàtans',
+            '1 got de farina',
+        ]);
+
+        const enText = 'Ingredients: • 2 cups flour • 1 cup sugar';
+        expect(parseIngredientsText(enText)).toEqual([
+            '2 cups flour',
+            '1 cup sugar',
+        ]);
+    });
+
+    it('preserves internal commas when items are separated by bullets', () => {
+        const text =
+            'Solo necesitas: • 2 plátanos maduros, machacados • 1 vaso de harina, tamizada • 2 huevos 🥚';
+        const result = parseIngredientsText(text);
+        expect(result).toEqual([
+            '2 plátanos maduros, machacados',
+            '1 vaso de harina, tamizada',
+            '2 huevos 🥚',
+        ]);
+    });
+
+    it('preserves Catalan ela geminada (l·l) while supporting middle dot bullets', () => {
+        const text = '• 2 pomes · 1 col·lecció d’espècies · 3 ous';
+        const result = parseIngredientsText(text);
+        expect(result).toEqual(['2 pomes', '1 col·lecció d’espècies', '3 ous']);
+    });
+
+    it('handles multiline ingredients with introductory header and inline bullets', () => {
+        const text = `Solo necesitas:
+• 2 plátanos maduros 🍌 • 1 vaso de harina integral de avena
+• 2 huevos 🥚 • 1 cucharada de levadura`;
+        const result = parseIngredientsText(text);
+        expect(result).toEqual([
+            '2 plátanos maduros 🍌',
+            '1 vaso de harina integral de avena',
+            '2 huevos 🥚',
+            '1 cucharada de levadura',
+        ]);
+    });
+
+    it('does not strip contextual item headers like "for the sauce:" when ingredients follow', () => {
+        const text = 'for the sauce: ketchup and mayonese';
+        const result = parseIngredientsText(text);
+        expect(result).toEqual(['for the sauce: ketchup and mayonese']);
+    });
 });
 
 describe('parseStepsText', () => {
@@ -306,5 +410,26 @@ describe('parseStepsText', () => {
 3. Step three.`;
         const result = parseStepsText(text);
         expect(result).toEqual(['Step one', 'Step two', 'Step three']);
+    });
+
+    it('splits inline bullet-separated steps with introductory header', () => {
+        const text =
+            'Solo necesitas seguir estos pasos: • Pelar las patatas • Cortar en rodajas • Freír en abundante aceite';
+        const result = parseStepsText(text);
+        expect(result).toEqual([
+            'Pelar las patatas',
+            'Cortar en rodajas',
+            'Freír en abundante aceite',
+        ]);
+    });
+
+    it('splits inline bullet-separated steps without header', () => {
+        const text = '• Mezclar todo • Hornear 20 minutos • Dejar enfriar';
+        const result = parseStepsText(text);
+        expect(result).toEqual([
+            'Mezclar todo',
+            'Hornear 20 minutos',
+            'Dejar enfriar',
+        ]);
     });
 });
