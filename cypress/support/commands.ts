@@ -1,25 +1,27 @@
 /// <reference types="cypress" />
 
 Cypress.Commands.add('login', (email?: string, password?: string) => {
-    const userEmail = email || Cypress.env('userTestEmail');
-    const userPassword = password || Cypress.env('userTestPassword');
+    cy.env(['userTestEmail', 'userTestPassword']).then((envVars) => {
+        const userEmail = email || envVars.userTestEmail;
+        const userPassword = password || envVars.userTestPassword;
 
-    cy.session(
-        [userEmail, userPassword],
-        () => {
-            cy.visit('/');
-            cy.get('[data-cy="user-menu"]').click();
-            cy.get('[data-cy="user-menu-login"]').should('be.visible').click();
-            cy.get('[data-cy="login-email"]').type(userEmail);
-            cy.get('[data-cy="login-password"]').type(userPassword);
-            cy.get('[data-cy="modal-action-button"]').click();
-            cy.get('[class^="go"]', { timeout: 10000 }).should('be.visible');
-            cy.get('[data-cy="login-modal"]', { timeout: 10000 }).should('not.exist');
-        },
-        {
-            cacheAcrossSpecs: true,
-        }
-    );
+        cy.session(
+            [userEmail, userPassword],
+            () => {
+                cy.visit('/');
+                cy.get('[data-cy="user-menu"]').click();
+                cy.get('[data-cy="user-menu-login"]').should('be.visible').click();
+                cy.get('[data-cy="login-email"]').type(userEmail);
+                cy.get('[data-cy="login-password"]').type(userPassword);
+                cy.get('[data-cy="modal-action-button"]').click();
+                cy.get('[class^="go"]', { timeout: 10000 }).should('be.visible');
+                cy.get('[data-cy="login-modal"]', { timeout: 10000 }).should('not.exist');
+            },
+            {
+                cacheAcrossSpecs: true,
+            }
+        );
+    });
 });
 
 Cypress.Commands.add('ensureEnglish', () => {
