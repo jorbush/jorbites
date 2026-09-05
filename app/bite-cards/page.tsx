@@ -23,7 +23,7 @@ export default async function BiteCardsPage() {
 
     return (
         <ClientOnly>
-            <main className="min-h-[calc(100vh-60px)] pb-2">
+            <main className="min-h-[calc(100vh-60px)] max-w-full overflow-x-hidden pb-2">
                 <Container>
                     <BiteCardsContainer
                         key={recipesKey}

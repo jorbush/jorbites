@@ -130,7 +130,9 @@ const BiteCard: React.FC<BiteCardProps> = ({
                   : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
               touchAction: 'none' as const,
           }
-        : {};
+        : {
+              touchAction: 'none' as const,
+          };
 
     return (
         <div

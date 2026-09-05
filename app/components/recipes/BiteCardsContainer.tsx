@@ -223,7 +223,7 @@ export default function BiteCardsContainer({
             />
 
             {/* Card Stack Container */}
-            <div className="relative z-0 min-h-0 w-full flex-1 rounded-3xl md:aspect-[3/4.1] md:max-h-[540px] md:flex-none">
+            <div className="relative z-0 min-h-0 w-full max-w-full flex-1 overflow-x-hidden rounded-3xl md:aspect-[3/4.1] md:max-h-[540px] md:flex-none">
                 {isLoading ? (
                     <div className="absolute inset-0 flex animate-pulse flex-col items-center justify-center gap-3 rounded-3xl bg-neutral-200 text-neutral-400 dark:bg-neutral-800">
                         <FaUtensils
