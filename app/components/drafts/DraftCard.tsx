@@ -164,17 +164,17 @@ const DraftCard: React.FC<DraftCardProps> = ({
             {draft.type === 'shared' &&
                 draft.coCooksIds &&
                 draft.coCooksIds.length > 0 && (
-                    <div className="flex -space-x-2">
+                    <div className="flex">
                         {draft.coCooksIds.slice(0, 3).map((id) => (
                             <div
                                 key={id}
-                                className="flex size-6 items-center justify-center rounded-full border-2 border-white bg-blue-500 text-[10px] font-bold text-white dark:border-neutral-900"
+                                className="-ml-2 flex size-6 items-center justify-center rounded-full border-2 border-white bg-blue-500 text-[10px] font-bold text-white first:ml-0 dark:border-neutral-900"
                             >
                                 {id.substring(0, 1).toUpperCase()}
                             </div>
                         ))}
                         {draft.coCooksIds.length > 3 && (
-                            <div className="flex size-6 items-center justify-center rounded-full border-2 border-white bg-neutral-200 text-[10px] font-medium text-neutral-600 dark:border-neutral-900 dark:bg-neutral-700 dark:text-neutral-300">
+                            <div className="-ml-2 flex size-6 items-center justify-center rounded-full border-2 border-white bg-neutral-200 text-[10px] font-medium text-neutral-600 first:ml-0 dark:border-neutral-900 dark:bg-neutral-700 dark:text-neutral-300">
                                 +{draft.coCooksIds.length - 3}
                             </div>
                         )}
