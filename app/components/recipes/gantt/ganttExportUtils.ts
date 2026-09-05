@@ -79,7 +79,19 @@ export const exportGanttTableToPNG = async (
 ) => {
     if (!element) return;
     try {
-        const width = element.offsetWidth || 800;
+        let maxChildScrollWidth = 0;
+        element.querySelectorAll('*').forEach((child) => {
+            if (child.scrollWidth > maxChildScrollWidth) {
+                maxChildScrollWidth = child.scrollWidth;
+            }
+        });
+
+        const width = Math.max(
+            element.offsetWidth || 0,
+            element.scrollWidth || 0,
+            maxChildScrollWidth ? maxChildScrollWidth + 32 : 0,
+            800
+        );
         const height = (element.offsetHeight || 400) + 12;
 
         const canvas = document.createElement('canvas');
@@ -114,6 +126,7 @@ export const exportGanttTableToPNG = async (
             h3 { font-size: 20px; font-weight: 700; margin: 0 0 16px 0; color: ${isDark ? '#f5f5f5' : '#171717'}; }
             [data-testid="gantt-pre-steps"], .mb-4, .mb-5, .mb-6 { margin-bottom: 24px !important; }
             .gap-1\\.5 { gap: 6px; }
+            .overflow-x-auto { overflow: visible !important; width: 100% !important; }
             table { border-collapse: collapse; width: 100%; font-size: 14px; text-align: left; }
             th, td { border: 1px solid ${isDark ? '#262626' : '#e5e7eb'}; padding: 12px; }
             th { background-color: ${isDark ? '#171717' : '#f9fafb'}; color: ${isDark ? '#e5e5e5' : '#1f2937'}; white-space: nowrap; font-weight: 500; }
