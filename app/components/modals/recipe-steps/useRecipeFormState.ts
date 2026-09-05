@@ -34,14 +34,6 @@ interface UseRecipeFormStateProps {
     mutateDraft?: () => Promise<unknown>;
 }
 
-import {
-    checkIsCollaborativeSession,
-    CheckIsCollaborativeSessionProps,
-} from '@/app/utils/draftFormUtils';
-
-export { checkIsCollaborativeSession };
-export type { CheckIsCollaborativeSessionProps };
-
 export function useRecipeFormState({
     recipeModal,
     currentUser,
