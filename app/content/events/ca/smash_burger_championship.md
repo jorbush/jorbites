@@ -1,7 +1,7 @@
 ---
 title: "🍔 Campionat d'Hamburgueses: Hora del Smash! 🍔"
-date: 2026-09-05
-endDate: 2026-09-05T21:59:59
+date: 2026-10-05
+endDate: 2026-10-05T21:59:59
 image: /images/events/smash_burger_championship.webp
 description: L'enfrontament definitiu de smash burgers en viu. Vores cruixents, formatge fos i acció culinària en directe!
 ---
@@ -31,7 +31,7 @@ Tant si hi participes sol com en equip, hauràs de demostrar la teva precisió, 
 
 Hem actualitzat el sistema de recompenses per a aquest campionat per celebrar l'esforç de tothom:
 
-* **Per a Tots els Participants**: Cada xef que participi en la sessió de cuina en viu i pugi la seva recepta rebrà la medalla digital exclusiva **"Smash Master"**!
-* **Per al Campió**: El guanyador absolut, elegit pel nostre jurat de tastadors secrets, rebrà el títol de "Smash Champion" i un misteriós premi físic exclusiu que només es revelarà el dia del campionat.
+- **Per a Tots els Participants**: Cada xef que participi en la sessió de cuina en viu i pugi la seva recepta rebrà la medalla digital exclusiva **"Smash Master"**!
+- **Per al Campió**: El guanyador absolut, elegit pel nostre jurat de tastadors secrets, rebrà el títol de "Smash Champion" i un misteriós premi físic exclusiu que només es revelarà el dia del campionat.
 
-**Llest per portar el foc i aixafar per impressionar? Ens veiem el 5 de setembre!**
+**Llest per portar el foc i aixafar per impressionar? Ens veiem el 5 d'octubre!**

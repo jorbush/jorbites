@@ -1,7 +1,7 @@
 ---
-title: "🍔 Campeonato de Hamburguesas: ¡Hora del Smash! 🍔"
-date: 2026-09-05
-endDate: 2026-09-05T21:59:59
+title: '🍔 Campeonato de Hamburguesas: ¡Hora del Smash! 🍔'
+date: 2026-10-05
+endDate: 2026-10-05T21:59:59
 image: /images/events/smash_burger_championship.webp
 description: El enfrentamiento definitivo de smash burgers en vivo. ¡Bordes crujientes, queso fundido y acción culinaria en directo!
 ---
@@ -31,7 +31,7 @@ Ya sea que participes solo o en equipo, tendrás que demostrar tu precisión, ve
 
 Hemos actualizado el sistema de recompensas para este campeonato para celebrar el esfuerzo de todos:
 
-* **Para Todos los Participantes**: ¡Cada chef que participe en la sesión de cocina en vivo y suba su receta recibirá la medalla digital exclusiva **"Smash Master"**!
-* **Para el Campeón**: El ganador absoluto, elegido por nuestro jurado de catadores secretos, recibirá el título de "Smash Champion" y un misterioso premio físico exclusivo que solo se revelará el día del campeonato.
+- **Para Todos los Participantes**: ¡Cada chef que participe en la sesión de cocina en vivo y suba su receta recibirá la medalla digital exclusiva **"Smash Master"**!
+- **Para el Campeón**: El ganador absoluto, elegido por nuestro jurado de catadores secretos, recibirá el título de "Smash Champion" y un misterioso premio físico exclusivo que solo se revelará el día del campeonato.
 
-**¿Listo para traer el fuego y aplastar para impresionar? ¡Nos vemos el 5 de septiembre!**
+**¿Listo para traer el fuego y aplastar para impresionar? ¡Nos vemos el 5 de octubre!**
