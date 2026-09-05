@@ -104,6 +104,36 @@ describe('<CategoryBox />', () => {
         expect(mockPush).toHaveBeenCalledWith('/');
     });
 
+    it('adds category to existing categories when multiple categories are selected', () => {
+        mockToString.mockReturnValue('category=Fruits');
+
+        render(
+            <CategoryBox
+                icon={FaHome}
+                label="Desserts"
+            />
+        );
+        fireEvent.click(screen.getByText('desserts'));
+
+        expect(mockPush).toHaveBeenCalledWith(
+            '/?category=Fruits&category=Desserts'
+        );
+    });
+
+    it('removes category from multiple categories when already selected', () => {
+        mockToString.mockReturnValue('category=Fruits&category=Desserts');
+
+        render(
+            <CategoryBox
+                icon={FaHome}
+                label="Fruits"
+            />
+        );
+        fireEvent.click(screen.getByText('fruits'));
+
+        expect(mockPush).toHaveBeenCalledWith('/?category=Desserts');
+    });
+
     it('preserves other query parameters when updating category', () => {
         mockGet.mockReturnValue(null);
         mockToString.mockReturnValue('otherParam=value');
