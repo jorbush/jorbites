@@ -219,4 +219,28 @@ describe('Tooltip', () => {
         fireEvent.click(container!);
         expect(screen.queryByTestId('tooltip')).toBeNull();
     });
+
+    it('hides tooltip on key down', () => {
+        render(
+            <Tooltip
+                text="Test tooltip"
+                delay={300}
+            >
+                <span>Hover me</span>
+            </Tooltip>
+        );
+
+        const container = screen.getByText('Hover me').parentElement;
+
+        // Show tooltip
+        fireEvent.mouseEnter(container!);
+        act(() => {
+            vi.advanceTimersByTime(300);
+        });
+        expect(screen.getByTestId('tooltip')).toBeDefined();
+
+        // Key down hides tooltip
+        fireEvent.keyDown(container!, { key: 'Enter' });
+        expect(screen.queryByTestId('tooltip')).toBeNull();
+    });
 });
