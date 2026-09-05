@@ -1,14 +1,14 @@
 ---
-title: "🍔 Burger Championship: Smash Time! 🍔"
-date: 2026-09-05
-endDate: 2026-09-05T21:59:59
+title: '🍔 Burger Championship: Smash Time! 🍔'
+date: 2026-10-05
+endDate: 2026-10-05T21:59:59
 image: /images/events/smash_burger_championship.webp
 description: The ultimate live smash burger showdown. Crisp edges, gooey cheese, and live culinary action!
 ---
 
 # 🍔 Jorbites Burger Championship: Smash Time! 🍔
 
-Get ready for the second Jorbites Burger Championship! This time, we are focusing on the art of the **Smash Burger**. 
+Get ready for the second Jorbites Burger Championship! This time, we are focusing on the art of the **Smash Burger**.
 
 ## 🍳 A Live Cooking Showdown
 
@@ -31,7 +31,7 @@ Whether you participate solo or in a team, you'll have to show your precision, s
 
 We've updated the reward system for this championship to celebrate everyone's effort:
 
-* **For All Participants**: Every single chef who participates in the live cooking session and uploads their recipe will receive the exclusive **"Smash Master"** digital badge!
-* **For The Champion**: The overall winner, determined by our panel of secret tasters, will receive the "Smash Champion" title and a mysterious, exclusive physical award that will only be revealed on the day of the championship!
+- **For All Participants**: Every single chef who participates in the live cooking session and uploads their recipe will receive the exclusive **"Smash Master"** digital badge!
+- **For The Champion**: The overall winner, determined by our panel of secret tasters, will receive the "Smash Champion" title and a mysterious, exclusive physical award that will only be revealed on the day of the championship!
 
-**Ready to bring the heat and press to impress? See you on September 5th!**
+**Ready to bring the heat and press to impress? See you on October 5th!**
