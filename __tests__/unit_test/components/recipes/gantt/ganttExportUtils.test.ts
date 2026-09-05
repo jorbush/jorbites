@@ -61,5 +61,71 @@ describe('ganttExportUtils', () => {
         it('handles null element safely', async () => {
             await exportGanttTableToPNG(null, 'Recipe Title', mockT as any);
         });
+
+        it('calculates full width considering scrollWidth of overflowing children', async () => {
+            const mockContainer = document.createElement('div');
+            Object.defineProperty(mockContainer, 'offsetWidth', { value: 320 });
+            Object.defineProperty(mockContainer, 'offsetHeight', { value: 200 });
+            Object.defineProperty(mockContainer, 'scrollWidth', { value: 320 });
+
+            const mockChildTable = document.createElement('table');
+            Object.defineProperty(mockChildTable, 'scrollWidth', { value: 1200 });
+            mockContainer.appendChild(mockChildTable);
+
+            // Mock HTMLCanvasElement context
+            const mockCtx = {
+                scale: vi.fn(),
+                fillStyle: '',
+                fillRect: vi.fn(),
+                drawImage: vi.fn(),
+            };
+            const mockCanvas = {
+                width: 0,
+                height: 0,
+                getContext: vi.fn().mockReturnValue(mockCtx),
+                toDataURL: vi.fn().mockReturnValue('data:image/png;base64,mock'),
+            };
+
+            const originalCreateElement = document.createElement.bind(document);
+            vi.spyOn(document, 'createElement').mockImplementation((tagName: string, options?: ElementCreationOptions) => {
+                if (tagName.toLowerCase() === 'canvas') {
+                    return mockCanvas as unknown as HTMLCanvasElement;
+                }
+                return originalCreateElement(tagName, options);
+            });
+
+            const appendChildSpy = vi
+                .spyOn(document.body, 'appendChild')
+                .mockImplementation((node) => node);
+            const removeChildSpy = vi
+                .spyOn(document.body, 'removeChild')
+                .mockImplementation((node) => node);
+
+            // Mock Image load behavior
+            class MockImage {
+                onload: (() => void) | null = null;
+                onerror: ((err: any) => void) | null = null;
+                _src = '';
+                set src(val: string) {
+                    this._src = val;
+                    setTimeout(() => {
+                        if (this.onload) this.onload();
+                    }, 0);
+                }
+                get src() {
+                    return this._src;
+                }
+            }
+            vi.stubGlobal('Image', MockImage);
+
+            await exportGanttTableToPNG(mockContainer, 'Recipe Title', mockT as any);
+
+            expect(mockCanvas.width).toBe((1200 + 32) * 2);
+            expect(appendChildSpy).toHaveBeenCalled();
+            expect(removeChildSpy).toHaveBeenCalled();
+
+            vi.unstubAllGlobals();
+            vi.restoreAllMocks();
+        });
     });
 });
