@@ -76,9 +76,17 @@ describe('<UserMenu />', () => {
         render(<UserMenu currentUser={mockCurrentUser} />);
         fireEvent.click(screen.getByTestId('mock-avatar').parentElement!);
         expect(screen.getByText('my_profile')).toBeDefined();
+        expect(screen.getByText('my_drafts')).toBeDefined();
         expect(screen.getByText('my_favorites')).toBeDefined();
         expect(screen.getByText('settings')).toBeDefined();
         expect(screen.getByText('logout')).toBeDefined();
+
+        const profileItem = screen.getByText('my_profile');
+        const draftsItem = screen.getByText('my_drafts');
+        expect(
+            profileItem.compareDocumentPosition(draftsItem) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
     });
 
     it('opens login modal when post recipe is clicked and user is not logged in', () => {
