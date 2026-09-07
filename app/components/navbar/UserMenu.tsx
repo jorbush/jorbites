@@ -128,21 +128,21 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                 />
                                 <MenuItem
                                     onClick={() => {
-                                        draftsModal.onOpen();
-                                        toggleOpen();
-                                    }}
-                                    label={t('my_drafts') || 'My Drafts'}
-                                    icon={FcDocument}
-                                    dataCy="user-menu-my-drafts"
-                                />
-                                <MenuItem
-                                    onClick={() => {
                                         push('/profile/' + currentUser.id);
                                         toggleOpen();
                                     }}
                                     label={t('my_profile')}
                                     icon={FcManager}
                                     avatarSrc={currentUser?.image || undefined}
+                                />
+                                <MenuItem
+                                    onClick={() => {
+                                        draftsModal.onOpen();
+                                        toggleOpen();
+                                    }}
+                                    label={t('my_drafts') || 'My Drafts'}
+                                    icon={FcDocument}
+                                    dataCy="user-menu-my-drafts"
                                 />
                                 <MenuItem
                                     onClick={() => {
