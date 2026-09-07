@@ -63,7 +63,7 @@ const getBadgeTooltip = (badge: string) => {
 };
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
-    const router = useRouter();
+    const { push } = useRouter();
     const { t } = useTranslation();
     const isMdOrSmaller = useMediaQuery('(max-width: 415px)');
     const isSmOrSmaller = useMediaQuery('(max-width: 375px)');
@@ -71,7 +71,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
 
     const onBadgeClick = (badge: string) => {
         if (isQuestBadge(badge)) {
-            router.push('/events/quest_badges');
+            push('/events/quest_badges');
         } else {
             handleBadgeClick();
         }
@@ -84,16 +84,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                     <Avatar
                         src={user?.image}
                         size={100}
-                        onClick={() => router.push('/profile/' + user?.id)}
+                        onClick={() => push('/profile/' + user?.id)}
                     />
                     <div className="flex flex-col gap-2 text-2xl md:text-3xl">
                         <div className="flex flex-row gap-2">
                             <button
                                 type="button"
                                 className="cursor-pointer text-left focus:outline-hidden"
-                                onClick={() =>
-                                    router.push('/profile/' + user?.id)
-                                }
+                                onClick={() => push('/profile/' + user?.id)}
                             >
                                 {getUserDisplayName(
                                     user,
