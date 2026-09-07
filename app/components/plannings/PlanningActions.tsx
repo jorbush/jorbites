@@ -45,6 +45,7 @@ export const PlanningActions: React.FC<PlanningActionsProps> = ({
                 onClick={onShoppingListOpen}
                 className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white/60 p-2.5 text-sm font-semibold transition hover:bg-neutral-100 md:px-4 md:py-2.5 dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:bg-neutral-950"
                 data-testid="shopping-list-button"
+                data-cy="shopping-list-button"
                 title={t('shopping_list') as string}
             >
                 <FiShoppingCart size={16} />
@@ -56,6 +57,7 @@ export const PlanningActions: React.FC<PlanningActionsProps> = ({
                 onClick={onCalendarExportOpen}
                 className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white/60 p-2.5 text-sm font-semibold transition hover:bg-neutral-100 md:px-4 md:py-2.5 dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:bg-neutral-950"
                 data-testid="export-calendar-button"
+                data-cy="export-calendar-button"
                 title={t('export_calendar') as string}
             >
                 <FiDownload size={16} />
@@ -68,6 +70,7 @@ export const PlanningActions: React.FC<PlanningActionsProps> = ({
                     onClick={() => share({ title: editedName })}
                     className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white/60 p-2.5 text-sm font-semibold transition hover:bg-neutral-100 md:px-4 md:py-2.5 dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:bg-neutral-950"
                     data-testid="share-button"
+                    data-cy="share-button"
                     title={t('share') as string}
                 >
                     <FiShare2 size={16} />
@@ -82,6 +85,7 @@ export const PlanningActions: React.FC<PlanningActionsProps> = ({
                     disabled={isSaving}
                     className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white/60 p-2.5 text-sm font-semibold transition hover:bg-neutral-100 md:px-4 md:py-2.5 dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:bg-neutral-950"
                     data-testid="save-plan-button"
+                    data-cy="save-plan-button"
                     title={
                         t(
                             isSaved ? 'unsave_plan_action' : 'save_plan_action'
@@ -108,6 +112,7 @@ export const PlanningActions: React.FC<PlanningActionsProps> = ({
                     onClick={onPlanningModalOpen}
                     className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl bg-neutral-900 p-2.5 text-sm font-semibold text-white transition hover:opacity-90 md:px-4 md:py-2.5 dark:bg-white dark:text-neutral-900"
                     data-testid="edit-plan-button"
+                    data-cy="edit-plan-button"
                     title={t('edit_plan') as string}
                 >
                     <AiOutlineEdit size={16} />

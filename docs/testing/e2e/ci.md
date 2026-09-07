@@ -85,7 +85,7 @@ pnpm run seed:e2e
 
 ## 4. CI Matrix Sharding Strategy
 
-The test suite is divided across **5 parallel matrix containers** to optimize execution time and resource utilization:
+The test suite is divided across **6 parallel matrix containers** to optimize execution time and resource utilization:
 
 | Container | Name                             | Spec Files                                                                                                                | Primary Focus Areas                                                                          |
 | :-------- | :------------------------------- | :------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------- |
@@ -94,6 +94,7 @@ The test suite is divided across **5 parallel matrix containers** to optimize ex
 | **3**     | `User & Basic Specs`             | [`user.cy.ts`](file:///__tests__/e2e/user.cy.ts)<br/>[`app.cy.ts`](file:///__tests__/e2e/app.cy.ts)                       | NextAuth session login/logout flows and core layout/shell component verification.            |
 | **4**     | `Collaborative Recipes`          | [`collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts)                                        | Multi-user co-cooking, invite links, Redis draft syncing, soft-locking, and capacity limits. |
 | **5**     | `Drafts Management & Navigation` | [`drafts_management.cy.ts`](file:///__tests__/e2e/drafts_management.cy.ts)<br/>[`drafts_navigation.cy.ts`](file:///__tests__/e2e/drafts_navigation.cy.ts) | Multi-draft modal dashboard, auto-load on open, indicator dot, TTL, duplication, deletion, multi-step state persistence, in-session draft switching, publish cleanup, 5-slot limits, mixed solo/collaborative cards, and plain-text mode persistence across reload. |
+| **6**     | `Lists & Plannings Specs`        | [`lists.cy.ts`](file:///__tests__/e2e/lists.cy.ts)<br/>[`plannings.cy.ts`](file:///__tests__/e2e/plannings.cy.ts)         | Recipe lists CRUD, privacy toggles, recipe add/remove, default list protection, meal plan diet calendar grids, slot recipes, shopping list and export calendar modals. |
 
 ---
 

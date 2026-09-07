@@ -195,6 +195,7 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                         onClick={handleCreateClick}
                         className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl bg-neutral-900 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-neutral-800 active:scale-[0.98] dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
                         data-testid="create-meal-plan-button"
+                        data-cy="create-meal-plan-button"
                     >
                         <BiPlus size={20} />
                         <span>{t('create_meal_plan')}</span>

@@ -87,6 +87,7 @@ const ListsClient: React.FC<ListsClientProps> = ({
                         listsToRender.map((list) => (
                             <div
                                 key={list.id}
+                                data-cy="list-card"
                                 className="group relative flex w-full flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 transition hover:shadow-lg dark:border-neutral-700"
                             >
                                 <div className="text-xl font-bold">
@@ -96,6 +97,7 @@ const ListsClient: React.FC<ListsClientProps> = ({
                                             e.stopPropagation();
                                             push(`/lists/${list.id}`);
                                         }}
+                                        data-cy="list-card-title"
                                         className="cursor-pointer text-left font-bold after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
                                     >
                                         {list.isDefault
@@ -140,6 +142,7 @@ const ListsClient: React.FC<ListsClientProps> = ({
                                             e.stopPropagation();
                                             setDeleteListId(list.id);
                                         }}
+                                        data-cy="delete-list-button"
                                         className="absolute top-4 right-4 z-10 cursor-pointer rounded-full border-0 bg-transparent p-2 text-rose-500 transition group-hover:block hover:bg-rose-100 focus:outline-hidden md:hidden dark:hover:bg-rose-900"
                                         title={
                                             t('delete_list') || 'Delete list'

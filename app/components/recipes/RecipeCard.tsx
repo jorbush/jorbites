@@ -63,6 +63,7 @@ const RecipeCard = memo(function RecipeCard({
         <div
             className="group relative col-span-1"
             id={isFirstCard ? 'lcp-container' : undefined}
+            data-cy="recipe-card"
         >
             <div className="flex w-full flex-col gap-2">
                 <div className="relative aspect-square w-full overflow-hidden rounded-xl">
@@ -97,6 +98,7 @@ const RecipeCard = memo(function RecipeCard({
                                 type="button"
                                 disabled={disabled}
                                 onClick={handleCancel}
+                                data-cy="recipe-card-action-button"
                                 className="absolute top-3 left-3 z-10 flex size-8 cursor-pointer items-center justify-center rounded-full bg-white/80 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-70 dark:bg-neutral-800/80 dark:hover:bg-neutral-800"
                                 title={actionLabel}
                             >

@@ -44,7 +44,10 @@ export const PlanningHeader: React.FC<PlanningHeaderProps> = ({
                 >
                     <FiChevronLeft className="text-2xl" />
                 </button>
-                <h1 className="truncate text-3xl font-semibold tracking-tight">
+                <h1
+                    className="truncate text-3xl font-semibold tracking-tight"
+                    data-cy="plan-title"
+                >
                     {editedName}
                 </h1>
             </div>
@@ -52,7 +55,10 @@ export const PlanningHeader: React.FC<PlanningHeaderProps> = ({
             {/* Description & Metadata */}
             <div className="flex flex-col gap-2 pl-12 md:pl-0">
                 {editedDesc && (
-                    <p className="text-sm font-light text-neutral-500 dark:text-neutral-400">
+                    <p
+                        className="text-sm font-light text-neutral-500 dark:text-neutral-400"
+                        data-cy="plan-description"
+                    >
                         {editedDesc}
                     </p>
                 )}
@@ -78,6 +84,7 @@ export const PlanningHeader: React.FC<PlanningHeaderProps> = ({
                             type="button"
                             onClick={togglePrivacy}
                             disabled={isSaving}
+                            data-cy="toggle-plan-privacy"
                             className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
                             title={
                                 (isPrivate ? t('private') : t('public')) || ''

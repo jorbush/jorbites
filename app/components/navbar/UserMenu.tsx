@@ -175,6 +175,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('lists') || 'Lists'}
                                     icon={FcBookmark}
+                                    dataCy="user-menu-lists"
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -183,6 +184,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('meal_planner') || 'Meal Planner'}
                                     icon={FcPlanner}
+                                    dataCy="user-menu-plannings"
                                 />
                                 {/* <MenuItem
                                     onClick={() => {

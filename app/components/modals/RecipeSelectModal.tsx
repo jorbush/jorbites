@@ -83,6 +83,7 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                     aria-label={
                         t('search_recipes_placeholder') || 'Search recipes'
                     }
+                    data-cy="recipe-select-search-input"
                     className="focus:border-neutral-450 w-full rounded-xl border border-neutral-200 bg-neutral-50 py-3 pr-4 pl-10 text-sm font-light text-neutral-900 outline-hidden dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-neutral-700"
                 />
             </div>
@@ -103,6 +104,7 @@ const RecipeSelectModal: React.FC<RecipeSelectModalProps> = ({
                                     onSelect(recipe);
                                     handleClose();
                                 }}
+                                data-cy="recipe-select-option"
                                 className="dark:hover:bg-neutral-850 flex w-full cursor-pointer flex-row items-center gap-3 rounded-xl p-2 text-left transition hover:bg-neutral-100 focus:outline-hidden"
                             >
                                 {recipe.imageSrc && (

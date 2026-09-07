@@ -65,6 +65,8 @@ export async function GET(request: Request) {
             title: string;
             imageSrc: string | null;
             userId: string;
+            calories?: number | null;
+            ingredients?: string[];
             user: {
                 name: string | null;
                 image: string | null;
@@ -110,6 +112,7 @@ export async function GET(request: Request) {
                     imageSrc: true,
                     userId: true,
                     calories: true,
+                    ingredients: true,
                     user: {
                         select: {
                             name: true,
