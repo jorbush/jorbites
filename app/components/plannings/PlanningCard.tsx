@@ -48,7 +48,10 @@ export const PlanningCard: React.FC<PlanningCardProps> = ({
     const totalMealsCount = plan.meals?.length || 0;
 
     return (
-        <div className="group relative flex w-full flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/60 bg-white/50 p-5 shadow-xs backdrop-blur-xs transition duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-xl dark:border-neutral-800/60 dark:bg-[#121212]/50 dark:hover:bg-[#181818]">
+        <div
+            data-cy="planning-card"
+            className="group relative flex w-full flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/60 bg-white/50 p-5 shadow-xs backdrop-blur-xs transition duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-xl dark:border-neutral-800/60 dark:bg-[#121212]/50 dark:hover:bg-[#181818]"
+        >
             <div className="flex w-full flex-col gap-2">
                 <div className="flex flex-row items-center justify-between gap-2">
                     <div className="truncate text-xl font-semibold text-neutral-900 group-hover:text-black dark:text-neutral-100 dark:group-hover:text-white">
@@ -58,6 +61,7 @@ export const PlanningCard: React.FC<PlanningCardProps> = ({
                                 e.stopPropagation();
                                 push(`/plannings/${plan.id}`);
                             }}
+                            data-cy="planning-card-title"
                             className="cursor-pointer text-left font-semibold after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:underline focus:outline-hidden"
                         >
                             {plan.name}
@@ -77,7 +81,8 @@ export const PlanningCard: React.FC<PlanningCardProps> = ({
                                     onDeleteClick(plan.id);
                                 }
                             }}
-                            className="cursor-pointer rounded-full border-0 bg-transparent p-2 text-neutral-500 hover:bg-neutral-100 hover:text-rose-600 focus:outline-hidden dark:hover:bg-neutral-800"
+                            data-cy="delete-planning-button"
+                            className="relative z-10 cursor-pointer rounded-full border-0 bg-transparent p-2 text-neutral-500 hover:bg-neutral-100 hover:text-rose-600 focus:outline-hidden dark:hover:bg-neutral-800"
                             title={t('delete') || 'Delete'}
                         >
                             <AiOutlineDelete size={18} />

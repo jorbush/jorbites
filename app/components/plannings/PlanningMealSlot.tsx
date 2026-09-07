@@ -67,7 +67,10 @@ export const PlanningMealSlot: React.FC<PlanningMealSlotProps> = ({
                                 onClick={() => push(`/recipes/${recipe.id}`)}
                                 className="flex-1 cursor-pointer truncate border-0 bg-transparent pr-6 text-left focus:outline-hidden"
                             >
-                                <div className="truncate text-xs font-semibold text-neutral-800 hover:underline dark:text-neutral-200">
+                                <div
+                                    className="truncate text-xs font-semibold text-neutral-800 hover:underline dark:text-neutral-200"
+                                    data-cy="slot-recipe-title"
+                                >
                                     {recipe.title}
                                 </div>
                                 <div className="mt-0.5 flex max-w-full flex-row items-center gap-1">
@@ -97,6 +100,7 @@ export const PlanningMealSlot: React.FC<PlanningMealSlotProps> = ({
                                 <button
                                     type="button"
                                     onClick={() => onRemoveRecipe(meal.id)}
+                                    data-cy="remove-meal-recipe-button"
                                     className="absolute top-1/2 right-1 -translate-y-1/2 rounded-full p-1 text-neutral-500 opacity-0 transition-opacity duration-200 group-hover/recipe:opacity-100 hover:bg-neutral-100 hover:text-rose-600 dark:text-neutral-500 dark:hover:bg-neutral-800"
                                     title={t('delete') || 'Delete'}
                                 >
@@ -114,6 +118,7 @@ export const PlanningMealSlot: React.FC<PlanningMealSlotProps> = ({
                         onClick={() => onAddRecipeClick(day, mealType)}
                         className="dark:border-neutral-850 flex cursor-pointer items-center justify-center gap-1 rounded-xl border border-dashed border-neutral-300 py-3 text-xs text-neutral-500 transition hover:bg-neutral-50 hover:text-neutral-900 dark:hover:bg-neutral-900/60 dark:hover:text-white"
                         data-testid="add-recipe-button"
+                        data-cy="add-recipe-button"
                     >
                         <FiPlus size={14} />
                         <span>{t('add_recipe')}</span>

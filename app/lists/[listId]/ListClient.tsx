@@ -99,7 +99,10 @@ const ListClient: React.FC<ListClientProps> = ({
             <div className="flex flex-col gap-6 pb-12 md:pt-8 dark:text-white">
                 <div className="flex flex-col gap-2">
                     <div className="flex flex-row items-start justify-between gap-4">
-                        <div className="text-3xl font-bold">
+                        <div
+                            className="text-3xl font-bold"
+                            data-cy="list-title"
+                        >
                             {list.isDefault ? t('to_cook_later') : list.name}
                         </div>
                         {isOwner && (
@@ -115,6 +118,7 @@ const ListClient: React.FC<ListClientProps> = ({
                                         className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 dark:hover:bg-neutral-800"
                                         aria-label={t('share') || 'Share'}
                                         title={t('share') || 'Share'}
+                                        data-cy="share-list-button"
                                     >
                                         <FiShare2
                                             size={20}
@@ -126,6 +130,7 @@ const ListClient: React.FC<ListClientProps> = ({
                                     type="button"
                                     onClick={togglePrivacy}
                                     disabled={isLoading}
+                                    data-cy="toggle-list-privacy"
                                     className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
                                     title={
                                         (list.isPrivate
@@ -154,6 +159,7 @@ const ListClient: React.FC<ListClientProps> = ({
                                             setIsConfirmModalOpen(true)
                                         }
                                         disabled={isLoading}
+                                        data-cy="delete-list-button"
                                         className="cursor-pointer rounded-full p-2 text-rose-500 transition hover:bg-rose-100 dark:hover:bg-rose-900"
                                         title={
                                             t('delete_list') || 'Delete list'
@@ -166,7 +172,10 @@ const ListClient: React.FC<ListClientProps> = ({
                         )}
                     </div>
                     <div className="flex flex-row items-center gap-2">
-                        <div className="text-sm text-neutral-500">
+                        <div
+                            className="text-sm text-neutral-500"
+                            data-cy="list-recipes-count"
+                        >
                             {recipes.length} {t('recipes')}
                         </div>
                         <div className="size-1 rounded-full bg-neutral-300 dark:bg-neutral-600" />

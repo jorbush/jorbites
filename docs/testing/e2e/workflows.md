@@ -34,6 +34,11 @@ flowchart TD
             T7["drafts_management.cy.ts<br/>Multi-Draft CRUD, SWR & TTL"]
             T8["drafts_navigation.cy.ts<br/>Category Persistence & Auto-Save"]
         end
+
+        subgraph Job6["Container 6: Lists & Plannings Specs"]
+            T9["lists.cy.ts<br/>Recipe Lists Lifecycle"]
+            T10["plannings.cy.ts<br/>Meal Plannings Lifecycle"]
+        end
     end
 
     redisSvc -.->|REDIS_URL| Job1
@@ -41,12 +46,14 @@ flowchart TD
     redisSvc -.->|REDIS_URL| Job3
     redisSvc -.->|REDIS_URL| Job4
     redisSvc -.->|REDIS_URL| Job5
+    redisSvc -.->|REDIS_URL| Job6
 
     mongoSvc -.->|DATABASE_URL| Job1
     mongoSvc -.->|DATABASE_URL| Job2
     mongoSvc -.->|DATABASE_URL| Job3
     mongoSvc -.->|DATABASE_URL| Job4
     mongoSvc -.->|DATABASE_URL| Job5
+    mongoSvc -.->|DATABASE_URL| Job6
 ```
 
 ---
@@ -809,3 +816,122 @@ flowchart TD
     N9 --> N10["Navigate to Steps -> Fill items via list mode"]
     N10 --> N11["Save Draft -> Navigate across steps without state loss"]
 ```
+
+---
+
+## 10. Recipe Lists Workflow (`lists.cy.ts`)
+
+This spec validates custom list creation directly from a recipe detail page via `AddToListModal`, multi-list selection, tab switching on `/lists`, detail view inspection, privacy toggling, recipe removal, custom list deletion via confirmation modal, and default "To cook later" list deletion protections.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Authenticated User
+    participant Recipe as Recipe Page (/recipes/:id)
+    participant Modal as AddToListModal
+    participant Lists as Lists Page (/lists)
+    participant Detail as List Detail (/lists/:id)
+    participant API as Next.js API (/api/lists)
+
+    %% Step 1: Create List from Recipe
+    User->>Recipe: Click "Add to list" button ([data-cy="add-to-list-button"])
+    Recipe->>Modal: Open AddToListModal
+    User->>Modal: Click "Create new list" ([data-cy="create-new-list-button"])
+    User->>Modal: Fill list name & toggle private checkbox
+    User->>Modal: Click "Create" ([data-cy="submit-new-list-button"])
+    Modal->>API: POST /api/lists { name, isPrivate, recipeId }
+    API-->>Modal: 200 OK (List created & recipe added)
+    Modal-->>User: Checkmark displayed on list row ([data-cy="list-item-selected"])
+    User->>Modal: Click "Done" ([data-cy="modal-action-button"]) -> Modal closes
+
+    %% Step 2: View in /lists & Tabs
+    User->>Lists: Navigate to /lists (via UserMenu [data-cy="user-menu-lists"])
+    Lists-->>User: "My Lists" tab displays list card with recipe count
+    User->>Lists: Switch to "Community Lists" tab ([data-cy="tab-community"])
+    Lists-->>User: Render public community lists
+    User->>Lists: Switch back to "My Lists" ([data-cy="tab-my"])
+
+    %% Step 3: Detail, Privacy & Item Management
+    User->>Lists: Click custom list card ([data-cy="list-card-title"])
+    Lists->>Detail: Navigate to /lists/:id
+    Detail-->>User: Render list title, author info, and RecipeCard grid
+    User->>Detail: Click privacy toggle ([data-cy="toggle-list-privacy"])
+    Detail->>API: PATCH /api/lists/:id { isPrivate: false }
+    API-->>Detail: 200 OK -> Share button becomes visible
+    User->>Detail: Click remove recipe ([data-cy="recipe-card-action-button"])
+    Detail->>API: DELETE /api/lists/:id/recipes/:recipeId
+    API-->>Detail: 200 OK -> Recipe card removed from list view
+
+    %% Step 4: Deletion & Protections
+    User->>Detail: Click delete list ([data-cy="delete-list-button"])
+    Detail-->>User: Open ConfirmModal
+    User->>Detail: Confirm deletion ([data-cy="modal-action-button"])
+    Detail->>API: DELETE /api/lists/:id
+    API-->>Detail: 200 OK
+    Detail->>Lists: Redirect back to /lists
+    Lists-->>User: Custom list is removed; default "To cook later" list remains non-deletable
+```
+
+---
+
+## 11. Meal Plannings Workflow (`plannings.cy.ts`)
+
+This spec validates weekly meal planning creation, 7-day diet calendar grid rendering, recipe search and assignment to day slots via `RecipeSelectModal`, shopping list consolidation, calendar `.ics` export, recipe removal from slots, plan metadata updates, privacy toggles, tab switching, and plan deletion.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Authenticated User
+    participant Plannings as Plannings Page (/plannings)
+    participant Modal as PlanningModal
+    participant Grid as Plan Detail & Grid (/plannings/:id)
+    participant Selector as RecipeSelectModal
+    participant Actions as PlanningActions
+    participant API as Next.js API (/api/plannings)
+
+    %% Step 1: Create Plan
+    User->>Plannings: Click "Create Meal Plan" ([data-cy="create-meal-plan-button"])
+    Plannings->>Modal: Open PlanningModal
+    User->>Modal: Fill name, description, privacy toggle
+    User->>Modal: Submit ([data-cy="modal-action-button"])
+    Modal->>API: POST /api/plannings { name, description, isPrivate }
+    API-->>Modal: 201 Created { id }
+    Modal->>Grid: Redirect to /plannings/:id
+
+    %% Step 2: Schedule Recipe in Day Slot
+    Grid-->>User: Render 7-day grid (Monday to Sunday) with 4 meal slots each
+    User->>Grid: Click "Add recipe" on Monday slot ([data-cy="add-recipe-button"])
+    Grid->>Selector: Open RecipeSelectModal
+    User->>Selector: Search recipe title ([data-cy="recipe-select-search-input"])
+    User->>Selector: Click matching recipe option ([data-cy="recipe-select-option"])
+    Selector->>API: PATCH /api/plannings/:id (connect meal with day & mealType)
+    API-->>Grid: 200 OK -> Slot renders recipe card with title and calories
+    Selector-->>Grid: Close RecipeSelectModal
+
+    %% Step 3: Modals & Item Removal
+    User->>Actions: Click "Shopping List" ([data-cy="shopping-list-button"])
+    Actions-->>User: Open WeeklyShoppingListModal with consolidated ingredients
+    User->>Actions: Close modal
+    User->>Actions: Click "Export Calendar" ([data-cy="export-calendar-button"])
+    Actions-->>User: Open ExportCalendarModal for .ics file generation
+    User->>Actions: Close modal
+    User->>Grid: Click remove recipe from slot ([data-cy="remove-meal-recipe-button"])
+    Grid->>API: PATCH /api/plannings/:id (remove meal)
+    API-->>Grid: 200 OK -> Recipe cleared from slot
+
+    %% Step 4: Metadata Update, Privacy & Deletion
+    User->>Actions: Click "Edit Plan" ([data-cy="edit-plan-button"])
+    Actions->>Modal: Open PlanningModal with existing values
+    User->>Modal: Update name & description -> Submit
+    Modal->>API: PATCH /api/plannings/:id
+    API-->>Grid: 200 OK -> Header title & description update
+    User->>Grid: Click privacy toggle ([data-cy="toggle-plan-privacy"])
+    Grid->>API: PATCH /api/plannings/:id (toggle isPrivate)
+    User->>Plannings: Return to /plannings
+    Plannings-->>User: Plan displayed in "My Meal Plans" tab ([data-cy="tab-my"])
+    User->>Plannings: Click delete button on card ([data-cy="delete-planning-button"])
+    Plannings-->>User: Confirm in ConfirmModal
+    User->>Plannings: Confirm -> DELETE /api/plannings/:id
+    Plannings-->>User: Plan card removed from list
+```
+

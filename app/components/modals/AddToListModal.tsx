@@ -135,19 +135,27 @@ const AddToListModal = () => {
                                 key={list.id}
                                 type="button"
                                 onClick={() => handleToggleRecipeInList(list)}
+                                data-cy="list-item"
+                                data-cy-id={list.id}
                                 className={`group flex w-full cursor-pointer flex-row items-center justify-between rounded-lg border-2 p-4 text-left transition hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
                                     isSelected
                                         ? 'border-black dark:border-white'
                                         : 'border-neutral-200 dark:border-neutral-700'
                                 }`}
                             >
-                                <div className="font-semibold">
+                                <div
+                                    className="font-semibold"
+                                    data-cy="list-item-name"
+                                >
                                     {list.isDefault
                                         ? t('to_cook_later')
                                         : list.name}
                                 </div>
                                 {isSelected && (
-                                    <div className="relative size-5">
+                                    <div
+                                        className="relative size-5"
+                                        data-cy="list-item-selected"
+                                    >
                                         <FaCheckCircle
                                             size={20}
                                             className="absolute inset-0 text-green-500 transition-opacity duration-200"
@@ -163,6 +171,7 @@ const AddToListModal = () => {
                 <button
                     type="button"
                     onClick={() => setIsCreating(true)}
+                    data-cy="create-new-list-button"
                     className="mt-4 w-full cursor-pointer border-0 bg-transparent text-center font-bold underline focus:outline-hidden"
                 >
                     {t('create_new_list')}
@@ -176,12 +185,14 @@ const AddToListModal = () => {
                         register={register}
                         errors={errors}
                         required
+                        dataCy="new-list-name-input"
                     />
                     <div className="flex flex-row items-center gap-2">
                         <input
                             id="isPrivate"
                             type="checkbox"
                             {...register('isPrivate')}
+                            data-cy="new-list-private-checkbox"
                             className="size-4 rounded border-neutral-300 bg-neutral-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-neutral-600 dark:bg-neutral-700 dark:ring-offset-neutral-800 dark:focus:ring-blue-600"
                         />
                         <label
@@ -198,6 +209,7 @@ const AddToListModal = () => {
                                 onClick={() => setIsCreating(false)}
                                 label={t('cancel')}
                                 outline
+                                dataCy="cancel-new-list-button"
                             />
                         </div>
                         <div className="w-full">
@@ -205,6 +217,7 @@ const AddToListModal = () => {
                                 disabled={isLoading}
                                 onClick={handleSubmit(onSubmitNewList)}
                                 label={t('create')}
+                                dataCy="submit-new-list-button"
                             />
                         </div>
                     </div>
