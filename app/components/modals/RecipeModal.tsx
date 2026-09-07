@@ -288,9 +288,7 @@ const RecipeModalContent: React.FC<{
 const RecipeModalComponent: React.FC<RecipeModalProps> = ({ currentUser }) => {
     const recipeModal = useRecipeModal();
     const searchParams = useSearchParams();
-    const get = searchParams
-        ? searchParams.get.bind(searchParams)
-        : () => null;
+    const get = searchParams ? searchParams.get.bind(searchParams) : () => null;
     const draftQueryParam = get('draft');
     const autoOpenedDraftRef = useRef<string | null>(null);
 
