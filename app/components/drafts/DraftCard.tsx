@@ -192,7 +192,7 @@ const DraftCard: React.FC<DraftCardProps> = ({
                             type="button"
                             data-testid="draft-card-share"
                             onClick={handleShare}
-                            className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-green-50 hover:text-green-600 dark:text-neutral-400 dark:hover:bg-green-900/20 dark:hover:text-green-400"
+                            className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-green-50 hover:text-green-700 dark:text-neutral-400 dark:hover:bg-green-900/20 dark:hover:text-green-400"
                             title={
                                 (t('copy_co_cook_link') ??
                                     'Copy invite link') as string
@@ -221,7 +221,7 @@ const DraftCard: React.FC<DraftCardProps> = ({
                         type="button"
                         data-testid="draft-card-delete"
                         onClick={handleDelete}
-                        className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-red-50 hover:text-red-600 dark:text-neutral-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                        className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-red-50 hover:text-red-700 dark:text-neutral-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                         title={(t('delete_draft') ?? 'Delete') as string}
                         aria-label={(t('delete_draft') ?? 'Delete') as string}
                     >
