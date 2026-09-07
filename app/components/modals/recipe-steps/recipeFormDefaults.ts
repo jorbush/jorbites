@@ -1,9 +1,13 @@
-import { SafeUser, SafeRecipe, RecipeModalStateLike } from '@/app/types';
+import type {
+    SafeUser,
+    SafeRecipe,
+    RecipeModalStateLike,
+    DraftData,
+} from '@/app/types';
 import {
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
 } from '@/app/utils/constants';
-import { DraftData } from '@/app/types/draft';
 
 function buildEmptySlots(): Record<string, string> {
     const emptySlots: Record<string, string> = {};

@@ -7,7 +7,7 @@ import {
     RECIPE_MAX_INGREDIENTS,
     RECIPE_MAX_STEPS,
 } from '@/app/utils/constants';
-import { DraftData, RecipeModalStateLike } from '@/app/types';
+import type { DraftData, RecipeModalStateLike } from '@/app/types';
 
 export interface UseRecipeItemsStateProps {
     recipeModal: RecipeModalStateLike;

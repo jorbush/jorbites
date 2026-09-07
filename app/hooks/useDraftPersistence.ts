@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormAccessor, collectDraftFormData } from '@/app/utils/draftFormUtils';
-import { DraftData, RecipeModalDraftController } from '@/app/types';
+import type { DraftData, RecipeModalDraftController } from '@/app/types';
 
 export type { RecipeModalDraftController };
 

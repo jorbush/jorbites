@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { EditRecipeData } from '@/app/types';
+import type { EditRecipeData } from '@/app/types';
 
 export type { EditRecipeData };
 
