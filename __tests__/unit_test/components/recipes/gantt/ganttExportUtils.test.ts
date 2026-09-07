@@ -65,11 +65,15 @@ describe('ganttExportUtils', () => {
         it('calculates full width considering scrollWidth of overflowing children', async () => {
             const mockContainer = document.createElement('div');
             Object.defineProperty(mockContainer, 'offsetWidth', { value: 320 });
-            Object.defineProperty(mockContainer, 'offsetHeight', { value: 200 });
+            Object.defineProperty(mockContainer, 'offsetHeight', {
+                value: 200,
+            });
             Object.defineProperty(mockContainer, 'scrollWidth', { value: 320 });
 
             const mockChildTable = document.createElement('table');
-            Object.defineProperty(mockChildTable, 'scrollWidth', { value: 1200 });
+            Object.defineProperty(mockChildTable, 'scrollWidth', {
+                value: 1200,
+            });
             mockContainer.appendChild(mockChildTable);
 
             // Mock HTMLCanvasElement context
@@ -83,16 +87,20 @@ describe('ganttExportUtils', () => {
                 width: 0,
                 height: 0,
                 getContext: vi.fn().mockReturnValue(mockCtx),
-                toDataURL: vi.fn().mockReturnValue('data:image/png;base64,mock'),
+                toDataURL: vi
+                    .fn()
+                    .mockReturnValue('data:image/png;base64,mock'),
             };
 
             const originalCreateElement = document.createElement.bind(document);
-            vi.spyOn(document, 'createElement').mockImplementation((tagName: string, options?: ElementCreationOptions) => {
-                if (tagName.toLowerCase() === 'canvas') {
-                    return mockCanvas as unknown as HTMLCanvasElement;
+            vi.spyOn(document, 'createElement').mockImplementation(
+                (tagName: string, options?: ElementCreationOptions) => {
+                    if (tagName.toLowerCase() === 'canvas') {
+                        return mockCanvas as unknown as HTMLCanvasElement;
+                    }
+                    return originalCreateElement(tagName, options);
                 }
-                return originalCreateElement(tagName, options);
-            });
+            );
 
             const appendChildSpy = vi
                 .spyOn(document.body, 'appendChild')
@@ -118,7 +126,11 @@ describe('ganttExportUtils', () => {
             }
             vi.stubGlobal('Image', MockImage);
 
-            await exportGanttTableToPNG(mockContainer, 'Recipe Title', mockT as any);
+            await exportGanttTableToPNG(
+                mockContainer,
+                'Recipe Title',
+                mockT as any
+            );
 
             expect(mockCanvas.width).toBe((1200 + 32) * 2);
             expect(appendChildSpy).toHaveBeenCalled();
