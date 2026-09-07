@@ -1,28 +1,7 @@
 import { create } from 'zustand';
-import { SafeRecipe, SafeUser } from '@/app/types';
+import { EditRecipeData } from '@/app/types';
 
-export interface EditRecipeData {
-    id: string;
-    title: string;
-    description: string;
-    categories?: string[];
-    method: string;
-    imageSrc: string;
-    imageSrc1?: string;
-    imageSrc2?: string;
-    imageSrc3?: string;
-    ingredients: string[];
-    steps: string[];
-    minutes: number;
-    prepTime?: number | null;
-    cookTime?: number | null;
-    coCooksIds?: string[];
-    linkedRecipeIds?: string[];
-    coCooks?: SafeUser[];
-    linkedRecipes?: SafeRecipe[];
-    youtubeUrl?: string;
-    questId?: string;
-}
+export type { EditRecipeData };
 
 export interface RecipeModalStore {
     isOpen: boolean;

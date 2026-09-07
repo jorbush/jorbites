@@ -3,11 +3,15 @@
 import { useState, useMemo, useCallback } from 'react';
 import useSWR from 'swr';
 import { toast } from 'react-hot-toast';
-import { SafeUser, SafeRecipe, SafeQuest } from '@/app/types';
+import {
+    SafeUser,
+    SafeRecipe,
+    SafeQuest,
+    RecipeModalStateLike,
+} from '@/app/types';
 import { axiosFetcher } from '@/app/utils/fetcher';
 import { MAX_CO_COOKS, MAX_LINKED_RECIPES } from '@/app/utils/constants';
 import { DraftData } from '@/app/types/draft';
-import { RecipeModalStateLike } from './useRecipeFormState';
 
 interface UseRecipeRelatedContentProps {
     recipeModal: RecipeModalStateLike;

@@ -6,15 +6,9 @@ import { toast } from 'react-hot-toast';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormAccessor, collectDraftFormData } from '@/app/utils/draftFormUtils';
-import { DraftData } from '@/app/types/draft';
+import { DraftData, RecipeModalDraftController } from '@/app/types';
 
-export interface RecipeModalDraftController {
-    isOpen?: boolean;
-    isEditMode?: boolean;
-    activeDraftId?: string | null;
-    onOpenSharedDraft: (draftId: string) => void;
-    onClose?: () => void;
-}
+export type { RecipeModalDraftController };
 
 interface UseDraftPersistenceOptions {
     recipeModal: RecipeModalDraftController;
