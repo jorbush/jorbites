@@ -12,7 +12,7 @@ import {
 } from 'react-hook-form';
 import { TFunction } from 'i18next';
 import { STEPS, STEPS_LENGTH } from '@/app/utils/constants';
-import { RecipeModalStateLike } from './useRecipeFormState';
+import type { RecipeModalStateLike } from '@/app/types';
 import {
     processIngredientsOnStepAdvance,
     processStepsOnStepAdvance,

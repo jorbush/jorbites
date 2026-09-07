@@ -4,15 +4,10 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useForm, FieldValues } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { SafeUser } from '@/app/types';
+import type { SafeUser, RecipeModalStateLike, DraftData } from '@/app/types';
 import { STEPS, STEPS_LENGTH } from '@/app/utils/constants';
 import { useDraftSync } from '@/app/hooks/useDraftSync';
-import {
-    useDraftPersistence,
-    RecipeModalDraftController,
-} from '@/app/hooks/useDraftPersistence';
-import { EditRecipeData } from '@/app/hooks/useRecipeModal';
-import { DraftData } from '@/app/types/draft';
+import { useDraftPersistence } from '@/app/hooks/useDraftPersistence';
 import { buildInitialRecipeDefaultValues } from './recipeFormDefaults';
 import { useRecipeRelatedContent } from './useRecipeRelatedContent';
 import { useRecipeItemsState } from './useRecipeItemsState';
@@ -20,12 +15,7 @@ import { useRecipeStepNavigation } from './useRecipeStepNavigation';
 import { useRecipeFormLock } from './useRecipeFormLock';
 import { useDraftSwitchSync } from './useDraftSwitchSync';
 
-export interface RecipeModalStateLike extends RecipeModalDraftController {
-    isEditMode?: boolean;
-    onClose?: () => void;
-    editRecipeData?: EditRecipeData | null;
-    questId?: string | null;
-}
+export type { RecipeModalStateLike };
 
 interface UseRecipeFormStateProps {
     recipeModal: RecipeModalStateLike;

@@ -169,3 +169,4 @@ export type SafePlanning = Omit<Planning, 'createdAt' | 'updatedAt'> & {
 };
 
 export * from './draft';
+export * from './recipeModal';

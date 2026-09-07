@@ -1,11 +1,9 @@
 'use client';
 
-import { UseFormWatch, FieldValues } from 'react-hook-form';
-import { SafeUser } from '@/app/types';
-import { DraftData } from '@/app/types/draft';
+import type { UseFormWatch, FieldValues } from 'react-hook-form';
+import type { SafeUser, RecipeModalStateLike, DraftData } from '@/app/types';
 import { useRecipeLock } from '@/app/hooks/useRecipeLock';
 import { checkIsCollaborativeSession } from '@/app/utils/draftFormUtils';
-import { RecipeModalStateLike } from './useRecipeFormState';
 
 export interface UseRecipeFormLockProps {
     recipeModal: RecipeModalStateLike;
