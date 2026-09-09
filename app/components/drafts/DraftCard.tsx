@@ -3,7 +3,7 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { FiTrash2, FiCopy } from 'react-icons/fi';
+import { FiTrash2, FiCopy, FiUsers } from 'react-icons/fi';
 import { FaUserPlus } from 'react-icons/fa';
 import { DraftSummary } from '@/app/types/draft';
 import {
@@ -20,6 +20,7 @@ interface DraftCardProps {
     onDelete: (draftId: string) => void;
     onDuplicate: (draftId: string) => void;
     onShare?: (draftId: string) => void;
+    onManageCoCooks?: (draftId: string) => void;
 }
 
 function getRelativeTime(dateStr?: string | null, t?: TFunction): string {
@@ -82,6 +83,7 @@ const DraftCard: React.FC<DraftCardProps> = ({
     onDelete,
     onDuplicate,
     onShare,
+    onManageCoCooks,
 }) => {
     const { t } = useTranslation();
 
@@ -111,6 +113,14 @@ const DraftCard: React.FC<DraftCardProps> = ({
             onShare?.(draft.draftId);
         },
         [draft.draftId, onShare]
+    );
+
+    const handleManageCoCooks = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            onManageCoCooks?.(draft.draftId);
+        },
+        [draft.draftId, onManageCoCooks]
     );
 
     const title = generateDraftTitle(draft);
@@ -164,7 +174,19 @@ const DraftCard: React.FC<DraftCardProps> = ({
             {draft.type === 'shared' &&
                 draft.coCooksIds &&
                 draft.coCooksIds.length > 0 && (
-                    <div className="flex">
+                    <div
+                        className={`flex ${onManageCoCooks ? 'cursor-pointer hover:opacity-80' : ''}`}
+                        onClick={
+                            onManageCoCooks ? handleManageCoCooks : undefined
+                        }
+                        data-testid="draft-card-avatars"
+                        title={
+                            onManageCoCooks
+                                ? ((t('manage_co_cooks_invite') ??
+                                      'Manage Co-Cooks & Invites') as string)
+                                : undefined
+                        }
+                    >
                         {draft.coCooksIds.slice(0, 3).map((id) => (
                             <div
                                 key={id}
@@ -187,6 +209,24 @@ const DraftCard: React.FC<DraftCardProps> = ({
                 </div>
 
                 <div className="flex items-center gap-1">
+                    {onManageCoCooks && (
+                        <button
+                            type="button"
+                            data-testid="draft-card-manage-collabs"
+                            onClick={handleManageCoCooks}
+                            className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-blue-50 hover:text-blue-700 dark:text-neutral-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                            title={
+                                (t('manage_co_cooks_invite') ??
+                                    'Manage Co-Cooks & Invites') as string
+                            }
+                            aria-label={
+                                (t('manage_co_cooks_invite') ??
+                                    'Manage Co-Cooks & Invites') as string
+                            }
+                        >
+                            <FiUsers size={16} />
+                        </button>
+                    )}
                     {onShare && (
                         <button
                             type="button"

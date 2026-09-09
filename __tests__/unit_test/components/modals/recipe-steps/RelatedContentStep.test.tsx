@@ -21,6 +21,13 @@ vi.mock('react-i18next', () => ({
     })),
 }));
 
+const mockOnOpenInviteModal = vi.fn();
+vi.mock('@/app/hooks/useDraftInviteModal', () => ({
+    default: () => ({
+        onOpen: mockOnOpenInviteModal,
+    }),
+}));
+
 // Mock Heading component
 vi.mock('@/app/components/navigation/Heading', () => ({
     default: ({ title, subtitle }: { title: string; subtitle?: string }) => (
@@ -751,6 +758,31 @@ describe('<RelatedContentStep />', () => {
                 'input-field-youtubeUrl'
             ) as HTMLInputElement;
             expect(youtubeInput.value).toBe('');
+        });
+    });
+
+    describe('Manage Co-Cooks and Invites button', () => {
+        it('renders manage co-cooks button when draftId is provided and opens modal on click', async () => {
+            const propsWithDraft = {
+                ...mockProps,
+                draftId: 'draft-test-999',
+            };
+
+            render(<RelatedContentStep {...propsWithDraft} />);
+
+            const btn = screen.getByTestId('manage-co-cooks-btn');
+            expect(btn).toBeInTheDocument();
+
+            fireEvent.click(btn);
+            expect(mockOnOpenInviteModal).toHaveBeenCalledWith(
+                'draft-test-999'
+            );
+        });
+
+        it('does not render manage co-cooks button when draftId is omitted', () => {
+            render(<RelatedContentStep {...mockProps} />);
+
+            expect(screen.queryByTestId('manage-co-cooks-btn')).toBeNull();
         });
     });
 });

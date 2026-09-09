@@ -33,8 +33,29 @@ export async function POST(request: Request) {
             );
         }
 
-        // Security: Always enforce server-side cryptographically secure token generation (M4)
-        // Reuse existing token if already generated for this draft, otherwise generate new 16-byte hex
+        const baseUrl =
+            process.env.NEXT_PUBLIC_APP_URL ||
+            (request.headers.get('origin') ?? 'http://localhost:3000');
+
+        const shouldRegenerate = Boolean(body.regenerate);
+        if (shouldRegenerate && existing) {
+            const regenerated = await DraftService.regenerateInviteToken(
+                draftId,
+                currentUser,
+                baseUrl
+            );
+            logger.info('POST /api/draft/invite - regenerated token', {
+                draftId,
+                userId: currentUser.id,
+            });
+            return NextResponse.json({
+                draftId,
+                inviteToken: regenerated.inviteToken,
+                shareUrl: regenerated.shareUrl,
+                draft: regenerated.draft,
+            });
+        }
+
         const inviteToken =
             existing?.inviteToken || crypto.randomBytes(16).toString('hex');
 
@@ -53,9 +74,6 @@ export async function POST(request: Request) {
             userId: currentUser.id,
         });
 
-        const baseUrl =
-            process.env.NEXT_PUBLIC_APP_URL ||
-            (request.headers.get('origin') ?? 'http://localhost:3000');
         const shareUrl = `${baseUrl}/recipes/new?draft=${draftId}&token=${inviteToken}`;
 
         return NextResponse.json({

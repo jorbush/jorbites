@@ -135,9 +135,9 @@ The backend already supports multiple shared drafts via `user:drafts:{userId}` a
 
 | # | Issue | Description | Scope | Status |
 |---|-------|-------------|-------|:------:|
-| D-08 | **In-app invite management** | Instead of only clipboard-copied links, add an in-modal panel to see pending/active co-cooks, copy/regenerate invite link, and remove co-cooks. Reuse `RelatedContentStep` patterns. | Frontend | ⏳ Pending |
-| D-09 | **Conflict notification toast** | When SWR sync detects a field was changed by a co-cook on the step the user is currently editing, show a subtle inline toast: "Maria updated ingredients — tap to refresh". Non-blocking. | Frontend | ⏳ Pending |
-| D-10 | **Co-cook role management** | Allow the draft owner to toggle co-cook permissions (editor / viewer) from the in-app invite panel (D-08). Viewer can browse but inputs are disabled. | Full-stack | ⏳ Pending |
+| D-08 | **In-app invite management** | Instead of only clipboard-copied links, add an in-modal panel to see pending/active co-cooks, copy/regenerate invite link, and remove co-cooks. Reuse `RelatedContentStep` patterns. | Frontend | ✅ Completed |
+| D-09 | **Conflict notification toast** | When SWR sync detects a field was changed by a co-cook on the step the user is currently editing, show a subtle inline toast: "Maria updated ingredients — tap to refresh". Non-blocking. | Frontend | ✅ Completed |
+| D-10 | **Co-cook role management** | Allow the draft owner to toggle co-cook permissions (editor / viewer) from the in-app invite panel (D-08). Viewer can browse but inputs are disabled. | Full-stack | ✅ Completed |
 | D-11 | **Field-level presence indicators** | Augment step-level locking with sub-step field granularity. Track which specific field (title, description, ingredient row N, step row N) a co-cook is editing. Show a coloured dot + tiny avatar next to the active field. Use the existing Redis lock key pattern: `lock:recipe:{id}:field:ingredient:{index}`. | Full-stack | ⏳ Pending |
 | D-12 | **Change feed panel** | Slim collapsible panel in `RecipeModal` listing recent edits: "Ana added 'garlic' — 2 min ago". Populated from a lightweight `edit:{draftId}` Redis list (capped at last 30 events, TTL = draft TTL). | Full-stack | ⏳ Pending |
 
@@ -238,9 +238,9 @@ The backend already supports multiple shared drafts via `user:drafts:{userId}` a
 | D-05 | Drafts dashboard modal / UI | 🔴 3 | 🟡 2 | ⭐ High Value — unified DraftsModal dashboard | ✅ Completed (PR #1642) |
 | D-06 | Navigation entry point to drafts | 🔴 3 | 🟢 1 | 🏆 Quick Win — routes navbar/menu to drafts modal | ✅ Completed (PR #1642) |
 | D-07 | Remove `DraftRecoveryDialog` | 🟢 1 | 🟢 1 | 🏆 Quick Win — safely delete legacy dialog | ✅ Completed (PR #1642) |
-| D-08 | In-app invite management | 🟡 2 | 🟡 2 | ⭐ High Value — better collab onboarding in modal | ⏳ Pending |
-| D-09 | Conflict notification toast | 🟡 2 | 🟢 1 | 🏆 Quick Win — SWR diff check + inline alert | ⏳ Pending |
-| D-10 | Co-cook role management | 🟢 1 | 🟢 1 | 💎 Nice-to-Have — editor/viewer toggle | ⏳ Pending |
+| D-08 | In-app invite management | 🟡 2 | 🟡 2 | ⭐ High Value — better collab onboarding in modal | ✅ Completed |
+| D-09 | Conflict notification toast | 🟡 2 | 🟢 1 | 🏆 Quick Win — SWR diff check + inline alert | ✅ Completed |
+| D-10 | Co-cook role management | 🟢 1 | 🟢 1 | 💎 Nice-to-Have — editor/viewer toggle | ✅ Completed |
 | D-11 | Field-level presence indicators | 🟡 2 | 🔴 3 | 💎 Nice-to-Have — complex for incremental gain | ⏳ Pending |
 | D-12 | Change feed panel | 🟢 1 | 🟡 2 | 💎 Nice-to-Have — collapsible log in modal | ⏳ Pending |
 | D-13 | Scheduled recipe publication | 🔴 3 | 🟡 2 | ⭐ High Value — unique feature for creators | ⏳ Pending |
@@ -380,14 +380,15 @@ The backend already supports multiple shared drafts via `user:drafts:{userId}` a
 9. **`S-12`**: Allergen exclusion filter (`allergens` field + toggle group) → *Safety filter live.*
 
 #### **Sprint 6 — Collaboration, Scheduling & Seasonal Events _(~2.5 weeks)_**
-1. **`D-08`**: In-app invite management (View/manage co-cooks in `RecipeModal`) → *Collab onboarding live.*
-2. **`D-09`**: Conflict notification toast (SWR diff detection + "tap to refresh") → *Live collision alert.*
-3. **`D-13`**: Scheduled recipe publication field & wizard UI (`scheduledPublishAt`) → *Scheduling UI live.*
-4. **`D-14`**: Scheduled publication cron job (GitHub Actions cron + API handler) → *Automated publishing live.*
-5. **`G-16`**: Admin role on `User` (`isAdmin` boolean + middleware) → *Admin auth ready.*
-6. **`G-17`**: `SeasonalEvent` Prisma model → *Event model ready.*
-7. **`G-18`**: Seasonal badge auto-evaluation in `badge_forge` → *Auto-awarding live.*
-8. **`G-19`**: Admin UI for seasonal events (`/admin/events`) → *Admin portal live.*
+- [x] **`D-08`**: In-app invite management (`DraftInviteModal`, invite links & token regeneration, co-cook roster removal/leave) → *Collab onboarding live.*
+- [x] **`D-09`**: Conflict notification toast (SWR diff detection + non-blocking toast with "Refresh" action) → *Live collision alert.*
+- [x] **`D-10`**: Co-cook role management (Editor vs Viewer permissions, soft-lock bypass, inert input guard) → *Role permissions live.*
+1. **`D-13`**: Scheduled recipe publication field & wizard UI (`scheduledPublishAt`) → *Scheduling UI live.*
+2. **`D-14`**: Scheduled publication cron job (GitHub Actions cron + API handler) → *Automated publishing live.*
+3. **`G-16`**: Admin role on `User` (`isAdmin` boolean + middleware) → *Admin auth ready.*
+4. **`G-17`**: `SeasonalEvent` Prisma model → *Event model ready.*
+5. **`G-18`**: Seasonal badge auto-evaluation in `badge_forge` → *Auto-awarding live.*
+6. **`G-19`**: Admin UI for seasonal events (`/admin/events`) → *Admin portal live.*
 
 #### **Sprint 7 — History, Polish & Nice-to-Haves _(Remaining Time)_**
 *Non-critical items to pick from as time permits:*
@@ -460,10 +461,11 @@ Sprint 2 [DONE ✅]  Sprint 4 (Unlocks+Notif)                Sprint 7 (Polish)
 - `S-10a` to `S-10c`: Canonical `DIETARY_TAGS` list + schema, `tagatoni` dietary tag enrichment, dietary tags filter in search UI.
 - `S-12`: Allergen exclusion filter (`allergens` field + toggle group).
 
-#### 5. **Sprint 6 — Collaboration, Scheduling & Seasonal Events _(8 tasks pending)_**
+#### 5. **Sprint 6 — Collaboration, Scheduling & Seasonal Events _(5 tasks pending — D-08, D-09, D-10 completed)_**
 *Advanced collaborative workflows, scheduled publishing, and admin-driven events:*
-- `D-08`: In-app invite management (view/manage active co-cooks in `RecipeModal`).
-- `D-09`: Conflict notification toast (SWR diff detection + "tap to refresh").
+- `D-08` [COMPLETED]: In-app invite management (`DraftInviteModal`, token regeneration, collaborator management).
+- `D-09` [COMPLETED]: Conflict notification toast (SWR diff detection + "Refresh" action).
+- `D-10` [COMPLETED]: Co-cook role management (Editor vs Viewer permissions).
 - `D-13`: Scheduled recipe publication field & wizard UI (`scheduledPublishAt`).
 - `D-14`: Scheduled publication cron job (GitHub Actions cron + API handler).
 - `G-16` to `G-19`: Admin role on `User`, `SeasonalEvent` Prisma model, seasonal badge auto-evaluation in `badge_forge`, admin UI for seasonal events (`/admin/events`).

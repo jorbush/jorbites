@@ -198,4 +198,21 @@ describe('RecipeModalStepBody', () => {
         );
         expect(lockedWrapper).toBeDefined();
     });
+
+    it('applies inert and disabled styling when isViewer is true', () => {
+        const { container } = render(
+            <RecipeModalStepBody
+                {...defaultProps}
+                step={STEPS.DESCRIPTION}
+                isViewer={true}
+            />
+        );
+
+        const lockedWrapper = container.querySelector(
+            '.pointer-events-none.opacity-60'
+        );
+        expect(lockedWrapper).toBeDefined();
+        const containerElem = screen.getByTestId('locked-step-container');
+        expect(containerElem).toHaveAttribute('inert');
+    });
 });

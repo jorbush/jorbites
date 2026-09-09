@@ -174,6 +174,7 @@ const RecipeModalContent: React.FC<{
         setCustomValue,
         draftData,
         isLoadingDraft,
+        isViewer,
     } = useRecipeFormState({
         recipeModal,
         currentUser,
@@ -223,7 +224,10 @@ const RecipeModalContent: React.FC<{
             onClose={onClose}
             onSubmit={handleSubmit(onSubmit)}
             actionLabel={actionLabel}
-            actionDisabled={isCurrentStepLocked && step === STEPS.IMAGES}
+            actionDisabled={
+                (isCurrentStepLocked && step === STEPS.IMAGES) ||
+                (isViewer && step === STEPS.IMAGES)
+            }
             secondaryActionLabel={secondaryActionLabel}
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
             title={modalTitle}
@@ -234,6 +238,7 @@ const RecipeModalContent: React.FC<{
                     lockOwner={lockOwner}
                     isSharedSession={isSharedSession}
                     otherActiveLocks={otherActiveLocks}
+                    isViewer={isViewer}
                     categories={categories}
                     setCustomValue={setCustomValue}
                     numIngredients={numIngredients}
@@ -267,6 +272,7 @@ const RecipeModalContent: React.FC<{
                     selectQuest={selectQuest}
                     removeQuest={removeQuest}
                     imageSrc={imageSrc}
+                    draftId={draftData?.draftId || getValues('draftId')}
                 />
             }
             isLoading={isLoading}

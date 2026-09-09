@@ -139,6 +139,47 @@ describe('DraftCard', () => {
         expect(onOpen).not.toHaveBeenCalled();
     });
 
+    it('triggers onManageCoCooks when manage collabs icon is clicked', () => {
+        const onManageCoCooks = vi.fn();
+        const onOpen = vi.fn();
+
+        render(
+            <DraftCard
+                draft={mockDraft}
+                onOpen={onOpen}
+                onDelete={vi.fn()}
+                onDuplicate={vi.fn()}
+                onManageCoCooks={onManageCoCooks}
+            />
+        );
+
+        fireEvent.click(screen.getByTestId('draft-card-manage-collabs'));
+        expect(onManageCoCooks).toHaveBeenCalledWith('draft-123');
+        expect(onOpen).not.toHaveBeenCalled();
+    });
+
+    it('triggers onManageCoCooks when clicking co-cook avatars on shared draft', () => {
+        const onManageCoCooks = vi.fn();
+        const sharedDraft: DraftSummary = {
+            ...mockDraft,
+            type: 'shared',
+            coCooksIds: ['alice', 'bob'],
+        };
+
+        render(
+            <DraftCard
+                draft={sharedDraft}
+                onOpen={vi.fn()}
+                onDelete={vi.fn()}
+                onDuplicate={vi.fn()}
+                onManageCoCooks={onManageCoCooks}
+            />
+        );
+
+        fireEvent.click(screen.getByTestId('draft-card-avatars'));
+        expect(onManageCoCooks).toHaveBeenCalledWith('draft-123');
+    });
+
     it('safely handles missing or undefined updatedAt without displaying NaN', () => {
         const draftWithoutDate: DraftSummary = {
             ...mockDraft,

@@ -13,6 +13,7 @@ import debounce from 'lodash/debounce';
 import Input from '@/app/components/inputs/Input';
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 import { validateYouTubeUrl } from '@/app/utils/validation';
+import useDraftInviteModal from '@/app/hooks/useDraftInviteModal';
 import { SelectedCoCooksList } from './SelectedCoCooksList';
 import { SelectedQuestDisplay } from './SelectedQuestDisplay';
 import { SelectedLinkedRecipesList } from './SelectedLinkedRecipesList';
@@ -22,6 +23,7 @@ interface RelatedContentStepProps {
     selectedCoCooks: any[];
     selectedLinkedRecipes: any[];
     selectedQuest: any | null;
+    draftId?: string;
     onAddCoCook: (user: any) => void;
     onRemoveCoCook: (userId: string) => void;
     onAddLinkedRecipe: (recipe: any) => void;
@@ -37,6 +39,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
     selectedCoCooks,
     selectedLinkedRecipes,
     selectedQuest,
+    draftId,
     onAddCoCook,
     onRemoveCoCook,
     onAddLinkedRecipe,
@@ -47,6 +50,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
     errors,
 }) => {
     const { t } = useTranslation();
+    const draftInviteModal = useDraftInviteModal();
     const [searchQuery, setSearchQuery] = useState('');
     const [searchType, setSearchType] = useState<
         'users' | 'recipes' | 'quests' | 'videos'
@@ -221,11 +225,36 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
             {/* Display of selected items */}
             <div className="space-y-4">
                 {searchType === 'users' && (
-                    <SelectedCoCooksList
-                        selectedCoCooks={selectedCoCooks}
-                        onRemoveCoCook={onRemoveCoCook}
-                        t={t}
-                    />
+                    <div className="space-y-3">
+                        <SelectedCoCooksList
+                            selectedCoCooks={selectedCoCooks}
+                            onRemoveCoCook={onRemoveCoCook}
+                            t={t}
+                        />
+                        {draftId && (
+                            <div className="pt-1">
+                                <button
+                                    type="button"
+                                    data-testid="manage-co-cooks-btn"
+                                    onClick={() =>
+                                        draftInviteModal.onOpen(draftId)
+                                    }
+                                    className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-xs font-semibold text-neutral-700 shadow-xs transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
+                                >
+                                    <FiUsers
+                                        size={14}
+                                        className="text-green-500"
+                                    />
+                                    <span>
+                                        {t('manage_co_cooks_invite', {
+                                            defaultValue:
+                                                'Manage Co-Cooks & Invites',
+                                        })}
+                                    </span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 )}
 
                 {searchType === 'quests' && (

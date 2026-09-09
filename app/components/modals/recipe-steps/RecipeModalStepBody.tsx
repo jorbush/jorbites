@@ -27,6 +27,7 @@ export interface RecipeModalStepBodyProps {
     otherActiveLocks: Array<[string, { userId?: string; userName?: string }]>;
     categories?: string[];
     setCustomValue: (id: string, value: unknown) => void;
+    isViewer?: boolean;
     numIngredients: number;
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
@@ -58,6 +59,7 @@ export interface RecipeModalStepBodyProps {
     selectQuest: (quest: SafeQuest) => void;
     removeQuest: () => void;
     imageSrc?: string;
+    draftId?: string;
 }
 
 const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
@@ -68,6 +70,7 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
     otherActiveLocks,
     categories,
     setCustomValue,
+    isViewer,
     numIngredients,
     register,
     errors,
@@ -99,6 +102,7 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
     selectQuest,
     removeQuest,
     imageSrc,
+    draftId,
 }) => {
     const renderStepContent = () => {
         switch (step) {
@@ -177,6 +181,7 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
                         onRemoveLinkedRecipe={removeLinkedRecipe}
                         onSelectQuest={selectQuest}
                         onRemoveQuest={removeQuest}
+                        draftId={draftId}
                         register={register}
                         errors={errors}
                     />
@@ -213,12 +218,15 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
                 lockOwner={lockOwner}
                 isSharedSession={isSharedSession}
                 otherActiveLocks={otherActiveLocks}
+                isViewer={isViewer}
             />
             <div
                 data-testid="locked-step-container"
-                inert={isCurrentStepLocked ? true : undefined}
+                inert={isCurrentStepLocked || isViewer ? true : undefined}
                 className={
-                    isCurrentStepLocked ? 'pointer-events-none opacity-60' : ''
+                    isCurrentStepLocked || isViewer
+                        ? 'pointer-events-none opacity-60'
+                        : ''
                 }
             >
                 {renderStepContent()}

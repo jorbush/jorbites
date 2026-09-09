@@ -65,6 +65,11 @@ export async function POST(request: Request) {
                             'You are not authorized to update this shared draft'
                         );
                     }
+                    if (message === 'VIEWER_CANNOT_EDIT') {
+                        return forbiddenResponse(
+                            'Viewers cannot edit this draft'
+                        );
+                    }
                     throw err;
                 }
             }

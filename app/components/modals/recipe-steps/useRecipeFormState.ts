@@ -138,6 +138,13 @@ export function useRecipeFormState({
         [watch, getValues, setValue]
     );
 
+    const isViewer = Boolean(
+        draftData?.type === 'shared' &&
+        currentUser?.id &&
+        draftData.ownerId !== currentUser.id &&
+        draftData.coCookRoles?.[currentUser.id] === 'viewer'
+    );
+
     const { lock, isCurrentStepLocked } = useRecipeFormLock({
         recipeModal,
         draftData,
@@ -145,6 +152,7 @@ export function useRecipeFormState({
         watch,
         step,
         currentUser,
+        isViewer,
     });
 
     useEffect(() => {
@@ -205,6 +213,9 @@ export function useRecipeFormState({
     const saveDraft = async (
         stepOverride?: number | React.MouseEvent
     ): Promise<boolean> => {
+        if (isViewer) {
+            return false;
+        }
         return _saveDraft(
             formAccessor,
             step,
@@ -246,6 +257,7 @@ export function useRecipeFormState({
         setCustomValue,
         getValues,
         isCurrentStepLocked,
+        isViewer,
         t,
         refresh,
     });
@@ -304,5 +316,6 @@ export function useRecipeFormState({
         draftData,
         isLoadingDraft,
         mutateDraft,
+        isViewer,
     };
 }

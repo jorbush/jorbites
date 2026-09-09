@@ -9,6 +9,14 @@ import { SafeUser } from '@/app/types';
 
 vi.mock('@/app/hooks/useDraftsModal');
 vi.mock('@/app/hooks/useRecipeModal');
+const mockDraftInviteOpen = vi.fn();
+vi.mock('@/app/hooks/useDraftInviteModal', () => ({
+    default: () => ({
+        isOpen: false,
+        onOpen: mockDraftInviteOpen,
+        onClose: vi.fn(),
+    }),
+}));
 vi.mock('swr');
 
 const mockCreateDraft = vi.fn();
@@ -328,6 +336,33 @@ describe('DraftsModal component', () => {
 
         await waitFor(() => {
             expect(mockShareDraft).toHaveBeenCalledWith('draft-to-share');
+        });
+    });
+
+    it('opens draftInviteModal when manage collabs button is clicked', async () => {
+        const mockDrafts = [
+            {
+                draftId: 'draft-to-manage',
+                type: 'shared',
+                title: 'Manage Me',
+                ownerId: 'user-1',
+                coCooksIds: ['user-2'],
+                updatedAt: new Date().toISOString(),
+            },
+        ];
+
+        (useSWR as any).mockReturnValue({
+            data: mockDrafts,
+            isLoading: false,
+            mutate: mockMutate,
+        });
+
+        render(<DraftsModal currentUser={mockCurrentUser} />);
+
+        fireEvent.click(screen.getByTestId('draft-card-manage-collabs'));
+
+        await waitFor(() => {
+            expect(mockDraftInviteOpen).toHaveBeenCalledWith('draft-to-manage');
         });
     });
 });

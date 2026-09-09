@@ -100,8 +100,9 @@ app/
 │   └── draft.ts                  # SharedDraft, SingleDraft, DraftData, SaveDraftPayload, DraftTTLInfo, DraftProgress
 ├── hooks/
 │   ├── useDraftsModal.ts         # Zustand store for DraftsModal visibility
+│   ├── useDraftInviteModal.ts    # Zustand store for DraftInviteModal visibility & active draftId
 │   ├── useDraftActions.ts        # Standalone CRUD actions (createDraft, deleteDraft, duplicateDraft, shareDraft)
-│   ├── useDraftSync.ts           # SWR polling + non-destructive remote merge logic
+│   ├── useDraftSync.ts           # SWR polling + non-destructive remote merge logic + D-09 conflict toast
 │   └── useDraftPersistence.ts    # Serialized save promise queue, copy invite link, and deletion logic
 ├── components/
 │   ├── drafts/
@@ -110,9 +111,12 @@ app/
 │   │   └── DraftTTLBadge.tsx     # Color-coded TTL pill (amber when expiring soon)
 │   └── modals/
 │       ├── DraftsModal.tsx       # Modal card grid, empty state, and new draft actions
+│       ├── DraftInviteModal.tsx  # In-app invite management, link copy/regeneration, role toggle, collaborator remove
 │       ├── RecipeModal.tsx       # Multi-step wizard consuming decoupled draft hooks
 │       └── recipe-steps/
-│           └── RecipeModalTopActions.tsx # Header actions (My Drafts folder + dot, Save)
+│           ├── RecipeModalTopActions.tsx # Header actions (My Drafts folder + dot, Save)
+│           ├── RecipeLockBanner.tsx      # Step soft-lock, co-cook activity, and viewer mode banner
+│           └── RelatedContentStep.tsx    # Co-cooks tab with in-recipe invite management button
 ```
 
 ---
@@ -167,6 +171,14 @@ Defined in [`app/utils/constants.ts`](file:///Users/jordi/.gemini/antigravity/wo
     - Remote sync applies incoming updates with `shouldDirty: false` and `shouldTouch: false` to avoid marking pristine forms dirty.
 12. **Async Draft Row Expansion (H11)**:
     - Ingredient and step addition and removal handlers calculate from the live effective length, ensuring asynchronous drafts immediately expand or contract on the very first click without lag.
+13. **In-App Invite Management & Token Rotation (D-08)**:
+    - Dedicated `DraftInviteModal` opened via `DraftCard` share icon and `RelatedContentStep` (preserving header space in `RecipeModalTopActions`). Allows draft owner to copy tokenized invite links and regenerate invite tokens (`POST /api/draft/invite` with `{ regenerate: true }`), invalidating previous invite links server-side.
+14. **Co-Cook Role Permissions (Editor vs Viewer) (D-10)**:
+    - Owner can toggle roles between `editor` and `viewer` via `PATCH /api/draft/role`. Viewers are granted read-only access: form inputs are marked `inert` with `pointer-events-none opacity-60`, a blue `viewer-banner` is displayed, step soft-lock acquisition and heartbeat renewal are bypassed, and saves/publishes are blocked client-side and server-side (`VIEWER_CANNOT_EDIT` returning 403 Forbidden). Setting a co-cook to viewer automatically releases any step locks they currently hold.
+15. **Collaborator Removal & Self-Leave (D-08)**:
+    - `DraftService.removeCollaborator` handles both owner kicking a co-cook and a co-cook leaving a draft, removing them from `coCooksIds`, clearing their `user:drafts:${userId}` set, and atomically releasing any locks they held.
+16. **Step Conflict Detection & Non-Blocking Toast (D-09)**:
+    - `detectStepConflict` detects when a remote co-cook modifies fields on the active step while the local user has uncommitted edits. Triggers an accessible, non-blocking toast with a "Refresh" button that calls `forceApplyStepFields` to re-synchronize the step on demand.
 
 ---
 

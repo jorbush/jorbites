@@ -8,6 +8,10 @@ import { SafeUser } from '@/app/types';
 vi.mock('swr');
 vi.mock('@/app/utils/draftSyncUtils', () => ({
     syncRemoteDraftToForm: vi.fn(),
+    detectStepConflict: vi
+        .fn()
+        .mockReturnValue({ hasConflict: false, stepIndex: 0, stepKey: '' }),
+    forceApplyStepFields: vi.fn(),
 }));
 
 const mockUser: SafeUser = {
