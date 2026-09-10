@@ -217,7 +217,7 @@ const DraftInviteModal: React.FC<DraftInviteModalProps> = ({ currentUser }) => {
                         ? {
                               ...prev,
                               coCookRoles: {
-                                  ...(prev.coCookRoles || {}),
+                                  ...prev.coCookRoles,
                                   [targetUserId]: newRole,
                               },
                           }
@@ -448,9 +448,9 @@ const DraftInviteModal: React.FC<DraftInviteModalProps> = ({ currentUser }) => {
                                             <button
                                                 type="button"
                                                 data-testid="regenerate-confirm-btn"
-                                                onClick={
-                                                    handleGenerateOrRegenerate
-                                                }
+                                                onClick={() => {
+                                                    void handleGenerateOrRegenerate();
+                                                }}
                                                 disabled={isRegenerating}
                                                 className="rounded bg-amber-600 px-2.5 py-1 font-medium text-white hover:bg-amber-700 disabled:opacity-50"
                                             >
@@ -738,12 +738,14 @@ const DraftInviteModal: React.FC<DraftInviteModalProps> = ({ currentUser }) => {
                                                                     .value as CoCookRole
                                                             )
                                                         }
-                                                        aria-label={t(
-                                                            'collaborator_role',
-                                                            {
-                                                                defaultValue:
-                                                                    'Collaborator Role',
-                                                            }
+                                                        aria-label={String(
+                                                            t(
+                                                                'collaborator_role',
+                                                                {
+                                                                    defaultValue:
+                                                                        'Collaborator Role',
+                                                                }
+                                                            )
                                                         )}
                                                         className="rounded-lg border border-neutral-300 bg-white px-2.5 py-1 text-xs font-medium text-neutral-700 focus:outline-hidden disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
                                                     >

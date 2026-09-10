@@ -11,7 +11,7 @@
 
 **Search** — Prisma `title: { contains, mode: 'insensitive' }` (regex on title only). Filters: 1 category, cuisine, calorie range, yield range, date range. Sort: newest/oldest/title/most-liked/best-rated. Results cached in Redis (24 h). **Gaps**: can't search by ingredient or description; no dietary/time filters (fields don't exist on schema); no relevance scoring; no autocomplete on the main search; no recent/trending searches; zero MongoDB indexes on Recipe.
 
-**Drafts & Collaboration** — Full multi-slot draft management and real-time collaboration are active. Solo drafts support up to 5 slots at `draft:user:{userId}:{slotId}` tracked in `user:drafts:{userId}`, and shared collaborative drafts live at `draft:shared:{draftId}` (7-day TTL). The unified `DraftsModal` dashboard allows users to browse, switch, duplicate, delete, and create drafts with progress pills, co-cook avatars, and TTL countdowns. Collaboration features SWR sync (3 s) + step-level soft-locks (30 s TTL, heartbeat every 10 s, atomic Lua release, locked step container `inert` guard) and link-based invite/join flows (`/api/draft/invite`, `/api/draft/join`). **Gaps**: in-app co-cook role permissions (editor vs viewer); sub-step field-level presence dots; change feed log panel; scheduled publishing; version history/restore.
+**Drafts & Collaboration** — Full multi-slot draft management and real-time collaboration are active. Solo drafts support up to 5 slots at `draft:user:{userId}:{slotId}` tracked in `user:drafts:{userId}`, and shared collaborative drafts live at `draft:shared:{draftId}` (7-day TTL). The unified `DraftsModal` dashboard allows users to browse, switch, duplicate, delete, and create drafts with progress pills, co-cook avatars, and TTL countdowns. Collaboration features SWR sync (3 s) + step-level soft-locks (30 s TTL, heartbeat every 10 s, atomic Lua release, locked step container `inert` guard), dedicated in-app invite management (`DraftInviteModal`) with direct user search, collaborator removal, co-cook role permissions (editor vs viewer), conflict notification toasts, and link-based invite/join flows (`/api/draft/invite`, `/api/draft/join`). **Gaps**: sub-step field-level presence dots; change feed log panel; scheduled publishing; version history/restore.
 
 ---
 
@@ -412,7 +412,7 @@ Sprint 2 [DONE ✅]  Sprint 4 (Unlocks+Notif)                Sprint 7 (Polish)
 ```
 
 > **Total: 70 issues** organized into strict, dependency-safe deployable sequences.
-> **Current Progress**: **7 / 70 issues completed (10%)** — Sprint 2 is 100% delivered in PR #1642.
+> **Current Progress**: **10 / 70 issues completed (14%)** — Sprint 2 is 100% delivered in PR #1642, and Sprint 6 collaborative features (D-08, D-09, D-10) are completed.
 
 ---
 
@@ -424,9 +424,9 @@ Sprint 2 [DONE ✅]  Sprint 4 (Unlocks+Notif)                Sprint 7 (Polish)
 |---|:---:|:---:|:---:|:---:|
 | **Pillar 1: Gamification** | 0 | 23 | 23 | 0% |
 | **Pillar 2: Search** | 0 | 18 | 18 | 0% |
-| **Pillar 3: Drafts & Collaboration** | **7** (Phase 1) | 12 (Phases 2 & 3) | 19 | **37%** |
+| **Pillar 3: Drafts & Collaboration** | **10** (Phases 1 & 2) | 9 (Phase 3) | 19 | **53%** |
 | **Cross-cutting & Infrastructure** | 0 | 10 | 10 | 0% |
-| **Overall** | **7** | **63** | **70** | **10%** |
+| **Overall** | **10** | **60** | **70** | **14%** |
 
 ### Remaining Sprints Breakdown
 

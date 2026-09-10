@@ -270,6 +270,7 @@ export class DraftService {
         if (!draft || typeof draft !== 'object') return draft;
         return {
             ...draft,
+            type: 'shared',
             categories: Array.isArray(draft.categories) ? draft.categories : [],
             ingredients: Array.isArray(draft.ingredients)
                 ? draft.ingredients
@@ -293,6 +294,7 @@ export class DraftService {
         if (!draft || typeof draft !== 'object') return draft;
         return {
             ...draft,
+            type: 'solo',
             categories: Array.isArray(draft.categories) ? draft.categories : [],
             ingredients: Array.isArray(draft.ingredients)
                 ? draft.ingredients
@@ -525,7 +527,7 @@ export class DraftService {
                 currentUser.id === (existing?.ownerId || currentUser.id) &&
                 sanitizedPayload.coCookRoles
                     ? {
-                          ...(existing?.coCookRoles || {}),
+                          ...existing?.coCookRoles,
                           ...sanitizedPayload.coCookRoles,
                       }
                     : existing?.coCookRoles || {},

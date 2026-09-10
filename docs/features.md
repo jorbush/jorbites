@@ -12,8 +12,8 @@ This document provides a comprehensive overview of all features available in Jor
 - Step-by-step cooking instructions
 - Multiple image uploads
 - **Auto-save drafts** with Redis storage for seamless editing
-- **Multi-Draft Management**: Surface up to 5 concurrent solo drafts and active shared drafts via `DraftsModal`, featuring draft cards with wizard progress indicators, TTL countdown badges, duplication, and quick actions (see [`drafts.md`](file:///Users/jordi/.gemini/antigravity/worktrees/jorbites/implement_drafts_collaborative_editing/docs/drafts.md))
-- **Collaborative Cooking**: Multi-user co-authoring, shareable invite links, and Redis section soft-locking (see [`collaborative_cooking.md`](file:///Users/jordi/.gemini/antigravity/worktrees/jorbites/implement_drafts_collaborative_editing/docs/collaborative_cooking.md) and [`workflows.md`](file:///Users/jordi/.gemini/antigravity/worktrees/jorbites/implement_drafts_collaborative_editing/docs/testing/e2e/workflows.md))
+- **Multi-Draft Management**: Surface up to 5 concurrent solo drafts and active shared drafts via `DraftsModal`, featuring draft cards with wizard progress indicators, TTL countdown badges, duplication, and quick actions (see [`drafts.md`](./drafts.md))
+- **Collaborative Cooking**: Multi-user co-authoring, dedicated in-app invite management (`DraftInviteModal`), shareable invite links, direct user search, role toggling (Editor vs Viewer), conflict toasts, and Redis section soft-locking (see [`collaborative_cooking.md`](./collaborative_cooking.md) and [`workflows.md`](./testing/e2e/workflows.md))
 - Category selection
 - Cooking time estimation
 

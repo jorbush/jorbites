@@ -139,10 +139,10 @@ export function useRecipeFormState({
     );
 
     const isViewer = Boolean(
-        draftData?.type === 'shared' &&
+        (draftData?.type === 'shared' || Boolean(draftData?.ownerId)) &&
         currentUser?.id &&
-        draftData.ownerId !== currentUser.id &&
-        draftData.coCookRoles?.[currentUser.id] === 'viewer'
+        draftData?.ownerId !== currentUser.id &&
+        draftData?.coCookRoles?.[currentUser.id] === 'viewer'
     );
 
     const { lock, isCurrentStepLocked } = useRecipeFormLock({

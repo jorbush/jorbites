@@ -92,17 +92,17 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
     prepTime,
     cookTime,
     method,
-    selectedCoCooks,
+    selectedCoCooks: _selectedCoCooks,
     selectedLinkedRecipes,
     selectedQuest,
-    addCoCook,
-    removeCoCook,
+    addCoCook: _addCoCook,
+    removeCoCook: _removeCoCook,
     addLinkedRecipe,
     removeLinkedRecipe,
     selectQuest,
     removeQuest,
     imageSrc,
-    draftId,
+    draftId: _draftId,
 }) => {
     const renderStepContent = () => {
         switch (step) {

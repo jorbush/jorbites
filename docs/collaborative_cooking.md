@@ -21,19 +21,19 @@ sequenceDiagram
     autonumber
     actor Owner as Recipe Owner (User A)
     actor CoCook as Co-Cook (User B)
-    participant Modal as RecipeModal UI (Step 0 / Header)
+    participant Modal as DraftInviteModal (via DraftCard)
     participant API as Jorbites API / Next.js
     participant DS as DraftService
     participant Redis as Redis (ioredis)
     participant DB as MongoDB (Prisma)
 
-    Owner->>Modal: Open RecipeModal (Post a Recipe)
-    Owner->>Modal: Click "+ Add Co-Cook" or "Copy Invite Link 🔗"
-    Modal->>API: POST /api/draft/invite (generates draftId & secure token)
+    Owner->>Modal: Open DraftsModal -> Click "Manage Collaborators"
+    Modal->>API: POST /api/draft/invite (generates draftId & secure token on mount)
     API->>DS: DraftService.saveSharedDraft(draftId, payload, Owner)
     DS->>Redis: SET draft:shared:<draftId> (TTL 7 days)
     DS->>Redis: SADD user:drafts:<OwnerId> <draftId> (TTL 365 days)
     API-->>Owner: Returns share URL https://jorbites.com/recipes/new?draft=<id>&token=<token>
+    Note over Owner,Modal: Alternatively, owner searches & adds co-cook directly below link
 
     Owner->>CoCook: Shares Link via WhatsApp / Telegram / Chat
     CoCook->>API: Opens Share Link (GET /api/draft/join?draft=<id>&token=<token>)
@@ -73,7 +73,7 @@ sequenceDiagram
 | `user:drafts:<userId>`                    | Active draft index per user    | **365 Days** (`USER_DRAFTS_INDEX_TTL_SECONDS = 31536000`) | **Redis Set** of draft IDs (atomically updated via `SADD`/`SREM`)                |
 | `lock:recipe:<targetId>:field:<fieldKey>` | Section/field soft lock        | **30 Seconds** (`LOCK_TTL_SECONDS = 30`)          | JSON `{ userId, userName, userAvatar, timestamp }`                               |
 
-For comprehensive documentation on multi-draft management and DraftsModal UI, see [`docs/drafts.md`](file:///Users/jordi/.gemini/antigravity/worktrees/jorbites/implement_drafts_collaborative_editing/docs/drafts.md).
+For comprehensive documentation on multi-draft management and DraftsModal UI, see [`docs/drafts.md`](./drafts.md).
 
 ---
 
@@ -189,7 +189,7 @@ To guarantee that collaborators cannot concurrently edit or overwrite the same r
     - `FiFolder` ("My Drafts" with green indicator dot when active drafts exist; opens `DraftsModal`)
     - `FiUploadCloud` ("Save draft")
 - **Draft Card Actions**: In `DraftsModal`, each draft card includes:
-    - `FaUserPlus` ("Copy co-cook invite link" to invite collaborative co-cooks to any draft)
+    - `FiUsers` ("Manage collaborators" to open `DraftInviteModal` where owners can copy/regenerate invite links, search & add co-cooks directly, manage roles, and remove collaborators)
     - `FiCopy` ("Duplicate draft")
     - `FiTrash2` ("Delete draft")
 - **In-Modal Co-Cooking Status Indicator**: Minimalist status indicator rendered inside `RecipeModal` during multi-user collaborative editing sessions:
@@ -197,12 +197,13 @@ To guarantee that collaborators cannot concurrently edit or overwrite the same r
 - **Field Lock Banners**: Rendered inside form steps when another co-cook holds an active soft-lock on that step:
     - _`@maria is currently editing this step`_ (Amber pill with pulsing lock indicator)
     - Inputs for locked fields are disabled with visual opacity feedback, while allowing other co-cooks to navigate freely.
+- **Viewer Mode Banners**: When a co-cook has the `viewer` role, inputs are guarded with `inert` and a view-only banner is displayed (`[data-testid="viewer-banner"]`).
 
 ---
 
 ## E2E Testing & Step Navigation Synchronization
 
-The collaborative cooking architecture is covered by automated Cypress E2E tests in [`__tests__/e2e/collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts) running against a local Redis instance (`REDIS_URL=redis://localhost:6379`).
+The collaborative cooking architecture is covered by automated Cypress E2E test suites in [`__tests__/e2e/collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts) and [`__tests__/e2e/collaborative_roles_invites.cy.ts`](file:///__tests__/e2e/collaborative_roles_invites.cy.ts) running against a local Redis instance (`REDIS_URL=redis://localhost:6379`).
 
 ### Key Test Scenarios (17/17 Passing):
 

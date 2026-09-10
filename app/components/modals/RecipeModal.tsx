@@ -283,7 +283,7 @@ const RecipeModalContent: React.FC<{
                         onOpenDrafts={handleOpenDrafts}
                         hasDrafts={hasDrafts}
                         isSaving={isSaving}
-                        isLocked={isCurrentStepLocked}
+                        isLocked={isCurrentStepLocked || isViewer}
                     />
                 ) : undefined
             }
