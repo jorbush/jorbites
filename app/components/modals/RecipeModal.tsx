@@ -234,11 +234,13 @@ const RecipeModalContent: React.FC<{
             body={
                 <RecipeModalStepBody
                     step={step}
-                    isCurrentStepLocked={isCurrentStepLocked}
-                    lockOwner={lockOwner}
-                    isSharedSession={isSharedSession}
-                    otherActiveLocks={otherActiveLocks}
-                    isViewer={isViewer}
+                    lockState={{
+                        isCurrentStepLocked,
+                        lockOwner,
+                        isSharedSession,
+                        otherActiveLocks,
+                        isViewer,
+                    }}
                     categories={categories}
                     setCustomValue={setCustomValue}
                     numIngredients={numIngredients}

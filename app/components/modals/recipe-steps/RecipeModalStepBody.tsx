@@ -17,17 +17,15 @@ import MethodsStep from '@/app/components/modals/recipe-steps/MethodsStep';
 import RecipeStepsStep from '@/app/components/modals/recipe-steps/RecipeStepsStep';
 import ImagesStep from '@/app/components/modals/recipe-steps/ImagesStep';
 import RelatedContentStep from '@/app/components/modals/recipe-steps/RelatedContentStep';
-import RecipeLockBanner from '@/app/components/modals/recipe-steps/RecipeLockBanner';
+import RecipeStepLockContainer, {
+    RecipeLockState,
+} from '@/app/components/modals/recipe-steps/RecipeStepLockContainer';
 
 export interface RecipeModalStepBodyProps {
     step: number;
-    isCurrentStepLocked: boolean;
-    lockOwner?: { userName?: string; userId?: string } | null;
-    isSharedSession: boolean;
-    otherActiveLocks: Array<[string, { userId?: string; userName?: string }]>;
+    lockState?: RecipeLockState;
     categories?: string[];
     setCustomValue: (id: string, value: unknown) => void;
-    isViewer?: boolean;
     numIngredients: number;
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors;
@@ -64,13 +62,9 @@ export interface RecipeModalStepBodyProps {
 
 const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
     step,
-    isCurrentStepLocked,
-    lockOwner,
-    isSharedSession,
-    otherActiveLocks,
+    lockState,
     categories,
     setCustomValue,
-    isViewer,
     numIngredients,
     register,
     errors,
@@ -119,7 +113,7 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
                         setValue={setValue}
                         inputMode={ingredientsInputMode}
                         setInputMode={setIngredientsInputMode}
-                        isLocked={isCurrentStepLocked}
+                        isLocked={lockState?.isCurrentStepLocked}
                     />
                 );
             case STEPS.STEPS:
@@ -135,7 +129,7 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
                         setValue={setValue}
                         inputMode={stepsInputMode}
                         setInputMode={setStepsInputMode}
-                        isLocked={isCurrentStepLocked}
+                        isLocked={lockState?.isCurrentStepLocked}
                     />
                 );
             case STEPS.DESCRIPTION:
@@ -149,14 +143,14 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
                             setCustomValue('minutes', value)
                         }
                         prepTime={prepTime}
+                        cookTime={cookTime}
                         onPrepTimeChange={(value) =>
                             setCustomValue('prepTime', value)
                         }
-                        cookTime={cookTime}
                         onCookTimeChange={(value) =>
                             setCustomValue('cookTime', value)
                         }
-                        isLocked={isCurrentStepLocked}
+                        isLocked={lockState?.isCurrentStepLocked}
                     />
                 );
             case STEPS.METHODS:
@@ -208,26 +202,9 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
     };
 
     return (
-        <div>
-            <RecipeLockBanner
-                isCurrentStepLocked={isCurrentStepLocked}
-                lockOwner={lockOwner}
-                isSharedSession={isSharedSession}
-                otherActiveLocks={otherActiveLocks}
-                isViewer={isViewer}
-            />
-            <div
-                data-testid="locked-step-container"
-                inert={isCurrentStepLocked || isViewer ? true : undefined}
-                className={
-                    isCurrentStepLocked || isViewer
-                        ? 'pointer-events-none opacity-60'
-                        : ''
-                }
-            >
-                {renderStepContent()}
-            </div>
-        </div>
+        <RecipeStepLockContainer lockState={lockState}>
+            {renderStepContent()}
+        </RecipeStepLockContainer>
     );
 };
 

@@ -65,10 +65,13 @@ vi.mock('@/app/components/modals/recipe-steps/RecipeLockBanner', () => ({
 describe('RecipeModalStepBody', () => {
     const defaultProps = {
         step: STEPS.CATEGORY,
-        isCurrentStepLocked: false,
-        lockOwner: null,
-        isSharedSession: false,
-        otherActiveLocks: [],
+        lockState: {
+            isCurrentStepLocked: false,
+            lockOwner: null,
+            isSharedSession: false,
+            otherActiveLocks: [],
+            isViewer: false,
+        },
         categories: ['Breakfast'],
         setCustomValue: vi.fn(),
         numIngredients: 1,
@@ -188,7 +191,9 @@ describe('RecipeModalStepBody', () => {
             <RecipeModalStepBody
                 {...defaultProps}
                 step={STEPS.INGREDIENTS}
-                isCurrentStepLocked={true}
+                lockState={{
+                    isCurrentStepLocked: true,
+                }}
             />
         );
 
@@ -204,7 +209,9 @@ describe('RecipeModalStepBody', () => {
             <RecipeModalStepBody
                 {...defaultProps}
                 step={STEPS.DESCRIPTION}
-                isViewer={true}
+                lockState={{
+                    isViewer: true,
+                }}
             />
         );
 

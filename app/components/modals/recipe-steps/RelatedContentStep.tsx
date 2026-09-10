@@ -1,20 +1,17 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
 import Heading from '@/app/components/navigation/Heading';
-import SearchInput from '@/app/components/inputs/SearchInput';
 import Tabs, { Tab } from '@/app/components/utils/Tabs';
-import { FiSearch, FiTarget, FiYoutube } from 'react-icons/fi';
+import { FiTarget, FiYoutube } from 'react-icons/fi';
 import { IoRestaurantOutline } from 'react-icons/io5';
-import debounce from 'lodash/debounce';
-import Input from '@/app/components/inputs/Input';
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
-import { validateYouTubeUrl } from '@/app/utils/validation';
 import { SelectedQuestDisplay } from './SelectedQuestDisplay';
 import { SelectedLinkedRecipesList } from './SelectedLinkedRecipesList';
+import { useRelatedContentSearch } from './useRelatedContentSearch';
+import RelatedSearchSection from './RelatedSearchSection';
+import RelatedYouTubeSection from './RelatedYouTubeSection';
 
 interface RelatedContentStepProps {
     isLoading: boolean;
@@ -40,14 +37,12 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
     errors,
 }) => {
     const { t } = useTranslation();
-    const [searchQuery, setSearchQuery] = useState('');
     const [searchType, setSearchType] = useState<
         'recipes' | 'quests' | 'videos'
     >('recipes');
-    const [searchResults, setSearchResults] = useState<{
-        recipes: any[];
-        quests: any[];
-    }>({ recipes: [], quests: [] });
+
+    const { searchQuery, setSearchQuery, searchResults } =
+        useRelatedContentSearch(searchType, t);
 
     // Define tabs for the component
     const tabs: Tab[] = [
@@ -68,66 +63,10 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
         },
     ];
 
-    const debouncedSearch = useMemo(
-        () =>
-            debounce(
-                async (
-                    query: string,
-                    type: string,
-                    tFunction: Function,
-                    setResults: Function
-                ) => {
-                    if (query.length < 2) {
-                        setResults({ recipes: [], quests: [] });
-                        return;
-                    }
-
-                    try {
-                        if (type === 'quests') {
-                            const response = await axios.get(
-                                `/api/quests?status=open&q=${encodeURIComponent(query)}`
-                            );
-                            setResults({
-                                recipes: [],
-                                quests: response.data.quests,
-                            });
-                        } else {
-                            const response = await axios.get(
-                                `/api/search?q=${encodeURIComponent(query)}&type=${type}`
-                            );
-                            setResults({ ...response.data, quests: [] });
-                        }
-                    } catch (error) {
-                        console.error('Search failed:', error);
-                        toast.error(
-                            tFunction('search_failed') || 'Search failed'
-                        );
-                    }
-                },
-                300
-            ),
-        []
-    );
-
-    const handleSearch = useCallback(
-        (query: string) => {
-            debouncedSearch(query, searchType, t, setSearchResults);
-        },
-        [debouncedSearch, searchType, t]
-    );
-
     const handleTabChange = (tabId: string) => {
         setSearchType(tabId as 'recipes' | 'quests' | 'videos');
         setSearchQuery('');
     };
-
-    useEffect(() => {
-        handleSearch(searchQuery);
-
-        return () => {
-            debouncedSearch.cancel();
-        };
-    }, [searchQuery, handleSearch, debouncedSearch]);
 
     return (
         <div className="flex flex-col gap-8">
@@ -150,44 +89,17 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
 
             {/* Search input with integrated dropdown - hide for videos tab */}
             {searchType !== 'videos' && (
-                <div className="relative">
-                    <SearchInput
-                        id="search"
-                        label={
-                            searchType === 'recipes'
-                                ? t('search_recipes') || 'Search Recipes'
-                                : t('search_quests') || 'Search Quests'
-                        }
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        disabled={isLoading}
-                        dataCy="search-input"
-                        icon={FiSearch}
-                        results={searchResults}
-                        onSelectResult={(result) => {
-                            if (searchType === 'recipes') {
-                                onAddLinkedRecipe(result);
-                            } else {
-                                onSelectQuest(result);
-                            }
-                            setSearchQuery('');
-                        }}
-                        searchType={searchType}
-                        maxSelected={searchType === 'recipes' ? 2 : 1}
-                        isSelected={(id) =>
-                            searchType === 'recipes'
-                                ? selectedLinkedRecipes.some(
-                                      (recipe) => recipe.id === id
-                                  )
-                                : selectedQuest?.id === id
-                        }
-                        emptyMessage={
-                            searchType === 'recipes'
-                                ? t('no_recipes_found') || 'No recipes found'
-                                : t('no_quests_found') || 'No quests found'
-                        }
-                    />
-                </div>
+                <RelatedSearchSection
+                    searchType={searchType}
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    searchResults={searchResults}
+                    isLoading={isLoading}
+                    selectedLinkedRecipes={selectedLinkedRecipes}
+                    selectedQuest={selectedQuest}
+                    onAddLinkedRecipe={onAddLinkedRecipe}
+                    onSelectQuest={onSelectQuest}
+                />
             )}
 
             {/* Display of selected items */}
@@ -211,25 +123,11 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
 
             {/* YouTube URL Input - only show in Videos tab */}
             {searchType === 'videos' && (
-                <div className="space-y-3">
-                    <Input
-                        id="youtubeUrl"
-                        label={t('youtube_url_optional')}
-                        type="url"
-                        disabled={isLoading}
-                        register={register}
-                        errors={errors}
-                        dataCy="youtube-url-input"
-                        validation={{
-                            validate: (value: string) =>
-                                validateYouTubeUrl(
-                                    value,
-                                    t('invalid_youtube_url') ||
-                                        'Please enter a valid YouTube URL (e.g., https://youtube.com/watch?v=... or https://youtu.be/...)'
-                                ),
-                        }}
-                    />
-                </div>
+                <RelatedYouTubeSection
+                    isLoading={isLoading}
+                    register={register}
+                    errors={errors}
+                />
             )}
         </div>
     );

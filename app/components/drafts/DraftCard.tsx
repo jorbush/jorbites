@@ -162,18 +162,20 @@ const DraftCard: React.FC<DraftCardProps> = ({
 
             {draft.type === 'shared' &&
                 draft.coCooksIds &&
-                draft.coCooksIds.length > 0 && (
-                    <div
-                        className={`flex ${onManageCoCooks ? 'cursor-pointer hover:opacity-80' : ''}`}
-                        onClick={
-                            onManageCoCooks ? handleManageCoCooks : undefined
-                        }
+                draft.coCooksIds.length > 0 &&
+                (onManageCoCooks ? (
+                    <button
+                        type="button"
+                        className="flex cursor-pointer text-left hover:opacity-80 focus:outline-none"
+                        onClick={handleManageCoCooks}
                         data-testid="draft-card-avatars"
                         title={
-                            onManageCoCooks
-                                ? ((t('manage_co_cooks_invite') ??
-                                      'Manage Co-Cooks & Invites') as string)
-                                : undefined
+                            (t('manage_co_cooks_invite') ??
+                                'Manage Co-Cooks & Invites') as string
+                        }
+                        aria-label={
+                            (t('manage_co_cooks_invite') ??
+                                'Manage Co-Cooks & Invites') as string
                         }
                     >
                         {draft.coCooksIds.slice(0, 3).map((id) => (
@@ -189,8 +191,27 @@ const DraftCard: React.FC<DraftCardProps> = ({
                                 +{draft.coCooksIds.length - 3}
                             </div>
                         )}
+                    </button>
+                ) : (
+                    <div
+                        className="flex"
+                        data-testid="draft-card-avatars"
+                    >
+                        {draft.coCooksIds.slice(0, 3).map((id) => (
+                            <div
+                                key={id}
+                                className="-ml-2 flex size-6 items-center justify-center rounded-full border-2 border-white bg-blue-500 text-[10px] font-bold text-white first:ml-0 dark:border-neutral-900"
+                            >
+                                {id.substring(0, 1).toUpperCase()}
+                            </div>
+                        ))}
+                        {draft.coCooksIds.length > 3 && (
+                            <div className="-ml-2 flex size-6 items-center justify-center rounded-full border-2 border-white bg-neutral-200 text-[10px] font-medium text-neutral-600 first:ml-0 dark:border-neutral-900 dark:bg-neutral-700 dark:text-neutral-300">
+                                +{draft.coCooksIds.length - 3}
+                            </div>
+                        )}
                     </div>
-                )}
+                ))}
 
             <div className="relative z-10 mt-2 flex items-center justify-between">
                 <div data-testid="draft-card-ttl">
