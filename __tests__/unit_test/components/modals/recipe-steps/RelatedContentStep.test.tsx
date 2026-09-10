@@ -21,6 +21,13 @@ vi.mock('react-i18next', () => ({
     })),
 }));
 
+const mockOnOpenInviteModal = vi.fn();
+vi.mock('@/app/hooks/useDraftInviteModal', () => ({
+    default: () => ({
+        onOpen: mockOnOpenInviteModal,
+    }),
+}));
+
 // Mock Heading component
 vi.mock('@/app/components/navigation/Heading', () => ({
     default: ({ title, subtitle }: { title: string; subtitle?: string }) => (
@@ -69,9 +76,8 @@ vi.mock('@/app/components/inputs/SearchInput', () => ({
             <button
                 data-testid="mock-select-user"
                 onClick={() =>
-                    // Mock select button that simulates selecting a user or recipe
-                    searchType === 'users'
-                        ? onSelectResult({ id: 'user1', name: 'Test User' })
+                    searchType === 'quests'
+                        ? onSelectResult({ id: 'quest1', title: 'Test Quest' })
                         : onSelectResult({
                               id: 'recipe1',
                               title: 'Test Recipe',
@@ -139,16 +145,14 @@ describe('<RelatedContentStep />', () => {
     // Default mock props for all tests
     const mockProps = {
         isLoading: false,
-        selectedCoCooks: [],
         selectedLinkedRecipes: [],
-        onAddCoCook: vi.fn(),
-        onRemoveCoCook: vi.fn(),
+        selectedQuest: null,
         onAddLinkedRecipe: vi.fn(),
         onRemoveLinkedRecipe: vi.fn(),
+        onSelectQuest: vi.fn(),
+        onRemoveQuest: vi.fn(),
         register: createMockRegister(),
         errors: {},
-        youtubeUrl: '',
-        onYoutubeUrlChange: vi.fn(),
     };
 
     beforeEach(() => {
@@ -159,16 +163,11 @@ describe('<RelatedContentStep />', () => {
         // Setup default axios mock responses
         mockedAxios.get.mockResolvedValue({
             data: {
-                users: [
+                quests: [
                     {
-                        id: 'user1',
-                        name: 'User 1',
-                        image: '/user1.jpg',
-                    },
-                    {
-                        id: 'user2',
-                        name: 'User 2',
-                        image: '/user2.jpg',
+                        id: 'quest1',
+                        title: 'Test Quest',
+                        imageSrc: '/quest1.jpg',
                     },
                 ],
                 recipes: [
@@ -201,93 +200,94 @@ describe('<RelatedContentStep />', () => {
         expect(screen.getByTestId('heading')).toBeDefined();
         expect(screen.getByText('related_content')).toBeDefined();
         expect(screen.getByTestId('related-content-tabs')).toBeDefined();
-        expect(screen.getByTestId('tab-users')).toBeDefined();
         expect(screen.getByTestId('tab-recipes')).toBeDefined();
+        expect(screen.getByTestId('tab-quests')).toBeDefined();
         expect(screen.getByTestId('tab-videos')).toBeDefined();
+        expect(screen.queryByTestId('tab-users')).toBeNull();
         expect(screen.getByTestId('search-input')).toBeDefined();
     });
 
     it('renders tab labels correctly', () => {
         render(<RelatedContentStep {...mockProps} />);
 
-        expect(screen.getByText('co_cooks')).toBeDefined();
         expect(screen.getByText('linked_recipes')).toBeDefined();
+        expect(screen.getByText('quests')).toBeDefined();
         expect(screen.getByText('videos')).toBeDefined();
     });
 
-    it('switches between users and recipes tabs', async () => {
+    it('switches between recipes and quests tabs', async () => {
         render(<RelatedContentStep {...mockProps} />);
 
-        // Should be on users tab by default
-        expect(screen.getByText('search_users')).toBeDefined();
+        // Should be on recipes tab by default
+        expect(screen.getByText('search_recipes')).toBeDefined();
 
-        // Switch to recipes tab using the new tab component
+        // Switch to quests tab
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('tab-quests'));
+        });
+
+        expect(screen.getByText('search_quests')).toBeDefined();
+
+        // Switch back to recipes tab
         await act(async () => {
             fireEvent.click(screen.getByTestId('tab-recipes'));
         });
 
         expect(screen.getByText('search_recipes')).toBeDefined();
-
-        // Switch back to users tab
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('tab-users'));
-        });
-
-        expect(screen.getByText('search_users')).toBeDefined();
     });
 
-    it('shows users tab as active by default', () => {
+    it('shows recipes tab as active by default', () => {
         render(<RelatedContentStep {...mockProps} />);
 
-        const usersTab = screen.getByTestId('tab-users');
         const recipesTab = screen.getByTestId('tab-recipes');
+        const questsTab = screen.getByTestId('tab-quests');
 
-        expect(usersTab.className).toContain('active');
-        expect(recipesTab.className).not.toContain('active');
+        expect(recipesTab.className).toContain('active');
+        expect(questsTab.className).not.toContain('active');
     });
 
     it('updates active tab styling when switching tabs', async () => {
         render(<RelatedContentStep {...mockProps} />);
 
-        const usersTab = screen.getByTestId('tab-users');
         const recipesTab = screen.getByTestId('tab-recipes');
+        const questsTab = screen.getByTestId('tab-quests');
 
-        // Initially users tab should be active
-        expect(usersTab.className).toContain('active');
-        expect(recipesTab.className).not.toContain('active');
+        // Initially recipes tab should be active
+        expect(recipesTab.className).toContain('active');
+        expect(questsTab.className).not.toContain('active');
 
-        // Click recipes tab
+        // Click quests tab
         await act(async () => {
-            fireEvent.click(recipesTab);
+            fireEvent.click(questsTab);
         });
 
-        // Now recipes tab should be active
-        expect(recipesTab.className).toContain('active');
-        expect(usersTab.className).not.toContain('active');
+        // Now quests tab should be active
+        expect(questsTab.className).toContain('active');
+        expect(recipesTab.className).not.toContain('active');
     });
 
-    it('adds a co-cook when selecting from search results', async () => {
+    it('selects a quest when selecting from search results on quests tab', async () => {
         render(<RelatedContentStep {...mockProps} />);
 
-        // Select a user from search results
+        // Switch to quests tab
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('tab-quests'));
+        });
+
+        // Select a quest from search results
         await act(async () => {
             fireEvent.click(screen.getByTestId('mock-select-user'));
         });
 
-        // Verify that onAddCoCook callback was called with correct user data
-        expect(mockProps.onAddCoCook).toHaveBeenCalledWith({
-            id: 'user1',
-            name: 'Test User',
+        // Verify that onSelectQuest callback was called
+        expect(mockProps.onSelectQuest).toHaveBeenCalledWith({
+            id: 'quest1',
+            title: 'Test Quest',
         });
     });
 
     it('adds a linked recipe when selecting from search results', async () => {
         render(<RelatedContentStep {...mockProps} />);
-
-        // Switch to recipes tab
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('tab-recipes'));
-        });
 
         // Select a recipe from search results
         await act(async () => {
@@ -301,20 +301,26 @@ describe('<RelatedContentStep />', () => {
         });
     });
 
-    it('displays selected co-cooks', async () => {
-        // Test props with a pre-selected co-cook
-        const propsWithSelectedCooks = {
+    it('displays selected quest', async () => {
+        const propsWithSelectedQuest = {
             ...mockProps,
-            selectedCoCooks: [
-                { id: 'user1', name: 'Test User', image: '/test.jpg' },
-            ],
+            selectedQuest: {
+                id: 'quest1',
+                title: 'Test Quest',
+                description: 'Quest description',
+                imageSrc: '/quest.jpg',
+            },
         };
 
-        render(<RelatedContentStep {...propsWithSelectedCooks} />);
+        render(<RelatedContentStep {...propsWithSelectedQuest} />);
 
-        // Should display the selected co-cooks section
-        expect(screen.getByText('selected_co_cooks')).toBeDefined();
-        expect(screen.getByText('Test User')).toBeDefined();
+        // Switch to quests tab
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('tab-quests'));
+        });
+
+        expect(screen.getByText('selected_quest')).toBeDefined();
+        expect(screen.getByText('Test Quest')).toBeDefined();
     });
 
     it('displays selected linked recipes', async () => {
@@ -333,39 +339,38 @@ describe('<RelatedContentStep />', () => {
 
         render(<RelatedContentStep {...propsWithSelectedRecipes} />);
 
-        // Switch to recipes tab
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('tab-recipes'));
-        });
-
-        // Should display the selected linked recipes section
+        // Should display the selected linked recipes section on default recipes tab
         expect(screen.getByText('selected_linked_recipes')).toBeDefined();
         expect(screen.getByText('Test Recipe')).toBeDefined();
         expect(screen.getByText('Chef Test')).toBeDefined();
     });
 
-    it('removes a co-cook when clicking remove button', async () => {
-        // Test props with a pre-selected co-cook
-        const propsWithSelectedCooks = {
+    it('removes a selected quest when clicking remove button', async () => {
+        const propsWithSelectedQuest = {
             ...mockProps,
-            selectedCoCooks: [
-                { id: 'user1', name: 'Test User', image: '/test.jpg' },
-            ],
+            selectedQuest: {
+                id: 'quest1',
+                title: 'Test Quest',
+                description: 'Quest description',
+                imageSrc: '/quest.jpg',
+            },
         };
 
-        render(<RelatedContentStep {...propsWithSelectedCooks} />);
+        render(<RelatedContentStep {...propsWithSelectedQuest} />);
 
-        // Find and click the remove button
-        const removeButtons = screen.getAllByRole('button');
-        // The remove button should be present
-        expect(removeButtons.length).toBeGreaterThan(0);
-
+        // Switch to quests tab
         await act(async () => {
-            fireEvent.click(removeButtons[removeButtons.length - 1]);
+            fireEvent.click(screen.getByTestId('tab-quests'));
         });
 
-        // Verify that onRemoveCoCook callback was called with correct user ID
-        expect(mockProps.onRemoveCoCook).toHaveBeenCalledWith('user1');
+        const removeButton = screen.getByRole('button', {
+            name: /remove test quest/i,
+        });
+        await act(async () => {
+            fireEvent.click(removeButton);
+        });
+
+        expect(mockProps.onRemoveQuest).toHaveBeenCalled();
     });
 
     it('removes a linked recipe when clicking remove button', async () => {
@@ -384,18 +389,11 @@ describe('<RelatedContentStep />', () => {
 
         render(<RelatedContentStep {...propsWithSelectedRecipes} />);
 
-        // Switch to recipes tab
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('tab-recipes'));
+        const removeButton = screen.getByRole('button', {
+            name: /remove test recipe/i,
         });
-
-        // Find and click the remove button
-        const removeButtons = screen.getAllByRole('button');
-        // The remove button should be present
-        expect(removeButtons.length).toBeGreaterThan(0);
-
         await act(async () => {
-            fireEvent.click(removeButtons[removeButtons.length - 1]);
+            fireEvent.click(removeButton);
         });
 
         // Verify that onRemoveLinkedRecipe callback was called with correct recipe ID
@@ -447,9 +445,9 @@ describe('<RelatedContentStep />', () => {
         // Search input should be cleared
         expect(searchInput.value).toBe('');
 
-        // Switch back to users tab
+        // Switch back to quests tab
         await act(async () => {
-            fireEvent.click(screen.getByTestId('tab-users'));
+            fireEvent.click(screen.getByTestId('tab-quests'));
         });
 
         // Search input should still be cleared
@@ -463,17 +461,17 @@ describe('<RelatedContentStep />', () => {
         expect(tabsComponent).toBeDefined();
 
         // Check that all tabs are rendered with correct test IDs
-        expect(screen.getByTestId('tab-users')).toBeDefined();
         expect(screen.getByTestId('tab-recipes')).toBeDefined();
         expect(screen.getByTestId('tab-quests')).toBeDefined();
         expect(screen.getByTestId('tab-videos')).toBeDefined();
+        expect(screen.queryByTestId('tab-users')).toBeNull();
     });
 
     it('switches to videos tab and displays YouTube input', async () => {
         render(<RelatedContentStep {...mockProps} />);
 
-        // Initially on users tab
-        expect(screen.getByTestId('tab-users').className).toContain('active');
+        // Initially on recipes tab
+        expect(screen.getByTestId('tab-recipes').className).toContain('active');
 
         // Switch to videos tab
         await act(async () => {
@@ -489,10 +487,10 @@ describe('<RelatedContentStep />', () => {
     });
 
     describe('YouTube URL input', () => {
-        it('does not render YouTube URL input field on users tab', () => {
+        it('does not render YouTube URL input field on recipes tab', () => {
             render(<RelatedContentStep {...mockProps} />);
 
-            // Should not find YouTube input on users tab
+            // Should not find YouTube input on recipes tab
             expect(screen.queryByTestId('input-youtubeUrl')).toBeNull();
         });
 
@@ -660,10 +658,10 @@ describe('<RelatedContentStep />', () => {
     });
 
     describe('Layout and positioning', () => {
-        it('hides YouTube input section when on users tab', () => {
+        it('hides YouTube input section when on recipes tab', () => {
             render(<RelatedContentStep {...mockProps} />);
 
-            // YouTube section should not be visible on users tab
+            // YouTube section should not be visible on recipes tab
             expect(screen.queryByTestId('input-youtubeUrl')).toBeNull();
         });
 

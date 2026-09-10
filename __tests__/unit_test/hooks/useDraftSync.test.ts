@@ -8,6 +8,10 @@ import { SafeUser } from '@/app/types';
 vi.mock('swr');
 vi.mock('@/app/utils/draftSyncUtils', () => ({
     syncRemoteDraftToForm: vi.fn(),
+    detectStepConflict: vi
+        .fn()
+        .mockReturnValue({ hasConflict: false, stepIndex: 0, stepKey: '' }),
+    forceApplyStepFields: vi.fn(),
 }));
 
 const mockUser: SafeUser = {
@@ -30,7 +34,7 @@ describe('useDraftSync hook', () => {
         });
     });
 
-    it('encodes activeDraftId in the SWR endpoint key (L2)', () => {
+    it('encodes activeDraftId in the SWR endpoint key and sets refreshInterval to 8000 only for shared drafts', () => {
         renderHook(() =>
             useDraftSync({
                 activeDraftId: 'draft with spaces & special=chars',
@@ -44,9 +48,34 @@ describe('useDraftSync hook', () => {
             '/api/draft?draftId=draft%20with%20spaces%20%26%20special%3Dchars',
             expect.any(Function),
             expect.objectContaining({
-                refreshInterval: 8000,
+                refreshInterval: expect.any(Function),
             })
         );
+
+        const swrConfig = vi.mocked(useSWR).mock.calls[0][2] as any;
+        const intervalFn = swrConfig.refreshInterval;
+
+        // Solo draft or undefined draft returns 0 (no polling waste)
+        expect(intervalFn(undefined)).toBe(0);
+        expect(intervalFn({ type: 'solo' })).toBe(0);
+
+        // Shared draft returns 8000
+        expect(intervalFn({ type: 'shared' })).toBe(8000);
+    });
+
+    it('uses initialDraftData type when evaluating refreshInterval', () => {
+        renderHook(() =>
+            useDraftSync({
+                activeDraftId: 'draft-shared',
+                isEditMode: false,
+                currentUser: mockUser,
+                isOpen: true,
+                initialDraftData: { type: 'shared' as any },
+            })
+        );
+
+        const swrConfig = vi.mocked(useSWR).mock.calls[0][2] as any;
+        expect(swrConfig.refreshInterval(undefined)).toBe(8000);
     });
 
     it('passes null key to SWR when modal is closed', () => {

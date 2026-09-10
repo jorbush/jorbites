@@ -174,6 +174,7 @@ const RecipeModalContent: React.FC<{
         setCustomValue,
         draftData,
         isLoadingDraft,
+        isViewer,
     } = useRecipeFormState({
         recipeModal,
         currentUser,
@@ -223,17 +224,23 @@ const RecipeModalContent: React.FC<{
             onClose={onClose}
             onSubmit={handleSubmit(onSubmit)}
             actionLabel={actionLabel}
-            actionDisabled={isCurrentStepLocked && step === STEPS.IMAGES}
+            actionDisabled={
+                (isCurrentStepLocked && step === STEPS.IMAGES) ||
+                (isViewer && step === STEPS.IMAGES)
+            }
             secondaryActionLabel={secondaryActionLabel}
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
             title={modalTitle}
             body={
                 <RecipeModalStepBody
                     step={step}
-                    isCurrentStepLocked={isCurrentStepLocked}
-                    lockOwner={lockOwner}
-                    isSharedSession={isSharedSession}
-                    otherActiveLocks={otherActiveLocks}
+                    lockState={{
+                        isCurrentStepLocked,
+                        lockOwner,
+                        isSharedSession,
+                        otherActiveLocks,
+                        isViewer,
+                    }}
                     categories={categories}
                     setCustomValue={setCustomValue}
                     numIngredients={numIngredients}
@@ -267,6 +274,7 @@ const RecipeModalContent: React.FC<{
                     selectQuest={selectQuest}
                     removeQuest={removeQuest}
                     imageSrc={imageSrc}
+                    draftId={draftData?.draftId || getValues('draftId')}
                 />
             }
             isLoading={isLoading}
@@ -277,7 +285,7 @@ const RecipeModalContent: React.FC<{
                         onOpenDrafts={handleOpenDrafts}
                         hasDrafts={hasDrafts}
                         isSaving={isSaving}
-                        isLocked={isCurrentStepLocked}
+                        isLocked={isCurrentStepLocked || isViewer}
                     />
                 ) : undefined
             }

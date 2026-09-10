@@ -118,25 +118,45 @@ describe('DraftCard', () => {
         expect(onOpen).not.toHaveBeenCalled();
     });
 
-    it('triggers onShare without firing onOpen when share icon is clicked', () => {
+    it('triggers onManageCoCooks when manage collabs icon is clicked', () => {
+        const onManageCoCooks = vi.fn();
         const onOpen = vi.fn();
-        const onDelete = vi.fn();
-        const onDuplicate = vi.fn();
-        const onShare = vi.fn();
 
         render(
             <DraftCard
                 draft={mockDraft}
                 onOpen={onOpen}
-                onDelete={onDelete}
-                onDuplicate={onDuplicate}
-                onShare={onShare}
+                onDelete={vi.fn()}
+                onDuplicate={vi.fn()}
+                onManageCoCooks={onManageCoCooks}
             />
         );
 
-        fireEvent.click(screen.getByTestId('draft-card-share'));
-        expect(onShare).toHaveBeenCalledWith('draft-123');
+        fireEvent.click(screen.getByTestId('draft-card-manage-collabs'));
+        expect(onManageCoCooks).toHaveBeenCalledWith('draft-123');
         expect(onOpen).not.toHaveBeenCalled();
+    });
+
+    it('triggers onManageCoCooks when clicking co-cook avatars on shared draft', () => {
+        const onManageCoCooks = vi.fn();
+        const sharedDraft: DraftSummary = {
+            ...mockDraft,
+            type: 'shared',
+            coCooksIds: ['alice', 'bob'],
+        };
+
+        render(
+            <DraftCard
+                draft={sharedDraft}
+                onOpen={vi.fn()}
+                onDelete={vi.fn()}
+                onDuplicate={vi.fn()}
+                onManageCoCooks={onManageCoCooks}
+            />
+        );
+
+        fireEvent.click(screen.getByTestId('draft-card-avatars'));
+        expect(onManageCoCooks).toHaveBeenCalledWith('draft-123');
     });
 
     it('safely handles missing or undefined updatedAt without displaying NaN', () => {
@@ -184,11 +204,11 @@ describe('DraftCard', () => {
                 onOpen={vi.fn()}
                 onDelete={vi.fn()}
                 onDuplicate={vi.fn()}
-                onShare={vi.fn()}
+                onManageCoCooks={vi.fn()}
             />
         );
 
-        expect(screen.getByTestId('draft-card-share')).toHaveAttribute(
+        expect(screen.getByTestId('draft-card-manage-collabs')).toHaveAttribute(
             'aria-label'
         );
         expect(screen.getByTestId('draft-card-duplicate')).toHaveAttribute(

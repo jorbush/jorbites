@@ -26,9 +26,15 @@ export function generateDraftTitle(draft: DraftSummary): string {
         return `Untitled — ${draft.ingredients.length} ingredients`;
     }
 
-    if (draft.method && draft.method.trim() !== '') {
+    const methodStr =
+        typeof draft.method === 'string'
+            ? draft.method
+            : Array.isArray(draft.method)
+              ? String(draft.method[0] || '')
+              : '';
+    if (methodStr.trim() !== '') {
         const capitalizedMethod =
-            draft.method.charAt(0).toUpperCase() + draft.method.slice(1);
+            methodStr.charAt(0).toUpperCase() + methodStr.slice(1);
         const truncatedMethod =
             capitalizedMethod.length > 20
                 ? capitalizedMethod.substring(0, 20)
@@ -140,7 +146,13 @@ export function getDraftProgress(draft: DraftSummary): DraftProgress {
         {
             step: 3,
             name: 'Method',
-            completed: !!(draft.method && draft.method.trim() !== ''),
+            completed: !!(
+                (typeof draft.method === 'string' &&
+                    draft.method.trim() !== '') ||
+                (Array.isArray(draft.method) &&
+                    draft.method.length > 0 &&
+                    String(draft.method[0]).trim() !== '')
+            ),
         },
         {
             step: 4,

@@ -3,8 +3,6 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { FiTrash2, FiCopy } from 'react-icons/fi';
-import { FaUserPlus } from 'react-icons/fa';
 import { DraftSummary } from '@/app/types/draft';
 import {
     generateDraftTitle,
@@ -13,13 +11,15 @@ import {
 } from '@/app/lib/draftMetadata';
 import DraftProgressBar from './DraftProgressBar';
 import DraftTTLBadge from './DraftTTLBadge';
+import DraftCardAvatars from './DraftCardAvatars';
+import DraftCardActions from './DraftCardActions';
 
 interface DraftCardProps {
     draft: DraftSummary;
     onOpen: (draftId: string) => void;
     onDelete: (draftId: string) => void;
     onDuplicate: (draftId: string) => void;
-    onShare?: (draftId: string) => void;
+    onManageCoCooks?: (draftId: string) => void;
 }
 
 function getRelativeTime(dateStr?: string | null, t?: TFunction): string {
@@ -81,7 +81,7 @@ const DraftCard: React.FC<DraftCardProps> = ({
     onOpen,
     onDelete,
     onDuplicate,
-    onShare,
+    onManageCoCooks,
 }) => {
     const { t } = useTranslation();
 
@@ -105,12 +105,12 @@ const DraftCard: React.FC<DraftCardProps> = ({
         [draft.draftId, onDuplicate]
     );
 
-    const handleShare = useCallback(
+    const handleManageCoCooks = useCallback(
         (e: React.MouseEvent) => {
             e.stopPropagation();
-            onShare?.(draft.draftId);
+            onManageCoCooks?.(draft.draftId);
         },
-        [draft.draftId, onShare]
+        [draft.draftId, onManageCoCooks]
     );
 
     const title = generateDraftTitle(draft);
@@ -161,73 +161,29 @@ const DraftCard: React.FC<DraftCardProps> = ({
                 <DraftProgressBar progress={progress} />
             </div>
 
-            {draft.type === 'shared' &&
-                draft.coCooksIds &&
-                draft.coCooksIds.length > 0 && (
-                    <div className="flex">
-                        {draft.coCooksIds.slice(0, 3).map((id) => (
-                            <div
-                                key={id}
-                                className="-ml-2 flex size-6 items-center justify-center rounded-full border-2 border-white bg-blue-500 text-[10px] font-bold text-white first:ml-0 dark:border-neutral-900"
-                            >
-                                {id.substring(0, 1).toUpperCase()}
-                            </div>
-                        ))}
-                        {draft.coCooksIds.length > 3 && (
-                            <div className="-ml-2 flex size-6 items-center justify-center rounded-full border-2 border-white bg-neutral-200 text-[10px] font-medium text-neutral-600 first:ml-0 dark:border-neutral-900 dark:bg-neutral-700 dark:text-neutral-300">
-                                +{draft.coCooksIds.length - 3}
-                            </div>
-                        )}
-                    </div>
-                )}
+            {draft.type === 'shared' && (
+                <div className="relative z-10">
+                    <DraftCardAvatars
+                        coCooksIds={draft.coCooksIds}
+                        onManageCoCooks={
+                            onManageCoCooks ? handleManageCoCooks : undefined
+                        }
+                    />
+                </div>
+            )}
 
             <div className="relative z-10 mt-2 flex items-center justify-between">
                 <div data-testid="draft-card-ttl">
                     <DraftTTLBadge ttlInfo={ttlInfo} />
                 </div>
 
-                <div className="flex items-center gap-1">
-                    {onShare && (
-                        <button
-                            type="button"
-                            data-testid="draft-card-share"
-                            onClick={handleShare}
-                            className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-green-50 hover:text-green-700 dark:text-neutral-400 dark:hover:bg-green-900/20 dark:hover:text-green-400"
-                            title={
-                                (t('copy_co_cook_link') ??
-                                    'Copy invite link') as string
-                            }
-                            aria-label={
-                                (t('copy_co_cook_link') ??
-                                    'Copy invite link') as string
-                            }
-                        >
-                            <FaUserPlus size={16} />
-                        </button>
-                    )}
-                    <button
-                        type="button"
-                        data-testid="draft-card-duplicate"
-                        onClick={handleDuplicate}
-                        className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-                        title={(t('duplicate_draft') ?? 'Duplicate') as string}
-                        aria-label={
-                            (t('duplicate_draft') ?? 'Duplicate') as string
-                        }
-                    >
-                        <FiCopy size={16} />
-                    </button>
-                    <button
-                        type="button"
-                        data-testid="draft-card-delete"
-                        onClick={handleDelete}
-                        className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-red-50 hover:text-red-700 dark:text-neutral-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
-                        title={(t('delete_draft') ?? 'Delete') as string}
-                        aria-label={(t('delete_draft') ?? 'Delete') as string}
-                    >
-                        <FiTrash2 size={16} />
-                    </button>
-                </div>
+                <DraftCardActions
+                    onManageCoCooks={
+                        onManageCoCooks ? handleManageCoCooks : undefined
+                    }
+                    onDuplicate={handleDuplicate}
+                    onDelete={handleDelete}
+                />
             </div>
         </div>
     );

@@ -36,6 +36,7 @@ export interface UseRecipeStepNavigationProps {
     setCustomValue: (id: string, value: unknown) => void;
     getValues: UseFormGetValues<FieldValues>;
     isCurrentStepLocked: boolean;
+    isViewer?: boolean;
     t: TFunction;
     refresh?: () => void;
 }
@@ -58,6 +59,7 @@ export function useRecipeStepNavigation({
     setCustomValue,
     getValues,
     isCurrentStepLocked,
+    isViewer = false,
     t,
     refresh,
 }: UseRecipeStepNavigationProps) {
@@ -112,6 +114,10 @@ export function useRecipeStepNavigation({
     };
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+        if (isViewer && step === STEPS.IMAGES) {
+            return;
+        }
+
         if (step !== STEPS.IMAGES) {
             const success = onNext();
             if (

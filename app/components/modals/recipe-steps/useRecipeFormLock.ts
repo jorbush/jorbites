@@ -12,6 +12,7 @@ export interface UseRecipeFormLockProps {
     watch: UseFormWatch<FieldValues>;
     step: number;
     currentUser?: SafeUser | null;
+    isViewer?: boolean;
 }
 
 export function useRecipeFormLock({
@@ -21,6 +22,7 @@ export function useRecipeFormLock({
     watch,
     step,
     currentUser,
+    isViewer = false,
 }: UseRecipeFormLockProps) {
     const lockTargetId = recipeModal.isEditMode
         ? recipeModal.editRecipeData?.id
@@ -42,7 +44,10 @@ export function useRecipeFormLock({
     });
 
     const activeLockField =
-        recipeModal.isOpen && isCollaborativeSession && lockTargetId
+        recipeModal.isOpen &&
+        isCollaborativeSession &&
+        lockTargetId &&
+        !isViewer
             ? `step:${step}`
             : null;
 

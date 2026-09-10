@@ -3,7 +3,12 @@ import { redis } from '@/app/lib/redis';
 import { releaseAllLocks } from '@/app/lib/redisLock';
 import { logger } from '@/app/lib/axiom/server';
 import { SafeUser } from '@/app/types';
-import { SharedDraft, SingleDraft, DraftSummary } from '@/app/types/draft';
+import {
+    SharedDraft,
+    SingleDraft,
+    DraftSummary,
+    CoCookRole,
+} from '@/app/types/draft';
 import {
     DRAFT_TTL_SECONDS,
     USER_DRAFTS_TTL_SECONDS,
@@ -121,22 +126,107 @@ const ALLOWED_DRAFT_FIELDS: (keyof SharedDraft)[] = [
     'prepTime',
     'cookTime',
     'coCooksIds',
+    'coCookRoles',
+    'lastModifiedBy',
     'linkedRecipeIds',
     'youtubeUrl',
     'questId',
 ];
 
+const STRING_FIELDS = new Set([
+    'title',
+    'description',
+    'method',
+    'imageSrc',
+    'imageSrc1',
+    'imageSrc2',
+    'imageSrc3',
+    'youtubeUrl',
+    'questId',
+]);
+
+const ARRAY_FIELDS = new Set([
+    'categories',
+    'ingredients',
+    'steps',
+    'coCooksIds',
+    'linkedRecipeIds',
+]);
+
+const NUMBER_OR_NULL_FIELDS = new Set([
+    'currentStep',
+    'minutes',
+    'prepTime',
+    'cookTime',
+]);
+
 /**
- * Filter an arbitrary payload to only allowed draft fields to prevent field pollution (C3).
+ * Filter an arbitrary payload to only allowed draft fields and validate runtime types
+ * to prevent field and prototype pollution (C3).
  */
 function sanitizeDraftPayload(body: unknown): Partial<SharedDraft> {
     const sanitized: Partial<SharedDraft> = {};
-    if (!body || typeof body !== 'object') return sanitized;
+    if (!body || typeof body !== 'object' || Array.isArray(body))
+        return sanitized;
     const rec = body as Record<string, unknown>;
 
     for (const field of ALLOWED_DRAFT_FIELDS) {
-        if (rec[field] !== undefined) {
-            (sanitized as Record<string, unknown>)[field] = rec[field];
+        const val = rec[field];
+        if (val === undefined) continue;
+
+        if (STRING_FIELDS.has(field)) {
+            if (val === null) {
+                (sanitized as Record<string, unknown>)[field] = null;
+            } else if (typeof val === 'string') {
+                (sanitized as Record<string, unknown>)[field] = val;
+            }
+        } else if (ARRAY_FIELDS.has(field)) {
+            if (Array.isArray(val)) {
+                (sanitized as Record<string, unknown>)[field] = val.filter(
+                    (item): item is string => typeof item === 'string'
+                );
+            }
+        } else if (NUMBER_OR_NULL_FIELDS.has(field)) {
+            if (val === null) {
+                (sanitized as Record<string, unknown>)[field] = null;
+            } else if (typeof val === 'number' && !Number.isNaN(val)) {
+                (sanitized as Record<string, unknown>)[field] = val;
+            } else if (
+                typeof val === 'string' &&
+                val.trim() !== '' &&
+                !Number.isNaN(Number(val))
+            ) {
+                (sanitized as Record<string, unknown>)[field] = Number(val);
+            }
+        } else if (field === 'coCookRoles') {
+            if (
+                typeof val === 'object' &&
+                val !== null &&
+                !Array.isArray(val)
+            ) {
+                const roles: Record<string, CoCookRole> = {};
+                for (const [k, v] of Object.entries(val)) {
+                    if (v === 'editor' || v === 'viewer') {
+                        roles[k] = v;
+                    }
+                }
+                sanitized.coCookRoles = roles;
+            }
+        } else if (field === 'lastModifiedBy') {
+            if (
+                typeof val === 'object' &&
+                val !== null &&
+                !Array.isArray(val)
+            ) {
+                const obj = val as Record<string, unknown>;
+                if (typeof obj.id === 'string') {
+                    sanitized.lastModifiedBy = {
+                        id: obj.id,
+                        name:
+                            typeof obj.name === 'string' ? obj.name : undefined,
+                    };
+                }
+            }
         }
     }
     return sanitized;
@@ -263,12 +353,17 @@ export class DraftService {
         if (!draft || typeof draft !== 'object') return draft;
         return {
             ...draft,
+            type: 'shared',
             categories: Array.isArray(draft.categories) ? draft.categories : [],
             ingredients: Array.isArray(draft.ingredients)
                 ? draft.ingredients
                 : [],
             steps: Array.isArray(draft.steps) ? draft.steps : [],
             coCooksIds: Array.isArray(draft.coCooksIds) ? draft.coCooksIds : [],
+            coCookRoles:
+                draft.coCookRoles && typeof draft.coCookRoles === 'object'
+                    ? draft.coCookRoles
+                    : {},
             linkedRecipeIds: Array.isArray(draft.linkedRecipeIds)
                 ? draft.linkedRecipeIds
                 : [],
@@ -282,6 +377,7 @@ export class DraftService {
         if (!draft || typeof draft !== 'object') return draft;
         return {
             ...draft,
+            type: 'solo',
             categories: Array.isArray(draft.categories) ? draft.categories : [],
             ingredients: Array.isArray(draft.ingredients)
                 ? draft.ingredients
@@ -379,6 +475,10 @@ export class DraftService {
             if (!isCoCook) {
                 throw new Error('UNAUTHORIZED_DRAFT_UPDATE');
             }
+            const userRole = existing.coCookRoles?.[currentUser.id] || 'editor';
+            if (userRole === 'viewer') {
+                throw new Error('VIEWER_CANNOT_EDIT');
+            }
         }
 
         const sanitizedPayload = sanitizeDraftPayload(payload);
@@ -430,6 +530,12 @@ export class DraftService {
             ...existing,
             ...sanitizedPayload,
             draftId,
+            currentStep:
+                sanitizedPayload.currentStep !== undefined
+                    ? sanitizedPayload.currentStep
+                    : existing?.currentStep !== undefined
+                      ? existing.currentStep
+                      : 0,
             ownerId: existing?.ownerId || currentUser.id,
             ownerName:
                 existing?.ownerName ||
@@ -500,6 +606,18 @@ export class DraftService {
                     ? sanitizedPayload.cookTime
                     : existing?.cookTime,
             coCooksIds: limitedCoCooks,
+            coCookRoles:
+                currentUser.id === (existing?.ownerId || currentUser.id) &&
+                sanitizedPayload.coCookRoles
+                    ? {
+                          ...existing?.coCookRoles,
+                          ...sanitizedPayload.coCookRoles,
+                      }
+                    : existing?.coCookRoles || {},
+            lastModifiedBy: {
+                id: currentUser.id,
+                name: currentUser.name || currentUser.email || 'Chef',
+            },
             linkedRecipeIds: limitedLinked,
             inviteToken:
                 existing?.inviteToken ||
@@ -556,6 +674,14 @@ export class DraftService {
                         const normalizedDraft = this.normalizeSharedDraft(
                             parsed.draft
                         );
+                        if (currentUser.id !== normalizedDraft.ownerId) {
+                            normalizedDraft.coCookRoles =
+                                normalizedDraft.coCookRoles || {};
+                            if (!normalizedDraft.coCookRoles[currentUser.id]) {
+                                normalizedDraft.coCookRoles[currentUser.id] =
+                                    'editor';
+                            }
+                        }
                         await redisClient.set(
                             draftKey,
                             JSON.stringify(normalizedDraft),
@@ -611,6 +737,12 @@ export class DraftService {
 
         draft.coCooksIds = Array.from(coCooksSet);
         draft.updatedAt = nowIso;
+        if (currentUser.id !== draft.ownerId) {
+            draft.coCookRoles = draft.coCookRoles || {};
+            if (!draft.coCookRoles[currentUser.id]) {
+                draft.coCookRoles[currentUser.id] = 'editor';
+            }
+        }
         const normalizedDraft = this.normalizeSharedDraft(draft);
 
         await redisClient.set(
@@ -671,6 +803,234 @@ export class DraftService {
         );
 
         return true;
+    }
+
+    /**
+     * Updates the role of an active co-cook on a shared draft (owner only).
+     */
+    static async updateCoCookRole(
+        draftId: string,
+        targetUserId: string,
+        role: CoCookRole,
+        currentUser: SafeUser
+    ): Promise<SharedDraft> {
+        const key = `draft:shared:${draftId}`;
+        const raw = await redisClient.get(key);
+        if (!raw) {
+            throw new Error('DRAFT_NOT_FOUND');
+        }
+
+        let draft: SharedDraft;
+        try {
+            draft = this.normalizeSharedDraft(JSON.parse(raw));
+        } catch {
+            throw new Error('CORRUPTED_DRAFT_DATA');
+        }
+
+        if (draft.ownerId && draft.ownerId !== currentUser.id) {
+            throw new Error('ONLY_OWNER_CAN_MANAGE_ROLES');
+        }
+
+        if (draft.ownerId === targetUserId) {
+            throw new Error('CANNOT_CHANGE_OWNER_ROLE');
+        }
+
+        if (!draft.coCooksIds || !draft.coCooksIds.includes(targetUserId)) {
+            throw new Error('USER_NOT_A_CO_COOK');
+        }
+
+        if (role !== 'editor' && role !== 'viewer') {
+            throw new Error('INVALID_ROLE');
+        }
+
+        draft.coCookRoles = draft.coCookRoles || {};
+        draft.coCookRoles[targetUserId] = role;
+        draft.updatedAt = new Date().toISOString();
+
+        await redisClient.set(
+            key,
+            JSON.stringify(draft),
+            'EX',
+            DRAFT_TTL_SECONDS
+        );
+
+        if (role === 'viewer') {
+            await releaseAllLocks(draftId);
+        }
+
+        return draft;
+    }
+
+    /**
+     * Removes an active collaborator from a shared draft (owner or self).
+     */
+    static async removeCollaborator(
+        draftId: string,
+        targetUserId: string,
+        currentUser: SafeUser
+    ): Promise<SharedDraft> {
+        const key = `draft:shared:${draftId}`;
+        const raw = await redisClient.get(key);
+        if (!raw) {
+            throw new Error('DRAFT_NOT_FOUND');
+        }
+
+        let draft: SharedDraft;
+        try {
+            draft = this.normalizeSharedDraft(JSON.parse(raw));
+        } catch {
+            throw new Error('CORRUPTED_DRAFT_DATA');
+        }
+
+        const isOwner = draft.ownerId === currentUser.id;
+        const isSelf = currentUser.id === targetUserId;
+
+        if (!isOwner && !isSelf) {
+            throw new Error('UNAUTHORIZED_COLLABORATOR_REMOVAL');
+        }
+
+        if (draft.ownerId === targetUserId) {
+            throw new Error('CANNOT_REMOVE_OWNER');
+        }
+
+        draft.coCooksIds = (draft.coCooksIds || []).filter(
+            (id) => id !== targetUserId
+        );
+        if (draft.coCookRoles && draft.coCookRoles[targetUserId]) {
+            delete draft.coCookRoles[targetUserId];
+        }
+        draft.updatedAt = new Date().toISOString();
+
+        await Promise.all([
+            redisClient.set(
+                key,
+                JSON.stringify(draft),
+                'EX',
+                DRAFT_TTL_SECONDS
+            ),
+            this.removeFromUserDrafts(targetUserId, draftId),
+            releaseAllLocks(draftId),
+        ]);
+
+        return draft;
+    }
+
+    /**
+     * Adds an active collaborator directly to a shared draft (owner only).
+     */
+    static async addCollaborator(
+        draftId: string,
+        targetUserId: string,
+        currentUser: SafeUser,
+        role: CoCookRole = 'editor'
+    ): Promise<SharedDraft> {
+        const key = `draft:shared:${draftId}`;
+        const raw = await redisClient.get(key);
+        let draft: SharedDraft;
+
+        if (!raw) {
+            const soloDraft = await this.getSingleUserDraft(
+                currentUser.id,
+                draftId
+            );
+            if (!soloDraft) {
+                throw new Error('DRAFT_NOT_FOUND');
+            }
+            await this.deleteSingleUserDraft(currentUser.id, draftId);
+            const inviteToken = crypto.randomBytes(16).toString('hex');
+            draft = await this.saveSharedDraft(
+                draftId,
+                {
+                    ...soloDraft,
+                    draftId,
+                    inviteToken,
+                },
+                currentUser
+            );
+        } else {
+            try {
+                draft = this.normalizeSharedDraft(JSON.parse(raw));
+            } catch {
+                throw new Error('CORRUPTED_DRAFT_DATA');
+            }
+        }
+
+        if (draft.ownerId && draft.ownerId !== currentUser.id) {
+            throw new Error('ONLY_OWNER_CAN_ADD_COLLABORATORS');
+        }
+
+        if (draft.ownerId === targetUserId) {
+            throw new Error('CANNOT_ADD_OWNER');
+        }
+
+        const coCooksList = Array.isArray(draft.coCooksIds)
+            ? draft.coCooksIds
+            : [];
+        if (coCooksList.includes(targetUserId)) {
+            throw new Error('COLLABORATOR_ALREADY_EXISTS');
+        }
+
+        if (coCooksList.length >= MAX_CO_COOKS) {
+            throw new Error('CO_COOK_LIMIT_REACHED');
+        }
+
+        draft.coCooksIds = [...coCooksList, targetUserId];
+        draft.coCookRoles = draft.coCookRoles || {};
+        draft.coCookRoles[targetUserId] =
+            role === 'viewer' ? 'viewer' : 'editor';
+        draft.updatedAt = new Date().toISOString();
+
+        await Promise.all([
+            redisClient.set(
+                key,
+                JSON.stringify(draft),
+                'EX',
+                DRAFT_TTL_SECONDS
+            ),
+            this.addToUserDrafts(targetUserId, draftId),
+        ]);
+
+        return draft;
+    }
+
+    /**
+     * Regenerates the secret invite token for a shared draft, invalidating old links.
+     */
+    static async regenerateInviteToken(
+        draftId: string,
+        currentUser: SafeUser,
+        baseUrl: string = 'http://localhost:3000'
+    ): Promise<{ inviteToken: string; shareUrl: string; draft: SharedDraft }> {
+        const key = `draft:shared:${draftId}`;
+        const raw = await redisClient.get(key);
+        if (!raw) {
+            throw new Error('DRAFT_NOT_FOUND');
+        }
+
+        let draft: SharedDraft;
+        try {
+            draft = this.normalizeSharedDraft(JSON.parse(raw));
+        } catch {
+            throw new Error('CORRUPTED_DRAFT_DATA');
+        }
+
+        if (draft.ownerId && draft.ownerId !== currentUser.id) {
+            throw new Error('ONLY_OWNER_CAN_REGENERATE_TOKEN');
+        }
+
+        const newInviteToken = crypto.randomBytes(16).toString('hex');
+        draft.inviteToken = newInviteToken;
+        draft.updatedAt = new Date().toISOString();
+
+        await redisClient.set(
+            key,
+            JSON.stringify(draft),
+            'EX',
+            DRAFT_TTL_SECONDS
+        );
+
+        const shareUrl = `${baseUrl}/recipes/new?draft=${draftId}&token=${newInviteToken}`;
+        return { inviteToken: newInviteToken, shareUrl, draft };
     }
 
     /**
@@ -978,6 +1338,7 @@ export class DraftService {
                         steps: shared.steps,
                         method: shared.method,
                         coCooksIds: shared.coCooksIds || [],
+                        coCookRoles: shared.coCookRoles,
                         ownerId: shared.ownerId,
                         ownerName: shared.ownerName,
                         updatedAt,

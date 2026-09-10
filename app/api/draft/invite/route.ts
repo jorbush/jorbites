@@ -9,6 +9,9 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import { DraftService } from '@/app/services/draftService';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function POST(request: Request) {
     try {
         const currentUser = await getCurrentUser();
@@ -22,7 +25,7 @@ export async function POST(request: Request) {
         const draftId = body.draftId || crypto.randomUUID();
 
         // Check if existing draft belongs to another owner
-        const existing = await DraftService.getSharedDraft(draftId);
+        let existing = await DraftService.getSharedDraft(draftId);
         if (
             existing &&
             existing.ownerId &&
@@ -33,14 +36,56 @@ export async function POST(request: Request) {
             );
         }
 
-        // Security: Always enforce server-side cryptographically secure token generation (M4)
-        // Reuse existing token if already generated for this draft, otherwise generate new 16-byte hex
+        // If not a shared draft yet, check if it's an existing solo draft belonging to the user
+        if (!existing && body.draftId) {
+            const soloDraft = await DraftService.getSingleUserDraft(
+                currentUser.id,
+                draftId
+            );
+            if (soloDraft) {
+                existing = soloDraft as any;
+                await DraftService.deleteSingleUserDraft(
+                    currentUser.id,
+                    draftId
+                );
+            }
+        }
+
+        const host = request.headers.get('host');
+        const origin = request.headers.get('origin');
+        const hostUrl = host ? `https://${host}` : null;
+        const baseUrl =
+            process.env.NEXT_PUBLIC_APP_URL ||
+            origin ||
+            hostUrl ||
+            'http://localhost:3000';
+
+        const shouldRegenerate = Boolean(body.regenerate);
+        if (shouldRegenerate && existing) {
+            const regenerated = await DraftService.regenerateInviteToken(
+                draftId,
+                currentUser,
+                baseUrl
+            );
+            logger.info('POST /api/draft/invite - regenerated token', {
+                draftId,
+                userId: currentUser.id,
+            });
+            return NextResponse.json({
+                draftId,
+                inviteToken: regenerated.inviteToken,
+                shareUrl: regenerated.shareUrl,
+                draft: regenerated.draft,
+            });
+        }
+
         const inviteToken =
             existing?.inviteToken || crypto.randomBytes(16).toString('hex');
 
         const savedDraft = await DraftService.saveSharedDraft(
             draftId,
             {
+                ...existing,
                 ...body,
                 draftId,
                 inviteToken,
@@ -53,9 +98,6 @@ export async function POST(request: Request) {
             userId: currentUser.id,
         });
 
-        const baseUrl =
-            process.env.NEXT_PUBLIC_APP_URL ||
-            (request.headers.get('origin') ?? 'http://localhost:3000');
         const shareUrl = `${baseUrl}/recipes/new?draft=${draftId}&token=${inviteToken}`;
 
         return NextResponse.json({

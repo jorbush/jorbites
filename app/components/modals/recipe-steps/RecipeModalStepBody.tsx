@@ -17,14 +17,13 @@ import MethodsStep from '@/app/components/modals/recipe-steps/MethodsStep';
 import RecipeStepsStep from '@/app/components/modals/recipe-steps/RecipeStepsStep';
 import ImagesStep from '@/app/components/modals/recipe-steps/ImagesStep';
 import RelatedContentStep from '@/app/components/modals/recipe-steps/RelatedContentStep';
-import RecipeLockBanner from '@/app/components/modals/recipe-steps/RecipeLockBanner';
+import RecipeStepLockContainer, {
+    RecipeLockState,
+} from '@/app/components/modals/recipe-steps/RecipeStepLockContainer';
 
 export interface RecipeModalStepBodyProps {
     step: number;
-    isCurrentStepLocked: boolean;
-    lockOwner?: { userName?: string; userId?: string } | null;
-    isSharedSession: boolean;
-    otherActiveLocks: Array<[string, { userId?: string; userName?: string }]>;
+    lockState?: RecipeLockState;
     categories?: string[];
     setCustomValue: (id: string, value: unknown) => void;
     numIngredients: number;
@@ -48,24 +47,22 @@ export interface RecipeModalStepBodyProps {
     prepTime?: number;
     cookTime?: number;
     method?: string;
-    selectedCoCooks: SafeUser[];
+    selectedCoCooks?: SafeUser[];
     selectedLinkedRecipes: SafeRecipe[];
     selectedQuest: SafeQuest | null;
-    addCoCook: (user: SafeUser) => void;
-    removeCoCook: (userId: string) => void;
+    addCoCook?: (user: SafeUser) => void;
+    removeCoCook?: (userId: string) => void;
     addLinkedRecipe: (recipe: SafeRecipe) => void;
     removeLinkedRecipe: (recipeId: string) => void;
     selectQuest: (quest: SafeQuest) => void;
     removeQuest: () => void;
     imageSrc?: string;
+    draftId?: string;
 }
 
 const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
     step,
-    isCurrentStepLocked,
-    lockOwner,
-    isSharedSession,
-    otherActiveLocks,
+    lockState,
     categories,
     setCustomValue,
     numIngredients,
@@ -89,16 +86,17 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
     prepTime,
     cookTime,
     method,
-    selectedCoCooks,
+    selectedCoCooks: _selectedCoCooks,
     selectedLinkedRecipes,
     selectedQuest,
-    addCoCook,
-    removeCoCook,
+    addCoCook: _addCoCook,
+    removeCoCook: _removeCoCook,
     addLinkedRecipe,
     removeLinkedRecipe,
     selectQuest,
     removeQuest,
     imageSrc,
+    draftId: _draftId,
 }) => {
     const renderStepContent = () => {
         switch (step) {
@@ -115,7 +113,7 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
                         setValue={setValue}
                         inputMode={ingredientsInputMode}
                         setInputMode={setIngredientsInputMode}
-                        isLocked={isCurrentStepLocked}
+                        isLocked={lockState?.isCurrentStepLocked}
                     />
                 );
             case STEPS.STEPS:
@@ -131,7 +129,7 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
                         setValue={setValue}
                         inputMode={stepsInputMode}
                         setInputMode={setStepsInputMode}
-                        isLocked={isCurrentStepLocked}
+                        isLocked={lockState?.isCurrentStepLocked}
                     />
                 );
             case STEPS.DESCRIPTION:
@@ -145,14 +143,14 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
                             setCustomValue('minutes', value)
                         }
                         prepTime={prepTime}
+                        cookTime={cookTime}
                         onPrepTimeChange={(value) =>
                             setCustomValue('prepTime', value)
                         }
-                        cookTime={cookTime}
                         onCookTimeChange={(value) =>
                             setCustomValue('cookTime', value)
                         }
-                        isLocked={isCurrentStepLocked}
+                        isLocked={lockState?.isCurrentStepLocked}
                     />
                 );
             case STEPS.METHODS:
@@ -168,11 +166,8 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
                 return (
                     <RelatedContentStep
                         isLoading={isLoading}
-                        selectedCoCooks={selectedCoCooks}
                         selectedLinkedRecipes={selectedLinkedRecipes}
                         selectedQuest={selectedQuest}
-                        onAddCoCook={addCoCook}
-                        onRemoveCoCook={removeCoCook}
                         onAddLinkedRecipe={addLinkedRecipe}
                         onRemoveLinkedRecipe={removeLinkedRecipe}
                         onSelectQuest={selectQuest}
@@ -207,23 +202,9 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
     };
 
     return (
-        <div>
-            <RecipeLockBanner
-                isCurrentStepLocked={isCurrentStepLocked}
-                lockOwner={lockOwner}
-                isSharedSession={isSharedSession}
-                otherActiveLocks={otherActiveLocks}
-            />
-            <div
-                data-testid="locked-step-container"
-                inert={isCurrentStepLocked ? true : undefined}
-                className={
-                    isCurrentStepLocked ? 'pointer-events-none opacity-60' : ''
-                }
-            >
-                {renderStepContent()}
-            </div>
-        </div>
+        <RecipeStepLockContainer lockState={lockState}>
+            {renderStepContent()}
+        </RecipeStepLockContainer>
     );
 };
 

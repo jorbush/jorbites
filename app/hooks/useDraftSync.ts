@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 import useSWR from 'swr';
+import { toast } from 'react-hot-toast';
 import {
     UseFormSetValue,
     UseFormGetValues,
@@ -10,7 +11,12 @@ import {
 import { axiosFetcher } from '@/app/utils/fetcher';
 import { SafeUser } from '@/app/types';
 import { SHARED_DRAFT_POLL_INTERVAL_MS } from '@/app/utils/constants';
-import { syncRemoteDraftToForm, LockChecker } from '@/app/utils/draftSyncUtils';
+import {
+    syncRemoteDraftToForm,
+    detectStepConflict,
+    forceApplyStepFields,
+    LockChecker,
+} from '@/app/utils/draftSyncUtils';
 import { DraftData } from '@/app/types/draft';
 
 interface UseDraftSyncOptions {
@@ -48,8 +54,6 @@ export function useDraftSync({
         ? `/api/draft?draftId=${encodeURIComponent(activeDraftId)}`
         : `/api/draft`;
 
-    const isSharedDraft = Boolean(activeDraftId);
-
     const {
         data: swrDraftData,
         isLoading: isLoadingDraft,
@@ -60,7 +64,15 @@ export function useDraftSync({
         {
             revalidateOnFocus: true,
             revalidateOnReconnect: true,
-            refreshInterval: isSharedDraft ? SHARED_DRAFT_POLL_INTERVAL_MS : 0,
+            refreshInterval: (latestData) => {
+                const effective =
+                    initialDraftData !== undefined
+                        ? initialDraftData
+                        : latestData;
+                return effective?.type === 'shared'
+                    ? SHARED_DRAFT_POLL_INTERVAL_MS
+                    : 0;
+            },
             shouldRetryOnError: false,
             keepPreviousData: true,
         }
@@ -102,6 +114,74 @@ export function useDraftSync({
             prevDraftRef.current = draftData;
 
             if (!isEditMode) {
+                // Check if a remote change on the active step conflicts with local edits (D-09)
+                const conflict = detectStepConflict(
+                    step,
+                    draftData,
+                    prevDraft,
+                    getValues,
+                    currentUser?.id,
+                    lock
+                );
+
+                if (conflict.hasConflict) {
+                    const author = conflict.authorName || 'A co-cook';
+                    const stepLabel = conflict.stepKey.replace('_', ' ');
+                    const notify =
+                        typeof toast.custom === 'function'
+                            ? toast.custom
+                            : typeof toast === 'function'
+                              ? toast
+                              : undefined;
+
+                    if (notify) {
+                        notify(
+                            (tInstance) =>
+                                React.createElement(
+                                    'div',
+                                    {
+                                        'data-testid': 'conflict-toast',
+                                        className:
+                                            'flex items-center gap-2.5 text-xs',
+                                    },
+                                    React.createElement(
+                                        'span',
+                                        null,
+                                        `${author} updated ${stepLabel}`
+                                    ),
+                                    React.createElement(
+                                        'button',
+                                        {
+                                            type: 'button',
+                                            'data-testid':
+                                                'conflict-refresh-button',
+                                            className:
+                                                'rounded bg-green-500 px-2 py-0.5 font-semibold text-white transition hover:bg-green-600',
+                                            onClick: () => {
+                                                forceApplyStepFields(
+                                                    step,
+                                                    draftData,
+                                                    setValue
+                                                );
+                                                if (
+                                                    typeof toast.dismiss ===
+                                                    'function'
+                                                ) {
+                                                    toast.dismiss(tInstance.id);
+                                                }
+                                            },
+                                        },
+                                        'Refresh'
+                                    )
+                                ),
+                            {
+                                id: `conflict-step-${step}`,
+                                duration: 8000,
+                            }
+                        );
+                    }
+                }
+
                 syncRemoteDraftToForm(
                     draftData,
                     prevDraft,
@@ -112,7 +192,7 @@ export function useDraftSync({
                 );
             }
         },
-        [draftData, isEditMode]
+        [currentUser?.id, draftData, isEditMode]
     );
 
     return {

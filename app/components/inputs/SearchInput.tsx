@@ -7,16 +7,16 @@ import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { AiOutlinePlus } from 'react-icons/ai';
 import VerificationBadge from '@/app/components/VerificationBadge';
 
-interface SearchResult {
+export interface SearchResult {
     id: string;
-    name?: string;
-    image?: string;
-    title?: string;
-    description?: string;
-    imageSrc?: string;
+    name?: string | null;
+    image?: string | null;
+    title?: string | null;
+    description?: string | null;
+    imageSrc?: string | null;
     user?: {
-        name: string;
-        image: string;
+        name?: string | null;
+        image?: string | null;
     };
     verified?: boolean;
     level?: number;
