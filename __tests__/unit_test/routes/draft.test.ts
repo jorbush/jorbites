@@ -432,5 +432,32 @@ describe('Draft API Error Handling & Shared Drafts', () => {
                 'token=injected-attacker-token'
             );
         });
+
+        it('should fall back to Host header when Origin header is not present', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    draftId: 'host-fallback-draft',
+                }),
+                headers: {
+                    get: (header: string) => {
+                        if (header === 'host') return 'proxy.jorbites.com';
+                        return null;
+                    },
+                },
+            } as unknown as Request;
+
+            const response = await DraftInvitePOST(mockRequest);
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data.shareUrl).toContain(
+                'https://proxy.jorbites.com/recipes/new?draft=host-fallback-draft'
+            );
+        });
     });
 });

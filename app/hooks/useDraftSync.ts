@@ -54,8 +54,6 @@ export function useDraftSync({
         ? `/api/draft?draftId=${encodeURIComponent(activeDraftId)}`
         : `/api/draft`;
 
-    const isSharedDraft = Boolean(activeDraftId);
-
     const {
         data: swrDraftData,
         isLoading: isLoadingDraft,
@@ -66,7 +64,15 @@ export function useDraftSync({
         {
             revalidateOnFocus: true,
             revalidateOnReconnect: true,
-            refreshInterval: isSharedDraft ? SHARED_DRAFT_POLL_INTERVAL_MS : 0,
+            refreshInterval: (latestData) => {
+                const effective =
+                    initialDraftData !== undefined
+                        ? initialDraftData
+                        : latestData;
+                return effective?.type === 'shared'
+                    ? SHARED_DRAFT_POLL_INTERVAL_MS
+                    : 0;
+            },
             shouldRetryOnError: false,
             keepPreviousData: true,
         }

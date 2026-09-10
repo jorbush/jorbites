@@ -55,7 +55,8 @@ describe('useRelatedContentSearch', () => {
 
         await waitFor(() => {
             expect(mockedAxios.get).toHaveBeenCalledWith(
-                '/api/search?q=pizza&type=recipes'
+                '/api/search?q=pizza&type=recipes',
+                expect.objectContaining({ signal: expect.any(Object) })
             );
         });
 
@@ -81,7 +82,8 @@ describe('useRelatedContentSearch', () => {
 
         await waitFor(() => {
             expect(mockedAxios.get).toHaveBeenCalledWith(
-                '/api/quests?status=open&q=cake'
+                '/api/quests?status=open&q=cake',
+                expect.objectContaining({ signal: expect.any(Object) })
             );
         });
 
@@ -90,7 +92,7 @@ describe('useRelatedContentSearch', () => {
         });
     });
 
-    it('shows toast error when search request fails', async () => {
+    it('shows toast error when search request fails with regular error', async () => {
         mockedAxios.get.mockRejectedValueOnce(new Error('Network Error'));
 
         const { result } = renderHook(() =>
@@ -104,5 +106,25 @@ describe('useRelatedContentSearch', () => {
         await waitFor(() => {
             expect(toast.error).toHaveBeenCalledWith('search_failed');
         });
+    });
+
+    it('does not show toast error when search request is cancelled', async () => {
+        const cancelError = new Error('canceled');
+        cancelError.name = 'CanceledError';
+        mockedAxios.get.mockRejectedValueOnce(cancelError);
+
+        const { result } = renderHook(() =>
+            useRelatedContentSearch('recipes', mockT)
+        );
+
+        act(() => {
+            result.current.setSearchQuery('pasta');
+        });
+
+        await waitFor(() => {
+            expect(mockedAxios.get).toHaveBeenCalled();
+        });
+
+        expect(toast.error).not.toHaveBeenCalled();
     });
 });

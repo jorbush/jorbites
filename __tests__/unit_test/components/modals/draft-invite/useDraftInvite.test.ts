@@ -5,9 +5,17 @@ import { useDraftInvite } from '@/app/components/modals/draft-invite/useDraftInv
 import useDraftInviteModal from '@/app/hooks/useDraftInviteModal';
 import useSWR from 'swr';
 import { SafeUser } from '@/app/types';
+import { toast } from 'react-hot-toast';
 
 vi.mock('axios');
 const mockedAxios = axios as any;
+
+vi.mock('react-hot-toast', () => ({
+    toast: {
+        success: vi.fn(),
+        error: vi.fn(),
+    },
+}));
 
 vi.mock('swr');
 const mockedUseSWR = useSWR as any;
@@ -134,5 +142,60 @@ describe('useDraftInvite hook', () => {
                 role: 'editor',
             }
         );
+    });
+
+    it('shows error toast when handleRoleChange rejects', async () => {
+        mockedAxios.patch.mockRejectedValueOnce(new Error('Network Error'));
+
+        const { result } = renderHook(() => useDraftInvite(mockOwner));
+
+        await act(async () => {
+            await result.current.handleRoleChange('user-2', 'viewer');
+        });
+
+        expect(toast.error).toHaveBeenCalledWith('Failed to update role');
+    });
+
+    it('shows error toast when handleRemoveCollaborator rejects', async () => {
+        mockedAxios.delete.mockRejectedValueOnce(new Error('Server Error'));
+
+        const { result } = renderHook(() => useDraftInvite(mockOwner));
+
+        await act(async () => {
+            await result.current.handleRemoveCollaborator('user-2');
+        });
+
+        expect(toast.error).toHaveBeenCalledWith(
+            'Failed to remove collaborator'
+        );
+    });
+
+    it('shows error toast when handleAddCollaborator rejects', async () => {
+        mockedAxios.post.mockRejectedValueOnce({
+            response: { data: { error: 'Custom Add Error' } },
+        });
+
+        const { result } = renderHook(() => useDraftInvite(mockOwner));
+
+        await act(async () => {
+            await result.current.handleAddCollaborator({
+                id: 'user-3',
+                name: 'New Chef',
+            } as any);
+        });
+
+        expect(toast.error).toHaveBeenCalledWith('Custom Add Error');
+    });
+
+    it('shows error toast when handleRegenerate rejects', async () => {
+        mockedAxios.post.mockRejectedValueOnce(new Error('Regenerate Failed'));
+
+        const { result } = renderHook(() => useDraftInvite(mockOwner));
+
+        await act(async () => {
+            await result.current.handleRegenerate();
+        });
+
+        expect(toast.error).toHaveBeenCalledWith('Something went wrong');
     });
 });

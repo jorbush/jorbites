@@ -133,17 +133,100 @@ const ALLOWED_DRAFT_FIELDS: (keyof SharedDraft)[] = [
     'questId',
 ];
 
+const STRING_FIELDS = new Set([
+    'title',
+    'description',
+    'method',
+    'imageSrc',
+    'imageSrc1',
+    'imageSrc2',
+    'imageSrc3',
+    'youtubeUrl',
+    'questId',
+]);
+
+const ARRAY_FIELDS = new Set([
+    'categories',
+    'ingredients',
+    'steps',
+    'coCooksIds',
+    'linkedRecipeIds',
+]);
+
+const NUMBER_OR_NULL_FIELDS = new Set([
+    'currentStep',
+    'minutes',
+    'prepTime',
+    'cookTime',
+]);
+
 /**
- * Filter an arbitrary payload to only allowed draft fields to prevent field pollution (C3).
+ * Filter an arbitrary payload to only allowed draft fields and validate runtime types
+ * to prevent field and prototype pollution (C3).
  */
 function sanitizeDraftPayload(body: unknown): Partial<SharedDraft> {
     const sanitized: Partial<SharedDraft> = {};
-    if (!body || typeof body !== 'object') return sanitized;
+    if (!body || typeof body !== 'object' || Array.isArray(body))
+        return sanitized;
     const rec = body as Record<string, unknown>;
 
     for (const field of ALLOWED_DRAFT_FIELDS) {
-        if (rec[field] !== undefined) {
-            (sanitized as Record<string, unknown>)[field] = rec[field];
+        const val = rec[field];
+        if (val === undefined) continue;
+
+        if (STRING_FIELDS.has(field)) {
+            if (val === null) {
+                (sanitized as Record<string, unknown>)[field] = null;
+            } else if (typeof val === 'string') {
+                (sanitized as Record<string, unknown>)[field] = val;
+            }
+        } else if (ARRAY_FIELDS.has(field)) {
+            if (Array.isArray(val)) {
+                (sanitized as Record<string, unknown>)[field] = val.filter(
+                    (item): item is string => typeof item === 'string'
+                );
+            }
+        } else if (NUMBER_OR_NULL_FIELDS.has(field)) {
+            if (val === null) {
+                (sanitized as Record<string, unknown>)[field] = null;
+            } else if (typeof val === 'number' && !Number.isNaN(val)) {
+                (sanitized as Record<string, unknown>)[field] = val;
+            } else if (
+                typeof val === 'string' &&
+                val.trim() !== '' &&
+                !Number.isNaN(Number(val))
+            ) {
+                (sanitized as Record<string, unknown>)[field] = Number(val);
+            }
+        } else if (field === 'coCookRoles') {
+            if (
+                typeof val === 'object' &&
+                val !== null &&
+                !Array.isArray(val)
+            ) {
+                const roles: Record<string, CoCookRole> = {};
+                for (const [k, v] of Object.entries(val)) {
+                    if (v === 'editor' || v === 'viewer') {
+                        roles[k] = v;
+                    }
+                }
+                sanitized.coCookRoles = roles;
+            }
+        } else if (field === 'lastModifiedBy') {
+            if (
+                typeof val === 'object' &&
+                val !== null &&
+                !Array.isArray(val)
+            ) {
+                const obj = val as Record<string, unknown>;
+                if (typeof obj.id === 'string') {
+                    sanitized.lastModifiedBy = {
+                        id: obj.id,
+                        name:
+                            typeof obj.name === 'string' ? obj.name : undefined,
+                    };
+                }
+            }
         }
     }
     return sanitized;

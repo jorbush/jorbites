@@ -82,8 +82,27 @@ describe('DraftDirectSearchSection', () => {
 
         await waitFor(() => {
             expect(mockedAxios.get).toHaveBeenCalledWith(
-                '/api/search?q=Maria&type=users'
+                '/api/search?q=Maria&type=users',
+                expect.objectContaining({ signal: expect.any(Object) })
             );
         });
+    });
+
+    it('ignores cancelled search requests gracefully', async () => {
+        const cancelError = new Error('canceled');
+        cancelError.name = 'CanceledError';
+        mockedAxios.get.mockRejectedValueOnce(cancelError);
+
+        render(<DraftDirectSearchSection {...defaultProps} />);
+
+        const input = screen.getByLabelText('Search Users');
+        fireEvent.change(input, { target: { value: 'Maria' } });
+
+        await waitFor(() => {
+            expect(mockedAxios.get).toHaveBeenCalled();
+        });
+
+        // Search results remain empty without breaking UI
+        expect(screen.queryByText('Chef Maria')).not.toBeInTheDocument();
     });
 });

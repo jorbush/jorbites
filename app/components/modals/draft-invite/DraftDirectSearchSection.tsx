@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiSearch } from 'react-icons/fi';
 import axios from 'axios';
@@ -29,6 +29,7 @@ const DraftDirectSearchSection: React.FC<DraftDirectSearchSectionProps> = ({
     const [searchResults, setSearchResults] = useState<{
         users: SafeUser[];
     }>({ users: [] });
+    const abortControllerRef = useRef<AbortController | null>(null);
 
     const isLimitReached = coCooksCount >= MAX_CO_COOKS;
 
@@ -39,12 +40,27 @@ const DraftDirectSearchSection: React.FC<DraftDirectSearchSectionProps> = ({
                     setSearchResults({ users: [] });
                     return;
                 }
+
+                if (abortControllerRef.current) {
+                    abortControllerRef.current.abort();
+                }
+                const controller = new AbortController();
+                abortControllerRef.current = controller;
+
                 try {
                     const res = await axios.get(
-                        `/api/search?q=${encodeURIComponent(query)}&type=users`
+                        `/api/search?q=${encodeURIComponent(query)}&type=users`,
+                        { signal: controller.signal }
                     );
                     setSearchResults({ users: res.data.users || [] });
                 } catch (err) {
+                    if (
+                        axios.isCancel(err) ||
+                        (err as any)?.name === 'CanceledError' ||
+                        (err as any)?.name === 'AbortError'
+                    ) {
+                        return;
+                    }
                     console.error('User search failed:', err);
                 }
             }, 300),
@@ -55,6 +71,9 @@ const DraftDirectSearchSection: React.FC<DraftDirectSearchSectionProps> = ({
         debouncedSearch(searchQuery);
         return () => {
             debouncedSearch.cancel();
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
         };
     }, [searchQuery, debouncedSearch]);
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import axios from 'axios';
 import debounce from 'lodash/debounce';
 import { toast } from 'react-hot-toast';
@@ -17,6 +17,7 @@ export function useRelatedContentSearch(
         recipes: [],
         quests: [],
     });
+    const abortControllerRef = useRef<AbortController | null>(null);
 
     const debouncedSearch = useMemo(
         () =>
@@ -31,10 +32,17 @@ export function useRelatedContentSearch(
                         return;
                     }
 
+                    if (abortControllerRef.current) {
+                        abortControllerRef.current.abort();
+                    }
+                    const controller = new AbortController();
+                    abortControllerRef.current = controller;
+
                     try {
                         if (type === 'quests') {
                             const response = await axios.get(
-                                `/api/quests?status=open&q=${encodeURIComponent(query)}`
+                                `/api/quests?status=open&q=${encodeURIComponent(query)}`,
+                                { signal: controller.signal }
                             );
                             setSearchResults({
                                 recipes: [],
@@ -42,11 +50,19 @@ export function useRelatedContentSearch(
                             });
                         } else {
                             const response = await axios.get(
-                                `/api/search?q=${encodeURIComponent(query)}&type=${type}`
+                                `/api/search?q=${encodeURIComponent(query)}&type=${type}`,
+                                { signal: controller.signal }
                             );
                             setSearchResults({ ...response.data, quests: [] });
                         }
                     } catch (error) {
+                        if (
+                            axios.isCancel(error) ||
+                            (error as any)?.name === 'CanceledError' ||
+                            (error as any)?.name === 'AbortError'
+                        ) {
+                            return;
+                        }
                         console.error('Search failed:', error);
                         toast.error(
                             tFunction('search_failed') || 'Search failed'
@@ -61,6 +77,9 @@ export function useRelatedContentSearch(
     useEffect(() => {
         return () => {
             debouncedSearch.cancel();
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
         };
     }, [debouncedSearch]);
 

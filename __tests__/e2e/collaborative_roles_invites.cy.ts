@@ -1000,4 +1000,130 @@ describe('Collaborative Drafts Roles & Invites E2E', () => {
             cy.get('label').should('contain', 'YouTube Video URL');
         });
     });
+
+    it('opens DraftInviteModal by clicking draft card avatar stack and dynamically updates avatars on add', () => {
+        const draftTitle = `Avatar Stack ${Date.now().toString().slice(-4)}`;
+
+        // 1. Create shared draft with 1 existing co-cook
+        cy.request({
+            method: 'POST',
+            url: '/api/draft/invite',
+            body: {
+                title: draftTitle,
+                categories: ['Lunch'],
+            },
+        }).then((res) => {
+            const draftId = res.body.draftId;
+
+            cy.request({
+                method: 'POST',
+                url: '/api/draft',
+                body: {
+                    draftId,
+                    title: draftTitle,
+                    coCooksIds: ['mock-chef-1'],
+                    coCookRoles: {
+                        'mock-chef-1': 'editor',
+                    },
+                },
+            }).then(() => {
+                // 2. Open My Drafts modal
+                cy.get('[data-cy="user-menu"]').click();
+                cy.get('[data-cy="user-menu-my-drafts"]')
+                    .should('be.visible')
+                    .click();
+                cy.get('[data-testid="drafts-modal"]').should('be.visible');
+
+                // 3. Click directly on the avatar stack button
+                cy.contains('[data-testid="draft-card"]', draftTitle)
+                    .find('[data-testid="draft-card-avatars"]')
+                    .should('be.visible')
+                    .click();
+
+                // 4. Verify DraftInviteModal opens and displays existing collaborator
+                cy.get('[data-testid="draft-invite-modal"]').should(
+                    'be.visible'
+                );
+                cy.get('[data-testid="collaborators-list"]').should(
+                    'be.visible'
+                );
+
+                // 5. Add Chef Maria via direct search
+                cy.intercept('GET', '/api/search?q=*&type=users').as(
+                    'searchUsers'
+                );
+                cy.intercept('POST', '/api/draft/collaborator').as('addCollab');
+
+                cy.get('[data-cy="search-input"]').type('Chef Maria');
+                cy.wait('@searchUsers');
+                cy.get('[data-cy="search-input"]')
+                    .parent()
+                    .parent()
+                    .contains('button[type="button"]', 'Chef Maria')
+                    .click();
+
+                cy.wait('@addCollab');
+                cy.contains('Co-cook added').should('be.visible');
+
+                // 6. Close DraftInviteModal
+                cy.get('[data-testid="draft-invite-modal"]')
+                    .parents('.fixed')
+                    .find('[data-cy="modal-action-button"]')
+                    .click();
+                cy.get('[data-testid="draft-invite-modal"]').should(
+                    'not.exist'
+                );
+
+                // 7. Verify the draft card avatar stack dynamically updated to reflect 2 co-cooks
+                cy.contains('[data-testid="draft-card"]', draftTitle)
+                    .find('[data-testid="draft-card-avatars"]')
+                    .children()
+                    .should('have.length', 2);
+            });
+        });
+    });
+
+    it('handles rapid typing in DraftInviteModal user search with request cancellation and without errors', () => {
+        const draftTitle = `Search Abort ${Date.now().toString().slice(-4)}`;
+
+        // 1. Create a shared draft
+        cy.request({
+            method: 'POST',
+            url: '/api/draft/invite',
+            body: {
+                title: draftTitle,
+                categories: ['Breakfast'],
+            },
+        }).then((res) => {
+            expect(res.body.draftId).to.be.a('string');
+
+            // 2. Open DraftsModal and open DraftInviteModal
+            cy.get('[data-cy="user-menu"]').click();
+            cy.get('[data-cy="user-menu-my-drafts"]')
+                .should('be.visible')
+                .click();
+            cy.get('[data-testid="drafts-modal"]').should('be.visible');
+
+            cy.contains('[data-testid="draft-card"]', draftTitle)
+                .find('[data-testid="draft-card-manage-collabs"]')
+                .click();
+            cy.get('[data-testid="draft-invite-modal"]').should('be.visible');
+
+            cy.intercept('GET', '/api/search?q=*&type=users').as('searchUsers');
+
+            // 3. Rapid typing sequence: type 'Chef', clear, then immediately type 'Maria'
+            cy.get('[data-cy="search-input"]')
+                .type('Chef')
+                .clear()
+                .type('Maria');
+
+            cy.wait('@searchUsers');
+
+            // 4. Verify Chef Maria appears in search results
+            cy.contains('Chef Maria').should('be.visible');
+
+            // 5. Verify no error toast was triggered by the aborted search
+            cy.contains('Search failed').should('not.exist');
+        });
+    });
 });

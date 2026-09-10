@@ -945,7 +945,7 @@ sequenceDiagram
 
 ## 10. Collaborative Roles, Direct Search & Invites Workflow (`collaborative_roles_invites.cy.ts`)
 
-This spec validates the in-app invite management (`DraftInviteModal`), direct invite link display and auto-generation on modal mount, token regeneration, role toggle between `editor` and `viewer`, collaborator removal, direct collaborator addition via search with automatic solo-to-shared promotion, and collaborator editing access.
+This spec validates the in-app invite management (`DraftInviteModal`), direct invite link display and auto-generation on modal mount, token regeneration, role toggle between `editor` and `viewer`, collaborator removal, direct collaborator addition via search with automatic solo-to-shared promotion, collaborator editing access, draft card avatar stack click trigger with dynamic counter updates, and rapid search input cancellation via `AbortController`.
 
 ```mermaid
 sequenceDiagram

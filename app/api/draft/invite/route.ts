@@ -51,9 +51,14 @@ export async function POST(request: Request) {
             }
         }
 
+        const host = request.headers.get('host');
+        const origin = request.headers.get('origin');
+        const hostUrl = host ? `https://${host}` : null;
         const baseUrl =
             process.env.NEXT_PUBLIC_APP_URL ||
-            (request.headers.get('origin') ?? 'http://localhost:3000');
+            origin ||
+            hostUrl ||
+            'http://localhost:3000';
 
         const shouldRegenerate = Boolean(body.regenerate);
         if (shouldRegenerate && existing) {
