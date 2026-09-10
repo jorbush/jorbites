@@ -24,11 +24,10 @@ export function useRelatedContentSearch(
                 async (
                     query: string,
                     type: string,
-                    tFunction: (key: string, options?: any) => string,
-                    setResults: (results: RelatedSearchResults) => void
+                    tFunction: (key: string, options?: any) => string
                 ) => {
-                    if (query.length < 2) {
-                        setResults({ recipes: [], quests: [] });
+                    if (query.trim().length < 2) {
+                        setSearchResults({ recipes: [], quests: [] });
                         return;
                     }
 
@@ -37,15 +36,15 @@ export function useRelatedContentSearch(
                             const response = await axios.get(
                                 `/api/quests?status=open&q=${encodeURIComponent(query)}`
                             );
-                            setResults({
+                            setSearchResults({
                                 recipes: [],
-                                quests: response.data.quests,
+                                quests: response.data.quests || [],
                             });
                         } else {
                             const response = await axios.get(
                                 `/api/search?q=${encodeURIComponent(query)}&type=${type}`
                             );
-                            setResults({ ...response.data, quests: [] });
+                            setSearchResults({ ...response.data, quests: [] });
                         }
                     } catch (error) {
                         console.error('Search failed:', error);
@@ -59,24 +58,28 @@ export function useRelatedContentSearch(
         []
     );
 
-    const handleSearch = useCallback(
+    useEffect(() => {
+        return () => {
+            debouncedSearch.cancel();
+        };
+    }, [debouncedSearch]);
+
+    const handleSearchQueryChange = useCallback(
         (query: string) => {
-            debouncedSearch(query, searchType, t, setSearchResults);
+            setSearchQuery(query);
+            if (query.trim().length < 2) {
+                debouncedSearch.cancel();
+                setSearchResults({ recipes: [], quests: [] });
+            } else {
+                debouncedSearch(query, searchType, t);
+            }
         },
         [debouncedSearch, searchType, t]
     );
 
-    useEffect(() => {
-        handleSearch(searchQuery);
-
-        return () => {
-            debouncedSearch.cancel();
-        };
-    }, [searchQuery, handleSearch, debouncedSearch]);
-
     return {
         searchQuery,
-        setSearchQuery,
+        setSearchQuery: handleSearchQueryChange,
         searchResults,
     };
 }
