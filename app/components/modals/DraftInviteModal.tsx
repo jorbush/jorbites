@@ -14,14 +14,18 @@ import {
     FiShield,
     FiUsers,
     FiLink,
+    FiSearch,
 } from 'react-icons/fi';
+import debounce from 'lodash/debounce';
 import Modal from '@/app/components/modals/Modal';
 import Avatar from '@/app/components/utils/Avatar';
 import Loader from '@/app/components/shared/Loader';
+import SearchInput from '@/app/components/inputs/SearchInput';
 import useDraftInviteModal from '@/app/hooks/useDraftInviteModal';
 import { axiosFetcher } from '@/app/utils/fetcher';
 import { SafeUser } from '@/app/types';
 import { SharedDraft, CoCookRole } from '@/app/types/draft';
+import { MAX_CO_COOKS } from '@/app/utils/constants';
 
 interface DraftInviteModalProps {
     currentUser?: SafeUser | null;
@@ -35,6 +39,18 @@ const DraftInviteModal: React.FC<DraftInviteModalProps> = ({ currentUser }) => {
     const [isRegenerating, setIsRegenerating] = useState(false);
     const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
     const [mutatingUserId, setMutatingUserId] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<{
+        users: SafeUser[];
+    }>({ users: [] });
+    const [isAddingUser, setIsAddingUser] = useState(false);
+    const [regeneratedToken, setRegeneratedToken] = useState<string | null>(
+        null
+    );
+
+    React.useEffect(() => {
+        setRegeneratedToken(null);
+    }, [draftId, isOpen]);
 
     const {
         data: draft,
@@ -84,12 +100,14 @@ const DraftInviteModal: React.FC<DraftInviteModalProps> = ({ currentUser }) => {
         currentUser?.id && draft?.ownerId && currentUser.id === draft.ownerId
     );
 
+    const effectiveToken = regeneratedToken || draft?.inviteToken;
+
     const inviteUrl = useMemo(() => {
-        if (!draft?.inviteToken || !draftId) return '';
+        if (!effectiveToken || !draftId) return '';
         const origin =
             typeof window !== 'undefined' ? window.location.origin : '';
-        return `${origin}/recipes/new?draft=${draftId}&token=${draft.inviteToken}`;
-    }, [draft?.inviteToken, draftId]);
+        return `${origin}/recipes/new?draft=${draftId}&token=${effectiveToken}`;
+    }, [effectiveToken, draftId]);
 
     const handleCopy = useCallback(async () => {
         if (!inviteUrl) return;
@@ -111,37 +129,82 @@ const DraftInviteModal: React.FC<DraftInviteModalProps> = ({ currentUser }) => {
         }
     }, [inviteUrl, t]);
 
-    const handleGenerateOrRegenerate = useCallback(async () => {
-        if (!draftId) return;
-        setIsRegenerating(true);
-        try {
-            const res = await axios.post('/api/draft/invite', {
-                draftId,
-                regenerate: Boolean(draft?.inviteToken),
-            });
-            if (res.data?.draft) {
-                await mutateDraft(res.data.draft, false);
-            } else {
-                await mutateDraft();
+    const handleGenerateOrRegenerate = useCallback(
+        async (isAutoInitial: boolean = false) => {
+            if (!draftId) return;
+            setIsRegenerating(true);
+            try {
+                const res = await axios.post('/api/draft/invite', {
+                    draftId,
+                    regenerate: Boolean(effectiveToken),
+                });
+                if (res.data?.inviteToken) {
+                    setRegeneratedToken(res.data.inviteToken);
+                }
+                if (res.data?.draft) {
+                    await mutateDraft(res.data.draft, false);
+                } else {
+                    await mutateDraft();
+                }
+                mutate('/api/draft/active');
+                mutate(`/api/draft?draftId=${encodeURIComponent(draftId)}`);
+                setShowRegenerateConfirm(false);
+                if (!isAutoInitial && effectiveToken) {
+                    toast.success(
+                        t('invite_link_regenerated', {
+                            defaultValue: 'Invite link regenerated!',
+                        })
+                    );
+                }
+            } catch {
+                if (!isAutoInitial) {
+                    toast.error(
+                        t('something_went_wrong', {
+                            defaultValue: 'Something went wrong',
+                        })
+                    );
+                }
+            } finally {
+                setIsRegenerating(false);
             }
-            mutate('/api/draft/active');
-            mutate(`/api/draft?draftId=${encodeURIComponent(draftId)}`);
-            setShowRegenerateConfirm(false);
-            toast.success(
-                t('invite_link_regenerated', {
-                    defaultValue: 'Invite link regenerated!',
-                })
-            );
-        } catch {
-            toast.error(
-                t('something_went_wrong', {
-                    defaultValue: 'Something went wrong',
-                })
-            );
-        } finally {
-            setIsRegenerating(false);
+        },
+        [draftId, effectiveToken, mutateDraft, t]
+    );
+
+    const hasAutoGeneratedRef = React.useRef(false);
+
+    React.useEffect(() => {
+        if (!isOpen) {
+            hasAutoGeneratedRef.current = false;
         }
-    }, [draft?.inviteToken, draftId, mutateDraft, t]);
+    }, [isOpen]);
+
+    React.useEffect(() => {
+        hasAutoGeneratedRef.current = false;
+    }, [draftId]);
+
+    React.useEffect(() => {
+        if (
+            isOpen &&
+            draftId &&
+            isOwner &&
+            draft &&
+            !effectiveToken &&
+            !isRegenerating &&
+            !hasAutoGeneratedRef.current
+        ) {
+            hasAutoGeneratedRef.current = true;
+            handleGenerateOrRegenerate(true);
+        }
+    }, [
+        isOpen,
+        draftId,
+        isOwner,
+        draft,
+        effectiveToken,
+        isRegenerating,
+        handleGenerateOrRegenerate,
+    ]);
 
     const handleRoleChange = useCallback(
         async (targetUserId: string, newRole: CoCookRole) => {
@@ -230,6 +293,76 @@ const DraftInviteModal: React.FC<DraftInviteModalProps> = ({ currentUser }) => {
         [currentUser?.id, draftId, mutateDraft, onClose, t]
     );
 
+    const debouncedSearch = useMemo(
+        () =>
+            debounce(async (query: string) => {
+                if (query.trim().length < 2) {
+                    setSearchResults({ users: [] });
+                    return;
+                }
+                try {
+                    const res = await axios.get(
+                        `/api/search?q=${encodeURIComponent(query)}&type=users`
+                    );
+                    setSearchResults({ users: res.data.users || [] });
+                } catch (err) {
+                    console.error('User search failed:', err);
+                }
+            }, 300),
+        []
+    );
+
+    React.useEffect(() => {
+        debouncedSearch(searchQuery);
+        return () => {
+            debouncedSearch.cancel();
+        };
+    }, [searchQuery, debouncedSearch]);
+
+    const handleAddCollaborator = useCallback(
+        async (user: SafeUser) => {
+            if (!draftId || isAddingUser) return;
+            if ((draft?.coCooksIds?.length || 0) >= MAX_CO_COOKS) {
+                toast.error(
+                    t('max_cooks_reached', {
+                        defaultValue: `Maximum of ${MAX_CO_COOKS} co-cooks allowed`,
+                    })
+                );
+                return;
+            }
+            setIsAddingUser(true);
+            try {
+                const res = await axios.post('/api/draft/collaborator', {
+                    draftId,
+                    userId: user.id,
+                    role: 'editor',
+                });
+                if (res.data?.draft) {
+                    await mutateDraft(res.data.draft, false);
+                } else {
+                    await mutateDraft();
+                }
+                mutate('/api/draft/active');
+                mutate(`/api/draft?draftId=${encodeURIComponent(draftId)}`);
+                toast.success(
+                    t('co_cook_added', { defaultValue: 'Co-cook added' })
+                );
+                setSearchQuery('');
+            } catch (err: any) {
+                const msg =
+                    err?.response?.data?.message ||
+                    err?.response?.data?.error ||
+                    t('something_went_wrong', {
+                        defaultValue: 'Failed to add co-cook',
+                    });
+                toast.error(msg);
+            } finally {
+                setIsAddingUser(false);
+            }
+        },
+        [draft?.coCooksIds?.length, draftId, isAddingUser, mutateDraft, t]
+    );
+
     const bodyContent = (
         <div
             data-testid="draft-invite-modal"
@@ -241,144 +374,241 @@ const DraftInviteModal: React.FC<DraftInviteModalProps> = ({ currentUser }) => {
                 </div>
             ) : (
                 <>
-                    {/* Section: Invite Link */}
-                    <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between">
-                            <label className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-neutral-600 uppercase dark:text-neutral-400">
-                                <FiLink size={14} />
-                                <span>
-                                    {t('invite_link', {
-                                        defaultValue: 'Invite Link',
-                                    })}
-                                </span>
-                            </label>
-                            {isOwner &&
-                                draft?.inviteToken &&
-                                !showRegenerateConfirm && (
-                                    <button
-                                        type="button"
-                                        data-testid="regenerate-invite-link-btn"
-                                        onClick={() =>
-                                            setShowRegenerateConfirm(true)
-                                        }
-                                        disabled={isRegenerating}
-                                        className="flex items-center gap-1 text-xs font-medium text-amber-600 hover:text-amber-700 disabled:opacity-50 dark:text-amber-400 dark:hover:text-amber-300"
-                                    >
-                                        <FiRefreshCw
-                                            size={12}
-                                            className={
-                                                isRegenerating
-                                                    ? 'animate-spin'
-                                                    : ''
-                                            }
-                                        />
+                    {/* Owner section: Invite Link & Direct User Search */}
+                    {isOwner ? (
+                        <div className="flex flex-col gap-5">
+                            {/* Sub-section: Invite Link */}
+                            <div className="flex flex-col gap-2">
+                                <div className="flex items-center justify-between">
+                                    <label className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-neutral-600 uppercase dark:text-neutral-400">
+                                        <FiLink size={14} />
                                         <span>
-                                            {t('regenerate_link', {
-                                                defaultValue: 'Regenerate link',
+                                            {t('invite_link', {
+                                                defaultValue: 'Invite Link',
                                             })}
                                         </span>
-                                    </button>
-                                )}
-                        </div>
+                                    </label>
+                                    {draft?.inviteToken &&
+                                        !showRegenerateConfirm && (
+                                            <button
+                                                type="button"
+                                                data-testid="regenerate-invite-link-btn"
+                                                onClick={() =>
+                                                    setShowRegenerateConfirm(
+                                                        true
+                                                    )
+                                                }
+                                                disabled={isRegenerating}
+                                                className="flex items-center gap-1 text-xs font-medium text-amber-600 hover:text-amber-700 disabled:opacity-50 dark:text-amber-400 dark:hover:text-amber-300"
+                                            >
+                                                <FiRefreshCw
+                                                    size={12}
+                                                    className={
+                                                        isRegenerating
+                                                            ? 'animate-spin'
+                                                            : ''
+                                                    }
+                                                />
+                                                <span>
+                                                    {t('regenerate_link', {
+                                                        defaultValue:
+                                                            'Regenerate link',
+                                                    })}
+                                                </span>
+                                            </button>
+                                        )}
+                                </div>
 
-                        {showRegenerateConfirm && (
-                            <div
-                                data-testid="regenerate-confirm-box"
-                                className="flex flex-col gap-2 rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-700/50 dark:bg-amber-950/30 dark:text-amber-200"
-                            >
-                                <p>
-                                    {t('regenerate_confirm', {
-                                        defaultValue:
-                                            'Are you sure? Previous invite links will stop working.',
-                                    })}
-                                </p>
+                                {showRegenerateConfirm && (
+                                    <div
+                                        data-testid="regenerate-confirm-box"
+                                        className="flex flex-col gap-2 rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-700/50 dark:bg-amber-950/30 dark:text-amber-200"
+                                    >
+                                        <p>
+                                            {t('regenerate_confirm', {
+                                                defaultValue:
+                                                    'Are you sure? Previous invite links will stop working.',
+                                            })}
+                                        </p>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                data-testid="regenerate-cancel-btn"
+                                                onClick={() =>
+                                                    setShowRegenerateConfirm(
+                                                        false
+                                                    )
+                                                }
+                                                className="rounded border border-neutral-300 bg-white px-2.5 py-1 text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                                            >
+                                                {t('cancel', {
+                                                    defaultValue: 'Cancel',
+                                                })}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                data-testid="regenerate-confirm-btn"
+                                                onClick={
+                                                    handleGenerateOrRegenerate
+                                                }
+                                                disabled={isRegenerating}
+                                                className="rounded bg-amber-600 px-2.5 py-1 font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+                                            >
+                                                {isRegenerating
+                                                    ? t('loading', {
+                                                          defaultValue:
+                                                              'Loading...',
+                                                      })
+                                                    : t('confirm', {
+                                                          defaultValue:
+                                                              'Regenerate',
+                                                      })}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="flex items-center gap-2">
-                                    <button
-                                        type="button"
-                                        data-testid="regenerate-cancel-btn"
-                                        onClick={() =>
-                                            setShowRegenerateConfirm(false)
+                                    <input
+                                        type="text"
+                                        readOnly
+                                        value={inviteUrl}
+                                        placeholder={
+                                            isRegenerating || !effectiveToken
+                                                ? (t('generating_link', {
+                                                      defaultValue:
+                                                          'Generating invite link...',
+                                                  }) as string)
+                                                : ''
                                         }
-                                        className="rounded border border-neutral-300 bg-white px-2.5 py-1 text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
-                                    >
-                                        {t('cancel', {
-                                            defaultValue: 'Cancel',
-                                        })}
-                                    </button>
+                                        data-testid="invite-link-input"
+                                        className="w-full truncate rounded-lg border border-neutral-300 bg-neutral-50 px-3 py-2 font-mono text-xs text-neutral-700 select-all focus:outline-hidden dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                                    />
                                     <button
                                         type="button"
-                                        data-testid="regenerate-confirm-btn"
-                                        onClick={handleGenerateOrRegenerate}
-                                        disabled={isRegenerating}
-                                        className="rounded bg-amber-600 px-2.5 py-1 font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+                                        data-testid="copy-invite-link-btn"
+                                        onClick={handleCopy}
+                                        disabled={!inviteUrl}
+                                        className="bg-green-450 flex shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                                     >
-                                        {isRegenerating
-                                            ? t('loading', {
-                                                  defaultValue: 'Loading...',
-                                              })
-                                            : t('confirm', {
-                                                  defaultValue: 'Regenerate',
-                                              })}
+                                        {copied ? (
+                                            <FiCheck size={14} />
+                                        ) : (
+                                            <FiCopy size={14} />
+                                        )}
+                                        <span>
+                                            {copied
+                                                ? t('copied', {
+                                                      defaultValue: 'Copied!',
+                                                  })
+                                                : t('copy_link', {
+                                                      defaultValue: 'Copy Link',
+                                                  })}
+                                        </span>
                                     </button>
                                 </div>
                             </div>
-                        )}
 
-                        {inviteUrl ? (
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="text"
-                                    readOnly
-                                    value={inviteUrl}
-                                    data-testid="invite-link-input"
-                                    className="w-full truncate rounded-lg border border-neutral-300 bg-neutral-50 px-3 py-2 font-mono text-xs text-neutral-700 select-all focus:outline-hidden dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
-                                />
-                                <button
-                                    type="button"
-                                    data-testid="copy-invite-link-btn"
-                                    onClick={handleCopy}
-                                    className="bg-green-450 flex shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white transition hover:opacity-90"
-                                >
-                                    {copied ? (
-                                        <FiCheck size={14} />
-                                    ) : (
-                                        <FiCopy size={14} />
-                                    )}
+                            {/* Sub-section: Search Users (directly below invite link) */}
+                            <div className="flex flex-col gap-2">
+                                <label className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-neutral-600 uppercase dark:text-neutral-400">
+                                    <FiSearch size={14} />
                                     <span>
-                                        {copied
-                                            ? t('copied', {
-                                                  defaultValue: 'Copied!',
-                                              })
-                                            : t('copy_link', {
-                                                  defaultValue: 'Copy Link',
-                                              })}
+                                        {t('add_co_cook_directly', {
+                                            defaultValue:
+                                                'Add Co-Cook Directly',
+                                        })}
                                     </span>
-                                </button>
+                                </label>
+                                <SearchInput
+                                    id="invite-search-users"
+                                    label={
+                                        t('search_users', {
+                                            defaultValue: 'Search Users',
+                                        }) as string
+                                    }
+                                    value={searchQuery}
+                                    onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                    }
+                                    disabled={
+                                        isAddingUser ||
+                                        (draft?.coCooksIds?.length || 0) >=
+                                            MAX_CO_COOKS
+                                    }
+                                    dataCy="search-input"
+                                    icon={FiSearch}
+                                    results={searchResults}
+                                    onSelectResult={(result) =>
+                                        handleAddCollaborator(
+                                            result as SafeUser
+                                        )
+                                    }
+                                    searchType="users"
+                                    maxSelected={MAX_CO_COOKS}
+                                    isSelected={(id) =>
+                                        id === draft?.ownerId ||
+                                        Boolean(draft?.coCooksIds?.includes(id))
+                                    }
+                                    emptyMessage={
+                                        t('no_users_found', {
+                                            defaultValue: 'No users found',
+                                        }) as string
+                                    }
+                                />
+                                {(draft?.coCooksIds?.length || 0) >=
+                                    MAX_CO_COOKS && (
+                                    <p className="text-xs text-amber-600 dark:text-amber-400">
+                                        {t('max_cooks_reached', {
+                                            defaultValue: `Maximum of ${MAX_CO_COOKS} co-cooks allowed`,
+                                        })}
+                                    </p>
+                                )}
                             </div>
-                        ) : isOwner ? (
-                            <button
-                                type="button"
-                                data-testid="generate-invite-link-btn"
-                                onClick={handleGenerateOrRegenerate}
-                                disabled={isRegenerating}
-                                className="bg-green-450 flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
-                            >
-                                <FiLink size={14} />
-                                <span>
-                                    {t('generate_invite_link', {
-                                        defaultValue: 'Generate Invite Link',
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-2">
+                            {inviteUrl ? (
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        readOnly
+                                        value={inviteUrl}
+                                        data-testid="invite-link-input"
+                                        className="w-full truncate rounded-lg border border-neutral-300 bg-neutral-50 px-3 py-2 font-mono text-xs text-neutral-700 select-all focus:outline-hidden dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                                    />
+                                    <button
+                                        type="button"
+                                        data-testid="copy-invite-link-btn"
+                                        onClick={handleCopy}
+                                        className="bg-green-450 flex shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white transition hover:opacity-90"
+                                    >
+                                        {copied ? (
+                                            <FiCheck size={14} />
+                                        ) : (
+                                            <FiCopy size={14} />
+                                        )}
+                                        <span>
+                                            {copied
+                                                ? t('copied', {
+                                                      defaultValue: 'Copied!',
+                                                  })
+                                                : t('copy_link', {
+                                                      defaultValue: 'Copy Link',
+                                                  })}
+                                        </span>
+                                    </button>
+                                </div>
+                            ) : (
+                                <p className="text-xs text-neutral-500 italic">
+                                    {t('only_owner_can_generate_link', {
+                                        defaultValue:
+                                            'Only the draft owner can generate invite links.',
                                     })}
-                                </span>
-                            </button>
-                        ) : (
-                            <p className="text-xs text-neutral-500 italic">
-                                {t('only_owner_can_generate_link', {
-                                    defaultValue:
-                                        'Only the draft owner can generate invite links.',
-                                })}
-                            </p>
-                        )}
-                    </div>
+                                </p>
+                            )}
+                        </div>
+                    )}
 
                     {/* Section: Collaborators */}
                     <div className="flex flex-col gap-3">

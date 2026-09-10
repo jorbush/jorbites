@@ -590,7 +590,7 @@ describe('<RecipeModal />', () => {
         });
 
         expect(screen.getByText('related_content')).toBeDefined();
-        expect(screen.getByText('co_cooks')).toBeDefined();
+        expect(screen.getByText('quests')).toBeDefined();
         expect(screen.getByText('linked_recipes')).toBeDefined();
     });
 

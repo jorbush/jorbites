@@ -172,7 +172,9 @@ To guarantee that collaborators cannot concurrently edit or overwrite the same r
 | Endpoint                 | Method                  | Description                                                                                                                |
 | ------------------------ | ----------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `/api/draft`             | `GET`, `POST`, `DELETE` | Manages single-user or shared drafts via `DraftService`. Non-destructively merges fields; sanitizes tokens for non-owners. |
-| `/api/draft/invite`      | `POST`                  | Generates a shared draft ID, secure token, and shareable link (owner only).                                                |
+| `/api/draft/invite`      | `POST`                  | Generates a shared draft ID, secure token, and shareable link (owner only). Auto-promotes solo drafts to shared. |
+| `/api/draft/collaborator`| `POST`, `DELETE`        | Adds or removes a co-cook collaborator directly. Auto-promotes solo drafts to shared drafts upon collaborator addition. |
+| `/api/draft/role`        | `PATCH`                 | Updates co-cook permission role between `editor` and `viewer` (owner only). Releases locks on switch to viewer. |
 | `/api/draft/join`        | `GET`                   | Validates invite token, adds user to `coCooksIds`, and redirects to shared draft.                                          |
 | `/api/draft/active`      | `GET`                   | Returns list of active shared drafts where current user is owner or co-cook (with lazy cleanup).                           |
 | `/api/recipes/[id]/lock` | `POST`, `DELETE`, `GET` | Acquires, releases, or fetches section soft-locks with fast heartbeat path.                                                |

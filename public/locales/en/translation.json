@@ -1358,5 +1358,9 @@
     "no_co_cooks_yet": "No co-cooks have joined yet. Share the invite link above!",
     "viewer_mode_banner": "View-only mode — you can browse but editing is disabled for your role",
     "step_conflict_toast": "Step {{stepNumber}} updated by a co-cook",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "close": "Close",
+    "co_cook_added": "Co-cook added",
+    "search_users_tab": "Search Users",
+    "add_co_cook_directly": "Add Co-Cook Directly"
 }

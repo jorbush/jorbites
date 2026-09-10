@@ -138,9 +138,24 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
             .should('not.be.disabled')
             .click();
 
-        // STEP 2: Related Content & Co-Cook Selection
-        cy.task('log', '=== STEP 2: Adding Co-Cook Collaborator ===');
-        cy.get('[data-testid="related-content-tabs"]').should('exist');
+        // STEP 2: Co-Cook Collaborator Selection via DraftInviteModal
+        cy.task(
+            'log',
+            '=== STEP 2: Adding Co-Cook Collaborator via DraftInviteModal ==='
+        );
+        cy.intercept('POST', '/api/draft').as('saveCollabDraft');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveCollabDraft');
+
+        // Open DraftsModal
+        cy.get('[data-testid="open-drafts-modal-button"]').click();
+        cy.get('[data-testid="drafts-modal"]').should('be.visible');
+
+        // Open DraftInviteModal on the draft card
+        cy.contains('[data-testid="draft-card"]', recipeName)
+            .find('[data-testid="draft-card-manage-collabs"]')
+            .click();
+        cy.get('[data-testid="draft-invite-modal"]').should('be.visible');
 
         // Mock search response with valid 24-character hexadecimal MongoDB ObjectId
         cy.intercept('GET', '/api/search?q=*&type=users', {
@@ -158,6 +173,7 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
                 recipes: [],
             },
         }).as('searchUsers');
+        cy.intercept('POST', '/api/draft/collaborator').as('addCollab');
 
         // Search for user
         cy.get('[data-cy="search-input"]').type('Chef Maria');
@@ -165,13 +181,23 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
 
         // Select Maria as co-cook
         cy.contains('Chef Maria').click();
+        cy.wait('@addCollab');
+        cy.contains('Co-cook added').should('be.visible');
         cy.task('log', 'Chef Maria selected as co-cook');
 
-        // Verify selected co-cook is displayed in SelectedCoCooksList
-        cy.contains('Chef Maria').should('be.visible');
-        cy.contains('(1/4)').should('be.visible');
+        // Close DraftInviteModal
+        cy.get('[data-testid="draft-invite-modal"]')
+            .parents('.fixed')
+            .find('[data-cy="modal-action-button"]')
+            .click();
+        cy.get('[data-testid="draft-invite-modal"]').should('not.exist');
 
-        // Proceed to next step
+        // Open the draft card in RecipeModal
+        cy.contains('[data-testid="draft-card"]', recipeName)
+            .find('[data-testid="draft-card-title"]')
+            .click();
+
+        // Advance through Related Content step to Images step
         cy.get('[data-cy="modal-action-button"]')
             .should('not.be.disabled')
             .click();
@@ -233,14 +259,17 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
         cy.get('[data-testid="load-draft-button"]').click();
         cy.wait('@saveDraft');
 
-        // Open DraftsModal and copy invite link from draft card
+        // Open DraftsModal and copy invite link from draft card via DraftInviteModal
         cy.intercept('POST', '/api/draft/invite').as('generateInvite');
         cy.get('[data-testid="open-drafts-modal-button"]').click();
         cy.get('[data-testid="drafts-modal"]').should('be.visible');
         cy.get('[data-testid="draft-card"]', { timeout: 10000 }).should(
             'be.visible'
         );
-        cy.get('[data-testid="draft-card-share"]').first().click();
+        cy.get('[data-testid="draft-card-manage-collabs"]').first().click();
+
+        // DraftInviteModal opens and invite link is generated automatically
+        cy.get('[data-testid="draft-invite-modal"]').should('be.visible');
 
         let generatedDraftId = '';
         let generatedToken = '';
@@ -257,13 +286,25 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
             );
         });
 
+        // Copy invite link
+        cy.get('[data-testid="copy-invite-link-btn"]').click();
+
         // Verify toast notification
         cy.contains('Co-cook invite link copied to clipboard').should(
             'be.visible'
         );
 
+        // Close draft invite modal
+        cy.get('[data-testid="draft-invite-modal"]')
+            .parents('.fixed')
+            .find('[data-testid="close-modal-button"]')
+            .click();
+
         // Close drafts modal
-        cy.get('[data-testid="close-modal-button"]').click();
+        cy.get('[data-testid="drafts-modal"]')
+            .parents('.fixed')
+            .find('[data-testid="close-modal-button"]')
+            .click();
 
         // Now test joining the shared draft via tokenized URL
         cy.task('log', '=== Joining Shared Draft via Join URL ===');
@@ -568,8 +609,18 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
             .should('not.be.disabled')
             .click();
 
-        // Related Content Step
-        cy.get('[data-testid="related-content-tabs"]').should('exist');
+        // Save draft and open DraftInviteModal to test co-cook limit
+        cy.intercept('POST', '/api/draft').as('saveDraft');
+        cy.get('[data-testid="load-draft-button"]').click();
+        cy.wait('@saveDraft');
+
+        // Open DraftsModal and open DraftInviteModal
+        cy.get('[data-testid="open-drafts-modal-button"]').click();
+        cy.get('[data-testid="drafts-modal"]').should('be.visible');
+        cy.contains('[data-testid="draft-card"]', 'Four Cook Feast')
+            .find('[data-testid="draft-card-manage-collabs"]')
+            .click();
+        cy.get('[data-testid="draft-invite-modal"]').should('be.visible');
 
         // Mock search response returning 5 users
         cy.intercept('GET', '/api/search?q=*&type=users', {
@@ -607,9 +658,11 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
         }).as('searchMultipleUsers');
 
         const addChef = (name: string) => {
+            cy.intercept('POST', '/api/draft/collaborator').as('addCollab');
             cy.get('[data-cy="search-input"]').clear().type(name);
             cy.wait('@searchMultipleUsers');
             cy.contains(name).click();
+            cy.wait('@addCollab');
         };
 
         // Add 4 co-cooks (reaching maximum capacity)
@@ -618,29 +671,38 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
         addChef('Chef Three');
         addChef('Chef Four');
 
-        // Verify capacity is 4/4
-        cy.get('[data-testid="co-cooks-count"]').should('contain', '(4/4)');
-
-        // Search Chef Five -> verify dropdown item is disabled when max capacity is reached
-        cy.get('[data-cy="search-input"]').clear().type('Chef Five');
-        cy.wait('@searchMultipleUsers');
-        cy.contains('Chef Five').closest('button').should('be.disabled');
+        // Verify capacity limit message is displayed and search input is disabled
+        cy.contains('Maximum of 4 co-cooks allowed').should('be.visible');
+        cy.get('[data-cy="search-input"]').should('be.disabled');
 
         // Remove Chef Four
-        cy.get('[data-testid="remove-co-cook-507f1f77bcf86cd799439014"]')
+        cy.intercept('DELETE', '/api/draft/collaborator*').as('removeCollab');
+        cy.get('[data-testid="remove-collaborator-507f1f77bcf86cd799439014"]')
             .first()
             .click({ force: true });
+        cy.wait('@removeCollab');
 
-        // Verify capacity drops to 3/4
-        cy.get('[data-testid="co-cooks-count"]').should('contain', '(3/4)');
+        // Verify capacity drops below maximum and search input is re-enabled
+        cy.contains('Maximum of 4 co-cooks allowed').should('not.exist');
+        cy.get('[data-cy="search-input"]').should('not.be.disabled');
 
-        // Verify Chef Five is no longer disabled and can now be added
-        cy.contains('Chef Five')
-            .closest('button')
-            .should('not.be.disabled')
-            .click();
-        cy.get('[data-testid="co-cooks-count"]').should('contain', '(4/4)');
+        // Add Chef Five to reach maximum capacity again
+        addChef('Chef Five');
+        cy.contains('Maximum of 4 co-cooks allowed').should('be.visible');
+        cy.get('[data-cy="search-input"]').should('be.disabled');
         cy.task('log', '✓ Co-cook capacity limits and removal verified');
+
+        // Close modals
+        cy.get('[data-testid="draft-invite-modal"]')
+            .parents('.fixed')
+            .find('[data-cy="modal-action-button"]')
+            .click();
+        cy.get('[data-testid="draft-invite-modal"]').should('not.exist');
+        cy.get('[data-testid="drafts-modal"]')
+            .parents('.fixed')
+            .find('[data-testid="close-modal-button"]')
+            .click();
+        cy.get('[data-testid="drafts-modal"]').should('not.exist');
     });
 
     it('cleans up shared Redis draft completely upon recipe publish', () => {

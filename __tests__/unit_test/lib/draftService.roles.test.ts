@@ -297,4 +297,108 @@ describe('DraftService - Roles, Invites & Collaboration (D-08, D-10)', () => {
             });
         });
     });
+
+    describe('addCollaborator', () => {
+        it('allows owner to add a new collaborator with default role editor', async () => {
+            await createSharedDraftFixture('draft-roles-5');
+
+            const updated = await DraftService.addCollaborator(
+                'draft-roles-5',
+                outsiderUser.id,
+                ownerUser
+            );
+
+            expect(updated.coCooksIds).toContain(outsiderUser.id);
+            expect(updated.coCookRoles?.[outsiderUser.id]).toBe('editor');
+            expect(
+                sets[`user:drafts:${outsiderUser.id}`].has('draft-roles-5')
+            ).toBe(true);
+        });
+
+        it('allows owner to add a new collaborator with viewer role', async () => {
+            await createSharedDraftFixture('draft-roles-5');
+
+            const updated = await DraftService.addCollaborator(
+                'draft-roles-5',
+                outsiderUser.id,
+                ownerUser,
+                'viewer'
+            );
+
+            expect(updated.coCooksIds).toContain(outsiderUser.id);
+            expect(updated.coCookRoles?.[outsiderUser.id]).toBe('viewer');
+        });
+
+        it('rejects if caller is not the owner', async () => {
+            await createSharedDraftFixture('draft-roles-5');
+
+            await expect(
+                DraftService.addCollaborator(
+                    'draft-roles-5',
+                    outsiderUser.id,
+                    coCook1
+                )
+            ).rejects.toThrow('ONLY_OWNER_CAN_ADD_COLLABORATORS');
+        });
+
+        it('rejects adding the owner', async () => {
+            await createSharedDraftFixture('draft-roles-5');
+
+            await expect(
+                DraftService.addCollaborator(
+                    'draft-roles-5',
+                    ownerUser.id,
+                    ownerUser
+                )
+            ).rejects.toThrow('CANNOT_ADD_OWNER');
+        });
+
+        it('rejects adding a user who is already a collaborator', async () => {
+            await createSharedDraftFixture('draft-roles-5');
+
+            await expect(
+                DraftService.addCollaborator(
+                    'draft-roles-5',
+                    coCook1.id,
+                    ownerUser
+                )
+            ).rejects.toThrow('COLLABORATOR_ALREADY_EXISTS');
+        });
+
+        it('rejects when maximum co-cook limit (4) is reached', async () => {
+            const draft = {
+                draftId: 'draft-roles-full',
+                ownerId: ownerUser.id,
+                ownerName: ownerUser.name,
+                coCooksIds: ['c1', 'c2', 'c3', 'c4'],
+                coCookRoles: {
+                    c1: 'editor',
+                    c2: 'editor',
+                    c3: 'editor',
+                    c4: 'editor',
+                },
+                title: 'Full Collab',
+                updatedAt: new Date().toISOString(),
+            };
+            store['draft:shared:draft-roles-full'] = JSON.stringify(draft);
+
+            await expect(
+                DraftService.addCollaborator(
+                    'draft-roles-full',
+                    outsiderUser.id,
+                    ownerUser
+                )
+            ).rejects.toThrow('CO_COOK_LIMIT_REACHED');
+        });
+
+        it('rejects if draft does not exist', async () => {
+            await expect(
+                DraftService.addCollaborator(
+                    'non-existent-draft',
+                    outsiderUser.id,
+                    ownerUser
+                )
+            ).rejects.toThrow('DRAFT_NOT_FOUND');
+        });
+    });
 });

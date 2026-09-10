@@ -10,6 +10,9 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import { DraftService } from '@/app/services/draftService';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function DELETE(request: Request) {
     try {
         const currentUser = await getCurrentUser();
@@ -80,5 +83,81 @@ export async function DELETE(request: Request) {
             error: message,
         });
         return internalServerError('Failed to remove collaborator');
+    }
+}
+
+export async function POST(request: Request) {
+    try {
+        const currentUser = await getCurrentUser();
+        if (!currentUser) {
+            return unauthorizedResponse(
+                'User authentication required to add collaborator'
+            );
+        }
+
+        const body = await request.json().catch(() => ({}));
+        const draftId = body.draftId || body.draft;
+        const targetUserId = body.userId || body.targetUserId;
+        const role = body.role || 'editor';
+
+        if (!draftId || !targetUserId) {
+            return badRequest('draftId and userId are required');
+        }
+
+        try {
+            const updatedDraft = await DraftService.addCollaborator(
+                draftId,
+                targetUserId,
+                currentUser,
+                role
+            );
+
+            logger.info('POST /api/draft/collaborator - success', {
+                draftId,
+                targetUserId,
+                addedBy: currentUser.id,
+                role,
+            });
+
+            const responseDraft =
+                currentUser.id === updatedDraft.ownerId
+                    ? updatedDraft
+                    : DraftService.maskSharedDraft(updatedDraft);
+
+            return NextResponse.json({
+                success: true,
+                draft: responseDraft,
+            });
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err);
+            if (message === 'ONLY_OWNER_CAN_ADD_COLLABORATORS') {
+                return forbiddenResponse(
+                    'Only the draft owner can add collaborators'
+                );
+            }
+            if (message === 'CANNOT_ADD_OWNER') {
+                return badRequest(
+                    'The draft owner cannot be added as a co-cook'
+                );
+            }
+            if (message === 'COLLABORATOR_ALREADY_EXISTS') {
+                return badRequest(
+                    'This user is already a collaborator on this draft'
+                );
+            }
+            if (message === 'CO_COOK_LIMIT_REACHED') {
+                return badRequest('Maximum co-cook limit reached');
+            }
+            if (message === 'DRAFT_NOT_FOUND') {
+                return notFoundResponse('Draft not found');
+            }
+            throw err;
+        }
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error('POST /api/draft/collaborator - error', {
+            error: message,
+        });
+        return internalServerError('Failed to add collaborator');
     }
 }

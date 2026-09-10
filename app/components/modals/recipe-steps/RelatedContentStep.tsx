@@ -7,25 +7,19 @@ import { toast } from 'react-hot-toast';
 import Heading from '@/app/components/navigation/Heading';
 import SearchInput from '@/app/components/inputs/SearchInput';
 import Tabs, { Tab } from '@/app/components/utils/Tabs';
-import { FiSearch, FiUsers, FiTarget, FiYoutube } from 'react-icons/fi';
+import { FiSearch, FiTarget, FiYoutube } from 'react-icons/fi';
 import { IoRestaurantOutline } from 'react-icons/io5';
 import debounce from 'lodash/debounce';
 import Input from '@/app/components/inputs/Input';
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 import { validateYouTubeUrl } from '@/app/utils/validation';
-import useDraftInviteModal from '@/app/hooks/useDraftInviteModal';
-import { SelectedCoCooksList } from './SelectedCoCooksList';
 import { SelectedQuestDisplay } from './SelectedQuestDisplay';
 import { SelectedLinkedRecipesList } from './SelectedLinkedRecipesList';
 
 interface RelatedContentStepProps {
     isLoading: boolean;
-    selectedCoCooks: any[];
     selectedLinkedRecipes: any[];
     selectedQuest: any | null;
-    draftId?: string;
-    onAddCoCook: (user: any) => void;
-    onRemoveCoCook: (userId: string) => void;
     onAddLinkedRecipe: (recipe: any) => void;
     onRemoveLinkedRecipe: (recipeId: string) => void;
     onSelectQuest: (quest: any) => void;
@@ -36,12 +30,8 @@ interface RelatedContentStepProps {
 
 const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
     isLoading,
-    selectedCoCooks,
     selectedLinkedRecipes,
     selectedQuest,
-    draftId,
-    onAddCoCook,
-    onRemoveCoCook,
     onAddLinkedRecipe,
     onRemoveLinkedRecipe,
     onSelectQuest,
@@ -50,24 +40,17 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
     errors,
 }) => {
     const { t } = useTranslation();
-    const draftInviteModal = useDraftInviteModal();
     const [searchQuery, setSearchQuery] = useState('');
     const [searchType, setSearchType] = useState<
-        'users' | 'recipes' | 'quests' | 'videos'
-    >('users');
+        'recipes' | 'quests' | 'videos'
+    >('recipes');
     const [searchResults, setSearchResults] = useState<{
-        users: any[];
         recipes: any[];
         quests: any[];
-    }>({ users: [], recipes: [], quests: [] });
+    }>({ recipes: [], quests: [] });
 
     // Define tabs for the component
     const tabs: Tab[] = [
-        {
-            id: 'users',
-            label: t('co_cooks') || 'Co-Cooks',
-            icon: <FiUsers />,
-        },
         {
             id: 'recipes',
             label: t('linked_recipes') || 'Linked Recipes',
@@ -95,7 +78,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                     setResults: Function
                 ) => {
                     if (query.length < 2) {
-                        setResults({ users: [], recipes: [], quests: [] });
+                        setResults({ recipes: [], quests: [] });
                         return;
                     }
 
@@ -105,7 +88,6 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                                 `/api/quests?status=open&q=${encodeURIComponent(query)}`
                             );
                             setResults({
-                                users: [],
                                 recipes: [],
                                 quests: response.data.quests,
                             });
@@ -135,7 +117,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
     );
 
     const handleTabChange = (tabId: string) => {
-        setSearchType(tabId as 'users' | 'recipes' | 'quests' | 'videos');
+        setSearchType(tabId as 'recipes' | 'quests' | 'videos');
         setSearchQuery('');
     };
 
@@ -153,11 +135,11 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                 title={t('related_content') || 'Related Content'}
                 subtitle={
                     t('related_content_subtitle') ||
-                    'Add co-cooks and related recipes'
+                    'Add linked recipes, quests, and videos'
                 }
             />
 
-            {/* Tab selection for co-cooks vs related recipes */}
+            {/* Tab selection for related content */}
             <Tabs
                 tabs={tabs}
                 activeTab={searchType}
@@ -172,11 +154,9 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                     <SearchInput
                         id="search"
                         label={
-                            searchType === 'users'
-                                ? t('search_users') || 'Search Users'
-                                : searchType === 'recipes'
-                                  ? t('search_recipes') || 'Search Recipes'
-                                  : t('search_quests') || 'Search Quests'
+                            searchType === 'recipes'
+                                ? t('search_recipes') || 'Search Recipes'
+                                : t('search_quests') || 'Search Quests'
                         }
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -185,9 +165,7 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                         icon={FiSearch}
                         results={searchResults}
                         onSelectResult={(result) => {
-                            if (searchType === 'users') {
-                                onAddCoCook(result);
-                            } else if (searchType === 'recipes') {
+                            if (searchType === 'recipes') {
                                 onAddLinkedRecipe(result);
                             } else {
                                 onSelectQuest(result);
@@ -195,28 +173,18 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
                             setSearchQuery('');
                         }}
                         searchType={searchType}
-                        maxSelected={
-                            searchType === 'users'
-                                ? 4
-                                : searchType === 'recipes'
-                                  ? 2
-                                  : 1
-                        }
+                        maxSelected={searchType === 'recipes' ? 2 : 1}
                         isSelected={(id) =>
-                            searchType === 'users'
-                                ? selectedCoCooks.some((cook) => cook.id === id)
-                                : searchType === 'recipes'
-                                  ? selectedLinkedRecipes.some(
-                                        (recipe) => recipe.id === id
-                                    )
-                                  : selectedQuest?.id === id
+                            searchType === 'recipes'
+                                ? selectedLinkedRecipes.some(
+                                      (recipe) => recipe.id === id
+                                  )
+                                : selectedQuest?.id === id
                         }
                         emptyMessage={
-                            searchType === 'users'
-                                ? t('no_users_found') || 'No users found'
-                                : searchType === 'recipes'
-                                  ? t('no_recipes_found') || 'No recipes found'
-                                  : t('no_quests_found') || 'No quests found'
+                            searchType === 'recipes'
+                                ? t('no_recipes_found') || 'No recipes found'
+                                : t('no_quests_found') || 'No quests found'
                         }
                     />
                 </div>
@@ -224,39 +192,6 @@ const RelatedContentStep: React.FC<RelatedContentStepProps> = ({
 
             {/* Display of selected items */}
             <div className="space-y-4">
-                {searchType === 'users' && (
-                    <div className="space-y-3">
-                        <SelectedCoCooksList
-                            selectedCoCooks={selectedCoCooks}
-                            onRemoveCoCook={onRemoveCoCook}
-                            t={t}
-                        />
-                        {draftId && (
-                            <div className="pt-1">
-                                <button
-                                    type="button"
-                                    data-testid="manage-co-cooks-btn"
-                                    onClick={() =>
-                                        draftInviteModal.onOpen(draftId)
-                                    }
-                                    className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-xs font-semibold text-neutral-700 shadow-xs transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
-                                >
-                                    <FiUsers
-                                        size={14}
-                                        className="text-green-500"
-                                    />
-                                    <span>
-                                        {t('manage_co_cooks_invite', {
-                                            defaultValue:
-                                                'Manage Co-Cooks & Invites',
-                                        })}
-                                    </span>
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                )}
-
                 {searchType === 'quests' && (
                     <SelectedQuestDisplay
                         selectedQuest={selectedQuest}

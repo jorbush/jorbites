@@ -1358,5 +1358,9 @@
     "no_co_cooks_yet": "Encara no s'ha unit cap co-cuiner. Comparteix l'enllaç de dalt!",
     "viewer_mode_banner": "Mode de només lectura — pots explorar però l'edició està inhabilitada per al teu rol",
     "step_conflict_toast": "Pas {{stepNumber}} actualitzat per un co-cuiner",
-    "refresh": "Actualitzar"
+    "refresh": "Actualitzar",
+    "close": "Tancar",
+    "co_cook_added": "Co-cuiner afegit",
+    "search_users_tab": "Cercar Usuaris",
+    "add_co_cook_directly": "Afegir co-cuiner directament"
 }

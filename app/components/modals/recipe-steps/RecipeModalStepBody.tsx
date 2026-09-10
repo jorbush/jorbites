@@ -49,11 +49,11 @@ export interface RecipeModalStepBodyProps {
     prepTime?: number;
     cookTime?: number;
     method?: string;
-    selectedCoCooks: SafeUser[];
+    selectedCoCooks?: SafeUser[];
     selectedLinkedRecipes: SafeRecipe[];
     selectedQuest: SafeQuest | null;
-    addCoCook: (user: SafeUser) => void;
-    removeCoCook: (userId: string) => void;
+    addCoCook?: (user: SafeUser) => void;
+    removeCoCook?: (userId: string) => void;
     addLinkedRecipe: (recipe: SafeRecipe) => void;
     removeLinkedRecipe: (recipeId: string) => void;
     selectQuest: (quest: SafeQuest) => void;
@@ -172,16 +172,12 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
                 return (
                     <RelatedContentStep
                         isLoading={isLoading}
-                        selectedCoCooks={selectedCoCooks}
                         selectedLinkedRecipes={selectedLinkedRecipes}
                         selectedQuest={selectedQuest}
-                        onAddCoCook={addCoCook}
-                        onRemoveCoCook={removeCoCook}
                         onAddLinkedRecipe={addLinkedRecipe}
                         onRemoveLinkedRecipe={removeLinkedRecipe}
                         onSelectQuest={selectQuest}
                         onRemoveQuest={removeQuest}
-                        draftId={draftId}
                         register={register}
                         errors={errors}
                     />

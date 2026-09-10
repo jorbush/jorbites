@@ -9,6 +9,9 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import { DraftService } from '@/app/services/draftService';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function POST(request: Request) {
     try {
         const currentUser = await getCurrentUser();
@@ -22,7 +25,7 @@ export async function POST(request: Request) {
         const draftId = body.draftId || crypto.randomUUID();
 
         // Check if existing draft belongs to another owner
-        const existing = await DraftService.getSharedDraft(draftId);
+        let existing = await DraftService.getSharedDraft(draftId);
         if (
             existing &&
             existing.ownerId &&
@@ -31,6 +34,21 @@ export async function POST(request: Request) {
             return forbiddenResponse(
                 'Only the draft owner can generate invite links'
             );
+        }
+
+        // If not a shared draft yet, check if it's an existing solo draft belonging to the user
+        if (!existing && body.draftId) {
+            const soloDraft = await DraftService.getSingleUserDraft(
+                currentUser.id,
+                draftId
+            );
+            if (soloDraft) {
+                existing = soloDraft as any;
+                await DraftService.deleteSingleUserDraft(
+                    currentUser.id,
+                    draftId
+                );
+            }
         }
 
         const baseUrl =
@@ -62,6 +80,7 @@ export async function POST(request: Request) {
         const savedDraft = await DraftService.saveSharedDraft(
             draftId,
             {
+                ...existing,
                 ...body,
                 draftId,
                 inviteToken,

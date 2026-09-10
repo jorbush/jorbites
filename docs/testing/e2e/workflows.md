@@ -39,6 +39,10 @@ flowchart TD
             T9["lists.cy.ts<br/>Recipe Lists Lifecycle"]
             T10["plannings.cy.ts<br/>Meal Plannings Lifecycle"]
         end
+
+        subgraph Job7["Container 7: Collaborative Roles & Invites"]
+            T11["collaborative_roles_invites.cy.ts<br/>Roles, Direct Search & Invites"]
+        end
     end
 
     redisSvc -.->|REDIS_URL| Job1
@@ -47,6 +51,7 @@ flowchart TD
     redisSvc -.->|REDIS_URL| Job4
     redisSvc -.->|REDIS_URL| Job5
     redisSvc -.->|REDIS_URL| Job6
+    redisSvc -.->|REDIS_URL| Job7
 
     mongoSvc -.->|DATABASE_URL| Job1
     mongoSvc -.->|DATABASE_URL| Job2
@@ -54,6 +59,7 @@ flowchart TD
     mongoSvc -.->|DATABASE_URL| Job4
     mongoSvc -.->|DATABASE_URL| Job5
     mongoSvc -.->|DATABASE_URL| Job6
+    mongoSvc -.->|DATABASE_URL| Job7
 ```
 
 ---
@@ -934,4 +940,61 @@ sequenceDiagram
     User->>Plannings: Confirm -> DELETE /api/plannings/:id
     Plannings-->>User: Plan card removed from list
 ```
+
+---
+
+## 10. Collaborative Roles, Direct Search & Invites Workflow (`collaborative_roles_invites.cy.ts`)
+
+This spec validates the in-app invite management (`DraftInviteModal`), direct invite link display and auto-generation on modal mount, token regeneration, role toggle between `editor` and `viewer`, collaborator removal, direct collaborator addition via search with automatic solo-to-shared promotion, and collaborator editing access.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Owner as Recipe Owner
+    actor Maria as Chef Maria (Collaborator)
+    participant UI as Browser / DraftInviteModal
+    participant RM as RecipeModal
+    participant API as Next.js API Routes
+    participant DS as DraftService
+    participant Redis as Redis Store
+
+    %% Scenario 1 & 2: Direct Invite Link & Regeneration
+    Owner->>UI: Open DraftsModal -> Click "Manage Collaborators"
+    UI->>API: POST /api/draft/invite { draftId, regenerate: false } (auto on mount)
+    API->>DS: DraftService.saveSharedDraft (promotes to shared if solo)
+    DS->>Redis: SET draft:shared:<id> with inviteToken
+    API-->>UI: 200 OK { draftId, inviteToken }
+    UI-->>Owner: Render invite link input directly & Copy button
+    Owner->>UI: Click "Regenerate" -> ConfirmModal -> Confirm
+    UI->>API: POST /api/draft/invite { draftId, regenerate: true }
+    API-->>UI: 200 OK (rotates token, invalidates previous)
+
+    %% Scenario 3: Role Management (Editor vs Viewer)
+    Owner->>UI: Click role toggle for co-cook (Editor -> Viewer)
+    UI->>API: PATCH /api/draft/role { draftId, collaboratorId, role: 'viewer' }
+    API->>DS: DraftService.setCollaboratorRole
+    DS->>Redis: Updates role in draft:shared:<id> & releases held locks
+    API-->>UI: 200 OK { coCookRoles: { [id]: 'viewer' } }
+
+    %% Scenario 4: Direct User Search Addition & Solo Auto-Promotion
+    Owner->>UI: Type collaborator name into search input below invite link
+    UI->>API: GET /api/search/users?q=Maria
+    API-->>UI: 200 OK [users]
+    Owner->>UI: Click user in search results list
+    UI->>API: POST /api/draft/collaborator { draftId, collaboratorId }
+    API->>DS: DraftService.addCollaborator (auto-promotes solo draft to shared)
+    DS->>Redis: SADD coCooksIds & SADD user:drafts:<MariaId>
+    API-->>UI: 200 OK { collaborators: [...] }
+    UI-->>Owner: Displays collaborator badge with Editor role pill
+
+    %% Scenario 5: Collaborator Access & Editing
+    Maria->>RM: Opens shared draft in RecipeModal
+    RM->>API: GET /api/draft?draftId=<id>
+    API-->>RM: 200 OK { draftData, role: 'editor' }
+    RM-->>Maria: Form interactive, viewer banner hidden
+    Maria->>RM: Edit recipe description & save draft
+    RM->>API: POST /api/draft { draftId, description }
+    API-->>RM: 200 OK -> Changes saved in Redis
+```
+
 

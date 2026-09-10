@@ -211,4 +211,114 @@ describe('DraftInviteModal component', () => {
             expect(mockOnClose).toHaveBeenCalled();
         });
     });
+
+    it('allows draft owner to search users directly below invite link and add a collaborator', async () => {
+        (axios.get as any).mockResolvedValueOnce({
+            data: {
+                users: [
+                    {
+                        id: 'user-new',
+                        name: 'New Chef',
+                        image: '/new.jpg',
+                    },
+                ],
+            },
+        });
+        (axios.post as any).mockResolvedValueOnce({
+            data: {
+                success: true,
+                draft: {
+                    ...mockDraft,
+                    coCooksIds: ['user-cocook', 'user-new'],
+                },
+            },
+        });
+
+        const { container } = render(
+            <DraftInviteModal currentUser={mockOwner} />
+        );
+
+        // Search input is directly available in the owner section
+        const searchInput = container.querySelector(
+            '#invite-search-users'
+        ) as HTMLInputElement;
+        expect(searchInput).toBeInTheDocument();
+        fireEvent.change(searchInput, { target: { value: 'New Chef' } });
+
+        // Wait for debounced search and select result
+        await waitFor(() => {
+            const selectBtn = screen.getByText('New Chef');
+            fireEvent.click(selectBtn);
+        });
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith(
+                '/api/draft/collaborator',
+                expect.objectContaining({
+                    draftId: 'draft-abc-123',
+                    userId: 'user-new',
+                    role: 'editor',
+                })
+            );
+            expect(mockMutateDraft).toHaveBeenCalled();
+        });
+    });
+
+    it('omits generate-invite-link-btn and renders invite-link-input directly', () => {
+        render(<DraftInviteModal currentUser={mockOwner} />);
+
+        expect(
+            screen.queryByTestId('generate-invite-link-btn')
+        ).not.toBeInTheDocument();
+        expect(screen.getByTestId('invite-link-input')).toBeInTheDocument();
+        expect(screen.getByTestId('copy-invite-link-btn')).toBeInTheDocument();
+    });
+
+    it('automatically requests invite token generation on mount when draft has no token', async () => {
+        (useSWR as any).mockImplementation((key: string | null) => {
+            if (key && key.includes('/api/draft')) {
+                return {
+                    data: {
+                        ...mockDraft,
+                        inviteToken: undefined,
+                    },
+                    isLoading: false,
+                    mutate: mockMutateDraft,
+                };
+            }
+            if (key && key.includes('/api/users/multiple')) {
+                return {
+                    data: [mockOwner],
+                    isLoading: false,
+                    mutate: vi.fn(),
+                };
+            }
+            return {
+                data: null,
+                isLoading: false,
+                mutate: vi.fn(),
+            };
+        });
+
+        (axios.post as any).mockResolvedValueOnce({
+            data: {
+                draftId: 'draft-abc-123',
+                inviteToken: 'auto-generated-token-777',
+            },
+        });
+
+        render(<DraftInviteModal currentUser={mockOwner} />);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith('/api/draft/invite', {
+                draftId: 'draft-abc-123',
+                regenerate: false,
+            });
+        });
+
+        expect(
+            screen.queryByTestId('generate-invite-link-btn')
+        ).not.toBeInTheDocument();
+        expect(screen.getByTestId('invite-link-input')).toBeInTheDocument();
+    });
 });

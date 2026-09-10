@@ -135,7 +135,7 @@ The backend already supports multiple shared drafts via `user:drafts:{userId}` a
 
 | # | Issue | Description | Scope | Status |
 |---|-------|-------------|-------|:------:|
-| D-08 | **In-app invite management** | Instead of only clipboard-copied links, add an in-modal panel to see pending/active co-cooks, copy/regenerate invite link, and remove co-cooks. Reuse `RelatedContentStep` patterns. | Frontend | ✅ Completed |
+| D-08 | **In-app invite management** | Instead of only clipboard-copied links, provide a dedicated `DraftInviteModal` to see pending/active co-cooks, copy/regenerate invite links, search & add users directly, and remove co-cooks (decoupling co-cook management from `RelatedContentStep`). | Frontend | ✅ Completed |
 | D-09 | **Conflict notification toast** | When SWR sync detects a field was changed by a co-cook on the step the user is currently editing, show a subtle inline toast: "Maria updated ingredients — tap to refresh". Non-blocking. | Frontend | ✅ Completed |
 | D-10 | **Co-cook role management** | Allow the draft owner to toggle co-cook permissions (editor / viewer) from the in-app invite panel (D-08). Viewer can browse but inputs are disabled. | Full-stack | ✅ Completed |
 | D-11 | **Field-level presence indicators** | Augment step-level locking with sub-step field granularity. Track which specific field (title, description, ingredient row N, step row N) a co-cook is editing. Show a coloured dot + tiny avatar next to the active field. Use the existing Redis lock key pattern: `lock:recipe:{id}:field:ingredient:{index}`. | Full-stack | ⏳ Pending |
@@ -380,7 +380,7 @@ The backend already supports multiple shared drafts via `user:drafts:{userId}` a
 9. **`S-12`**: Allergen exclusion filter (`allergens` field + toggle group) → *Safety filter live.*
 
 #### **Sprint 6 — Collaboration, Scheduling & Seasonal Events _(~2.5 weeks)_**
-- [x] **`D-08`**: In-app invite management (`DraftInviteModal`, invite links & token regeneration, co-cook roster removal/leave) → *Collab onboarding live.*
+- [x] **`D-08`**: In-app invite management (`DraftInviteModal`, invite links & token regeneration, direct user search, co-cook roster removal/leave) → *Collab onboarding live.*
 - [x] **`D-09`**: Conflict notification toast (SWR diff detection + non-blocking toast with "Refresh" action) → *Live collision alert.*
 - [x] **`D-10`**: Co-cook role management (Editor vs Viewer permissions, soft-lock bypass, inert input guard) → *Role permissions live.*
 1. **`D-13`**: Scheduled recipe publication field & wizard UI (`scheduledPublishAt`) → *Scheduling UI live.*
@@ -463,7 +463,7 @@ Sprint 2 [DONE ✅]  Sprint 4 (Unlocks+Notif)                Sprint 7 (Polish)
 
 #### 5. **Sprint 6 — Collaboration, Scheduling & Seasonal Events _(5 tasks pending — D-08, D-09, D-10 completed)_**
 *Advanced collaborative workflows, scheduled publishing, and admin-driven events:*
-- `D-08` [COMPLETED]: In-app invite management (`DraftInviteModal`, token regeneration, collaborator management).
+- `D-08` [COMPLETED]: In-app invite management (`DraftInviteModal`, token regeneration, direct user search, collaborator management, co-cook tab decoupled from recipe wizard).
 - `D-09` [COMPLETED]: Conflict notification toast (SWR diff detection + "Refresh" action).
 - `D-10` [COMPLETED]: Co-cook role management (Editor vs Viewer permissions).
 - `D-13`: Scheduled recipe publication field & wizard UI (`scheduledPublishAt`).

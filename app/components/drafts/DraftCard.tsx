@@ -4,7 +4,6 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { FiTrash2, FiCopy, FiUsers } from 'react-icons/fi';
-import { FaUserPlus } from 'react-icons/fa';
 import { DraftSummary } from '@/app/types/draft';
 import {
     generateDraftTitle,
@@ -19,7 +18,6 @@ interface DraftCardProps {
     onOpen: (draftId: string) => void;
     onDelete: (draftId: string) => void;
     onDuplicate: (draftId: string) => void;
-    onShare?: (draftId: string) => void;
     onManageCoCooks?: (draftId: string) => void;
 }
 
@@ -82,7 +80,6 @@ const DraftCard: React.FC<DraftCardProps> = ({
     onOpen,
     onDelete,
     onDuplicate,
-    onShare,
     onManageCoCooks,
 }) => {
     const { t } = useTranslation();
@@ -105,14 +102,6 @@ const DraftCard: React.FC<DraftCardProps> = ({
             onDuplicate(draft.draftId);
         },
         [draft.draftId, onDuplicate]
-    );
-
-    const handleShare = useCallback(
-        (e: React.MouseEvent) => {
-            e.stopPropagation();
-            onShare?.(draft.draftId);
-        },
-        [draft.draftId, onShare]
     );
 
     const handleManageCoCooks = useCallback(
@@ -225,24 +214,6 @@ const DraftCard: React.FC<DraftCardProps> = ({
                             }
                         >
                             <FiUsers size={16} />
-                        </button>
-                    )}
-                    {onShare && (
-                        <button
-                            type="button"
-                            data-testid="draft-card-share"
-                            onClick={handleShare}
-                            className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-green-50 hover:text-green-700 dark:text-neutral-400 dark:hover:bg-green-900/20 dark:hover:text-green-400"
-                            title={
-                                (t('copy_co_cook_link') ??
-                                    'Copy invite link') as string
-                            }
-                            aria-label={
-                                (t('copy_co_cook_link') ??
-                                    'Copy invite link') as string
-                            }
-                        >
-                            <FaUserPlus size={16} />
                         </button>
                     )}
                     <button

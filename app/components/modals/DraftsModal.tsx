@@ -45,19 +45,11 @@ const DraftsModal: React.FC<DraftsModalProps> = ({ currentUser }) => {
         createDraft,
         deleteDraft,
         duplicateDraft,
-        shareDraft,
         isLoading: isActionLoading,
     } = useDraftActions({
         currentUser,
         onDraftMutate: mutate,
     });
-
-    const handleShareDraft = useCallback(
-        async (draftId: string) => {
-            await shareDraft(draftId);
-        },
-        [shareDraft]
-    );
 
     const handleManageCoCooks = useCallback(
         (draftId: string) => {
@@ -201,7 +193,6 @@ const DraftsModal: React.FC<DraftsModalProps> = ({ currentUser }) => {
                             onOpen={handleOpenDraft}
                             onDelete={handleDeleteClick}
                             onDuplicate={handleDuplicateDraft}
-                            onShare={handleShareDraft}
                             onManageCoCooks={handleManageCoCooks}
                         />
                     ))}

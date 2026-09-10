@@ -22,14 +22,12 @@ vi.mock('swr');
 const mockCreateDraft = vi.fn();
 const mockDeleteDraft = vi.fn();
 const mockDuplicateDraft = vi.fn();
-const mockShareDraft = vi.fn();
 
 vi.mock('@/app/hooks/useDraftActions', () => ({
     useDraftActions: () => ({
         createDraft: mockCreateDraft,
         deleteDraft: mockDeleteDraft,
         duplicateDraft: mockDuplicateDraft,
-        shareDraft: mockShareDraft,
         isLoading: false,
     }),
 }));
@@ -306,36 +304,6 @@ describe('DraftsModal component', () => {
             expect(mockDuplicateDraft).toHaveBeenCalledWith(
                 'draft-to-duplicate'
             );
-        });
-    });
-
-    it('calls shareDraft when share icon is clicked', async () => {
-        const mockDrafts = [
-            {
-                draftId: 'draft-to-share',
-                type: 'solo',
-                title: 'Share Me',
-                ownerId: 'user-1',
-                coCooksIds: [],
-                updatedAt: new Date().toISOString(),
-            },
-        ];
-
-        (useSWR as any).mockReturnValue({
-            data: mockDrafts,
-            isLoading: false,
-            mutate: mockMutate,
-        });
-        mockShareDraft.mockResolvedValueOnce(
-            'http://localhost:3000/?draft=draft-to-share&token=123'
-        );
-
-        render(<DraftsModal currentUser={mockCurrentUser} />);
-
-        fireEvent.click(screen.getByTestId('draft-card-share'));
-
-        await waitFor(() => {
-            expect(mockShareDraft).toHaveBeenCalledWith('draft-to-share');
         });
     });
 

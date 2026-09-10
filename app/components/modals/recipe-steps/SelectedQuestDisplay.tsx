@@ -28,10 +28,11 @@ export const SelectedQuestDisplay: React.FC<SelectedQuestDisplayProps> = ({
                             {selectedQuest.title}
                         </p>
                         <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                            {selectedQuest.description.length > 100
+                            {selectedQuest.description &&
+                            selectedQuest.description.length > 100
                                 ? selectedQuest.description.substring(0, 100) +
                                   '...'
-                                : selectedQuest.description}
+                                : selectedQuest.description || ''}
                         </p>
                     </div>
                     <button

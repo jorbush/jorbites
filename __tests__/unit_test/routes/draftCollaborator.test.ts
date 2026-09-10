@@ -1,5 +1,7 @@
-import { expect } from '@jest/globals';
-import { DELETE as DraftCollaboratorDELETE } from '@/app/api/draft/collaborator/route';
+import {
+    DELETE as DraftCollaboratorDELETE,
+    POST as DraftCollaboratorPOST,
+} from '@/app/api/draft/collaborator/route';
 import { Session } from 'next-auth';
 
 let mockedSession: Session | null = null;
@@ -190,5 +192,226 @@ describe('DELETE /api/draft/collaborator', () => {
         const data = await res.json();
         expect(data.success).toBe(true);
         expect(data.draft.coCooksIds).not.toContain(mockCoCook.id);
+    });
+});
+
+describe('POST /api/draft/collaborator', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        Object.keys(redisStore).forEach((k) => delete redisStore[k]);
+        Object.keys(redisSets).forEach((k) => delete redisSets[k]);
+        mockedSession = {
+            user: { email: mockOwner.email, name: mockOwner.name },
+            expires: '2099-01-01',
+        };
+        (prisma.user.findUnique as jest.Mock).mockImplementation(
+            (args: any) => {
+                if (args.where.email === mockOwner.email)
+                    return Promise.resolve(mockOwner);
+                if (args.where.email === mockCoCook.email)
+                    return Promise.resolve(mockCoCook);
+                if (args.where.email === mockOutsider.email)
+                    return Promise.resolve(mockOutsider);
+                return Promise.resolve(null);
+            }
+        );
+    });
+
+    it('returns 401 when unauthenticated', async () => {
+        mockedSession = null;
+        const req = new Request(
+            'http://localhost:3000/api/draft/collaborator',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    draftId: 'd-1',
+                    userId: mockOutsider.id,
+                }),
+            }
+        );
+        const res = await DraftCollaboratorPOST(req);
+        expect(res.status).toBe(401);
+    });
+
+    it('returns 400 when parameters are missing', async () => {
+        const req = new Request(
+            'http://localhost:3000/api/draft/collaborator',
+            {
+                method: 'POST',
+                body: JSON.stringify({ draftId: 'd-1' }),
+            }
+        );
+        const res = await DraftCollaboratorPOST(req);
+        expect(res.status).toBe(400);
+    });
+
+    it('returns 404 when draft does not exist', async () => {
+        const req = new Request(
+            'http://localhost:3000/api/draft/collaborator',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    draftId: 'non-existent',
+                    userId: mockOutsider.id,
+                }),
+            }
+        );
+        const res = await DraftCollaboratorPOST(req);
+        expect(res.status).toBe(404);
+    });
+
+    it('returns 403 when non-owner attempts to add a collaborator', async () => {
+        mockedSession = {
+            user: { email: mockOutsider.email, name: mockOutsider.name },
+            expires: '2099-01-01',
+        };
+        const draft = {
+            draftId: 'd-1',
+            ownerId: mockOwner.id,
+            coCooksIds: [mockCoCook.id],
+        };
+        redisStore['draft:shared:d-1'] = JSON.stringify(draft);
+
+        const req = new Request(
+            'http://localhost:3000/api/draft/collaborator',
+            {
+                method: 'POST',
+                body: JSON.stringify({ draftId: 'd-1', userId: 'new-user' }),
+            }
+        );
+        const res = await DraftCollaboratorPOST(req);
+        expect(res.status).toBe(403);
+    });
+
+    it('returns 400 when attempting to add the owner as co-cook', async () => {
+        const draft = {
+            draftId: 'd-1',
+            ownerId: mockOwner.id,
+            coCooksIds: [],
+        };
+        redisStore['draft:shared:d-1'] = JSON.stringify(draft);
+
+        const req = new Request(
+            'http://localhost:3000/api/draft/collaborator',
+            {
+                method: 'POST',
+                body: JSON.stringify({ draftId: 'd-1', userId: mockOwner.id }),
+            }
+        );
+        const res = await DraftCollaboratorPOST(req);
+        expect(res.status).toBe(400);
+        const data = await res.json();
+        expect(data.error).toBe('The draft owner cannot be added as a co-cook');
+    });
+
+    it('returns 400 when collaborator already exists', async () => {
+        const draft = {
+            draftId: 'd-1',
+            ownerId: mockOwner.id,
+            coCooksIds: [mockCoCook.id],
+        };
+        redisStore['draft:shared:d-1'] = JSON.stringify(draft);
+
+        const req = new Request(
+            'http://localhost:3000/api/draft/collaborator',
+            {
+                method: 'POST',
+                body: JSON.stringify({ draftId: 'd-1', userId: mockCoCook.id }),
+            }
+        );
+        const res = await DraftCollaboratorPOST(req);
+        expect(res.status).toBe(400);
+        const data = await res.json();
+        expect(data.error).toBe(
+            'This user is already a collaborator on this draft'
+        );
+    });
+
+    it('returns 400 when co-cook limit of 4 is reached', async () => {
+        const draft = {
+            draftId: 'd-1',
+            ownerId: mockOwner.id,
+            coCooksIds: ['c1', 'c2', 'c3', 'c4'],
+        };
+        redisStore['draft:shared:d-1'] = JSON.stringify(draft);
+
+        const req = new Request(
+            'http://localhost:3000/api/draft/collaborator',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    draftId: 'd-1',
+                    userId: mockOutsider.id,
+                }),
+            }
+        );
+        const res = await DraftCollaboratorPOST(req);
+        expect(res.status).toBe(400);
+        const data = await res.json();
+        expect(data.error).toBe('Maximum co-cook limit reached');
+    });
+
+    it('returns 200 when owner successfully adds a collaborator', async () => {
+        const draft = {
+            draftId: 'd-1',
+            ownerId: mockOwner.id,
+            coCooksIds: [mockCoCook.id],
+            coCookRoles: { [mockCoCook.id]: 'editor' },
+        };
+        redisStore['draft:shared:d-1'] = JSON.stringify(draft);
+
+        const req = new Request(
+            'http://localhost:3000/api/draft/collaborator',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    draftId: 'd-1',
+                    userId: mockOutsider.id,
+                    role: 'viewer',
+                }),
+            }
+        );
+        const res = await DraftCollaboratorPOST(req);
+        expect(res.status).toBe(200);
+        const data = await res.json();
+        expect(data.success).toBe(true);
+        expect(data.draft.coCooksIds).toContain(mockOutsider.id);
+        expect(data.draft.coCookRoles[mockOutsider.id]).toBe('viewer');
+        expect(redisSets[`user:drafts:${mockOutsider.id}`].has('d-1')).toBe(
+            true
+        );
+    });
+
+    it('promotes a solo draft to a shared draft when adding a collaborator directly via search', async () => {
+        const soloDraft = {
+            draftId: 'solo-slot-1',
+            ownerId: mockOwner.id,
+            title: 'My Solo Pasta',
+            type: 'solo',
+            currentStep: 1,
+        };
+        redisStore[`draft:user:${mockOwner.id}:solo-slot-1`] =
+            JSON.stringify(soloDraft);
+        redisSets[`user:drafts:${mockOwner.id}`] = new Set(['solo-slot-1']);
+
+        const req = new Request(
+            'http://localhost:3000/api/draft/collaborator',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    draftId: 'solo-slot-1',
+                    userId: mockCoCook.id,
+                    role: 'editor',
+                }),
+            }
+        );
+        const res = await DraftCollaboratorPOST(req);
+        expect(res.status).toBe(200);
+        const data = await res.json();
+        expect(data.success).toBe(true);
+        expect(data.draft.draftId).toBe('solo-slot-1');
+        expect(data.draft.coCooksIds).toContain(mockCoCook.id);
+        expect(data.draft.title).toBe('My Solo Pasta');
+        expect(data.draft.currentStep).toBe(1);
     });
 });

@@ -9,6 +9,9 @@ import { STEPS_LENGTH } from '@/app/utils/constants';
 import { logger } from '@/app/lib/axiom/server';
 import { DraftService } from '@/app/services/draftService';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function POST(request: Request) {
     try {
         const currentUser = await getCurrentUser();

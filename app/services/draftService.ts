@@ -445,6 +445,12 @@ export class DraftService {
             ...existing,
             ...sanitizedPayload,
             draftId,
+            currentStep:
+                sanitizedPayload.currentStep !== undefined
+                    ? sanitizedPayload.currentStep
+                    : existing?.currentStep !== undefined
+                      ? existing.currentStep
+                      : 0,
             ownerId: existing?.ownerId || currentUser.id,
             ownerName:
                 existing?.ownerName ||
@@ -819,6 +825,84 @@ export class DraftService {
             ),
             this.removeFromUserDrafts(targetUserId, draftId),
             releaseAllLocks(draftId),
+        ]);
+
+        return draft;
+    }
+
+    /**
+     * Adds an active collaborator directly to a shared draft (owner only).
+     */
+    static async addCollaborator(
+        draftId: string,
+        targetUserId: string,
+        currentUser: SafeUser,
+        role: CoCookRole = 'editor'
+    ): Promise<SharedDraft> {
+        const key = `draft:shared:${draftId}`;
+        const raw = await redisClient.get(key);
+        let draft: SharedDraft;
+
+        if (!raw) {
+            const soloDraft = await this.getSingleUserDraft(
+                currentUser.id,
+                draftId
+            );
+            if (!soloDraft) {
+                throw new Error('DRAFT_NOT_FOUND');
+            }
+            await this.deleteSingleUserDraft(currentUser.id, draftId);
+            const inviteToken = crypto.randomBytes(16).toString('hex');
+            draft = await this.saveSharedDraft(
+                draftId,
+                {
+                    ...soloDraft,
+                    draftId,
+                    inviteToken,
+                },
+                currentUser
+            );
+        } else {
+            try {
+                draft = this.normalizeSharedDraft(JSON.parse(raw));
+            } catch {
+                throw new Error('CORRUPTED_DRAFT_DATA');
+            }
+        }
+
+        if (draft.ownerId && draft.ownerId !== currentUser.id) {
+            throw new Error('ONLY_OWNER_CAN_ADD_COLLABORATORS');
+        }
+
+        if (draft.ownerId === targetUserId) {
+            throw new Error('CANNOT_ADD_OWNER');
+        }
+
+        const coCooksList = Array.isArray(draft.coCooksIds)
+            ? draft.coCooksIds
+            : [];
+        if (coCooksList.includes(targetUserId)) {
+            throw new Error('COLLABORATOR_ALREADY_EXISTS');
+        }
+
+        if (coCooksList.length >= MAX_CO_COOKS) {
+            throw new Error('CO_COOK_LIMIT_REACHED');
+        }
+
+        draft.coCooksIds = [...coCooksList, targetUserId];
+        draft.coCookRoles = draft.coCookRoles || {};
+        draft.coCookRoles[targetUserId] =
+            role === 'viewer' ? 'viewer' : 'editor';
+        draft.updatedAt = new Date().toISOString();
+
+        await Promise.all([
+            redisClient.set(
+                key,
+                JSON.stringify(draft),
+                'EX',
+                DRAFT_TTL_SECONDS
+            ),
+            this.addToUserDrafts(targetUserId, draftId),
         ]);
 
         return draft;

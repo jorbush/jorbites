@@ -1359,5 +1359,9 @@
     "no_co_cooks_yet": "Aún no se ha unido ningún co-cocinero. ¡Comparte el enlace de arriba!",
     "viewer_mode_banner": "Modo de solo lectura — puedes explorar pero la edición está deshabilitada para tu rol",
     "step_conflict_toast": "Paso {{stepNumber}} actualizado por un co-cocinero",
-    "refresh": "Actualizar"
+    "refresh": "Actualizar",
+    "close": "Cerrar",
+    "co_cook_added": "Co-cocinero añadido",
+    "search_users_tab": "Buscar Usuarios",
+    "add_co_cook_directly": "Añadir co-cocinero directamente"
 }
