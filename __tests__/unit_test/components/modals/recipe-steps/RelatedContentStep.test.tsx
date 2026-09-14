@@ -415,10 +415,11 @@ describe('<RelatedContentStep />', () => {
             vi.advanceTimersByTime(300);
         });
 
-        // Verify that axios.get was called with the properly encoded search query
+        // Verify that axios.get was called with the properly encoded search query and abort signal
         await waitFor(() => {
             expect(axios.get).toHaveBeenCalledWith(
-                expect.stringContaining('test%20query')
+                expect.stringContaining('test%20query'),
+                expect.objectContaining({ signal: expect.any(Object) })
             );
         });
     });
