@@ -120,13 +120,15 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 - **Step-Scoped Client Saves (`saveDraft`)**: When auto-saving drafts during forward/backward step transitions, `useRecipeFormState` only attaches array fields (`ingredients` or `steps`) to the POST payload if the user is **actively on that specific step** (`step === STEPS.INGREDIENTS` or `step === STEPS.STEPS`). This ensures client transitions through earlier steps never broadcast stale local inputs that could overwrite real-time collaborator additions in Redis.
 - **Empty Array Safety Guards**: Remote collections like `coCooksIds` and `linkedRecipeIds` are only synced into local form state if `draftData.<field>.length > 0`, ensuring empty initial draft arrays never wipe user selections when navigating to subsequent steps.
 
-### 8. Real-Time State Synchronization & Background SWR Polling
+### 8. Real-Time State Synchronization & Safe Auto-Apply
 
-- **Background Polling & Endpoint Binding**: Active shared drafts in `RecipeModal` poll `GET /api/draft?draftId=<draftId>` every 3 seconds via SWR (`refreshInterval: 3000`, `revalidateOnFocus: true`). When the owner generates an invite link, both owner and co-cook clients immediately bind to the shared draft endpoint.
-- **Selective Form State Sync**: `useRecipeFormState` non-destructively syncs incoming draft updates:
-    - On initial draft load (`isInitialSync = true`).
-    - For all steps other than the active user's current step (`step !== stepIndex`).
-    - On the active user's current step when it is locked by another co-cook (`lock.isLockedByOther('step:' + stepIndex)`), allowing the user to see real-time updates as the other co-cook edits without overwriting local inputs when holding the lock.
+- **Background Polling & Endpoint Binding**: Active shared drafts in `RecipeModal` poll `GET /api/draft?draftId=<draftId>` every 8 seconds via SWR (`refreshInterval: 8000`, `revalidateOnFocus: true`). Solo drafts completely disable polling (`refreshInterval: 0`), preventing redundant Redis operations. When the owner generates an invite link or adds a collaborator, the draft is promoted to shared and polling begins automatically.
+- **Safe Auto-Apply & Keystroke Protection (Anti-Clobbering)**: `syncRemoteDraftToForm` safely synchronizes incoming draft updates:
+    - **Inactive Steps**: Inactive steps (`step !== stepIndex`) are always auto-applied quietly in the background without affecting the user's active view.
+    - **Locked Steps**: When a step is locked by another co-cook (`lock.isLockedByOther('step:' + stepIndex)`), incoming changes are auto-applied live to the read-only view.
+    - **Active Step Untouched Fields**: Incoming remote updates on the active step for fields that the local user has not modified are **auto-applied directly** into the form state without requiring manual button clicks.
+    - **Active Step Keystroke Protection**: Fields with active, uncommitted local edits (dirty fields) are strictly protected against being overwritten by incoming remote payloads, preventing race conditions or progress loss.
+- **Standard Notification System**: When a remote co-cook modifies fields on the user's active step, the system notifies the collaborator using the app's standard notification toast (`Step {{stepNumber}} updated by a co-cook` with icon `👨‍🍳` and deduplication ID `step-sync-{{step}}`), completely eliminating intrusive or overlapping manual refresh buttons.
 - **Synchronous Input Row Expansion**: Dynamic collaborator additions (such as a co-cook adding a 3rd ingredient or step) expand form inputs synchronously during render via `effectiveNumIngredients` and `effectiveNumSteps` (`Math.max(numInputs, draftData.items.length)`), rendering new fields without layout lag or stale-state clipping.
 - **Modal Lifecycle & URL Cleanliness**: Tracks auto-open state so `?draft=` in the URL opens the modal once, and cleans up query parameters (`window.history.replaceState`) on modal close to prevent re-opening loops.
 - **Immediate Navigation Sync & Persistence**: Step transitions trigger `mutateDraft?.()` on `onNext()` and `onBack()`, and auto-save draft state in production (`NODE_ENV === 'production'`).

@@ -1425,4 +1425,199 @@ describe('Collaborative Recipes & Co-Cooking E2E', () => {
             );
         });
     });
+
+    it('safely auto-applies remote updates on untouched fields without manual refresh button and displays standard toast', () => {
+        cy.task(
+            'log',
+            '=== TEST 18: Safe auto-apply and standard toast notification ==='
+        );
+
+        // 1. Create a shared draft
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Desserts'],
+            title: 'Initial Title',
+            description: 'Initial Description',
+        }).then((response) => {
+            const draftId = response.body.draftId;
+
+            // Intercept initial draft fetch on mount (ignoring /api/draft/active)
+            cy.intercept({
+                method: 'GET',
+                pathname: '/api/draft',
+                query: { draftId: draftId },
+            }).as('initialDraft');
+
+            // Open the shared draft
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+            cy.wait('@initialDraft');
+
+            // Navigate to Step 1 (Description)
+            cy.get('[data-cy="modal-action-button"]').click();
+            cy.get('[data-cy="recipe-title"]', { timeout: 10000 }).should(
+                'be.visible'
+            );
+            cy.get('[data-cy="recipe-title"]').should(
+                'have.value',
+                'Initial Title'
+            );
+
+            // 2. Intercept subsequent SWR polling with co-cook updates
+            cy.intercept(
+                {
+                    method: 'GET',
+                    pathname: '/api/draft',
+                    query: { draftId: draftId },
+                },
+                {
+                    statusCode: 200,
+                    body: {
+                        draftId,
+                        type: 'shared',
+                        currentStep: 1,
+                        categories: ['Desserts'],
+                        title: 'Co-Cook Updated Title',
+                        description: 'Co-Cook Updated Description',
+                        lastModifiedBy: {
+                            id: 'other-cocook-id',
+                            name: 'Chef Maria',
+                        },
+                    },
+                }
+            ).as('remoteDraftPoll');
+
+            // 3. Wait for the SWR poll to fire and deliver remote updates
+            cy.wait('@remoteDraftPoll', { timeout: 15000 });
+
+            // 4. Verify title and description auto-apply without requiring manual refresh button
+            cy.get('[data-cy="recipe-title"]', { timeout: 10000 }).should(
+                'have.value',
+                'Co-Cook Updated Title'
+            );
+            cy.get('[data-cy="recipe-description"]').should(
+                'have.value',
+                'Co-Cook Updated Description'
+            );
+
+            // 5. Verify standard toast is displayed
+            cy.contains('Step 2 updated by a co-cook', {
+                timeout: 5000,
+            }).should('be.visible');
+
+            // 6. Verify the old broken custom refresh button never exists in DOM
+            cy.get('[data-testid="conflict-refresh-button"]').should(
+                'not.exist'
+            );
+            cy.get('[data-testid="conflict-toast"]').should('not.exist');
+
+            cy.task(
+                'log',
+                '✓ Remote updates safely auto-applied with standard toast and without broken refresh button'
+            );
+        });
+    });
+
+    it('protects locally edited dirty fields from remote overwrite while safely auto-applying clean fields on the same step', () => {
+        cy.task(
+            'log',
+            '=== TEST 19: In-progress keystroke protection and selective auto-apply ==='
+        );
+
+        // 1. Create a shared draft
+        cy.request('POST', '/api/draft/invite', {
+            categories: ['Desserts'],
+            title: 'Initial Title',
+            description: 'Initial Description',
+        }).then((response) => {
+            const draftId = response.body.draftId;
+
+            // Intercept initial draft fetch on mount (ignoring /api/draft/active)
+            cy.intercept({
+                method: 'GET',
+                pathname: '/api/draft',
+                query: { draftId: draftId },
+            }).as('initialDraft');
+
+            // Open the shared draft
+            cy.visit(`/?draft=${draftId}`);
+            cy.get('[data-testid="modal-title"]').should('be.visible');
+            cy.wait('@initialDraft');
+
+            // Navigate to Step 1 (Description)
+            cy.get('[data-cy="modal-action-button"]').click();
+            cy.get('[data-cy="recipe-title"]', { timeout: 10000 }).should(
+                'be.visible'
+            );
+            cy.get('[data-cy="recipe-title"]').should(
+                'have.value',
+                'Initial Title'
+            );
+
+            // User actively types locally into Title (dirtying the field)
+            cy.get('[data-cy="recipe-title"]')
+                .clear()
+                .type('My Local In-Progress Title');
+            cy.get('[data-cy="recipe-title"]').should(
+                'have.value',
+                'My Local In-Progress Title'
+            );
+
+            // Description is left untouched ('Initial Description')
+
+            // 2. Intercept subsequent SWR polling with co-cook updates on BOTH title & description
+            cy.intercept(
+                {
+                    method: 'GET',
+                    pathname: '/api/draft',
+                    query: { draftId: draftId },
+                },
+                {
+                    statusCode: 200,
+                    body: {
+                        draftId,
+                        type: 'shared',
+                        currentStep: 1,
+                        categories: ['Desserts'],
+                        title: 'Remote Override Attempt',
+                        description: 'Remote Updated Description',
+                        lastModifiedBy: {
+                            id: 'other-cocook-id',
+                            name: 'Chef Maria',
+                        },
+                    },
+                }
+            ).as('remoteDraftPoll');
+
+            // 3. Wait for the SWR poll to fire and deliver remote updates
+            cy.wait('@remoteDraftPoll', { timeout: 15000 });
+
+            // 4. Verify keystroke protection: User's locally edited title was NOT clobbered
+            cy.get('[data-cy="recipe-title"]').should(
+                'have.value',
+                'My Local In-Progress Title'
+            );
+
+            // 5. Verify selective auto-apply: Untouched description WAS safely auto-applied
+            cy.get('[data-cy="recipe-description"]').should(
+                'have.value',
+                'Remote Updated Description'
+            );
+
+            // 6. Verify standard toast notification is displayed
+            cy.contains('Step 2 updated by a co-cook', {
+                timeout: 5000,
+            }).should('be.visible');
+
+            // 7. Verify broken refresh button never appears in DOM
+            cy.get('[data-testid="conflict-refresh-button"]').should(
+                'not.exist'
+            );
+            cy.get('[data-testid="conflict-toast"]').should('not.exist');
+
+            cy.task(
+                'log',
+                '✓ In-progress keystrokes protected and clean fields selectively auto-applied'
+            );
+        });
+    });
 });

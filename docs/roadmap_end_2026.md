@@ -11,7 +11,7 @@
 
 **Search** — Prisma `title: { contains, mode: 'insensitive' }` (regex on title only). Filters: 1 category, cuisine, calorie range, yield range, date range. Sort: newest/oldest/title/most-liked/best-rated. Results cached in Redis (24 h). **Gaps**: can't search by ingredient or description; no dietary/time filters (fields don't exist on schema); no relevance scoring; no autocomplete on the main search; no recent/trending searches; zero MongoDB indexes on Recipe.
 
-**Drafts & Collaboration** — Full multi-slot draft management and real-time collaboration are active. Solo drafts support up to 5 slots at `draft:user:{userId}:{slotId}` tracked in `user:drafts:{userId}`, and shared collaborative drafts live at `draft:shared:{draftId}` (7-day TTL). The unified `DraftsModal` dashboard allows users to browse, switch, duplicate, delete, and create drafts with progress pills, co-cook avatars, and TTL countdowns. Collaboration features SWR sync (3 s) + step-level soft-locks (30 s TTL, heartbeat every 10 s, atomic Lua release, locked step container `inert` guard), dedicated in-app invite management (`DraftInviteModal`) with direct user search, collaborator removal, co-cook role permissions (editor vs viewer), conflict notification toasts, and link-based invite/join flows (`/api/draft/invite`, `/api/draft/join`). **Gaps**: sub-step field-level presence dots; change feed log panel; scheduled publishing; version history/restore.
+**Drafts & Collaboration** — Full multi-slot draft management and real-time collaboration are active. Solo drafts support up to 5 slots at `draft:user:{userId}:{slotId}` tracked in `user:drafts:{userId}`, and shared collaborative drafts live at `draft:shared:{draftId}` (7-day TTL). The unified `DraftsModal` dashboard allows users to browse, switch, duplicate, delete, and create drafts with progress pills, co-cook avatars, and TTL countdowns. Collaboration features SWR shared draft sync (8 s) + step-level soft-locks (30 s TTL, heartbeat every 10 s, polling every 4 s, atomic Lua release, locked step container `inert` guard), dedicated in-app invite management (`DraftInviteModal`) with direct user search, collaborator removal, co-cook role permissions (editor vs viewer), safe field-level auto-apply with in-progress keystroke protection, standard non-disruptive notification toasts, and link-based invite/join flows (`/api/draft/invite`, `/api/draft/join`). **Gaps**: sub-step field-level presence dots; change feed log panel; scheduled publishing; version history/restore.
 
 ---
 
@@ -136,7 +136,7 @@ The backend already supports multiple shared drafts via `user:drafts:{userId}` a
 | # | Issue | Description | Scope | Status |
 |---|-------|-------------|-------|:------:|
 | D-08 | **In-app invite management** | Instead of only clipboard-copied links, provide a dedicated `DraftInviteModal` to see pending/active co-cooks, copy/regenerate invite links, search & add users directly, and remove co-cooks (decoupling co-cook management from `RelatedContentStep`). | Frontend | ✅ Completed |
-| D-09 | **Conflict notification toast** | When SWR sync detects a field was changed by a co-cook on the step the user is currently editing, show a subtle inline toast: "Maria updated ingredients — tap to refresh". Non-blocking. | Frontend | ✅ Completed |
+| D-09 | **Safe auto-apply & conflict notification toast** | When SWR sync detects a remote field update on the active step, safe field-level auto-apply merges untouched fields without requiring manual refresh clicks, strictly protects in-progress local keystrokes from being overwritten, and shows a standard non-blocking toast ("Step X updated by a co-cook"). | Frontend | ✅ Completed |
 | D-10 | **Co-cook role management** | Allow the draft owner to toggle co-cook permissions (editor / viewer) from the in-app invite panel (D-08). Viewer can browse but inputs are disabled. | Full-stack | ✅ Completed |
 | D-11 | **Field-level presence indicators** | Augment step-level locking with sub-step field granularity. Track which specific field (title, description, ingredient row N, step row N) a co-cook is editing. Show a coloured dot + tiny avatar next to the active field. Use the existing Redis lock key pattern: `lock:recipe:{id}:field:ingredient:{index}`. | Full-stack | ⏳ Pending |
 | D-12 | **Change feed panel** | Slim collapsible panel in `RecipeModal` listing recent edits: "Ana added 'garlic' — 2 min ago". Populated from a lightweight `edit:{draftId}` Redis list (capped at last 30 events, TTL = draft TTL). | Full-stack | ⏳ Pending |
@@ -239,7 +239,7 @@ The backend already supports multiple shared drafts via `user:drafts:{userId}` a
 | D-06 | Navigation entry point to drafts | 🔴 3 | 🟢 1 | 🏆 Quick Win — routes navbar/menu to drafts modal | ✅ Completed (PR #1642) |
 | D-07 | Remove `DraftRecoveryDialog` | 🟢 1 | 🟢 1 | 🏆 Quick Win — safely delete legacy dialog | ✅ Completed (PR #1642) |
 | D-08 | In-app invite management | 🟡 2 | 🟡 2 | ⭐ High Value — better collab onboarding in modal | ✅ Completed |
-| D-09 | Conflict notification toast | 🟡 2 | 🟢 1 | 🏆 Quick Win — SWR diff check + inline alert | ✅ Completed |
+| D-09 | Safe auto-apply & conflict toast | 🟡 2 | 🟢 1 | 🏆 Quick Win — SWR diff check + keystroke protection + standard alert | ✅ Completed |
 | D-10 | Co-cook role management | 🟢 1 | 🟢 1 | 💎 Nice-to-Have — editor/viewer toggle | ✅ Completed |
 | D-11 | Field-level presence indicators | 🟡 2 | 🔴 3 | 💎 Nice-to-Have — complex for incremental gain | ⏳ Pending |
 | D-12 | Change feed panel | 🟢 1 | 🟡 2 | 💎 Nice-to-Have — collapsible log in modal | ⏳ Pending |
@@ -381,7 +381,7 @@ The backend already supports multiple shared drafts via `user:drafts:{userId}` a
 
 #### **Sprint 6 — Collaboration, Scheduling & Seasonal Events _(~2.5 weeks)_**
 - [x] **`D-08`**: In-app invite management (`DraftInviteModal`, invite links & token regeneration, direct user search, co-cook roster removal/leave) → *Collab onboarding live.*
-- [x] **`D-09`**: Conflict notification toast (SWR diff detection + non-blocking toast with "Refresh" action) → *Live collision alert.*
+- [x] **`D-09`**: Safe auto-apply & conflict notification toast (SWR diff detection + keystroke protection for active edits + non-disruptive standard toast) → *Non-destructive real-time collision resolution.*
 - [x] **`D-10`**: Co-cook role management (Editor vs Viewer permissions, soft-lock bypass, inert input guard) → *Role permissions live.*
 1. **`D-13`**: Scheduled recipe publication field & wizard UI (`scheduledPublishAt`) → *Scheduling UI live.*
 2. **`D-14`**: Scheduled publication cron job (GitHub Actions cron + API handler) → *Automated publishing live.*
@@ -464,7 +464,7 @@ Sprint 2 [DONE ✅]  Sprint 4 (Unlocks+Notif)                Sprint 7 (Polish)
 #### 5. **Sprint 6 — Collaboration, Scheduling & Seasonal Events _(5 tasks pending — D-08, D-09, D-10 completed)_**
 *Advanced collaborative workflows, scheduled publishing, and admin-driven events:*
 - `D-08` [COMPLETED]: In-app invite management (`DraftInviteModal`, token regeneration, direct user search, collaborator management, co-cook tab decoupled from recipe wizard).
-- `D-09` [COMPLETED]: Conflict notification toast (SWR diff detection + "Refresh" action).
+- `D-09` [COMPLETED]: Safe auto-apply & conflict notification toast (SWR diff detection + keystroke protection for active edits + standard notification toast).
 - `D-10` [COMPLETED]: Co-cook role management (Editor vs Viewer permissions).
 - `D-13`: Scheduled recipe publication field & wizard UI (`scheduledPublishAt`).
 - `D-14`: Scheduled publication cron job (GitHub Actions cron + API handler).

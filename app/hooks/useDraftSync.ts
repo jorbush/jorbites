@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useRef, useCallback } from 'react';
+import { useRef, useCallback, useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import {
     UseFormSetValue,
     UseFormGetValues,
@@ -14,7 +15,6 @@ import { SHARED_DRAFT_POLL_INTERVAL_MS } from '@/app/utils/constants';
 import {
     syncRemoteDraftToForm,
     detectStepConflict,
-    forceApplyStepFields,
     LockChecker,
 } from '@/app/utils/draftSyncUtils';
 import { DraftData } from '@/app/types/draft';
@@ -50,9 +50,36 @@ export function useDraftSync({
     initialDraftData,
     initialMutateDraft,
 }: UseDraftSyncOptions): UseDraftSyncReturn {
+    const { t } = useTranslation();
     const draftEndpoint = activeDraftId
         ? `/api/draft?draftId=${encodeURIComponent(activeDraftId)}`
         : `/api/draft`;
+
+    const [isSharedDraft, setIsSharedDraft] = useState<boolean>(() =>
+        Boolean(
+            initialDraftData?.type === 'shared' ||
+            initialDraftData?.inviteToken ||
+            (Array.isArray(initialDraftData?.coCooksIds) &&
+                initialDraftData.coCooksIds.length > 0)
+        )
+    );
+
+    const refreshInterval = useCallback(
+        (latestData: Partial<DraftData> | undefined) => {
+            const effective =
+                initialDraftData !== undefined
+                    ? initialDraftData
+                    : (latestData ??
+                      (isSharedDraft ? { type: 'shared' } : undefined));
+            const isShared =
+                effective?.type === 'shared' ||
+                Boolean(effective?.inviteToken) ||
+                (Array.isArray(effective?.coCooksIds) &&
+                    effective.coCooksIds.length > 0);
+            return isShared ? SHARED_DRAFT_POLL_INTERVAL_MS : 0;
+        },
+        [initialDraftData, isSharedDraft]
+    );
 
     const {
         data: swrDraftData,
@@ -64,19 +91,28 @@ export function useDraftSync({
         {
             revalidateOnFocus: true,
             revalidateOnReconnect: true,
-            refreshInterval: (latestData) => {
-                const effective =
-                    initialDraftData !== undefined
-                        ? initialDraftData
-                        : latestData;
-                return effective?.type === 'shared'
-                    ? SHARED_DRAFT_POLL_INTERVAL_MS
-                    : 0;
-            },
+            refreshWhenHidden: true,
+            refreshInterval,
             shouldRetryOnError: false,
             keepPreviousData: true,
         }
     );
+
+    useEffect(() => {
+        const currentData =
+            initialDraftData !== undefined ? initialDraftData : swrDraftData;
+        if (currentData) {
+            const isShared = Boolean(
+                currentData?.type === 'shared' ||
+                currentData?.inviteToken ||
+                (Array.isArray(currentData?.coCooksIds) &&
+                    currentData.coCooksIds.length > 0)
+            );
+            if (isShared !== isSharedDraft) {
+                setIsSharedDraft(isShared);
+            }
+        }
+    }, [initialDraftData, swrDraftData, isSharedDraft]);
 
     const rawDraftData =
         initialDraftData !== undefined ? initialDraftData : swrDraftData;
@@ -124,62 +160,19 @@ export function useDraftSync({
                     lock
                 );
 
-                if (conflict.hasConflict) {
+                if (conflict.remoteChanged && typeof toast === 'function') {
                     const author = conflict.authorName || 'A co-cook';
                     const stepLabel = conflict.stepKey.replace('_', ' ');
-                    const notify =
-                        typeof toast.custom === 'function'
-                            ? toast.custom
-                            : typeof toast === 'function'
-                              ? toast
-                              : undefined;
+                    const toastMessage =
+                        t('step_conflict_toast', {
+                            stepNumber: step + 1,
+                        }) || `${author} updated ${stepLabel}`;
 
-                    if (notify) {
-                        notify(
-                            (tInstance) =>
-                                React.createElement(
-                                    'div',
-                                    {
-                                        'data-testid': 'conflict-toast',
-                                        className:
-                                            'flex items-center gap-2.5 text-xs',
-                                    },
-                                    React.createElement(
-                                        'span',
-                                        null,
-                                        `${author} updated ${stepLabel}`
-                                    ),
-                                    React.createElement(
-                                        'button',
-                                        {
-                                            type: 'button',
-                                            'data-testid':
-                                                'conflict-refresh-button',
-                                            className:
-                                                'rounded bg-green-500 px-2 py-0.5 font-semibold text-white transition hover:bg-green-600',
-                                            onClick: () => {
-                                                forceApplyStepFields(
-                                                    step,
-                                                    draftData,
-                                                    setValue
-                                                );
-                                                if (
-                                                    typeof toast.dismiss ===
-                                                    'function'
-                                                ) {
-                                                    toast.dismiss(tInstance.id);
-                                                }
-                                            },
-                                        },
-                                        'Refresh'
-                                    )
-                                ),
-                            {
-                                id: `conflict-step-${step}`,
-                                duration: 8000,
-                            }
-                        );
-                    }
+                    toast(toastMessage, {
+                        icon: '👨‍🍳',
+                        id: `step-sync-${step}`,
+                        duration: 3000,
+                    });
                 }
 
                 syncRemoteDraftToForm(
@@ -192,7 +185,7 @@ export function useDraftSync({
                 );
             }
         },
-        [currentUser?.id, draftData, isEditMode]
+        [currentUser?.id, draftData, isEditMode, t]
     );
 
     return {

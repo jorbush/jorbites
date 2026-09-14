@@ -45,7 +45,8 @@ export function valuesEqual(current: unknown, incoming: unknown): boolean {
  */
 export function isFieldLocallyEdited(
     currentVal: unknown,
-    prevValue: unknown
+    prevValue: unknown,
+    fieldName?: string
 ): boolean {
     const isCurrentEmpty =
         currentVal === undefined ||
@@ -62,6 +63,17 @@ export function isFieldLocallyEdited(
     if (isCurrentEmpty && isPrevEmpty) {
         return false;
     }
+
+    // Default numeric values (e.g. minutes defaults to 30 in the recipe form)
+    // should not be considered a local user edit if the previous draft had no value set.
+    if (
+        fieldName === 'minutes' &&
+        (currentVal === 30 || currentVal === '30') &&
+        isPrevEmpty
+    ) {
+        return false;
+    }
+
     // If one is empty and the other is not, or both have non-empty distinct content, it is a local edit (H4)
     return !valuesEqual(currentVal, prevValue);
 }
@@ -87,7 +99,8 @@ export function shouldApplyStep(
     const locallyEdited = fields.some((field) =>
         isFieldLocallyEdited(
             getValues(field),
-            (prevDraft as Record<string, unknown> | null | undefined)?.[field]
+            (prevDraft as Record<string, unknown> | null | undefined)?.[field],
+            field
         )
     );
     return !locallyEdited;
@@ -196,19 +209,33 @@ export function syncRemoteDraftToForm(
     );
 
     const applyStepFields = (stepIndex: number, fields: string[]) => {
-        if (
-            !isDraftSwitch &&
-            !shouldApplyStep(
-                stepIndex,
-                step,
-                fields,
-                getValues,
-                prevDraft,
-                lock
-            )
-        )
+        if (isDraftSwitch) {
+            fields.forEach(applyField);
             return;
-        fields.forEach(applyField);
+        }
+
+        // Inactive steps or steps locked by another user: safely apply all fields
+        if (
+            step !== stepIndex ||
+            lock?.isLockedByOther?.(`step:${stepIndex}`)
+        ) {
+            fields.forEach(applyField);
+            return;
+        }
+
+        // Active step: auto-apply remote fields that have not been locally modified
+        fields.forEach((field) => {
+            const isEdited = isFieldLocallyEdited(
+                getValues(field),
+                (prevDraft as Record<string, unknown> | null | undefined)?.[
+                    field
+                ],
+                field
+            );
+            if (!isEdited) {
+                applyField(field);
+            }
+        });
     };
 
     applyStepFields(STEPS.CATEGORY, ['categories']);
@@ -293,6 +320,7 @@ export function syncRemoteDraftToForm(
 
 export interface StepConflictInfo {
     hasConflict: boolean;
+    remoteChanged?: boolean;
     stepIndex: number;
     stepKey: string;
     authorName?: string;
@@ -316,7 +344,12 @@ export function detectStepConflict(
         !draftData.draftId ||
         draftData.draftId !== prevDraft.draftId
     ) {
-        return { hasConflict: false, stepIndex, stepKey: '' };
+        return {
+            hasConflict: false,
+            remoteChanged: false,
+            stepIndex,
+            stepKey: '',
+        };
     }
 
     // If change was made by the current user, no conflict toast needed
@@ -325,7 +358,12 @@ export function detectStepConflict(
         currentUserId &&
         draftData.lastModifiedBy.id === currentUserId
     ) {
-        return { hasConflict: false, stepIndex, stepKey: '' };
+        return {
+            hasConflict: false,
+            remoteChanged: false,
+            stepIndex,
+            stepKey: '',
+        };
     }
 
     const stepFieldsMap: Record<number, { key: string; fields: string[] }> = {
@@ -348,7 +386,13 @@ export function detectStepConflict(
     };
 
     const stepMeta = stepFieldsMap[stepIndex];
-    if (!stepMeta) return { hasConflict: false, stepIndex, stepKey: '' };
+    if (!stepMeta)
+        return {
+            hasConflict: false,
+            remoteChanged: false,
+            stepIndex,
+            stepKey: '',
+        };
 
     // Did remote fields change on this step?
     let remoteChanged = false;
@@ -368,8 +412,26 @@ export function detectStepConflict(
     }
 
     if (!remoteChanged) {
-        return { hasConflict: false, stepIndex, stepKey: '' };
+        return {
+            hasConflict: false,
+            remoteChanged: false,
+            stepIndex,
+            stepKey: '',
+        };
     }
+
+    // If active step is locked by another co-cook, the lock banner already indicates they are editing
+    if (lock?.isLockedByOther?.(`step:${stepIndex}`)) {
+        return {
+            hasConflict: false,
+            remoteChanged: false,
+            stepIndex,
+            stepKey: '',
+        };
+    }
+
+    const authorName =
+        draftData.lastModifiedBy?.name || draftData.ownerName || 'A co-cook';
 
     // Did local user edit this step?
     let locallyEdited = false;
@@ -398,18 +460,12 @@ export function detectStepConflict(
         );
     }
 
-    if (!locallyEdited) {
-        return { hasConflict: false, stepIndex, stepKey: '' };
-    }
-
     return {
-        hasConflict: true,
+        hasConflict: locallyEdited,
+        remoteChanged: true,
         stepIndex,
         stepKey: stepMeta.key,
-        authorName:
-            draftData.lastModifiedBy?.name ||
-            draftData.ownerName ||
-            'A co-cook',
+        authorName,
     };
 }
 
