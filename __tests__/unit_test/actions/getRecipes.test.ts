@@ -22,7 +22,7 @@ describe('getRecipes and getFavoriteRecipes Actions', () => {
         jest.clearAllMocks();
     });
 
-    describe('getRecipes cuisine filtering', () => {
+    describe('getRecipes search and cuisine filtering', () => {
         it('should use exact match (equals) instead of contains for recipeCuisine', async () => {
             jest.mocked(prisma.recipe.findMany).mockResolvedValue([]);
             jest.mocked(prisma.recipe.count).mockResolvedValue(0);
@@ -40,9 +40,42 @@ describe('getRecipes and getFavoriteRecipes Actions', () => {
                 })
             );
         });
+
+        it('should search across title, description, and ingredients using OR clause', async () => {
+            jest.mocked(prisma.recipe.findMany).mockResolvedValue([]);
+            jest.mocked(prisma.recipe.count).mockResolvedValue(0);
+
+            await getRecipes({ search: 'pasta' });
+
+            expect(prisma.recipe.findMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: expect.objectContaining({
+                        OR: [
+                            {
+                                title: {
+                                    contains: 'pasta',
+                                    mode: 'insensitive',
+                                },
+                            },
+                            {
+                                description: {
+                                    contains: 'pasta',
+                                    mode: 'insensitive',
+                                },
+                            },
+                            {
+                                ingredients: {
+                                    has: 'pasta',
+                                },
+                            },
+                        ],
+                    }),
+                })
+            );
+        });
     });
 
-    describe('getFavoriteRecipes cuisine filtering', () => {
+    describe('getFavoriteRecipes search and cuisine filtering', () => {
         it('should use exact match (equals) instead of contains for recipeCuisine', async () => {
             jest.mocked(getCurrentUser).mockResolvedValue({
                 id: 'user-1',
@@ -60,6 +93,43 @@ describe('getRecipes and getFavoriteRecipes Actions', () => {
                             equals: 'American',
                             mode: 'insensitive',
                         },
+                    }),
+                })
+            );
+        });
+
+        it('should search across title, description, and ingredients using OR clause', async () => {
+            jest.mocked(getCurrentUser).mockResolvedValue({
+                id: 'user-1',
+                favoriteIds: ['recipe-1'],
+            } as any);
+            jest.mocked(prisma.recipe.findMany).mockResolvedValue([]);
+            jest.mocked(prisma.recipe.count).mockResolvedValue(0);
+
+            await getFavoriteRecipes({ search: 'pasta' });
+
+            expect(prisma.recipe.findMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: expect.objectContaining({
+                        OR: [
+                            {
+                                title: {
+                                    contains: 'pasta',
+                                    mode: 'insensitive',
+                                },
+                            },
+                            {
+                                description: {
+                                    contains: 'pasta',
+                                    mode: 'insensitive',
+                                },
+                            },
+                            {
+                                ingredients: {
+                                    has: 'pasta',
+                                },
+                            },
+                        ],
                     }),
                 })
             );
