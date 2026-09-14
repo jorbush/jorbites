@@ -456,8 +456,9 @@ describe('Draft API Error Handling & Shared Drafts', () => {
             expect(response.status).toBe(200);
             const data = await response.json();
             expect(data.shareUrl).toContain(
-                'https://proxy.jorbites.com/recipes/new?draft=host-fallback-draft'
+                'https://proxy.jorbites.com/api/draft/join?draft=host-fallback-draft'
             );
+            expect(data.shareUrl).not.toContain('/recipes/new');
         });
     });
 });

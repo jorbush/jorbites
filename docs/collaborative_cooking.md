@@ -32,7 +32,7 @@ sequenceDiagram
     API->>DS: DraftService.saveSharedDraft(draftId, payload, Owner)
     DS->>Redis: SET draft:shared:<draftId> (TTL 7 days)
     DS->>Redis: SADD user:drafts:<OwnerId> <draftId> (TTL 365 days)
-    API-->>Owner: Returns share URL https://jorbites.com/recipes/new?draft=<id>&token=<token>
+    API-->>Owner: Returns share URL https://jorbites.com/api/draft/join?draft=<id>&token=<token>
     Note over Owner,Modal: Alternatively, owner searches & adds co-cook directly below link
 
     Owner->>CoCook: Shares Link via WhatsApp / Telegram / Chat

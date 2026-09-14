@@ -78,7 +78,7 @@ export function useDraftInvite(currentUser?: SafeUser | null) {
         if (!effectiveToken || !draftId) return '';
         const origin =
             typeof window !== 'undefined' ? window.location.origin : '';
-        return `${origin}/recipes/new?draft=${draftId}&token=${effectiveToken}`;
+        return `${origin}/api/draft/join?draft=${draftId}&token=${effectiveToken}`;
     }, [effectiveToken, draftId]);
 
     const handleGenerateOrRegenerate = useCallback(

@@ -100,7 +100,7 @@ describe('DraftInviteModal component', () => {
 
         expect(screen.getByTestId('draft-invite-modal')).toBeInTheDocument();
         expect(screen.getByTestId('invite-link-input')).toHaveValue(
-            `${window.location.origin}/recipes/new?draft=draft-abc-123&token=secret-token-xyz`
+            `${window.location.origin}/api/draft/join?draft=draft-abc-123&token=secret-token-xyz`
         );
         expect(screen.getByTestId('role-badge-owner')).toBeInTheDocument();
         expect(
@@ -117,7 +117,7 @@ describe('DraftInviteModal component', () => {
         });
 
         expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-            `${window.location.origin}/recipes/new?draft=draft-abc-123&token=secret-token-xyz`
+            `${window.location.origin}/api/draft/join?draft=draft-abc-123&token=secret-token-xyz`
         );
     });
 

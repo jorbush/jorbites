@@ -48,6 +48,14 @@ describe('Drafts Management & Multi-Draft E2E', () => {
                             method: 'DELETE',
                             url: `/api/draft?draftId=${encodeURIComponent(d.draftId)}`,
                             failOnStatusCode: false,
+                        }).then((delRes) => {
+                            if (delRes.status === 403) {
+                                cy.request({
+                                    method: 'DELETE',
+                                    url: `/api/draft/collaborator?draftId=${encodeURIComponent(d.draftId)}&userId=self`,
+                                    failOnStatusCode: false,
+                                });
+                            }
                         });
                     }
                 });
@@ -542,17 +550,16 @@ describe('Drafts Management & Multi-Draft E2E', () => {
         cy.get('[data-testid="draft-card"]').should('have.length', 1);
 
         // Duplicate up to 5 drafts
+        cy.intercept('POST', '/api/draft').as('dupDraft');
         for (let i = 2; i <= 5; i++) {
-            cy.intercept('POST', '/api/draft').as(`dup${i}`);
             cy.get('[data-testid="draft-card-duplicate"]').first().click();
-            cy.wait(`@dup${i}`);
+            cy.wait('@dupDraft');
             cy.get('[data-testid="draft-card"]').should('have.length', i);
         }
 
         // Attempt 6th duplicate -> should be rejected by server with 409 Conflict
-        cy.intercept('POST', '/api/draft').as('dupExcess');
         cy.get('[data-testid="draft-card-duplicate"]').first().click();
-        cy.wait('@dupExcess').then((interception) => {
+        cy.wait('@dupDraft').then((interception) => {
             expect(interception.response?.statusCode).to.equal(409);
             expect(interception.response?.body?.error).to.equal(
                 'MAX_SOLO_DRAFTS_REACHED'
@@ -570,9 +577,8 @@ describe('Drafts Management & Multi-Draft E2E', () => {
         cy.get('[data-testid="draft-card"]').should('have.length', 4);
 
         // Duplicating now succeeds again -> back to 5
-        cy.intercept('POST', '/api/draft').as('dupSlotAvailable');
         cy.get('[data-testid="draft-card-duplicate"]').first().click();
-        cy.wait('@dupSlotAvailable');
+        cy.wait('@dupDraft');
         cy.get('[data-testid="draft-card"]').should('have.length', 5);
     });
 

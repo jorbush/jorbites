@@ -98,7 +98,7 @@ export async function POST(request: Request) {
             userId: currentUser.id,
         });
 
-        const shareUrl = `${baseUrl}/recipes/new?draft=${draftId}&token=${inviteToken}`;
+        const shareUrl = `${baseUrl}/api/draft/join?draft=${draftId}&token=${inviteToken}`;
 
         return NextResponse.json({
             draftId,

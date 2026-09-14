@@ -20,7 +20,7 @@ describe('DraftViewerInviteSection', () => {
 
     it('renders invite link and copy button when inviteUrl exists', async () => {
         const inviteUrl =
-            'http://localhost:3000/recipes/new?draft=123&token=abc';
+            'http://localhost:3000/api/draft/join?draft=123&token=abc';
         render(<DraftViewerInviteSection inviteUrl={inviteUrl} />);
 
         const input = screen.getByTestId('invite-link-input');

@@ -84,8 +84,10 @@ describe('useDraftInvite hook', () => {
         const { result } = renderHook(() => useDraftInvite(mockOwner));
 
         expect(result.current.isOwner).toBe(true);
+        expect(result.current.inviteUrl).toContain('/api/draft/join?');
         expect(result.current.inviteUrl).toContain('draft=draft-1');
         expect(result.current.inviteUrl).toContain('token=token-abc');
+        expect(result.current.inviteUrl).not.toContain('/recipes/new');
     });
 
     it('handles role change via PATCH /api/draft/role', async () => {

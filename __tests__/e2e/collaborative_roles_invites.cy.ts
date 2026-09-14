@@ -26,6 +26,14 @@ describe('Collaborative Drafts Roles & Invites E2E', () => {
                             method: 'DELETE',
                             url: `/api/draft?draftId=${encodeURIComponent(d.draftId)}`,
                             failOnStatusCode: false,
+                        }).then((delRes) => {
+                            if (delRes.status === 403) {
+                                cy.request({
+                                    method: 'DELETE',
+                                    url: `/api/draft/collaborator?draftId=${encodeURIComponent(d.draftId)}&userId=self`,
+                                    failOnStatusCode: false,
+                                });
+                            }
                         });
                     }
                 });

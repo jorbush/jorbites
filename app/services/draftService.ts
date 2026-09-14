@@ -1029,7 +1029,7 @@ export class DraftService {
             DRAFT_TTL_SECONDS
         );
 
-        const shareUrl = `${baseUrl}/recipes/new?draft=${draftId}&token=${newInviteToken}`;
+        const shareUrl = `${baseUrl}/api/draft/join?draft=${draftId}&token=${newInviteToken}`;
         return { inviteToken: newInviteToken, shareUrl, draft };
     }
 

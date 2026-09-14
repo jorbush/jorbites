@@ -244,8 +244,9 @@ describe('DraftService - Roles, Invites & Collaboration (D-08, D-10)', () => {
             expect(result.inviteToken).toBeTruthy();
             expect(result.inviteToken).not.toBe('initial-secret-token');
             expect(result.shareUrl).toBe(
-                `https://jorbites.app/recipes/new?draft=draft-roles-3&token=${result.inviteToken}`
+                `https://jorbites.app/api/draft/join?draft=draft-roles-3&token=${result.inviteToken}`
             );
+            expect(result.shareUrl).not.toContain('/recipes/new');
 
             const saved = JSON.parse(store['draft:shared:draft-roles-3']);
             expect(saved.inviteToken).toBe(result.inviteToken);

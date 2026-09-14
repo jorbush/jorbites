@@ -36,6 +36,10 @@ export async function DELETE(request: Request) {
             targetUserId = targetUserId || body.userId;
         }
 
+        if (draftId && (!targetUserId || targetUserId === 'self')) {
+            targetUserId = currentUser.id;
+        }
+
         if (!draftId || !targetUserId) {
             return badRequest('draftId and userId are required');
         }

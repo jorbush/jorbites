@@ -10,7 +10,7 @@ vi.mock('react-i18next', () => ({
 
 describe('DraftOwnerInviteSection', () => {
     const defaultProps = {
-        inviteUrl: 'http://localhost:3000/recipes/new?draft=123&token=abc',
+        inviteUrl: 'http://localhost:3000/api/draft/join?draft=123&token=abc',
         isRegenerating: false,
         onRegenerate: vi.fn(),
     };
