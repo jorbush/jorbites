@@ -449,6 +449,36 @@ describe('DraftService', () => {
             expect(fetched.arbitraryField).toBeUndefined();
             expect(fetched.polluted).toBeUndefined();
         });
+
+        it('should enforce runtime type validation and discard ill-typed field values', async () => {
+            const slotId = await DraftService.saveSingleUserDraft('owner-1', {
+                title: { malicious: 'object' } as any, // non-string string field
+                description: ['invalid', 'array'] as any, // non-string string field
+                ingredients: 'should-be-an-array' as any, // non-array array field
+                steps: ['Valid Step', 123, null, { evil: true }] as any, // mixed array elements
+                minutes: '45' as any, // numeric string -> number
+                cookTime: 'not-a-number' as any, // invalid number -> discarded
+                coCookRoles: {
+                    'valid-user': 'viewer',
+                    'invalid-user': 'superuser', // invalid role -> discarded
+                } as any,
+            } as any);
+
+            const fetched: any = await DraftService.getSingleUserDraft(
+                'owner-1',
+                slotId
+            );
+            expect(fetched).toBeDefined();
+            // Discarded invalid types:
+            expect(fetched.title).toBeUndefined();
+            expect(fetched.description).toBeUndefined();
+            expect(fetched.ingredients).toEqual([]); // normalized to empty array
+            // Filtered array elements:
+            expect(fetched.steps).toEqual(['Valid Step']);
+            // Parsed number:
+            expect(fetched.minutes).toBe(45);
+            expect(fetched.cookTime).toBeUndefined();
+        });
     });
 
     describe('getSharedDraft & token masking', () => {

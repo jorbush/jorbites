@@ -39,6 +39,10 @@ flowchart TD
             T9["lists.cy.ts<br/>Recipe Lists Lifecycle"]
             T10["plannings.cy.ts<br/>Meal Plannings Lifecycle"]
         end
+
+        subgraph Job7["Container 7: Collaborative Roles & Invites"]
+            T11["collaborative_roles_invites.cy.ts<br/>Roles, Direct Search & Invites"]
+        end
     end
 
     redisSvc -.->|REDIS_URL| Job1
@@ -47,6 +51,7 @@ flowchart TD
     redisSvc -.->|REDIS_URL| Job4
     redisSvc -.->|REDIS_URL| Job5
     redisSvc -.->|REDIS_URL| Job6
+    redisSvc -.->|REDIS_URL| Job7
 
     mongoSvc -.->|DATABASE_URL| Job1
     mongoSvc -.->|DATABASE_URL| Job2
@@ -54,6 +59,7 @@ flowchart TD
     mongoSvc -.->|DATABASE_URL| Job4
     mongoSvc -.->|DATABASE_URL| Job5
     mongoSvc -.->|DATABASE_URL| Job6
+    mongoSvc -.->|DATABASE_URL| Job7
 ```
 
 ---
@@ -311,6 +317,80 @@ sequenceDiagram
     Note over Owner,Modal: Owner navigates to Step 5 (Related Content)
     Owner->>Modal: Advance to Step 5
     Modal-->>Owner: Displays co-cook count `(4/4)` with all participants retained!
+```
+
+### 1.10 Safe Auto-Apply on Untouched Fields & Standard Toast Notification (Test 18)
+
+Validates that when a collaborator is viewing an active step and a remote co-cook pushes updates on fields the user has not edited, the changes automatically apply directly into the form fields without requiring manual button clicks or intrusive floating refresh overlays. A standard toast notification (`"Step X updated by a co-cook"`) alerts the user of the merge.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor UserA as Active Cook (User A)
+    actor UserB as Remote Co-Cook (User B)
+    participant Modal as RecipeModal UI (Step 1: Description)
+    participant SWR as SWR Polling Engine (8000ms)
+    participant Sync as useDraftSync & syncRemoteDraftToForm
+    participant Toast as React Hot Toast
+    participant Redis as Redis Store (:6379)
+
+    Note over UserA,Modal: User A is on Step 1. Title & Description are clean/untouched.
+    UserB->>Redis: POST /api/draft { title: "Co-Cook Updated Title", description: "Co-Cook Updated Description" }
+    Redis-->>Redis: SET draft:shared:<id>
+
+    Note over SWR,Redis: Periodic SWR Poll triggers GET /api/draft?draftId=<id>
+    SWR->>Redis: GET /api/draft?draftId=<id>
+    Redis-->>SWR: 200 OK (New Title & Description from Chef Maria)
+    SWR->>Sync: swrDraftData updated
+
+    Sync->>Sync: detectStepConflict(step=1, currentDraft, prevDraft, getValues)
+    Note over Sync: remoteChanged = true, isFieldLocallyEdited('title') = false, isFieldLocallyEdited('description') = false
+
+    Sync->>Toast: toast("Step 2 updated by a co-cook", { icon: "👨‍🍳", id: "step-sync-1" })
+    Toast-->>UserA: Standard toast notification rendered (clean, non-disruptive)
+
+    Sync->>Modal: setValue('title', 'Co-Cook Updated Title')
+    Sync->>Modal: setValue('description', 'Co-Cook Updated Description')
+    Modal-->>UserA: Inputs updated automatically! No broken refresh button or prompt.
+```
+
+### 1.11 Active Keystroke Protection & Selective Field Auto-Apply Workflow (Test 19)
+
+Validates that if a user is actively typing in an active step field (marking it dirty/locally edited), remote background polls will **never overwrite** the user's uncommitted typing. Meanwhile, clean/untouched fields on that same step safely auto-apply remote updates, and a standard toast notification informs the user of the merge.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor UserA as Active Typist (User A)
+    actor UserB as Remote Co-Cook (User B)
+    participant Modal as RecipeModal UI (Step 1: Description)
+    participant SWR as SWR Polling Engine (8000ms)
+    participant Sync as syncRemoteDraftToForm / draftSyncUtils
+    participant Toast as React Hot Toast
+    participant Redis as Redis Store (:6379)
+
+    UserA->>Modal: Types into Title: "My Local In-Progress Title" (Dirty field)
+    Note over Modal: Description is untouched: "Initial Description" (Clean field)
+
+    UserB->>Redis: POST /api/draft { title: "Remote Override Attempt", description: "Remote Updated Description" }
+    Redis-->>Redis: SET draft:shared:<id>
+
+    SWR->>Redis: GET /api/draft?draftId=<id>
+    Redis-->>SWR: 200 OK (Remote changes payload)
+    SWR->>Sync: swrDraftData updated
+
+    Sync->>Sync: isFieldLocallyEdited('title') -> true (Local dirty keystrokes detected)
+    Sync->>Sync: isFieldLocallyEdited('description') -> false (Field is pristine)
+
+    Note over Sync,Modal: 1. Keystroke Protection: Title is skipped! Local typing preserved.
+    Note over Sync,Modal: 2. Selective Auto-Apply: Description is updated to "Remote Updated Description"
+    Sync->>Modal: setValue('description', 'Remote Updated Description')
+
+    Sync->>Toast: toast("Step 2 updated by a co-cook", { icon: "👨‍🍳" })
+    Toast-->>UserA: Standard toast displayed
+
+    Modal-->>UserA: Title stays "My Local In-Progress Title" & Description auto-applied!
+    Note over UserA,Modal: Zero keystroke loss, zero race condition clobbering!
 ```
 
 ---
@@ -934,4 +1014,61 @@ sequenceDiagram
     User->>Plannings: Confirm -> DELETE /api/plannings/:id
     Plannings-->>User: Plan card removed from list
 ```
+
+---
+
+## 12. Collaborative Roles, Direct Search & Invites Workflow (`collaborative_roles_invites.cy.ts`)
+
+This spec validates the in-app invite management (`DraftInviteModal`), direct invite link display and auto-generation on modal mount, token regeneration, role toggle between `editor` and `viewer`, collaborator removal, direct collaborator addition via search with automatic solo-to-shared promotion, collaborator editing access, draft card avatar stack click trigger with dynamic counter updates, and rapid search input cancellation via `AbortController`.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Owner as Recipe Owner
+    actor Maria as Chef Maria (Collaborator)
+    participant UI as Browser / DraftInviteModal
+    participant RM as RecipeModal
+    participant API as Next.js API Routes
+    participant DS as DraftService
+    participant Redis as Redis Store
+
+    %% Scenario 1 & 2: Direct Invite Link & Regeneration
+    Owner->>UI: Open DraftsModal -> Click "Manage Collaborators"
+    UI->>API: POST /api/draft/invite { draftId, regenerate: false } (auto on mount)
+    API->>DS: DraftService.saveSharedDraft (promotes to shared if solo)
+    DS->>Redis: SET draft:shared:<id> with inviteToken
+    API-->>UI: 200 OK { draftId, inviteToken }
+    UI-->>Owner: Render invite link input directly & Copy button
+    Owner->>UI: Click "Regenerate" -> ConfirmModal -> Confirm
+    UI->>API: POST /api/draft/invite { draftId, regenerate: true }
+    API-->>UI: 200 OK (rotates token, invalidates previous)
+
+    %% Scenario 3: Role Management (Editor vs Viewer)
+    Owner->>UI: Click role toggle for co-cook (Editor -> Viewer)
+    UI->>API: PATCH /api/draft/role { draftId, collaboratorId, role: 'viewer' }
+    API->>DS: DraftService.setCollaboratorRole
+    DS->>Redis: Updates role in draft:shared:<id> & releases held locks
+    API-->>UI: 200 OK { coCookRoles: { [id]: 'viewer' } }
+
+    %% Scenario 4: Direct User Search Addition & Solo Auto-Promotion
+    Owner->>UI: Type collaborator name into search input below invite link
+    UI->>API: GET /api/search/users?q=Maria
+    API-->>UI: 200 OK [users]
+    Owner->>UI: Click user in search results list
+    UI->>API: POST /api/draft/collaborator { draftId, collaboratorId }
+    API->>DS: DraftService.addCollaborator (auto-promotes solo draft to shared)
+    DS->>Redis: SADD coCooksIds & SADD user:drafts:<MariaId>
+    API-->>UI: 200 OK { collaborators: [...] }
+    UI-->>Owner: Displays collaborator badge with Editor role pill
+
+    %% Scenario 5: Collaborator Access & Editing
+    Maria->>RM: Opens shared draft in RecipeModal
+    RM->>API: GET /api/draft?draftId=<id>
+    API-->>RM: 200 OK { draftData, role: 'editor' }
+    RM-->>Maria: Form interactive, viewer banner hidden
+    Maria->>RM: Edit recipe description & save draft
+    RM->>API: POST /api/draft { draftId, description }
+    API-->>RM: 200 OK -> Changes saved in Redis
+```
+
 

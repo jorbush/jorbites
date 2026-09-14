@@ -31,6 +31,8 @@ jobs:
                       spec: '__tests__/e2e/drafts_management.cy.ts,__tests__/e2e/drafts_navigation.cy.ts'
                     - name: 'Lists & Plannings Specs'
                       spec: '__tests__/e2e/lists.cy.ts,__tests__/e2e/plannings.cy.ts'
+                    - name: 'Collaborative Roles & Invites'
+                      spec: '__tests__/e2e/collaborative_roles_invites.cy.ts'
         services:
             redis:
                 image: redis

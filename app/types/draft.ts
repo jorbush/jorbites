@@ -7,6 +7,8 @@ export interface BaseDraft {
     ownerId?: string;
     ownerName?: string;
     coCooksIds?: string[];
+    coCookRoles?: Record<string, CoCookRole>;
+    lastModifiedBy?: { id: string; name?: string };
     title?: string;
     description?: string;
     categories?: string[];
@@ -30,11 +32,23 @@ export interface BaseDraft {
     linkedRecipes?: SafeRecipe[];
 }
 
+export type CoCookRole = 'editor' | 'viewer';
+
+export interface DraftCollaborator {
+    id: string;
+    name: string;
+    email?: string;
+    image?: string | null;
+    role: CoCookRole;
+    isOwner: boolean;
+}
+
 export interface SharedDraft extends BaseDraft {
     draftId: string;
     ownerId: string;
     ownerName: string;
     coCooksIds: string[];
+    coCookRoles?: Record<string, CoCookRole>;
     updatedAt: string;
 }
 
@@ -53,6 +67,7 @@ export interface DraftSummary {
     steps?: string[];
     method?: string;
     coCooksIds: string[];
+    coCookRoles?: Record<string, CoCookRole>;
     ownerId: string;
     ownerName?: string;
     updatedAt: string;

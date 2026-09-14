@@ -9,19 +9,25 @@ import { SafeUser } from '@/app/types';
 
 vi.mock('@/app/hooks/useDraftsModal');
 vi.mock('@/app/hooks/useRecipeModal');
+const mockDraftInviteOpen = vi.fn();
+vi.mock('@/app/hooks/useDraftInviteModal', () => ({
+    default: () => ({
+        isOpen: false,
+        onOpen: mockDraftInviteOpen,
+        onClose: vi.fn(),
+    }),
+}));
 vi.mock('swr');
 
 const mockCreateDraft = vi.fn();
 const mockDeleteDraft = vi.fn();
 const mockDuplicateDraft = vi.fn();
-const mockShareDraft = vi.fn();
 
 vi.mock('@/app/hooks/useDraftActions', () => ({
     useDraftActions: () => ({
         createDraft: mockCreateDraft,
         deleteDraft: mockDeleteDraft,
         duplicateDraft: mockDuplicateDraft,
-        shareDraft: mockShareDraft,
         isLoading: false,
     }),
 }));
@@ -301,14 +307,14 @@ describe('DraftsModal component', () => {
         });
     });
 
-    it('calls shareDraft when share icon is clicked', async () => {
+    it('opens draftInviteModal when manage collabs button is clicked', async () => {
         const mockDrafts = [
             {
-                draftId: 'draft-to-share',
-                type: 'solo',
-                title: 'Share Me',
+                draftId: 'draft-to-manage',
+                type: 'shared',
+                title: 'Manage Me',
                 ownerId: 'user-1',
-                coCooksIds: [],
+                coCooksIds: ['user-2'],
                 updatedAt: new Date().toISOString(),
             },
         ];
@@ -318,16 +324,13 @@ describe('DraftsModal component', () => {
             isLoading: false,
             mutate: mockMutate,
         });
-        mockShareDraft.mockResolvedValueOnce(
-            'http://localhost:3000/?draft=draft-to-share&token=123'
-        );
 
         render(<DraftsModal currentUser={mockCurrentUser} />);
 
-        fireEvent.click(screen.getByTestId('draft-card-share'));
+        fireEvent.click(screen.getByTestId('draft-card-manage-collabs'));
 
         await waitFor(() => {
-            expect(mockShareDraft).toHaveBeenCalledWith('draft-to-share');
+            expect(mockDraftInviteOpen).toHaveBeenCalledWith('draft-to-manage');
         });
     });
 });

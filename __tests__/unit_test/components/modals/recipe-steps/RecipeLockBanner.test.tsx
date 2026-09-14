@@ -105,4 +105,20 @@ describe('RecipeLockBanner', () => {
             screen.getByText('co_cook_active_other_step_generic')
         ).toBeDefined();
     });
+
+    it('renders viewer banner when isViewer is true', () => {
+        render(
+            <RecipeLockBanner
+                isCurrentStepLocked={false}
+                lockOwner={null}
+                isSharedSession={true}
+                otherActiveLocks={[]}
+                isViewer={true}
+            />
+        );
+
+        const banner = screen.getByTestId('viewer-banner');
+        expect(banner).toBeDefined();
+        expect(screen.getByText('viewer_mode_banner')).toBeDefined();
+    });
 });

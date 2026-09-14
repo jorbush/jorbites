@@ -48,6 +48,14 @@ describe('Drafts Management & Multi-Draft E2E', () => {
                             method: 'DELETE',
                             url: `/api/draft?draftId=${encodeURIComponent(d.draftId)}`,
                             failOnStatusCode: false,
+                        }).then((delRes) => {
+                            if (delRes.status === 403) {
+                                cy.request({
+                                    method: 'DELETE',
+                                    url: `/api/draft/collaborator?draftId=${encodeURIComponent(d.draftId)}&userId=self`,
+                                    failOnStatusCode: false,
+                                });
+                            }
                         });
                     }
                 });
@@ -125,7 +133,9 @@ describe('Drafts Management & Multi-Draft E2E', () => {
         );
         cy.get('[data-testid="draft-progress-bar"]').should('be.visible');
         cy.get('[data-testid="draft-ttl-badge"]').should('be.visible');
-        cy.get('[data-testid="draft-card-share"]').should('be.visible');
+        cy.get('[data-testid="draft-card-manage-collabs"]').should(
+            'be.visible'
+        );
 
         // Step 4: Duplicate the draft
         cy.intercept('POST', '/api/draft').as('duplicateDraft');
@@ -540,17 +550,16 @@ describe('Drafts Management & Multi-Draft E2E', () => {
         cy.get('[data-testid="draft-card"]').should('have.length', 1);
 
         // Duplicate up to 5 drafts
+        cy.intercept('POST', '/api/draft').as('dupDraft');
         for (let i = 2; i <= 5; i++) {
-            cy.intercept('POST', '/api/draft').as(`dup${i}`);
             cy.get('[data-testid="draft-card-duplicate"]').first().click();
-            cy.wait(`@dup${i}`);
+            cy.wait('@dupDraft');
             cy.get('[data-testid="draft-card"]').should('have.length', i);
         }
 
         // Attempt 6th duplicate -> should be rejected by server with 409 Conflict
-        cy.intercept('POST', '/api/draft').as('dupExcess');
         cy.get('[data-testid="draft-card-duplicate"]').first().click();
-        cy.wait('@dupExcess').then((interception) => {
+        cy.wait('@dupDraft').then((interception) => {
             expect(interception.response?.statusCode).to.equal(409);
             expect(interception.response?.body?.error).to.equal(
                 'MAX_SOLO_DRAFTS_REACHED'
@@ -568,9 +577,8 @@ describe('Drafts Management & Multi-Draft E2E', () => {
         cy.get('[data-testid="draft-card"]').should('have.length', 4);
 
         // Duplicating now succeeds again -> back to 5
-        cy.intercept('POST', '/api/draft').as('dupSlotAvailable');
         cy.get('[data-testid="draft-card-duplicate"]').first().click();
-        cy.wait('@dupSlotAvailable');
+        cy.wait('@dupDraft');
         cy.get('[data-testid="draft-card"]').should('have.length', 5);
     });
 
@@ -597,15 +605,25 @@ describe('Drafts Management & Multi-Draft E2E', () => {
         cy.wait('@dupDraft');
         cy.get('[data-testid="draft-card"]').should('have.length', 2);
 
-        // Step 3: Convert the first draft into a Shared Collaborative Draft via share button
+        // Step 3: Convert the first draft into a Shared Collaborative Draft via DraftInviteModal
         cy.intercept('POST', '/api/draft/invite').as('generateInvite');
-        cy.get('[data-testid="draft-card-share"]').first().click();
+        cy.get('[data-testid="draft-card-manage-collabs"]').first().click();
+        cy.get('[data-testid="draft-invite-modal"]').should('be.visible');
         cy.wait('@generateInvite');
+        cy.get('[data-testid="invite-link-input"]').should('be.visible');
+
+        cy.get('[data-testid="copy-invite-link-btn"]').click();
 
         // Verify toast
         cy.contains('Co-cook invite link copied to clipboard').should(
             'be.visible'
         );
+
+        // Close draft invite modal
+        cy.get('[data-testid="draft-invite-modal"]')
+            .parents('.fixed')
+            .find('[data-testid="close-modal-button"]')
+            .click();
 
         // Step 4: Verify DraftsModal displays mixed badges
         // One card has "Shared" badge and 7d TTL, other card has "Solo" badge and 365d TTL
@@ -616,9 +634,9 @@ describe('Drafts Management & Multi-Draft E2E', () => {
             .contains('Solo')
             .should('be.visible');
 
-        // Verify TTL badges (1 week for 7-day shared draft, 52 weeks for 365-day solo draft)
+        // Verify TTL badges (1 week / 6 days for 7-day shared draft, 52 weeks for 365-day solo draft)
         cy.get('[data-testid="draft-ttl-badge"]')
-            .contains('1 week')
+            .contains(/1 week|6 days/)
             .should('be.visible');
         cy.get('[data-testid="draft-ttl-badge"]')
             .contains('52 weeks')

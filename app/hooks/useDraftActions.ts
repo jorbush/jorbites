@@ -84,9 +84,22 @@ export function useDraftActions({
 
             setIsLoading(true);
             try {
-                await axios.delete(
-                    `/api/draft?draftId=${encodeURIComponent(draftId)}`
-                );
+                try {
+                    await axios.delete(
+                        `/api/draft?draftId=${encodeURIComponent(draftId)}`
+                    );
+                } catch (delError: unknown) {
+                    if (
+                        axios.isAxiosError(delError) &&
+                        delError.response?.status === 403
+                    ) {
+                        await axios.delete(
+                            `/api/draft/collaborator?draftId=${encodeURIComponent(draftId)}&userId=${encodeURIComponent(currentUser.id)}`
+                        );
+                    } else {
+                        throw delError;
+                    }
+                }
                 toast.success(
                     t('draft_deleted', { defaultValue: 'Draft deleted' })
                 );

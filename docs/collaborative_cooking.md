@@ -21,19 +21,19 @@ sequenceDiagram
     autonumber
     actor Owner as Recipe Owner (User A)
     actor CoCook as Co-Cook (User B)
-    participant Modal as RecipeModal UI (Step 0 / Header)
+    participant Modal as DraftInviteModal (via DraftCard)
     participant API as Jorbites API / Next.js
     participant DS as DraftService
     participant Redis as Redis (ioredis)
     participant DB as MongoDB (Prisma)
 
-    Owner->>Modal: Open RecipeModal (Post a Recipe)
-    Owner->>Modal: Click "+ Add Co-Cook" or "Copy Invite Link 🔗"
-    Modal->>API: POST /api/draft/invite (generates draftId & secure token)
+    Owner->>Modal: Open DraftsModal -> Click "Manage Collaborators"
+    Modal->>API: POST /api/draft/invite (generates draftId & secure token on mount)
     API->>DS: DraftService.saveSharedDraft(draftId, payload, Owner)
     DS->>Redis: SET draft:shared:<draftId> (TTL 7 days)
     DS->>Redis: SADD user:drafts:<OwnerId> <draftId> (TTL 365 days)
-    API-->>Owner: Returns share URL https://jorbites.com/recipes/new?draft=<id>&token=<token>
+    API-->>Owner: Returns share URL https://jorbites.com/api/draft/join?draft=<id>&token=<token>
+    Note over Owner,Modal: Alternatively, owner searches & adds co-cook directly below link
 
     Owner->>CoCook: Shares Link via WhatsApp / Telegram / Chat
     CoCook->>API: Opens Share Link (GET /api/draft/join?draft=<id>&token=<token>)
@@ -73,7 +73,7 @@ sequenceDiagram
 | `user:drafts:<userId>`                    | Active draft index per user    | **365 Days** (`USER_DRAFTS_INDEX_TTL_SECONDS = 31536000`) | **Redis Set** of draft IDs (atomically updated via `SADD`/`SREM`)                |
 | `lock:recipe:<targetId>:field:<fieldKey>` | Section/field soft lock        | **30 Seconds** (`LOCK_TTL_SECONDS = 30`)          | JSON `{ userId, userName, userAvatar, timestamp }`                               |
 
-For comprehensive documentation on multi-draft management and DraftsModal UI, see [`docs/drafts.md`](file:///Users/jordi/.gemini/antigravity/worktrees/jorbites/implement_drafts_collaborative_editing/docs/drafts.md).
+For comprehensive documentation on multi-draft management and DraftsModal UI, see [`docs/drafts.md`](./drafts.md).
 
 ---
 
@@ -120,13 +120,15 @@ When co-cooks work on different steps concurrently (e.g., User A on Step 1: Desc
 - **Step-Scoped Client Saves (`saveDraft`)**: When auto-saving drafts during forward/backward step transitions, `useRecipeFormState` only attaches array fields (`ingredients` or `steps`) to the POST payload if the user is **actively on that specific step** (`step === STEPS.INGREDIENTS` or `step === STEPS.STEPS`). This ensures client transitions through earlier steps never broadcast stale local inputs that could overwrite real-time collaborator additions in Redis.
 - **Empty Array Safety Guards**: Remote collections like `coCooksIds` and `linkedRecipeIds` are only synced into local form state if `draftData.<field>.length > 0`, ensuring empty initial draft arrays never wipe user selections when navigating to subsequent steps.
 
-### 8. Real-Time State Synchronization & Background SWR Polling
+### 8. Real-Time State Synchronization & Safe Auto-Apply
 
-- **Background Polling & Endpoint Binding**: Active shared drafts in `RecipeModal` poll `GET /api/draft?draftId=<draftId>` every 3 seconds via SWR (`refreshInterval: 3000`, `revalidateOnFocus: true`). When the owner generates an invite link, both owner and co-cook clients immediately bind to the shared draft endpoint.
-- **Selective Form State Sync**: `useRecipeFormState` non-destructively syncs incoming draft updates:
-    - On initial draft load (`isInitialSync = true`).
-    - For all steps other than the active user's current step (`step !== stepIndex`).
-    - On the active user's current step when it is locked by another co-cook (`lock.isLockedByOther('step:' + stepIndex)`), allowing the user to see real-time updates as the other co-cook edits without overwriting local inputs when holding the lock.
+- **Background Polling & Endpoint Binding**: Active shared drafts in `RecipeModal` poll `GET /api/draft?draftId=<draftId>` every 8 seconds via SWR (`refreshInterval: 8000`, `revalidateOnFocus: true`). Solo drafts completely disable polling (`refreshInterval: 0`), preventing redundant Redis operations. When the owner generates an invite link or adds a collaborator, the draft is promoted to shared and polling begins automatically.
+- **Safe Auto-Apply & Keystroke Protection (Anti-Clobbering)**: `syncRemoteDraftToForm` safely synchronizes incoming draft updates:
+    - **Inactive Steps**: Inactive steps (`step !== stepIndex`) are always auto-applied quietly in the background without affecting the user's active view.
+    - **Locked Steps**: When a step is locked by another co-cook (`lock.isLockedByOther('step:' + stepIndex)`), incoming changes are auto-applied live to the read-only view.
+    - **Active Step Untouched Fields**: Incoming remote updates on the active step for fields that the local user has not modified are **auto-applied directly** into the form state without requiring manual button clicks.
+    - **Active Step Keystroke Protection**: Fields with active, uncommitted local edits (dirty fields) are strictly protected against being overwritten by incoming remote payloads, preventing race conditions or progress loss.
+- **Standard Notification System**: When a remote co-cook modifies fields on the user's active step, the system notifies the collaborator using the app's standard notification toast (`Step {{stepNumber}} updated by a co-cook` with icon `👨‍🍳` and deduplication ID `step-sync-{{step}}`), completely eliminating intrusive or overlapping manual refresh buttons.
 - **Synchronous Input Row Expansion**: Dynamic collaborator additions (such as a co-cook adding a 3rd ingredient or step) expand form inputs synchronously during render via `effectiveNumIngredients` and `effectiveNumSteps` (`Math.max(numInputs, draftData.items.length)`), rendering new fields without layout lag or stale-state clipping.
 - **Modal Lifecycle & URL Cleanliness**: Tracks auto-open state so `?draft=` in the URL opens the modal once, and cleans up query parameters (`window.history.replaceState`) on modal close to prevent re-opening loops.
 - **Immediate Navigation Sync & Persistence**: Step transitions trigger `mutateDraft?.()` on `onNext()` and `onBack()`, and auto-save draft state in production (`NODE_ENV === 'production'`).
@@ -172,7 +174,9 @@ To guarantee that collaborators cannot concurrently edit or overwrite the same r
 | Endpoint                 | Method                  | Description                                                                                                                |
 | ------------------------ | ----------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `/api/draft`             | `GET`, `POST`, `DELETE` | Manages single-user or shared drafts via `DraftService`. Non-destructively merges fields; sanitizes tokens for non-owners. |
-| `/api/draft/invite`      | `POST`                  | Generates a shared draft ID, secure token, and shareable link (owner only).                                                |
+| `/api/draft/invite`      | `POST`                  | Generates a shared draft ID, secure token, and shareable link (owner only). Auto-promotes solo drafts to shared. |
+| `/api/draft/collaborator`| `POST`, `DELETE`        | Adds or removes a co-cook collaborator directly (removal atomically releases any locks held by that user). Auto-promotes solo drafts to shared drafts upon collaborator addition. |
+| `/api/draft/role`        | `PATCH`                 | Updates co-cook permission role between `editor` and `viewer` (owner only). Releases locks on switch to viewer. |
 | `/api/draft/join`        | `GET`                   | Validates invite token, adds user to `coCooksIds`, and redirects to shared draft.                                          |
 | `/api/draft/active`      | `GET`                   | Returns list of active shared drafts where current user is owner or co-cook (with lazy cleanup).                           |
 | `/api/recipes/[id]/lock` | `POST`, `DELETE`, `GET` | Acquires, releases, or fetches section soft-locks with fast heartbeat path.                                                |
@@ -187,7 +191,7 @@ To guarantee that collaborators cannot concurrently edit or overwrite the same r
     - `FiFolder` ("My Drafts" with green indicator dot when active drafts exist; opens `DraftsModal`)
     - `FiUploadCloud` ("Save draft")
 - **Draft Card Actions**: In `DraftsModal`, each draft card includes:
-    - `FaUserPlus` ("Copy co-cook invite link" to invite collaborative co-cooks to any draft)
+    - `FiUsers` ("Manage collaborators" to open `DraftInviteModal` where owners can copy/regenerate invite links, search & add co-cooks directly, manage roles, and remove collaborators)
     - `FiCopy` ("Duplicate draft")
     - `FiTrash2` ("Delete draft")
 - **In-Modal Co-Cooking Status Indicator**: Minimalist status indicator rendered inside `RecipeModal` during multi-user collaborative editing sessions:
@@ -195,12 +199,13 @@ To guarantee that collaborators cannot concurrently edit or overwrite the same r
 - **Field Lock Banners**: Rendered inside form steps when another co-cook holds an active soft-lock on that step:
     - _`@maria is currently editing this step`_ (Amber pill with pulsing lock indicator)
     - Inputs for locked fields are disabled with visual opacity feedback, while allowing other co-cooks to navigate freely.
+- **Viewer Mode Banners**: When a co-cook has the `viewer` role, inputs are guarded with `inert` and a view-only banner is displayed (`[data-testid="viewer-banner"]`).
 
 ---
 
 ## E2E Testing & Step Navigation Synchronization
 
-The collaborative cooking architecture is covered by automated Cypress E2E tests in [`__tests__/e2e/collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts) running against a local Redis instance (`REDIS_URL=redis://localhost:6379`).
+The collaborative cooking architecture is covered by automated Cypress E2E test suites in [`__tests__/e2e/collaborative_recipes.cy.ts`](file:///__tests__/e2e/collaborative_recipes.cy.ts) and [`__tests__/e2e/collaborative_roles_invites.cy.ts`](file:///__tests__/e2e/collaborative_roles_invites.cy.ts) running against a local Redis instance (`REDIS_URL=redis://localhost:6379`).
 
 ### Key Test Scenarios (17/17 Passing):
 

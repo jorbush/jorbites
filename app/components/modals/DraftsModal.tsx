@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { FiPlus, FiFileText } from 'react-icons/fi';
 import Modal from '@/app/components/modals/Modal';
 import useDraftsModal from '@/app/hooks/useDraftsModal';
+import useDraftInviteModal from '@/app/hooks/useDraftInviteModal';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import { useDraftActions } from '@/app/hooks/useDraftActions';
 import { axiosFetcher } from '@/app/utils/fetcher';
@@ -21,6 +22,7 @@ interface DraftsModalProps {
 const DraftsModal: React.FC<DraftsModalProps> = ({ currentUser }) => {
     const { t } = useTranslation();
     const draftsModal = useDraftsModal();
+    const draftInviteModal = useDraftInviteModal();
     const recipeModal = useRecipeModal();
     const [deletingDraftId, setDeletingDraftId] = useState<string | null>(null);
 
@@ -43,18 +45,17 @@ const DraftsModal: React.FC<DraftsModalProps> = ({ currentUser }) => {
         createDraft,
         deleteDraft,
         duplicateDraft,
-        shareDraft,
         isLoading: isActionLoading,
     } = useDraftActions({
         currentUser,
         onDraftMutate: mutate,
     });
 
-    const handleShareDraft = useCallback(
-        async (draftId: string) => {
-            await shareDraft(draftId);
+    const handleManageCoCooks = useCallback(
+        (draftId: string) => {
+            draftInviteModal.onOpen(draftId);
         },
-        [shareDraft]
+        [draftInviteModal]
     );
 
     const handleOpenDraft = useCallback(
@@ -192,7 +193,7 @@ const DraftsModal: React.FC<DraftsModalProps> = ({ currentUser }) => {
                             onOpen={handleOpenDraft}
                             onDelete={handleDeleteClick}
                             onDuplicate={handleDuplicateDraft}
-                            onShare={handleShareDraft}
+                            onManageCoCooks={handleManageCoCooks}
                         />
                     ))}
                 </div>

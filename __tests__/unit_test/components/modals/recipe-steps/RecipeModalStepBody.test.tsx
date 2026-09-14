@@ -65,10 +65,13 @@ vi.mock('@/app/components/modals/recipe-steps/RecipeLockBanner', () => ({
 describe('RecipeModalStepBody', () => {
     const defaultProps = {
         step: STEPS.CATEGORY,
-        isCurrentStepLocked: false,
-        lockOwner: null,
-        isSharedSession: false,
-        otherActiveLocks: [],
+        lockState: {
+            isCurrentStepLocked: false,
+            lockOwner: null,
+            isSharedSession: false,
+            otherActiveLocks: [],
+            isViewer: false,
+        },
         categories: ['Breakfast'],
         setCustomValue: vi.fn(),
         numIngredients: 1,
@@ -188,7 +191,9 @@ describe('RecipeModalStepBody', () => {
             <RecipeModalStepBody
                 {...defaultProps}
                 step={STEPS.INGREDIENTS}
-                isCurrentStepLocked={true}
+                lockState={{
+                    isCurrentStepLocked: true,
+                }}
             />
         );
 
@@ -197,5 +202,24 @@ describe('RecipeModalStepBody', () => {
             '.pointer-events-none.opacity-60'
         );
         expect(lockedWrapper).toBeDefined();
+    });
+
+    it('applies inert and disabled styling when isViewer is true', () => {
+        const { container } = render(
+            <RecipeModalStepBody
+                {...defaultProps}
+                step={STEPS.DESCRIPTION}
+                lockState={{
+                    isViewer: true,
+                }}
+            />
+        );
+
+        const lockedWrapper = container.querySelector(
+            '.pointer-events-none.opacity-60'
+        );
+        expect(lockedWrapper).toBeDefined();
+        const containerElem = screen.getByTestId('locked-step-container');
+        expect(containerElem).toHaveAttribute('inert');
     });
 });

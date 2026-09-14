@@ -8,6 +8,7 @@ export interface RecipeLockBannerProps {
     lockOwner?: { userName?: string; userId?: string } | null;
     isSharedSession: boolean;
     otherActiveLocks: Array<[string, any]>;
+    isViewer?: boolean;
 }
 
 const RecipeLockBanner: React.FC<RecipeLockBannerProps> = ({
@@ -15,8 +16,26 @@ const RecipeLockBanner: React.FC<RecipeLockBannerProps> = ({
     lockOwner,
     isSharedSession,
     otherActiveLocks,
+    isViewer = false,
 }) => {
     const { t } = useTranslation();
+
+    if (isViewer) {
+        return (
+            <div
+                data-testid="viewer-banner"
+                className="mb-4 flex items-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/10 px-3.5 py-2 text-xs font-medium text-blue-900 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-200"
+            >
+                <span className="relative flex size-2 shrink-0">
+                    <span className="relative inline-flex size-2 rounded-full bg-blue-500"></span>
+                </span>
+                <span>
+                    {t('viewer_mode_banner') ||
+                        'View-only mode — you can browse but editing is disabled for your role'}
+                </span>
+            </div>
+        );
+    }
 
     if (isCurrentStepLocked && lockOwner) {
         return (

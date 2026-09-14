@@ -1,13 +1,37 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import useSWR from 'swr';
+import { toast } from 'react-hot-toast';
 import { useDraftSync } from '@/app/hooks/useDraftSync';
-import { syncRemoteDraftToForm } from '@/app/utils/draftSyncUtils';
+import {
+    syncRemoteDraftToForm,
+    detectStepConflict,
+} from '@/app/utils/draftSyncUtils';
 import { SafeUser } from '@/app/types';
 
 vi.mock('swr');
+vi.mock('react-hot-toast', () => ({
+    toast: Object.assign(vi.fn(), {
+        custom: vi.fn(),
+        dismiss: vi.fn(),
+    }),
+}));
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key: string, opts?: { stepNumber?: number }) =>
+            key === 'step_conflict_toast'
+                ? `Step ${opts?.stepNumber} updated by a co-cook`
+                : key,
+    }),
+}));
 vi.mock('@/app/utils/draftSyncUtils', () => ({
     syncRemoteDraftToForm: vi.fn(),
+    detectStepConflict: vi.fn().mockReturnValue({
+        hasConflict: false,
+        remoteChanged: false,
+        stepIndex: 0,
+        stepKey: '',
+    }),
 }));
 
 const mockUser: SafeUser = {
@@ -30,7 +54,7 @@ describe('useDraftSync hook', () => {
         });
     });
 
-    it('encodes activeDraftId in the SWR endpoint key (L2)', () => {
+    it('encodes activeDraftId in the SWR endpoint key and sets refreshInterval to 8000 only for shared drafts', () => {
         renderHook(() =>
             useDraftSync({
                 activeDraftId: 'draft with spaces & special=chars',
@@ -44,9 +68,34 @@ describe('useDraftSync hook', () => {
             '/api/draft?draftId=draft%20with%20spaces%20%26%20special%3Dchars',
             expect.any(Function),
             expect.objectContaining({
-                refreshInterval: 8000,
+                refreshInterval: expect.any(Function),
             })
         );
+
+        const swrConfig = vi.mocked(useSWR).mock.calls[0][2] as any;
+        const intervalFn = swrConfig.refreshInterval;
+
+        // Solo draft or undefined draft returns 0 (no polling waste)
+        expect(intervalFn(undefined)).toBe(0);
+        expect(intervalFn({ type: 'solo' })).toBe(0);
+
+        // Shared draft returns 8000
+        expect(intervalFn({ type: 'shared' })).toBe(8000);
+    });
+
+    it('uses initialDraftData type when evaluating refreshInterval', () => {
+        renderHook(() =>
+            useDraftSync({
+                activeDraftId: 'draft-shared',
+                isEditMode: false,
+                currentUser: mockUser,
+                isOpen: true,
+                initialDraftData: { type: 'shared' as any },
+            })
+        );
+
+        const swrConfig = vi.mocked(useSWR).mock.calls[0][2] as any;
+        expect(swrConfig.refreshInterval(undefined)).toBe(8000);
     });
 
     it('passes null key to SWR when modal is closed', () => {
@@ -135,5 +184,88 @@ describe('useDraftSync hook', () => {
         });
 
         expect(syncRemoteDraftToForm).not.toHaveBeenCalled();
+    });
+
+    it('dispatches a standard toast notification when detectStepConflict reports remoteChanged on the active step', () => {
+        vi.mocked(detectStepConflict).mockReturnValueOnce({
+            hasConflict: false,
+            remoteChanged: true,
+            stepIndex: 1,
+            stepKey: 'description',
+            authorName: 'Chef Bob',
+        });
+
+        const mockDraft = {
+            draftId: 'draft-123',
+            title: 'Chef Bobs Title',
+        };
+
+        const setValue = vi.fn();
+        const getValues = vi.fn().mockReturnValue({});
+
+        const { result } = renderHook(() =>
+            useDraftSync({
+                activeDraftId: 'draft-123',
+                isEditMode: false,
+                currentUser: mockUser,
+                isOpen: true,
+                initialDraftData: mockDraft,
+            })
+        );
+
+        act(() => {
+            result.current.syncFormFromDraft(setValue, getValues, 1, null);
+        });
+
+        // Verifies standard toast is called with icon, message, and deduplication id
+        expect(toast).toHaveBeenCalledWith('Step 2 updated by a co-cook', {
+            icon: '👨‍🍳',
+            id: 'step-sync-1',
+            duration: 3000,
+        });
+        // Verifies broken unstyled toast.custom is never called
+        expect(toast.custom).not.toHaveBeenCalled();
+        // Verifies syncRemoteDraftToForm is still executed
+        expect(syncRemoteDraftToForm).toHaveBeenCalledWith(
+            mockDraft,
+            null,
+            1,
+            null,
+            getValues,
+            setValue
+        );
+    });
+
+    it('does not dispatch toast when detectStepConflict reports remoteChanged: false', () => {
+        vi.mocked(detectStepConflict).mockReturnValueOnce({
+            hasConflict: false,
+            remoteChanged: false,
+            stepIndex: 0,
+            stepKey: '',
+        });
+
+        const mockDraft = {
+            draftId: 'draft-123',
+            categories: ['Dinner'],
+        };
+
+        const setValue = vi.fn();
+        const getValues = vi.fn().mockReturnValue({});
+
+        const { result } = renderHook(() =>
+            useDraftSync({
+                activeDraftId: 'draft-123',
+                isEditMode: false,
+                currentUser: mockUser,
+                isOpen: true,
+                initialDraftData: mockDraft,
+            })
+        );
+
+        act(() => {
+            result.current.syncFormFromDraft(setValue, getValues, 0, null);
+        });
+
+        expect(toast).not.toHaveBeenCalled();
     });
 });
