@@ -11,34 +11,34 @@ datasource db {
 }
 
 model User {
-  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
-  name                String?
-  email               String?   @unique
-  emailVerified       DateTime?
-  image               String?
-  hashedPassword      String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  favoriteIds         String[]  @db.ObjectId
-  savedPlanningIds    String[]  @db.ObjectId
-  pinnedRecipeIds     String[]  @db.ObjectId
-  emailNotifications  Boolean   @default(false)
+  id                      String                   @id @default(auto()) @map("_id") @db.ObjectId
+  name                    String?
+  email                   String?                  @unique
+  emailVerified           DateTime?
+  image                   String?
+  hashedPassword          String?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  favoriteIds             String[]                 @db.ObjectId
+  savedPlanningIds        String[]                 @db.ObjectId
+  pinnedRecipeIds         String[]                 @db.ObjectId
+  emailNotifications      Boolean                  @default(false)
   notificationPreferences NotificationPreferences?
-  level               Int       @default(0)
-  verified            Boolean   @default(false)
-  language            String?   @default("es")
-  badges              String[]  @default([])
-  resetToken          String?
-  resetTokenExpiry    DateTime?
+  level                   Int                      @default(0)
+  verified                Boolean                  @default(false)
+  language                String?                  @default("es")
+  badges                  String[]                 @default([])
+  resetToken              String?
+  resetTokenExpiry        DateTime?
 
-  accounts            Account[]
-  recipes             Recipe[]
-  comments            Comment[]
-  workshops           Workshop[]
-  quests              Quest[]
-  pushSubscriptions   PushSubscription[]
-  lists               List[]
-  plannings           Planning[]
+  accounts          Account[]
+  recipes           Recipe[]
+  comments          Comment[]
+  workshops         Workshop[]
+  quests            Quest[]
+  pushSubscriptions PushSubscription[]
+  lists             List[]
+  plannings         Planning[]
 }
 
 type NotificationPreferences {
@@ -51,18 +51,18 @@ type NotificationPreferences {
 }
 
 model Account {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  userId             String   @db.ObjectId
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.String
-  access_token       String?  @db.String
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.String
-  session_state      String?
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -70,52 +70,59 @@ model Account {
 }
 
 model Recipe {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  title String
-  description String
-  imageSrc String
-  createdAt DateTime @default(now())
-  categories String[]
-  method String
-  minutes Int
-  numLikes Int
-  ingredients String[]
-  steps String[]
-  extraImages String[]
-  userId String @db.ObjectId
-  coCooksIds String[] @db.ObjectId @default([])
-  linkedRecipeIds String[] @db.ObjectId @default([])
-  listIds String[] @db.ObjectId @default([])
-  youtubeUrl String?
-  questId String? @db.ObjectId
-  averageRating Float @default(0)
-  ratingCount Int @default(0)
-  calories Int?
-  recipeCuisine String?
-  recipeYield Int?
-  prepTime Int?
-  cookTime Int?
-  ganttTable Json?
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  description     String
+  imageSrc        String
+  createdAt       DateTime @default(now())
+  categories      String[]
+  method          String
+  minutes         Int
+  numLikes        Int
+  ingredients     String[]
+  steps           String[]
+  extraImages     String[]
+  userId          String   @db.ObjectId
+  coCooksIds      String[] @default([]) @db.ObjectId
+  linkedRecipeIds String[] @default([]) @db.ObjectId
+  listIds         String[] @default([]) @db.ObjectId
+  youtubeUrl      String?
+  questId         String?  @db.ObjectId
+  averageRating   Float    @default(0)
+  ratingCount     Int      @default(0)
+  calories        Int?
+  recipeCuisine   String?
+  recipeYield     Int?
+  prepTime        Int?
+  cookTime        Int?
+  ganttTable      Json?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comments Comment[]
-  quest Quest? @relation(fields: [questId], references: [id], onDelete: SetNull)
-  lists List[] @relation(fields: [listIds], references: [id])
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments      Comment[]
+  quest         Quest?         @relation(fields: [questId], references: [id], onDelete: SetNull)
+  lists         List[]         @relation(fields: [listIds], references: [id])
   planningMeals PlanningMeal[]
+
+  @@index([title])
+  @@index([categories])
+  @@index([recipeCuisine])
+  @@index([createdAt])
+  @@index([numLikes])
+  @@index([averageRating])
 }
 
 model Comment {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @db.ObjectId
-  comment String
-  recipeId String @db.ObjectId
-  rating Int?
-  imageSrc String?
-  isCooked Boolean @default(false)
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  comment   String
+  recipeId  String   @db.ObjectId
+  rating    Int?
+  imageSrc  String?
+  isCooked  Boolean  @default(false)
   createdAt DateTime @default(now())
-  likedIds String[] @db.ObjectId @default([])
+  likedIds  String[] @default([]) @db.ObjectId
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
@@ -123,8 +130,8 @@ model WeeklyChallenge {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
-  type        String   // "ingredient", "cuisine", "recipe", "technique", "dietary"
-  value       String   // The specific ingredient, cuisine, or recipe name
+  type        String // "ingredient", "cuisine", "recipe", "technique", "dietary"
+  value       String // The specific ingredient, cuisine, or recipe name
   startDate   DateTime @default(now())
   endDate     DateTime
   createdAt   DateTime @default(now())
@@ -132,129 +139,129 @@ model WeeklyChallenge {
 }
 
 model Workshop {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
-  title               String
-  description         String
-  date                DateTime
-  location            String
-  isRecurrent         Boolean  @default(false)
-  recurrencePattern   String?  // e.g., "weekly", "monthly"
-  isPrivate           Boolean  @default(false)
-  whitelistedUserIds  String[] @db.ObjectId @default([])
-  imageSrc            String?
-  price               Float    @default(0)
-  currency            String   @default("EUR")
-  ingredients         String[] @default([])
-  previousSteps       String[] @default([])
-  hostId              String   @db.ObjectId
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  title              String
+  description        String
+  date               DateTime
+  location           String
+  isRecurrent        Boolean  @default(false)
+  recurrencePattern  String? // e.g., "weekly", "monthly"
+  isPrivate          Boolean  @default(false)
+  whitelistedUserIds String[] @default([]) @db.ObjectId
+  imageSrc           String?
+  price              Float    @default(0)
+  currency           String   @default("EUR")
+  ingredients        String[] @default([])
+  previousSteps      String[] @default([])
+  hostId             String   @db.ObjectId
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  host                User     @relation(fields: [hostId], references: [id], onDelete: Cascade)
-  participants        WorkshopParticipant[]
+  host         User                  @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  participants WorkshopParticipant[]
 }
 
 model WorkshopParticipant {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  workshopId  String   @db.ObjectId
-  userId      String   @db.ObjectId
-  joinedAt    DateTime @default(now())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  workshopId String   @db.ObjectId
+  userId     String   @db.ObjectId
+  joinedAt   DateTime @default(now())
 
-  workshop    Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+  workshop Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
 
   @@unique([workshopId, userId])
 }
 
 model Quest {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  userId      String   @db.ObjectId
-  status      String   @default("open") // open, in_progress, completed
-  acceptedRecipeId  String?  @db.ObjectId
-  acceptedSolverId  String?  @db.ObjectId
-  badgeEvaluated    Boolean  @default(false)
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  title            String
+  description      String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  userId           String   @db.ObjectId
+  status           String   @default("open") // open, in_progress, completed
+  acceptedRecipeId String?  @db.ObjectId
+  acceptedSolverId String?  @db.ObjectId
+  badgeEvaluated   Boolean  @default(false)
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipes     Recipe[]
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipes Recipe[]
 }
 
 model PushSubscription {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String   @db.ObjectId
-  endpoint       String
-  p256dh         String
-  auth           String
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String @db.ObjectId
+  endpoint String
+  p256dh   String
+  auth     String
 
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, endpoint])
   @@index([userId])
 }
 
 model List {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  isPrivate   Boolean  @default(true)
-  isDefault   Boolean  @default(false)
-  userId      String   @db.ObjectId
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  recipeIds   String[] @db.ObjectId @default([])
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  isPrivate Boolean  @default(true)
+  isDefault Boolean  @default(false)
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  recipeIds String[] @default([]) @db.ObjectId
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipes     Recipe[] @relation(fields: [recipeIds], references: [id])
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipes Recipe[] @relation(fields: [recipeIds], references: [id])
 }
 
 model Planning {
-  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
-  isPrivate   Boolean        @default(true)
-  userId      String         @db.ObjectId
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  isPrivate   Boolean  @default(true)
+  userId      String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  meals       PlanningMeal[]
+  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meals PlanningMeal[]
 }
 
 model PlanningMeal {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  planningId  String   @db.ObjectId
-  day         String   // "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
-  mealType    String   // "breakfast", "lunch", "dinner", "snack"
-  recipeId    String   @db.ObjectId
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  planningId String @db.ObjectId
+  day        String // "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
+  mealType   String // "breakfast", "lunch", "dinner", "snack"
+  recipeId   String @db.ObjectId
 
-  planning    Planning @relation(fields: [planningId], references: [id], onDelete: Cascade)
-  recipe      Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  planning Planning @relation(fields: [planningId], references: [id], onDelete: Cascade)
+  recipe   Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
 model RecipeVote {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  category   String   // "week" | "month" | "year"
-  periodKey  String   // e.g. "2026-W25", "2026-06", "2026"
-  recipeId   String   @db.ObjectId
-  userId     String   @db.ObjectId   // voter
-  createdAt  DateTime @default(now())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  category  String // "week" | "month" | "year"
+  periodKey String // e.g. "2026-W25", "2026-06", "2026"
+  recipeId  String   @db.ObjectId
+  userId    String   @db.ObjectId // voter
+  createdAt DateTime @default(now())
 
-  @@unique([category, periodKey, userId])   // one vote per user per period
+  @@unique([category, periodKey, userId]) // one vote per user per period
 }
 
 model RecipeVoteSession {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  category    String   // "week" | "month" | "year"
-  periodKey   String   // same format as RecipeVote
-  status      String   @default("voting") // "voting" | "closed"
-  winnerId    String?  @db.ObjectId   // filled once closed
-  candidates  String[] @db.ObjectId   // top-10 recipe IDs
-  startedAt   DateTime @default(now())
-  closedAt    DateTime?
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  category   String // "week" | "month" | "year"
+  periodKey  String // same format as RecipeVote
+  status     String    @default("voting") // "voting" | "closed"
+  winnerId   String?   @db.ObjectId // filled once closed
+  candidates String[]  @db.ObjectId // top-10 recipe IDs
+  startedAt  DateTime  @default(now())
+  closedAt   DateTime?
 
   @@unique([category, periodKey])
 }
