@@ -124,4 +124,101 @@ describe('<BiteCard />', () => {
 
         expect(defaultProps.onSwipeLeft).toHaveBeenCalledWith(mockRecipe);
     });
+
+    it('has touch-none class to disable iOS Safari gesture conflicts', () => {
+        render(<BiteCard {...defaultProps} />);
+        const card = screen.getByTestId('bite-card-recipe-test-1');
+        expect(card.classList.contains('touch-none')).toBe(true);
+    });
+
+    it('releases pointer capture on pointerUp and pointerCancel', () => {
+        render(<BiteCard {...defaultProps} />);
+        const card = screen.getByTestId('bite-card-recipe-test-1');
+        card.setPointerCapture = vi.fn();
+        card.releasePointerCapture = vi.fn();
+        card.hasPointerCapture = vi.fn().mockReturnValue(true);
+
+        // Pointer Down
+        const downEvent = createEvent.pointerDown(card);
+        Object.defineProperty(downEvent, 'pointerId', { value: 42 });
+        fireEvent(card, downEvent);
+        expect(card.setPointerCapture).toHaveBeenCalledWith(42);
+
+        // Pointer Up releases capture
+        const upEvent = createEvent.pointerUp(card);
+        Object.defineProperty(upEvent, 'pointerId', { value: 42 });
+        fireEvent(card, upEvent);
+        expect(card.releasePointerCapture).toHaveBeenCalledWith(42);
+
+        // Pointer Cancel also releases capture safely
+        const cancelDownEvent = createEvent.pointerDown(card);
+        Object.defineProperty(cancelDownEvent, 'pointerId', { value: 99 });
+        fireEvent(card, cancelDownEvent);
+        const cancelEvent = createEvent.pointerCancel(card);
+        Object.defineProperty(cancelEvent, 'pointerId', { value: 99 });
+        fireEvent(card, cancelEvent);
+        expect(card.releasePointerCapture).toHaveBeenCalledWith(99);
+    });
+
+    it('gracefully tolerates errors in setPointerCapture and releasePointerCapture', () => {
+        render(<BiteCard {...defaultProps} />);
+        const card = screen.getByTestId('bite-card-recipe-test-1');
+        card.setPointerCapture = vi.fn().mockImplementation(() => {
+            throw new Error('Pointer capture not supported');
+        });
+        card.releasePointerCapture = vi.fn().mockImplementation(() => {
+            throw new Error('Pointer capture release failed');
+        });
+
+        expect(() => {
+            const downEvent = createEvent.pointerDown(card, { pointerId: 1 });
+            fireEvent(card, downEvent);
+            const upEvent = createEvent.pointerUp(card, { pointerId: 1 });
+            fireEvent(card, upEvent);
+        }).not.toThrow();
+    });
+
+    it('prevents Safari edge-swipe back navigation on touchstart near edges', () => {
+        render(<BiteCard {...defaultProps} />);
+        const card = screen.getByTestId('bite-card-recipe-test-1');
+
+        // Touch near left edge (Safari back gesture zone: clientX < 28)
+        const leftEdgeEvent = new Event('touchstart', {
+            bubbles: true,
+            cancelable: true,
+        });
+        Object.defineProperty(leftEdgeEvent, 'touches', {
+            value: [{ clientX: 15, clientY: 100 }],
+        });
+        const preventDefaultLeftSpy = vi.spyOn(leftEdgeEvent, 'preventDefault');
+        card.dispatchEvent(leftEdgeEvent);
+        expect(preventDefaultLeftSpy).toHaveBeenCalled();
+
+        // Touch near right edge (Safari forward gesture zone: clientX > innerWidth - 28)
+        const rightEdgeEvent = new Event('touchstart', {
+            bubbles: true,
+            cancelable: true,
+        });
+        Object.defineProperty(rightEdgeEvent, 'touches', {
+            value: [{ clientX: window.innerWidth - 10, clientY: 100 }],
+        });
+        const preventDefaultRightSpy = vi.spyOn(
+            rightEdgeEvent,
+            'preventDefault'
+        );
+        card.dispatchEvent(rightEdgeEvent);
+        expect(preventDefaultRightSpy).toHaveBeenCalled();
+
+        // Touch in middle (normal card swipe interaction) should NOT be prevented
+        const middleEvent = new Event('touchstart', {
+            bubbles: true,
+            cancelable: true,
+        });
+        Object.defineProperty(middleEvent, 'touches', {
+            value: [{ clientX: 150, clientY: 100 }],
+        });
+        const preventDefaultMiddleSpy = vi.spyOn(middleEvent, 'preventDefault');
+        card.dispatchEvent(middleEvent);
+        expect(preventDefaultMiddleSpy).not.toHaveBeenCalled();
+    });
 });

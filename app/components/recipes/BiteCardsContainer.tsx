@@ -215,7 +215,7 @@ export default function BiteCardsContainer({
     }, [history, currentIndex, recipes]);
 
     return (
-        <div className="relative z-0 mx-auto flex h-[calc(100dvh-160px)] w-full max-w-sm flex-col pb-1 sm:max-w-md md:h-auto md:min-h-[calc(100vh-120px)]">
+        <div className="relative z-0 mx-auto flex h-[calc(100dvh-160px)] w-full max-w-sm touch-none flex-col overscroll-none pb-1 sm:max-w-md md:h-auto md:min-h-[calc(100vh-120px)]">
             {/* Header Badge */}
             <BiteCardsHeader
                 currentIndex={currentIndex}
@@ -223,7 +223,10 @@ export default function BiteCardsContainer({
             />
 
             {/* Card Stack Container */}
-            <div className="relative z-0 min-h-0 w-full flex-1 rounded-3xl md:aspect-[3/4.1] md:max-h-[540px] md:flex-none">
+            <div
+                className="relative z-0 min-h-0 w-full flex-1 touch-none overscroll-none rounded-3xl md:aspect-[3/4.1] md:max-h-[540px] md:flex-none"
+                data-testid="bite-cards-stack"
+            >
                 {isLoading ? (
                     <div className="absolute inset-0 flex animate-pulse flex-col items-center justify-center gap-3 rounded-3xl bg-neutral-200 text-neutral-400 dark:bg-neutral-800">
                         <FaUtensils
