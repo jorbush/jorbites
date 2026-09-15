@@ -202,7 +202,7 @@ const DraftCollaboratorsList: React.FC<DraftCollaboratorsListProps> = ({
                                                         'Remove co-cook',
                                                 }) as string
                                             }
-                                            className="flex size-7 items-center justify-center rounded-md text-neutral-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+                                            className="flex size-7 items-center justify-center rounded-md text-red-600 hover:bg-red-50 hover:text-red-700 disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-950/30 dark:hover:text-red-300"
                                         >
                                             <FiTrash2 size={14} />
                                         </button>
