@@ -24,9 +24,7 @@ export function useDraftPersistence({
     const isMountedRef = useRef(true);
     const pendingSavesRef = useRef(0);
     const saveQueueRef = useRef<Promise<boolean> | null>(null);
-    const openedDraftIdRef = useRef<string | null>(
-        recipeModal.activeDraftId || null
-    );
+    const lastSavedDraftIdRef = useRef<string | null>(null);
 
     useEffect(() => {
         isMountedRef.current = true;
@@ -34,14 +32,6 @@ export function useDraftPersistence({
             isMountedRef.current = false;
         };
     }, []);
-
-    useEffect(() => {
-        if (recipeModal.isOpen && recipeModal.activeDraftId) {
-            openedDraftIdRef.current = recipeModal.activeDraftId;
-        } else if (!recipeModal.isOpen) {
-            openedDraftIdRef.current = null;
-        }
-    }, [recipeModal.isOpen, recipeModal.activeDraftId]);
 
     const saveDraft = useCallback(
         (
@@ -89,9 +79,10 @@ export function useDraftPersistence({
                         if (
                             isMountedRef.current &&
                             recipeModal.isOpen !== false &&
-                            openedDraftIdRef.current !== res.data.draftId
+                            recipeModal.activeDraftId !== res.data.draftId &&
+                            lastSavedDraftIdRef.current !== res.data.draftId
                         ) {
-                            openedDraftIdRef.current = res.data.draftId;
+                            lastSavedDraftIdRef.current = res.data.draftId;
                             recipeModal.onOpenSharedDraft(res.data.draftId);
                         }
                     }
@@ -132,6 +123,7 @@ export function useDraftPersistence({
                 );
                 if (isMountedRef.current && pendingSavesRef.current === 0) {
                     setIsSaving(false);
+                    lastSavedDraftIdRef.current = null;
                 }
             });
             saveQueueRef.current = trackedSave;
@@ -273,6 +265,7 @@ export function useDraftPersistence({
                 );
             }
             mutate('/api/draft/active');
+            lastSavedDraftIdRef.current = null;
         } catch (error) {
             console.error('Failed to delete draft', error);
         }
