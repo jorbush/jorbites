@@ -69,7 +69,50 @@ const BiteCard: React.FC<BiteCardProps> = ({
     const isDraggingRef = useRef(false);
     const [isDragging, setIsDragging] = useState(false);
     const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+    const activePointerIdRef = useRef<number | null>(null);
     const cardRef = useRef<HTMLDivElement>(null);
+
+    // Prevent Safari iOS native edge-swipe back navigation when touch starts near screen edge
+    React.useEffect(() => {
+        const cardEl = cardRef.current;
+        if (!cardEl || !isTop) return;
+
+        const handleTouchStart = (e: TouchEvent) => {
+            const touch = e.touches[0];
+            if (!touch) return;
+            const edgeThreshold = 28;
+            if (
+                touch.clientX < edgeThreshold ||
+                touch.clientX > window.innerWidth - edgeThreshold
+            ) {
+                e.preventDefault();
+            }
+        };
+
+        cardEl.addEventListener('touchstart', handleTouchStart, {
+            passive: false,
+        });
+        return () => {
+            cardEl.removeEventListener('touchstart', handleTouchStart);
+        };
+    }, [isTop]);
+
+    // Cleanup pointer capture and dragging state on unmount
+    React.useEffect(() => {
+        return () => {
+            isDraggingRef.current = false;
+            const pointerId = activePointerIdRef.current;
+            if (
+                pointerId !== null &&
+                cardRef.current &&
+                typeof cardRef.current.releasePointerCapture === 'function'
+            ) {
+                try {
+                    cardRef.current.releasePointerCapture(pointerId);
+                } catch {}
+            }
+        };
+    }, []);
 
     const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
         if (!isTop) return;
@@ -78,11 +121,15 @@ const BiteCard: React.FC<BiteCardProps> = ({
         setIsDragging(true);
         dragStartRef.current = coords;
         dragOffsetRef.current = { x: 0, y: 0 };
+        activePointerIdRef.current = e.pointerId;
+
         if (
             cardRef.current &&
             typeof cardRef.current.setPointerCapture === 'function'
         ) {
-            cardRef.current.setPointerCapture(e.pointerId);
+            try {
+                cardRef.current.setPointerCapture(e.pointerId);
+            } catch {}
         }
     };
 
@@ -95,10 +142,28 @@ const BiteCard: React.FC<BiteCardProps> = ({
         setDragOffset({ x: deltaX, y: deltaY });
     };
 
-    const handlePointerUp = () => {
+    const handlePointerUp = (e?: React.PointerEvent<HTMLDivElement>) => {
         if (!isDraggingRef.current || !isTop) return;
         isDraggingRef.current = false;
         setIsDragging(false);
+
+        const pointerId = e?.pointerId ?? activePointerIdRef.current;
+        if (
+            pointerId !== null &&
+            cardRef.current &&
+            typeof cardRef.current.releasePointerCapture === 'function'
+        ) {
+            try {
+                if (
+                    typeof cardRef.current.hasPointerCapture === 'function'
+                        ? cardRef.current.hasPointerCapture(pointerId)
+                        : true
+                ) {
+                    cardRef.current.releasePointerCapture(pointerId);
+                }
+            } catch {}
+        }
+        activePointerIdRef.current = null;
 
         const thresholdX = 85;
         const thresholdY = -100;
@@ -140,7 +205,7 @@ const BiteCard: React.FC<BiteCardProps> = ({
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
             style={transformStyle}
-            className={`absolute inset-0 h-full w-full overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-900 shadow-xl select-none ${
+            className={`absolute inset-0 h-full w-full touch-none overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-900 shadow-xl select-none ${
                 isTop
                     ? 'z-5 cursor-grab active:cursor-grabbing'
                     : 'pointer-events-none z-0 scale-95 opacity-80'

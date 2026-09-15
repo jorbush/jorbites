@@ -3,12 +3,21 @@ import Container from '@/app/components/utils/Container';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getBiteCards from '@/app/actions/getBiteCards';
 import BiteCardsContainer from '@/app/components/recipes/BiteCardsContainer';
-import { Metadata } from 'next';
+import { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
     title: 'Daily Bite Cards | Jorbites',
     description:
         'Quick mobile-first recipe discovery swiper. Swipe right to save recipes to your favorites!',
+};
+
+export const viewport: Viewport = {
+    themeColor: '#ffffff',
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: 'cover',
 };
 
 export const dynamic = 'force-dynamic';
@@ -23,7 +32,7 @@ export default async function BiteCardsPage() {
 
     return (
         <ClientOnly>
-            <main className="min-h-[calc(100vh-60px)] pb-2">
+            <main className="min-h-[calc(100vh-60px)] w-full max-w-full overflow-x-clip pb-2">
                 <Container>
                     <BiteCardsContainer
                         key={recipesKey}

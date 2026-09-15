@@ -122,4 +122,12 @@ describe('<BiteCardsContainer />', () => {
 
         expect(mockPush).toHaveBeenCalledWith('/recipes/recipe-1');
     });
+
+    it('applies touch-none and overscroll-none classes to card stack to prevent gesture zoom and bounce', () => {
+        render(<BiteCardsContainer initialRecipes={mockRecipes} />);
+
+        const stack = screen.getByTestId('bite-cards-stack');
+        expect(stack.classList.contains('touch-none')).toBe(true);
+        expect(stack.classList.contains('overscroll-none')).toBe(true);
+    });
 });

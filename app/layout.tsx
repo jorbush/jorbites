@@ -143,7 +143,7 @@ export default async function RootLayout({
                 </ClientOnly>
                 <main
                     id="main-content"
-                    className="grow pt-[calc(7rem+env(safe-area-inset-top,0px))] pb-[calc(5rem+env(safe-area-inset-bottom,0px))]"
+                    className="w-full max-w-full grow overflow-x-clip pt-[calc(7rem+env(safe-area-inset-top,0px))] pb-[calc(5rem+env(safe-area-inset-bottom,0px))]"
                 >
                     {children}
                 </main>
