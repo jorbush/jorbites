@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback, useState, useEffect } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import useSWR from 'swr';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -98,24 +98,19 @@ export function useDraftSync({
         }
     );
 
-    useEffect(() => {
-        const currentData =
-            initialDraftData !== undefined ? initialDraftData : swrDraftData;
-        if (currentData) {
-            const isShared = Boolean(
-                currentData?.type === 'shared' ||
-                currentData?.inviteToken ||
-                (Array.isArray(currentData?.coCooksIds) &&
-                    currentData.coCooksIds.length > 0)
-            );
-            if (isShared !== isSharedDraft) {
-                setIsSharedDraft(isShared);
-            }
-        }
-    }, [initialDraftData, swrDraftData, isSharedDraft]);
-
     const rawDraftData =
         initialDraftData !== undefined ? initialDraftData : swrDraftData;
+
+    const isCurrentShared = Boolean(
+        rawDraftData?.type === 'shared' ||
+        rawDraftData?.inviteToken ||
+        (Array.isArray(rawDraftData?.coCooksIds) &&
+            rawDraftData.coCooksIds.length > 0)
+    );
+
+    if (rawDraftData && isCurrentShared !== isSharedDraft) {
+        setIsSharedDraft(isCurrentShared);
+    }
 
     const draftData =
         activeDraftId &&

@@ -27,6 +27,21 @@ export function useDraftPersistence({
     const openedDraftIdRef = useRef<string | null>(
         recipeModal.activeDraftId || null
     );
+    const prevIsOpenRef = useRef(recipeModal.isOpen);
+    const prevActiveDraftIdRef = useRef(recipeModal.activeDraftId);
+
+    if (
+        prevIsOpenRef.current !== recipeModal.isOpen ||
+        prevActiveDraftIdRef.current !== recipeModal.activeDraftId
+    ) {
+        prevIsOpenRef.current = recipeModal.isOpen;
+        prevActiveDraftIdRef.current = recipeModal.activeDraftId;
+        if (recipeModal.isOpen && recipeModal.activeDraftId) {
+            openedDraftIdRef.current = recipeModal.activeDraftId;
+        } else if (!recipeModal.isOpen) {
+            openedDraftIdRef.current = null;
+        }
+    }
 
     useEffect(() => {
         isMountedRef.current = true;
@@ -34,14 +49,6 @@ export function useDraftPersistence({
             isMountedRef.current = false;
         };
     }, []);
-
-    useEffect(() => {
-        if (recipeModal.isOpen && recipeModal.activeDraftId) {
-            openedDraftIdRef.current = recipeModal.activeDraftId;
-        } else if (!recipeModal.isOpen) {
-            openedDraftIdRef.current = null;
-        }
-    }, [recipeModal.isOpen, recipeModal.activeDraftId]);
 
     const saveDraft = useCallback(
         (
