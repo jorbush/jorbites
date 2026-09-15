@@ -50,14 +50,14 @@ const Tooltip: React.FC<TooltipProps> = ({
         }, 1000);
     };
 
-    const handleClick = () => {
+    const dismissTooltip = () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         setIsVisible(false);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
-            handleClick();
+            dismissTooltip();
         }
     };
 
@@ -74,7 +74,7 @@ const Tooltip: React.FC<TooltipProps> = ({
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             onTouchStart={handleTouchStart}
-            onClick={handleClick}
+            onClick={dismissTooltip}
             onKeyDown={handleKeyDown}
         >
             {children}
