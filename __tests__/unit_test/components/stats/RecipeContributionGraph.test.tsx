@@ -11,6 +11,16 @@ vi.mock('react-i18next', () => ({
         t: (key: string) => {
             const translations: Record<string, string> = {
                 recipe_contribution_graph: 'Recipe Contribution Graph',
+                recipes_in_last_year: 'recipes in the last year',
+                active_days: 'Active days',
+                longest_streak: 'Longest streak',
+                day_streak: 'day streak',
+                days_streak: 'days streak',
+                swipe_to_view_history: 'Swipe to explore past weeks',
+                no_recipes_on_day: 'No recipes on this day',
+                view_3m: '3M',
+                view_6m: '6M',
+                view_1y: '1Y',
                 on: 'on',
                 less: 'Less',
                 more: 'More',
@@ -256,5 +266,92 @@ describe('<RecipeContributionGraph />', () => {
             // But the component should handle the event without errors
             expect(dayCell).toBeDefined();
         }
+    });
+
+    it('displays summary metrics in the header', () => {
+        const today = new Date();
+        const recipe1 = createMockRecipe('1', today.toISOString());
+        const recipe2 = createMockRecipe('2', today.toISOString());
+
+        render(<RecipeContributionGraph recipes={[recipe1, recipe2]} />);
+
+        expect(screen.getByText(/recipes in the last year/i)).toBeDefined();
+        expect(screen.getByText(/active days/i)).toBeDefined();
+    });
+
+    it('renders time range buttons and filters weeks accordingly', () => {
+        const today = new Date();
+        const recipe = createMockRecipe('1', today.toISOString());
+
+        const { container } = render(
+            <RecipeContributionGraph recipes={[recipe]} />
+        );
+
+        const btn3M = screen.getByText('3M');
+        const btn6M = screen.getByText('6M');
+        const btn1Y = screen.getByText('1Y');
+
+        expect(btn3M).toBeDefined();
+        expect(btn6M).toBeDefined();
+        expect(btn1Y).toBeDefined();
+
+        // Switch to 3M
+        fireEvent.click(btn3M);
+        const weekColumns3M = container.querySelectorAll(
+            '[data-testid="week-column"]'
+        );
+        // 3M has 13 weeks
+        expect(weekColumns3M.length).toBe(13);
+
+        // Switch to 6M
+        fireEvent.click(btn6M);
+        const weekColumns6M = container.querySelectorAll(
+            '[data-testid="week-column"]'
+        );
+        // 6M has 26 weeks
+        expect(weekColumns6M.length).toBe(26);
+    });
+
+    it('selects and dismisses a day on click', () => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const recipe = createMockRecipe('1', today.toISOString());
+
+        render(<RecipeContributionGraph recipes={[recipe]} />);
+
+        const dayCells = screen.getAllByTitle(/recipe/i);
+        expect(dayCells.length).toBeGreaterThan(0);
+
+        // Click to select day
+        fireEvent.click(dayCells[0]);
+
+        // Details banner should be displayed
+        expect(screen.getByText('1 recipe')).toBeDefined();
+
+        // Click dismiss button
+        const dismissBtn = screen.getByLabelText('Dismiss selection');
+        fireEvent.click(dismissBtn);
+
+        // Selection should be cleared
+        expect(screen.queryByLabelText('Dismiss selection')).toBeNull();
+    });
+
+    it('supports keyboard navigation with Enter key on day cells', () => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const recipe = createMockRecipe('1', today.toISOString());
+
+        render(<RecipeContributionGraph recipes={[recipe]} />);
+
+        const dayCells = screen.getAllByTitle(/recipe/i);
+        expect(dayCells.length).toBeGreaterThan(0);
+
+        // Press Enter to select
+        fireEvent.keyDown(dayCells[0], { key: 'Enter' });
+        expect(screen.getByLabelText('Dismiss selection')).toBeDefined();
+
+        // Press Enter again to toggle off
+        fireEvent.keyDown(dayCells[0], { key: 'Enter' });
+        expect(screen.queryByLabelText('Dismiss selection')).toBeNull();
     });
 });
