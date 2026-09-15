@@ -24,7 +24,7 @@ const DraftCardActions: React.FC<DraftCardActionsProps> = ({
                     type="button"
                     data-testid="draft-card-manage-collabs"
                     onClick={onManageCoCooks}
-                    className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-blue-50 hover:text-blue-700 dark:text-neutral-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                    className="flex size-8 items-center justify-center rounded-full text-blue-600 transition hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-300"
                     title={
                         (t('manage_co_cooks_invite', {
                             defaultValue: 'Manage Co-Cooks & Invites',
@@ -53,7 +53,7 @@ const DraftCardActions: React.FC<DraftCardActionsProps> = ({
                 type="button"
                 data-testid="draft-card-delete"
                 onClick={onDelete}
-                className="flex size-8 items-center justify-center rounded-full text-neutral-500 transition hover:bg-red-50 hover:text-red-700 dark:text-neutral-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                className="flex size-8 items-center justify-center rounded-full text-red-600 transition hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
                 title={(t('delete_draft') ?? 'Delete') as string}
                 aria-label={(t('delete_draft') ?? 'Delete') as string}
             >
