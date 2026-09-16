@@ -182,7 +182,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         push('/plannings');
                                         toggleOpen();
                                     }}
-                                    label={t('meal_planner') || 'Meal Planner'}
+                                    label={t('meal_planner') || 'Plannings'}
                                     icon={FcPlanner}
                                     dataCy="user-menu-plannings"
                                 />
@@ -241,7 +241,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         push('/plannings');
                                         toggleOpen();
                                     }}
-                                    label={t('meal_planner') || 'Meal Planner'}
+                                    label={t('meal_planner') || 'Plannings'}
                                     icon={FcPlanner}
                                 />
                                 {/* <MenuItem
