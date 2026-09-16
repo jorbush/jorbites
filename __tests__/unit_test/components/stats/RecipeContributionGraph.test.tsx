@@ -10,7 +10,7 @@ vi.mock('react-i18next', () => ({
         i18n: { language: 'en' },
         t: (key: string) => {
             const translations: Record<string, string> = {
-                recipe_contribution_graph: 'Recipe Contribution Graph',
+                recipe_contribution_graph: 'Activity',
                 on: 'on',
                 less: 'Less',
                 more: 'More',
@@ -105,7 +105,7 @@ describe('<RecipeContributionGraph />', () => {
 
         render(<RecipeContributionGraph recipes={[recipe]} />);
 
-        expect(screen.getByText('Recipe Contribution Graph')).toBeDefined();
+        expect(screen.getByText('Activity')).toBeDefined();
     });
 
     it('renders the legend with Less and More labels', () => {
@@ -198,7 +198,7 @@ describe('<RecipeContributionGraph />', () => {
 
         render(<RecipeContributionGraph recipes={recipes} />);
 
-        expect(screen.getByText('Recipe Contribution Graph')).toBeDefined();
+        expect(screen.getByText('Activity')).toBeDefined();
     });
 
     it('displays month labels', () => {
@@ -256,5 +256,24 @@ describe('<RecipeContributionGraph />', () => {
             // But the component should handle the event without errors
             expect(dayCell).toBeDefined();
         }
+    });
+
+    it('shows floating tooltip on day click and dismisses on click again', () => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const recipe = createMockRecipe('1', today.toISOString());
+
+        render(<RecipeContributionGraph recipes={[recipe]} />);
+
+        const dayCells = screen.getAllByTitle(/recipe/i);
+        expect(dayCells.length).toBeGreaterThan(0);
+
+        // Click to trigger floating tooltip (useful for mobile touch)
+        fireEvent.click(dayCells[0]);
+        expect(screen.getByText(/1 recipe/i)).toBeDefined();
+
+        // Click again to dismiss
+        fireEvent.click(dayCells[0]);
+        expect(screen.queryByText(/1 recipe/i)).toBeNull();
     });
 });
