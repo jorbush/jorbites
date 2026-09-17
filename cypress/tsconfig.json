@@ -6,5 +6,8 @@
   "include": [
     "**/*.ts",
     "../__tests__/e2e/**/*.ts"
+  ],
+  "exclude": [
+    "../node_modules"
   ]
 }
