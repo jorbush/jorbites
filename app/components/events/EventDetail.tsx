@@ -111,7 +111,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                 {...props}
             />
         ),
-        table: ({ children, node, ...props }: any) => (
+        table: ({ children, node: _node, ...props }: any) => (
             <div className="my-6 w-full overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-700">
                 <table
                     className="w-full border-collapse text-left text-sm"
@@ -121,7 +121,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                 </table>
             </div>
         ),
-        thead: ({ children, node, ...props }: any) => (
+        thead: ({ children, node: _node, ...props }: any) => (
             <thead
                 className="border-b border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800/80"
                 {...props}
@@ -129,7 +129,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                 {children}
             </thead>
         ),
-        th: ({ children, node, ...props }: any) => (
+        th: ({ children, node: _node, ...props }: any) => (
             <th
                 className="px-4 py-3 font-semibold whitespace-nowrap text-neutral-800 dark:text-neutral-200"
                 {...props}
@@ -137,7 +137,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                 {children}
             </th>
         ),
-        tbody: ({ children, node, ...props }: any) => (
+        tbody: ({ children, node: _node, ...props }: any) => (
             <tbody
                 className="divide-y divide-neutral-200 dark:divide-neutral-700"
                 {...props}
@@ -145,7 +145,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                 {children}
             </tbody>
         ),
-        tr: ({ children, node, ...props }: any) => (
+        tr: ({ children, node: _node, ...props }: any) => (
             <tr
                 className="transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800/40"
                 {...props}
@@ -153,7 +153,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                 {children}
             </tr>
         ),
-        td: ({ children, node, ...props }: any) => (
+        td: ({ children, node: _node, ...props }: any) => (
             <td
                 className="px-4 py-3 whitespace-nowrap text-neutral-700 dark:text-neutral-300"
                 {...props}
