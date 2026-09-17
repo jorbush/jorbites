@@ -4,6 +4,14 @@ import React from 'react';
 import DraftCard from '@/app/components/drafts/DraftCard';
 import { DraftSummary } from '@/app/types/draft';
 
+vi.mock('swr', () => ({
+    default: vi.fn().mockReturnValue({
+        data: undefined,
+        isLoading: false,
+    }),
+    mutate: vi.fn(),
+}));
+
 describe('DraftCard', () => {
     const mockDraft: DraftSummary = {
         draftId: 'draft-123',
@@ -56,8 +64,15 @@ describe('DraftCard', () => {
         );
 
         expect(screen.getByText('shared_draft')).toBeInTheDocument();
-        expect(screen.getByText('A')).toBeInTheDocument(); // Initial of alice
-        expect(screen.getByText('B')).toBeInTheDocument(); // Initial of bob
+        expect(
+            screen.getByTestId('draft-card-owner-avatar')
+        ).toBeInTheDocument();
+        expect(
+            screen.getByTestId('draft-card-collaborator-avatar-alice')
+        ).toBeInTheDocument();
+        expect(
+            screen.getByTestId('draft-card-collaborator-avatar-bob')
+        ).toBeInTheDocument();
     });
 
     it('triggers onOpen when the card is clicked', () => {
