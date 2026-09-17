@@ -1082,11 +1082,11 @@ describe('Collaborative Drafts Roles & Invites E2E', () => {
                     'not.exist'
                 );
 
-                // 7. Verify the draft card avatar stack dynamically updated to reflect 2 co-cooks
+                // 7. Verify the draft card avatar stack dynamically updated to reflect owner + 2 co-cooks
                 cy.contains('[data-testid="draft-card"]', draftTitle)
                     .find('[data-testid="draft-card-avatars"]')
                     .children()
-                    .should('have.length', 2);
+                    .should('have.length', 3);
             });
         });
     });

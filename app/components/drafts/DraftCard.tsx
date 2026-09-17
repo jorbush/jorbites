@@ -164,6 +164,8 @@ const DraftCard: React.FC<DraftCardProps> = ({
             {draft.type === 'shared' && (
                 <div className="relative z-10">
                     <DraftCardAvatars
+                        ownerId={draft.ownerId}
+                        ownerName={draft.ownerName}
                         coCooksIds={draft.coCooksIds}
                         onManageCoCooks={
                             onManageCoCooks ? handleManageCoCooks : undefined
