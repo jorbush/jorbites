@@ -47,7 +47,8 @@ export function useBiteCardGesture({
     const activePointerIdRef = useRef<number | null>(null);
     const cardRef = useRef<HTMLDivElement>(null);
 
-    // Prevent Safari iOS native edge-swipe back navigation when touch starts near screen edge
+
+    // Safari iOS edge touch listener for top card gestures
     useEffect(() => {
         const cardEl = cardRef.current;
         if (!cardEl || !isTop) return;
@@ -60,12 +61,12 @@ export function useBiteCardGesture({
                 touch.clientX < edgeThreshold ||
                 touch.clientX > window.innerWidth - edgeThreshold
             ) {
-                e.preventDefault();
+                // Edge touch near screen edge
             }
         };
 
         cardEl.addEventListener('touchstart', handleTouchStart, {
-            passive: false,
+            passive: true,
         });
         return () => {
             cardEl.removeEventListener('touchstart', handleTouchStart);

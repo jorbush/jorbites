@@ -178,47 +178,19 @@ describe('<BiteCard />', () => {
         }).not.toThrow();
     });
 
-    it('prevents Safari edge-swipe back navigation on touchstart near edges', () => {
-        render(<BiteCard {...defaultProps} />);
-        const card = screen.getByTestId('bite-card-recipe-test-1');
-
-        // Touch near left edge (Safari back gesture zone: clientX < 28)
-        const leftEdgeEvent = new Event('touchstart', {
-            bubbles: true,
-            cancelable: true,
-        });
-        Object.defineProperty(leftEdgeEvent, 'touches', {
-            value: [{ clientX: 15, clientY: 100 }],
-        });
-        const preventDefaultLeftSpy = vi.spyOn(leftEdgeEvent, 'preventDefault');
-        card.dispatchEvent(leftEdgeEvent);
-        expect(preventDefaultLeftSpy).toHaveBeenCalled();
-
-        // Touch near right edge (Safari forward gesture zone: clientX > innerWidth - 28)
-        const rightEdgeEvent = new Event('touchstart', {
-            bubbles: true,
-            cancelable: true,
-        });
-        Object.defineProperty(rightEdgeEvent, 'touches', {
-            value: [{ clientX: window.innerWidth - 10, clientY: 100 }],
-        });
-        const preventDefaultRightSpy = vi.spyOn(
-            rightEdgeEvent,
-            'preventDefault'
+    it('attaches touchstart event listener with { passive: true } option', () => {
+        const addEventListenerSpy = vi.spyOn(
+            HTMLDivElement.prototype,
+            'addEventListener'
         );
-        card.dispatchEvent(rightEdgeEvent);
-        expect(preventDefaultRightSpy).toHaveBeenCalled();
+        render(<BiteCard {...defaultProps} />);
 
-        // Touch in middle (normal card swipe interaction) should NOT be prevented
-        const middleEvent = new Event('touchstart', {
-            bubbles: true,
-            cancelable: true,
-        });
-        Object.defineProperty(middleEvent, 'touches', {
-            value: [{ clientX: 150, clientY: 100 }],
-        });
-        const preventDefaultMiddleSpy = vi.spyOn(middleEvent, 'preventDefault');
-        card.dispatchEvent(middleEvent);
-        expect(preventDefaultMiddleSpy).not.toHaveBeenCalled();
+        expect(addEventListenerSpy).toHaveBeenCalledWith(
+            'touchstart',
+            expect.any(Function),
+            { passive: true }
+        );
+        addEventListenerSpy.mockRestore();
     });
+
 });
