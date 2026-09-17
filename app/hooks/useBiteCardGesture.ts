@@ -183,5 +183,3 @@ export function useBiteCardGesture({
         upOpacity,
     };
 }
-
-export default useBiteCardGesture;
