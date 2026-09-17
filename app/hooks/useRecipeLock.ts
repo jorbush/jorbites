@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useCallback, useMemo } from 'react';
 import axios from 'axios';
+import useSWR from 'swr';
+import { axiosFetcher } from '@/app/utils/fetcher';
 import {
     LOCK_HEARTBEAT_INTERVAL_MS,
     LOCK_POLL_INTERVAL_MS,
@@ -21,37 +23,19 @@ export function useRecipeLock(
     currentUserId: string | null | undefined,
     activeField?: string | null
 ) {
-    const [locksState, setLocksState] = useState<{
-        targetId: string | null | undefined;
-        locks: Record<string, LockOwnerInfo>;
-    }>({ targetId, locks: EMPTY_LOCKS });
+    const lockEndpoint = targetId
+        ? `/api/recipes/${encodeURIComponent(targetId)}/lock`
+        : null;
 
-    // Derive locks during render: if targetId has changed, locks is immediately empty without waiting for an effect
-    const locks =
-        locksState.targetId === targetId ? locksState.locks : EMPTY_LOCKS;
+    const { data: locksData, mutate: mutateLocks } = useSWR<
+        Record<string, LockOwnerInfo>
+    >(lockEndpoint, axiosFetcher, {
+        refreshInterval: targetId ? LOCK_POLL_INTERVAL_MS : 0,
+        revalidateOnFocus: true,
+        shouldRetryOnError: false,
+    });
 
-    const setLocks = useCallback(
-        (
-            newLocks:
-                | Record<string, LockOwnerInfo>
-                | ((
-                      prev: Record<string, LockOwnerInfo>
-                  ) => Record<string, LockOwnerInfo>)
-        ) => {
-            setLocksState((prev) => ({
-                targetId: targetIdRef.current,
-                locks:
-                    typeof newLocks === 'function'
-                        ? newLocks(
-                              prev.targetId === targetIdRef.current
-                                  ? prev.locks
-                                  : {}
-                          )
-                        : newLocks,
-            }));
-        },
-        []
-    );
+    const locks = targetId && locksData ? locksData : EMPTY_LOCKS;
 
     const activeLockFieldRef = useRef<string | null>(null);
     const lastHeldTargetIdRef = useRef<string | null>(null);
@@ -66,19 +50,17 @@ export function useRecipeLock(
     }, [targetId, currentUserId, activeField]);
 
     const fetchLocks = useCallback(async () => {
-        const id = targetIdRef.current;
-        if (!id) return null;
+        if (!targetIdRef.current) return null;
         try {
-            const response = await axios.get(`/api/recipes/${id}/lock`);
-            if (response?.data && typeof response.data === 'object') {
-                setLocks(response.data);
-                return response.data as Record<string, LockOwnerInfo>;
+            const updated = await mutateLocks();
+            if (updated && typeof updated === 'object') {
+                return updated as Record<string, LockOwnerInfo>;
             }
         } catch (error) {
             console.error('Failed to fetch recipe locks', error);
         }
         return null;
-    }, []);
+    }, [mutateLocks]);
 
     const acquire = useCallback(
         async (fieldKey: string) => {
@@ -172,30 +154,23 @@ export function useRecipeLock(
         return () => clearInterval(heartbeatInterval);
     }, [targetId, currentUserId, acquire]);
 
-    // Poll active locks periodically and re-try acquiring if activeField becomes free
+    // Re-try acquiring activeField if it becomes free on lock update
     useEffect(() => {
-        if (!targetId) return;
+        if (!targetId || !locks) return;
 
-        fetchLocks();
-        const pollInterval = setInterval(async () => {
-            const latestLocks = await fetchLocks();
-            const desired = activeFieldRef.current;
-            const uid = currentUserIdRef.current;
-            if (
-                desired &&
-                uid &&
-                activeLockFieldRef.current !== desired &&
-                latestLocks
-            ) {
-                const holder = latestLocks[desired];
-                if (!holder || holder.userId === uid) {
-                    acquire(desired);
-                }
+        const desired = activeFieldRef.current;
+        const uid = currentUserIdRef.current;
+        if (
+            desired &&
+            uid &&
+            activeLockFieldRef.current !== desired
+        ) {
+            const holder = locks[desired];
+            if (!holder || holder.userId === uid) {
+                acquire(desired);
             }
-        }, LOCK_POLL_INTERVAL_MS);
-
-        return () => clearInterval(pollInterval);
-    }, [targetId, fetchLocks, acquire]);
+        }
+    }, [targetId, locks, acquire]);
 
     // Cleanup active lock on unmount
     useEffect(() => {
