@@ -180,7 +180,6 @@ describe('AboutSections', () => {
             name: 'Test',
             email: 'test@test.com',
             image: null,
-            hashedPassword: null,
             createdAt: '',
             updatedAt: '',
             favoriteIds: [],

@@ -63,7 +63,6 @@ const mockCurrentUser: SafeUser = {
     email: null,
     emailVerified: null,
     image: '/test-image.jpg',
-    hashedPassword: null,
     createdAt: '',
     updatedAt: '', // Add the updatedAt property
     favoriteIds: [],

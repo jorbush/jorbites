@@ -26,7 +26,6 @@ describe('<HeartButton />', () => {
         email: null,
         emailVerified: null,
         image: null,
-        hashedPassword: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],

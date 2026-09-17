@@ -87,7 +87,6 @@ describe('FavoritesPage', () => {
             email: null,
             emailVerified: null,
             image: null,
-            hashedPassword: null,
             createdAt: new Date().toISOString(),
         };
 

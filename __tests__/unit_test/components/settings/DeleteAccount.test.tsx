@@ -91,7 +91,6 @@ const mockCurrentUser = {
     image: null,
     emailNotifications: true,
     favoriteIds: [],
-    hashedPassword: null,
     level: 1,
     resetToken: null,
     resetTokenExpiry: null,

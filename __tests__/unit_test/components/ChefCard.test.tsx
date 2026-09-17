@@ -66,7 +66,6 @@ describe('<ChefCard />', () => {
         image: 'https://example.com/avatar.jpg',
         level: 5,
         verified: true,
-        hashedPassword: null,
         favoriteIds: [],
         emailNotifications: false,
         badges: [],

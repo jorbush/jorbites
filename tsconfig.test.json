@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "node"]
+  },
+  "include": [
+    "next-env.d.ts",
+    "__tests__/unit_test/**/*.ts",
+    "__tests__/unit_test/**/*.tsx",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "cypress",
+    "cypress.config.ts",
+    "__tests__/e2e"
+  ]
+}

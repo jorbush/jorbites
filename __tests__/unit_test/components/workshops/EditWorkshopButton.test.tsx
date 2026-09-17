@@ -50,7 +50,6 @@ describe('<EditWorkshopButton />', () => {
             email: 'host@example.com',
             emailVerified: null,
             image: '/host-image.jpg',
-            hashedPassword: null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             favoriteIds: [],

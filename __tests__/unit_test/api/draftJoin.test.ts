@@ -1,4 +1,3 @@
-import { expect } from '@jest/globals';
 import { GET as DraftJoinGET } from '@/app/api/draft/join/route';
 import { Session } from 'next-auth';
 
