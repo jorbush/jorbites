@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { FiChevronLeft, FiShare2, FiCalendar } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import Heading from '@/app/components/navigation/Heading';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -110,6 +111,56 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                 {...props}
             />
         ),
+        table: ({ children, node: _node, ...props }: any) => (
+            <div className="my-6 w-full overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-700">
+                <table
+                    className="w-full border-collapse text-left text-sm"
+                    {...props}
+                >
+                    {children}
+                </table>
+            </div>
+        ),
+        thead: ({ children, node: _node, ...props }: any) => (
+            <thead
+                className="border-b border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800/80"
+                {...props}
+            >
+                {children}
+            </thead>
+        ),
+        th: ({ children, node: _node, ...props }: any) => (
+            <th
+                className="px-4 py-3 font-semibold whitespace-nowrap text-neutral-800 dark:text-neutral-200"
+                {...props}
+            >
+                {children}
+            </th>
+        ),
+        tbody: ({ children, node: _node, ...props }: any) => (
+            <tbody
+                className="divide-y divide-neutral-200 dark:divide-neutral-700"
+                {...props}
+            >
+                {children}
+            </tbody>
+        ),
+        tr: ({ children, node: _node, ...props }: any) => (
+            <tr
+                className="transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800/40"
+                {...props}
+            >
+                {children}
+            </tr>
+        ),
+        td: ({ children, node: _node, ...props }: any) => (
+            <td
+                className="px-4 py-3 whitespace-nowrap text-neutral-700 dark:text-neutral-300"
+                {...props}
+            >
+                {children}
+            </td>
+        ),
     };
 
     return (
@@ -157,7 +208,10 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
             )}
 
             <div className="prose dark:prose-invert max-w-none">
-                <ReactMarkdown components={markdownComponents}>
+                <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={markdownComponents}
+                >
                     {event.content}
                 </ReactMarkdown>
             </div>
