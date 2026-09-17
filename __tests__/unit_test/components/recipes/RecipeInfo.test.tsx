@@ -73,7 +73,6 @@ describe('RecipeInfo', () => {
         level: 5,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        hashedPassword: null,
         favoriteIds: [],
         emailNotifications: false,
     };

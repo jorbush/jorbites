@@ -1,4 +1,3 @@
-import { expect } from '@jest/globals';
 import { POST as CompleteQuestPOST } from '@/app/api/quests/[id]/complete/route';
 import { NextRequest } from 'next/server';
 

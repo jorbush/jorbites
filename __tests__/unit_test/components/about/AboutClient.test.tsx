@@ -163,7 +163,6 @@ describe('AboutClient', () => {
         name: 'Test User',
         email: 'test@example.com',
         image: 'test-image.jpg',
-        hashedPassword: null,
         createdAt: '2023-01-01',
         updatedAt: '2023-01-01',
         favoriteIds: [],

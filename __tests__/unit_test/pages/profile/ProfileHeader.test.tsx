@@ -17,7 +17,6 @@ const mockUser: SafeUser = {
     email: null,
     emailVerified: null,
     image: '/test-image.jpg',
-    hashedPassword: null,
     createdAt: '2023-01-01T00:00:00.000Z',
     updatedAt: new Date().toISOString(),
     favoriteIds: [],

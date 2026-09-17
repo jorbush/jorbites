@@ -35,11 +35,12 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "__tests__/**/*.tsx",
-    "__tests__/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "__tests__",
+    "cypress",
+    "cypress.config.ts"
   ]
 }

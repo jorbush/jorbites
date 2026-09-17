@@ -105,6 +105,7 @@ describe('Recipe Validation Utilities', () => {
             recipeCuisine: null,
             calories: null,
             recipeYield: null,
+            method: 'RECIPE',
             createdAt: new Date(),
             updatedAt: new Date(),
         };

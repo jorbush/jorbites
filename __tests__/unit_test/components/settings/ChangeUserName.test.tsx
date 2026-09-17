@@ -45,7 +45,6 @@ describe('ChangeUserNameSelector', () => {
         email: 'test@example.com',
         image: null,
         emailVerified: null,
-        hashedPassword: null,
         createdAt: '2023-01-01T00:00:00.000Z',
         updatedAt: '2023-01-01T00:00:00.000Z',
         favoriteIds: [],

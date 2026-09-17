@@ -58,7 +58,6 @@ describe('Comments', () => {
         name: 'Test User',
         email: null,
         emailVerified: null,
-        hashedPassword: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],

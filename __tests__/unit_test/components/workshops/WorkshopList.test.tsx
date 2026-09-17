@@ -35,7 +35,6 @@ describe('<WorkshopList />', () => {
         email: 'test@example.com',
         emailVerified: null,
         image: null,
-        hashedPassword: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         favoriteIds: [],
