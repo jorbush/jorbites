@@ -95,6 +95,26 @@ describe('DraftCard', () => {
         expect(onDuplicate).not.toHaveBeenCalled();
     });
 
+    it('triggers onOpen when clicking directly on the draft card container', () => {
+        const onOpen = vi.fn();
+        const onDelete = vi.fn();
+        const onDuplicate = vi.fn();
+
+        render(
+            <DraftCard
+                draft={mockDraft}
+                onOpen={onOpen}
+                onDelete={onDelete}
+                onDuplicate={onDuplicate}
+            />
+        );
+
+        fireEvent.click(screen.getByTestId('draft-card'));
+        expect(onOpen).toHaveBeenCalledWith('draft-123');
+        expect(onDelete).not.toHaveBeenCalled();
+        expect(onDuplicate).not.toHaveBeenCalled();
+    });
+
     it('triggers onDelete without firing onOpen when delete icon is clicked', () => {
         const onOpen = vi.fn();
         const onDelete = vi.fn();
