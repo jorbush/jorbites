@@ -14,7 +14,7 @@ const ALLOWED_DOMAINS = new Set([
     r2PublicDomain,
 ]);
 
-const ALLOWED_FORMATS = new Set(['webp', 'png', 'jpg', 'jpeg', 'avif']);
+const ALLOWED_FORMATS = new Set(['auto', 'webp', 'png', 'jpg', 'jpeg', 'avif']);
 const ALLOWED_QUALITIES = new Set([
     'auto:eco',
     'auto:good',
@@ -212,7 +212,7 @@ export async function GET(request: NextRequest) {
         const imageResponse = await fetch(imageUrl, {
             headers: {
                 'User-Agent': 'Jorbites Image Proxy',
-                Accept: 'image/webp,image/avif,image/*',
+                Accept: 'image/avif,image/webp,image/*',
             },
             cache: 'force-cache',
             next: {

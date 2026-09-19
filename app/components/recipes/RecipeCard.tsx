@@ -75,7 +75,7 @@ const RecipeCard = memo(function RecipeCard({
                         className="size-full object-cover transition group-hover:scale-110"
                         width={209}
                         height={209}
-                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px"
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 209px, 250px"
                         quality="auto:eco"
                     />
                     <div className="absolute top-3 right-3 z-10">

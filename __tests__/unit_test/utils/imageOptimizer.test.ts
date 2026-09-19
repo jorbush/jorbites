@@ -63,7 +63,9 @@ describe('getProxyImageSrcAndSrcSet', () => {
             quality: 'auto:best',
         });
         expect(result.srcSet).toBeDefined();
-        // Check that it contains multiple widths
+        // Check that it contains multiple widths including smaller responsive sizes
+        expect(result.srcSet).toContain('209w');
+        expect(result.srcSet).toContain('256w');
         expect(result.srcSet).toContain('384w');
         expect(result.srcSet).toContain('750w');
         expect(result.srcSet).toContain('1200w');
@@ -71,6 +73,19 @@ describe('getProxyImageSrcAndSrcSet', () => {
         // Check that each URL inside srcset is properly parameterized
         expect(result.srcSet).toContain('/api/image-proxy?url=');
         expect(result.srcSet).toContain('q=auto%3Abest');
+    });
+
+    it('includes custom width in responsive srcset for fill layout if provided', () => {
+        const result = getProxyImageSrcAndSrcSet({
+            src: 'https://res.cloudinary.com/test/image.jpg',
+            width: 250,
+            height: 250,
+            fill: true,
+            quality: 'auto:eco',
+        });
+        expect(result.srcSet).toBeDefined();
+        expect(result.srcSet).toContain('250w');
+        expect(result.srcSet).toContain('w=250&h=250');
     });
 
     it('generates 1x/2x/3x srcset for fixed layout', () => {
