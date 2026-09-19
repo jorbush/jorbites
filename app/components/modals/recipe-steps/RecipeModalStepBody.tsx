@@ -60,7 +60,9 @@ export interface RecipeModalStepBodyProps {
     draftId?: string;
 }
 
-const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
+export type RecipeStepContentProps = RecipeModalStepBodyProps;
+
+export const RecipeStepContent: React.FC<RecipeStepContentProps> = ({
     step,
     lockState,
     categories,
@@ -98,112 +100,112 @@ const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = ({
     imageSrc,
     draftId: _draftId,
 }) => {
-    const renderStepContent = () => {
-        switch (step) {
-            case STEPS.INGREDIENTS:
-                return (
-                    <IngredientsStep
-                        numIngredients={numIngredients}
-                        register={register}
-                        errors={errors}
-                        onAddIngredient={addIngredientInput}
-                        onRemoveIngredient={removeIngredientInput}
-                        onSetIngredients={setIngredients}
-                        getValues={getValues}
-                        setValue={setValue}
-                        inputMode={ingredientsInputMode}
-                        setInputMode={setIngredientsInputMode}
-                        isLocked={lockState?.isCurrentStepLocked}
-                    />
-                );
-            case STEPS.STEPS:
-                return (
-                    <RecipeStepsStep
-                        numSteps={numSteps}
-                        register={register}
-                        errors={errors}
-                        onAddStep={addStepInput}
-                        onRemoveStep={removeStepInput}
-                        onSetSteps={setSteps}
-                        getValues={getValues}
-                        setValue={setValue}
-                        inputMode={stepsInputMode}
-                        setInputMode={setStepsInputMode}
-                        isLocked={lockState?.isCurrentStepLocked}
-                    />
-                );
-            case STEPS.DESCRIPTION:
-                return (
-                    <DescriptionStep
-                        isLoading={isLoading}
-                        register={register}
-                        errors={errors}
-                        minutes={minutes}
-                        onMinutesChange={(value) =>
-                            setCustomValue('minutes', value)
-                        }
-                        prepTime={prepTime}
-                        cookTime={cookTime}
-                        onPrepTimeChange={(value) =>
-                            setCustomValue('prepTime', value)
-                        }
-                        onCookTimeChange={(value) =>
-                            setCustomValue('cookTime', value)
-                        }
-                        isLocked={lockState?.isCurrentStepLocked}
-                    />
-                );
-            case STEPS.METHODS:
-                return (
-                    <MethodsStep
-                        selectedMethod={method || ''}
-                        onMethodSelect={(selectedMethod) =>
-                            setCustomValue('method', selectedMethod)
-                        }
-                    />
-                );
-            case STEPS.RELATED_CONTENT:
-                return (
-                    <RelatedContentStep
-                        isLoading={isLoading}
-                        selectedLinkedRecipes={selectedLinkedRecipes}
-                        selectedQuest={selectedQuest}
-                        onAddLinkedRecipe={addLinkedRecipe}
-                        onRemoveLinkedRecipe={removeLinkedRecipe}
-                        onSelectQuest={selectQuest}
-                        onRemoveQuest={removeQuest}
-                        register={register}
-                        errors={errors}
-                    />
-                );
-            case STEPS.IMAGES:
-                return (
-                    <ImagesStep
-                        imageSrc={imageSrc || ''}
-                        imageSrc1={getValues('imageSrc1')}
-                        imageSrc2={getValues('imageSrc2')}
-                        imageSrc3={getValues('imageSrc3')}
-                        onImageChange={(field, value) =>
-                            setCustomValue(field, value)
-                        }
-                    />
-                );
-            case STEPS.CATEGORY:
-            default:
-                return (
-                    <CategoryStep
-                        selectedCategories={categories || []}
-                        onCategorySelect={(selectedCategories) =>
-                            setCustomValue('categories', selectedCategories)
-                        }
-                    />
-                );
-        }
-    };
+    switch (step) {
+        case STEPS.INGREDIENTS:
+            return (
+                <IngredientsStep
+                    numIngredients={numIngredients}
+                    register={register}
+                    errors={errors}
+                    onAddIngredient={addIngredientInput}
+                    onRemoveIngredient={removeIngredientInput}
+                    onSetIngredients={setIngredients}
+                    getValues={getValues}
+                    setValue={setValue}
+                    inputMode={ingredientsInputMode}
+                    setInputMode={setIngredientsInputMode}
+                    isLocked={lockState?.isCurrentStepLocked}
+                />
+            );
+        case STEPS.STEPS:
+            return (
+                <RecipeStepsStep
+                    numSteps={numSteps}
+                    register={register}
+                    errors={errors}
+                    onAddStep={addStepInput}
+                    onRemoveStep={removeStepInput}
+                    onSetSteps={setSteps}
+                    getValues={getValues}
+                    setValue={setValue}
+                    inputMode={stepsInputMode}
+                    setInputMode={setStepsInputMode}
+                    isLocked={lockState?.isCurrentStepLocked}
+                />
+            );
+        case STEPS.DESCRIPTION:
+            return (
+                <DescriptionStep
+                    isLoading={isLoading}
+                    register={register}
+                    errors={errors}
+                    minutes={minutes}
+                    onMinutesChange={(value) =>
+                        setCustomValue('minutes', value)
+                    }
+                    prepTime={prepTime}
+                    cookTime={cookTime}
+                    onPrepTimeChange={(value) =>
+                        setCustomValue('prepTime', value)
+                    }
+                    onCookTimeChange={(value) =>
+                        setCustomValue('cookTime', value)
+                    }
+                    isLocked={lockState?.isCurrentStepLocked}
+                />
+            );
+        case STEPS.METHODS:
+            return (
+                <MethodsStep
+                    selectedMethod={method || ''}
+                    onMethodSelect={(selectedMethod) =>
+                        setCustomValue('method', selectedMethod)
+                    }
+                />
+            );
+        case STEPS.RELATED_CONTENT:
+            return (
+                <RelatedContentStep
+                    isLoading={isLoading}
+                    selectedLinkedRecipes={selectedLinkedRecipes}
+                    selectedQuest={selectedQuest}
+                    onAddLinkedRecipe={addLinkedRecipe}
+                    onRemoveLinkedRecipe={removeLinkedRecipe}
+                    onSelectQuest={selectQuest}
+                    onRemoveQuest={removeQuest}
+                    register={register}
+                    errors={errors}
+                />
+            );
+        case STEPS.IMAGES:
+            return (
+                <ImagesStep
+                    imageSrc={imageSrc || ''}
+                    imageSrc1={getValues('imageSrc1')}
+                    imageSrc2={getValues('imageSrc2')}
+                    imageSrc3={getValues('imageSrc3')}
+                    onImageChange={(field, value) =>
+                        setCustomValue(field, value)
+                    }
+                />
+            );
+        case STEPS.CATEGORY:
+        default:
+            return (
+                <CategoryStep
+                    selectedCategories={categories || []}
+                    onCategorySelect={(selectedCategories) =>
+                        setCustomValue('categories', selectedCategories)
+                    }
+                />
+            );
+    }
+};
 
+const RecipeModalStepBody: React.FC<RecipeModalStepBodyProps> = (props) => {
     return (
-        <RecipeStepLockContainer lockState={lockState}>
-            {renderStepContent()}
+        <RecipeStepLockContainer lockState={props.lockState}>
+            <RecipeStepContent {...props} />
         </RecipeStepLockContainer>
     );
 };
