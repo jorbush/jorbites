@@ -10,10 +10,11 @@ interface DraftProgressBarProps {
 
 const DraftProgressBar: React.FC<DraftProgressBarProps> = ({ progress }) => {
     return (
-        <div
+        <progress
             className="flex flex-row items-center gap-1.5"
             data-testid="draft-progress-bar"
-            role="progressbar"
+            value={progress.completedSteps}
+            max={progress.totalSteps}
             aria-valuenow={progress.completedSteps}
             aria-valuemin={0}
             aria-valuemax={progress.totalSteps}
@@ -35,7 +36,7 @@ const DraftProgressBar: React.FC<DraftProgressBarProps> = ({ progress }) => {
                     />
                 </Tooltip>
             ))}
-        </div>
+        </progress>
     );
 };
 

@@ -200,4 +200,69 @@ describe('useDraftInvite hook', () => {
 
         expect(toast.error).toHaveBeenCalledWith('Something went wrong');
     });
+
+    it('handles successful handleRegenerate and updates inviteUrl', async () => {
+        mockedAxios.post.mockResolvedValueOnce({
+            data: {
+                draftId: 'draft-1',
+                inviteToken: 'regenerated-token-999',
+                draft: { ...mockDraft, inviteToken: 'regenerated-token-999' },
+            },
+        });
+
+        const { result } = renderHook(() => useDraftInvite(mockOwner));
+
+        await act(async () => {
+            await result.current.handleRegenerate();
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledWith('/api/draft/invite', {
+            draftId: 'draft-1',
+            regenerate: true,
+        });
+        expect(result.current.inviteUrl).toContain(
+            'token=regenerated-token-999'
+        );
+        expect(toast.success).toHaveBeenCalledWith('Invite link regenerated!');
+    });
+
+    it('auto-generates initial token if draft does not have one', async () => {
+        mockedUseSWR.mockImplementation((key: string) => {
+            if (typeof key === 'string' && key.startsWith('/api/draft?')) {
+                return {
+                    data: { ...mockDraft, inviteToken: undefined },
+                    isLoading: false,
+                    mutate: mockMutate,
+                };
+            }
+            if (
+                typeof key === 'string' &&
+                key.startsWith('/api/users/multiple')
+            ) {
+                return {
+                    data: [mockOwner],
+                    isLoading: false,
+                };
+            }
+            return { data: null, isLoading: false };
+        });
+
+        mockedAxios.post.mockResolvedValueOnce({
+            data: {
+                draftId: 'draft-1',
+                inviteToken: 'initial-generated-token',
+                draft: {
+                    ...mockDraft,
+                    inviteToken: 'initial-generated-token',
+                },
+            },
+        });
+
+        renderHook(() => useDraftInvite(mockOwner));
+
+        expect(mockedAxios.post).toHaveBeenCalledWith('/api/draft/invite', {
+            draftId: 'draft-1',
+            regenerate: false,
+        });
+    });
 });
