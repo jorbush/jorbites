@@ -58,7 +58,7 @@ const Home = async ({ searchParams }: HomeProps) => {
                         height={cardDimension}
                         fill
                         quality="auto:eco"
-                        sizes="(max-width: 640px) 319px, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 209px, 250px"
+                        sizes="(max-width: 640px) 150px, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 209px, 250px"
                     />
                 )}
                 {response.error ? (
