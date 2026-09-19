@@ -225,6 +225,35 @@ describe('GET /api/image-proxy', () => {
         );
     });
 
+    it('should process valid Cloudinary URL with f=auto successfully', async () => {
+        const mockImageData = new ArrayBuffer(1024);
+        const mockFetch = global.fetch as jest.Mock;
+        mockFetch.mockResolvedValueOnce({
+            ok: true,
+            status: 200,
+            headers: {
+                get: jest.fn().mockReturnValue('image/avif'),
+            },
+            arrayBuffer: jest.fn().mockResolvedValueOnce(mockImageData),
+        });
+
+        const request = new NextRequest(
+            'http://localhost:3000/api/image-proxy?url=https://res.cloudinary.com/test/image/upload/test.jpg&w=400&h=400&f=auto'
+        );
+
+        const response = await ImageProxyGET(request);
+
+        expect(response.status).toBe(200);
+        expect(mockFetch).toHaveBeenCalledWith(
+            expect.stringContaining('f_auto,q_auto:good,w_400,h_400,c_fill'),
+            expect.objectContaining({
+                headers: expect.objectContaining({
+                    Accept: 'image/avif,image/webp,image/*',
+                }),
+            })
+        );
+    });
+
     it('should process allowed non-Cloudinary URL successfully', async () => {
         const mockImageData = new ArrayBuffer(1024);
         const mockFetch = global.fetch as jest.Mock;
