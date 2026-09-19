@@ -74,16 +74,18 @@ export function useBiteCardGesture({
 
     // Cleanup pointer capture and dragging state on unmount
     useEffect(() => {
+        let isDragging = isDraggingRef.current;
+        const pointerId = activePointerIdRef.current;
+        const card = cardRef.current;
         return () => {
-            isDraggingRef.current = false;
-            const pointerId = activePointerIdRef.current;
+            isDragging = false;
             if (
                 pointerId !== null &&
-                cardRef.current &&
-                typeof cardRef.current.releasePointerCapture === 'function'
+                card &&
+                typeof card.releasePointerCapture === 'function'
             ) {
                 try {
-                    cardRef.current.releasePointerCapture(pointerId);
+                    card.releasePointerCapture(pointerId);
                 } catch {}
             }
         };

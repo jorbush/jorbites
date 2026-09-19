@@ -78,7 +78,7 @@ export function useRecipeLock(
             console.error('Failed to fetch recipe locks', error);
         }
         return null;
-    }, []);
+    }, [setLocks]);
 
     const acquire = useCallback(
         async (fieldKey: string) => {
@@ -201,8 +201,8 @@ export function useRecipeLock(
     useEffect(() => {
         const id = targetId;
         const uid = currentUserId;
+        const activeField = activeLockFieldRef.current;
         return () => {
-            const activeField = activeLockFieldRef.current;
             if (activeField && id && uid) {
                 activeLockFieldRef.current = null;
                 axios

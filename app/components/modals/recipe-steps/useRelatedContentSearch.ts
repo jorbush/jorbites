@@ -75,10 +75,11 @@ export function useRelatedContentSearch(
     );
 
     useEffect(() => {
+        const abortController = abortControllerRef.current;
         return () => {
             debouncedSearch.cancel();
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
+            if (abortController) {
+                abortController.abort();
             }
         };
     }, [debouncedSearch]);

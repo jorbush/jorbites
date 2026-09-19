@@ -69,10 +69,11 @@ const DraftDirectSearchSection: React.FC<DraftDirectSearchSectionProps> = ({
 
     useEffect(() => {
         debouncedSearch(searchQuery);
+        const abortController = abortControllerRef.current;
         return () => {
             debouncedSearch.cancel();
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
+            if (abortController) {
+                abortController.abort();
             }
         };
     }, [searchQuery, debouncedSearch]);
