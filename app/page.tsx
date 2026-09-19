@@ -28,12 +28,15 @@ interface HomeProps {
 }
 
 const Home = async ({ searchParams }: HomeProps) => {
+    const userHeaders = await headers();
+    const isMobileDevice = isMobile(userHeaders.get('user-agent') || '');
+
     const [currentUser, response, resolvedParams] = await Promise.all([
         getCurrentUser(),
-        Promise.all([searchParams, headers()]).then(([params, userHeaders]) =>
+        searchParams.then((params) =>
             getRecipes({
                 ...params,
-                limit: isMobile(userHeaders.get('user-agent') || '')
+                limit: isMobileDevice
                     ? MOBILE_RECIPES_LIMIT
                     : DESKTOP_RECIPES_LIMIT,
             })
@@ -41,6 +44,7 @@ const Home = async ({ searchParams }: HomeProps) => {
         searchParams,
     ]);
     const firstImageUrl = getFirstRecipeImageUrl(response.data?.recipes);
+    const cardDimension = isMobileDevice ? 319 : 209;
     return (
         <>
             <Container>
@@ -50,11 +54,11 @@ const Home = async ({ searchParams }: HomeProps) => {
                 {firstImageUrl && (
                     <LcpPreloader
                         imageUrl={firstImageUrl}
-                        width={209}
-                        height={209}
+                        width={cardDimension}
+                        height={cardDimension}
                         fill
                         quality="auto:eco"
-                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 209px, 250px"
+                        sizes="(max-width: 640px) 319px, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 209px, 250px"
                     />
                 )}
                 {response.error ? (

@@ -28,7 +28,7 @@ export default function CustomProxyImage({
     priority = false,
     width = 400,
     height = 400,
-    sizes = '(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 209px, 250px',
+    sizes = '(max-width: 640px) 319px, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 209px, 250px',
     preloadViaProxy = false,
     quality = 'auto:good',
     style,
