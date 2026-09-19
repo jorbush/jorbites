@@ -227,7 +227,7 @@ describe('useDraftInvite hook', () => {
     });
 
     it('auto-generates initial token if draft does not have one', async () => {
-        mockedUseSWR.mockImplementation((key: string) => {
+        mockedUseSWR.mockImplementation((key: string, fetcher?: any) => {
             if (typeof key === 'string' && key.startsWith('/api/draft?')) {
                 return {
                     data: { ...mockDraft, inviteToken: undefined },
@@ -241,6 +241,16 @@ describe('useDraftInvite hook', () => {
             ) {
                 return {
                     data: [mockOwner],
+                    isLoading: false,
+                };
+            }
+            if (
+                typeof key === 'string' &&
+                key.startsWith('/api/draft/invite?')
+            ) {
+                fetcher?.();
+                return {
+                    data: { inviteToken: 'initial-generated-token' },
                     isLoading: false,
                 };
             }
@@ -258,11 +268,14 @@ describe('useDraftInvite hook', () => {
             },
         });
 
-        renderHook(() => useDraftInvite(mockOwner));
+        const { result } = renderHook(() => useDraftInvite(mockOwner));
 
         expect(mockedAxios.post).toHaveBeenCalledWith('/api/draft/invite', {
             draftId: 'draft-1',
             regenerate: false,
         });
+        expect(result.current.inviteUrl).toContain(
+            'token=initial-generated-token'
+        );
     });
 });

@@ -121,8 +121,7 @@ const DraftCard: React.FC<DraftCardProps> = ({
     return (
         <div
             data-testid="draft-card"
-            onClick={handleOpen}
-            className="group relative flex cursor-pointer flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:p-5 dark:border-neutral-800 dark:bg-neutral-900"
+            className="group relative flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:p-5 dark:border-neutral-800 dark:bg-neutral-900"
         >
             <div className="flex items-start justify-between gap-2">
                 <h3 className="truncate text-base font-semibold text-neutral-900 dark:text-neutral-100">

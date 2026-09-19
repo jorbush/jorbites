@@ -64,28 +64,42 @@ describe('DraftInviteModal component', () => {
 
         // Mock useSWR responses:
         // 1st call: /api/draft?draftId=...
-        // 2nd call: /api/users/multiple?ids=...
-        (useSWR as any).mockImplementation((key: string | null) => {
-            if (key && key.includes('/api/draft')) {
+        // 2nd call: /api/draft/invite?draftId=...
+        // 3rd call: /api/users/multiple?ids=...
+        (useSWR as any).mockImplementation(
+            (key: string | null, fetcher?: any) => {
+                if (key && key.startsWith('/api/draft?')) {
+                    return {
+                        data: mockDraft,
+                        isLoading: false,
+                        mutate: mockMutateDraft,
+                    };
+                }
+                if (key && key.includes('/api/draft/invite')) {
+                    fetcher?.();
+                    return {
+                        data: {
+                            draftId: 'draft-abc-123',
+                            inviteToken: 'secret-token-xyz',
+                        },
+                        isLoading: false,
+                        mutate: vi.fn(),
+                    };
+                }
+                if (key && key.includes('/api/users/multiple')) {
+                    return {
+                        data: [mockOwner, mockCoCook],
+                        isLoading: false,
+                        mutate: vi.fn(),
+                    };
+                }
                 return {
-                    data: mockDraft,
-                    isLoading: false,
-                    mutate: mockMutateDraft,
-                };
-            }
-            if (key && key.includes('/api/users/multiple')) {
-                return {
-                    data: [mockOwner, mockCoCook],
+                    data: null,
                     isLoading: false,
                     mutate: vi.fn(),
                 };
             }
-            return {
-                data: null,
-                isLoading: false,
-                mutate: vi.fn(),
-            };
-        });
+        );
 
         // Mock clipboard
         Object.assign(navigator, {
@@ -275,30 +289,43 @@ describe('DraftInviteModal component', () => {
     });
 
     it('automatically requests invite token generation on mount when draft has no token', async () => {
-        (useSWR as any).mockImplementation((key: string | null) => {
-            if (key && key.includes('/api/draft')) {
+        (useSWR as any).mockImplementation(
+            (key: string | null, fetcher?: any) => {
+                if (key && key.startsWith('/api/draft?')) {
+                    return {
+                        data: {
+                            ...mockDraft,
+                            inviteToken: undefined,
+                        },
+                        isLoading: false,
+                        mutate: mockMutateDraft,
+                    };
+                }
+                if (key && key.includes('/api/draft/invite')) {
+                    fetcher?.();
+                    return {
+                        data: {
+                            draftId: 'draft-abc-123',
+                            inviteToken: 'auto-generated-token-777',
+                        },
+                        isLoading: false,
+                        mutate: vi.fn(),
+                    };
+                }
+                if (key && key.includes('/api/users/multiple')) {
+                    return {
+                        data: [mockOwner],
+                        isLoading: false,
+                        mutate: vi.fn(),
+                    };
+                }
                 return {
-                    data: {
-                        ...mockDraft,
-                        inviteToken: undefined,
-                    },
-                    isLoading: false,
-                    mutate: mockMutateDraft,
-                };
-            }
-            if (key && key.includes('/api/users/multiple')) {
-                return {
-                    data: [mockOwner],
+                    data: null,
                     isLoading: false,
                     mutate: vi.fn(),
                 };
             }
-            return {
-                data: null,
-                isLoading: false,
-                mutate: vi.fn(),
-            };
-        });
+        );
 
         (axios.post as any).mockResolvedValueOnce({
             data: {
