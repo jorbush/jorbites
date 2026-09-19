@@ -156,7 +156,7 @@ const DraftCard: React.FC<DraftCardProps> = ({
 
             <div
                 data-testid="draft-card-progress"
-                className="pointer-events-none relative z-10 mt-1"
+                className="relative z-10 mt-1"
             >
                 <DraftProgressBar progress={progress} />
             </div>
