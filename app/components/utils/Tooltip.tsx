@@ -62,9 +62,11 @@ const Tooltip: React.FC<TooltipProps> = ({
     };
 
     useEffect(() => {
+        const timeout = timeoutRef.current;
+        const touchTimeout = touchTimeoutRef.current;
         return () => {
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-            if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+            if (timeout) clearTimeout(timeout);
+            if (touchTimeout) clearTimeout(touchTimeout);
         };
     }, []);
 

@@ -16,6 +16,14 @@ export interface LockOwnerInfo {
 
 const EMPTY_LOCKS: Record<string, LockOwnerInfo> = {};
 
+function releaseLockApi(targetId: string, field: string) {
+    axios
+        .delete(
+            `/api/recipes/${targetId}/lock?field=${encodeURIComponent(field)}`
+        )
+        .catch(() => {});
+}
+
 export function useRecipeLock(
     targetId: string | null | undefined,
     currentUserId: string | null | undefined,
@@ -78,7 +86,7 @@ export function useRecipeLock(
             console.error('Failed to fetch recipe locks', error);
         }
         return null;
-    }, []);
+    }, [setLocks]);
 
     const acquire = useCallback(
         async (fieldKey: string) => {
@@ -201,15 +209,11 @@ export function useRecipeLock(
     useEffect(() => {
         const id = targetId;
         const uid = currentUserId;
+        const activeField = activeLockFieldRef.current;
         return () => {
-            const activeField = activeLockFieldRef.current;
             if (activeField && id && uid) {
                 activeLockFieldRef.current = null;
-                axios
-                    .delete(
-                        `/api/recipes/${id}/lock?field=${encodeURIComponent(activeField)}`
-                    )
-                    .catch(() => {});
+                releaseLockApi(id, activeField);
             }
         };
     }, [targetId, currentUserId]);

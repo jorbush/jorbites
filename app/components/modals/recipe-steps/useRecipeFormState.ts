@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useForm, FieldValues } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -156,7 +156,7 @@ export function useRecipeFormState({
     });
 
     useEffect(() => {
-        syncFormFromDraft(setValue, getValues, step, lock, false);
+        syncFormFromDraft(setValue, getValues, step, lock);
     }, [draftData, syncFormFromDraft, setValue, getValues, step, lock]);
 
     useDraftSwitchSync({
