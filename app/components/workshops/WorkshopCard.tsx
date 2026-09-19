@@ -52,7 +52,7 @@ const WorkshopCard = memo(function WorkshopCard({
                         className="size-full object-cover transition group-hover:scale-110"
                         width={250}
                         height={250}
-                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px"
+                        sizes="(max-width: 640px) 319px, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px"
                     />
                     {data.isPrivate && (
                         <div className="absolute top-3 left-3 rounded-lg bg-neutral-900/70 px-2 py-1 text-white">

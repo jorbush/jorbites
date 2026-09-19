@@ -66,6 +66,7 @@ describe('getProxyImageSrcAndSrcSet', () => {
         // Check that it contains multiple widths including smaller responsive sizes
         expect(result.srcSet).toContain('209w');
         expect(result.srcSet).toContain('256w');
+        expect(result.srcSet).toContain('319w');
         expect(result.srcSet).toContain('384w');
         expect(result.srcSet).toContain('750w');
         expect(result.srcSet).toContain('1200w');

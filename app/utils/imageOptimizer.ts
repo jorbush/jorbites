@@ -73,7 +73,7 @@ export function getProxyImageSrcAndSrcSet({
     if (fill) {
         // For fill, we generate a responsive width-based srcSet
         const baseWidths = [
-            209, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048,
+            209, 256, 319, 384, 640, 750, 828, 1080, 1200, 1920, 2048,
         ];
         const widths =
             width && !baseWidths.includes(width)
