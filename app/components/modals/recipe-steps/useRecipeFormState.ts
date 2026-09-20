@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useForm, FieldValues } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -155,9 +155,7 @@ export function useRecipeFormState({
         isViewer,
     });
 
-    useEffect(() => {
-        syncFormFromDraft(setValue, getValues, step, lock);
-    }, [draftData, syncFormFromDraft, setValue, getValues, step, lock]);
+    syncFormFromDraft(setValue, getValues, step, lock);
 
     useDraftSwitchSync({
         isEditMode: recipeModal.isEditMode,
