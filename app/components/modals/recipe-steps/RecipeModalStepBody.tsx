@@ -60,9 +60,9 @@ export interface RecipeModalStepBodyProps {
     draftId?: string;
 }
 
-export type RecipeStepContentProps = RecipeModalStepBodyProps;
+type RecipeStepContentProps = RecipeModalStepBodyProps;
 
-export const RecipeStepContent: React.FC<RecipeStepContentProps> = ({
+const RecipeStepContent: React.FC<RecipeStepContentProps> = ({
     step,
     lockState,
     categories,

@@ -212,7 +212,6 @@ export function useRecipeLock(
         const activeField = activeLockFieldRef.current;
         return () => {
             if (activeField && id && uid) {
-                activeLockFieldRef.current = null;
                 releaseLockApi(id, activeField);
             }
         };
