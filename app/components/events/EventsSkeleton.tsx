@@ -45,6 +45,40 @@ export const EventsSkeleton: React.FC<EventsSkeletonProps> = ({
                     </div>
                 )}
 
+                {/* Recipe of the Week & Month Skeletons (always shown) */}
+                {(['week', 'month'] as const).map((category) => (
+                    <div
+                        key={category}
+                        className="mb-10 animate-pulse rounded-2xl border border-neutral-200 bg-white p-6 shadow-md dark:border-neutral-800 dark:bg-neutral-900"
+                    >
+                        <div className="relative flex flex-col gap-6 md:flex-row md:items-center">
+                            {/* Winner Badge Image Skeleton */}
+                            <div className="flex shrink-0 justify-center">
+                                <div className="size-20 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+                            </div>
+
+                            {/* Content details Skeleton */}
+                            <div className="flex-1 space-y-2 text-center md:text-left">
+                                <div className="mx-auto h-5 w-32 rounded-full bg-neutral-200 md:mx-0 dark:bg-neutral-700" />
+                                <div className="mx-auto h-7 w-56 rounded bg-neutral-200 md:mx-0 dark:bg-neutral-700" />
+                                <div className="mx-auto h-4 w-40 rounded bg-neutral-200 md:mx-0 dark:bg-neutral-700" />
+
+                                {/* Winner Recipe Card Skeleton */}
+                                <div className="mx-auto mt-4 flex max-w-sm items-center gap-4 rounded-xl border border-neutral-100 bg-neutral-50 p-3 md:mx-0 dark:border-neutral-800 dark:bg-neutral-800/40">
+                                    <div className="size-16 shrink-0 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
+                                    <div className="min-w-0 flex-1 space-y-2 text-left">
+                                        <div className="h-4 w-3/4 rounded bg-neutral-200 dark:bg-neutral-700" />
+                                        <div className="flex items-center gap-3">
+                                            <div className="size-5 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+                                            <div className="h-3.5 w-20 rounded bg-neutral-200 dark:bg-neutral-700" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+
                 {/* EventCalendar Skeleton */}
                 <div className="mb-10 animate-pulse rounded-xl border border-neutral-200 bg-white p-4 shadow-sm md:p-6 dark:border-neutral-700 dark:bg-neutral-900">
                     {/* Calendar Header */}
@@ -93,7 +127,7 @@ export const EventsSkeleton: React.FC<EventsSkeletonProps> = ({
                             {[...Array(4)].map((_, i) => (
                                 <div
                                     key={i}
-                                    className="min-w-[280px] flex-shrink-0 sm:min-w-[320px] md:min-w-[350px]"
+                                    className="min-w-[280px] shrink-0 sm:min-w-[320px] md:min-w-[350px]"
                                 >
                                     {/* EventCardSkeleton matching design */}
                                     <div className="dark:bg-dark overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white dark:border-neutral-700">
