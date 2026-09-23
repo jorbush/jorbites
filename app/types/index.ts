@@ -116,6 +116,7 @@ export type SafeUser = Omit<
     language?: string | null;
     recipeCount?: number | null | undefined;
     likesReceived?: number | null | undefined;
+    levelDelta?: number | null | undefined;
     recipesThisYear?: number | null | undefined;
     recipesThisMonth?: number | null | undefined;
     totalCookingTime?: number | null | undefined;
