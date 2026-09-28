@@ -1363,5 +1363,9 @@
     "close": "Cerrar",
     "co_cook_added": "Co-cocinero añadido",
     "search_users_tab": "Buscar Usuarios",
-    "add_co_cook_directly": "Añadir co-cocinero directamente"
+    "add_co_cook_directly": "Añadir co-cocinero directamente",
+    "recipe_not_found": "Receta no encontrada",
+    "recipe_not_found_message": "No hemos podido cargar esta receta. Puede haber sido eliminada o el enlace es incorrecto.",
+    "try_again": "Reintentar",
+    "go_home": "Ir al inicio"
 }

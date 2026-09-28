@@ -1362,5 +1362,9 @@
     "close": "Tancar",
     "co_cook_added": "Co-cuiner afegit",
     "search_users_tab": "Cercar Usuaris",
-    "add_co_cook_directly": "Afegir co-cuiner directament"
+    "add_co_cook_directly": "Afegir co-cuiner directament",
+    "recipe_not_found": "Recepta no trobada",
+    "recipe_not_found_message": "No hem pogut carregar aquesta recepta. Pot haver estat eliminada o l'enllaç és incorrecte.",
+    "try_again": "Tornar a provar",
+    "go_home": "Anar a l'inici"
 }

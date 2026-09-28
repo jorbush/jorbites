@@ -39,7 +39,15 @@ export async function generateMetadata(props: {
     params: Promise<IParams>;
 }): Promise<Metadata> {
     const params = await props.params;
-    const recipe = await getRecipeById(params);
+
+    let recipe;
+    try {
+        recipe = await getRecipeById(params);
+    } catch {
+        return {
+            title: 'Receta no encontrada | Jorbites',
+        };
+    }
 
     if (!recipe) {
         return {
@@ -77,16 +85,31 @@ export async function generateMetadata(props: {
 const RecipePage = async (props: { params: Promise<IParams> }) => {
     const params = await props.params;
 
-    const [recipe, currentUser, comments] = await Promise.all([
-        getRecipeById(params),
-        getCurrentUser(),
-        getCommentsByRecipeId(params),
-    ]);
+    let recipe, currentUser, comments;
+    try {
+        [recipe, currentUser, comments] = await Promise.all([
+            getRecipeById(params),
+            getCurrentUser(),
+            getCommentsByRecipeId(params),
+        ]);
+    } catch {
+        return (
+            <ClientOnly>
+                <EmptyState
+                    title="Recipe not found"
+                    subtitle="Sorry, we couldn't find this recipe. It may have been removed or the link might be incorrect."
+                />
+            </ClientOnly>
+        );
+    }
 
     if (!recipe) {
         return (
             <ClientOnly>
-                <EmptyState />
+                <EmptyState
+                    title="Recipe not found"
+                    subtitle="Sorry, we couldn't find this recipe. It may have been removed or the link might be incorrect."
+                />
             </ClientOnly>
         );
     }

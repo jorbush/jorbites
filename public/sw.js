@@ -20,7 +20,9 @@ self.addEventListener('notificationclick', function (event) {
   console.log('Notification click received.')
   event.notification.close()
 
-  const relativeUrl = event.notification.data.url || '/'
+  const targetUrl = event.notification.data?.url || '/'
+  const relativeUrl =
+    targetUrl === '/recipes/' || targetUrl === '/recipes' ? '/' : targetUrl
   const absoluteUrl = relativeUrl.startsWith('http')
     ? relativeUrl
     : new URL(relativeUrl, self.location.origin).href
