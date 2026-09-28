@@ -35,7 +35,12 @@ const sendNotification = async ({
         const metadata: Record<string, string> = {};
 
         if (params.userName) metadata.authorName = params.userName;
-        if (params.recipeId) metadata.recipeId = params.recipeId;
+        if (params.recipeId) {
+            metadata.recipeId = params.recipeId;
+            if (type === NotificationType.NEW_RECIPE) {
+                metadata.slug = params.recipeId;
+            }
+        }
         if (params.recipeName) metadata.recipeName = params.recipeName;
         if (params.resetUrl) metadata.resetUrl = params.resetUrl;
         if (params.mentionedUsers)
