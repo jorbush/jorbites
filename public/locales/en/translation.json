@@ -1362,5 +1362,9 @@
     "close": "Close",
     "co_cook_added": "Co-cook added",
     "search_users_tab": "Search Users",
-    "add_co_cook_directly": "Add Co-Cook Directly"
+    "add_co_cook_directly": "Add Co-Cook Directly",
+    "recipe_not_found": "Recipe Not Found",
+    "recipe_not_found_message": "Sorry, we couldn't load this recipe. It may have been removed or the link might be incorrect.",
+    "try_again": "Try Again",
+    "go_home": "Go Home"
 }

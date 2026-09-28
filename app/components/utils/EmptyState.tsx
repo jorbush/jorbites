@@ -54,7 +54,12 @@ const EmptyStateContent: React.FC<EmptyStateProps> = ({
     let displaySubtitle = subtitle;
     let buttonLabel = t('remove_all_filters');
 
-    if (searchQuery && !category) {
+    if (title === 'Recipe not found' || title === 'recipe_not_found') {
+        displayTitle = t('recipe_not_found') || 'Recipe not found';
+        displaySubtitle =
+            t('recipe_not_found_message') ||
+            "Sorry, we couldn't find this recipe. It may have been removed or the link might be incorrect.";
+    } else if (searchQuery && !category) {
         displayTitle = t('no_recipes_found') || 'No recipes found';
         displaySubtitle =
             t('no_search_results_subtitle') ||
