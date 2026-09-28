@@ -28,14 +28,46 @@ self.addEventListener('notificationclick', function (event) {
     : new URL(relativeUrl, self.location.origin).href
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
-      for (let i = 0; i < clientList.length; i++) {
-        const client = clientList[i]
-        if (client.url === absoluteUrl && 'focus' in client) {
-          return client.focus()
+    clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then(function (clientList) {
+        for (let i = 0; i < clientList.length; i++) {
+          const client = clientList[i]
+          if (client.url === absoluteUrl && 'focus' in client) {
+            if ('navigate' in client) {
+              return client
+                .navigate(absoluteUrl)
+                .then(function (c) {
+                  return (c || client).focus()
+                })
+                .catch(function () {
+                  return client.focus()
+                })
+            }
+            return client.focus()
+          }
         }
-      }
-      return clients.openWindow(absoluteUrl)
-    })
+
+        for (let i = 0; i < clientList.length; i++) {
+          const client = clientList[i]
+          if ('focus' in client) {
+            if ('navigate' in client) {
+              return client
+                .navigate(absoluteUrl)
+                .then(function (c) {
+                  return (c || client).focus()
+                })
+                .catch(function () {
+                  return client.focus()
+                })
+            }
+            return client.focus()
+          }
+        }
+
+        if (clients.openWindow) {
+          return clients.openWindow(absoluteUrl)
+        }
+      })
   )
 })
