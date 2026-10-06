@@ -863,6 +863,7 @@
     "start_course": "Start Course",
     "continue_course": "Continue Course",
     "course_completed": "Course Completed",
+    "module_completed": "Module completed!",
     "course_steps": "Course Steps",
     "workflow": "Workflow",
     "voting": "Voting via Google Form",
