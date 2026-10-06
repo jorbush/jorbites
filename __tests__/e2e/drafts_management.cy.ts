@@ -89,8 +89,9 @@ describe('Drafts Management & Multi-Draft E2E', () => {
 
         cy.get('[data-testid="drafts-modal"]').should('be.visible');
         cy.get('[data-testid="drafts-modal-empty-state"]').should('be.visible');
+        cy.get('[data-cy="modal-action-button"]').should('be.visible');
         cy.get('[data-testid="drafts-modal-empty-create-btn"]').should(
-            'be.visible'
+            'not.exist'
         );
     });
 

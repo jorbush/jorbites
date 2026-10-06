@@ -3,7 +3,7 @@
 import React, { useCallback, useState } from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
-import { FiPlus, FiFileText } from 'react-icons/fi';
+import { FiFileText } from 'react-icons/fi';
 import Modal from '@/app/components/modals/Modal';
 import useDraftsModal from '@/app/hooks/useDraftsModal';
 import useDraftInviteModal from '@/app/hooks/useDraftInviteModal';
@@ -171,18 +171,6 @@ const DraftsModal: React.FC<DraftsModalProps> = ({ currentUser }) => {
                             defaultValue: 'Start your first recipe!',
                         })}
                     </p>
-                    <button
-                        type="button"
-                        data-testid="drafts-modal-empty-create-btn"
-                        onClick={handleCreateNewDraft}
-                        disabled={isActionLoading}
-                        className="bg-green-450 mt-6 inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
-                    >
-                        <FiPlus size={18} />
-                        <span>
-                            {t('new_draft', { defaultValue: 'New draft' })}
-                        </span>
-                    </button>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

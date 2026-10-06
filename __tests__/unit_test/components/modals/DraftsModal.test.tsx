@@ -78,9 +78,12 @@ describe('DraftsModal component', () => {
         ).toBeInTheDocument();
         expect(screen.getByText('no_drafts_yet')).toBeInTheDocument();
         expect(screen.getByText('start_first_recipe')).toBeInTheDocument();
+        expect(
+            screen.queryByTestId('drafts-modal-empty-create-btn')
+        ).not.toBeInTheDocument();
     });
 
-    it('creates a new draft and opens recipe modal on empty state create button click', async () => {
+    it('creates a new draft and opens recipe modal on modal action button click', async () => {
         (useSWR as any).mockReturnValue({
             data: [],
             isLoading: false,
@@ -90,7 +93,7 @@ describe('DraftsModal component', () => {
 
         render(<DraftsModal currentUser={mockCurrentUser} />);
 
-        const createBtn = screen.getByTestId('drafts-modal-empty-create-btn');
+        const createBtn = screen.getByTestId('modal-action-button');
         fireEvent.click(createBtn);
 
         await waitFor(() => {
