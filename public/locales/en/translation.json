@@ -1291,7 +1291,7 @@
         "invites_desc3": "Best of all, inviting a co-cook to your solo draft automatically upgrades it into a shared collaborative draft—no manual setup needed.",
         "simulator_title": "Interactive Playground: Draft Box & Invites",
         "simulator_desc": "Try out managing your draft slots, generating invite links, and see what happens when your draft box is full!",
-        "add_draft_btn": "+ Add New Draft",
+        "add_draft_btn": "Add New Draft",
         "delete_draft_btn": "Delete Draft",
         "slots_used": "Draft Slots Used",
         "max_slots_reached": "Maximum 5 solo drafts reached! Delete a draft to create room.",

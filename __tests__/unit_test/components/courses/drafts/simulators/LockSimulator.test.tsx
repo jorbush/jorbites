@@ -6,7 +6,7 @@ import {
     act,
 } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { LockSimulator } from '@/app/courses/drafts/simulators/LockSimulator';
+import { LockSimulator } from '@/app/components/courses/drafts/simulators/LockSimulator';
 import React from 'react';
 import toast from 'react-hot-toast';
 

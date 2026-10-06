@@ -1291,7 +1291,7 @@
         "invites_desc3": "El millor de tot: en convidar un cuiner al teu esborrany individual, es converteix automàticament en un esborrany col·laboratiu compartit.",
         "simulator_title": "Zona Interactiva: Panell d'Esborranys i Invitacions",
         "simulator_desc": "Prova de gestionar els teus espais d'esborranys, generar enllaços d'invitació i descobreix què passa quan s'omple el panell.",
-        "add_draft_btn": "+ Afegir Nou Esborrany",
+        "add_draft_btn": "Afegir Nou Esborrany",
         "delete_draft_btn": "Eliminar Esborrany",
         "slots_used": "Espais d'Esborranys Utilitzats",
         "max_slots_reached": "Límit de 5 esborranys assolit! Elimina'n un per fer espai.",

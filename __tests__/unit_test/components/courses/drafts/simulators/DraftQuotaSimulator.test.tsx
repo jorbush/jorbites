@@ -6,7 +6,7 @@ import {
     act,
 } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { DraftQuotaSimulator } from '@/app/courses/drafts/simulators/DraftQuotaSimulator';
+import { DraftQuotaSimulator } from '@/app/components/courses/drafts/simulators/DraftQuotaSimulator';
 import React from 'react';
 import toast from 'react-hot-toast';
 

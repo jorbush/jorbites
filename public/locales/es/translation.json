@@ -1292,7 +1292,7 @@
         "invites_desc3": "Lo mejor de todo: al invitar a un cocinero a tu borrador individual, este se transforma automáticamente en un borrador colaborativo compartido.",
         "simulator_title": "Zona Interactiva: Panel de Borradores e Invitaciones",
         "simulator_desc": "Prueba a gestionar tus espacios de borradores, generar enlaces de invitación y descubre qué ocurre cuando se llena tu panel.",
-        "add_draft_btn": "+ Añadir Nuevo Borrador",
+        "add_draft_btn": "Añadir Nuevo Borrador",
         "delete_draft_btn": "Eliminar Borrador",
         "slots_used": "Espacios de Borradores Usados",
         "max_slots_reached": "¡Límite de 5 borradores alcanzado! Elimina uno para hacer espacio.",

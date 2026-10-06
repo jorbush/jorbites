@@ -8,7 +8,7 @@ import {
     afterEach,
     type Mock,
 } from 'vitest';
-import DraftsCourseOverview from '@/app/courses/drafts/DraftsCourseOverview';
+import DraftsCourseOverview from '@/app/components/courses/drafts/DraftsCourseOverview';
 import React from 'react';
 
 // Mock react-i18next

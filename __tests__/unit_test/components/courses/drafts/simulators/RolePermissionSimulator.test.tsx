@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { RolePermissionSimulator } from '@/app/courses/drafts/simulators/RolePermissionSimulator';
+import { RolePermissionSimulator } from '@/app/components/courses/drafts/simulators/RolePermissionSimulator';
 import React from 'react';
 import toast from 'react-hot-toast';
 
