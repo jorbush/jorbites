@@ -17,6 +17,7 @@ describe('useAllCoursesProgress', () => {
 
         expect(result.current.progress.contest).toBe(0);
         expect(result.current.progress.basics).toBe(0);
+        expect(result.current.progress.drafts).toBe(0);
     });
 
     it('should initialize with values from localStorage', () => {
@@ -24,6 +25,7 @@ describe('useAllCoursesProgress', () => {
             if (key === 'jorbites_course_contest_manager_progress:v2')
                 return '50';
             if (key === 'jorbites_course_basics_progress:v2') return '100';
+            if (key === 'jorbites_course_drafts_progress:v2') return '75';
             return null;
         });
 
@@ -31,6 +33,7 @@ describe('useAllCoursesProgress', () => {
 
         expect(result.current.progress.contest).toBe(50);
         expect(result.current.progress.basics).toBe(100);
+        expect(result.current.progress.drafts).toBe(75);
         expect(result.current.progress.lists).toBe(0);
     });
 

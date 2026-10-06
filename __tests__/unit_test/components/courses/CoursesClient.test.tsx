@@ -61,5 +61,10 @@ describe('<CoursesClient />', () => {
         expect(
             durations.some((d) => d.textContent === 'duration_hours_2')
         ).toBe(true);
+
+        const titles = screen.getAllByTestId('card-title');
+        expect(titles.some((t) => t.textContent === 'course_drafts')).toBe(
+            true
+        );
     });
 });
