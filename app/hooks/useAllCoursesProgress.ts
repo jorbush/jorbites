@@ -12,6 +12,7 @@ interface CoursesProgressState {
     recipeBook: number;
     mealPlanner: number;
     basics: number;
+    drafts: number;
 }
 
 type Action = { type: 'REFRESH' };
@@ -26,6 +27,7 @@ const STORAGE_KEYS = {
     recipeBook: 'jorbites_course_recipe_book_progress:v2',
     mealPlanner: 'jorbites_course_meal_planner_progress:v2',
     basics: 'jorbites_course_basics_progress:v2',
+    drafts: 'jorbites_course_drafts_progress:v2',
 } as const;
 
 const getProgressFromStorage = (key: string): number => {
@@ -44,6 +46,7 @@ const getInitialState = (): CoursesProgressState => ({
     recipeBook: getProgressFromStorage(STORAGE_KEYS.recipeBook),
     mealPlanner: getProgressFromStorage(STORAGE_KEYS.mealPlanner),
     basics: getProgressFromStorage(STORAGE_KEYS.basics),
+    drafts: getProgressFromStorage(STORAGE_KEYS.drafts),
 });
 
 function coursesProgressReducer(

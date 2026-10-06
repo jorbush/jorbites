@@ -2,12 +2,14 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export function useCourseProgress(
     modulesKey: string,
     progressKey: string,
     allStepIds: string[]
 ) {
+    const { t } = useTranslation();
     const [completedModules, setCompletedModules] = useState<
         Record<string, boolean>
     >(() => {
@@ -43,9 +45,9 @@ export function useCourseProgress(
 
             const updated = { ...completedRef.current, [id]: true };
             persistModules(updated);
-            toast.success('Module completed!');
+            toast.success(t('module_completed') || 'Module completed!');
         },
-        [persistModules]
+        [persistModules, t]
     );
 
     const isTestPassed = !!completedModules['test'];

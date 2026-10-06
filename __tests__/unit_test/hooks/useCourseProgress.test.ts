@@ -9,6 +9,13 @@ vi.mock('react-hot-toast', () => ({
     },
 }));
 
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key: string) =>
+            key === 'module_completed' ? 'Module completed!' : key,
+    }),
+}));
+
 describe('useCourseProgress', () => {
     const modulesKey = 'test_modules_key';
     const progressKey = 'test_progress_key';

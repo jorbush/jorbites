@@ -135,6 +135,17 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         slug="contest-manager"
                         badgeSrc="/badges/contest_manager_badge.webp"
                     />
+
+                    {/* 9. Recipe Drafts & Collaboration */}
+                    <CertificateCard
+                        id="drafts"
+                        title={t('course_drafts')}
+                        description={t('course_drafts_desc')}
+                        duration={t('duration_hours', { count: 2 })}
+                        progress={progress.drafts}
+                        slug="drafts"
+                        badgeSrc="/badges/drafts_badge.webp"
+                    />
                 </div>
             </div>
         </Container>
