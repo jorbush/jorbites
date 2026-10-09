@@ -18,6 +18,7 @@ Welcome to the Jorbites documentation! This directory contains comprehensive doc
 - **[Redis Soft-Locking in Recipe Collaboration](redis_lock_recipes_collaboration.md)** - Step-level soft-locking mechanics, atomic Lua scripts, and Redis architecture
 - **[Quest Fulfillment Badges Workflow](quest_badges_workflow.md)** - System design, Mermaid sequence diagrams, and microservice communication for quest badges
 - **[Automated Top Recipe Voting](top_recipe_voting.md)** - System design and implementation details for the in-app voting system
+- **[Course Certificates & Verification](course_certificates.md)** - DB-backed source of truth, public verification pages, and LinkedIn integration
 - **[Image Optimization](image_optimization.md)** - Custom image proxy implementation and optimization techniques
 - **[Rate Limiting](rate_limit.md)** - Security implementation with Upstash Redis
 

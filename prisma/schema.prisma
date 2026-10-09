@@ -39,6 +39,7 @@ model User {
   pushSubscriptions   PushSubscription[]
   lists               List[]
   plannings           Planning[]
+  certificates        Certificate[]
 }
 
 type NotificationPreferences {
@@ -257,4 +258,23 @@ model RecipeVoteSession {
   closedAt    DateTime?
 
   @@unique([category, periodKey])
+}
+
+model Certificate {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  certId      String   @unique
+  userId      String   @db.ObjectId
+  courseId    String
+  courseTitle String
+  userName    String
+  badgeUrl    String?
+  issuedAt    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
 }

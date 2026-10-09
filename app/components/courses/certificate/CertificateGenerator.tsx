@@ -1,14 +1,17 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiCheck } from 'react-icons/fi';
 import dynamic from 'next/dynamic';
 import { useForm, FieldValues } from 'react-hook-form';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 import Button from '@/app/components/buttons/Button';
 import Input from '@/app/components/inputs/Input';
 import { formatDate } from '@/app/utils/date-utils';
+import { SafeCertificate } from '@/app/types';
 
 // Load CertificateDownloadSection dynamically. Since it statically imports
 // @react-pdf/renderer, that entire heavy library is successfully split
@@ -29,6 +32,8 @@ interface CertificateGeneratorProps {
     courseTitle: string;
     currentUserNames?: string | null;
     badgePath?: string;
+    courseId?: string;
+    initialCertificate?: SafeCertificate | null;
 }
 
 interface CertificateLabels {
@@ -44,13 +49,21 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
     courseTitle,
     currentUserNames,
     badgePath,
+    courseId,
+    initialCertificate,
 }) => {
     const { t, i18n } = useTranslation();
+    const [certificate, setCertificate] = useState<SafeCertificate | null>(
+        initialCertificate ?? null
+    );
     const [customName, setCustomName] = useState<string | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
-    const name = customName ?? currentUserNames ?? '';
-    const submitted = Boolean(customName || currentUserNames) && !isEditing;
+    const name = customName ?? certificate?.userName ?? currentUserNames ?? '';
+    const submitted =
+        Boolean(customName || certificate?.userName || currentUserNames) &&
+        !isEditing;
 
     const {
         register,
@@ -66,29 +79,114 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
 
     const watchName = watch('certificateName');
 
-    const today = useMemo(() => new Date(), []);
-    const dateString = formatDate(today, i18n.language);
+    // Keep form value in sync if name updates from DB
+    useEffect(() => {
+        if (certificate?.userName && !customName) {
+            setValue('certificateName', certificate.userName);
+        }
+    }, [certificate, customName, setValue]);
 
-    const issueYear = today.getFullYear().toString();
-    const issueMonth = (today.getMonth() + 1).toString();
+    // Fetch or save certificate when courseId is available
+    useEffect(() => {
+        if (!courseId) return;
 
-    // Unique certificate ID generator
-    const certId = React.useMemo(() => {
-        const hash = Math.random().toString(36).substring(2, 8).toUpperCase();
-        return `JRBT-${issueYear}-${hash}`;
-    }, [issueYear]);
+        if (initialCertificate) {
+            setCertificate(initialCertificate);
+            return;
+        }
 
-    const linkedInUrl = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(
-        courseTitle
-    )}&organizationName=Jorbites&issueYear=${issueYear}&issueMonth=${issueMonth}&certUrl=${encodeURIComponent(
-        'https://jorbites.com/courses'
-    )}&certId=${certId}`;
+        let isMounted = true;
+        axios
+            .get(`/api/certificates?courseId=${encodeURIComponent(courseId)}`)
+            .then((res) => {
+                if (isMounted && res.data && res.data.length > 0) {
+                    setCertificate(res.data[0]);
+                } else if (isMounted && currentUserNames && submitted) {
+                    axios
+                        .post('/api/certificates', {
+                            courseId,
+                            userName: currentUserNames,
+                        })
+                        .then((createRes) => {
+                            if (isMounted) setCertificate(createRes.data);
+                        })
+                        .catch((err) => {
+                            console.error(
+                                'Error auto-issuing certificate:',
+                                err
+                            );
+                        });
+                }
+            })
+            .catch((err) => {
+                console.error('Error fetching certificate:', err);
+            });
 
-    const handleConfirmName = (data: FieldValues) => {
+        return () => {
+            isMounted = false;
+        };
+    }, [courseId, initialCertificate, currentUserNames, submitted]);
+
+    const issueDate = useMemo(() => {
+        return certificate?.issuedAt
+            ? new Date(certificate.issuedAt)
+            : new Date();
+    }, [certificate]);
+
+    const dateString = formatDate(issueDate, i18n.language);
+    const issueYear = issueDate.getFullYear().toString();
+    const issueMonth = (issueDate.getMonth() + 1).toString();
+
+    const publicCertUrl = useMemo(() => {
+        if (!certificate?.certId) return undefined;
+        if (typeof window === 'undefined') {
+            return `https://jorbites.com/certificates/${certificate.certId}`;
+        }
+        return `${window.location.origin}/certificates/${certificate.certId}`;
+    }, [certificate?.certId]);
+
+    const linkedInUrl = useMemo(() => {
+        if (!certificate?.certId || !publicCertUrl) return undefined;
+        return `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(
+            courseTitle
+        )}&organizationName=Jorbites&issueYear=${issueYear}&issueMonth=${issueMonth}&certUrl=${encodeURIComponent(
+            publicCertUrl
+        )}&certId=${certificate.certId}`;
+    }, [
+        certificate?.certId,
+        publicCertUrl,
+        courseTitle,
+        issueYear,
+        issueMonth,
+    ]);
+
+    const handleConfirmName = async (data: FieldValues) => {
         const finalName = data.certificateName.trim();
-        if (finalName) {
-            setCustomName(finalName);
-            setIsEditing(false);
+        if (!finalName) return;
+
+        setIsSaving(true);
+        setCustomName(finalName);
+        setIsEditing(false);
+
+        if (courseId) {
+            try {
+                const res = await axios.post('/api/certificates', {
+                    courseId,
+                    userName: finalName,
+                });
+                setCertificate(res.data);
+                toast.success(
+                    t('certificate_saved') || 'Certificate issued successfully!'
+                );
+            } catch (err: any) {
+                console.error('Error saving certificate:', err);
+                toast.error(
+                    t('error_saving_certificate') ||
+                        'Failed to issue certificate. Please try again.'
+                );
+            } finally {
+                setIsSaving(false);
+            }
         }
     };
 
@@ -113,7 +211,7 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
         undefined
     );
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!badgePath || typeof window === 'undefined') return;
         const absoluteUrl = `${window.location.origin}${badgePath}`;
 
@@ -193,7 +291,7 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
                                     'contest_manager_course_details.confirm'
                                 )}
                                 type="submit"
-                                disabled={!watchName?.trim()}
+                                disabled={!watchName?.trim() || isSaving}
                                 className="py-5"
                             />
                         </div>
@@ -225,18 +323,29 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
                         </div>
                     </div>
 
-                    <CertificateDownloadSection
-                        name={name}
-                        dateString={dateString}
-                        certId={certId}
-                        absoluteBadgeUrl={pngBadgeUrl || absoluteBadgeUrl}
-                        logoUrl={logoUrl}
-                        labels={labels}
-                        courseTitle={courseTitle}
-                        downloadLabel={t('download_certificate')}
-                        linkedInUrl={linkedInUrl}
-                        shareLinkedInLabel={t('share_linkedin')}
-                    />
+                    {!certificate ? (
+                        <div className="flex h-12 w-full items-center justify-center text-sm font-semibold text-neutral-500">
+                            {t('issuing_certificate') || 'Issuing certificate…'}
+                        </div>
+                    ) : (
+                        <CertificateDownloadSection
+                            name={name}
+                            dateString={dateString}
+                            certId={certificate.certId}
+                            absoluteBadgeUrl={pngBadgeUrl || absoluteBadgeUrl}
+                            logoUrl={logoUrl}
+                            labels={labels}
+                            courseTitle={courseTitle}
+                            downloadLabel={t('download_certificate')}
+                            linkedInUrl={linkedInUrl}
+                            shareLinkedInLabel={t('share_linkedin')}
+                            publicCertUrl={publicCertUrl}
+                            viewCertificateLabel={
+                                t('view_public_certificate') ||
+                                'View Certificate'
+                            }
+                        />
+                    )}
                 </div>
             )}
         </div>

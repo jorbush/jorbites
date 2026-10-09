@@ -10,7 +10,7 @@ import {
     FiHelpCircle,
     FiCalendar,
 } from 'react-icons/fi';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 
 import CourseTest from '@/app/components/courses/core/CourseTest';
 import CourseLayout from '@/app/components/courses/core/CourseLayout';
@@ -25,6 +25,7 @@ import CommunityEventsOverview from './CommunityEventsOverview';
 
 interface CommunityEventsClientProps {
     currentUser?: SafeUser | null;
+    initialCertificate?: SafeCertificate | null;
 }
 
 type StepId =
@@ -41,6 +42,7 @@ const PROGRESS_KEY = 'jorbites_course_community_events_progress:v2';
 
 const CommunityEventsClient: React.FC<CommunityEventsClientProps> = ({
     currentUser,
+    initialCertificate,
 }) => {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
@@ -61,7 +63,12 @@ const CommunityEventsClient: React.FC<CommunityEventsClientProps> = ({
     );
 
     const { completedModules, markModuleCompleted, isTestPassed } =
-        useCourseProgress(MODULES_KEY, PROGRESS_KEY, allStepIds);
+        useCourseProgress(
+            MODULES_KEY,
+            PROGRESS_KEY,
+            allStepIds,
+            Boolean(initialCertificate)
+        );
 
     // Steps list configuration
     const steps = [
@@ -259,6 +266,8 @@ const CommunityEventsClient: React.FC<CommunityEventsClientProps> = ({
                             courseTitle="Community Events Certificate"
                             currentUserNames={currentUser?.name}
                             badgePath="/badges/community_events_badge.jpg"
+                            courseId="community-events"
+                            initialCertificate={initialCertificate}
                         />
                     )}
                 </div>

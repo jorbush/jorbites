@@ -1,4 +1,5 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import getUserCertificates from '@/app/actions/getUserCertificates';
 import CoursesClient from './CoursesClient';
 import { Metadata } from 'next';
 
@@ -9,8 +10,16 @@ export const metadata: Metadata = {
 
 const CoursesPage = async () => {
     const currentUser = await getCurrentUser();
+    const certificates = currentUser
+        ? await getUserCertificates(currentUser.id)
+        : [];
 
-    return <CoursesClient currentUser={currentUser} />;
+    return (
+        <CoursesClient
+            currentUser={currentUser}
+            certificates={certificates}
+        />
+    );
 };
 
 export default CoursesPage;

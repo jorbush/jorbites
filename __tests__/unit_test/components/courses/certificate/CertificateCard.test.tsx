@@ -92,4 +92,20 @@ describe('<CertificateCard />', () => {
 
         expect(mockPush).toHaveBeenCalledWith('/courses/jorbites-basics');
     });
+
+    it('renders view certificate button and navigates to certificate page when completed with certificateId', () => {
+        render(
+            <CertificateCard
+                {...defaultProps}
+                progress={100}
+                certificateId="JRBT-2026-TEST01"
+            />
+        );
+
+        const viewCertBtn = screen.getByText('view_certificate');
+        expect(viewCertBtn).toBeDefined();
+
+        fireEvent.click(viewCertBtn);
+        expect(mockPush).toHaveBeenCalledWith('/certificates/JRBT-2026-TEST01');
+    });
 });

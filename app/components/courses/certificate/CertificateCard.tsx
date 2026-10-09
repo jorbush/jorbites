@@ -16,6 +16,7 @@ interface CertificateCardProps {
     slug: string;
     badgeSrc?: string;
     comingSoon?: boolean;
+    certificateId?: string;
 }
 
 const CertificateCard: React.FC<CertificateCardProps> = ({
@@ -26,6 +27,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
     slug,
     badgeSrc,
     comingSoon = false,
+    certificateId,
 }) => {
     const { t } = useTranslation();
     const { push } = useRouter();
@@ -112,7 +114,24 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                             </div>
                         )}
 
-                        <div className="flex justify-end">
+                        <div className="flex flex-wrap items-center justify-end gap-2">
+                            {isCompleted && certificateId && (
+                                <div className="w-fit">
+                                    <Button
+                                        label={
+                                            t('view_certificate') ||
+                                            'View Certificate'
+                                        }
+                                        onClick={() =>
+                                            push(
+                                                `/certificates/${certificateId}`
+                                            )
+                                        }
+                                        small
+                                        dataCy={`view-certificate-${slug}`}
+                                    />
+                                </div>
+                            )}
                             <div className="w-fit">
                                 <Button
                                     label={

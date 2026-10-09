@@ -2,7 +2,7 @@
 
 import React, { useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 import CourseTest from '@/app/components/courses/core/CourseTest';
 import CourseCompleted from '@/app/components/courses/steps/CourseCompleted';
 import CourseLayout from '@/app/components/courses/core/CourseLayout';
@@ -462,10 +462,12 @@ const ContactModule: React.FC<ContactModuleProps> = ({
 
 interface ContestManagerClientProps {
     currentUser?: SafeUser | null;
+    initialCertificate?: SafeCertificate | null;
 }
 
 const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
     currentUser,
+    initialCertificate,
 }) => {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
@@ -483,7 +485,12 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
     );
 
     const { completedModules, markModuleCompleted, isTestPassed } =
-        useCourseProgress(MODULES_KEY, PROGRESS_KEY, allStepIds);
+        useCourseProgress(
+            MODULES_KEY,
+            PROGRESS_KEY,
+            allStepIds,
+            Boolean(initialCertificate)
+        );
 
     const {
         activeModuleId,
@@ -669,6 +676,8 @@ const ContestManagerClient: React.FC<ContestManagerClientProps> = ({
                             courseTitle="Contest Manager Certificate"
                             currentUserNames={currentUser?.name}
                             badgePath="/badges/contest_manager_badge.webp"
+                            courseId="contest-manager"
+                            initialCertificate={initialCertificate}
                         />
                     )}
                 </div>

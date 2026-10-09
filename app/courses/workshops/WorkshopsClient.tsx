@@ -10,7 +10,7 @@ import {
     FiLock,
 } from 'react-icons/fi';
 import { FcConferenceCall } from 'react-icons/fc';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 
 import CourseTest from '@/app/components/courses/core/CourseTest';
 import CourseLayout from '@/app/components/courses/core/CourseLayout';
@@ -25,6 +25,7 @@ import WorkshopsOverview from './WorkshopsOverview';
 
 interface WorkshopsClientProps {
     currentUser?: SafeUser | null;
+    initialCertificate?: SafeCertificate | null;
 }
 
 type StepId = 'requirements' | 'workflow' | 'whitelist' | 'approvals' | 'test';
@@ -32,7 +33,10 @@ type StepId = 'requirements' | 'workflow' | 'whitelist' | 'approvals' | 'test';
 const MODULES_KEY = 'jorbites_course_workshops_modules:v2';
 const PROGRESS_KEY = 'jorbites_course_workshops_progress:v2';
 
-const WorkshopsClient: React.FC<WorkshopsClientProps> = ({ currentUser }) => {
+const WorkshopsClient: React.FC<WorkshopsClientProps> = ({
+    currentUser,
+    initialCertificate,
+}) => {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
 
@@ -44,7 +48,12 @@ const WorkshopsClient: React.FC<WorkshopsClientProps> = ({ currentUser }) => {
     );
 
     const { completedModules, markModuleCompleted, isTestPassed } =
-        useCourseProgress(MODULES_KEY, PROGRESS_KEY, allStepIds);
+        useCourseProgress(
+            MODULES_KEY,
+            PROGRESS_KEY,
+            allStepIds,
+            Boolean(initialCertificate)
+        );
 
     const steps = [
         {
@@ -184,6 +193,8 @@ const WorkshopsClient: React.FC<WorkshopsClientProps> = ({ currentUser }) => {
                             courseTitle="Workshops & Classes Certificate"
                             currentUserNames={currentUser?.name}
                             badgePath="/badges/community_events_badge.jpg"
+                            courseId="workshops"
+                            initialCertificate={initialCertificate}
                         />
                     )}
                 </div>
