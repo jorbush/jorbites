@@ -1,4 +1,5 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import getCertificateByUserAndCourse from '@/app/actions/getCertificateByUserAndCourse';
 import RecipeListsClient from './RecipeListsClient';
 import { Metadata } from 'next';
 
@@ -10,8 +11,16 @@ export const metadata: Metadata = {
 
 const RecipeListsPage = async () => {
     const currentUser = await getCurrentUser();
+    const initialCertificate = currentUser
+        ? await getCertificateByUserAndCourse(currentUser.id, 'recipe-lists')
+        : null;
 
-    return <RecipeListsClient currentUser={currentUser} />;
+    return (
+        <RecipeListsClient
+            currentUser={currentUser}
+            initialCertificate={initialCertificate}
+        />
+    );
 };
 
 export default RecipeListsPage;

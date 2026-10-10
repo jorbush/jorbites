@@ -10,7 +10,7 @@ import {
     FiList,
 } from 'react-icons/fi';
 import { FcFolder } from 'react-icons/fc';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 
 import CourseTest from '@/app/components/courses/core/CourseTest';
 import CourseLayout from '@/app/components/courses/core/CourseLayout';
@@ -25,6 +25,7 @@ import RecipeBookOverview from './RecipeBookOverview';
 
 interface RecipeBookClientProps {
     currentUser?: SafeUser | null;
+    initialCertificate?: SafeCertificate | null;
 }
 
 type StepId = 'requirements' | 'workflow' | 'styles' | 'selection' | 'test';
@@ -32,7 +33,10 @@ type StepId = 'requirements' | 'workflow' | 'styles' | 'selection' | 'test';
 const MODULES_KEY = 'jorbites_course_recipe_book_modules:v2';
 const PROGRESS_KEY = 'jorbites_course_recipe_book_progress:v2';
 
-const RecipeBookClient: React.FC<RecipeBookClientProps> = ({ currentUser }) => {
+const RecipeBookClient: React.FC<RecipeBookClientProps> = ({
+    currentUser,
+    initialCertificate,
+}) => {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
 
@@ -44,7 +48,12 @@ const RecipeBookClient: React.FC<RecipeBookClientProps> = ({ currentUser }) => {
     );
 
     const { completedModules, markModuleCompleted, isTestPassed } =
-        useCourseProgress(MODULES_KEY, PROGRESS_KEY, allStepIds);
+        useCourseProgress(
+            MODULES_KEY,
+            PROGRESS_KEY,
+            allStepIds,
+            Boolean(initialCertificate)
+        );
 
     const steps = [
         {
@@ -188,6 +197,8 @@ const RecipeBookClient: React.FC<RecipeBookClientProps> = ({ currentUser }) => {
                             courseTitle="Recipe Book Builder Certificate"
                             currentUserNames={currentUser?.name}
                             badgePath="/badges/recipe_lists_badge_1783155223621.jpg"
+                            courseId="recipe-book-builder"
+                            initialCertificate={initialCertificate}
                         />
                     )}
                 </div>

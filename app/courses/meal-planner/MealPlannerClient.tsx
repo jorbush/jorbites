@@ -10,7 +10,7 @@ import {
     FiDownload,
 } from 'react-icons/fi';
 import { FcPlanner } from 'react-icons/fc';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 
 import CourseTest from '@/app/components/courses/core/CourseTest';
 import CourseLayout from '@/app/components/courses/core/CourseLayout';
@@ -25,6 +25,7 @@ import MealPlannerOverview from './MealPlannerOverview';
 
 interface MealPlannerClientProps {
     currentUser?: SafeUser | null;
+    initialCertificate?: SafeCertificate | null;
 }
 
 type StepId = 'requirements' | 'workflow' | 'slots' | 'exports' | 'test';
@@ -34,6 +35,7 @@ const PROGRESS_KEY = 'jorbites_course_meal_planner_progress:v2';
 
 const MealPlannerClient: React.FC<MealPlannerClientProps> = ({
     currentUser,
+    initialCertificate,
 }) => {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
@@ -46,7 +48,12 @@ const MealPlannerClient: React.FC<MealPlannerClientProps> = ({
     );
 
     const { completedModules, markModuleCompleted, isTestPassed } =
-        useCourseProgress(MODULES_KEY, PROGRESS_KEY, allStepIds);
+        useCourseProgress(
+            MODULES_KEY,
+            PROGRESS_KEY,
+            allStepIds,
+            Boolean(initialCertificate)
+        );
 
     const steps = [
         {
@@ -186,6 +193,8 @@ const MealPlannerClient: React.FC<MealPlannerClientProps> = ({
                             courseTitle="Meal Planner Certificate"
                             currentUserNames={currentUser?.name}
                             badgePath="/badges/recipe_lists_badge_1783155223621.jpg"
+                            courseId="meal-planner"
+                            initialCertificate={initialCertificate}
                         />
                     )}
                 </div>

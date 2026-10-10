@@ -1,4 +1,5 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import getCertificateByUserAndCourse from '@/app/actions/getCertificateByUserAndCourse';
 import JorbitesBasicsClient from './JorbitesBasicsClient';
 import { Metadata } from 'next';
 
@@ -10,8 +11,16 @@ export const metadata: Metadata = {
 
 const JorbitesBasicsPage = async () => {
     const currentUser = await getCurrentUser();
+    const initialCertificate = currentUser
+        ? await getCertificateByUserAndCourse(currentUser.id, 'jorbites-basics')
+        : null;
 
-    return <JorbitesBasicsClient currentUser={currentUser} />;
+    return (
+        <JorbitesBasicsClient
+            currentUser={currentUser}
+            initialCertificate={initialCertificate}
+        />
+    );
 };
 
 export default JorbitesBasicsPage;
