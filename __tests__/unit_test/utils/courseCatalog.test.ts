@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import {
     isValidCourseId,
     getCourseCatalogEntry,
-    COURSE_CATALOG,
     VALID_COURSE_IDS,
 } from '@/app/utils/courseCatalog';
 

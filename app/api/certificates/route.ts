@@ -118,6 +118,18 @@ export async function POST(request: Request) {
         const courseTitle = catalogEntry.title;
         const badgeUrl = catalogEntry.badgeUrl;
 
+        // Helper to check for unique certId collision (P2002) using Set for constant time lookup
+        const isCertIdCollision = (error: unknown): boolean => {
+            if (!error || typeof error !== 'object') return false;
+            const err = error as { code?: string; meta?: { target?: unknown } };
+            if (err.code !== 'P2002') return false;
+            const target = err.meta?.target;
+            if (Array.isArray(target)) {
+                return new Set(target).has('certId');
+            }
+            return typeof target === 'string' && target.includes('certId');
+        };
+
         // Retry loop for upsert in case of unique certId collision
         let certificate = null;
         let attempts = 0;
@@ -156,11 +168,7 @@ export async function POST(request: Request) {
                 });
             } catch (upsertError: any) {
                 // If collision on unique certId (P2002), retry with new generatedCertId
-                if (
-                    upsertError.code === 'P2002' &&
-                    upsertError.meta?.target?.includes('certId') &&
-                    attempts < maxAttempts
-                ) {
+                if (isCertIdCollision(upsertError) && attempts < maxAttempts) {
                     continue;
                 }
                 throw upsertError;

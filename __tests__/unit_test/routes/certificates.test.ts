@@ -109,6 +109,7 @@ describe('Certificates API Routes (/api/certificates)', () => {
             const data = await res.json();
 
             expect(res.status).toBe(200);
+            expect(data).toHaveLength(1);
             expect(prisma.certificate.findMany).toHaveBeenCalledWith({
                 where: {
                     userId: 'user-123',

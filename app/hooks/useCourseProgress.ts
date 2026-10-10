@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
@@ -25,16 +25,18 @@ export function useCourseProgress(
         return parsed;
     });
 
-    const completedRef = useRef(completedModules);
-    useEffect(() => {
-        completedRef.current = completedModules;
-    }, [completedModules]);
+    const effectiveCompletedModules = useMemo(
+        () =>
+            initialCompleted
+                ? { ...completedModules, test: true }
+                : completedModules,
+        [completedModules, initialCompleted]
+    );
 
+    const completedRef = useRef(effectiveCompletedModules);
     useEffect(() => {
-        if (initialCompleted && !completedRef.current['test']) {
-            setCompletedModules((prev) => ({ ...prev, test: true }));
-        }
-    }, [initialCompleted]);
+        completedRef.current = effectiveCompletedModules;
+    }, [effectiveCompletedModules]);
 
     const persistModules = useCallback(
         (updated: Record<string, boolean>) => {
@@ -63,10 +65,11 @@ export function useCourseProgress(
         [persistModules, t]
     );
 
-    const isTestPassed = !!completedModules['test'] || !!initialCompleted;
+    const isTestPassed =
+        Boolean(effectiveCompletedModules['test']) || Boolean(initialCompleted);
 
     return {
-        completedModules,
+        completedModules: effectiveCompletedModules,
         markModuleCompleted,
         isTestPassed,
     };

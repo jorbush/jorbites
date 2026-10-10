@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiCheck } from 'react-icons/fi';
 import dynamic from 'next/dynamic';
@@ -87,7 +87,7 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
     }, [certificate, customName, setValue]);
 
     // Fetch or save certificate when courseId is available
-    useEffect(() => {
+    const syncCertificate = useCallback(async () => {
         if (!courseId) return;
 
         if (initialCertificate) {
@@ -95,37 +95,27 @@ const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
             return;
         }
 
-        let isMounted = true;
-        axios
-            .get(`/api/certificates?courseId=${encodeURIComponent(courseId)}`)
-            .then((res) => {
-                if (isMounted && res.data && res.data.length > 0) {
-                    setCertificate(res.data[0]);
-                } else if (isMounted && currentUserNames && submitted) {
-                    axios
-                        .post('/api/certificates', {
-                            courseId,
-                            userName: currentUserNames,
-                        })
-                        .then((createRes) => {
-                            if (isMounted) setCertificate(createRes.data);
-                        })
-                        .catch((err) => {
-                            console.error(
-                                'Error auto-issuing certificate:',
-                                err
-                            );
-                        });
-                }
-            })
-            .catch((err) => {
-                console.error('Error fetching certificate:', err);
-            });
-
-        return () => {
-            isMounted = false;
-        };
+        try {
+            const res = await axios.get(
+                `/api/certificates?courseId=${encodeURIComponent(courseId)}`
+            );
+            if (res.data && res.data.length > 0) {
+                setCertificate(res.data[0]);
+            } else if (currentUserNames && submitted) {
+                const createRes = await axios.post('/api/certificates', {
+                    courseId,
+                    userName: currentUserNames,
+                });
+                setCertificate(createRes.data);
+            }
+        } catch (err) {
+            console.error('Error fetching or auto-issuing certificate:', err);
+        }
     }, [courseId, initialCertificate, currentUserNames, submitted]);
+
+    useEffect(() => {
+        syncCertificate();
+    }, [syncCertificate]);
 
     const issueDate = useMemo(() => {
         return certificate?.issuedAt

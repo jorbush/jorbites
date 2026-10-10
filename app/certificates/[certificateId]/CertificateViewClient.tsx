@@ -4,18 +4,11 @@ import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import {
-    FiCheckCircle,
-    FiLinkedin,
-    FiCopy,
-    FiArrowLeft,
-    FiAward,
-} from 'react-icons/fi';
+import { FiCheckCircle, FiCopy, FiArrowLeft } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import dynamic from 'next/dynamic';
 
 import Container from '@/app/components/utils/Container';
-import Button from '@/app/components/buttons/Button';
 import { SafeCertificate } from '@/app/types';
 import { formatDate } from '@/app/utils/date-utils';
 
@@ -134,6 +127,7 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
                                 src="/images/logo-nobg.png"
                                 alt="Jorbites"
                                 fill
+                                sizes="80px"
                                 className="object-contain"
                                 priority
                             />
@@ -169,6 +163,7 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
                                     src={certificate.badgeUrl}
                                     alt={certificate.courseTitle}
                                     fill
+                                    sizes="(max-width: 640px) 96px, 112px"
                                     className="object-cover"
                                 />
                             </div>
