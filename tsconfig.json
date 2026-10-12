@@ -41,6 +41,8 @@
     "node_modules",
     "__tests__",
     "cypress",
-    "cypress.config.ts"
+    "cypress.config.ts",
+    "events-repo",
+    "events-cms-auth"
   ]
 }

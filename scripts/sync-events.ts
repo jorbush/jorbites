@@ -28,15 +28,16 @@ function mirrorDirectory(src: string, dest: string) {
     if (!fs.existsSync(src)) return;
     fs.mkdirSync(dest, { recursive: true });
 
-    const srcFiles = new Set(
-        fs.readdirSync(src).filter((f) => f !== '.DS_Store')
-    );
+    const srcFilesList = fs
+        .readdirSync(src)
+        .filter((f) => f !== '.DS_Store');
+    const srcFilesSet = new Set(srcFilesList);
 
     // Delete files in dest that are no longer in src
     if (fs.existsSync(dest)) {
         for (const destChild of fs.readdirSync(dest)) {
             if (destChild === '.DS_Store') continue;
-            if (!srcFiles.has(destChild)) {
+            if (!srcFilesSet.has(destChild)) {
                 const target = path.join(dest, destChild);
                 fs.rmSync(target, { recursive: true, force: true });
             }
@@ -44,7 +45,7 @@ function mirrorDirectory(src: string, dest: string) {
     }
 
     // Copy from src to dest
-    for (const child of srcFiles) {
+    for (const child of srcFilesList) {
         const srcChild = path.join(src, child);
         const destChild = path.join(dest, child);
         const stats = fs.statSync(srcChild);
