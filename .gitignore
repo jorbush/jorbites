@@ -52,3 +52,8 @@ dump.rdb
 dev_server.log
 localhost.pem
 localhost-key.pem
+
+# Events sync & local staging
+events-repo/
+events-cms-auth/
+.events-cache/

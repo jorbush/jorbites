@@ -1,5 +1,5 @@
 ---
-title: ♻️🍲 Leftover Magic: Zero Waste Cooking 🥖✨
+title: "♻️🍲 Leftover Magic: Zero Waste Cooking 🥖✨"
 date: 2026-10-12
 endDate: 2026-11-12T23:59:59
 image: /images/events/leftover_recipes.webp
