@@ -3,8 +3,10 @@
     "version": "3.4.3",
     "private": true,
     "scripts": {
+        "predev": "npx tsx scripts/sync-events.ts",
         "dev": "next dev --turbopack",
-        "build": "next build",
+        "prebuild": "npx tsx scripts/sync-events.ts",
+        "build": "npx tsx scripts/sync-events.ts && next build",
         "start": "next start",
         "format": "prettier --write 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
         "check-format": "prettier --check 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
@@ -13,6 +15,7 @@
         "backfill-quests": "npx tsx prisma/backfill-quests.ts",
         "backfill-split-recipes": "npx tsx prisma/backfill-split-recipe-fields.ts",
         "seed:e2e": "npx tsx prisma/seed-e2e.ts",
+        "sync:events": "npx tsx scripts/sync-events.ts",
         "cypress:open": "cypress open",
         "cypress": "cypress run"
     },

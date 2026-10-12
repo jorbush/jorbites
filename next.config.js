@@ -1,3 +1,21 @@
+const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+// Ensure events content & badges are synced before Next.js builds
+try {
+    const eventsDir = path.join(process.cwd(), 'app/content/events');
+    const challengesFile = path.join(eventsDir, 'weekly-challenges.json');
+    if (!process.env._EVENTS_SYNCED && (!fs.existsSync(challengesFile) || process.env.VERCEL)) {
+        process.env._EVENTS_SYNCED = 'true';
+        console.log('🔄 [next.config.js] Syncing events content & badges...');
+        execSync('npx tsx scripts/sync-events.ts', { stdio: 'inherit' });
+    }
+} catch (err) {
+    console.error('❌ [next.config.js] Failed to run sync-events:', err.message);
+    throw err;
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
