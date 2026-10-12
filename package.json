@@ -6,7 +6,7 @@
         "predev": "npx tsx scripts/sync-events.ts",
         "dev": "next dev --turbopack",
         "prebuild": "npx tsx scripts/sync-events.ts",
-        "build": "next build",
+        "build": "npx tsx scripts/sync-events.ts && next build",
         "start": "next start",
         "format": "prettier --write 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
         "check-format": "prettier --check 'app/**/*.{ts,tsx}' 'pages/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
