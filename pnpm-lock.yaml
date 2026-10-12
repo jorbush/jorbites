@@ -97,8 +97,8 @@ importers:
         specifier: ^7.0.2
         version: 7.2.2
       i18next-http-backend:
-        specifier: ^3.0.5
-        version: 3.0.5
+        specifier: ^4.0.2
+        version: 4.0.2
       ioredis:
         specifier: ^5.4.1
         version: 5.6.0
@@ -528,6 +528,10 @@ packages:
 
   '@babel/runtime@7.27.0':
     resolution: {integrity: sha512-VtPOkrdPHZsKc/clNqyi9WUA8TINkZ4cGk63UUE3u4pmB2k+ZMQRDuIOagv8UVd6j7k0T3+RRIb7beKTebNbcw==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.29.10':
+    resolution: {integrity: sha512-NpugTzbKgGrNe45Ui32cN8vCFFMxVtP/9rtfwv0nP5FRDAjvYBxJcLVpYA9mr1jxP6cnIT7x9LUzuDTbWYYNRA==}
     engines: {node: '>=6.9.0'}
 
   '@babel/runtime@7.29.2':
@@ -2555,9 +2559,6 @@ packages:
   create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
 
-  cross-fetch@4.1.0:
-    resolution: {integrity: sha512-uKm5PU+MHTootlWEY+mZ4vvXoCn4fLQxT9dSc1sXVMSFkINTJVN8cAQROpwcKm8bJ/c7rgZVIBWzH5T78sNZZw==}
-
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
@@ -3298,8 +3299,9 @@ packages:
   i18next-browser-languagedetector@7.2.2:
     resolution: {integrity: sha512-6b7r75uIJDWCcCflmbof+sJ94k9UQO4X0YR62oUfqGI/GjCLVzlCwu8TFdRZIqVLzWbzNcmkmhfqKEr4TLz4HQ==}
 
-  i18next-http-backend@3.0.5:
-    resolution: {integrity: sha512-QaWHnsxieEDcqKe+vo/RFqpiIFRi/KBqlOSPcUlvinBaISCeiTRCbtrazHAjtHtsLC66oDsROAH8frWkQzfMMQ==}
+  i18next-http-backend@4.0.2:
+    resolution: {integrity: sha512-oay62dIB2kL7+WHzoUXBjWfL3+mwijD3pQkQkIEaRLhy6kjXxUhrRenV0gInwlCASAaJaDy94+XvYizK+cAGdA==}
+    engines: {node: '>=18'}
 
   i18next@22.5.1:
     resolution: {integrity: sha512-8TGPgM3pAD+VRsMtUMNknRz3kzqwp/gPALrWMsDnmC1mKqJwpWyooQRLMcbTwq8z8YwSmuj+ZYvc+xCuEpkssA==}
@@ -4230,15 +4232,6 @@ packages:
     resolution: {integrity: sha512-/bRZty2mXUIFY/xU5HLvveNHlswNJej+RnxBjOMkidWfwZzgTbPG1E3K5TOxRLOR+5hX7bSofy8yf1hZevMS8A==}
     engines: {node: ^18 || ^20 || >= 21}
 
-  node-fetch@2.7.0:
-    resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
-    engines: {node: 4.x || >=6.0.0}
-    peerDependencies:
-      encoding: ^0.1.0
-    peerDependenciesMeta:
-      encoding:
-        optional: true
-
   node-gyp-build@4.8.4:
     resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
     hasBin: true
@@ -5126,9 +5119,6 @@ packages:
     resolution: {integrity: sha512-FVDYdxtnj0G6Qm/DhNPSb8Ju59ULcup3tuJxkFb5K8Bv2pUXILbf0xZWU8PX8Ov19OXljbUyveOFwRMwkXzO+A==}
     engines: {node: '>=16'}
 
-  tr46@0.0.3:
-    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
-
   tr46@5.1.0:
     resolution: {integrity: sha512-IUWnUK7ADYR5Sl1fZlO1INDUhVhatWl7BtJWsIhwJ0UAK7ilzzIa8uIqOO/aYVWHZPJkKbEL+362wrzoeRF7bw==}
     engines: {node: '>=18'}
@@ -5469,9 +5459,6 @@ packages:
   web-vitals@4.2.4:
     resolution: {integrity: sha512-r4DIlprAGwJ7YM11VZp4R884m0Vmgr6EAKe3P+kO0PPj3Unqyvv59rczf6UiGcb9Z8QxZVcqKNwv/g0WNdWwsw==}
 
-  webidl-conversions@3.0.1:
-    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
-
   webidl-conversions@7.0.0:
     resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
     engines: {node: '>=12'}
@@ -5488,9 +5475,6 @@ packages:
   whatwg-url@14.2.0:
     resolution: {integrity: sha512-De72GdQZzNTUBBChsXueQUnPKDkg/5A5zp7pFDuQAj5UFoENpiACU0wlCvzpAGnTkj++ihpKwKyYewn/XNUbKw==}
     engines: {node: '>=18'}
-
-  whatwg-url@5.0.0:
-    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
 
   which-boxed-primitive@1.1.1:
     resolution: {integrity: sha512-TbX3mj8n0odCBFVlY8AxkqcHASw3L60jIuF8jFP78az3C2YhmGvqbHBpAjTRH2/xqYunrJ9g1jSyjCjpoWzIAA==}
@@ -6040,6 +6024,8 @@ snapshots:
   '@babel/runtime@7.27.0':
     dependencies:
       regenerator-runtime: 0.14.1
+
+  '@babel/runtime@7.29.10': {}
 
   '@babel/runtime@7.29.2': {}
 
@@ -7141,7 +7127,7 @@ snapshots:
   '@testing-library/dom@10.4.0':
     dependencies:
       '@babel/code-frame': 7.29.7
-      '@babel/runtime': 7.29.7
+      '@babel/runtime': 7.29.10
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       chalk: 4.1.2
@@ -7993,12 +7979,6 @@ snapshots:
       - ts-node
 
   create-require@1.1.1: {}
-
-  cross-fetch@4.1.0:
-    dependencies:
-      node-fetch: 2.7.0
-    transitivePeerDependencies:
-      - encoding
 
   cross-spawn@7.0.6:
     dependencies:
@@ -8978,11 +8958,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.27.0
 
-  i18next-http-backend@3.0.5:
-    dependencies:
-      cross-fetch: 4.1.0
-    transitivePeerDependencies:
-      - encoding
+  i18next-http-backend@4.0.2: {}
 
   i18next@22.5.1:
     dependencies:
@@ -10330,10 +10306,6 @@ snapshots:
 
   node-addon-api@8.5.0: {}
 
-  node-fetch@2.7.0:
-    dependencies:
-      whatwg-url: 5.0.0
-
   node-gyp-build@4.8.4: {}
 
   node-int64@0.4.0: {}
@@ -11254,8 +11226,6 @@ snapshots:
     dependencies:
       tldts: 6.1.85
 
-  tr46@0.0.3: {}
-
   tr46@5.1.0:
     dependencies:
       punycode: 2.3.1
@@ -11587,8 +11557,6 @@ snapshots:
 
   web-vitals@4.2.4: {}
 
-  webidl-conversions@3.0.1: {}
-
   webidl-conversions@7.0.0: {}
 
   whatwg-encoding@3.1.1:
@@ -11601,11 +11569,6 @@ snapshots:
     dependencies:
       tr46: 5.1.0
       webidl-conversions: 7.0.0
-
-  whatwg-url@5.0.0:
-    dependencies:
-      tr46: 0.0.3
-      webidl-conversions: 3.0.1
 
   which-boxed-primitive@1.1.1:
     dependencies:
