@@ -31,6 +31,9 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
+      - name: Sync Events Content & Badges
+        run: pnpm run sync:events
+
       - name: Run unit tests (API Routes & Server Actions)
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
