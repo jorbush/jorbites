@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FcDocument } from 'react-icons/fc';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 
 import CourseLayout from '@/app/components/courses/core/CourseLayout';
 import { useCourseProgress } from '@/app/hooks/useCourseProgress';
@@ -18,6 +18,7 @@ import DraftsStepContent from '@/app/components/courses/drafts/steps/DraftsStepC
 
 interface DraftsCourseClientProps {
     currentUser?: SafeUser | null;
+    initialCertificate?: SafeCertificate | null;
 }
 
 const MODULES_KEY = 'jorbites_course_drafts_modules:v2';
@@ -25,6 +26,7 @@ const PROGRESS_KEY = 'jorbites_course_drafts_progress:v2';
 
 const DraftsCourseClient: React.FC<DraftsCourseClientProps> = ({
     currentUser,
+    initialCertificate,
 }) => {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
@@ -33,7 +35,12 @@ const DraftsCourseClient: React.FC<DraftsCourseClientProps> = ({
     const allStepIds = useMemo(() => [...DRAFTS_STEP_IDS], []);
 
     const { completedModules, markModuleCompleted, isTestPassed } =
-        useCourseProgress(MODULES_KEY, PROGRESS_KEY, allStepIds);
+        useCourseProgress(
+            MODULES_KEY,
+            PROGRESS_KEY,
+            allStepIds,
+            Boolean(initialCertificate)
+        );
 
     const steps = useDraftsSteps(completedModules, isTestPassed);
 
@@ -60,6 +67,7 @@ const DraftsCourseClient: React.FC<DraftsCourseClientProps> = ({
                 setActiveStep={setActiveStep}
                 isTestPassed={isTestPassed}
                 currentUser={currentUser}
+                initialCertificate={initialCertificate}
             />
         </CourseLayout>
     );

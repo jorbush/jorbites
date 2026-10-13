@@ -11,7 +11,7 @@ import {
     FiSmartphone,
 } from 'react-icons/fi';
 import { FcDiploma1 } from 'react-icons/fc';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 
 import CourseTest from '@/app/components/courses/core/CourseTest';
 import CourseLayout from '@/app/components/courses/core/CourseLayout';
@@ -26,6 +26,7 @@ import JorbitesBasicsOverview from './JorbitesBasicsOverview';
 
 interface JorbitesBasicsClientProps {
     currentUser?: SafeUser | null;
+    initialCertificate?: SafeCertificate | null;
 }
 
 type StepId =
@@ -41,6 +42,7 @@ const PROGRESS_KEY = 'jorbites_course_basics_progress:v2';
 
 const JorbitesBasicsClient: React.FC<JorbitesBasicsClientProps> = ({
     currentUser,
+    initialCertificate,
 }) => {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
@@ -60,7 +62,12 @@ const JorbitesBasicsClient: React.FC<JorbitesBasicsClientProps> = ({
     );
 
     const { completedModules, markModuleCompleted, isTestPassed } =
-        useCourseProgress(MODULES_KEY, PROGRESS_KEY, allStepIds);
+        useCourseProgress(
+            MODULES_KEY,
+            PROGRESS_KEY,
+            allStepIds,
+            Boolean(initialCertificate)
+        );
 
     const steps = [
         {
@@ -233,6 +240,8 @@ const JorbitesBasicsClient: React.FC<JorbitesBasicsClientProps> = ({
                             courseTitle="Jorbites Basics Certificate"
                             currentUserNames={currentUser?.name}
                             badgePath="/badges/recipe_lists_badge_1783155223621.jpg"
+                            courseId="jorbites-basics"
+                            initialCertificate={initialCertificate}
                         />
                     )}
                 </div>

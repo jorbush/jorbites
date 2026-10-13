@@ -59,7 +59,7 @@ describe('<CertificateCard />', () => {
         expect(screen.getByText('continue_course')).toBeDefined();
     });
 
-    it('shows completed state when progress is 100%', () => {
+    it('shows completed state when progress is 100% without completed tag', () => {
         render(
             <CertificateCard
                 {...defaultProps}
@@ -67,7 +67,7 @@ describe('<CertificateCard />', () => {
             />
         );
 
-        expect(screen.getByText('Completed')).toBeDefined();
+        expect(screen.queryByText('Completed')).toBeNull();
         expect(screen.getByText('course_completed')).toBeDefined();
     });
 
@@ -91,5 +91,21 @@ describe('<CertificateCard />', () => {
         fireEvent.click(button);
 
         expect(mockPush).toHaveBeenCalledWith('/courses/jorbites-basics');
+    });
+
+    it('renders view certificate button and navigates to certificate page when completed with certificateId', () => {
+        render(
+            <CertificateCard
+                {...defaultProps}
+                progress={100}
+                certificateId="JRBT-2026-TEST01"
+            />
+        );
+
+        const viewCertBtn = screen.getByText('view_certificate');
+        expect(viewCertBtn).toBeDefined();
+
+        fireEvent.click(viewCertBtn);
+        expect(mockPush).toHaveBeenCalledWith('/certificates/JRBT-2026-TEST01');
     });
 });

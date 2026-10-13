@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 import DraftsCourseOverview from '../DraftsCourseOverview';
 import DraftsWorkflowStep from './DraftsWorkflowStep';
 import DraftsInvitesStep from './DraftsInvitesStep';
@@ -18,6 +18,7 @@ interface DraftsStepContentProps {
     setActiveStep: (step: StepId) => void;
     isTestPassed: boolean;
     currentUser?: SafeUser | null;
+    initialCertificate?: SafeCertificate | null;
 }
 
 export const DraftsStepContent: React.FC<DraftsStepContentProps> = ({
@@ -27,6 +28,7 @@ export const DraftsStepContent: React.FC<DraftsStepContentProps> = ({
     setActiveStep,
     isTestPassed,
     currentUser,
+    initialCertificate,
 }) => {
     switch (activeStep) {
         case 'requirements':
@@ -87,6 +89,7 @@ export const DraftsStepContent: React.FC<DraftsStepContentProps> = ({
                 <DraftsTestStep
                     isTestPassed={isTestPassed}
                     currentUser={currentUser}
+                    initialCertificate={initialCertificate}
                     onPass={() => markModuleCompleted('test')}
                 />
             );

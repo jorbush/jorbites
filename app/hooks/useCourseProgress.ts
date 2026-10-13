@@ -1,27 +1,42 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 export function useCourseProgress(
     modulesKey: string,
     progressKey: string,
-    allStepIds: string[]
+    allStepIds: string[],
+    initialCompleted?: boolean
 ) {
     const { t } = useTranslation();
     const [completedModules, setCompletedModules] = useState<
         Record<string, boolean>
     >(() => {
-        if (typeof window === 'undefined') return {};
+        if (typeof window === 'undefined') {
+            return initialCompleted ? { test: true } : {};
+        }
         const stored = localStorage.getItem(modulesKey);
-        return stored ? JSON.parse(stored) : {};
+        const parsed = stored ? JSON.parse(stored) : {};
+        if (initialCompleted) {
+            parsed['test'] = true;
+        }
+        return parsed;
     });
 
-    const completedRef = useRef(completedModules);
+    const effectiveCompletedModules = useMemo(
+        () =>
+            initialCompleted
+                ? { ...completedModules, test: true }
+                : completedModules,
+        [completedModules, initialCompleted]
+    );
+
+    const completedRef = useRef(effectiveCompletedModules);
     useEffect(() => {
-        completedRef.current = completedModules;
-    }, [completedModules]);
+        completedRef.current = effectiveCompletedModules;
+    }, [effectiveCompletedModules]);
 
     const persistModules = useCallback(
         (updated: Record<string, boolean>) => {
@@ -50,10 +65,11 @@ export function useCourseProgress(
         [persistModules, t]
     );
 
-    const isTestPassed = !!completedModules['test'];
+    const isTestPassed =
+        Boolean(effectiveCompletedModules['test']) || Boolean(initialCompleted);
 
     return {
-        completedModules,
+        completedModules: effectiveCompletedModules,
         markModuleCompleted,
         isTestPassed,
     };

@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiCheck, FiAward, FiBookOpen, FiLink, FiClock } from 'react-icons/fi';
 import { FcTodoList } from 'react-icons/fc';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 
 import CourseTest from '@/app/components/courses/core/CourseTest';
 import CourseLayout from '@/app/components/courses/core/CourseLayout';
@@ -19,6 +19,7 @@ import QuestsOverview from './QuestsOverview';
 
 interface QuestsClientProps {
     currentUser?: SafeUser | null;
+    initialCertificate?: SafeCertificate | null;
 }
 
 type StepId = 'requirements' | 'workflow' | 'linking' | 'statuses' | 'test';
@@ -26,7 +27,10 @@ type StepId = 'requirements' | 'workflow' | 'linking' | 'statuses' | 'test';
 const MODULES_KEY = 'jorbites_course_quests_modules:v2';
 const PROGRESS_KEY = 'jorbites_course_quests_progress:v2';
 
-const QuestsClient: React.FC<QuestsClientProps> = ({ currentUser }) => {
+const QuestsClient: React.FC<QuestsClientProps> = ({
+    currentUser,
+    initialCertificate,
+}) => {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
 
@@ -38,7 +42,12 @@ const QuestsClient: React.FC<QuestsClientProps> = ({ currentUser }) => {
     );
 
     const { completedModules, markModuleCompleted, isTestPassed } =
-        useCourseProgress(MODULES_KEY, PROGRESS_KEY, allStepIds);
+        useCourseProgress(
+            MODULES_KEY,
+            PROGRESS_KEY,
+            allStepIds,
+            Boolean(initialCertificate)
+        );
 
     const steps = [
         {
@@ -178,6 +187,8 @@ const QuestsClient: React.FC<QuestsClientProps> = ({ currentUser }) => {
                             courseTitle="Recipe Quests Certificate"
                             currentUserNames={currentUser?.name}
                             badgePath="/badges/community_events_badge.jpg"
+                            courseId="quests"
+                            initialCertificate={initialCertificate}
                         />
                     )}
                 </div>

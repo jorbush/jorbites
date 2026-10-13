@@ -21,8 +21,10 @@ interface CertificateDownloadSectionProps {
     labels: CertificateLabels;
     courseTitle: string;
     downloadLabel: string;
-    linkedInUrl: string;
+    linkedInUrl?: string;
     shareLinkedInLabel: string;
+    publicCertUrl?: string;
+    viewCertificateLabel?: string;
 }
 
 type ReactPdfModule = typeof import('@react-pdf/renderer');
@@ -38,6 +40,8 @@ const CertificateDownloadSection: React.FC<CertificateDownloadSectionProps> = ({
     downloadLabel,
     linkedInUrl,
     shareLinkedInLabel,
+    publicCertUrl,
+    viewCertificateLabel,
 }) => {
     const [pdfModule, setPdfModule] = useState<ReactPdfModule | null>(null);
 
@@ -211,6 +215,8 @@ const CertificateDownloadSection: React.FC<CertificateDownloadSectionProps> = ({
             downloadLabel={downloadLabel}
             linkedInUrl={linkedInUrl}
             shareLinkedInLabel={shareLinkedInLabel}
+            publicCertUrl={publicCertUrl}
+            viewCertificateLabel={viewCertificateLabel}
         />
     );
 };

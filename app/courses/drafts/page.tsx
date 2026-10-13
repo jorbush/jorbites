@@ -1,4 +1,5 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import getCertificateByUserAndCourse from '@/app/actions/getCertificateByUserAndCourse';
 import DraftsCourseClient from './DraftsCourseClient';
 import { Metadata } from 'next';
 
@@ -10,8 +11,16 @@ export const metadata: Metadata = {
 
 const DraftsCoursePage = async () => {
     const currentUser = await getCurrentUser();
+    const initialCertificate = currentUser
+        ? await getCertificateByUserAndCourse(currentUser.id, 'drafts')
+        : null;
 
-    return <DraftsCourseClient currentUser={currentUser} />;
+    return (
+        <DraftsCourseClient
+            currentUser={currentUser}
+            initialCertificate={initialCertificate}
+        />
+    );
 };
 
 export default DraftsCoursePage;

@@ -42,6 +42,7 @@ This document provides a comprehensive overview of all features available in Jor
 - **User Levels:** Automatic progression based on activity
 - **Achievement Badges:** Earned through various milestones
 - **Verification System:** Special badge for verified users
+- **Course Certificates & Public Verification:** Verified credentials backed by MongoDB, with unique cert IDs (`JRBT-YYYY-XXXXXXXX`), public verification pages, and one-click LinkedIn certification sharing (see [`course_certificates.md`](./course_certificates.md))
 
 ### Events System ⭐
 

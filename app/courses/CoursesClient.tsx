@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import SectionHeader from '@/app/components/utils/SectionHeader';
 import CertificateCard from '@/app/components/courses/certificate/CertificateCard';
@@ -13,13 +13,23 @@ import { useAllCoursesProgress } from '@/app/hooks/useAllCoursesProgress';
 
 interface CoursesClientProps {
     currentUser?: SafeUser | null;
+    certificates?: SafeCertificate[];
 }
 
 const CoursesClient: React.FC<CoursesClientProps> = ({
     currentUser: _currentUser,
+    certificates,
 }) => {
     const { t } = useTranslation();
-    const { progress } = useAllCoursesProgress();
+    const { progress } = useAllCoursesProgress(certificates);
+
+    const certMap = useMemo(() => {
+        const map = new Map<string, SafeCertificate>();
+        (certificates || []).forEach((cert) => {
+            map.set(cert.courseId, cert);
+        });
+        return map;
+    }, [certificates]);
 
     const isMounted = useIsMounted();
 
@@ -43,9 +53,14 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_jorbites_basics')}
                         description={t('course_jorbites_basics_desc')}
                         duration={t('duration_minutes', { count: 15 })}
-                        progress={progress.basics}
+                        progress={
+                            certMap.has('jorbites-basics')
+                                ? 100
+                                : progress.basics
+                        }
                         slug="jorbites-basics"
                         badgeSrc="/badges/basics_badge.webp"
+                        certificateId={certMap.get('jorbites-basics')?.certId}
                     />
 
                     {/* 2. Recipe Creator */}
@@ -54,9 +69,14 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_recipe_creator')}
                         description={t('course_recipe_creator_desc')}
                         duration={t('duration_minutes', { count: 30 })}
-                        progress={progress.recipeCreator}
+                        progress={
+                            certMap.has('recipe-creator')
+                                ? 100
+                                : progress.recipeCreator
+                        }
                         slug="recipe-creator"
                         badgeSrc="/badges/recipe_creator_badge.webp"
+                        certificateId={certMap.get('recipe-creator')?.certId}
                     />
 
                     {/* 3. Recipe Lists */}
@@ -65,9 +85,12 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_recipe_lists')}
                         description={t('course_recipe_lists_desc')}
                         duration={t('duration_minutes', { count: 30 })}
-                        progress={progress.lists}
+                        progress={
+                            certMap.has('recipe-lists') ? 100 : progress.lists
+                        }
                         slug="recipe-lists"
                         badgeSrc="/badges/recipe_lists_badge.webp"
+                        certificateId={certMap.get('recipe-lists')?.certId}
                     />
 
                     {/* 4. Meal Planner */}
@@ -76,9 +99,14 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_meal_planner')}
                         description={t('course_meal_planner_desc')}
                         duration={t('duration_minutes', { count: 45 })}
-                        progress={progress.mealPlanner}
+                        progress={
+                            certMap.has('meal-planner')
+                                ? 100
+                                : progress.mealPlanner
+                        }
                         slug="meal-planner"
                         badgeSrc="/badges/meal_planner_badge.webp"
+                        certificateId={certMap.get('meal-planner')?.certId}
                     />
 
                     {/* 5. Community Events */}
@@ -87,9 +115,14 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_community_events')}
                         description={t('course_community_events_desc')}
                         duration={t('duration_minutes', { count: 45 })}
-                        progress={progress.events}
+                        progress={
+                            certMap.has('community-events')
+                                ? 100
+                                : progress.events
+                        }
                         slug="community-events"
                         badgeSrc="/badges/community_events_badge.webp"
+                        certificateId={certMap.get('community-events')?.certId}
                     />
 
                     {/* 6. Workshops & Classes */}
@@ -98,9 +131,12 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_workshops')}
                         description={t('course_workshops_desc')}
                         duration={t('duration_hours', { count: 1 })}
-                        progress={progress.workshops}
+                        progress={
+                            certMap.has('workshops') ? 100 : progress.workshops
+                        }
                         slug="workshops"
                         badgeSrc="/badges/workshops_badge.webp"
+                        certificateId={certMap.get('workshops')?.certId}
                     />
 
                     {/* 6b. Recipe Quests */}
@@ -109,9 +145,10 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_quests') || 'Recipe Quests'}
                         description={t('course_quests_desc')}
                         duration={t('duration_minutes', { count: 30 })}
-                        progress={progress.quests}
+                        progress={certMap.has('quests') ? 100 : progress.quests}
                         slug="quests"
                         badgeSrc="/badges/quests_badge.webp"
+                        certificateId={certMap.get('quests')?.certId}
                     />
 
                     {/* 7. Recipe Book Builder */}
@@ -120,9 +157,16 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_recipe_book_builder')}
                         description={t('course_recipe_book_builder_desc')}
                         duration={t('duration_hours', { count: 1 })}
-                        progress={progress.recipeBook}
+                        progress={
+                            certMap.has('recipe-book-builder')
+                                ? 100
+                                : progress.recipeBook
+                        }
                         slug="recipe-book-builder"
                         badgeSrc="/badges/recipe_book_badge.webp"
+                        certificateId={
+                            certMap.get('recipe-book-builder')?.certId
+                        }
                     />
 
                     {/* 8. Contest Manager */}
@@ -131,9 +175,14 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('contest_manager_course')}
                         description={t('contest_manager_description')}
                         duration={t('duration_hours', { count: 2 })}
-                        progress={progress.contest}
+                        progress={
+                            certMap.has('contest-manager')
+                                ? 100
+                                : progress.contest
+                        }
                         slug="contest-manager"
                         badgeSrc="/badges/contest_manager_badge.webp"
+                        certificateId={certMap.get('contest-manager')?.certId}
                     />
 
                     {/* 9. Recipe Drafts & Collaboration */}
@@ -142,9 +191,10 @@ const CoursesClient: React.FC<CoursesClientProps> = ({
                         title={t('course_drafts')}
                         description={t('course_drafts_desc')}
                         duration={t('duration_hours', { count: 2 })}
-                        progress={progress.drafts}
+                        progress={certMap.has('drafts') ? 100 : progress.drafts}
                         slug="drafts"
                         badgeSrc="/badges/drafts_badge.webp"
+                        certificateId={certMap.get('drafts')?.certId}
                     />
                 </div>
             </div>

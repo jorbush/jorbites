@@ -75,4 +75,27 @@ describe('useCourseProgress', () => {
 
         expect(result.current.isTestPassed).toBe(true);
     });
+
+    it('initializes with test step completed when initialCompleted is true', () => {
+        const { result } = renderHook(() =>
+            useCourseProgress(modulesKey, progressKey, allStepIds, true)
+        );
+
+        expect(result.current.isTestPassed).toBe(true);
+        expect(result.current.completedModules['test']).toBe(true);
+    });
+
+    it('merges initialCompleted with existing local storage modules', () => {
+        localStorage.setItem(modulesKey, JSON.stringify({ step1: true }));
+
+        const { result } = renderHook(() =>
+            useCourseProgress(modulesKey, progressKey, allStepIds, true)
+        );
+
+        expect(result.current.completedModules).toEqual({
+            step1: true,
+            test: true,
+        });
+        expect(result.current.isTestPassed).toBe(true);
+    });
 });

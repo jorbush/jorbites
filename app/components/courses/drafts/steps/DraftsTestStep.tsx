@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 import CourseTest from '@/app/components/courses/core/CourseTest';
 import CourseCompleted from '@/app/components/courses/steps/CourseCompleted';
 import { draftsQuestions } from '@/app/courses/drafts/draftsQuestions';
@@ -10,12 +10,14 @@ import { draftsQuestions } from '@/app/courses/drafts/draftsQuestions';
 interface DraftsTestStepProps {
     isTestPassed: boolean;
     currentUser?: SafeUser | null;
+    initialCertificate?: SafeCertificate | null;
     onPass: () => void;
 }
 
 export const DraftsTestStep: React.FC<DraftsTestStepProps> = ({
     isTestPassed,
     currentUser,
+    initialCertificate,
     onPass,
 }) => {
     const { t } = useTranslation();
@@ -48,6 +50,8 @@ export const DraftsTestStep: React.FC<DraftsTestStepProps> = ({
                 }
                 currentUserNames={currentUser?.name}
                 badgePath="/badges/drafts_badge.webp"
+                courseId="drafts"
+                initialCertificate={initialCertificate}
             />
         </div>
     );

@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { FiClock, FiAward, FiCheckCircle } from 'react-icons/fi';
+import { FiClock, FiAward } from 'react-icons/fi';
 import Button from '@/app/components/buttons/Button';
 
 interface CertificateCardProps {
@@ -16,6 +16,7 @@ interface CertificateCardProps {
     slug: string;
     badgeSrc?: string;
     comingSoon?: boolean;
+    certificateId?: string;
 }
 
 const CertificateCard: React.FC<CertificateCardProps> = ({
@@ -26,6 +27,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
     slug,
     badgeSrc,
     comingSoon = false,
+    certificateId,
 }) => {
     const { t } = useTranslation();
     const { push } = useRouter();
@@ -73,17 +75,10 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                                 <FiClock className="size-3.5" />
                                 {duration}
                             </span>
-                            {comingSoon ? (
+                            {comingSoon && (
                                 <span className="dark:bg-neutral-850 inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-semibold text-neutral-600 dark:text-neutral-400">
                                     {t('coming_soon')}
                                 </span>
-                            ) : (
-                                isCompleted && (
-                                    <span className="bg-green-450/20 dark:bg-green-450/10 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold text-green-800 dark:text-green-300">
-                                        <FiCheckCircle className="size-3.5" />
-                                        Completed
-                                    </span>
-                                )
                             )}
                         </div>
 
@@ -112,7 +107,24 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                             </div>
                         )}
 
-                        <div className="flex justify-end">
+                        <div className="flex flex-wrap items-center justify-end gap-2">
+                            {isCompleted && certificateId && (
+                                <div className="w-fit">
+                                    <Button
+                                        label={
+                                            t('view_certificate') ||
+                                            'View Certificate'
+                                        }
+                                        onClick={() =>
+                                            push(
+                                                `/certificates/${certificateId}`
+                                            )
+                                        }
+                                        small
+                                        dataCy={`view-certificate-${slug}`}
+                                    />
+                                </div>
+                            )}
                             <div className="w-fit">
                                 <Button
                                     label={

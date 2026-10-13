@@ -10,7 +10,7 @@ import {
     FiSave,
 } from 'react-icons/fi';
 import { FcSupport } from 'react-icons/fc';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 
 import CourseTest from '@/app/components/courses/core/CourseTest';
 import CourseLayout from '@/app/components/courses/core/CourseLayout';
@@ -25,6 +25,7 @@ import RecipeCreatorOverview from './RecipeCreatorOverview';
 
 interface RecipeCreatorClientProps {
     currentUser?: SafeUser | null;
+    initialCertificate?: SafeCertificate | null;
 }
 
 type StepId = 'requirements' | 'workflow' | 'plaintext' | 'drafts' | 'test';
@@ -34,6 +35,7 @@ const PROGRESS_KEY = 'jorbites_course_recipe_creator_progress:v2';
 
 const RecipeCreatorClient: React.FC<RecipeCreatorClientProps> = ({
     currentUser,
+    initialCertificate,
 }) => {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
@@ -46,7 +48,12 @@ const RecipeCreatorClient: React.FC<RecipeCreatorClientProps> = ({
     );
 
     const { completedModules, markModuleCompleted, isTestPassed } =
-        useCourseProgress(MODULES_KEY, PROGRESS_KEY, allStepIds);
+        useCourseProgress(
+            MODULES_KEY,
+            PROGRESS_KEY,
+            allStepIds,
+            Boolean(initialCertificate)
+        );
 
     const steps = [
         {
@@ -191,6 +198,8 @@ const RecipeCreatorClient: React.FC<RecipeCreatorClientProps> = ({
                             courseTitle="Recipe Creator Certificate"
                             currentUserNames={currentUser?.name}
                             badgePath="/badges/recipe_lists_badge_1783155223621.jpg"
+                            courseId="recipe-creator"
+                            initialCertificate={initialCertificate}
                         />
                     )}
                 </div>

@@ -104,20 +104,22 @@ import CourseWorkflowStep from '@/app/components/courses/CourseWorkflowStep';
 ```
 *Note: The component automatically resolves translation keys for titles and descriptions by combining the prefix with the step index: `${stepPrefix}${index}_title` / `${stepPrefix}${index}_desc`.*
 
-### E. Course Completion Alert (`CourseCompleted`)
-When a user passes the test, show the standard green success box and the printable PDF certificate generator.
+### E. Course Completion & Certification (`CourseCompleted`)
+When a user passes the test, show the standard green success box, printable PDF generator, public verification link, and LinkedIn certification sharing:
 
 ```typescript
 import CourseCompleted from '@/app/components/courses/CourseCompleted';
 
 {isTestPassed && (
     <CourseCompleted
+        courseId="my-course-id"
         courseTitle="My Course Title"
         currentUserNames={currentUser?.name}
         badgePath="/badges/my_course_badge.jpg"
     />
 )}
 ```
+*Note: Always register new courses in `app/utils/courseCatalog.ts` (`COURSE_CATALOG`). The backend uses this whitelist to validate certificate requests, populate authoritative titles/badges, and prevent spoofing.*
 
 ---
 

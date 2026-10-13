@@ -5,16 +5,22 @@ import { useTranslation } from 'react-i18next';
 import { FiAward } from 'react-icons/fi';
 import CertificateGenerator from '../certificate/CertificateGenerator';
 
+import { SafeCertificate } from '@/app/types';
+
 interface CourseCompletedProps {
     courseTitle: string;
     currentUserNames?: string | null;
     badgePath: string;
+    courseId?: string;
+    initialCertificate?: SafeCertificate | null;
 }
 
 const CourseCompleted: React.FC<CourseCompletedProps> = ({
     courseTitle,
     currentUserNames,
     badgePath,
+    courseId,
+    initialCertificate,
 }) => {
     const { t } = useTranslation();
 
@@ -33,6 +39,8 @@ const CourseCompleted: React.FC<CourseCompletedProps> = ({
                 courseTitle={courseTitle}
                 currentUserNames={currentUserNames}
                 badgePath={badgePath}
+                courseId={courseId}
+                initialCertificate={initialCertificate}
             />
         </div>
     );

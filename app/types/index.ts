@@ -9,6 +9,7 @@ import {
     Planning,
     PlanningMeal,
     Quest,
+    Certificate,
 } from '@prisma/client';
 
 export type SafeQuest = Omit<Quest, 'createdAt' | 'updatedAt'> & {
@@ -166,6 +167,22 @@ export type SafePlanning = Omit<Planning, 'createdAt' | 'updatedAt'> & {
     updatedAt: string;
     user?: SafeUser;
     meals?: SafePlanningMeal[];
+};
+
+export type PublicCertificateUser = {
+    id: string;
+    name: string | null;
+    image: string | null;
+};
+
+export type SafeCertificate = Omit<
+    Certificate,
+    'issuedAt' | 'createdAt' | 'updatedAt'
+> & {
+    issuedAt: string;
+    createdAt: string;
+    updatedAt: string;
+    user?: PublicCertificateUser;
 };
 
 export * from './draft';

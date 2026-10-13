@@ -1,7 +1,8 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import CertificateGenerator from '@/app/components/courses/certificate/CertificateGenerator';
 import React from 'react';
+import axios from 'axios';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -11,6 +12,22 @@ vi.mock('react-i18next', () => ({
             language: 'en',
         },
     }),
+}));
+
+// Mock axios
+vi.mock('axios', () => ({
+    default: {
+        get: vi.fn().mockResolvedValue({ data: [] }),
+        post: vi.fn(),
+    },
+}));
+
+// Mock react-hot-toast
+vi.mock('react-hot-toast', () => ({
+    default: {
+        success: vi.fn(),
+        error: vi.fn(),
+    },
 }));
 
 // Mock next/dynamic to render synchronously during test execution
@@ -26,9 +43,14 @@ vi.mock('next/dynamic', () => ({
     },
 }));
 
+beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(axios.get).mockReturnValue(new Promise(() => {}) as any);
+    vi.mocked(axios.post).mockReturnValue(new Promise(() => {}) as any);
+});
+
 afterEach(() => {
     cleanup();
-    vi.clearAllMocks();
 });
 
 describe('<CertificateGenerator />', () => {
@@ -36,6 +58,19 @@ describe('<CertificateGenerator />', () => {
         courseTitle: 'Jorbites Basics',
         currentUserNames: null,
         badgePath: '/badges/basics_badge.webp',
+        courseId: 'jorbites-basics',
+    };
+
+    const mockInitialCert = {
+        id: 'cert-1',
+        certId: 'JRBT-2026-TEST01',
+        userId: 'user-1',
+        courseId: 'jorbites-basics',
+        courseTitle: 'Jorbites Basics',
+        userName: 'Jordi Bonet',
+        issuedAt: '2026-06-01T12:00:00.000Z',
+        createdAt: '2026-06-01T12:00:00.000Z',
+        updatedAt: '2026-06-01T12:00:00.000Z',
     };
 
     it('renders name entry form initially if currentUserNames is not provided', () => {
@@ -63,7 +98,14 @@ describe('<CertificateGenerator />', () => {
         ).toBeDefined();
     });
 
-    it('enables confirm button when name is typed, and submits form to show Download Section', async () => {
+    it('enables confirm button when name is typed, and shows download section on successful save', async () => {
+        vi.mocked(axios.post).mockResolvedValueOnce({
+            data: {
+                ...mockInitialCert,
+                userName: 'Jordi Bonet',
+            },
+        });
+
         render(<CertificateGenerator {...defaultProps} />);
 
         const input = screen.getByLabelText(
@@ -95,8 +137,10 @@ describe('<CertificateGenerator />', () => {
             screen.getByText('contest_manager_course_details.change_name')
         ).toBeDefined();
 
-        // Download Section should render with the confirmed name
-        expect(screen.getByTestId('mock-download-section')).toBeDefined();
+        // Download Section should render once certificate is saved
+        expect(
+            await screen.findByTestId('mock-download-section')
+        ).toBeDefined();
         expect(
             screen.getByText(
                 'MockedDownloadSection: Jordi Bonet | Jorbites Basics'
@@ -104,11 +148,11 @@ describe('<CertificateGenerator />', () => {
         ).toBeDefined();
     });
 
-    it('renders Download Section immediately if currentUserNames is provided', () => {
+    it('renders Download Section immediately if initialCertificate is provided', () => {
         render(
             <CertificateGenerator
                 {...defaultProps}
-                currentUserNames="Jordi Bonet"
+                initialCertificate={mockInitialCert as any}
             />
         );
 
@@ -121,11 +165,24 @@ describe('<CertificateGenerator />', () => {
         expect(screen.getByTestId('mock-download-section')).toBeDefined();
     });
 
-    it('allows changing name from the confirmed state', async () => {
+    it('shows issuing indicator when submitted but certificate is not yet resolved', () => {
         render(
             <CertificateGenerator
                 {...defaultProps}
                 currentUserNames="Jordi Bonet"
+            />
+        );
+
+        // Should show issuing_certificate while awaiting server
+        expect(screen.getByText('issuing_certificate')).toBeDefined();
+        expect(screen.queryByTestId('mock-download-section')).toBeNull();
+    });
+
+    it('allows changing name from the confirmed state', async () => {
+        render(
+            <CertificateGenerator
+                {...defaultProps}
+                initialCertificate={mockInitialCert as any}
             />
         );
 

@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiCheck, FiBookOpen, FiShare2, FiHelpCircle } from 'react-icons/fi';
 import { PiListPlusBold } from 'react-icons/pi';
-import { SafeUser } from '@/app/types';
+import { SafeCertificate, SafeUser } from '@/app/types';
 
 import CourseTest from '@/app/components/courses/core/CourseTest';
 import CourseLayout from '@/app/components/courses/core/CourseLayout';
@@ -19,6 +19,7 @@ import RecipeListsOverview from './RecipeListsOverview';
 
 interface RecipeListsClientProps {
     currentUser?: SafeUser | null;
+    initialCertificate?: SafeCertificate | null;
 }
 
 type StepId = 'overview' | 'creation' | 'sharing' | 'test';
@@ -28,6 +29,7 @@ const PROGRESS_KEY = 'jorbites_course_recipe_lists_progress:v2';
 
 const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
     currentUser,
+    initialCertificate,
 }) => {
     const { t } = useTranslation();
     const isMounted = useIsMounted();
@@ -40,7 +42,12 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
     );
 
     const { completedModules, markModuleCompleted, isTestPassed } =
-        useCourseProgress(MODULES_KEY, PROGRESS_KEY, allStepIds);
+        useCourseProgress(
+            MODULES_KEY,
+            PROGRESS_KEY,
+            allStepIds,
+            Boolean(initialCertificate)
+        );
 
     // Steps list configuration
     const steps = [
@@ -144,6 +151,8 @@ const RecipeListsClient: React.FC<RecipeListsClientProps> = ({
                             courseTitle="Recipe Lists Certificate"
                             currentUserNames={currentUser?.name}
                             badgePath="/badges/recipe_lists_badge.jpg"
+                            courseId="recipe-lists"
+                            initialCertificate={initialCertificate}
                         />
                     )}
                 </div>

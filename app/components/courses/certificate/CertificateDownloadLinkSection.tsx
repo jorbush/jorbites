@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { FiDownload, FiLinkedin } from 'react-icons/fi';
+import { FiDownload, FiLinkedin, FiExternalLink } from 'react-icons/fi';
 
 interface CertificateLabels {
     completion: string;
@@ -105,8 +105,10 @@ interface CertificateDownloadLinkSectionProps {
     labels: CertificateLabels;
     courseTitle: string;
     downloadLabel: string;
-    linkedInUrl: string;
+    linkedInUrl?: string;
     shareLinkedInLabel: string;
+    publicCertUrl?: string;
+    viewCertificateLabel?: string;
 }
 
 const CertificateDownloadLinkSection: React.FC<
@@ -124,6 +126,8 @@ const CertificateDownloadLinkSection: React.FC<
     downloadLabel,
     linkedInUrl,
     shareLinkedInLabel,
+    publicCertUrl,
+    viewCertificateLabel,
 }) => {
     // Memoize the document JSX to satisfy jsx-no-jsx-as-prop.
     const pdfDocument = useMemo(
@@ -168,15 +172,29 @@ const CertificateDownloadLinkSection: React.FC<
                 )}
             </DownloadLink>
 
-            <a
-                href={linkedInUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-6 py-3 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
-            >
-                <FiLinkedin className="size-4 text-[#0A66C2]" />
-                <span>{shareLinkedInLabel}</span>
-            </a>
+            {linkedInUrl && (
+                <a
+                    href={linkedInUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-6 py-3 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                >
+                    <FiLinkedin className="size-4 text-[#0A66C2]" />
+                    <span>{shareLinkedInLabel}</span>
+                </a>
+            )}
+
+            {publicCertUrl && (
+                <a
+                    href={publicCertUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-6 py-3 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                >
+                    <FiExternalLink className="size-4 text-green-600 dark:text-green-400" />
+                    <span>{viewCertificateLabel || 'View Certificate'}</span>
+                </a>
+            )}
         </div>
     );
 };
