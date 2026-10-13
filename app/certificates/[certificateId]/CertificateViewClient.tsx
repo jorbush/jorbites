@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { FiCheckCircle, FiCopy, FiArrowLeft } from 'react-icons/fi';
+import { FiCopy, FiArrowLeft } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import dynamic from 'next/dynamic';
 
@@ -99,7 +99,7 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
         <Container>
             <div className="mx-auto max-w-4xl px-4 py-8 md:py-12">
                 {/* Back Link */}
-                <div className="mb-6 flex items-center justify-between">
+                <div className="mb-6 flex items-center">
                     <Link
                         href="/courses"
                         className="inline-flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
@@ -107,28 +107,27 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
                         <FiArrowLeft className="size-4" />
                         <span>{t('explore_courses') || 'Explore Courses'}</span>
                     </Link>
-
-                    {/* Verification Status Pill */}
-                    <div className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800 dark:bg-green-950/40 dark:text-green-300">
-                        <FiCheckCircle className="size-3.5 text-green-600 dark:text-green-400" />
-                        <span>
-                            {t('verified_certificate') ||
-                                'Verified Certificate'}
-                        </span>
-                    </div>
                 </div>
 
                 {/* Main Certificate Visual Frame */}
-                <div className="relative overflow-hidden rounded-3xl border-8 border-green-100 bg-[#FCFDF9] p-6 shadow-xl sm:p-10 md:p-14 dark:border-green-950/50 dark:bg-neutral-900">
-                    <div className="flex flex-col items-center rounded-2xl border-2 border-green-200/60 p-6 text-center sm:p-8 md:p-12 dark:border-green-900/40">
+                <div className="border-green-450/30 dark:border-green-450/20 relative overflow-hidden rounded-3xl border-8 bg-[#FCFDF9] p-6 shadow-xl sm:p-10 md:p-14 dark:bg-neutral-900">
+                    <div className="border-green-450/60 dark:border-green-450/30 flex flex-col items-center rounded-2xl border-2 p-6 text-center sm:p-8 md:p-12">
                         {/* Jorbites Logo */}
                         <div className="relative mb-3 size-20">
                             <Image
-                                src="/images/logo-nobg.png"
+                                src="/images/logo-nobg.webp"
                                 alt="Jorbites"
                                 fill
                                 sizes="80px"
-                                className="object-contain"
+                                className="object-contain dark:hidden"
+                                priority
+                            />
+                            <Image
+                                src="/images/no_bg_white.webp"
+                                alt="Jorbites"
+                                fill
+                                sizes="80px"
+                                className="hidden object-contain dark:block"
                                 priority
                             />
                         </div>
@@ -137,7 +136,7 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
                             {t('cert_community') || 'Jorbites Community'}
                         </p>
 
-                        <h2 className="mt-2 text-xl font-extrabold tracking-wider text-green-800 uppercase sm:text-2xl md:text-3xl dark:text-green-400">
+                        <h2 className="dark:text-green-450 mt-2 text-xl font-extrabold tracking-wider text-neutral-900 uppercase sm:text-2xl md:text-3xl">
                             {labels.completion}
                         </h2>
 
@@ -150,7 +149,7 @@ const CertificateViewClient: React.FC<CertificateViewClientProps> = ({
                             {certificate.userName}
                         </h1>
 
-                        <div className="my-4 h-0.5 w-24 bg-green-400/50 sm:w-32" />
+                        <div className="bg-green-450 my-4 h-0.5 w-24 sm:w-32" />
 
                         <p className="max-w-xl text-xs text-neutral-600 sm:text-sm md:text-base dark:text-neutral-300">
                             {labels.description}

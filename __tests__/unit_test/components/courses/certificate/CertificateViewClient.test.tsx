@@ -81,7 +81,7 @@ describe('<CertificateViewClient />', () => {
         cleanup();
     });
 
-    it('renders recipient name, certificate ID, course title, and verified status', () => {
+    it('renders recipient name, certificate ID, course title, and back link', () => {
         render(<CertificateViewClient certificate={mockCertificate} />);
 
         expect(screen.getAllByText('Elena Rostova').length).toBeGreaterThan(0);
@@ -91,7 +91,6 @@ describe('<CertificateViewClient />', () => {
         expect(screen.getAllByText(/JRBT-2026-TEST123/).length).toBeGreaterThan(
             0
         );
-        expect(screen.getByText('verified_certificate')).toBeDefined();
         expect(screen.getByText('explore_courses')).toBeDefined();
     });
 
@@ -149,5 +148,43 @@ describe('<CertificateViewClient />', () => {
         expect(href).toContain(
             encodeURIComponent('/certificates/JRBT-2026-TEST123')
         );
+    });
+
+    it('renders both light and dark mode logos with appropriate theme classes', () => {
+        render(<CertificateViewClient certificate={mockCertificate} />);
+
+        const logos = screen.getAllByAltText('Jorbites') as HTMLImageElement[];
+        expect(logos).toHaveLength(2);
+
+        const lightLogo = logos.find((img) => img.src.includes('logo-nobg'));
+        const darkLogo = logos.find((img) => img.src.includes('no_bg_white'));
+
+        expect(lightLogo).toBeDefined();
+        expect(lightLogo?.className).toContain('dark:hidden');
+
+        expect(darkLogo).toBeDefined();
+        expect(darkLogo?.className).toContain('dark:block');
+    });
+
+    it('styles the certificate completion header with green-450 in dark theme', () => {
+        render(<CertificateViewClient certificate={mockCertificate} />);
+
+        const heading = screen.getByRole('heading', { level: 2 });
+        expect(heading.className).toContain('dark:text-green-450');
+    });
+
+    it('uses app green (green-450) for the certificate frame borders and accent divider', () => {
+        const { container } = render(
+            <CertificateViewClient certificate={mockCertificate} />
+        );
+
+        const outerFrame = container.querySelector('.border-8');
+        expect(outerFrame?.className).toContain('border-green-450/30');
+
+        const innerFrame = container.querySelector('.border-2');
+        expect(innerFrame?.className).toContain('border-green-450/60');
+
+        const divider = container.querySelector('.bg-green-450');
+        expect(divider).toBeDefined();
     });
 });
