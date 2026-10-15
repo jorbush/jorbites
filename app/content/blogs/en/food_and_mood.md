@@ -5,7 +5,7 @@ date: 2026-06-07T10:00:00.000Z
 description: What we eat is involved in many processes in our body and brain. Discover the relationship between your diet and your mood.
 ---
 
-![Food and mood](/images/blogs/food_and_mood.png)
+![Food and mood](/images/blogs/food_and_mood.webp)
 
 What we eat is involved in many processes in our body and brain, and I think it is important to know that, although when we think of a good recipe the first things that come to mind are its taste, smell, texture, and appearance, where food really has an impact is also in our brain. Although, of course, we all know that we don't always feel like eating everything or like everything, and eating can become more complicated.
 

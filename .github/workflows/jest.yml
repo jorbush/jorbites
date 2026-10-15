@@ -31,8 +31,8 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Sync Events Content & Badges
-        run: pnpm run sync:events
+      - name: Sync Content & Assets (Events & Blogs)
+        run: pnpm run sync:content
 
       - name: Run unit tests (API Routes & Server Actions)
         env:

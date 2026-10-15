@@ -5,7 +5,7 @@ date: 2026-06-07T10:00:00.000Z
 description: El que mengem està implicat en molts processos del nostre cos, i cervell, i crec que és important saber que tot i que quan nosaltres pensem en una bona recepta, el primer que ens ve al cap és el gust que aquesta podrà tenir.
 ---
 
-![Food and mood](/images/blogs/food_and_mood.png)
+![Food and mood](/images/blogs/food_and_mood.webp)
 
 El que mengem està implicat en molts processos del nostre cos, i cervell, i crec que és important saber que tot i que quan nosaltres pensem en una bona recepta, el primer que ens ve al cap és el gust que aquesta podrà tenir, l’olor, la textura i la pinta. Però on realment influeix el menjar és també en el nostre cervell, tot i que clar, que tots sabem que no sempre tot ens ve de gust o ens agrada, i es fa més complicat menjar.
 

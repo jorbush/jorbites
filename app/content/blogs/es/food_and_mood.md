@@ -5,7 +5,7 @@ date: 2026-06-07T10:00:00.000Z
 description: Lo que comemos está implicado en muchos procesos de nuestro cuerpo y cerebro. Descubre la relación entre tu alimentación y tu estado de ánimo.
 ---
 
-![Food and mood](/images/blogs/food_and_mood.png)
+![Food and mood](/images/blogs/food_and_mood.webp)
 
 Lo que comemos está implicado en muchos procesos de nuestro cuerpo y cerebro, y creo que es importante saber que, aunque cuando pensamos en una buena receta lo primero que nos viene a la cabeza es el sabor que esta podrá tener, el olor, la textura y el aspecto, donde realmente influye la comida es también en nuestro cerebro. Aunque claro, todos sabemos que no siempre todo nos apetece o nos gusta, y se hace más complicado comer.
 
