@@ -11,10 +11,10 @@ interface SyncConfig {
 }
 
 const CONFIG: SyncConfig = {
-    org: process.env.EVENTS_ORG || 'jorbites',
-    repo: process.env.EVENTS_REPO || 'events',
-    branch: process.env.EVENTS_BRANCH || 'main',
-    localOverridePath: process.env.EVENTS_LOCAL_PATH,
+    org: process.env.CONTENT_ORG || process.env.EVENTS_ORG || 'jorbites',
+    repo: process.env.CONTENT_REPO || process.env.EVENTS_REPO || 'content',
+    branch: process.env.CONTENT_BRANCH || process.env.EVENTS_BRANCH || 'main',
+    localOverridePath: process.env.CONTENT_LOCAL_PATH || process.env.EVENTS_LOCAL_PATH,
 };
 
 const APP_CONTENT_DIR = path.resolve(process.cwd(), 'app/content/events');
@@ -83,19 +83,25 @@ function mergeDirectory(src: string, dest: string) {
  * Check if a local candidate directory exists
  */
 function findLocalEventsDir(): string | null {
+    if (process.env.FORCE_REMOTE_SYNC === 'true') {
+        return null;
+    }
     const candidates = [
         CONFIG.localOverridePath,
+        path.resolve(process.cwd(), '../content'),
         path.resolve(process.cwd(), '../events'),
+        path.resolve(process.cwd(), '../jorbites-content'),
         path.resolve(process.cwd(), '../jorbites-events'),
+        path.resolve(process.cwd(), 'content-repo'),
         path.resolve(process.cwd(), 'events-repo'),
+        path.resolve(process.cwd(), 'content'),
         path.resolve(process.cwd(), 'events'),
     ].filter(Boolean) as string[];
 
     for (const dir of candidates) {
         if (
             fs.existsSync(dir) &&
-            fs.existsSync(path.join(dir, 'content')) &&
-            fs.existsSync(path.join(dir, 'images'))
+            (fs.existsSync(path.join(dir, 'content/events')) || fs.existsSync(path.join(dir, 'content')))
         ) {
             return dir;
         }
@@ -176,10 +182,18 @@ export async function syncEvents() {
     const localDir = findLocalEventsDir();
     if (localDir) {
         console.log(`📂 [sync-events] Found local events source at: ${localDir}`);
-        console.log('📦 Mirroring content...');
-        mirrorDirectory(path.join(localDir, 'content'), APP_CONTENT_DIR);
-        console.log('🖼️  Mirroring images...');
-        mirrorDirectory(path.join(localDir, 'images'), APP_IMAGES_DIR);
+        const contentSrc = fs.existsSync(path.join(localDir, 'content/events'))
+            ? path.join(localDir, 'content/events')
+            : path.join(localDir, 'content');
+
+        const imagesSrc = fs.existsSync(path.join(localDir, 'images/events'))
+            ? path.join(localDir, 'images/events')
+            : path.join(localDir, 'images');
+
+        console.log(`📦 Mirroring events content from ${contentSrc}...`);
+        mirrorDirectory(contentSrc, APP_CONTENT_DIR);
+        console.log(`🖼️  Mirroring events images from ${imagesSrc}...`);
+        mirrorDirectory(imagesSrc, APP_IMAGES_DIR);
 
         const localBadges = path.join(localDir, 'badges');
         if (fs.existsSync(localBadges)) {
@@ -205,11 +219,19 @@ export async function syncEvents() {
         }
         await downloadRemoteTarball(tarballUrl, tempDir);
 
-        if (fs.existsSync(path.join(tempDir, 'content'))) {
-            mirrorDirectory(path.join(tempDir, 'content'), APP_CONTENT_DIR);
+        const remoteContentSrc = fs.existsSync(path.join(tempDir, 'content/events'))
+            ? path.join(tempDir, 'content/events')
+            : path.join(tempDir, 'content');
+
+        const remoteImagesSrc = fs.existsSync(path.join(tempDir, 'images/events'))
+            ? path.join(tempDir, 'images/events')
+            : path.join(tempDir, 'images');
+
+        if (fs.existsSync(remoteContentSrc)) {
+            mirrorDirectory(remoteContentSrc, APP_CONTENT_DIR);
         }
-        if (fs.existsSync(path.join(tempDir, 'images'))) {
-            mirrorDirectory(path.join(tempDir, 'images'), APP_IMAGES_DIR);
+        if (fs.existsSync(remoteImagesSrc)) {
+            mirrorDirectory(remoteImagesSrc, APP_IMAGES_DIR);
         }
         if (fs.existsSync(path.join(tempDir, 'badges'))) {
             mergeDirectory(path.join(tempDir, 'badges'), APP_BADGES_DIR);

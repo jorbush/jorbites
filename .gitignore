@@ -53,13 +53,21 @@ dev_server.log
 localhost.pem
 localhost-key.pem
 
-# Events sync & local staging
+# Events & content sync & local staging
 events-repo/
+content-repo/
 events-cms-auth/
+jorbites-cms-auth/
 .events-cache/
+.content-cache/
 
-# Synced from jorbites/events (runtime & build artifacts)
+# Synced from jorbites/content (runtime & build artifacts)
 app/content/events/
 public/images/events/
 public/badges/
-
+app/content/blogs/*/*.md
+!app/content/blogs/*/releases/
+!app/content/blogs/*/releases/**
+public/images/blogs/*.webp
+!public/images/blogs/releases/
+!public/images/blogs/releases/**
