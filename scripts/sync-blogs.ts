@@ -1,5 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import https from 'https';
+import { execSync } from 'child_process';
 
 interface SyncConfig {
     org: string;
@@ -101,6 +103,9 @@ function mirrorBlogImagesDirectory(src: string, dest: string) {
 }
 
 function findLocalContentDir(): string | null {
+    if (process.env.FORCE_REMOTE_SYNC === 'true') {
+        return null;
+    }
     const candidates = [
         CONFIG.localOverridePath,
         path.resolve(process.cwd(), '../content'),
@@ -118,6 +123,70 @@ function findLocalContentDir(): string | null {
         }
     }
     return null;
+}
+
+function downloadRemoteTarball(tarballUrl: string, destDir: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        fs.mkdirSync(destDir, { recursive: true });
+        const tarPath = path.join(destDir, 'content.tar.gz');
+
+        function fetchUrl(url: string, redirects = 0) {
+            if (redirects > 5) {
+                return reject(new Error('Too many redirects while downloading tarball'));
+            }
+
+            https
+                .get(
+                    url,
+                    {
+                        headers: {
+                            'User-Agent': 'Jorbites-Content-Sync',
+                            ...(process.env.GITHUB_TOKEN
+                                ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
+                                : {}),
+                        },
+                    },
+                    (res) => {
+                        if (
+                            res.statusCode &&
+                            res.statusCode >= 300 &&
+                            res.statusCode < 400 &&
+                            res.headers.location
+                        ) {
+                            return fetchUrl(res.headers.location, redirects + 1);
+                        }
+
+                        if (res.statusCode !== 200) {
+                            return reject(
+                                new Error(`Failed to download tarball: HTTP ${res.statusCode}`)
+                            );
+                        }
+
+                        const fileStream = fs.createWriteStream(tarPath);
+                        res.pipe(fileStream);
+
+                        fileStream.on('finish', () => {
+                            fileStream.close(() => {
+                                try {
+                                    execSync(
+                                        `tar -xzf "${tarPath}" -C "${destDir}" --strip-components=1`
+                                    );
+                                    fs.unlinkSync(tarPath);
+                                    resolve();
+                                } catch (err) {
+                                    reject(err);
+                                }
+                            });
+                        });
+                    }
+                )
+                .on('error', (err) => {
+                    reject(err);
+                });
+        }
+
+        fetchUrl(tarballUrl);
+    });
 }
 
 export async function syncBlogs() {
@@ -150,7 +219,36 @@ export async function syncBlogs() {
         return;
     }
 
-    console.log('ℹ️ [sync-blogs] No external blogs source found. Local blogs preserved.\n');
+    // 2. Try remote download from GitHub organization jorbites
+    const tarballUrl = `https://github.com/${CONFIG.org}/${CONFIG.repo}/archive/refs/heads/${CONFIG.branch}.tar.gz`;
+    const tempDir = path.resolve(process.cwd(), '.content-cache');
+
+    console.log(`🌐 [sync-blogs] Fetching from ${CONFIG.org}/${CONFIG.repo}@${CONFIG.branch}...`);
+
+    try {
+        if (fs.existsSync(tempDir)) {
+            fs.rmSync(tempDir, { recursive: true, force: true });
+        }
+        await downloadRemoteTarball(tarballUrl, tempDir);
+
+        const remoteBlogsSrc = path.join(tempDir, 'content/blogs');
+        const remoteImagesSrc = path.join(tempDir, 'images/blogs');
+
+        if (fs.existsSync(remoteBlogsSrc)) {
+            console.log('📝 Mirroring blog posts from remote (preserving releases/)...');
+            mirrorBlogContentDirectory(remoteBlogsSrc, APP_BLOGS_DIR);
+        }
+        if (fs.existsSync(remoteImagesSrc)) {
+            console.log('🖼️  Mirroring blog images from remote (preserving releases/)...');
+            mirrorBlogImagesDirectory(remoteImagesSrc, APP_BLOG_IMAGES_DIR);
+        }
+
+        fs.rmSync(tempDir, { recursive: true, force: true });
+        console.log('✅ [sync-blogs] Remote blog sync completed successfully!\n');
+    } catch (err: any) {
+        console.warn(`⚠️ [sync-blogs] Could not download remote blogs: ${err.message}`);
+        console.log('ℹ️ [sync-blogs] Existing local blog content was preserved. Continuing build.\n');
+    }
 }
 
 if (require.main === module) {

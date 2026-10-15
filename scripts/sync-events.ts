@@ -83,6 +83,9 @@ function mergeDirectory(src: string, dest: string) {
  * Check if a local candidate directory exists
  */
 function findLocalEventsDir(): string | null {
+    if (process.env.FORCE_REMOTE_SYNC === 'true') {
+        return null;
+    }
     const candidates = [
         CONFIG.localOverridePath,
         path.resolve(process.cwd(), '../content'),
