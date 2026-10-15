@@ -1,7 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import https from 'https';
-import { execSync } from 'child_process';
 
 interface SyncConfig {
     org: string;
