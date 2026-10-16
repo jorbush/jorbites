@@ -18,7 +18,7 @@ import { RECIPE_CUISINES } from '@/app/utils/constants';
 import { toSafeRecipe } from '@/app/utils/toSafeRecipe';
 
 export interface IRecipesParams {
-    category?: string;
+    category?: string | string[];
     search?: string;
     page?: number;
     limit?: number;
@@ -87,10 +87,19 @@ export default async function getRecipes(
 
         let query: Prisma.RecipeWhereInput = {};
 
-        if (typeof category === 'string') {
-            query.categories = {
-                has: category,
-            };
+        if (category) {
+            const categoryArray = Array.isArray(category)
+                ? category.filter(Boolean)
+                : category
+                      .split(',')
+                      .map((c) => c.trim())
+                      .filter(Boolean);
+
+            if (categoryArray.length > 0) {
+                query.categories = {
+                    hasSome: categoryArray,
+                };
+            }
         }
 
         if (typeof search === 'string' && search.trim()) {
