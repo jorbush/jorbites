@@ -9,14 +9,11 @@ import useTheme from '@/app/hooks/useTheme';
 import BlogCard, { BlogCardSkeleton } from '@/app/components/blog/BlogCard';
 import ActionCard from '@/app/components/shared/ActionCard';
 import Pagination from '@/app/components/navigation/Pagination';
-import { CONTACT_EMAIL } from '@/app/utils/constants';
+import CmsSubmitButton from '@/app/components/cms/CmsSubmitButton';
+import { CMS_BLOGS_URL } from '@/app/utils/constants';
 import { SafeUser } from '@/app/types';
 import useSWR from 'swr';
 import { fetcher } from '@/app/utils/fetcher';
-
-const handleContactEmail = () => {
-    window.location.href = `mailto:${CONTACT_EMAIL}`;
-};
 
 interface BlogsClientProps {
     currentUser?: SafeUser | null;
@@ -81,7 +78,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
                     {/* Main Content */}
                     <div className="lg:col-span-2">
-                        <div className="mb-8 flex items-center justify-between">
+                        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
                             <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">
                                 {currentCategory === 'releases'
                                     ? t(
@@ -90,16 +87,22 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                       )
                                     : t('latest_stories', 'Latest Stories')}
                             </h2>
-                            {currentCategory === 'releases' && (
-                                <button
-                                    type="button"
-                                    onClick={handleBackToStories}
-                                    className="text-primary-600 hover:text-primary-700 cursor-pointer text-sm font-medium dark:text-white"
-                                >
-                                    &larr;{' '}
-                                    {t('back_to_stories', 'Back to stories')}
-                                </button>
-                            )}
+                            <div className="flex items-center gap-3">
+                                {currentCategory === 'releases' && (
+                                    <button
+                                        type="button"
+                                        onClick={handleBackToStories}
+                                        className="text-primary-600 hover:text-primary-700 cursor-pointer text-sm font-medium dark:text-white"
+                                    >
+                                        &larr;{' '}
+                                        {t(
+                                            'back_to_stories',
+                                            'Back to stories'
+                                        )}
+                                    </button>
+                                )}
+                                <CmsSubmitButton target="blogs" />
+                            </div>
                         </div>
 
                         {loading ? (
@@ -205,16 +208,20 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                             </div>
                         </div>
 
-                        {/* Contribute / Contact */}
-                        {currentUser && (
-                            <ActionCard
-                                title={t('blog_contribute_title')}
-                                subtitle={t('blog_contribute_subtitle')}
-                                buttonText={t('contact_us')}
-                                onClick={handleContactEmail}
-                                variant="secondary"
-                            />
-                        )}
+                        {/* Contribute / CMS */}
+                        <ActionCard
+                            title={t('blog_contribute_title')}
+                            subtitle={t('blog_contribute_subtitle')}
+                            buttonText={t('blog_contribute_button')}
+                            onClick={() =>
+                                window.open(
+                                    CMS_BLOGS_URL,
+                                    '_blank',
+                                    'noopener,noreferrer'
+                                )
+                            }
+                            variant="secondary"
+                        />
                     </div>
                 </div>
             </div>

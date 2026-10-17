@@ -7,7 +7,7 @@ import Image from 'next/image';
 import packageJson from '@/package.json';
 import { FaGithub, FaTwitter, FaInstagram, FaEnvelope } from 'react-icons/fa';
 import { RiGitRepositoryLine } from 'react-icons/ri';
-import { CONTACT_EMAIL } from '@/app/utils/constants';
+import { CONTACT_EMAIL, CMS_URL } from '@/app/utils/constants';
 import FooterMenu from './FooterMenu';
 
 const SOCIAL_LINKS = [
@@ -95,6 +95,14 @@ const Footer = () => {
                         >
                             {t('terms_of_service')}
                         </Link>
+                        <a
+                            href={CMS_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-neutral-500 transition-colors duration-200 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
+                        >
+                            {t('content_cms')}
+                        </a>
                     </nav>
                     <Link
                         href="/"

@@ -85,11 +85,12 @@ describe('<Footer />', () => {
         });
     });
 
-    it('renders the privacy policy, cookies policy, and terms of service links', () => {
+    it('renders the privacy policy, cookies policy, terms of service, and content CMS links', () => {
         render(<Footer />);
         const privacyLink = screen.getByText('privacy_policy');
         const cookiesLink = screen.getByText('cookies_policy');
         const termsLink = screen.getByText('terms_of_service');
+        const cmsLink = screen.getByText('content_cms');
 
         expect(privacyLink).toBeDefined();
         expect(privacyLink.closest('a')?.getAttribute('href')).toBe(
@@ -103,6 +104,11 @@ describe('<Footer />', () => {
         expect(termsLink.closest('a')?.getAttribute('href')).toBe(
             '/policies/terms'
         );
+        expect(cmsLink).toBeDefined();
+        expect(cmsLink.closest('a')?.getAttribute('href')).toBe(
+            'https://jorbites.github.io/content/admin/'
+        );
+        expect(cmsLink.closest('a')?.getAttribute('target')).toBe('_blank');
     });
 
     it('renders the logo and brand name', () => {
@@ -196,6 +202,7 @@ describe('<Footer />', () => {
             expect(screen.getByText('privacy_policy')).toBeDefined();
             expect(screen.getByText('cookies_policy')).toBeDefined();
             expect(screen.getByText('terms_of_service')).toBeDefined();
+            expect(screen.getByText('content_cms')).toBeDefined();
             expect(screen.getByAltText('Jorbites Logo')).toBeDefined();
         });
     });
