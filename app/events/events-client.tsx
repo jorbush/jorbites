@@ -16,6 +16,7 @@ import EventCalendar from '@/app/components/events/EventCalendar';
 import { SafeWeeklyChallenge } from '@/app/types';
 import TopRecipeVoting from '@/app/components/events/TopRecipeVoting';
 import TopRecipeResult from '@/app/components/events/TopRecipeResult';
+import CmsSubmitButton from '@/app/components/cms/CmsSubmitButton';
 
 interface EventsClientProps {
     weeklyChallenge: SafeWeeklyChallenge | null;
@@ -72,6 +73,10 @@ const EventsClient: React.FC<EventsClientProps> = ({ weeklyChallenge }) => {
                     title={`${t('events')}`}
                     description={t('events_description')}
                 />
+
+                <div className="-mt-6 mb-8 flex justify-center">
+                    <CmsSubmitButton target="events" />
+                </div>
 
                 <WeeklyChallenge challenge={weeklyChallenge} />
 

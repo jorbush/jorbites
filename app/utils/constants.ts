@@ -1,5 +1,10 @@
 export const JORBITES_URL = 'https://jorbites.com';
 export const CONTACT_EMAIL = 'jbonetv5@gmail.com';
+export const CMS_URL = 'https://jorbites.github.io/content/admin/';
+export const CMS_EVENTS_URL =
+    'https://jorbites.github.io/content/admin/#/collections/events';
+export const CMS_BLOGS_URL =
+    'https://jorbites.github.io/content/admin/#/collections/blogs';
 
 export const getVapidEmail = () => {
     const rawVapidEmail =
