@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import BlogsClient from './blogs-client';
-import getCurrentUser from '@/app/actions/getCurrentUser';
 import Container from '@/app/components/utils/Container';
 import { BlogCardSkeleton } from '@/app/components/blog/BlogCard';
 
@@ -27,10 +26,7 @@ interface BlogPageProps {
 }
 
 const BlogPage = async ({ searchParams }: BlogPageProps) => {
-    const [currentUser, resolvedParams] = await Promise.all([
-        getCurrentUser(),
-        searchParams,
-    ]);
+    const resolvedParams = await searchParams;
     const page = parseInt(resolvedParams.page || '1');
     const category = resolvedParams.category || 'general';
 
@@ -48,7 +44,6 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
         >
             <ClientOnly>
                 <BlogsClient
-                    currentUser={currentUser}
                     initialPage={page}
                     initialCategory={category}
                 />

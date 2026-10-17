@@ -11,18 +11,15 @@ import ActionCard from '@/app/components/shared/ActionCard';
 import Pagination from '@/app/components/navigation/Pagination';
 import CmsSubmitButton from '@/app/components/cms/CmsSubmitButton';
 import { CMS_BLOGS_URL } from '@/app/utils/constants';
-import { SafeUser } from '@/app/types';
 import useSWR from 'swr';
 import { fetcher } from '@/app/utils/fetcher';
 
 interface BlogsClientProps {
-    currentUser?: SafeUser | null;
     initialPage: number;
     initialCategory?: string;
 }
 
 const BlogsClient: React.FC<BlogsClientProps> = ({
-    currentUser,
     initialPage,
     initialCategory = 'general',
 }) => {
