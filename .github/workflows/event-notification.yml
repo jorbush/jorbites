@@ -21,8 +21,8 @@ jobs:
           echo "Checking for events starting on: $TODAY (Day of Month: $DOM_TODAY)"
           echo "Checking for events ending on: $IN_3_DAYS"
 
-          # Fetch all events (using 'es' as source of truth)
-          response=$(curl -s -f "$JORBITES_URL/api/events?lang=es") || { echo "Failed to fetch events"; exit 1; }
+          # Fetch all events (using 'es' as source of truth, with translations for all supported locales)
+          response=$(curl -s -f "$JORBITES_URL/api/events?lang=es&includeTranslations=true") || { echo "Failed to fetch events"; exit 1; }
 
           # Filter events starting TODAY (or recurrent events for today)
           STARTED_EVENTS=$(echo "$response" | jq --arg date "$TODAY" --arg dom "$DOM_TODAY" -c '
@@ -31,7 +31,18 @@ jobs:
                 (.frontmatter.date != null and (.frontmatter.date | sub("T.*"; "") == $date)) or
                 (.frontmatter.recurrent == true and (.frontmatter.dayOfMonth | tostring) == $dom)
               ) |
-              {type: "NEW_EVENT", eventId: .slug, title: .frontmatter.title}
+              {
+                type: "NEW_EVENT",
+                eventId: .slug,
+                title: .frontmatter.title,
+                title_es: (.titles.es // .frontmatter.title),
+                title_en: (.titles.en // .frontmatter.title),
+                title_ca: (.titles.ca // .frontmatter.title),
+                description: (.frontmatter.description // ""),
+                description_es: (.descriptions.es // .frontmatter.description // ""),
+                description_en: (.descriptions.en // .frontmatter.description // ""),
+                description_ca: (.descriptions.ca // .frontmatter.description // "")
+              }
             ]
           ')
 
@@ -44,7 +55,18 @@ jobs:
                 .frontmatter.recurrent != true and
                 (.frontmatter.date | sub("T.*"; "")) != (.frontmatter.endDate | sub("T.*"; ""))
               ) |
-              {type: "EVENT_ENDING_SOON", eventId: .slug, title: .frontmatter.title}
+              {
+                type: "EVENT_ENDING_SOON",
+                eventId: .slug,
+                title: .frontmatter.title,
+                title_es: (.titles.es // .frontmatter.title),
+                title_en: (.titles.en // .frontmatter.title),
+                title_ca: (.titles.ca // .frontmatter.title),
+                description: (.frontmatter.description // ""),
+                description_es: (.descriptions.es // .frontmatter.description // ""),
+                description_en: (.descriptions.en // .frontmatter.description // ""),
+                description_ca: (.descriptions.ca // .frontmatter.description // "")
+              }
             ]
           ')
 
@@ -72,6 +94,13 @@ jobs:
             type=$(echo "$event" | jq -r '.type')
             eventId=$(echo "$event" | jq -r '.eventId')
             title=$(echo "$event" | jq -r '.title')
+            title_es=$(echo "$event" | jq -r '.title_es // empty')
+            title_en=$(echo "$event" | jq -r '.title_en // empty')
+            title_ca=$(echo "$event" | jq -r '.title_ca // empty')
+            desc=$(echo "$event" | jq -r '.description // empty')
+            desc_es=$(echo "$event" | jq -r '.description_es // empty')
+            desc_en=$(echo "$event" | jq -r '.description_en // empty')
+            desc_ca=$(echo "$event" | jq -r '.description_ca // empty')
 
             echo "Sending $type notification for: $title"
 
@@ -80,7 +109,27 @@ jobs:
               --arg type "$type" \
               --arg eventId "$eventId" \
               --arg title "$title" \
-              '{type: $type, metadata: {eventId: $eventId, title: $title}}')
+              --arg title_es "$title_es" \
+              --arg title_en "$title_en" \
+              --arg title_ca "$title_ca" \
+              --arg desc "$desc" \
+              --arg desc_es "$desc_es" \
+              --arg desc_en "$desc_en" \
+              --arg desc_ca "$desc_ca" \
+              '{
+                type: $type,
+                metadata: {
+                  eventId: $eventId,
+                  title: $title,
+                  title_es: $title_es,
+                  title_en: $title_en,
+                  title_ca: $title_ca,
+                  description: $desc,
+                  description_es: $desc_es,
+                  description_en: $desc_en,
+                  description_ca: $desc_ca
+                }
+              }')
 
             # Send notification
             response=$(curl -s -w "\n%{http_code}" -X POST "$JORBITES_NOTIFIER_URL/notifications" \

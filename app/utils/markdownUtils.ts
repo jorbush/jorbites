@@ -15,6 +15,8 @@ export interface Event {
     frontmatter: EventFrontmatter;
     content: string;
     language: string;
+    titles?: Record<string, string>;
+    descriptions?: Record<string, string>;
 }
 
 export interface BlogFrontmatter {

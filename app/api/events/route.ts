@@ -8,15 +8,18 @@ export async function GET(request: NextRequest) {
     try {
         const searchParams = request.nextUrl.searchParams;
         const lang = searchParams.get('lang') || 'en';
+        const includeTranslations =
+            searchParams.get('includeTranslations') === 'true';
 
-        logger.info('GET /api/events - start', { lang });
+        logger.info('GET /api/events - start', { lang, includeTranslations });
         const language = (ALLOWED_LANGUAGES as readonly string[]).includes(lang)
             ? lang
             : 'en';
-        const events = await getAllEvents(language);
+        const events = await getAllEvents(language, includeTranslations);
         logger.info('GET /api/events - success', {
             language,
             count: events.length,
+            includeTranslations,
         });
         return NextResponse.json(events);
     } catch (error: any) {
