@@ -17,19 +17,29 @@ export async function GET(
         const { slug } = params;
         const searchParams = request.nextUrl.searchParams;
         const lang = searchParams.get('lang') || 'en';
+        const includeTranslations =
+            searchParams.get('includeTranslations') === 'true';
 
-        logger.info('GET /api/events/[slug] - start', { slug, lang });
+        logger.info('GET /api/events/[slug] - start', {
+            slug,
+            lang,
+            includeTranslations,
+        });
         const language = (ALLOWED_LANGUAGES as readonly string[]).includes(lang)
             ? lang
             : 'en';
-        const event = await getEventBySlug(slug, language);
+        const event = await getEventBySlug(slug, language, includeTranslations);
         if (!event) {
             logger.info('GET /api/events/[slug] - event not found', {
                 slug,
             });
             return notFoundResponse('Event not found');
         }
-        logger.info('GET /api/events/[slug] - success', { slug, language });
+        logger.info('GET /api/events/[slug] - success', {
+            slug,
+            language,
+            includeTranslations,
+        });
         return NextResponse.json(event);
     } catch (error: any) {
         logger.error('GET /api/events/[slug] - error', {

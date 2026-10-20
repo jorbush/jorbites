@@ -10,6 +10,8 @@ export enum NotificationType {
     QUEST_FULFILLED = 'QUEST_FULFILLED',
     NEW_VOTATION = 'NEW_VOTATION',
     VOTATION_RESULT = 'VOTATION_RESULT',
+    NEW_EVENT = 'NEW_EVENT',
+    EVENT_ENDING_SOON = 'EVENT_ENDING_SOON',
 }
 
 export interface NotificationTemplateParams {

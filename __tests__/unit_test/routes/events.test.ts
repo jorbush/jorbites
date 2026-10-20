@@ -27,7 +27,7 @@ describe('Events API Error Handling', () => {
 
             expect(response.status).toBe(200);
             expect(data).toEqual(mockEvents);
-            expect(getAllEvents).toHaveBeenCalledWith('en');
+            expect(getAllEvents).toHaveBeenCalledWith('en', false);
         });
 
         it('should handle language parameter correctly', async () => {
@@ -40,7 +40,27 @@ describe('Events API Error Handling', () => {
             const response = await EventsGET(request);
 
             expect(response.status).toBe(200);
-            expect(getAllEvents).toHaveBeenCalledWith('es');
+            expect(getAllEvents).toHaveBeenCalledWith('es', false);
+        });
+
+        it('should handle includeTranslations parameter correctly', async () => {
+            const mockEvents = [
+                {
+                    slug: 'test-event',
+                    titles: { es: 'Evento', en: 'Event', ca: 'Esdeveniment' },
+                },
+            ];
+            (getAllEvents as jest.Mock).mockResolvedValueOnce(mockEvents);
+
+            const request = new NextRequest(
+                'http://localhost:3000/api/events?lang=es&includeTranslations=true'
+            );
+            const response = await EventsGET(request);
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(data).toEqual(mockEvents);
+            expect(getAllEvents).toHaveBeenCalledWith('es', true);
         });
 
         it('should default to en for invalid language', async () => {
@@ -53,7 +73,7 @@ describe('Events API Error Handling', () => {
             const response = await EventsGET(request);
 
             expect(response.status).toBe(200);
-            expect(getAllEvents).toHaveBeenCalledWith('en');
+            expect(getAllEvents).toHaveBeenCalledWith('en', false);
         });
 
         it('should return 500 when getAllEvents throws an error', async () => {
@@ -93,7 +113,11 @@ describe('Events API Error Handling', () => {
 
             expect(response.status).toBe(200);
             expect(data).toEqual(mockEvent);
-            expect(getEventBySlug).toHaveBeenCalledWith('test-event', 'en');
+            expect(getEventBySlug).toHaveBeenCalledWith(
+                'test-event',
+                'en',
+                false
+            );
         });
 
         it('should handle language parameter correctly', async () => {
@@ -114,7 +138,39 @@ describe('Events API Error Handling', () => {
             const response = await EventSlugGET(request, mockParams);
 
             expect(response.status).toBe(200);
-            expect(getEventBySlug).toHaveBeenCalledWith('test-event', 'ca');
+            expect(getEventBySlug).toHaveBeenCalledWith(
+                'test-event',
+                'ca',
+                false
+            );
+        });
+
+        it('should handle includeTranslations parameter correctly', async () => {
+            const mockEvent = {
+                id: '1',
+                slug: 'test-event',
+                title: 'Test Event',
+                titles: { es: 'Evento', en: 'Event', ca: 'Esdeveniment' },
+            };
+            (getEventBySlug as jest.Mock).mockResolvedValueOnce(mockEvent);
+
+            const mockParams = {
+                params: Promise.resolve({ slug: 'test-event' }),
+            };
+
+            const request = new NextRequest(
+                'http://localhost:3000/api/events/test-event?lang=en&includeTranslations=true'
+            );
+            const response = await EventSlugGET(request, mockParams);
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(data).toEqual(mockEvent);
+            expect(getEventBySlug).toHaveBeenCalledWith(
+                'test-event',
+                'en',
+                true
+            );
         });
 
         it('should return 404 when event is not found', async () => {
@@ -193,7 +249,8 @@ describe('Events API Error Handling', () => {
                 expect(data.language).toBe(lang);
                 expect(getEventBySlug).toHaveBeenCalledWith(
                     'quest_badges',
-                    lang
+                    lang,
+                    false
                 );
             }
         });
