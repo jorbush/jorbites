@@ -35,6 +35,22 @@ export function readEventFile(filePath: string): {
 }
 
 /**
+ * Helper to resolve the events directory across different working directories
+ */
+export function getEventsDirectory(language: string = 'en'): string {
+    const cwd = process.cwd();
+    const candidate1 = path.join(cwd, 'app/content/events', language);
+    if (fs.existsSync(candidate1)) {
+        return candidate1;
+    }
+    const candidate2 = path.join(cwd, 'jorbites/app/content/events', language);
+    if (fs.existsSync(candidate2)) {
+        return candidate2;
+    }
+    return candidate1;
+}
+
+/**
  * Extract localized titles and descriptions for an event slug across all allowed languages
  */
 export function getEventTranslations(slug: string): {
@@ -45,12 +61,8 @@ export function getEventTranslations(slug: string): {
     const descriptions: Record<string, string> = {};
 
     for (const lang of ALLOWED_LANGUAGES) {
-        const langFilePath = path.join(
-            process.cwd(),
-            'app/content/events',
-            lang,
-            `${slug}.md`
-        );
+        const eventsDirectory = getEventsDirectory(lang);
+        const langFilePath = path.join(eventsDirectory, `${slug}.md`);
         if (fs.existsSync(langFilePath)) {
             const { frontmatter } = readEventFile(langFilePath);
             if (frontmatter.title && frontmatter.title !== 'Error') {
@@ -76,11 +88,7 @@ export async function getEventBySlug(
     language: string = 'en',
     includeTranslations: boolean = false
 ): Promise<Event | null> {
-    const eventsDirectory = path.join(
-        process.cwd(),
-        'app/content/events',
-        language
-    );
+    const eventsDirectory = getEventsDirectory(language);
     const filePath = path.join(eventsDirectory, `${slug}.md`);
 
     if (!fs.existsSync(filePath)) {
@@ -112,11 +120,7 @@ export async function getAllEvents(
     language: string = 'en',
     includeTranslations: boolean = false
 ): Promise<Event[]> {
-    const eventsDirectory = path.join(
-        process.cwd(),
-        'app/content/events',
-        language
-    );
+    const eventsDirectory = getEventsDirectory(language);
 
     // Check if directory exists
     if (!fs.existsSync(eventsDirectory)) {
