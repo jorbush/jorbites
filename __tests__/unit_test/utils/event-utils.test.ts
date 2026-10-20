@@ -7,7 +7,6 @@ import {
     getEventsDirectory,
 } from '@/app/utils/event-utils';
 import fs from 'fs';
-import path from 'path';
 
 // Mock fs and path modules
 vi.mock('fs', () => ({
