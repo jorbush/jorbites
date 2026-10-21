@@ -34,6 +34,12 @@ export default async function getCurrentUser() {
                 language: true,
                 badges: true,
                 notificationPreferences: true,
+                bio: true,
+                websiteUrl: true,
+                instagram: true,
+                twitter: true,
+                youtube: true,
+                tiktok: true,
             },
         });
 

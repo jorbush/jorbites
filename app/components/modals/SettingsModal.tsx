@@ -7,7 +7,8 @@ import { SafeUser } from '@/app/types';
 import { ChangeUserImageRef } from '@/app/components/settings/ChangeUserImage';
 import { ChangeUserNameRef } from '@/app/components/settings/ChangeUserName';
 import { ChangePasswordRef } from '@/app/components/settings/ChangePassword';
-import { useCallback, useRef, useState } from 'react';
+import { ChangeProfileDetailsRef } from '@/app/components/settings/ChangeProfileDetails';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FcSettings } from 'react-icons/fc';
 import Tabs, { Tab } from '@/app/components/utils/Tabs';
 import { FiSettings, FiUser } from 'react-icons/fi';
@@ -23,7 +24,16 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
     const userImageRef = useRef<ChangeUserImageRef>(null);
     const userNameRef = useRef<ChangeUserNameRef>(null);
     const passwordRef = useRef<ChangePasswordRef>(null);
-    const [activeTab, setActiveTab] = useState('preferences');
+    const profileDetailsRef = useRef<ChangeProfileDetailsRef>(null);
+    const [activeTab, setActiveTab] = useState(
+        settingsModal.initialTab || 'preferences'
+    );
+
+    useEffect(() => {
+        if (settingsModal.initialTab) {
+            setActiveTab(settingsModal.initialTab);
+        }
+    }, [settingsModal.initialTab]);
 
     const tabs: Tab[] = [
         {
@@ -61,6 +71,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
                     userImageRef={userImageRef}
                     userNameRef={userNameRef}
                     passwordRef={passwordRef}
+                    profileDetailsRef={profileDetailsRef}
                 />
             </div>
         </div>
@@ -74,6 +85,7 @@ const SettingsModal: React.FC<SettingsProps> = ({ currentUser }) => {
         userImageRef.current?.save();
         userNameRef.current?.save();
         passwordRef.current?.save();
+        profileDetailsRef.current?.save();
 
         // Close modal after a short delay to allow components to save
         setTimeout(() => {

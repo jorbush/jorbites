@@ -26,7 +26,7 @@ export const RecipeBookButton: React.FC<RecipeBookButtonProps> = ({
         <button
             type="button"
             onClick={openRecipeBookModal}
-            className="flex cursor-pointer items-center gap-2 text-neutral-600 transition hover:text-green-600 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-100 dark:hover:text-green-400"
+            className="hover:text-green-450 dark:hover:text-green-450 flex cursor-pointer items-center justify-center text-neutral-600 transition focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-100"
             title={t('generate_recipe_book') || 'Generate Recipe Book'}
             aria-label={t('generate_recipe_book') || 'Generate Recipe Book'}
             data-cy="recipe-book-button"

@@ -1,3 +1,6 @@
+import { Metadata } from 'next';
+import { OrderByType } from '@/app/utils/filter';
+import { Suspense } from 'react';
 import EmptyState from '@/app/components/utils/EmptyState';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import getCurrentUser from '@/app/actions/getCurrentUser';
@@ -13,9 +16,8 @@ import RecipeContributionGraphSkeleton from '@/app/components/stats/RecipeContri
 import ProfileHeaderSkeleton from '@/app/components/profile/ProfileHeaderSkeleton';
 import UserStatsSkeleton from '@/app/components/stats/UserStatsSkeleton';
 import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
-import { Metadata } from 'next';
-import { OrderByType } from '@/app/utils/filter';
-import { Suspense } from 'react';
+import { getBlogsByAuthor } from '@/app/utils/blog-utils';
+import { getCreatorSameAsLinks } from '@/app/utils/profile-utils';
 
 interface IParams {
     userId?: string;
@@ -24,6 +26,7 @@ interface IParams {
 interface ISearchParams {
     orderBy?: OrderByType;
     page?: string;
+    tab?: string;
 }
 
 export async function generateMetadata(props: {
@@ -43,7 +46,9 @@ export async function generateMetadata(props: {
     const displayName = user.name || 'Usuario';
     const level = user && user.level ? user.level : 1;
     const title = `${displayName} | Perfil de usuario | Jorbites`;
-    const description = `${displayName} es un usuario de Jorbites con nivel ${level}. Descubre sus recetas y logros en la comunidad de cocina Jorbites.`;
+    const description = user.bio
+        ? `${displayName}: ${user.bio}`
+        : `${displayName} es un usuario de Jorbites con nivel ${level}. Descubre sus recetas y logros en la comunidad de cocina Jorbites.`;
     return {
         title,
         description,
@@ -82,7 +87,7 @@ const ProfilePage = async (props: {
     ]);
     const page = parseInt(searchParams.page || '1');
 
-    // Get paginated recipes for display
+    // Get paginated recipes and user data
     const [recipesResponse, graphRecipes, user, currentUser, pinnedRecipes] =
         await Promise.all([
             getRecipesByUserId({
@@ -99,7 +104,13 @@ const ProfilePage = async (props: {
             getPinnedRecipesByUserId(params.userId || ''),
         ]);
 
-    if (!user && recipesResponse.recipes.length === 0) {
+    const blogs = await getBlogsByAuthor(
+        params.userId || '',
+        user?.name || null,
+        currentUser?.language || user?.language || 'en'
+    );
+
+    if (!user && recipesResponse.recipes.length === 0 && blogs.length === 0) {
         return (
             <ClientOnly>
                 <EmptyState
@@ -110,8 +121,35 @@ const ProfilePage = async (props: {
         );
     }
 
+    const sameAsLinks = getCreatorSameAsLinks(user);
+
+    const profileJsonLd = user
+        ? {
+              '@context': 'https://schema.org',
+              '@type': 'ProfilePage',
+              mainEntity: {
+                  '@type': 'Person',
+                  name: user.name || 'User',
+                  description: user.bio || undefined,
+                  image: user.image || undefined,
+                  ...(sameAsLinks.length > 0 ? { sameAs: sameAsLinks } : {}),
+              },
+          }
+        : null;
+
     return (
         <>
+            {profileJsonLd && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(profileJsonLd)
+                            .replace(/</g, '\\u003c')
+                            .replace(/>/g, '\\u003e'),
+                    }}
+                />
+            )}
+
             <ClientOnly fallback={<ProfileHeaderSkeleton />}>
                 <ProfileHeader
                     user={user}
@@ -129,7 +167,7 @@ const ProfilePage = async (props: {
                 </ClientOnly>
             )}
 
-            {recipesResponse.recipes.length > 0 && (
+            {recipesResponse.recipes.length > 0 || blogs.length > 0 ? (
                 <Suspense fallback={<ProfileClientSkeleton />}>
                     <ClientOnly fallback={<ProfileClientSkeleton />}>
                         <ProfileClient
@@ -138,14 +176,14 @@ const ProfilePage = async (props: {
                             currentUser={currentUser}
                             totalPages={recipesResponse.totalPages}
                             currentPage={recipesResponse.currentPage}
+                            totalRecipes={recipesResponse.totalRecipes}
                             searchParams={searchParams}
                             profileUserId={params.userId || ''}
+                            blogs={blogs}
                         />
                     </ClientOnly>
                 </Suspense>
-            )}
-
-            {recipesResponse.recipes.length === 0 && (
+            ) : (
                 <ClientOnly>
                     <EmptyState
                         title="No recipes found"

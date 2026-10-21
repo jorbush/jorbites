@@ -27,6 +27,14 @@ vi.mock('canvas-confetti', () => ({
     default: vi.fn(),
 }));
 
+vi.mock('@/app/hooks/useSettingsModal', () => ({
+    default: () => ({
+        isOpen: false,
+        onOpen: vi.fn(),
+        onClose: vi.fn(),
+    }),
+}));
+
 // Mock RecipeBookButton
 vi.mock('@/app/components/profile/RecipeBookButton', () => ({
     RecipeBookButton: ({ userId, userName }: any) => (

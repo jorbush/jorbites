@@ -30,6 +30,12 @@ export default async function getUserById(params: IParams) {
                 language: true,
                 badges: true,
                 pinnedRecipeIds: true,
+                bio: true,
+                websiteUrl: true,
+                instagram: true,
+                twitter: true,
+                youtube: true,
+                tiktok: true,
             },
         });
 

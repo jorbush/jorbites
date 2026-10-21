@@ -61,6 +61,32 @@ vi.mock('react-icons/fi', () => ({
     FiCalendar: () =>
         React.createElement('div', { 'data-testid': 'calendar-icon' }),
     FiShare2: () => React.createElement('div', { 'data-testid': 'share-icon' }),
+    FiGlobe: () => React.createElement('div', { 'data-testid': 'globe-icon' }),
+    FiExternalLink: () =>
+        React.createElement('div', { 'data-testid': 'external-link-icon' }),
+    FiEdit3: () => React.createElement('div', { 'data-testid': 'edit3-icon' }),
+    FiBookOpen: () =>
+        React.createElement('div', { 'data-testid': 'book-open-icon' }),
+}));
+
+vi.mock('react-icons/fa', () => ({
+    FaInstagram: () =>
+        React.createElement('div', { 'data-testid': 'instagram-icon' }),
+    FaTwitter: () =>
+        React.createElement('div', { 'data-testid': 'twitter-icon' }),
+    FaYoutube: () =>
+        React.createElement('div', { 'data-testid': 'youtube-icon' }),
+    FaTiktok: () =>
+        React.createElement('div', { 'data-testid': 'tiktok-icon' }),
+}));
+
+const mockOnOpen = vi.fn();
+vi.mock('@/app/hooks/useSettingsModal', () => ({
+    default: () => ({
+        isOpen: false,
+        onOpen: mockOnOpen,
+        onClose: vi.fn(),
+    }),
 }));
 
 // Mock date-fns
@@ -257,6 +283,116 @@ describe('ProfileHeader', () => {
         expect(shareButton).toHaveProperty(
             'className',
             expect.stringContaining('cursor-pointer')
+        );
+    });
+
+    it('renders creator bio when bio is provided', () => {
+        const userWithBio = {
+            ...mockUser,
+            bio: 'Culinary enthusiast and sourdough baker.',
+        };
+        const { getByTestId } = render(<ProfileHeader user={userWithBio} />);
+
+        const bioElement = getByTestId('profile-bio');
+        expect(bioElement).toBeDefined();
+        expect(bioElement.textContent).toBe(
+            'Culinary enthusiast and sourdough baker.'
+        );
+    });
+
+    it('renders website outbound link with rel="noopener noreferrer"', () => {
+        const userWithWebsite = {
+            ...mockUser,
+            websiteUrl: 'https://myfoodblog.com',
+        };
+        const { getByTestId } = render(
+            <ProfileHeader user={userWithWebsite} />
+        );
+
+        const websiteLink = getByTestId('profile-website-link');
+        expect(websiteLink).toBeDefined();
+        expect(websiteLink.getAttribute('href')).toBe('https://myfoodblog.com');
+        expect(websiteLink.getAttribute('target')).toBe('_blank');
+        expect(websiteLink.getAttribute('rel')).toBe('noopener noreferrer');
+        expect(websiteLink.textContent).toContain('myfoodblog.com');
+    });
+
+    it('renders social profile links with rel="noopener noreferrer"', () => {
+        const userWithSocials = {
+            ...mockUser,
+            instagram: 'chef_anna',
+            twitter: 'chef_anna',
+            youtube: 'chef_anna',
+            tiktok: 'chef_anna',
+        };
+        const { getByTestId } = render(
+            <ProfileHeader user={userWithSocials} />
+        );
+
+        const igLink = getByTestId('profile-instagram-link');
+        expect(igLink.getAttribute('href')).toBe(
+            'https://instagram.com/chef_anna'
+        );
+        expect(igLink.getAttribute('rel')).toBe('noopener noreferrer');
+        expect(igLink.getAttribute('target')).toBe('_blank');
+
+        const twitterLink = getByTestId('profile-twitter-link');
+        expect(twitterLink.getAttribute('href')).toBe(
+            'https://x.com/chef_anna'
+        );
+        expect(twitterLink.getAttribute('rel')).toBe('noopener noreferrer');
+
+        const ytLink = getByTestId('profile-youtube-link');
+        expect(ytLink.getAttribute('href')).toBe(
+            'https://youtube.com/@chef_anna'
+        );
+        expect(ytLink.getAttribute('rel')).toBe('noopener noreferrer');
+
+        const tiktokLink = getByTestId('profile-tiktok-link');
+        expect(tiktokLink.getAttribute('href')).toBe(
+            'https://tiktok.com/@chef_anna'
+        );
+        expect(tiktokLink.getAttribute('rel')).toBe('noopener noreferrer');
+    });
+
+    it('renders edit profile button when viewing own profile and opens account settings tab', () => {
+        const { getByTestId } = render(
+            <ProfileHeader
+                user={mockUser}
+                currentUser={mockUser}
+            />
+        );
+
+        const editButton = getByTestId('edit-profile-button');
+        expect(editButton).toBeDefined();
+
+        fireEvent.click(editButton);
+        expect(mockOnOpen).toHaveBeenCalledWith('account');
+    });
+
+    it('sanitizes dangerous external URLs', () => {
+        const maliciousUser = {
+            ...mockUser,
+            websiteUrl: 'javascript:alert(1)',
+        };
+        const { getByTestId } = render(<ProfileHeader user={maliciousUser} />);
+
+        const websiteLink = getByTestId('profile-website-link');
+        expect(websiteLink.getAttribute('href')).toBe('#');
+    });
+
+    it('handles full youtube.com url for creator youtube link', () => {
+        const userWithFullYoutube = {
+            ...mockUser,
+            youtube: 'https://youtube.com/@chef_anna',
+        };
+        const { getByTestId } = render(
+            <ProfileHeader user={userWithFullYoutube} />
+        );
+
+        const ytLink = getByTestId('profile-youtube-link');
+        expect(ytLink.getAttribute('href')).toBe(
+            'https://youtube.com/@chef_anna'
         );
     });
 });

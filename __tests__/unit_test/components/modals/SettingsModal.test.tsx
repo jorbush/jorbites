@@ -64,6 +64,12 @@ vi.mock('@/app/components/settings/ChangePassword', () => ({
     ),
 }));
 
+vi.mock('@/app/components/settings/ChangeProfileDetails', () => ({
+    default: () => (
+        <div data-testid="change-profile-details">ChangeProfileDetails</div>
+    ),
+}));
+
 vi.mock('@/app/components/settings/DeleteAccount', () => ({
     default: () => (
         <div data-testid="delete-account-selector">DeleteAccount</div>

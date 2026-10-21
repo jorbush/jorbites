@@ -7,9 +7,14 @@ import { NextRequest } from 'next/server';
 jest.mock('@/app/utils/blog-utils', () => ({
     getPaginatedBlogs: jest.fn(),
     getBlogById: jest.fn(),
+    getBlogsByAuthor: jest.fn(),
 }));
 
-import { getPaginatedBlogs, getBlogById } from '@/app/utils/blog-utils';
+import {
+    getPaginatedBlogs,
+    getBlogById,
+    getBlogsByAuthor,
+} from '@/app/utils/blog-utils';
 
 describe('Blogs API Routes', () => {
     beforeEach(() => {
@@ -147,6 +152,39 @@ describe('Blogs API Routes', () => {
                 20,
                 'general'
             );
+        });
+
+        it('should return authored blogs when authorId is provided', async () => {
+            const mockAuthorBlogs = [
+                {
+                    id: 'author-blog-1',
+                    slug: 'author-blog-1',
+                    frontmatter: {
+                        title: 'Author Post',
+                        date: '2026-05-01',
+                        user_id: 'chef-123',
+                    },
+                },
+            ];
+
+            (getBlogsByAuthor as jest.Mock).mockResolvedValueOnce(
+                mockAuthorBlogs
+            );
+
+            const request = new NextRequest(
+                'http://localhost:3000/api/blogs?authorId=chef-123&lang=es'
+            );
+            const response = await BlogsGET(request);
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(getBlogsByAuthor).toHaveBeenCalledWith(
+                'chef-123',
+                null,
+                'es'
+            );
+            expect(data.blogs).toEqual(mockAuthorBlogs);
+            expect(data.total).toBe(1);
         });
 
         it('should default to en for invalid language', async () => {
