@@ -19,6 +19,114 @@ interface ProfileBacklinksProps {
     tiktok?: string | null;
 }
 
+type SocialPlatform = 'instagram' | 'twitter' | 'youtube' | 'tiktok';
+
+interface SocialItemConfig {
+    id: SocialPlatform;
+    icon: React.ComponentType<{ className?: string }>;
+    testId: string;
+    label: string;
+    hoverClass: string;
+}
+
+const SOCIAL_CONFIGS: SocialItemConfig[] = [
+    {
+        id: 'instagram',
+        icon: FaInstagram,
+        testId: 'profile-instagram-link',
+        label: 'Instagram',
+        hoverClass:
+            'text-neutral-500 hover:text-pink-600 dark:text-neutral-400 dark:hover:text-pink-400',
+    },
+    {
+        id: 'twitter',
+        icon: FaTwitter,
+        testId: 'profile-twitter-link',
+        label: 'X / Twitter',
+        hoverClass:
+            'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white',
+    },
+    {
+        id: 'youtube',
+        icon: FaYoutube,
+        testId: 'profile-youtube-link',
+        label: 'YouTube',
+        hoverClass:
+            'text-neutral-500 hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-400',
+    },
+    {
+        id: 'tiktok',
+        icon: FaTiktok,
+        testId: 'profile-tiktok-link',
+        label: 'TikTok',
+        hoverClass:
+            'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white',
+    },
+];
+
+const ProfileWebsiteLink: React.FC<{ websiteUrl?: string | null }> = ({
+    websiteUrl,
+}) => {
+    const { t } = useTranslation();
+    if (!websiteUrl) return null;
+
+    return (
+        <a
+            href={formatExternalUrl(websiteUrl)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-700 transition hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
+            data-testid="profile-website-link"
+            aria-label={t('visit_website') || 'Visit website'}
+        >
+            <FiGlobe className="text-green-450 size-3.5" />
+            <span className="max-w-[200px] truncate">
+                {formatDomainDisplay(websiteUrl)}
+            </span>
+            <FiExternalLink className="size-3 opacity-60" />
+        </a>
+    );
+};
+
+interface ProfileSocialLinksProps {
+    instagram?: string | null;
+    twitter?: string | null;
+    youtube?: string | null;
+    tiktok?: string | null;
+}
+
+const ProfileSocialLinks: React.FC<ProfileSocialLinksProps> = (props) => {
+    const activeItems = SOCIAL_CONFIGS.filter((item) =>
+        Boolean(props[item.id as keyof ProfileSocialLinksProps])
+    );
+
+    if (activeItems.length === 0) return null;
+
+    return (
+        <>
+            {activeItems.map(
+                ({ id, icon: Icon, testId, label, hoverClass }) => {
+                    const handle =
+                        props[id as keyof ProfileSocialLinksProps] || '';
+                    return (
+                        <a
+                            key={id}
+                            href={getSocialLink(id, handle)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`p-1 transition ${hoverClass}`}
+                            aria-label={label}
+                            data-testid={testId}
+                        >
+                            <Icon className="size-5" />
+                        </a>
+                    );
+                }
+            )}
+        </>
+    );
+};
+
 const ProfileBacklinks: React.FC<ProfileBacklinksProps> = ({
     bio,
     websiteUrl,
@@ -27,19 +135,16 @@ const ProfileBacklinks: React.FC<ProfileBacklinksProps> = ({
     youtube,
     tiktok,
 }) => {
-    const { t } = useTranslation();
+    const hasAnySocial = Boolean(instagram || twitter || youtube || tiktok);
+    const hasLinks = Boolean(websiteUrl || hasAnySocial);
 
-    const hasBio = Boolean(bio);
-    const hasWebsite = Boolean(websiteUrl);
-    const hasSocials = Boolean(instagram || twitter || youtube || tiktok);
-
-    if (!hasBio && !hasWebsite && !hasSocials) {
+    if (!bio && !hasLinks) {
         return null;
     }
 
     return (
         <div className="mt-1 px-2 pb-2">
-            {hasBio && (
+            {bio && (
                 <p
                     className="max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
                     data-testid="profile-bio"
@@ -47,72 +152,15 @@ const ProfileBacklinks: React.FC<ProfileBacklinksProps> = ({
                     {bio}
                 </p>
             )}
-            {(hasWebsite || hasSocials) && (
+            {hasLinks && (
                 <div className="mt-3 flex flex-wrap items-center gap-3">
-                    {websiteUrl && (
-                        <a
-                            href={formatExternalUrl(websiteUrl)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-700 transition hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
-                            data-testid="profile-website-link"
-                            aria-label={t('visit_website') || 'Visit website'}
-                        >
-                            <FiGlobe className="text-green-450 size-3.5" />
-                            <span className="max-w-[200px] truncate">
-                                {formatDomainDisplay(websiteUrl)}
-                            </span>
-                            <FiExternalLink className="size-3 opacity-60" />
-                        </a>
-                    )}
-                    {instagram && (
-                        <a
-                            href={getSocialLink('instagram', instagram)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-1 text-neutral-500 transition hover:text-pink-600 dark:text-neutral-400 dark:hover:text-pink-400"
-                            aria-label="Instagram"
-                            data-testid="profile-instagram-link"
-                        >
-                            <FaInstagram className="size-5" />
-                        </a>
-                    )}
-                    {twitter && (
-                        <a
-                            href={getSocialLink('twitter', twitter)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-1 text-neutral-500 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-                            aria-label="X / Twitter"
-                            data-testid="profile-twitter-link"
-                        >
-                            <FaTwitter className="size-5" />
-                        </a>
-                    )}
-                    {youtube && (
-                        <a
-                            href={getSocialLink('youtube', youtube)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-1 text-neutral-500 transition hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-400"
-                            aria-label="YouTube"
-                            data-testid="profile-youtube-link"
-                        >
-                            <FaYoutube className="size-5" />
-                        </a>
-                    )}
-                    {tiktok && (
-                        <a
-                            href={getSocialLink('tiktok', tiktok)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-1 text-neutral-500 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-                            aria-label="TikTok"
-                            data-testid="profile-tiktok-link"
-                        >
-                            <FaTiktok className="size-5" />
-                        </a>
-                    )}
+                    <ProfileWebsiteLink websiteUrl={websiteUrl} />
+                    <ProfileSocialLinks
+                        instagram={instagram}
+                        twitter={twitter}
+                        youtube={youtube}
+                        tiktok={tiktok}
+                    />
                 </div>
             )}
         </div>
