@@ -11,15 +11,10 @@ import { useTranslation } from 'react-i18next';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import {
-    FaRegSave,
-    FaInstagram,
-    FaTwitter,
-    FaYoutube,
-    FaTiktok,
-    FaGlobe,
-} from 'react-icons/fa';
+import { FaRegSave } from 'react-icons/fa';
 import { FiEdit3 } from 'react-icons/fi';
+import ProfileDetailsView from './ProfileDetailsView';
+import ProfileDetailsEditor from './ProfileDetailsEditor';
 
 export interface ChangeProfileDetailsRef {
     save: () => void;
@@ -34,13 +29,7 @@ const ChangeProfileDetails = ({
     currentUser,
     ref,
 }: ChangeProfileDetailsProps) => {
-    let router: any = null;
-    try {
-        router = useRouter();
-    } catch {
-        // Fallback when rendered outside Next.js Router context
-    }
-    const refresh = router?.refresh;
+    const router = useRouter();
     const { t } = useTranslation();
 
     const [bio, setBio] = useState(currentUser?.bio || '');
@@ -84,7 +73,7 @@ const ChangeProfileDetails = ({
                     error.response?.data?.error || t('something_went_wrong');
                 toast.error(errorMessage);
             } finally {
-                refresh?.();
+                router.refresh();
             }
         });
     }, [
@@ -96,7 +85,7 @@ const ChangeProfileDetails = ({
         youtube,
         tiktok,
         isPending,
-        refresh,
+        router,
         t,
     ]);
 
@@ -177,195 +166,23 @@ const ChangeProfileDetails = ({
             </div>
 
             {isEditing ? (
-                <div className="flex flex-col gap-3 pt-2 text-sm">
-                    {/* Bio Field */}
-                    <div className="flex flex-col gap-1">
-                        <div className="flex items-center justify-between">
-                            <label
-                                htmlFor="creator-bio-input"
-                                className="text-xs font-medium text-neutral-700 dark:text-neutral-300"
-                            >
-                                {t('creator_bio') || 'Creator Bio'}
-                            </label>
-                            <span className="text-xs text-neutral-400">
-                                {bio.length}/250
-                            </span>
-                        </div>
-                        <textarea
-                            id="creator-bio-input"
-                            value={bio}
-                            onChange={(e) =>
-                                setBio(e.target.value.slice(0, 250))
-                            }
-                            maxLength={250}
-                            rows={3}
-                            placeholder={
-                                t('bio_placeholder') ||
-                                'Tell us about your culinary background, specialties, or food philosophy...'
-                            }
-                            className="focus:ring-green-450 w-full rounded border border-neutral-300 p-2 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
-                            data-testid="bio-input"
-                            disabled={isPending}
-                        />
-                    </div>
-
-                    {/* Website URL */}
-                    <div className="flex flex-col gap-1">
-                        <label
-                            htmlFor="creator-website-input"
-                            className="flex items-center gap-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-300"
-                        >
-                            <FaGlobe className="text-neutral-400" />
-                            <span>{t('website_url') || 'Website / Blog'}</span>
-                        </label>
-                        <input
-                            id="creator-website-input"
-                            type="text"
-                            value={websiteUrl}
-                            onChange={(e) => setWebsiteUrl(e.target.value)}
-                            placeholder={
-                                t('website_placeholder') ||
-                                'https://myfoodblog.com'
-                            }
-                            className="focus:ring-green-450 w-full rounded border border-neutral-300 px-2 py-1.5 text-sm focus:ring-2 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
-                            data-testid="website-input"
-                            disabled={isPending}
-                        />
-                    </div>
-
-                    {/* Social Handles Grid */}
-                    <div className="flex flex-col gap-2 pt-1">
-                        <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
-                            {t('social_profiles') || 'Social Profiles'}
-                        </span>
-                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                            {/* Instagram */}
-                            <div className="flex items-center gap-1.5 rounded border border-neutral-300 px-2 py-1 dark:border-neutral-600 dark:bg-neutral-800">
-                                <FaInstagram className="shrink-0 text-pink-500" />
-                                <input
-                                    type="text"
-                                    value={instagram}
-                                    onChange={(e) =>
-                                        setInstagram(e.target.value)
-                                    }
-                                    placeholder={
-                                        t('instagram_placeholder') ||
-                                        'Instagram handle'
-                                    }
-                                    className="focus:ring-green-450 w-full bg-transparent text-xs focus:outline-none dark:text-white"
-                                    data-testid="instagram-input"
-                                    disabled={isPending}
-                                />
-                            </div>
-
-                            {/* X / Twitter */}
-                            <div className="flex items-center gap-1.5 rounded border border-neutral-300 px-2 py-1 dark:border-neutral-600 dark:bg-neutral-800">
-                                <FaTwitter className="shrink-0 text-blue-400" />
-                                <input
-                                    type="text"
-                                    value={twitter}
-                                    onChange={(e) => setTwitter(e.target.value)}
-                                    placeholder={
-                                        t('twitter_placeholder') ||
-                                        'X / Twitter handle'
-                                    }
-                                    className="focus:ring-green-450 w-full bg-transparent text-xs focus:outline-none dark:text-white"
-                                    data-testid="twitter-input"
-                                    disabled={isPending}
-                                />
-                            </div>
-
-                            {/* YouTube */}
-                            <div className="flex items-center gap-1.5 rounded border border-neutral-300 px-2 py-1 dark:border-neutral-600 dark:bg-neutral-800">
-                                <FaYoutube className="shrink-0 text-red-500" />
-                                <input
-                                    type="text"
-                                    value={youtube}
-                                    onChange={(e) => setYoutube(e.target.value)}
-                                    placeholder={
-                                        t('youtube_placeholder') ||
-                                        'YouTube channel'
-                                    }
-                                    className="focus:ring-green-450 w-full bg-transparent text-xs focus:outline-none dark:text-white"
-                                    data-testid="youtube-input"
-                                    disabled={isPending}
-                                />
-                            </div>
-
-                            {/* TikTok */}
-                            <div className="flex items-center gap-1.5 rounded border border-neutral-300 px-2 py-1 dark:border-neutral-600 dark:bg-neutral-800">
-                                <FaTiktok className="shrink-0 text-neutral-800 dark:text-white" />
-                                <input
-                                    type="text"
-                                    value={tiktok}
-                                    onChange={(e) => setTiktok(e.target.value)}
-                                    placeholder={
-                                        t('tiktok_placeholder') ||
-                                        'TikTok handle'
-                                    }
-                                    className="focus:ring-green-450 w-full bg-transparent text-xs focus:outline-none dark:text-white"
-                                    data-testid="tiktok-input"
-                                    disabled={isPending}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <ProfileDetailsEditor
+                    bio={bio}
+                    setBio={setBio}
+                    websiteUrl={websiteUrl}
+                    setWebsiteUrl={setWebsiteUrl}
+                    instagram={instagram}
+                    setInstagram={setInstagram}
+                    twitter={twitter}
+                    setTwitter={setTwitter}
+                    youtube={youtube}
+                    setYoutube={setYoutube}
+                    tiktok={tiktok}
+                    setTiktok={setTiktok}
+                    isPending={isPending}
+                />
             ) : (
-                <div className="space-y-1.5 text-xs text-neutral-600 dark:text-neutral-300">
-                    {currentUser?.bio ? (
-                        <p className="line-clamp-2 italic">
-                            "{currentUser.bio}"
-                        </p>
-                    ) : (
-                        <p className="text-neutral-400 italic">
-                            {t('no_bio_yet') || 'No creator bio added yet.'}
-                        </p>
-                    )}
-                    <div className="flex flex-wrap items-center gap-3 pt-1 text-neutral-500 dark:text-neutral-400">
-                        {currentUser?.websiteUrl && (
-                            <span className="flex items-center gap-1">
-                                <FaGlobe className="text-green-450 size-3" />
-                                <span className="max-w-[150px] truncate">
-                                    {currentUser.websiteUrl.replace(
-                                        /^https?:\/\//,
-                                        ''
-                                    )}
-                                </span>
-                            </span>
-                        )}
-                        {currentUser?.instagram && (
-                            <span className="flex items-center gap-1">
-                                <FaInstagram className="size-3 text-pink-500" />
-                                <span>
-                                    @{currentUser.instagram.replace(/^@/, '')}
-                                </span>
-                            </span>
-                        )}
-                        {currentUser?.twitter && (
-                            <span className="flex items-center gap-1">
-                                <FaTwitter className="size-3 text-blue-400" />
-                                <span>
-                                    @{currentUser.twitter.replace(/^@/, '')}
-                                </span>
-                            </span>
-                        )}
-                        {currentUser?.youtube && (
-                            <span className="flex items-center gap-1">
-                                <FaYoutube className="size-3 text-red-500" />
-                                <span>{currentUser.youtube}</span>
-                            </span>
-                        )}
-                        {currentUser?.tiktok && (
-                            <span className="flex items-center gap-1">
-                                <FaTiktok className="size-3" />
-                                <span>
-                                    @{currentUser.tiktok.replace(/^@/, '')}
-                                </span>
-                            </span>
-                        )}
-                    </div>
-                </div>
+                <ProfileDetailsView currentUser={currentUser} />
             )}
         </div>
     );

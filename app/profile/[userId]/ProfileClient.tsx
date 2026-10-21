@@ -160,14 +160,14 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                     ) : (
                         <div className="py-8">
                             <EmptyState
-                                title={t(
-                                    'no_articles_found',
+                                title={
+                                    t('no_articles_found') ||
                                     'No articles found'
-                                )}
-                                subtitle={t(
-                                    'no_articles_subtitle',
+                                }
+                                subtitle={
+                                    t('no_articles_subtitle') ||
                                     'This user has not published any articles yet.'
-                                )}
+                                }
                             />
                         </div>
                     )}

@@ -105,6 +105,12 @@ export type SafeUser = Omit<
     | 'emailNotifications'
     | 'language'
     | 'notificationPreferences'
+    | 'bio'
+    | 'websiteUrl'
+    | 'instagram'
+    | 'twitter'
+    | 'youtube'
+    | 'tiktok'
 > & {
     createdAt?: string;
     updatedAt?: string;

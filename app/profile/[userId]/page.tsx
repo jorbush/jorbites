@@ -16,8 +16,8 @@ import RecipeContributionGraphSkeleton from '@/app/components/stats/RecipeContri
 import ProfileHeaderSkeleton from '@/app/components/profile/ProfileHeaderSkeleton';
 import UserStatsSkeleton from '@/app/components/stats/UserStatsSkeleton';
 import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
+import ProfileJsonLd from '@/app/components/profile/ProfileJsonLd';
 import { getBlogsByAuthor } from '@/app/utils/blog-utils';
-import { getCreatorSameAsLinks } from '@/app/utils/profile-utils';
 
 interface IParams {
     userId?: string;
@@ -110,7 +110,10 @@ const ProfilePage = async (props: {
         currentUser?.language || user?.language || 'en'
     );
 
-    if (!user && recipesResponse.recipes.length === 0 && blogs.length === 0) {
+    const hasContent =
+        Boolean(user) || recipesResponse.recipes.length > 0 || blogs.length > 0;
+
+    if (!hasContent) {
         return (
             <ClientOnly>
                 <EmptyState
@@ -121,34 +124,12 @@ const ProfilePage = async (props: {
         );
     }
 
-    const sameAsLinks = getCreatorSameAsLinks(user);
-
-    const profileJsonLd = user
-        ? {
-              '@context': 'https://schema.org',
-              '@type': 'ProfilePage',
-              mainEntity: {
-                  '@type': 'Person',
-                  name: user.name || 'User',
-                  description: user.bio || undefined,
-                  image: user.image || undefined,
-                  ...(sameAsLinks.length > 0 ? { sameAs: sameAsLinks } : {}),
-              },
-          }
-        : null;
+    const hasClientContent =
+        recipesResponse.recipes.length > 0 || blogs.length > 0;
 
     return (
         <>
-            {profileJsonLd && (
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(profileJsonLd)
-                            .replace(/</g, '\\u003c')
-                            .replace(/>/g, '\\u003e'),
-                    }}
-                />
-            )}
+            <ProfileJsonLd user={user} />
 
             <ClientOnly fallback={<ProfileHeaderSkeleton />}>
                 <ProfileHeader
@@ -167,7 +148,7 @@ const ProfilePage = async (props: {
                 </ClientOnly>
             )}
 
-            {recipesResponse.recipes.length > 0 || blogs.length > 0 ? (
+            {hasClientContent ? (
                 <Suspense fallback={<ProfileClientSkeleton />}>
                     <ClientOnly fallback={<ProfileClientSkeleton />}>
                         <ProfileClient
