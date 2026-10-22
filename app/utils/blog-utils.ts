@@ -154,3 +154,93 @@ export async function getPaginatedBlogs(
         currentPage: page,
     };
 }
+
+/**
+ * Get all blogs authored by a specific user (matched by author ID or username), sorted newest first.
+ * Searches across categories (general, releases) in specified language and falls back across allowed languages.
+ */
+export async function getBlogsByAuthor(
+    authorId: string,
+    authorName?: string | null,
+    language: string = 'en'
+): Promise<Blog[]> {
+    if (!authorId && !authorName) return [];
+
+    const languages = Array.from(
+        new Set([language, ...ALLOWED_LANGUAGES, 'en'])
+    );
+    const subdirs = ['', 'releases'];
+
+    for (const lang of languages) {
+        const blogsDirectory = path.join(
+            process.cwd(),
+            'app/content/blogs',
+            lang
+        );
+
+        if (!fs.existsSync(blogsDirectory)) continue;
+
+        const matchingBlogs: Blog[] = [];
+        const seenIds = new Set<string>();
+
+        for (const subdir of subdirs) {
+            const dirPath = path.join(blogsDirectory, subdir);
+            if (!fs.existsSync(dirPath)) continue;
+
+            try {
+                const filenames = fs.readdirSync(dirPath);
+                const markdownFiles = filenames.filter((file) =>
+                    file.endsWith('.md')
+                );
+
+                for (const filename of markdownFiles) {
+                    const id = filename.replace('.md', '');
+                    if (seenIds.has(id)) continue;
+
+                    const filePath = path.join(dirPath, filename);
+                    const { frontmatter, content } = readBlogFile(filePath);
+
+                    const fmUserId = frontmatter.user_id;
+                    const fmAuthor = (frontmatter as any).author;
+                    const fmUsername = (frontmatter as any).username;
+
+                    const isMatch =
+                        (authorId &&
+                            (fmUserId === authorId ||
+                                fmAuthor === authorId ||
+                                fmUsername === authorId)) ||
+                        (authorName &&
+                            (fmUserId === authorName ||
+                                fmAuthor === authorName ||
+                                fmUsername === authorName));
+
+                    if (isMatch) {
+                        seenIds.add(id);
+                        matchingBlogs.push({
+                            id,
+                            slug: id,
+                            frontmatter,
+                            content,
+                            language: lang,
+                            category: (subdir === 'releases'
+                                ? 'releases'
+                                : 'general') as 'general' | 'releases',
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error(`Error reading blogs in ${dirPath}:`, error);
+            }
+        }
+
+        if (matchingBlogs.length > 0) {
+            return matchingBlogs.sort((a, b) => {
+                const dateA = new Date(a.frontmatter.date).getTime();
+                const dateB = new Date(b.frontmatter.date).getTime();
+                return dateB - dateA;
+            });
+        }
+    }
+
+    return [];
+}

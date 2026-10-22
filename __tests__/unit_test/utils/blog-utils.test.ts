@@ -4,9 +4,11 @@ import {
     getBlogById,
     getAllBlogs,
     getPaginatedBlogs,
+    getBlogsByAuthor,
 } from '@/app/utils/blog-utils';
 import fs from 'fs';
 import path from 'path';
+import matter from 'gray-matter';
 
 // Mock fs and path modules
 vi.mock('fs', () => ({
@@ -331,6 +333,64 @@ New content`;
             expect(result.blogs).toHaveLength(0);
             expect(result.totalPages).toBe(1);
             expect(result.currentPage).toBe(999);
+        });
+    });
+
+    describe('getBlogsByAuthor', () => {
+        it('should return empty array when no authorId and no authorName provided', async () => {
+            const result = await getBlogsByAuthor('', null);
+            expect(result).toEqual([]);
+        });
+
+        it('should find blogs matching authorId or authorName', async () => {
+            vi.mocked(matter).mockImplementation((content: any) => {
+                if (String(content).includes('author-123')) {
+                    return {
+                        data: {
+                            title: 'Release 1',
+                            user_id: 'author-123',
+                            date: '2026-03-01T00:00:00.000Z',
+                            description: 'First release',
+                        },
+                        content: 'Content 1',
+                    } as any;
+                }
+                return {
+                    data: {
+                        title: 'Post 1',
+                        user_id: 'someone-else',
+                        date: '2026-02-01T00:00:00.000Z',
+                        description: 'Someone else post',
+                    },
+                    content: 'Content 2',
+                } as any;
+            });
+
+            vi.mocked(fs.existsSync).mockReturnValue(true);
+            vi.mocked(fs.readdirSync).mockImplementation((dirPath: any) => {
+                if (String(dirPath).endsWith('/releases')) {
+                    return ['release-1.md'] as any;
+                }
+                return ['post-1.md'] as any;
+            });
+
+            vi.mocked(fs.readFileSync).mockImplementation((filePath: any) => {
+                if (String(filePath).includes('release-1.md')) {
+                    return 'user_id: author-123';
+                }
+                return 'user_id: someone-else';
+            });
+
+            const result = await getBlogsByAuthor(
+                'author-123',
+                'ChefAuthor',
+                'en'
+            );
+
+            expect(result).toHaveLength(1);
+            expect(result[0].id).toBe('release-1');
+            expect(result[0].frontmatter.title).toBe('Release 1');
+            expect(result[0].frontmatter.user_id).toBe('author-123');
         });
     });
 });

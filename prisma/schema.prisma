@@ -30,6 +30,12 @@ model User {
   badges              String[]  @default([])
   resetToken          String?
   resetTokenExpiry    DateTime?
+  bio                 String?
+  websiteUrl          String?
+  instagram           String?
+  twitter             String?
+  youtube             String?
+  tiktok              String?
 
   accounts            Account[]
   recipes             Recipe[]

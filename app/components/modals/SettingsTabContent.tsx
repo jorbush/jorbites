@@ -15,6 +15,9 @@ import ChangeUserNameSelector, {
 import ChangePassword, {
     ChangePasswordRef,
 } from '@/app/components/settings/ChangePassword';
+import ChangeProfileDetails, {
+    ChangeProfileDetailsRef,
+} from '@/app/components/settings/ChangeProfileDetails';
 import DeleteAccount from '@/app/components/settings/DeleteAccount';
 import { SafeUser } from '@/app/types';
 
@@ -24,6 +27,7 @@ interface SettingsTabContentProps {
     userImageRef: React.RefObject<ChangeUserImageRef | null>;
     userNameRef: React.RefObject<ChangeUserNameRef | null>;
     passwordRef: React.RefObject<ChangePasswordRef | null>;
+    profileDetailsRef?: React.RefObject<ChangeProfileDetailsRef | null>;
 }
 
 const SettingsTabContent: React.FC<SettingsTabContentProps> = ({
@@ -32,6 +36,7 @@ const SettingsTabContent: React.FC<SettingsTabContentProps> = ({
     userImageRef,
     userNameRef,
     passwordRef,
+    profileDetailsRef,
 }) => {
     switch (activeTab) {
         case 'preferences':
@@ -56,6 +61,10 @@ const SettingsTabContent: React.FC<SettingsTabContentProps> = ({
                     />
                     <ChangeUserNameSelector
                         ref={userNameRef}
+                        currentUser={currentUser}
+                    />
+                    <ChangeProfileDetails
+                        ref={profileDetailsRef}
                         currentUser={currentUser}
                     />
                     <ChangePassword

@@ -105,6 +105,12 @@ export type SafeUser = Omit<
     | 'emailNotifications'
     | 'language'
     | 'notificationPreferences'
+    | 'bio'
+    | 'websiteUrl'
+    | 'instagram'
+    | 'twitter'
+    | 'youtube'
+    | 'tiktok'
 > & {
     createdAt?: string;
     updatedAt?: string;
@@ -124,6 +130,12 @@ export type SafeUser = Omit<
     mostUsedCategory?: string | null | undefined;
     mostUsedMethod?: string | null | undefined;
     badges?: string[];
+    bio?: string | null;
+    websiteUrl?: string | null;
+    instagram?: string | null;
+    twitter?: string | null;
+    youtube?: string | null;
+    tiktok?: string | null;
     notificationPreferences?: {
         social?: boolean;
         newContent?: boolean;
