@@ -47,15 +47,15 @@ export const MobileSearch: React.FC<MobileSearchProps> = ({
 
     if (!isFilterablePage) {
         return (
-            <div className="flex w-full flex-row items-center gap-1">
+            <div className="flex flex-row items-center gap-1 md:gap-3">
                 <Logo />
             </div>
         );
     }
 
-    return (
-        <div className="flex w-full flex-row items-center gap-1">
-            {isSearchMode ? (
+    if (isSearchMode) {
+        return (
+            <div className="flex w-full flex-row items-center gap-1">
                 <div className="animate-mobile-search-in flex w-full items-center gap-2">
                     <button
                         type="button"
@@ -129,24 +129,24 @@ export const MobileSearch: React.FC<MobileSearchProps> = ({
                         </button>
                     </form>
                 </div>
-            ) : (
-                <div className="flex w-full flex-row items-center gap-1 md:gap-3">
-                    <Logo />
-                    <button
-                        type="button"
-                        onClick={onSearchToggle}
-                        className="bg-green-450 dark:text-dark relative flex min-h-[40px] min-w-[40px] cursor-pointer items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
-                        aria-label={
-                            t('search_and_filter') || 'Search and filter'
-                        }
-                    >
-                        <BiSearch size={18} />
-                        {hasActiveFilters && (
-                            <span className="absolute -top-0.5 -right-0.5 size-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
-                        )}
-                    </button>
-                </div>
-            )}
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex flex-row items-center gap-1 md:gap-3">
+            <Logo />
+            <button
+                type="button"
+                onClick={onSearchToggle}
+                className="bg-green-450 dark:text-dark relative flex min-h-[40px] min-w-[40px] cursor-pointer items-center justify-center rounded-full p-2 text-white shadow-xs transition hover:shadow-md"
+                aria-label={t('search_and_filter') || 'Search and filter'}
+            >
+                <BiSearch size={18} />
+                {hasActiveFilters && (
+                    <span className="absolute -top-0.5 -right-0.5 size-3 rounded-full border-2 border-white bg-rose-500 dark:border-neutral-900"></span>
+                )}
+            </button>
         </div>
     );
 };

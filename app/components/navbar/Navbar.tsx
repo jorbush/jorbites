@@ -20,7 +20,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     const [isSearchModeActive, setIsSearchModeActive] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
-    const isMobile = useMediaQuery('(max-width: 880px)');
+    const isMobile = useMediaQuery('(max-width: 768px)');
     const pathname = usePathname();
     useTheme();
     const isMainPage = pathname === '/';
