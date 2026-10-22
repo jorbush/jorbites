@@ -3,12 +3,29 @@ import Container from '@/app/components/utils/Container';
 const ProfileClientSkeleton = () => {
     return (
         <Container>
-            <div className="mt-9 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                {/* Recipe Card Skeletons */}
+            {/* Tabs skeleton */}
+            <div className="mt-2 mb-8 flex border-b border-neutral-200 dark:border-neutral-600">
+                <div className="flex flex-1 items-center justify-center gap-2 py-2">
+                    <div className="size-5 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="h-5 w-20 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                </div>
+                <div className="flex flex-1 items-center justify-center gap-2 py-2">
+                    <div className="size-5 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="h-5 w-16 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                </div>
+            </div>
+
+            {/* Dropdown filter skeleton */}
+            <div className="mb-4 flex justify-end">
+                <div className="h-9 w-36 animate-pulse rounded-md bg-neutral-200 dark:bg-neutral-700"></div>
+            </div>
+
+            {/* Card Skeletons Grid */}
+            <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                 {[1, 2, 3, 4, 5, 6].map((index) => (
                     <div
                         key={index}
-                        className="dark:bg-dark col-span-1 overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white dark:border-neutral-700"
+                        className="dark:bg-dark col-span-1 overflow-hidden rounded-xl border border-neutral-200 bg-white dark:border-neutral-700"
                     >
                         {/* Image placeholder */}
                         <div className="aspect-square w-full animate-pulse bg-neutral-200 dark:bg-neutral-700"></div>

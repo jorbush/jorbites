@@ -152,6 +152,7 @@ const ProfilePage = async (props: {
                 <Suspense fallback={<ProfileClientSkeleton />}>
                     <ClientOnly fallback={<ProfileClientSkeleton />}>
                         <ProfileClient
+                            key={`${params.userId || ''}-${searchParams.tab || 'default'}`}
                             recipes={recipesResponse.recipes}
                             pinnedRecipes={pinnedRecipes}
                             currentUser={currentUser}

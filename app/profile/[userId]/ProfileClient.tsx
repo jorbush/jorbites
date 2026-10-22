@@ -1,20 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { SafeRecipe, SafeUser } from '@/app/types';
 import { Blog } from '@/app/utils/markdownUtils';
 import Container from '@/app/components/utils/Container';
-import RecipeCard from '@/app/components/recipes/RecipeCard';
-import BlogCard from '@/app/components/blog/BlogCard';
-import OrderByDropdown from '@/app/components/navbar/OrderByDropdown';
-import Pagination from '@/app/components/navigation/Pagination';
 import Tabs, { Tab } from '@/app/components/utils/Tabs';
-import EmptyState from '@/app/components/utils/EmptyState';
 import { OrderByType } from '@/app/utils/filter';
-import { BsPinAngleFill } from 'react-icons/bs';
 import { FiBookOpen } from 'react-icons/fi';
 import { MdRestaurantMenu } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
+import ProfileRecipesContent from '@/app/components/profile/ProfileRecipesContent';
+import ProfileBlogsContent from '@/app/components/profile/ProfileBlogsContent';
 
 interface SearchParams {
     orderBy?: OrderByType;
@@ -37,141 +34,93 @@ interface ProfileClientProps {
 const EMPTY_RECIPES: SafeRecipe[] = [];
 const EMPTY_BLOGS: Blog[] = [];
 
+const getInitialTab = (
+    tabParam?: string,
+    recipesCount = 0,
+    blogsCount = 0
+): string => {
+    if (tabParam === 'blogs' || tabParam === 'articles') return 'blogs';
+    if (tabParam === 'recipes') return 'recipes';
+    if (recipesCount === 0 && blogsCount > 0) return 'blogs';
+    return 'recipes';
+};
+
 const ProfileClient: React.FC<ProfileClientProps> = ({
     recipes,
     pinnedRecipes = EMPTY_RECIPES,
     currentUser,
     totalPages,
     currentPage,
-    totalRecipes,
     searchParams,
     profileUserId,
     blogs = EMPTY_BLOGS,
 }) => {
+    const router = useRouter();
     const { t } = useTranslation();
-    const isOwnProfile = currentUser && currentUser.id === profileUserId;
+    const isOwnProfile = Boolean(
+        currentUser && currentUser.id === profileUserId
+    );
 
-    const initialTab =
-        searchParams?.tab === 'articles' ? 'articles' : 'recipes';
-    const [activeTab, setActiveTab] = useState<string>(initialTab);
+    const [activeTab, setActiveTab] = useState<string>(() =>
+        getInitialTab(
+            searchParams?.tab,
+            recipes.length + pinnedRecipes.length,
+            blogs.length
+        )
+    );
 
-    const recipeCount =
-        totalRecipes !== undefined ? totalRecipes : recipes.length;
+    const handleTabChange = (tabId: string) => {
+        setActiveTab(tabId);
+        const params = new URLSearchParams(
+            typeof window !== 'undefined' ? window.location.search : ''
+        );
+        params.set('tab', tabId);
+        params.delete('page');
+        const query = params.toString();
+        router.push(query ? `?${query}` : '?', { scroll: false });
+    };
 
     const tabs: Tab[] = [
         {
             id: 'recipes',
-            label: `${t('recipes', 'Recipes')} (${recipeCount})`,
+            label: t('recipes') || 'Recipes',
             icon: <MdRestaurantMenu size={20} />,
         },
         {
-            id: 'articles',
-            label: `${t('stories_and_articles', 'Stories & Articles')} (${blogs.length})`,
+            id: 'blogs',
+            label: t('blogs') || 'Blogs',
             icon: <FiBookOpen size={18} />,
         },
     ];
 
     return (
         <Container>
-            <div className="mb-6">
+            <div className="mt-2 mb-8">
                 <Tabs
                     tabs={tabs}
                     activeTab={activeTab}
-                    onTabChange={setActiveTab}
+                    onTabChange={handleTabChange}
                     data-testid="profile-tabs"
                 />
             </div>
 
             {activeTab === 'recipes' && (
-                <div>
-                    {pinnedRecipes.length > 0 && (
-                        <div className="mb-8 w-full">
-                            <div className="mb-4 flex items-center gap-2">
-                                <BsPinAngleFill
-                                    className="text-green-450"
-                                    size={22}
-                                />
-                                <h2 className="text-xl font-semibold dark:text-neutral-100">
-                                    {t('pinned_recipes')}
-                                </h2>
-                            </div>
-                            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                                {pinnedRecipes.map((recipe: any) => (
-                                    <RecipeCard
-                                        currentUser={currentUser}
-                                        key={`pinned-${recipe.id}`}
-                                        data={recipe}
-                                        canPin={
-                                            !!(
-                                                isOwnProfile &&
-                                                currentUser?.id ===
-                                                    recipe.userId
-                                            )
-                                        }
-                                    />
-                                ))}
-                            </div>
-                            <hr className="mt-8 border-neutral-200 dark:border-neutral-800" />
-                        </div>
-                    )}
-
-                    <div className="mb-4 flex justify-end">
-                        <OrderByDropdown />
-                    </div>
-                    <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                        {recipes.map((recipe: any) => (
-                            <RecipeCard
-                                currentUser={currentUser}
-                                key={recipe.id}
-                                data={recipe}
-                                canPin={
-                                    !!(
-                                        isOwnProfile &&
-                                        currentUser?.id === recipe.userId
-                                    )
-                                }
-                            />
-                        ))}
-                    </div>
-                    {totalPages > 1 && (
-                        <Pagination
-                            totalPages={totalPages}
-                            currentPage={currentPage}
-                            searchParams={searchParams}
-                        />
-                    )}
-                </div>
+                <ProfileRecipesContent
+                    recipes={recipes}
+                    pinnedRecipes={pinnedRecipes}
+                    currentUser={currentUser}
+                    isOwnProfile={isOwnProfile}
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    searchParams={searchParams}
+                />
             )}
 
-            {activeTab === 'articles' && (
-                <div
-                    className="pt-2"
-                    data-testid="profile-articles-content"
-                >
-                    {blogs.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {blogs.map((blog) => (
-                                <BlogCard
-                                    key={blog.id}
-                                    blog={blog}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="py-8">
-                            <EmptyState
-                                title={
-                                    t('no_articles_found') ||
-                                    'No articles found'
-                                }
-                                subtitle={
-                                    t('no_articles_subtitle') ||
-                                    'This user has not published any articles yet.'
-                                }
-                            />
-                        </div>
-                    )}
-                </div>
+            {activeTab === 'blogs' && (
+                <ProfileBlogsContent
+                    blogs={blogs}
+                    searchParams={searchParams}
+                />
             )}
         </Container>
     );

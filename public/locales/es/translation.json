@@ -1523,6 +1523,9 @@
     "edit": "Editar",
     "no_bio_yet": "Aún no hay biografía de creador.",
     "stories_and_articles": "Historias y artículos",
+    "blogs": "Blogs",
+    "no_blogs_found": "No se encontraron blogs",
+    "no_blogs_subtitle": "Este usuario aún no ha publicado ningún blog.",
     "no_articles_found": "No se encontraron artículos",
     "no_articles_subtitle": "Este usuario aún no ha publicado ningún artículo.",
     "visit_website": "Visitar sitio web"
