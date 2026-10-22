@@ -1,22 +1,19 @@
 import { Metadata } from 'next';
 import { OrderByType } from '@/app/utils/filter';
-import { Suspense } from 'react';
 import EmptyState from '@/app/components/utils/EmptyState';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import ProfileClient from '@/app/profile/[userId]/ProfileClient';
 import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
 import getRecipesForGraph from '@/app/actions/getRecipesForGraph';
 import getUserById from '@/app/actions/getUserById';
 import getPinnedRecipesByUserId from '@/app/actions/getPinnedRecipesByUserId';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
 import UserStats from '@/app/components/stats/UserStats';
-import RecipeContributionGraph from '@/app/components/stats/RecipeContributionGraph';
-import RecipeContributionGraphSkeleton from '@/app/components/stats/RecipeContributionGraphSkeleton';
 import ProfileHeaderSkeleton from '@/app/components/profile/ProfileHeaderSkeleton';
 import UserStatsSkeleton from '@/app/components/stats/UserStatsSkeleton';
-import ProfileClientSkeleton from '@/app/components/profile/ProfileClientSkeleton';
 import ProfileJsonLd from '@/app/components/profile/ProfileJsonLd';
+import ProfileContributionGraph from '@/app/components/profile/ProfileContributionGraph';
+import ProfileContentSection from '@/app/components/profile/ProfileContentSection';
 import { getBlogsByAuthor } from '@/app/utils/blog-utils';
 
 interface IParams {
@@ -77,43 +74,66 @@ export async function generateMetadata(props: {
     };
 }
 
-const ProfilePage = async (props: {
-    params: Promise<IParams>;
-    searchParams: Promise<ISearchParams>;
-}) => {
+async function loadProfilePageData(
+    paramsPromise: Promise<IParams>,
+    searchParamsPromise: Promise<ISearchParams>
+) {
     const [params, searchParams] = await Promise.all([
-        props.params,
-        props.searchParams,
+        paramsPromise,
+        searchParamsPromise,
     ]);
-    const page = parseInt(searchParams.page || '1');
+    const userId = params.userId || '';
+    const page = parseInt(searchParams.page || '1', 10);
 
-    // Get paginated recipes and user data
     const [recipesResponse, graphRecipes, user, currentUser, pinnedRecipes] =
         await Promise.all([
             getRecipesByUserId({
-                ...params,
+                userId,
                 orderBy: searchParams.orderBy,
                 page,
                 limit: 12,
             }),
-            getRecipesForGraph({
-                userId: params.userId,
-            }),
-            getUserById({ userId: params.userId, withStats: true }),
+            getRecipesForGraph({ userId }),
+            getUserById({ userId, withStats: true }),
             getCurrentUser(),
-            getPinnedRecipesByUserId(params.userId || ''),
+            getPinnedRecipesByUserId(userId),
         ]);
 
-    const blogs = await getBlogsByAuthor(
-        params.userId || '',
-        user?.name || null,
-        currentUser?.language || user?.language || 'en'
-    );
+    const language = currentUser?.language || user?.language || 'en';
+    const blogs = await getBlogsByAuthor(userId, user?.name || null, language);
 
-    const hasContent =
+    return {
+        userId,
+        searchParams,
+        recipesResponse,
+        graphRecipes,
+        user,
+        currentUser,
+        pinnedRecipes,
+        blogs,
+    };
+}
+
+const ProfilePage = async (props: {
+    params: Promise<IParams>;
+    searchParams: Promise<ISearchParams>;
+}) => {
+    const data = await loadProfilePageData(props.params, props.searchParams);
+    const {
+        userId,
+        searchParams,
+        recipesResponse,
+        graphRecipes,
+        user,
+        currentUser,
+        pinnedRecipes,
+        blogs,
+    } = data;
+
+    const hasAnyContent =
         Boolean(user) || recipesResponse.recipes.length > 0 || blogs.length > 0;
 
-    if (!hasContent) {
+    if (!hasAnyContent) {
         return (
             <ClientOnly>
                 <EmptyState
@@ -123,9 +143,6 @@ const ProfilePage = async (props: {
             </ClientOnly>
         );
     }
-
-    const hasClientContent =
-        recipesResponse.recipes.length > 0 || blogs.length > 0;
 
     return (
         <>
@@ -142,37 +159,20 @@ const ProfilePage = async (props: {
                 <UserStats user={user} />
             </ClientOnly>
 
-            {graphRecipes.length > 0 && (
-                <ClientOnly fallback={<RecipeContributionGraphSkeleton />}>
-                    <RecipeContributionGraph recipes={graphRecipes} />
-                </ClientOnly>
-            )}
+            <ProfileContributionGraph recipes={graphRecipes} />
 
-            {hasClientContent ? (
-                <Suspense fallback={<ProfileClientSkeleton />}>
-                    <ClientOnly fallback={<ProfileClientSkeleton />}>
-                        <ProfileClient
-                            key={`${params.userId || ''}-${searchParams.tab || 'default'}`}
-                            recipes={recipesResponse.recipes}
-                            pinnedRecipes={pinnedRecipes}
-                            currentUser={currentUser}
-                            totalPages={recipesResponse.totalPages}
-                            currentPage={recipesResponse.currentPage}
-                            totalRecipes={recipesResponse.totalRecipes}
-                            searchParams={searchParams}
-                            profileUserId={params.userId || ''}
-                            blogs={blogs}
-                        />
-                    </ClientOnly>
-                </Suspense>
-            ) : (
-                <ClientOnly>
-                    <EmptyState
-                        title="No recipes found"
-                        subtitle="Looks like this user has not created recipes."
-                    />
-                </ClientOnly>
-            )}
+            <ProfileContentSection
+                userId={userId}
+                tab={searchParams.tab}
+                recipes={recipesResponse.recipes}
+                pinnedRecipes={pinnedRecipes}
+                currentUser={currentUser}
+                totalPages={recipesResponse.totalPages}
+                currentPage={recipesResponse.currentPage}
+                totalRecipes={recipesResponse.totalRecipes}
+                searchParams={searchParams}
+                blogs={blogs}
+            />
         </>
     );
 };
