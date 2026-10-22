@@ -5,9 +5,10 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { SafeRecipe, SafeUser } from '@/app/types';
 import { Blog } from '@/app/utils/markdownUtils';
 
+const mockPush = vi.fn();
 vi.mock('next/navigation', () => ({
     useRouter: vi.fn(() => ({
-        push: vi.fn(),
+        push: mockPush,
         replace: vi.fn(),
         query: {},
     })),
@@ -16,6 +17,14 @@ vi.mock('next/navigation', () => ({
         toString: vi.fn(() => ''),
     })),
     usePathname: vi.fn(() => '/profile/user1'),
+}));
+
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key: string, fallback?: string) => key || fallback,
+        i18n: { language: 'en', changeLanguage: () => new Promise(() => {}) },
+    }),
+    initReactI18next: { type: '3rdParty', init: () => {} },
 }));
 
 // Mock data
@@ -59,6 +68,7 @@ const mockRecipes: SafeRecipe[] = [
         questId: null,
     },
 ];
+
 const mockCurrentUser: SafeUser = {
     id: 'user1',
     name: 'Test User',
@@ -79,7 +89,9 @@ const mockCurrentUser: SafeUser = {
 describe('ProfileClient', () => {
     afterEach(() => {
         cleanup();
+        vi.clearAllMocks();
     });
+
     it('renders correctly with recipes and current user', () => {
         const { getByText } = render(
             <ProfileClient
@@ -92,7 +104,6 @@ describe('ProfileClient', () => {
             />
         );
 
-        // Assert that recipes are displayed
         expect(getByText('Recipe 1')).toBeDefined();
         expect(getByText('Recipe 2')).toBeDefined();
     });
@@ -109,13 +120,12 @@ describe('ProfileClient', () => {
             />
         );
 
-        // Assert that recipes are displayed
         expect(getByText('Recipe 1')).toBeDefined();
         expect(getByText('Recipe 2')).toBeDefined();
     });
 
-    it('renders correctly with no recipes', () => {
-        const { container } = render(
+    it('renders empty state when recipes list is empty', () => {
+        const { getByTestId, queryByText } = render(
             <ProfileClient
                 recipes={[]}
                 currentUser={mockCurrentUser}
@@ -126,8 +136,8 @@ describe('ProfileClient', () => {
             />
         );
 
-        // Assert that no recipes are displayed
-        expect(container.querySelector('.grid')?.nodeValue).toBeNull();
+        expect(getByTestId('profile-recipes-empty')).toBeDefined();
+        expect(queryByText('Recipe 1')).toBeNull();
     });
 
     it('renders pinned recipes when pinnedRecipes is provided', () => {
@@ -154,7 +164,7 @@ describe('ProfileClient', () => {
         expect(getByText('Recipe 1')).toBeDefined();
     });
 
-    it('renders profile tabs and switches between Recipes and Stories & Articles', () => {
+    it('renders profile tabs without counts and switches between Recipes and Blogs', () => {
         const mockBlogs: Blog[] = [
             {
                 id: 'my-first-article',
@@ -182,16 +192,20 @@ describe('ProfileClient', () => {
             />
         );
 
+        // Assert tabs render clean labels without count parentheses
+        const tabsElement = getByTestId('profile-tabs');
+        expect(tabsElement.textContent).not.toContain('(');
+        expect(tabsElement.textContent).not.toContain(')');
+
         // Initially on recipes tab
-        expect(getByTestId('profile-tabs')).toBeDefined();
         expect(getByText('Recipe 1')).toBeDefined();
         expect(queryByText('The Art of Sourdough')).toBeNull();
 
-        // Switch to articles tab
-        const articlesTab = getByTestId('tab-articles');
-        fireEvent.click(articlesTab);
+        // Switch to blogs tab
+        const blogsTab = getByTestId('tab-blogs');
+        fireEvent.click(blogsTab);
 
-        // Now articles are visible
+        // Now blogs are visible
         expect(getByText('The Art of Sourdough')).toBeDefined();
         expect(
             getByText('A deep dive into naturally leavened bread')
@@ -199,20 +213,53 @@ describe('ProfileClient', () => {
         expect(queryByText('Recipe 1')).toBeNull();
     });
 
-    it('renders empty state in Stories & Articles tab when user has no articles', () => {
+    it('defaults to blogs tab when account has 0 recipes but has blogs', () => {
+        const mockBlogs: Blog[] = [
+            {
+                id: 'exclusive-blog',
+                slug: 'exclusive-blog',
+                content: 'Blog content',
+                language: 'en',
+                frontmatter: {
+                    title: 'Culinary Journey 2026',
+                    description: 'Story of taste',
+                    date: '2026-06-01T00:00:00.000Z',
+                    user_id: 'user1',
+                },
+            },
+        ];
+
+        const { getByText, getByTestId } = render(
+            <ProfileClient
+                recipes={[]}
+                currentUser={mockCurrentUser}
+                totalPages={0}
+                currentPage={1}
+                searchParams={{}}
+                profileUserId="user1"
+                blogs={mockBlogs}
+            />
+        );
+
+        // Should default to blogs tab automatically
+        expect(getByTestId('profile-blogs-content')).toBeDefined();
+        expect(getByText('Culinary Journey 2026')).toBeDefined();
+    });
+
+    it('renders empty state in Blogs tab when user has no blogs', () => {
         const { getByTestId, getByText } = render(
             <ProfileClient
                 recipes={mockRecipes}
                 currentUser={mockCurrentUser}
                 totalPages={1}
                 currentPage={1}
-                searchParams={{ tab: 'articles' }}
+                searchParams={{ tab: 'blogs' }}
                 profileUserId="user1"
                 blogs={[]}
             />
         );
 
-        expect(getByTestId('profile-articles-content')).toBeDefined();
-        expect(getByText('no_articles_found')).toBeDefined();
+        expect(getByTestId('profile-blogs-empty')).toBeDefined();
+        expect(getByText('no_blogs_found')).toBeDefined();
     });
 });

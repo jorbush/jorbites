@@ -1522,6 +1522,9 @@
     "edit": "Edit",
     "no_bio_yet": "No creator bio added yet.",
     "stories_and_articles": "Stories & Articles",
+    "blogs": "Blogs",
+    "no_blogs_found": "No blogs found",
+    "no_blogs_subtitle": "This user has not published any blogs yet.",
     "no_articles_found": "No articles found",
     "no_articles_subtitle": "This user has not published any articles yet.",
     "visit_website": "Visit Website"
