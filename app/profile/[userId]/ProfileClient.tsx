@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SafeRecipe, SafeUser } from '@/app/types';
 import { Blog } from '@/app/utils/markdownUtils';
@@ -68,14 +68,6 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
             blogs.length
         )
     );
-
-    useEffect(() => {
-        if (searchParams?.tab === 'blogs' || searchParams?.tab === 'articles') {
-            setActiveTab('blogs');
-        } else if (searchParams?.tab === 'recipes') {
-            setActiveTab('recipes');
-        }
-    }, [searchParams?.tab]);
 
     const handleTabChange = (tabId: string) => {
         setActiveTab(tabId);
