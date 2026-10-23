@@ -1,9 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import ActivityHeatmap, {
-    getActivityDayColor,
-} from '@/app/components/profile/ActivityHeatmap';
+import ActivityHeatmap from '@/app/components/profile/ActivityHeatmap';
+import { getActivityDayColor } from '@/app/utils/activityHeatmapUtils';
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
