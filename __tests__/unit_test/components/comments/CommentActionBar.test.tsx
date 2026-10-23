@@ -35,11 +35,10 @@ describe('CommentActionBar', () => {
         cleanup();
     });
 
-    it('renders all action buttons and submit button', () => {
+    it('renders rate, photo upload, and submit buttons', () => {
         render(<CommentActionBar {...defaultProps} />);
 
         expect(screen.getByTestId('rate-toggle-btn')).toBeDefined();
-        expect(screen.getByTestId('cooked-toggle-label')).toBeDefined();
         expect(screen.getByTestId('cooked-photo-input')).toBeDefined();
         expect(screen.getByTestId('submit-comment')).toBeDefined();
     });
@@ -49,14 +48,6 @@ describe('CommentActionBar', () => {
 
         fireEvent.click(screen.getByTestId('rate-toggle-btn'));
         expect(defaultProps.onToggleRating).toHaveBeenCalledTimes(1);
-    });
-
-    it('calls onToggleCooked when cooked toggle is changed', () => {
-        render(<CommentActionBar {...defaultProps} />);
-
-        const checkbox = screen.getByTestId('cooked-toggle');
-        fireEvent.click(checkbox);
-        expect(defaultProps.onToggleCooked).toHaveBeenCalledWith(true);
     });
 
     it('calls onFileSelect when a file is selected', () => {

@@ -1,5 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import {
+    render,
+    screen,
+    fireEvent,
+    waitFor,
+    cleanup,
+} from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ProfileBadges from '@/app/components/profile/ProfileBadges';
 import confetti from 'canvas-confetti';
@@ -65,5 +71,40 @@ describe('ProfileBadges Component', () => {
 
         expect(mockPush).toHaveBeenCalledWith('/events/quest_badges');
         expect(confetti).not.toHaveBeenCalled();
+    });
+
+    it('navigates to cooksnap badges page on cooksnap badge click', () => {
+        render(<ProfileBadges badges={['kitchen_explorer_1']} />);
+
+        const badgeButton = screen.getByRole('button');
+        fireEvent.click(badgeButton);
+
+        expect(mockPush).toHaveBeenCalledWith('/events/cooksnap_badges');
+        expect(confetti).not.toHaveBeenCalled();
+    });
+
+    it('renders descriptive tooltips for cooksnap badges', async () => {
+        const { container } = render(
+            <ProfileBadges
+                badges={[
+                    'kitchen_explorer_1',
+                    'cooksnap_master_5',
+                    'cooksnap_master_15',
+                ]}
+            />
+        );
+
+        const tooltipWrappers = container.querySelectorAll(
+            '.group.relative.inline-block'
+        );
+        expect(tooltipWrappers.length).toBe(3);
+
+        fireEvent.mouseEnter(tooltipWrappers[0]);
+        await waitFor(() => {
+            const tooltip = screen.getByTestId('tooltip');
+            expect(tooltip.textContent).toContain(
+                'Kitchen Explorer (Bronze) - 1 Dish Cooked'
+            );
+        });
     });
 });

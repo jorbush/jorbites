@@ -35,6 +35,11 @@ jest.mock('@/app/lib/prismadb', () => ({
 // Mock sendNotification
 jest.mock('@/app/actions/sendNotification', () => jest.fn());
 
+// Mock badgeForge
+jest.mock('@/app/lib/badgeForge', () => ({
+    triggerBadgeForgeEvaluation: jest.fn().mockResolvedValue(true),
+}));
+
 // Mock getCurrentUser
 jest.mock('@/app/actions/getCurrentUser', () =>
     jest.fn(() => {
@@ -48,6 +53,9 @@ jest.mock('@/app/actions/getCurrentUser', () =>
 );
 
 import prisma from '@/app/lib/prismadb';
+import sendNotification from '@/app/actions/sendNotification';
+import { triggerBadgeForgeEvaluation } from '@/app/lib/badgeForge';
+import { NotificationType } from '@/app/types/notification';
 
 describe('Comments API Error Handling', () => {
     beforeEach(() => {
@@ -428,6 +436,172 @@ describe('Comments API Error Handling', () => {
                     comments: true,
                 },
             });
+            expect(sendNotification).toHaveBeenCalledWith({
+                type: NotificationType.NEW_COOKSNAP,
+                userEmail: 'owner@example.com',
+                params: {
+                    userName: 'Cooker',
+                    recipeId: 'recipe-cooked-id',
+                    recipeName: undefined,
+                },
+            });
+            expect(triggerBadgeForgeEvaluation).toHaveBeenCalledWith(
+                'test-user-id',
+                'COOKSNAP_POSTED'
+            );
+        });
+
+        it('should create regular comment with imageSrc when isCooked is false, dispatching NEW_COMMENT and not triggering badge evaluation', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'Asker',
+                    email: 'asker@example.com',
+                },
+            };
+
+            const mockRecipe = {
+                id: 'recipe-question-id',
+                userId: 'owner-id',
+                user: { email: 'owner@example.com' },
+            };
+
+            const mockRecipeAndComment = {
+                id: 'recipe-question-id',
+                comments: [
+                    {
+                        id: 'comment-q-1',
+                        userId: 'test-user-id',
+                        comment: 'Does this dough texture look right?',
+                        rating: null,
+                        isCooked: false,
+                        imageSrc:
+                            'https://images.jorbites.com/remakes/dough.webp',
+                    },
+                ],
+            };
+
+            (prisma.recipe.findUnique as jest.Mock).mockResolvedValueOnce(
+                mockRecipe
+            );
+            (prisma.recipe.update as jest.Mock).mockResolvedValueOnce(
+                mockRecipeAndComment
+            );
+            (prisma.comment.aggregate as jest.Mock).mockResolvedValueOnce({
+                _avg: { rating: null },
+                _count: { rating: 0 },
+            });
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    recipeId: 'recipe-question-id',
+                    comment: 'Does this dough texture look right?',
+                    isCooked: false,
+                    imageSrc: 'https://images.jorbites.com/remakes/dough.webp',
+                }),
+            } as unknown as Request;
+
+            const response = await CommentPOST(mockRequest);
+            expect(response.status).toBe(200);
+
+            expect(prisma.recipe.update).toHaveBeenCalledWith({
+                where: { id: 'recipe-question-id' },
+                data: {
+                    comments: {
+                        create: {
+                            userId: 'test-user-id',
+                            comment: 'Does this dough texture look right?',
+                            rating: null,
+                            isCooked: false,
+                            imageSrc:
+                                'https://images.jorbites.com/remakes/dough.webp',
+                        },
+                    },
+                    averageRating: 0,
+                    ratingCount: 0,
+                },
+                include: {
+                    comments: true,
+                },
+            });
+
+            expect(sendNotification).toHaveBeenCalledWith({
+                type: NotificationType.NEW_COMMENT,
+                userEmail: 'owner@example.com',
+                params: {
+                    userName: 'Asker',
+                    recipeId: 'recipe-question-id',
+                    recipeName: undefined,
+                },
+            });
+            expect(triggerBadgeForgeEvaluation).not.toHaveBeenCalledWith(
+                'test-user-id',
+                'COOKSNAP_POSTED'
+            );
+        });
+
+        it('should not send notification when author posts a comment or cooksnap on their own recipe', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'AuthorUser',
+                    email: 'author@example.com',
+                },
+            };
+
+            const mockRecipe = {
+                id: 'own-recipe-id',
+                userId: 'test-user-id',
+                title: 'My Own Recipe',
+                user: {
+                    email: 'author@example.com',
+                },
+            };
+
+            const mockRecipeAndComment = {
+                id: 'own-recipe-id',
+                comments: [
+                    {
+                        id: 'comment-self-1',
+                        userId: 'test-user-id',
+                        comment: 'Cooked my own dish again!',
+                        rating: 5,
+                        isCooked: true,
+                        imageSrc:
+                            'https://images.jorbites.com/remakes/photo.webp',
+                    },
+                ],
+            };
+
+            (prisma.recipe.findUnique as jest.Mock).mockResolvedValueOnce(
+                mockRecipe
+            );
+            (prisma.recipe.update as jest.Mock).mockResolvedValueOnce(
+                mockRecipeAndComment
+            );
+            (prisma.comment.aggregate as jest.Mock).mockResolvedValueOnce({
+                _avg: { rating: 5.0 },
+                _count: { rating: 1 },
+            });
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    recipeId: 'own-recipe-id',
+                    comment: 'Cooked my own dish again!',
+                    rating: 5,
+                    isCooked: true,
+                    imageSrc: 'https://images.jorbites.com/remakes/photo.webp',
+                }),
+            } as unknown as Request;
+
+            const response = await CommentPOST(mockRequest);
+            expect(response.status).toBe(200);
+
+            expect(sendNotification).not.toHaveBeenCalled();
+            expect(triggerBadgeForgeEvaluation).toHaveBeenCalledWith(
+                'test-user-id',
+                'COOKSNAP_POSTED'
+            );
         });
     });
 });

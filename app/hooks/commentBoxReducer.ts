@@ -55,7 +55,6 @@ export function commentBoxReducer(
                 ...state,
                 selectedFile: action.payload.file,
                 previewUrl: action.payload.previewUrl,
-                isCooked: true,
             };
         case 'REMOVE_FILE':
             return {

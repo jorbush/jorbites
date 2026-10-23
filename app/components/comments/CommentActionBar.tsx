@@ -9,8 +9,8 @@ export interface CommentActionBarProps {
     rating: number | null;
     showRating: boolean;
     onToggleRating: () => void;
-    isCooked: boolean;
-    onToggleCooked: (isCooked: boolean) => void;
+    isCooked?: boolean;
+    onToggleCooked?: (isCooked: boolean) => void;
     selectedFile: File | null;
     onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
     fileInputRef: React.RefObject<HTMLInputElement | null>;
@@ -22,8 +22,6 @@ const CommentActionBar: React.FC<CommentActionBarProps> = ({
     rating,
     showRating,
     onToggleRating,
-    isCooked,
-    onToggleCooked,
     selectedFile,
     onFileSelect,
     fileInputRef,
@@ -35,7 +33,7 @@ const CommentActionBar: React.FC<CommentActionBarProps> = ({
 
     return (
         <div className="mt-3 flex items-center justify-between border-t border-neutral-200/70 pt-2.5 dark:border-neutral-700/70">
-            {/* Action Options (Rate, Cooked & Photo) */}
+            {/* Action Options (Rate & Photo) */}
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                 {/* Toggle Star Rating Button (Icon-only on < md, Text on >= md) */}
                 <button
@@ -68,66 +66,6 @@ const CommentActionBar: React.FC<CommentActionBarProps> = ({
                             : 'Rate'}
                     </span>
                 </button>
-
-                {/* "I Cooked This! 🥑" Toggle (Short text on < md, Full text on >= md) */}
-                <label
-                    className={`flex cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition select-none ${
-                        isCooked
-                            ? 'bg-green-450/20 dark:bg-green-450/10 text-green-800 dark:text-green-300'
-                            : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
-                    }`}
-                    data-testid="cooked-toggle-label"
-                    title={
-                        mounted
-                            ? String(
-                                  t('i_cooked_this') &&
-                                      t('i_cooked_this') !== 'i_cooked_this'
-                                      ? t('i_cooked_this')
-                                      : 'I Cooked This!'
-                              )
-                            : 'I Cooked This!'
-                    }
-                >
-                    <input
-                        type="checkbox"
-                        checked={isCooked}
-                        onChange={(e) => onToggleCooked(e.target.checked)}
-                        className="sr-only"
-                        data-testid="cooked-toggle"
-                        data-cy="cooked-toggle"
-                        aria-label={
-                            mounted
-                                ? String(
-                                      t('i_cooked_this') &&
-                                          t('i_cooked_this') !== 'i_cooked_this'
-                                          ? t('i_cooked_this')
-                                          : 'I Cooked This!'
-                                  )
-                                : 'I Cooked This!'
-                        }
-                    />
-                    <span>🥑</span>
-                    <span className="md:hidden">
-                        {mounted
-                            ? String(
-                                  t('cooked_short') &&
-                                      t('cooked_short') !== 'cooked_short'
-                                      ? t('cooked_short')
-                                      : 'Cooked'
-                              )
-                            : 'Cooked'}
-                    </span>
-                    <span className="hidden md:inline">
-                        {mounted
-                            ? String(
-                                  t('i_cooked_this') &&
-                                      t('i_cooked_this') !== 'i_cooked_this'
-                                      ? t('i_cooked_this')
-                                      : 'I Cooked This!'
-                              )
-                            : 'I Cooked This!'}
-                    </span>
-                </label>
 
                 {/* Image Upload Button (Icon-only on < md, Text on >= md) */}
                 <div>

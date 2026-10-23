@@ -110,7 +110,7 @@ describe('commentBoxReducer', () => {
     });
 
     describe('SELECT_FILE', () => {
-        it('sets selectedFile, previewUrl, and automatically sets isCooked to true', () => {
+        it('sets selectedFile, previewUrl, without setting isCooked to true', () => {
             const file = new File(['fake data'], 'cooked-dish.png', {
                 type: 'image/png',
             });
@@ -125,7 +125,7 @@ describe('commentBoxReducer', () => {
             expect(result.previewUrl).toBe(
                 'blob:http://localhost/dish-preview'
             );
-            expect(result.isCooked).toBe(true);
+            expect(result.isCooked).toBe(false);
         });
     });
 

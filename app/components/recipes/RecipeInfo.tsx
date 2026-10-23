@@ -16,6 +16,10 @@ import { RecipeCoCooks } from './RecipeCoCooks';
 import { RecipeLinkedRecipes } from './RecipeLinkedRecipes';
 import { RecipeGanttTable } from './RecipeGanttTable';
 import useIsMounted from '@/app/hooks/useIsMounted';
+import useCooksnapModal from '@/app/hooks/useCooksnapModal';
+import useLoginModal from '@/app/hooks/useLoginModal';
+import Button from '@/app/components/buttons/Button';
+import { TbPhotoPlus } from 'react-icons/tb';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -185,6 +189,8 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     const coCooks = coCooksData || [];
     const linkedRecipes = linkedRecipesData || [];
     const isLoadingRelatedData = isCoCooksLoading || isLinkedRecipesLoading;
+    const cooksnapModal = useCooksnapModal();
+    const loginModal = useLoginModal();
 
     return (
         <div className="col-span-4 flex flex-col gap-8 pr-2 pl-2">
@@ -192,6 +198,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 user={user}
                 currentUser={currentUser}
                 id={id}
+                recipeTitle={recipeTitle}
                 likes={likes}
                 stepsCount={steps.length}
                 ingredientsCount={ingredients.length}
@@ -231,6 +238,29 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 RenderSteps={RecipeSteps}
                 RenderGanttTable={RecipeGanttTable}
             />
+
+            {/* Post-steps Cooksnap Button */}
+            <div className="flex w-full flex-row items-center justify-center pt-2">
+                <div className="w-[240px]">
+                    <Button
+                        label={
+                            mounted
+                                ? String(
+                                      t('i_made_this', {
+                                          defaultValue: 'I Made This!',
+                                      })
+                                  )
+                                : 'I Made This!'
+                        }
+                        icon={TbPhotoPlus}
+                        onClick={() => {
+                            if (!currentUser) return loginModal.onOpen();
+                            cooksnapModal.onOpen(id, recipeTitle);
+                        }}
+                        dataTestId="post-steps-cooksnap-btn"
+                    />
+                </div>
+            </div>
 
             {/* YouTube video section */}
             {youtubeUrl && (

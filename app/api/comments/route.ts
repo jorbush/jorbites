@@ -16,6 +16,7 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 import { redisCache } from '@/app/lib/redis';
+import { triggerBadgeForgeEvaluation } from '@/app/lib/badgeForge';
 
 function isValidR2Url(urlStr: unknown): string | null {
     if (!urlStr || typeof urlStr !== 'string') return null;
@@ -137,40 +138,65 @@ export async function POST(request: Request) {
             newAvg = (oldAvg * oldCount + Number(rating)) / newCount;
         }
 
-        const [recipeAndComment] = await Promise.all([
-            prisma.recipe.update({
-                where: {
-                    id: recipeId,
-                },
-                data: {
-                    comments: {
-                        create: {
-                            userId: currentUser.id,
-                            comment: comment,
-                            rating:
-                                rating !== undefined && rating !== null
-                                    ? Number(rating)
-                                    : null,
-                            isCooked: Boolean(isCooked || imageSrc),
-                            imageSrc: isValidR2Url(imageSrc),
-                        },
+        const validImageSrc = isValidR2Url(imageSrc);
+        const isCooksnap = Boolean(isCooked && validImageSrc);
+        const isAuthor = currentRecipe?.userId === currentUser.id;
+
+        const updateRecipePromise = prisma.recipe.update({
+            where: {
+                id: recipeId,
+            },
+            data: {
+                comments: {
+                    create: {
+                        userId: currentUser.id,
+                        comment: comment,
+                        rating:
+                            rating !== undefined && rating !== null
+                                ? Number(rating)
+                                : null,
+                        isCooked: Boolean(isCooked),
+                        imageSrc: validImageSrc,
                     },
-                    averageRating: newAvg,
-                    ratingCount: newCount,
                 },
-                include: {
-                    comments: true,
-                },
-            }),
-            sendNotification({
-                type: NotificationType.NEW_COMMENT,
-                userEmail: currentRecipe?.user.email,
-                params: {
-                    userName: currentUser.name,
-                    recipeId: recipeId,
-                },
-            }),
+                averageRating: newAvg,
+                ratingCount: newCount,
+            },
+            include: {
+                comments: true,
+            },
+        });
+
+        const notificationPromise =
+            !isAuthor && currentRecipe?.user?.email
+                ? sendNotification({
+                      type: isCooksnap
+                          ? NotificationType.NEW_COOKSNAP
+                          : NotificationType.NEW_COMMENT,
+                      userEmail: currentRecipe.user.email,
+                      params: {
+                          userName: currentUser.name,
+                          recipeId: recipeId,
+                          recipeName: currentRecipe?.title,
+                      },
+                  })
+                : Promise.resolve(null);
+
+        const [recipeAndComment] = await Promise.all([
+            updateRecipePromise,
+            notificationPromise,
         ]);
+
+        if (isCooksnap) {
+            triggerBadgeForgeEvaluation(
+                currentUser.id,
+                'COOKSNAP_POSTED'
+            ).catch((err: unknown) =>
+                logger.warn('POST /api/comments - badge evaluation error', {
+                    error: err instanceof Error ? err.message : String(err),
+                })
+            );
+        }
 
         const mentionedUserIds = extractMentionedUserIds(comment);
         if (mentionedUserIds.length > 0) {

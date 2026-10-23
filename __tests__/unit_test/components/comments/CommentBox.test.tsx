@@ -280,19 +280,13 @@ describe('CommentBox', () => {
         });
     });
 
-    it('toggles I Cooked This! checkbox and passes isCooked on submit', async () => {
+    it('submits comment with isCooked false even when submitting', async () => {
         render(<CommentBox {...mockProps} />);
 
         const textarea = screen.getByPlaceholderText('write_comment');
         fireEvent.change(textarea, {
             target: { value: 'Made this for dinner!' },
         });
-
-        const cookedToggle = screen.getByTestId('cooked-toggle');
-        expect(cookedToggle).toHaveProperty('checked', false);
-
-        fireEvent.click(cookedToggle);
-        expect(cookedToggle).toHaveProperty('checked', true);
 
         const submitButton = screen.getByTestId('submit-comment');
         fireEvent.click(submitButton);
@@ -301,7 +295,7 @@ describe('CommentBox', () => {
             expect(mockProps.onCreateComment).toHaveBeenCalledWith(
                 'Made this for dinner!',
                 null,
-                true,
+                false,
                 null
             );
         });
@@ -352,10 +346,6 @@ describe('CommentBox', () => {
 
     it('applies correct responsive text visibility classes to action buttons', () => {
         render(<CommentBox {...mockProps} />);
-
-        const cookedLabel = screen.getByTestId('cooked-toggle-label');
-        expect(cookedLabel.querySelector('.md\\:hidden')).toBeDefined();
-        expect(cookedLabel.querySelector('.hidden.md\\:inline')).toBeDefined();
 
         const rateBtn = screen.getByTestId('rate-toggle-btn');
         expect(rateBtn.querySelector('.hidden.md\\:inline')).toBeDefined();

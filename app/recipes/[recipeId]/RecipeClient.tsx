@@ -19,6 +19,7 @@ import ClientOnly from '@/app/components/utils/ClientOnly';
 import { useTranslation } from 'react-i18next';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
+import CookedGallery from '@/app/components/recipes/CookedGallery';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
@@ -35,8 +36,8 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     currentUser,
     comments,
 }) => {
-    const loginModal = useLoginModal();
     const { refresh } = useRouter() || {};
+    const loginModal = useLoginModal();
     const { t } = useTranslation();
     const [isPending, startTransition] = useTransition();
 
@@ -166,6 +167,9 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             recipeYield={recipe.recipeYield}
                             ganttTable={recipe.ganttTable}
                         />
+                    </div>
+                    <div className="mt-2">
+                        <CookedGallery comments={comments} />
                     </div>
                     <div id="comments-section">
                         <Comments

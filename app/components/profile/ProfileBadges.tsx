@@ -34,6 +34,15 @@ const isQuestBadge = (badge: string) => {
     return badge.startsWith('quest_solver_') || badge.includes('quest_solver');
 };
 
+const isCooksnapBadge = (badge: string) => {
+    return (
+        badge.startsWith('kitchen_explorer_') ||
+        badge.includes('kitchen_explorer') ||
+        badge.startsWith('cooksnap_master_') ||
+        badge.includes('cooksnap_master')
+    );
+};
+
 const getBadgeTooltip = (badge: string) => {
     if (badge.includes('quest_solver_10')) {
         return 'Quest Veteran (Silver) - 10 Quests Fulfilled';
@@ -43,6 +52,15 @@ const getBadgeTooltip = (badge: string) => {
     }
     if (badge.includes('quest_solver_1')) {
         return 'Quest Solver (Bronze) - 1 Quest Fulfilled';
+    }
+    if (badge.includes('cooksnap_master_15')) {
+        return 'Cooksnap Master (Gold) - 15 Dishes Cooked';
+    }
+    if (badge.includes('cooksnap_master_5')) {
+        return 'Cooksnap Veteran (Silver) - 5 Dishes Cooked';
+    }
+    if (badge.includes('kitchen_explorer_1')) {
+        return 'Kitchen Explorer (Bronze) - 1 Dish Cooked';
     }
     return `${badge.replace(/\.(webp|png|jpg)$/, '').replace(/_/g, ' ')} badge`;
 };
@@ -57,6 +75,8 @@ const ProfileBadges: React.FC<ProfileBadgesProps> = ({ badges }) => {
     const onBadgeClick = (badge: string) => {
         if (isQuestBadge(badge)) {
             push('/events/quest_badges');
+        } else if (isCooksnapBadge(badge)) {
+            push('/events/cooksnap_badges');
         } else {
             handleBadgeClick();
         }

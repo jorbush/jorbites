@@ -127,7 +127,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 }
             }
 
-            onCreateComment(comment, rating, isCooked, uploadedImageSrc);
+            onCreateComment(comment, rating, false, uploadedImageSrc);
 
             if (previewUrl) {
                 try {
@@ -189,13 +189,6 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                         showRating={showRating}
                         onToggleRating={() =>
                             dispatch({ type: 'TOGGLE_RATING' })
-                        }
-                        isCooked={isCooked}
-                        onToggleCooked={(cooked) =>
-                            dispatch({
-                                type: 'SET_COOKED',
-                                payload: cooked,
-                            })
                         }
                         selectedFile={selectedFile}
                         onFileSelect={handleFileSelect}

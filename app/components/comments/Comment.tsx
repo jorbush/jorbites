@@ -118,7 +118,7 @@ const Comment: React.FC<CommentProps> = ({
                             ? `${t('level')} ${userLevel}`
                             : `level ${userLevel}`}
                     </div>
-                    {(isCooked || Boolean(imageSrc)) && (
+                    {Boolean(isCooked) && (
                         <span
                             className="bg-green-450/20 dark:bg-green-450/10 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold text-green-800 dark:text-green-300"
                             data-testid="cooked-badge"
