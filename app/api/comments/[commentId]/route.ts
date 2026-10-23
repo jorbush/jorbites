@@ -111,6 +111,7 @@ export async function DELETE(
             await Promise.all([
                 redisCache.del(`recipe:comments:${comment.recipeId}`),
                 redisCache.del(`recipe:${comment.recipeId}`),
+                redisCache.del(`user:activity:graph:${comment.userId}`),
             ]);
         } catch (cacheError: any) {
             logger.error(

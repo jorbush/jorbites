@@ -4,15 +4,12 @@ import EmptyState from '@/app/components/utils/EmptyState';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getRecipesByUserId from '@/app/actions/getRecipesByUserId';
-import getRecipesForGraph from '@/app/actions/getRecipesForGraph';
+import getUserActivityForGraph from '@/app/actions/getUserActivityForGraph';
 import getUserById from '@/app/actions/getUserById';
 import getPinnedRecipesByUserId from '@/app/actions/getPinnedRecipesByUserId';
 import ProfileHeader from '@/app/profile/[userId]/ProfileHeader';
-import UserStats from '@/app/components/stats/UserStats';
 import ProfileHeaderSkeleton from '@/app/components/profile/ProfileHeaderSkeleton';
-import UserStatsSkeleton from '@/app/components/stats/UserStatsSkeleton';
 import ProfileJsonLd from '@/app/components/profile/ProfileJsonLd';
-import ProfileContributionGraph from '@/app/components/profile/ProfileContributionGraph';
 import ProfileContentSection from '@/app/components/profile/ProfileContentSection';
 import { getBlogsByAuthor } from '@/app/utils/blog-utils';
 
@@ -85,7 +82,7 @@ async function loadProfilePageData(
     const userId = params.userId || '';
     const page = parseInt(searchParams.page || '1', 10);
 
-    const [recipesResponse, graphRecipes, user, currentUser, pinnedRecipes] =
+    const [recipesResponse, user, currentUser, pinnedRecipes] =
         await Promise.all([
             getRecipesByUserId({
                 userId,
@@ -93,24 +90,35 @@ async function loadProfilePageData(
                 page,
                 limit: 12,
             }),
-            getRecipesForGraph({ userId }),
             getUserById({ userId, withStats: true }),
             getCurrentUser(),
             getPinnedRecipesByUserId(userId),
         ]);
 
+    const showActivityGraph =
+        user?.profilePreferences?.showActivityGraph ?? true;
     const language = currentUser?.language || user?.language || 'en';
-    const blogs = await getBlogsByAuthor(userId, user?.name || null, language);
+
+    const [userActivity, blogs] = await Promise.all([
+        showActivityGraph
+            ? getUserActivityForGraph({ userId })
+            : Promise.resolve({
+                  recipes: [],
+                  comments: [],
+                  challengeSubmissions: [],
+              }),
+        getBlogsByAuthor(userId, user?.name || null, language),
+    ]);
 
     return {
         userId,
         searchParams,
         recipesResponse,
-        graphRecipes,
         user,
         currentUser,
         pinnedRecipes,
         blogs,
+        userActivity,
     };
 }
 
@@ -123,11 +131,11 @@ const ProfilePage = async (props: {
         userId,
         searchParams,
         recipesResponse,
-        graphRecipes,
         user,
         currentUser,
         pinnedRecipes,
         blogs,
+        userActivity,
     } = data;
 
     const hasAnyContent =
@@ -155,12 +163,6 @@ const ProfilePage = async (props: {
                 />
             </ClientOnly>
 
-            <ClientOnly fallback={<UserStatsSkeleton />}>
-                <UserStats user={user} />
-            </ClientOnly>
-
-            <ProfileContributionGraph recipes={graphRecipes} />
-
             <ProfileContentSection
                 userId={userId}
                 tab={searchParams.tab}
@@ -172,6 +174,10 @@ const ProfilePage = async (props: {
                 totalRecipes={recipesResponse.totalRecipes}
                 searchParams={searchParams}
                 blogs={blogs}
+                user={user}
+                graphRecipes={userActivity.recipes}
+                comments={userActivity.comments}
+                challengeSubmissions={userActivity.challengeSubmissions}
             />
         </>
     );

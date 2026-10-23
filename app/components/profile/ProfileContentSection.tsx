@@ -22,6 +22,20 @@ interface ProfileContentSectionProps {
         tab?: string;
     };
     blogs: Blog[];
+    user?: SafeUser | null;
+    graphRecipes?: Array<{
+        id: string;
+        createdAt: string;
+        questId?: string | null;
+    }>;
+    comments?: Array<{
+        id: string;
+        createdAt: string;
+        isCooked?: boolean;
+        rating?: number | null;
+        comment?: string;
+    }>;
+    challengeSubmissions?: Array<{ id: string; createdAt: string }>;
 }
 
 const ProfileContentSection: React.FC<ProfileContentSectionProps> = ({
@@ -35,8 +49,18 @@ const ProfileContentSection: React.FC<ProfileContentSectionProps> = ({
     totalRecipes,
     searchParams,
     blogs,
+    user,
+    graphRecipes,
+    comments,
+    challengeSubmissions,
 }) => {
-    const hasClientContent = recipes.length > 0 || blogs.length > 0;
+    const hasClientContent =
+        recipes.length > 0 ||
+        blogs.length > 0 ||
+        Boolean(user?.recipeCount && user.recipeCount > 0) ||
+        Boolean(graphRecipes && graphRecipes.length > 0) ||
+        Boolean(comments && comments.length > 0) ||
+        Boolean(challengeSubmissions && challengeSubmissions.length > 0);
 
     if (!hasClientContent) {
         return (
@@ -63,6 +87,10 @@ const ProfileContentSection: React.FC<ProfileContentSectionProps> = ({
                     searchParams={searchParams}
                     profileUserId={userId}
                     blogs={blogs}
+                    user={user}
+                    graphRecipes={graphRecipes}
+                    comments={comments}
+                    challengeSubmissions={challengeSubmissions}
                 />
             </ClientOnly>
         </Suspense>
