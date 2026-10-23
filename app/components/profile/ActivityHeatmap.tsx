@@ -9,6 +9,8 @@ import {
     useActivityCalendar,
     ActivityHeatmapProps,
     ActivityDayData,
+    HeatmapRecipe,
+    ActivityItem,
 } from '@/app/utils/activityHeatmapUtils';
 
 export type {
@@ -17,6 +19,90 @@ export type {
     ActivityHeatmapProps,
     ActivityDayData,
 } from '@/app/utils/activityHeatmapUtils';
+
+const EMPTY_RECIPES: HeatmapRecipe[] = [];
+const EMPTY_COMMENTS: NonNullable<ActivityHeatmapProps['comments']> = [];
+const EMPTY_CHALLENGES: NonNullable<
+    ActivityHeatmapProps['challengeSubmissions']
+> = [];
+const EMPTY_ACTIVITIES: ActivityItem[] = [];
+
+interface BreakdownItemProps {
+    count: number;
+    singularKey: string;
+    pluralKey: string;
+    singularFallback: string;
+    pluralFallback: string;
+}
+
+const TooltipBreakdownItem: React.FC<BreakdownItemProps> = ({
+    count,
+    singularKey,
+    pluralKey,
+    singularFallback,
+    pluralFallback,
+}) => {
+    const { t } = useTranslation();
+    if (count <= 0) return null;
+
+    const label =
+        count === 1
+            ? t(singularKey) || singularFallback
+            : t(pluralKey) || pluralFallback;
+
+    return (
+        <div>
+            {count} {label}
+        </div>
+    );
+};
+
+interface BreakdownProps {
+    day: ActivityDayData;
+}
+
+const ActivityHeatmapBreakdown: React.FC<BreakdownProps> = ({ day }) => {
+    const hasDetails =
+        day.recipesCount > 0 ||
+        day.cooksnapsCount > 0 ||
+        day.reviewsCount > 0 ||
+        day.challengesCount > 0;
+
+    if (!hasDetails) return null;
+
+    return (
+        <div className="mt-1 flex flex-col gap-0.5 text-[10px] text-neutral-300">
+            <TooltipBreakdownItem
+                count={day.recipesCount}
+                singularKey="recipe"
+                pluralKey="recipes"
+                singularFallback="recipe"
+                pluralFallback="recipes"
+            />
+            <TooltipBreakdownItem
+                count={day.cooksnapsCount}
+                singularKey="cooksnap"
+                pluralKey="cooksnaps"
+                singularFallback="cooksnap"
+                pluralFallback="cooksnaps"
+            />
+            <TooltipBreakdownItem
+                count={day.reviewsCount}
+                singularKey="review"
+                pluralKey="reviews"
+                singularFallback="review"
+                pluralFallback="reviews"
+            />
+            <TooltipBreakdownItem
+                count={day.challengesCount}
+                singularKey="challenge_submission"
+                pluralKey="challenge_submissions"
+                singularFallback="challenge submission"
+                pluralFallback="challenge submissions"
+            />
+        </div>
+    );
+};
 
 interface TooltipProps {
     hoveredDay: ActivityDayData | null;
@@ -53,47 +139,7 @@ const ActivityHeatmapTooltip: React.FC<TooltipProps> = ({
                 {hoveredDay.count} {activityUnit} {t('on') || 'on'}{' '}
                 {formatDate(hoveredDay.date)}
             </div>
-            {(hoveredDay.recipesCount > 0 ||
-                hoveredDay.cooksnapsCount > 0 ||
-                hoveredDay.reviewsCount > 0 ||
-                hoveredDay.challengesCount > 0) && (
-                <div className="mt-1 flex flex-col gap-0.5 text-[10px] text-neutral-300">
-                    {hoveredDay.recipesCount > 0 && (
-                        <div>
-                            {hoveredDay.recipesCount}{' '}
-                            {hoveredDay.recipesCount === 1
-                                ? t('recipe') || 'recipe'
-                                : t('recipes') || 'recipes'}
-                        </div>
-                    )}
-                    {hoveredDay.cooksnapsCount > 0 && (
-                        <div>
-                            {hoveredDay.cooksnapsCount}{' '}
-                            {hoveredDay.cooksnapsCount === 1
-                                ? t('cooksnap') || 'cooksnap'
-                                : t('cooksnaps') || 'cooksnaps'}
-                        </div>
-                    )}
-                    {hoveredDay.reviewsCount > 0 && (
-                        <div>
-                            {hoveredDay.reviewsCount}{' '}
-                            {hoveredDay.reviewsCount === 1
-                                ? t('review') || 'review'
-                                : t('reviews') || 'reviews'}
-                        </div>
-                    )}
-                    {hoveredDay.challengesCount > 0 && (
-                        <div>
-                            {hoveredDay.challengesCount}{' '}
-                            {hoveredDay.challengesCount === 1
-                                ? t('challenge_submission') ||
-                                  'challenge submission'
-                                : t('challenge_submissions') ||
-                                  'challenge submissions'}
-                        </div>
-                    )}
-                </div>
-            )}
+            <ActivityHeatmapBreakdown day={hoveredDay} />
         </div>
     );
 };
@@ -284,10 +330,10 @@ const ActivityHeatmapGrid: React.FC<GridProps> = ({
 );
 
 const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
-    recipes = [],
-    comments = [],
-    challengeSubmissions = [],
-    activities = [],
+    recipes = EMPTY_RECIPES,
+    comments = EMPTY_COMMENTS,
+    challengeSubmissions = EMPTY_CHALLENGES,
+    activities = EMPTY_ACTIVITIES,
     title,
     showTitle = true,
 }) => {

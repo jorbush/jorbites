@@ -50,8 +50,15 @@ interface ProfileClientProps {
     activities?: ActivityItem[];
 }
 
+type GraphRecipe = {
+    id: string;
+    createdAt: string;
+    questId?: string | null;
+};
+
 const EMPTY_RECIPES: SafeRecipe[] = [];
 const EMPTY_BLOGS: Blog[] = [];
+const EMPTY_GRAPH_RECIPES: GraphRecipe[] = [];
 
 const resolveTargetUser = (
     user?: SafeUser | null,
@@ -102,7 +109,7 @@ interface ProfileActivitySectionProps {
 
 const ProfileActivitySection: React.FC<ProfileActivitySectionProps> = ({
     show,
-    recipes = [],
+    recipes = EMPTY_GRAPH_RECIPES,
     comments,
     challengeSubmissions,
     activities,
