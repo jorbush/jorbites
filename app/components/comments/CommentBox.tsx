@@ -38,7 +38,6 @@ const CommentBox: React.FC<CommentBoxProps> = ({
         comment,
         rating,
         showRating,
-        isCooked,
         selectedFile,
         previewUrl,
         isUploading,

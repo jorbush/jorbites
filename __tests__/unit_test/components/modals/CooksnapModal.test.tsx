@@ -235,7 +235,7 @@ describe('CooksnapModal', () => {
             expect(axios.post).toHaveBeenCalledWith(
                 '/api/comments',
                 expect.objectContaining({
-                    comment: 'I made this recipe! 📸',
+                    comment: 'I made this recipe!',
                     isCooked: true,
                     imageSrc: 'https://images.jorbites.com/cooksnap.webp',
                 })

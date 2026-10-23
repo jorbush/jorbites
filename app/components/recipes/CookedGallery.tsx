@@ -14,7 +14,11 @@ interface CookedGalleryProps {
     comments?: SafeComment[];
 }
 
-const CookedGallery: React.FC<CookedGalleryProps> = ({ comments = [] }) => {
+const EMPTY_COMMENTS: SafeComment[] = [];
+
+const CookedGallery: React.FC<CookedGalleryProps> = ({
+    comments = EMPTY_COMMENTS,
+}) => {
     const { push } = useRouter() || {};
     const { t } = useTranslation();
     const mounted = useIsMounted();
@@ -52,10 +56,21 @@ const CookedGallery: React.FC<CookedGalleryProps> = ({ comments = [] }) => {
                 {cooksnaps.map((item) => (
                     <div
                         key={item.id}
+                        role="button"
+                        tabIndex={0}
                         onClick={() =>
                             item.imageSrc && setLightboxSrc(item.imageSrc)
                         }
-                        className="group w-40 shrink-0 cursor-pointer"
+                        onKeyDown={(e) => {
+                            if (
+                                (e.key === 'Enter' || e.key === ' ') &&
+                                item.imageSrc
+                            ) {
+                                e.preventDefault();
+                                setLightboxSrc(item.imageSrc);
+                            }
+                        }}
+                        className="group w-40 shrink-0 cursor-pointer text-left focus:outline-hidden"
                         data-testid={`cooksnap-card-${item.id}`}
                     >
                         {/* Dish Photo */}
@@ -79,31 +94,36 @@ const CookedGallery: React.FC<CookedGalleryProps> = ({ comments = [] }) => {
 
                         {/* Card Footer / Cook Info */}
                         <div className="mt-2 flex items-center gap-2">
-                            <div
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (item.user?.id) {
-                                        push('/profile/' + item.user.id);
-                                    }
-                                }}
-                                className="cursor-pointer"
-                            >
-                                <Avatar
-                                    src={item.user?.image}
-                                    size={20}
-                                />
-                            </div>
-                            <span
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (item.user?.id) {
-                                        push('/profile/' + item.user.id);
-                                    }
-                                }}
-                                className="truncate text-xs font-medium text-neutral-700 hover:underline dark:text-neutral-300"
-                            >
-                                {item.user?.name || 'Jorbiter'}
-                            </span>
+                            {item.user?.id ? (
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (item.user?.id) {
+                                            push('/profile/' + item.user.id);
+                                        }
+                                    }}
+                                    className="flex cursor-pointer items-center gap-2 border-0 bg-transparent p-0 text-left focus:outline-hidden"
+                                >
+                                    <Avatar
+                                        src={item.user?.image}
+                                        size={20}
+                                    />
+                                    <span className="truncate text-xs font-medium text-neutral-700 hover:underline dark:text-neutral-300">
+                                        {item.user?.name || 'Jorbiter'}
+                                    </span>
+                                </button>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <Avatar
+                                        src={item.user?.image}
+                                        size={20}
+                                    />
+                                    <span className="truncate text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                                        {item.user?.name || 'Jorbiter'}
+                                    </span>
+                                </div>
+                            )}
                         </div>
 
                         {item.comment && (
