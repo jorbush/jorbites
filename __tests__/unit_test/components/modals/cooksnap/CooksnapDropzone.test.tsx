@@ -104,9 +104,7 @@ describe('CooksnapDropzone', () => {
             'src',
             'blob:http://localhost/dish-photo'
         );
-        expect(
-            screen.getByTestId('remove-cooksnap-photo')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('remove-cooksnap-photo')).toBeInTheDocument();
     });
 
     it('rejects invalid non-image file selection with error toast', () => {
@@ -123,7 +121,9 @@ describe('CooksnapDropzone', () => {
             'Please select a valid image file'
         );
         expect(mockOnFileSelected).not.toHaveBeenCalled();
-        expect(screen.queryByTestId('custom-proxy-image')).not.toBeInTheDocument();
+        expect(
+            screen.queryByTestId('custom-proxy-image')
+        ).not.toBeInTheDocument();
     });
 
     it('handles drag over, drag leave, and drop events', () => {
@@ -167,7 +167,9 @@ describe('CooksnapDropzone', () => {
             'blob:http://localhost/dish-photo'
         );
         expect(mockOnFileSelected).toHaveBeenCalledWith(null);
-        expect(screen.queryByTestId('custom-proxy-image')).not.toBeInTheDocument();
+        expect(
+            screen.queryByTestId('custom-proxy-image')
+        ).not.toBeInTheDocument();
         expect(screen.getByTestId('cooksnap-dropzone')).toBeInTheDocument();
     });
 

@@ -145,7 +145,7 @@ export const CooksnapDropzone: React.FC<CooksnapDropzoneProps> = ({
             }}
             className={`relative flex h-48 w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-neutral-300 bg-transparent p-6 text-neutral-600 transition hover:opacity-70 focus:outline-hidden dark:border-neutral-700 dark:text-neutral-400 ${
                 isDragOver
-                    ? 'border-green-450 bg-neutral-50 dark:border-green-450 dark:bg-neutral-800/40'
+                    ? 'border-green-450 dark:border-green-450 bg-neutral-50 dark:bg-neutral-800/40'
                     : ''
             }`}
             data-testid="cooksnap-dropzone"
