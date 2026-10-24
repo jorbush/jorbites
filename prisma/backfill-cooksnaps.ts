@@ -1,9 +1,7 @@
 import '@/app/lib/axiom/asyncLocalStoragePolyfill';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../app/lib/prismadb';
 import { redisCache } from '../app/lib/redis';
 import { recomputeRecipeRating } from '../app/utils/recipeRating';
-
-const prisma = new PrismaClient();
 
 export async function backfillCooksnaps() {
     console.log('Starting Cooksnap migration backfill...');
@@ -141,9 +139,21 @@ export async function backfillCooksnaps() {
         process.exit(1);
     } finally {
         await prisma.$disconnect();
+        if (redisCache && typeof (redisCache as any).quit === 'function') {
+            try {
+                await (redisCache as any).quit();
+            } catch {}
+        }
     }
 }
 
 if (require.main === module) {
-    backfillCooksnaps();
+    backfillCooksnaps()
+        .then(() => {
+            process.exit(0);
+        })
+        .catch((error) => {
+            console.error('Backfill failed:', error);
+            process.exit(1);
+        });
 }
