@@ -129,4 +129,19 @@ describe('PhotoLightbox', () => {
         fireEvent.keyDown(dialog, { key: 'Enter' });
         expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
+
+    it('renders optional children content when provided', () => {
+        render(
+            <PhotoLightbox
+                src="https://images.example.com/photo.jpg"
+                isOpen={true}
+                onClose={mockOnClose}
+            >
+                <div data-testid="lightbox-children">Cooksnap Details</div>
+            </PhotoLightbox>
+        );
+
+        expect(screen.getByTestId('lightbox-children')).toBeInTheDocument();
+        expect(screen.getByText('Cooksnap Details')).toBeInTheDocument();
+    });
 });

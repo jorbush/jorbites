@@ -10,6 +10,7 @@ interface PhotoLightboxProps {
     isOpen: boolean;
     onClose: () => void;
     testId?: string;
+    children?: React.ReactNode;
 }
 
 export default function PhotoLightbox({
@@ -18,8 +19,11 @@ export default function PhotoLightbox({
     isOpen,
     onClose,
     testId = 'lightbox-modal',
+    children,
 }: PhotoLightboxProps) {
     if (!isOpen || !src) return null;
+
+    const hasChildren = Boolean(children);
 
     return (
         <div
@@ -33,7 +37,7 @@ export default function PhotoLightbox({
             data-testid={testId}
         >
             <div
-                className="relative flex max-h-[90vh] max-w-[92vw] flex-col items-center justify-center overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/95 p-2 shadow-2xl sm:max-w-[85vw] md:max-w-[800px]"
+                className="relative flex max-h-[90vh] w-full max-w-[92vw] flex-col items-center justify-center overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/95 p-2 shadow-2xl sm:max-w-[85vw] md:max-w-[750px]"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button
@@ -50,14 +54,21 @@ export default function PhotoLightbox({
                     width={800}
                     height={600}
                     maxQuality
-                    className="max-h-[80vh] w-auto max-w-full rounded-xl object-contain"
+                    className={`w-auto max-w-full rounded-xl object-contain ${
+                        hasChildren ? 'max-h-[58vh]' : 'max-h-[80vh]'
+                    }`}
                     style={{
                         maxWidth: '100%',
-                        maxHeight: '80vh',
+                        maxHeight: hasChildren ? '58vh' : '80vh',
                         width: 'auto',
                         height: 'auto',
                     }}
                 />
+                {children && (
+                    <div className="w-full border-t border-neutral-800/80 px-2 pt-2.5 pb-1 text-left sm:px-3 sm:pt-3">
+                        {children}
+                    </div>
+                )}
             </div>
         </div>
     );

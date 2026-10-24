@@ -66,7 +66,7 @@ vi.mock('@/app/components/optimization/CustomProxyImage', () => ({
 }));
 
 vi.mock('@/app/components/modals/PhotoLightbox', () => ({
-    default: ({ isOpen, src, onClose }: any) =>
+    default: ({ isOpen, src, onClose, children }: any) =>
         isOpen ? (
             <div
                 data-testid="photo-lightbox"
@@ -76,8 +76,29 @@ vi.mock('@/app/components/modals/PhotoLightbox', () => ({
                     src={src}
                     alt="lightbox-preview"
                 />
+                <div onClick={(e) => e.stopPropagation()}>{children}</div>
             </div>
         ) : null,
+}));
+
+vi.mock('@/app/components/VerificationBadge', () => ({
+    default: () => <span data-testid="verified-badge">✓</span>,
+}));
+
+vi.mock('@/app/components/utils/StarRating', () => ({
+    default: ({ rating }: any) => (
+        <div data-testid="star-rating">{rating} stars</div>
+    ),
+    StarRating: ({ rating }: any) => (
+        <div data-testid="star-rating">{rating} stars</div>
+    ),
+}));
+
+vi.mock('@/app/hooks/useTranslateableContent', () => ({
+    useTranslateableContent: ({ content }: any) => ({
+        displayContent: content,
+        translateButtonElement: null,
+    }),
 }));
 
 vi.mock('@/app/components/utils/ScrollableContainer', () => ({
@@ -162,6 +183,12 @@ describe('CookedGallery', () => {
         fireEvent.click(card);
 
         expect(screen.getByTestId('photo-lightbox')).toBeDefined();
+        expect(screen.getByTestId('cooksnap-lightbox-details')).toBeDefined();
+        expect(screen.getByTestId('cooksnap-lightbox-comment')).toBeDefined();
+        expect(
+            screen.getByTestId('cooksnap-lightbox-comment').textContent
+        ).toContain('Turned out amazing!');
+        expect(screen.getByTestId('cooksnap-lightbox-rating')).toBeDefined();
 
         // Close lightbox
         fireEvent.click(screen.getByTestId('photo-lightbox'));
