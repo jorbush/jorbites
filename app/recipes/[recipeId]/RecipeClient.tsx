@@ -125,6 +125,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 averageRating={averageRating}
                 ratingCount={ratingCount}
                 comments={comments}
+                cooksnaps={cooksnaps}
                 calories={recipe.calories}
                 recipeCuisine={recipe.recipeCuisine}
                 recipeYield={recipe.recipeYield}
@@ -165,7 +166,11 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                         />
                     </div>
                     <div className="mt-2">
-                        <CookedGallery cooksnaps={cooksnaps} />
+                        <CookedGallery
+                            cooksnaps={cooksnaps}
+                            currentUser={currentUser}
+                            recipeAuthorId={recipe.userId}
+                        />
                     </div>
                     <div id="comments-section">
                         <Comments

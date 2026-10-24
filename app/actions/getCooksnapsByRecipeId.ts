@@ -12,6 +12,10 @@ export default async function getCooksnapsByRecipeId(
 ): Promise<SafeCooksnap[]> {
     try {
         const { recipeId } = params;
+        if (!recipeId) {
+            return [];
+        }
+
         const cacheKey = `recipe:cooksnaps:${recipeId}`;
 
         try {

@@ -198,7 +198,6 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 user={user}
                 currentUser={currentUser}
                 id={id}
-                recipeTitle={recipeTitle}
                 likes={likes}
                 stepsCount={steps.length}
                 ingredientsCount={ingredients.length}

@@ -32,6 +32,7 @@ export async function backfillCooksnaps() {
         let migratedCount = 0;
         let skippedCount = 0;
         const affectedRecipeIds = new Set<string>();
+        const affectedUserIds = new Set<string>();
 
         const commentBatches = chunkArray(cookedComments, BATCH_SIZE);
         await commentBatches.reduce(async (chain, batch) => {
@@ -43,12 +44,12 @@ export async function backfillCooksnaps() {
                     }
 
                     affectedRecipeIds.add(comment.recipeId);
+                    affectedUserIds.add(comment.userId);
 
                     const existingCooksnap = await prisma.cooksnap.findFirst({
                         where: {
                             userId: comment.userId,
                             recipeId: comment.recipeId,
-                            imageSrc: comment.imageSrc,
                         },
                     });
 
@@ -121,6 +122,26 @@ export async function backfillCooksnaps() {
         console.log(
             `Updated ratings and cleared cache for ${affectedRecipeIds.size} recipes.`
         );
+
+        const userBatches = chunkArray(
+            Array.from(affectedUserIds),
+            BATCH_SIZE
+        );
+        await userBatches.reduce(async (chain, batch) => {
+            await chain;
+            await Promise.all(
+                batch.map(async (userId) => {
+                    try {
+                        await redisCache.del(`user:activity:graph:${userId}`);
+                    } catch (err) {
+                        console.warn(
+                            `Failed to clear activity cache for user ${userId}:`,
+                            err
+                        );
+                    }
+                })
+            );
+        }, Promise.resolve());
     } catch (error) {
         console.error('Backfill failed:', error);
         process.exit(1);

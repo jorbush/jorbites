@@ -14,7 +14,6 @@ interface RecipeInfoHeaderProps {
     user: SafeUser;
     currentUser?: SafeUser | null;
     id: string;
-    recipeTitle?: string;
     likes: number;
     stepsCount: number;
     ingredientsCount: number;

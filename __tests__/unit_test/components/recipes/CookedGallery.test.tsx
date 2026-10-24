@@ -1,15 +1,34 @@
 import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import axios from 'axios';
 import CookedGallery from '@/app/components/recipes/CookedGallery';
-import { SafeCooksnap } from '@/app/types';
+import { SafeCooksnap, SafeUser } from '@/app/types';
 
 const mockPush = vi.fn();
+const mockRefresh = vi.fn();
+
+vi.mock('axios');
 
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
         push: mockPush,
+        refresh: mockRefresh,
     }),
+}));
+
+vi.mock('@/app/components/modals/ConfirmModal', () => ({
+    default: ({ open, onConfirm }: any) =>
+        open ? (
+            <div data-testid="confirm-modal">
+                <button
+                    data-testid="confirm-delete-btn"
+                    onClick={onConfirm}
+                >
+                    Confirm
+                </button>
+            </div>
+        ) : null,
 }));
 
 vi.mock('react-i18next', () => ({
@@ -156,5 +175,52 @@ describe('CookedGallery', () => {
         fireEvent.click(chefName);
 
         expect(mockPush).toHaveBeenCalledWith('/profile/u-1');
+    });
+
+    it('shows delete button when user is the cook of the cooksnap', async () => {
+        const mockUser: SafeUser = {
+            id: 'u-1',
+            name: 'Chef Jordi',
+        } as SafeUser;
+
+        vi.mocked(axios.delete).mockResolvedValue({});
+
+        render(
+            <CookedGallery
+                cooksnaps={sampleCooksnaps}
+                currentUser={mockUser}
+                recipeAuthorId="other-author"
+            />
+        );
+
+        const deleteBtn = screen.getByTestId('delete-cooksnap-c-1');
+        expect(deleteBtn).toBeDefined();
+
+        // Other cooksnap (u-2) should not have delete button for u-1
+        expect(screen.queryByTestId('delete-cooksnap-c-2')).toBeNull();
+
+        fireEvent.click(deleteBtn);
+        expect(screen.getByTestId('confirm-modal')).toBeDefined();
+
+        fireEvent.click(screen.getByTestId('confirm-delete-btn'));
+        expect(axios.delete).toHaveBeenCalledWith('/api/cooksnaps/c-1');
+    });
+
+    it('shows delete button for all cooksnaps when user is the recipe author', () => {
+        const authorUser: SafeUser = {
+            id: 'author-user',
+            name: 'Recipe Author',
+        } as SafeUser;
+
+        render(
+            <CookedGallery
+                cooksnaps={sampleCooksnaps}
+                currentUser={authorUser}
+                recipeAuthorId="author-user"
+            />
+        );
+
+        expect(screen.getByTestId('delete-cooksnap-c-1')).toBeDefined();
+        expect(screen.getByTestId('delete-cooksnap-c-2')).toBeDefined();
     });
 });

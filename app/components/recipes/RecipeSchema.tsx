@@ -6,7 +6,7 @@ import {
     formatIsoDuration,
 } from '@/app/utils/seo-utils';
 import { JORBITES_URL } from '@/app/utils/constants';
-import { SafeComment } from '@/app/types';
+import { SafeComment, SafeCooksnap } from '@/app/types';
 
 interface RecipeSchemaProps {
     title: string;
@@ -26,6 +26,7 @@ interface RecipeSchemaProps {
     averageRating?: number;
     ratingCount?: number;
     comments?: SafeComment[];
+    cooksnaps?: SafeCooksnap[];
     calories?: number | null;
     recipeCuisine?: string | null;
     recipeYield?: number | null;
@@ -51,6 +52,7 @@ export default function RecipeSchema({
     averageRating,
     ratingCount,
     comments,
+    cooksnaps,
     calories,
     recipeCuisine,
     recipeYield,
@@ -143,18 +145,18 @@ export default function RecipeSchema({
         };
     }
 
-    const reviews = comments?.filter(
-        (c) => c.rating !== undefined && c.rating !== null && c.rating > 0
-    );
-    if (reviews && reviews.length > 0) {
-        schemaData.review = reviews.map((c) => ({
+    const commentReviews = (comments || [])
+        .filter(
+            (c) => c.rating !== undefined && c.rating !== null && c.rating > 0
+        )
+        .map((c) => ({
             '@type': 'Review',
             author: {
                 '@type': 'Person',
                 name: c.user?.name || 'Usuario de Jorbites',
             },
             datePublished: c.createdAt,
-            reviewBody: c.comment,
+            reviewBody: c.comment || '',
             reviewRating: {
                 '@type': 'Rating',
                 ratingValue: c.rating,
@@ -162,6 +164,31 @@ export default function RecipeSchema({
                 worstRating: '1',
             },
         }));
+
+    const cooksnapReviews = (cooksnaps || [])
+        .filter(
+            (cs) =>
+                cs.rating !== undefined && cs.rating !== null && cs.rating > 0
+        )
+        .map((cs) => ({
+            '@type': 'Review',
+            author: {
+                '@type': 'Person',
+                name: cs.user?.name || 'Usuario de Jorbites',
+            },
+            datePublished: cs.createdAt,
+            reviewBody: cs.comment || 'Cooksnap photo remake',
+            reviewRating: {
+                '@type': 'Rating',
+                ratingValue: cs.rating,
+                bestRating: '5',
+                worstRating: '1',
+            },
+        }));
+
+    const allReviews = [...commentReviews, ...cooksnapReviews];
+    if (allReviews.length > 0) {
+        schemaData.review = allReviews;
     }
 
     return (

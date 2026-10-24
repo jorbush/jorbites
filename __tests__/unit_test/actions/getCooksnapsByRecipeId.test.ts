@@ -116,4 +116,11 @@ describe('getCooksnapsByRecipeId Server Action', () => {
         const result = await getCooksnapsByRecipeId({ recipeId: 'r1' });
         expect(result).toEqual([]);
     });
+
+    it('returns empty array immediately when recipeId is missing', async () => {
+        const result = await getCooksnapsByRecipeId({});
+        expect(result).toEqual([]);
+        expect(redisCache.get).not.toHaveBeenCalled();
+        expect(prisma.cooksnap.findMany).not.toHaveBeenCalled();
+    });
 });

@@ -13,6 +13,9 @@ jest.mock('@/app/lib/prismadb', () => ({
         comment: {
             findMany: jest.fn(),
         },
+        cooksnap: {
+            findMany: jest.fn(),
+        },
     },
 }));
 
@@ -68,6 +71,7 @@ describe('getUserActivityForGraph Action', () => {
         const date1 = new Date('2026-03-01T12:00:00.000Z');
         const date2 = new Date('2026-03-02T15:00:00.000Z');
         const date3 = new Date('2026-03-03T10:00:00.000Z');
+        const date4 = new Date('2026-03-04T11:00:00.000Z');
 
         jest.mocked(prisma.recipe.findMany).mockResolvedValueOnce([
             { id: 'rec-1', createdAt: date1, questId: null },
@@ -78,8 +82,16 @@ describe('getUserActivityForGraph Action', () => {
             {
                 id: 'com-1',
                 createdAt: date2,
-                isCooked: true,
+                isCooked: false,
                 rating: 4,
+            },
+        ] as any);
+
+        jest.mocked(prisma.cooksnap.findMany).mockResolvedValueOnce([
+            {
+                id: 'cooksnap-1',
+                createdAt: date4,
+                rating: 5,
             },
         ] as any);
 
@@ -97,8 +109,14 @@ describe('getUserActivityForGraph Action', () => {
             {
                 id: 'com-1',
                 createdAt: date2.toISOString(),
-                isCooked: true,
+                isCooked: false,
                 rating: 4,
+            },
+            {
+                id: 'cooksnap-1',
+                createdAt: date4.toISOString(),
+                isCooked: true,
+                rating: 5,
             },
         ]);
         // Derived from recipes with questId

@@ -14,6 +14,7 @@ jest.mock('@/app/lib/prismadb', () => ({
     },
     cooksnap: {
         create: jest.fn(),
+        findFirst: jest.fn(),
     },
 }));
 
@@ -62,6 +63,7 @@ describe('POST /api/cooksnaps', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+        (prisma.cooksnap.findFirst as jest.Mock).mockResolvedValue(null);
     });
 
     it('returns 401 when user is not authenticated', async () => {
@@ -241,6 +243,33 @@ describe('POST /api/cooksnaps', () => {
             'recipe:cooksnaps:recipe-123'
         );
         expect(redisCache.del).toHaveBeenCalledWith('recipe:recipe-123');
+        expect(redisCache.del).toHaveBeenCalledWith(
+            'user:activity:graph:user-123'
+        );
+    });
+
+    it('returns 400 when user has already shared a cooksnap for this recipe', async () => {
+        (prisma.recipe.findUnique as jest.Mock).mockResolvedValue(mockRecipe);
+        (prisma.cooksnap.findFirst as jest.Mock).mockResolvedValue({
+            id: 'existing-cooksnap',
+        });
+
+        const request = new Request('http://localhost/api/cooksnaps', {
+            method: 'POST',
+            body: JSON.stringify({
+                recipeId: 'recipe-123',
+                imageSrc: 'https://images.jorbites.com/photo.webp',
+            }),
+        });
+
+        const response = await POST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe(
+            'You have already shared a cooksnap for this recipe'
+        );
+        expect(prisma.cooksnap.create).not.toHaveBeenCalled();
     });
 
     it('does not send notification if the cook is the recipe author', async () => {

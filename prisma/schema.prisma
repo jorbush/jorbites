@@ -149,6 +149,7 @@ model Cooksnap {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, recipeId])
   @@index([recipeId, createdAt])
   @@index([userId])
 }

@@ -202,7 +202,7 @@ describe('CooksnapModal', () => {
         });
     });
 
-    it('submits with friendly default note if note is left empty', async () => {
+    it('submits with null note if note is left empty', async () => {
         vi.mocked(axios.post).mockImplementation((url: string) => {
             if (url === '/api/upload/r2') {
                 return Promise.resolve({
@@ -234,7 +234,7 @@ describe('CooksnapModal', () => {
             expect(axios.post).toHaveBeenCalledWith(
                 '/api/cooksnaps',
                 expect.objectContaining({
-                    comment: 'I made this recipe!',
+                    comment: null,
                     imageSrc: 'https://images.jorbites.com/cooksnap.webp',
                 })
             );

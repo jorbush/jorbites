@@ -68,13 +68,7 @@ const CooksnapModal: React.FC = () => {
             }
 
             // 3. Post cooksnap to dedicated endpoint
-            const defaultNote = mounted
-                ? t('i_made_this_default_note', {
-                      defaultValue: 'I made this recipe!',
-                  })
-                : 'I made this recipe!';
-
-            const commentText = note.trim() || defaultNote;
+            const commentText = note.trim() || null;
 
             await axios.post('/api/cooksnaps', {
                 recipeId: cooksnapModal.recipeId,
@@ -103,15 +97,16 @@ const CooksnapModal: React.FC = () => {
 
             handleClose();
             refresh?.();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to submit cooksnap', error);
-            toast.error(
-                mounted
+            const errorMessage =
+                error?.response?.data?.message ||
+                (mounted
                     ? t('something_went_wrong', {
                           defaultValue: 'Something went wrong',
                       })
-                    : 'Something went wrong'
-            );
+                    : 'Something went wrong');
+            toast.error(errorMessage);
         } finally {
             setIsLoading(false);
         }

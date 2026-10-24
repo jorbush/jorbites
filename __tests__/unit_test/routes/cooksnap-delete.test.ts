@@ -3,7 +3,6 @@ import prisma from '@/app/lib/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { deleteFromR2 } from '@/app/utils/r2';
 import { recomputeRecipeRating } from '@/app/utils/recipeRating';
-import { triggerBadgeForgeEvaluation } from '@/app/lib/badgeForge';
 import { redisCache } from '@/app/lib/redis';
 
 // Mock dependencies
@@ -22,9 +21,6 @@ jest.mock('@/app/utils/recipeRating', () => ({
         averageRating: 4.0,
         ratingCount: 1,
     }),
-}));
-jest.mock('@/app/lib/badgeForge', () => ({
-    triggerBadgeForgeEvaluation: jest.fn().mockResolvedValue({}),
 }));
 jest.mock('@/app/lib/redis', () => ({
     redisCache: {
@@ -52,16 +48,9 @@ describe('DELETE /api/cooksnaps/[cooksnapId]', () => {
         role: 'user',
     };
 
-    const mockAdminUser = {
-        id: 'admin-789',
-        email: 'admin@example.com',
-        role: 'admin',
-    };
-
     const mockOtherUser = {
         id: 'stranger-999',
         email: 'stranger@example.com',
-        role: 'user',
     };
 
     const mockCooksnap = {
@@ -159,32 +148,17 @@ describe('DELETE /api/cooksnaps/[cooksnapId]', () => {
         expect(deleteFromR2).toHaveBeenCalledWith(
             'https://images.jorbites.com/remakes/photo1.webp'
         );
-        expect(triggerBadgeForgeEvaluation).toHaveBeenCalledWith(
-            'cook-123',
-            'COOKSNAP_DELETED'
-        );
         expect(redisCache.del).toHaveBeenCalledWith(
             'recipe:cooksnaps:recipe-100'
         );
         expect(redisCache.del).toHaveBeenCalledWith('recipe:recipe-100');
+        expect(redisCache.del).toHaveBeenCalledWith(
+            'user:activity:graph:cook-123'
+        );
     });
 
     it('allows the recipe author to delete a cooksnap on their recipe', async () => {
         (getCurrentUser as jest.Mock).mockResolvedValue(mockRecipeAuthor);
-
-        const props = {
-            params: Promise.resolve({ cooksnapId: 'cooksnap-001' }),
-        };
-
-        const response = await DELETE(new Request('http://localhost'), props);
-        expect(response.status).toBe(200);
-        expect(prisma.cooksnap.delete).toHaveBeenCalledWith({
-            where: { id: 'cooksnap-001' },
-        });
-    });
-
-    it('allows an admin to delete any cooksnap', async () => {
-        (getCurrentUser as jest.Mock).mockResolvedValue(mockAdminUser);
 
         const props = {
             params: Promise.resolve({ cooksnapId: 'cooksnap-001' }),

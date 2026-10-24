@@ -12,7 +12,6 @@ import { logger } from '@/app/lib/axiom/server';
 import { redisCache } from '@/app/lib/redis';
 import { deleteFromR2 } from '@/app/utils/r2';
 import { recomputeRecipeRating } from '@/app/utils/recipeRating';
-import { triggerBadgeForgeEvaluation } from '@/app/lib/badgeForge';
 
 interface IParams {
     cooksnapId?: string;
@@ -51,9 +50,8 @@ export async function DELETE(
 
         const isCookAuthor = cooksnap.userId === currentUser.id;
         const isRecipeAuthor = cooksnap.recipe.userId === currentUser.id;
-        const isAdmin = (currentUser as any).role === 'admin';
 
-        if (!isCookAuthor && !isRecipeAuthor && !isAdmin) {
+        if (!isCookAuthor && !isRecipeAuthor) {
             return forbiddenResponse(
                 'You do not have permission to delete this cooksnap'
             );
@@ -83,20 +81,11 @@ export async function DELETE(
             }
         }
 
-        triggerBadgeForgeEvaluation(cooksnap.userId, 'COOKSNAP_DELETED').catch(
-            (err: unknown) =>
-                logger.warn(
-                    'DELETE /api/cooksnaps/[cooksnapId] - badge evaluation error',
-                    {
-                        error: err instanceof Error ? err.message : String(err),
-                    }
-                )
-        );
-
         try {
             await Promise.all([
                 redisCache.del(`recipe:cooksnaps:${cooksnap.recipeId}`),
                 redisCache.del(`recipe:${cooksnap.recipeId}`),
+                redisCache.del(`user:activity:graph:${cooksnap.userId}`),
             ]);
         } catch (cacheError: any) {
             logger.error(

@@ -105,6 +105,19 @@ export async function POST(request: Request) {
             return badRequest('Recipe not found');
         }
 
+        const existingCooksnap = await prisma.cooksnap.findFirst({
+            where: {
+                userId: currentUser.id,
+                recipeId: recipeId,
+            },
+        });
+
+        if (existingCooksnap) {
+            return badRequest(
+                'You have already shared a cooksnap for this recipe'
+            );
+        }
+
         const createdCooksnap = await prisma.cooksnap.create({
             data: {
                 userId: currentUser.id,
@@ -163,11 +176,12 @@ export async function POST(request: Request) {
             cooksnapId: createdCooksnap.id,
         });
 
-        // Invalidate cooksnaps cache and recipe cache
+        // Invalidate cooksnaps cache, recipe cache, and user activity graph
         try {
             await Promise.all([
                 redisCache.del(`recipe:cooksnaps:${recipeId}`),
                 redisCache.del(`recipe:${recipeId}`),
+                redisCache.del(`user:activity:graph:${currentUser.id}`),
             ]);
         } catch (cacheError: any) {
             logger.error('POST /api/cooksnaps - cache invalidation error', {

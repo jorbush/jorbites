@@ -40,9 +40,9 @@ sequenceDiagram
 
 ## 🌟 Key Components
 
-### 1. Prominent Entry Points (CTAs) & Separation of Concerns
-- **Header Action Bar**: A dedicated `"📸 I Made This!"` button in `RecipeInfoHeader.tsx` alongside Save, Like, and Likes counter.
-- **Post-Steps Banner**: An engaging banner card immediately below the recipe preparation steps in `RecipeInfo.tsx` prompting cooks who just finished following the recipe to upload their photo.
+### 1. Prominent Entry Point (CTA) & Separation of Concerns
+- **Post-Steps CTA**: A prominent `"📸 I Made This!"` button immediately below the recipe preparation steps in `RecipeInfo.tsx` prompting cooks who just finished following the recipe to upload their photo.
+- **1 Cooksnap per User per Recipe**: Each cook can submit 1 cooksnap per recipe, guaranteed by unique compound constraint `@@unique([userId, recipeId])`.
 - **Strict Separation from Regular Comments**:
   - Regular comments (`CommentBox`) retain the photo attachment button (`HiOutlineCamera`) for general pictures (e.g., questions about ingredient texture or progress), but attaching a photo in a comment does **NOT** mark it as a cooksnap.
   - The `"🥑 I Cooked This!"` checkbox is removed from `CommentBox`.
@@ -53,14 +53,14 @@ sequenceDiagram
 - Drag-and-drop or mobile camera upload.
 - Client-side WebP compression (`compressImage`) to max 1080px with quality 0.82.
 - Direct-to-R2 pre-signed upload via `/api/upload/r2`.
-- Optional 1-sentence note (with automatic friendly fallback if empty).
+- Optional 1-sentence cook note (nullable).
 - Optional 1–5 star rating using interactive `StarRating`.
 
 ### 3. "Cooked by the Community" Photo Gallery (`CookedGallery.tsx`)
 - Horizontal snap-scrolling carousel on `RecipeClient.tsx`.
 - Displays dish photos with cook avatar, display name, and optional star rating.
 - Clicking any card opens `PhotoLightbox` for high-resolution viewing with cook notes.
-- Includes an inviting empty state if no cooksnaps exist yet.
+- In-place deletion support for the cook or recipe author via confirmation modal.
 
 ### 4. Author Notification Microservice (`jorbites-notifier` - Go)
 - New notification type: `NEW_COOKSNAP`.
