@@ -1,3 +1,4 @@
+import '@/app/lib/axiom/asyncLocalStoragePolyfill';
 import { PrismaClient } from '@prisma/client';
 import { redisCache } from '../app/lib/redis';
 import { recomputeRecipeRating } from '../app/utils/recipeRating';
