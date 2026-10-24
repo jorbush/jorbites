@@ -12,6 +12,7 @@ import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import PhotoLightbox from '@/app/components/modals/PhotoLightbox';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
 import ScrollableContainer from '@/app/components/utils/ScrollableContainer';
+import CooksnapLightboxDetails from '@/app/components/recipes/CooksnapLightboxDetails';
 import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface CookedGalleryProps {
@@ -30,7 +31,8 @@ const CookedGallery: React.FC<CookedGalleryProps> = ({
     const { push, refresh } = useRouter() || {};
     const { t } = useTranslation();
     const mounted = useIsMounted();
-    const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+    const [selectedCooksnap, setSelectedCooksnap] =
+        useState<SafeCooksnap | null>(null);
     const [cooksnapToDelete, setCooksnapToDelete] = useState<string | null>(
         null
     );
@@ -41,6 +43,9 @@ const CookedGallery: React.FC<CookedGalleryProps> = ({
         setIsDeleting(true);
         try {
             await axios.delete(`/api/cooksnaps/${cooksnapToDelete}`);
+            if (selectedCooksnap?.id === cooksnapToDelete) {
+                setSelectedCooksnap(null);
+            }
             toast.success(
                 mounted
                     ? t('cooksnap_deleted', {
@@ -99,7 +104,7 @@ const CookedGallery: React.FC<CookedGalleryProps> = ({
                             role="button"
                             tabIndex={0}
                             onClick={() =>
-                                item.imageSrc && setLightboxSrc(item.imageSrc)
+                                item.imageSrc && setSelectedCooksnap(item)
                             }
                             onKeyDown={(e) => {
                                 if (
@@ -107,7 +112,7 @@ const CookedGallery: React.FC<CookedGalleryProps> = ({
                                     item.imageSrc
                                 ) {
                                     e.preventDefault();
-                                    setLightboxSrc(item.imageSrc);
+                                    setSelectedCooksnap(item);
                                 }
                             }}
                             className="group w-40 shrink-0 cursor-pointer text-left focus:outline-hidden"
@@ -193,13 +198,27 @@ const CookedGallery: React.FC<CookedGalleryProps> = ({
                 })}
             </ScrollableContainer>
 
-            {/* Photo Lightbox */}
+            {/* Photo Lightbox with Complete Note */}
             <PhotoLightbox
-                src={lightboxSrc}
-                alt="Community Cooksnap"
-                isOpen={Boolean(lightboxSrc)}
-                onClose={() => setLightboxSrc(null)}
-            />
+                src={selectedCooksnap?.imageSrc ?? null}
+                alt={
+                    selectedCooksnap
+                        ? `Cooksnap by ${selectedCooksnap.user?.name || 'cook'}`
+                        : 'Community Cooksnap'
+                }
+                isOpen={Boolean(selectedCooksnap)}
+                onClose={() => setSelectedCooksnap(null)}
+            >
+                {selectedCooksnap && (
+                    <CooksnapLightboxDetails
+                        cooksnap={selectedCooksnap}
+                        onNavigateProfile={(userId) => {
+                            setSelectedCooksnap(null);
+                            push?.(`/profile/${userId}`);
+                        }}
+                    />
+                )}
+            </PhotoLightbox>
 
             <ConfirmModal
                 open={Boolean(cooksnapToDelete)}
