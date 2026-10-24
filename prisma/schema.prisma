@@ -24,6 +24,7 @@ model User {
   pinnedRecipeIds     String[]  @db.ObjectId
   emailNotifications  Boolean   @default(false)
   notificationPreferences NotificationPreferences?
+  profilePreferences  ProfilePreferences?
   level               Int       @default(0)
   verified            Boolean   @default(false)
   language            String?   @default("es")
@@ -55,6 +56,12 @@ type NotificationPreferences {
   quests              Boolean @default(true)
   voting              Boolean @default(true)
   achievements        Boolean @default(true)
+}
+
+type ProfilePreferences {
+  showStats         Boolean @default(true)
+  showActivityGraph Boolean @default(false)
+  showArticles      Boolean @default(false)
 }
 
 model Account {

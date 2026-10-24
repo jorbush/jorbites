@@ -197,6 +197,7 @@ export async function POST(request: Request) {
             await Promise.all([
                 redisCache.del(`recipe:comments:${recipeId}`),
                 redisCache.del(`recipe:${recipeId}`),
+                redisCache.del(`user:activity:graph:${currentUser.id}`),
             ]);
         } catch (cacheError: any) {
             logger.error('POST /api/comments - cache invalidation error', {

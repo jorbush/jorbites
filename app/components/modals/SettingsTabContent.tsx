@@ -18,6 +18,7 @@ import ChangePassword, {
 import ChangeProfileDetails, {
     ChangeProfileDetailsRef,
 } from '@/app/components/settings/ChangeProfileDetails';
+import ProfilePreferencesForm from '@/app/components/settings/ProfilePreferencesForm';
 import DeleteAccount from '@/app/components/settings/DeleteAccount';
 import { SafeUser } from '@/app/types';
 
@@ -67,6 +68,7 @@ const SettingsTabContent: React.FC<SettingsTabContentProps> = ({
                         ref={profileDetailsRef}
                         currentUser={currentUser}
                     />
+                    <ProfilePreferencesForm currentUser={currentUser} />
                     <ChangePassword
                         ref={passwordRef}
                         currentUser={currentUser}

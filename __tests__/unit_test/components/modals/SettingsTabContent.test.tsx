@@ -69,6 +69,12 @@ vi.mock('@/app/components/settings/ChangeProfileDetails', () => ({
     ),
 }));
 
+vi.mock('@/app/components/settings/ProfilePreferencesForm', () => ({
+    default: () => (
+        <div data-testid="profile-preferences-form">ProfilePreferencesForm</div>
+    ),
+}));
+
 vi.mock('@/app/components/settings/DeleteAccount', () => ({
     default: () => (
         <div data-testid="delete-account-selector">DeleteAccount</div>
@@ -134,6 +140,7 @@ describe('SettingsTabContent', () => {
         expect(screen.getByTestId('change-user-image-selector')).toBeDefined();
         expect(screen.getByTestId('change-user-name-selector')).toBeDefined();
         expect(screen.getByTestId('change-password-selector')).toBeDefined();
+        expect(screen.getByTestId('profile-preferences-form')).toBeDefined();
         expect(screen.getByTestId('delete-account-selector')).toBeDefined();
 
         expect(screen.queryByTestId('theme-selector')).toBeNull();

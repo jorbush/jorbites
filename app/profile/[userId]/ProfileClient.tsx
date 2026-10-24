@@ -1,17 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { SafeRecipe, SafeUser } from '@/app/types';
+import React from 'react';
+import { SafeRecipe, SafeUser, ProfilePreferences } from '@/app/types';
 import { Blog } from '@/app/utils/markdownUtils';
 import Container from '@/app/components/utils/Container';
-import Tabs, { Tab } from '@/app/components/utils/Tabs';
+import Tabs from '@/app/components/utils/Tabs';
 import { OrderByType } from '@/app/utils/filter';
-import { FiBookOpen } from 'react-icons/fi';
-import { MdRestaurantMenu } from 'react-icons/md';
-import { useTranslation } from 'react-i18next';
 import ProfileRecipesContent from '@/app/components/profile/ProfileRecipesContent';
 import ProfileBlogsContent from '@/app/components/profile/ProfileBlogsContent';
+import UserStats from '@/app/components/stats/UserStats';
+import ActivityHeatmap, {
+    ActivityItem,
+} from '@/app/components/profile/ActivityHeatmap';
+import {
+    getProfilePreferences,
+    DEFAULT_PROFILE_PREFERENCES,
+} from '@/app/utils/profile-utils';
+import { useProfileTabs } from '@/app/hooks/useProfileTabs';
 
 interface SearchParams {
     orderBy?: OrderByType;
@@ -29,20 +34,151 @@ interface ProfileClientProps {
     searchParams: SearchParams;
     profileUserId: string;
     blogs?: Blog[];
+    user?: SafeUser | null;
+    profileUser?: SafeUser | null;
+    profilePreferences?: ProfilePreferences | null;
+    graphRecipes?: Array<{
+        id: string;
+        createdAt: string;
+        questId?: string | null;
+    }>;
+    comments?: Array<{
+        id: string;
+        createdAt: string;
+        isCooked?: boolean;
+        rating?: number | null;
+        comment?: string;
+    }>;
+    challengeSubmissions?: Array<{ id: string; createdAt: string }>;
+    activities?: ActivityItem[];
 }
+
+type GraphRecipe = {
+    id: string;
+    createdAt: string;
+    questId?: string | null;
+};
 
 const EMPTY_RECIPES: SafeRecipe[] = [];
 const EMPTY_BLOGS: Blog[] = [];
+const EMPTY_GRAPH_RECIPES: GraphRecipe[] = [];
 
-const getInitialTab = (
-    tabParam?: string,
-    recipesCount = 0,
-    blogsCount = 0
-): string => {
-    if (tabParam === 'blogs' || tabParam === 'articles') return 'blogs';
-    if (tabParam === 'recipes') return 'recipes';
-    if (recipesCount === 0 && blogsCount > 0) return 'blogs';
-    return 'recipes';
+const resolveTargetUser = (
+    user?: SafeUser | null,
+    profileUser?: SafeUser | null,
+    currentUser?: SafeUser | null,
+    profileUserId?: string
+): SafeUser | null => {
+    if (user) return user;
+    if (profileUser) return profileUser;
+    if (currentUser && currentUser.id === profileUserId) return currentUser;
+    return null;
+};
+
+interface ProfileCookingStatsProps {
+    show: boolean;
+    user: SafeUser | null;
+}
+
+const ProfileCookingStats: React.FC<ProfileCookingStatsProps> = ({
+    show,
+    user,
+}) => {
+    if (!show || !user) return null;
+    return (
+        <div data-testid="profile-cooking-statistics">
+            <UserStats user={user} />
+        </div>
+    );
+};
+
+interface ProfileActivitySectionProps {
+    show: boolean;
+    recipes?: Array<{
+        id: string;
+        createdAt: string;
+        questId?: string | null;
+    }>;
+    comments?: Array<{
+        id: string;
+        createdAt: string;
+        isCooked?: boolean;
+        rating?: number | null;
+        comment?: string;
+    }>;
+    challengeSubmissions?: Array<{ id: string; createdAt: string }>;
+    activities?: ActivityItem[];
+}
+
+const ProfileActivitySection: React.FC<ProfileActivitySectionProps> = ({
+    show,
+    recipes = EMPTY_GRAPH_RECIPES,
+    comments,
+    challengeSubmissions,
+    activities,
+}) => {
+    if (!show) return null;
+    return (
+        <div data-testid="profile-activity-graph">
+            <ActivityHeatmap
+                recipes={recipes}
+                comments={comments}
+                challengeSubmissions={challengeSubmissions}
+                activities={activities}
+            />
+        </div>
+    );
+};
+
+interface ProfileTabContentProps {
+    activeTab: string;
+    showArticles: boolean;
+    recipes: SafeRecipe[];
+    pinnedRecipes: SafeRecipe[];
+    currentUser?: SafeUser | null;
+    isOwnProfile: boolean;
+    totalPages: number;
+    currentPage: number;
+    searchParams: SearchParams;
+    blogs: Blog[];
+}
+
+const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
+    activeTab,
+    showArticles,
+    recipes,
+    pinnedRecipes,
+    currentUser,
+    isOwnProfile,
+    totalPages,
+    currentPage,
+    searchParams,
+    blogs,
+}) => {
+    if (activeTab === 'recipes') {
+        return (
+            <ProfileRecipesContent
+                recipes={recipes}
+                pinnedRecipes={pinnedRecipes}
+                currentUser={currentUser}
+                isOwnProfile={isOwnProfile}
+                totalPages={totalPages}
+                currentPage={currentPage}
+                searchParams={searchParams}
+            />
+        );
+    }
+
+    if (activeTab === 'blogs' && showArticles) {
+        return (
+            <ProfileBlogsContent
+                blogs={blogs}
+                searchParams={searchParams}
+            />
+        );
+    }
+
+    return null;
 };
 
 const ProfileClient: React.FC<ProfileClientProps> = ({
@@ -54,58 +190,68 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
     searchParams,
     profileUserId,
     blogs = EMPTY_BLOGS,
+    user,
+    profileUser,
+    profilePreferences,
+    graphRecipes,
+    comments,
+    challengeSubmissions,
+    activities,
 }) => {
-    const router = useRouter();
-    const { t } = useTranslation();
     const isOwnProfile = Boolean(
         currentUser && currentUser.id === profileUserId
     );
-
-    const [activeTab, setActiveTab] = useState<string>(() =>
-        getInitialTab(
-            searchParams?.tab,
-            recipes.length + pinnedRecipes.length,
-            blogs.length
-        )
+    const targetUser = resolveTargetUser(
+        user,
+        profileUser,
+        currentUser,
+        profileUserId
     );
+    const preferences = profilePreferences || getProfilePreferences(targetUser);
 
-    const handleTabChange = (tabId: string) => {
-        setActiveTab(tabId);
-        const params = new URLSearchParams(
-            typeof window !== 'undefined' ? window.location.search : ''
-        );
-        params.set('tab', tabId);
-        params.delete('page');
-        const query = params.toString();
-        router.push(query ? `?${query}` : '?', { scroll: false });
-    };
+    const showStats =
+        preferences.showStats ?? DEFAULT_PROFILE_PREFERENCES.showStats;
+    const showActivityGraph =
+        preferences.showActivityGraph ??
+        DEFAULT_PROFILE_PREFERENCES.showActivityGraph;
+    const showArticles =
+        preferences.showArticles ?? DEFAULT_PROFILE_PREFERENCES.showArticles;
 
-    const tabs: Tab[] = [
-        {
-            id: 'recipes',
-            label: t('recipes') || 'Recipes',
-            icon: <MdRestaurantMenu size={20} />,
-        },
-        {
-            id: 'blogs',
-            label: t('blogs') || 'Blogs',
-            icon: <FiBookOpen size={18} />,
-        },
-    ];
+    const { activeTab, handleTabChange, tabs } = useProfileTabs({
+        tabParam: searchParams?.tab,
+        recipesCount: recipes.length + pinnedRecipes.length,
+        blogsCount: blogs.length,
+        showArticles,
+    });
 
     return (
-        <Container>
-            <div className="mt-2 mb-8">
-                <Tabs
-                    tabs={tabs}
-                    activeTab={activeTab}
-                    onTabChange={handleTabChange}
-                    data-testid="profile-tabs"
-                />
-            </div>
+        <>
+            <ProfileCookingStats
+                show={showStats}
+                user={targetUser}
+            />
 
-            {activeTab === 'recipes' && (
-                <ProfileRecipesContent
+            <ProfileActivitySection
+                show={showActivityGraph}
+                recipes={graphRecipes}
+                comments={comments}
+                challengeSubmissions={challengeSubmissions}
+                activities={activities}
+            />
+
+            <Container>
+                <div className="mt-2 mb-8">
+                    <Tabs
+                        tabs={tabs}
+                        activeTab={activeTab}
+                        onTabChange={handleTabChange}
+                        data-testid="profile-tabs"
+                    />
+                </div>
+
+                <ProfileTabContent
+                    activeTab={activeTab}
+                    showArticles={showArticles}
                     recipes={recipes}
                     pinnedRecipes={pinnedRecipes}
                     currentUser={currentUser}
@@ -113,16 +259,10 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                     totalPages={totalPages}
                     currentPage={currentPage}
                     searchParams={searchParams}
-                />
-            )}
-
-            {activeTab === 'blogs' && (
-                <ProfileBlogsContent
                     blogs={blogs}
-                    searchParams={searchParams}
                 />
-            )}
-        </Container>
+            </Container>
+        </>
     );
 };
 

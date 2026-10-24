@@ -189,6 +189,11 @@ describe('ProfileClient', () => {
                 searchParams={{}}
                 profileUserId="user1"
                 blogs={mockBlogs}
+                profilePreferences={{
+                    showStats: true,
+                    showActivityGraph: false,
+                    showArticles: true,
+                }}
             />
         );
 
@@ -238,6 +243,11 @@ describe('ProfileClient', () => {
                 searchParams={{}}
                 profileUserId="user1"
                 blogs={mockBlogs}
+                profilePreferences={{
+                    showStats: true,
+                    showActivityGraph: false,
+                    showArticles: true,
+                }}
             />
         );
 
@@ -256,10 +266,233 @@ describe('ProfileClient', () => {
                 searchParams={{ tab: 'blogs' }}
                 profileUserId="user1"
                 blogs={[]}
+                profilePreferences={{
+                    showStats: true,
+                    showActivityGraph: false,
+                    showArticles: true,
+                }}
             />
         );
 
         expect(getByTestId('profile-blogs-empty')).toBeDefined();
         expect(getByText('no_blogs_found')).toBeDefined();
+    });
+
+    describe('Profile Display Preferences customization', () => {
+        const mockUserWithStats: SafeUser = {
+            ...mockCurrentUser,
+            id: 'creator-1',
+            recipeCount: 10,
+            likesReceived: 45,
+            totalCookingTime: 120,
+            recipesThisYear: 5,
+        };
+
+        const mockBlogs: Blog[] = [
+            {
+                id: 'article-1',
+                slug: 'article-1',
+                content: 'Content',
+                language: 'en',
+                frontmatter: {
+                    title: 'Baking Sourdough',
+                    description: 'Guide',
+                    date: '2026-01-01',
+                    user_id: 'creator-1',
+                },
+            },
+        ];
+
+        const mockGraphRecipes = [
+            { id: 'gr-1', createdAt: new Date().toISOString() },
+        ];
+
+        it('shows cooking statistics when showStats is true', () => {
+            const userWithStatsVisible = {
+                ...mockUserWithStats,
+                profilePreferences: {
+                    showStats: true,
+                    showActivityGraph: true,
+                    showArticles: true,
+                },
+            };
+
+            const { getByTestId } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    user={userWithStatsVisible}
+                    currentUser={mockCurrentUser}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{}}
+                    profileUserId="creator-1"
+                />
+            );
+
+            expect(getByTestId('profile-cooking-statistics')).toBeDefined();
+        });
+
+        it('hides cooking statistics when showStats is false', () => {
+            const userWithStatsHidden = {
+                ...mockUserWithStats,
+                profilePreferences: {
+                    showStats: false,
+                    showActivityGraph: true,
+                    showArticles: true,
+                },
+            };
+
+            const { queryByTestId } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    user={userWithStatsHidden}
+                    currentUser={mockCurrentUser}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{}}
+                    profileUserId="creator-1"
+                />
+            );
+
+            expect(queryByTestId('profile-cooking-statistics')).toBeNull();
+        });
+
+        it('shows activity heatmap when showActivityGraph is true and graph data is provided', () => {
+            const userWithGraphVisible = {
+                ...mockUserWithStats,
+                profilePreferences: {
+                    showStats: true,
+                    showActivityGraph: true,
+                    showArticles: true,
+                },
+            };
+
+            const { getByTestId } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    user={userWithGraphVisible}
+                    currentUser={mockCurrentUser}
+                    graphRecipes={mockGraphRecipes}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{}}
+                    profileUserId="creator-1"
+                />
+            );
+
+            expect(getByTestId('profile-activity-graph')).toBeDefined();
+            expect(getByTestId('activity-heatmap')).toBeDefined();
+        });
+
+        it('hides activity heatmap when showActivityGraph is false even if graph data is present', () => {
+            const userWithGraphHidden = {
+                ...mockUserWithStats,
+                profilePreferences: {
+                    showStats: true,
+                    showActivityGraph: false,
+                    showArticles: true,
+                },
+            };
+
+            const { queryByTestId } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    user={userWithGraphHidden}
+                    currentUser={mockCurrentUser}
+                    graphRecipes={mockGraphRecipes}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{}}
+                    profileUserId="creator-1"
+                />
+            );
+
+            expect(queryByTestId('profile-activity-graph')).toBeNull();
+            expect(queryByTestId('activity-heatmap')).toBeNull();
+        });
+
+        it('shows authored articles tab when showArticles is true', () => {
+            const userWithArticlesVisible = {
+                ...mockUserWithStats,
+                profilePreferences: {
+                    showStats: true,
+                    showActivityGraph: true,
+                    showArticles: true,
+                },
+            };
+
+            const { getByTestId } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    blogs={mockBlogs}
+                    user={userWithArticlesVisible}
+                    currentUser={mockCurrentUser}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{}}
+                    profileUserId="creator-1"
+                />
+            );
+
+            expect(getByTestId('tab-blogs')).toBeDefined();
+        });
+
+        it('hides authored articles tab and prevents navigating to blogs tab when showArticles is false', () => {
+            const userWithArticlesHidden = {
+                ...mockUserWithStats,
+                profilePreferences: {
+                    showStats: true,
+                    showActivityGraph: true,
+                    showArticles: false,
+                },
+            };
+
+            const { queryByTestId, getByText } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    blogs={mockBlogs}
+                    user={userWithArticlesHidden}
+                    currentUser={mockCurrentUser}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{ tab: 'blogs' }}
+                    profileUserId="creator-1"
+                />
+            );
+
+            // Tab button for blogs should not exist
+            expect(queryByTestId('tab-blogs')).toBeNull();
+            // Should fallback to recipes tab and display recipe content instead of blog content
+            expect(getByText('Recipe 1')).toBeDefined();
+            expect(queryByTestId('profile-blogs-content')).toBeNull();
+        });
+
+        it('respects default profile preferences (Option A: stats visible, activity graph hidden, authored articles hidden)', () => {
+            const userWithoutCustomPrefs = {
+                ...mockUserWithStats,
+                profilePreferences: null,
+            };
+
+            const { getByTestId, queryByTestId } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    blogs={mockBlogs}
+                    user={userWithoutCustomPrefs}
+                    currentUser={mockCurrentUser}
+                    graphRecipes={mockGraphRecipes}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{}}
+                    profileUserId="creator-1"
+                />
+            );
+
+            // Stats shown by default
+            expect(getByTestId('profile-cooking-statistics')).toBeDefined();
+            // Activity graph hidden by default
+            expect(queryByTestId('profile-activity-graph')).toBeNull();
+            // Authored articles tab hidden by default
+            expect(queryByTestId('tab-blogs')).toBeNull();
+        });
     });
 });
