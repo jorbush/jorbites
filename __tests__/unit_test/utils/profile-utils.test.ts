@@ -6,6 +6,8 @@ import {
     formatDomainDisplay,
     getSocialLink,
     getCreatorSameAsLinks,
+    getProfilePreferences,
+    DEFAULT_PROFILE_PREFERENCES,
 } from '@/app/utils/profile-utils';
 
 describe('profile-utils', () => {
@@ -310,6 +312,43 @@ describe('profile-utils', () => {
 
             const links = getCreatorSameAsLinks(user);
             expect(links).toEqual(['https://instagram.com/alice_pastry']);
+        });
+    });
+
+    describe('getProfilePreferences', () => {
+        it('returns default preferences when user is null or undefined', () => {
+            expect(getProfilePreferences(null)).toEqual(
+                DEFAULT_PROFILE_PREFERENCES
+            );
+            expect(getProfilePreferences(undefined)).toEqual({
+                showStats: true,
+                showActivityGraph: false,
+                showArticles: false,
+            });
+        });
+
+        it('returns default preferences when user.profilePreferences is missing', () => {
+            const user = { id: 'user-1' } as any;
+            expect(getProfilePreferences(user)).toEqual({
+                showStats: true,
+                showActivityGraph: false,
+                showArticles: false,
+            });
+        });
+
+        it('returns saved preferences with fallbacks for partial configs', () => {
+            const user = {
+                id: 'user-1',
+                profilePreferences: {
+                    showStats: false,
+                },
+            } as any;
+
+            expect(getProfilePreferences(user)).toEqual({
+                showStats: false,
+                showActivityGraph: false,
+                showArticles: false,
+            });
         });
     });
 });

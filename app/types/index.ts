@@ -112,6 +112,7 @@ export type SafeUser = Omit<
     | 'emailNotifications'
     | 'language'
     | 'notificationPreferences'
+    | 'profilePreferences'
     | 'bio'
     | 'websiteUrl'
     | 'instagram'
@@ -151,6 +152,13 @@ export type SafeUser = Omit<
         voting?: boolean;
         achievements?: boolean;
     } | null;
+    profilePreferences?: ProfilePreferences | null;
+};
+
+export type ProfilePreferences = {
+    showStats?: boolean;
+    showActivityGraph?: boolean;
+    showArticles?: boolean;
 };
 
 export type SafeWorkshop = Omit<

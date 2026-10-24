@@ -3,6 +3,8 @@
  * creator social handles, website URLs, and backlinks.
  */
 
+import type { ProfilePreferences, SafeUser } from '@/app/types';
+
 export interface NormalizedResult<T> {
     value?: T;
     error?: string;
@@ -208,4 +210,26 @@ export const getCreatorSameAsLinks = (
     }
 
     return links.filter(Boolean);
+};
+
+export const DEFAULT_PROFILE_PREFERENCES: Required<ProfilePreferences> = {
+    showStats: true,
+    showActivityGraph: false,
+    showArticles: false,
+};
+
+export const getProfilePreferences = (
+    user?: SafeUser | null
+): Required<ProfilePreferences> => {
+    return {
+        showStats:
+            user?.profilePreferences?.showStats ??
+            DEFAULT_PROFILE_PREFERENCES.showStats,
+        showActivityGraph:
+            user?.profilePreferences?.showActivityGraph ??
+            DEFAULT_PROFILE_PREFERENCES.showActivityGraph,
+        showArticles:
+            user?.profilePreferences?.showArticles ??
+            DEFAULT_PROFILE_PREFERENCES.showArticles,
+    };
 };

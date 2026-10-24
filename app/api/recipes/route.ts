@@ -199,8 +199,11 @@ export async function POST(request: Request) {
         });
 
         try {
-            await redisCache.del(`recipes:graph:${currentUser.id}`);
-            await redisCache.incr('recipes:global:version');
+            await Promise.all([
+                redisCache.del(`recipes:graph:${currentUser.id}`),
+                redisCache.del(`user:activity:graph:${currentUser.id}`),
+                redisCache.incr('recipes:global:version'),
+            ]);
             if (body.draftId) {
                 await DraftService.cleanUpDraftOnPublish(
                     body.draftId,

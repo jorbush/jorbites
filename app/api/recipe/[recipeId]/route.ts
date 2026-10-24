@@ -555,6 +555,7 @@ export async function DELETE(
             await Promise.all([
                 redisCache.del(`recipe:${recipeId}`),
                 redisCache.del(`recipes:graph:${currentUser.id}`),
+                redisCache.del(`user:activity:graph:${currentUser.id}`),
                 redisCache.incr('recipes:global:version'),
             ]);
         } catch (error: any) {
