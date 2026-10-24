@@ -5,7 +5,7 @@ import { useCallback, useMemo, useTransition } from 'react';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useLoginModal from '@/app/hooks/useLoginModal';
-import { SafeComment, SafeRecipe, SafeUser } from '@/app/types';
+import { SafeComment, SafeCooksnap, SafeRecipe, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import { categories } from '@/app/components/navbar/categoriesData';
 import { IconType } from 'react-icons';
@@ -19,9 +19,11 @@ import ClientOnly from '@/app/components/utils/ClientOnly';
 import { useTranslation } from 'react-i18next';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
+import CookedGallery from '@/app/components/recipes/CookedGallery';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
+    cooksnaps?: SafeCooksnap[];
     recipe: SafeRecipe & {
         user: SafeUser;
         coCooksIds?: string[];
@@ -34,9 +36,10 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     recipe,
     currentUser,
     comments,
+    cooksnaps,
 }) => {
-    const loginModal = useLoginModal();
     const { refresh } = useRouter() || {};
+    const loginModal = useLoginModal();
     const { t } = useTranslation();
     const [isPending, startTransition] = useTransition();
 
@@ -66,12 +69,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const ratingCount = recipe.ratingCount || 0;
 
     const onCreateComment = useCallback(
-        (
-            comment: string,
-            rating: number | null,
-            isCooked?: boolean,
-            imageSrc?: string | null
-        ) => {
+        (comment: string, rating: number | null, imageSrc?: string | null) => {
             if (!currentUser) {
                 return loginModal.onOpen();
             }
@@ -82,7 +80,6 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                         comment: comment,
                         recipeId: recipe?.id,
                         rating: rating,
-                        isCooked: isCooked,
                         imageSrc: imageSrc,
                     });
                     toast.success(t('comment_created'));
@@ -128,6 +125,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 averageRating={averageRating}
                 ratingCount={ratingCount}
                 comments={comments}
+                cooksnaps={cooksnaps}
                 calories={recipe.calories}
                 recipeCuisine={recipe.recipeCuisine}
                 recipeYield={recipe.recipeYield}
@@ -165,6 +163,13 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             recipeCuisine={recipe.recipeCuisine}
                             recipeYield={recipe.recipeYield}
                             ganttTable={recipe.ganttTable}
+                        />
+                    </div>
+                    <div className="mt-2">
+                        <CookedGallery
+                            cooksnaps={cooksnaps}
+                            currentUser={currentUser}
+                            recipeAuthorId={recipe.userId}
                         />
                     </div>
                     <div id="comments-section">

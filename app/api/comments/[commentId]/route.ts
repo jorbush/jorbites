@@ -13,6 +13,7 @@ import {
 import { logger } from '@/app/lib/axiom/server';
 import { redisCache } from '@/app/lib/redis';
 import { deleteFromR2 } from '@/app/utils/r2';
+import { recomputeRecipeRating } from '@/app/utils/recipeRating';
 
 interface IParams {
     commentId?: string;
@@ -57,36 +58,15 @@ export async function DELETE(
             return forbiddenResponse('You can only delete your own comments');
         }
 
-        const [deletedComment, stats] = await Promise.all([
-            prisma.comment.delete({
-                where: {
-                    id: commentId,
-                },
-            }),
-            prisma.comment.aggregate({
-                where: {
-                    recipeId: comment.recipeId,
-                    rating: { not: null },
-                    id: { not: commentId },
-                },
-                _avg: {
-                    rating: true,
-                },
-                _count: {
-                    rating: true,
-                },
-            }),
-        ]);
-
-        await prisma.recipe.update({
+        const deletedComment = await prisma.comment.delete({
             where: {
-                id: comment.recipeId,
-            },
-            data: {
-                averageRating: stats._avg.rating || 0,
-                ratingCount: stats._count.rating || 0,
+                id: commentId,
             },
         });
+
+        if (comment.rating !== null && comment.rating !== undefined) {
+            await recomputeRecipeRating(comment.recipeId);
+        }
 
         if (comment.imageSrc) {
             try {

@@ -1,6 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 export enum NotificationType {
     NEW_COMMENT = 'NEW_COMMENT',
+    NEW_COOKSNAP = 'NEW_COOKSNAP',
     NEW_LIKE = 'NEW_LIKE',
     NEW_RECIPE = 'NEW_RECIPE',
     NOTIFICATIONS_ACTIVATED = 'NOTIFICATIONS_ACTIVATED',

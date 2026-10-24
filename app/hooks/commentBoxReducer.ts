@@ -2,7 +2,6 @@ export interface CommentBoxState {
     comment: string;
     rating: number | null;
     showRating: boolean;
-    isCooked: boolean;
     selectedFile: File | null;
     previewUrl: string | null;
     isUploading: boolean;
@@ -14,7 +13,6 @@ export type CommentBoxAction =
     | { type: 'SET_RATING'; payload: number | null }
     | { type: 'TOGGLE_RATING' }
     | { type: 'CLEAR_RATING' }
-    | { type: 'SET_COOKED'; payload: boolean }
     | { type: 'SELECT_FILE'; payload: { file: File; previewUrl: string } }
     | { type: 'REMOVE_FILE' }
     | { type: 'SET_UPLOADING'; payload: boolean }
@@ -25,7 +23,6 @@ export const DEFAULT_COMMENT_BOX_STATE: CommentBoxState = {
     comment: '',
     rating: null,
     showRating: false,
-    isCooked: false,
     selectedFile: null,
     previewUrl: null,
     isUploading: false,
@@ -48,14 +45,11 @@ export function commentBoxReducer(
             return { ...state, showRating: !state.showRating };
         case 'CLEAR_RATING':
             return { ...state, rating: null, showRating: false };
-        case 'SET_COOKED':
-            return { ...state, isCooked: action.payload };
         case 'SELECT_FILE':
             return {
                 ...state,
                 selectedFile: action.payload.file,
                 previewUrl: action.payload.previewUrl,
-                isCooked: true,
             };
         case 'REMOVE_FILE':
             return {

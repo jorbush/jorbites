@@ -65,7 +65,7 @@ export default async function getUserActivityForGraph(
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - 375); // 53 weeks covers calendar range
 
-        const [recipes, comments] = await Promise.all([
+        const [recipes, comments, cooksnaps] = await Promise.all([
             prisma.recipe.findMany({
                 where: {
                     userId,
@@ -99,6 +99,22 @@ export default async function getUserActivityForGraph(
                     createdAt: 'desc',
                 },
             }),
+            prisma.cooksnap.findMany({
+                where: {
+                    userId,
+                    createdAt: {
+                        gte: startDate,
+                    },
+                },
+                select: {
+                    id: true,
+                    createdAt: true,
+                    rating: true,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            }),
         ]);
 
         const challengeSubmissions = recipes
@@ -108,18 +124,28 @@ export default async function getUserActivityForGraph(
                 createdAt: r.createdAt.toISOString(),
             }));
 
+        const formattedCooksnaps = cooksnaps.map((cs) => ({
+            id: cs.id,
+            createdAt: cs.createdAt.toISOString(),
+            isCooked: true,
+            rating: cs.rating ?? null,
+        }));
+
         const result: UserActivityGraphData = {
             recipes: recipes.map((r) => ({
                 id: r.id,
                 createdAt: r.createdAt.toISOString(),
                 questId: r.questId,
             })),
-            comments: comments.map((c) => ({
-                id: c.id,
-                createdAt: c.createdAt.toISOString(),
-                isCooked: Boolean(c.isCooked),
-                rating: c.rating ?? null,
-            })),
+            comments: [
+                ...comments.map((c) => ({
+                    id: c.id,
+                    createdAt: c.createdAt.toISOString(),
+                    isCooked: Boolean(c.isCooked),
+                    rating: c.rating ?? null,
+                })),
+                ...formattedCooksnaps,
+            ],
             challengeSubmissions,
         };
 

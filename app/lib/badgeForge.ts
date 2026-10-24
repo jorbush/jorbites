@@ -1,7 +1,8 @@
 import { logger } from '@/app/lib/axiom/server';
 
 export async function triggerBadgeForgeEvaluation(
-    solverId: string
+    solverId: string,
+    event: 'QUEST_FULFILLED' | 'COOKSNAP_POSTED' = 'QUEST_FULFILLED'
 ): Promise<boolean> {
     try {
         const badgeForgeUrl =
@@ -18,7 +19,7 @@ export async function triggerBadgeForgeEvaluation(
                 },
                 body: JSON.stringify({
                     userId: solverId,
-                    event: 'QUEST_FULFILLED',
+                    event,
                 }),
                 cache: 'no-store',
                 signal: AbortSignal.timeout(5000),

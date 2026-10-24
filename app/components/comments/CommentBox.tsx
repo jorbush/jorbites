@@ -19,7 +19,6 @@ export interface CommentBoxProps {
     onCreateComment: (
         comment: string,
         rating: number | null,
-        isCooked?: boolean,
         imageSrc?: string | null
     ) => void;
     isLoading?: boolean;
@@ -38,7 +37,6 @@ const CommentBox: React.FC<CommentBoxProps> = ({
         comment,
         rating,
         showRating,
-        isCooked,
         selectedFile,
         previewUrl,
         isUploading,
@@ -127,7 +125,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 }
             }
 
-            onCreateComment(comment, rating, isCooked, uploadedImageSrc);
+            onCreateComment(comment, rating, uploadedImageSrc);
 
             if (previewUrl) {
                 try {
@@ -189,13 +187,6 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                         showRating={showRating}
                         onToggleRating={() =>
                             dispatch({ type: 'TOGGLE_RATING' })
-                        }
-                        isCooked={isCooked}
-                        onToggleCooked={(cooked) =>
-                            dispatch({
-                                type: 'SET_COOKED',
-                                payload: cooked,
-                            })
                         }
                         selectedFile={selectedFile}
                         onFileSelect={handleFileSelect}

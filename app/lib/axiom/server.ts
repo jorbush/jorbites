@@ -1,3 +1,4 @@
+import '@/app/lib/axiom/asyncLocalStoragePolyfill';
 import axiomClient from '@/app/lib/axiom/axiom';
 import { Logger, AxiomJSTransport } from '@axiomhq/logging';
 import { nextJsFormatters } from '@axiomhq/nextjs';

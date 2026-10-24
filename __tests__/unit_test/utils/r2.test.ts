@@ -4,6 +4,7 @@ import {
     extractR2Key,
     deleteFromR2,
     deleteMultipleFromR2,
+    isValidR2Url,
 } from '@/app/utils/r2';
 
 const mockSend = vi.fn();
@@ -76,6 +77,51 @@ describe('r2 utils', () => {
             expect(isR2Url('')).toBe(false);
             // @ts-ignore
             expect(isR2Url(null)).toBe(false);
+        });
+    });
+
+    describe('isValidR2Url', () => {
+        it('should return URL for valid R2 custom domain', () => {
+            const url = 'https://images.jorbites.com/remakes/photo.webp';
+            expect(isValidR2Url(url)).toBe(url);
+        });
+
+        it('should return URL for valid r2.dev domain', () => {
+            const url =
+                'https://pub-4c3d704cf6de499a9ef3964908533212.r2.dev/remakes/photo.webp';
+            expect(isValidR2Url(url)).toBe(url);
+        });
+
+        it('should return URL for valid r2.cloudflarestorage.com domain', () => {
+            const url =
+                'https://account-id.r2.cloudflarestorage.com/remakes/photo.webp';
+            expect(isValidR2Url(url)).toBe(url);
+        });
+
+        it('should return URL for Cloudinary domain', () => {
+            const url =
+                'https://res.cloudinary.com/demo/image/upload/sample.jpg';
+            expect(isValidR2Url(url)).toBe(url);
+        });
+
+        it('should return null for non-allowed external URLs', () => {
+            expect(isValidR2Url('https://example.com/evil.jpg')).toBeNull();
+            expect(
+                isValidR2Url('https://attacker.site.com/photo.png')
+            ).toBeNull();
+        });
+
+        it('should return null for invalid URL strings or non-string inputs', () => {
+            expect(isValidR2Url('')).toBeNull();
+            expect(isValidR2Url('not-a-url')).toBeNull();
+            expect(isValidR2Url(null)).toBeNull();
+            expect(isValidR2Url(undefined)).toBeNull();
+            expect(isValidR2Url(12345)).toBeNull();
+        });
+
+        it('should return null for non-http(s) protocols', () => {
+            expect(isValidR2Url('javascript:alert(1)')).toBeNull();
+            expect(isValidR2Url('data:image/png;base64,abc')).toBeNull();
         });
     });
 

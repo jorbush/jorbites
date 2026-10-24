@@ -554,6 +554,8 @@ export async function DELETE(
         try {
             await Promise.all([
                 redisCache.del(`recipe:${recipeId}`),
+                redisCache.del(`recipe:comments:${recipeId}`),
+                redisCache.del(`recipe:cooksnaps:${recipeId}`),
                 redisCache.del(`recipes:graph:${currentUser.id}`),
                 redisCache.del(`user:activity:graph:${currentUser.id}`),
                 redisCache.incr('recipes:global:version'),

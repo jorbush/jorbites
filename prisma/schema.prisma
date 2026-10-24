@@ -41,6 +41,7 @@ model User {
   accounts            Account[]
   recipes             Recipe[]
   comments            Comment[]
+  cooksnaps           Cooksnap[]
   workshops           Workshop[]
   quests              Quest[]
   pushSubscriptions   PushSubscription[]
@@ -113,6 +114,7 @@ model Recipe {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]
+  cooksnaps Cooksnap[]
   quest Quest? @relation(fields: [questId], references: [id], onDelete: SetNull)
   lists List[] @relation(fields: [listIds], references: [id])
   planningMeals PlanningMeal[]
@@ -131,6 +133,25 @@ model Comment {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+model Cooksnap {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  recipeId  String   @db.ObjectId
+  imageSrc  String
+  comment   String?
+  rating    Int?
+  likedIds  String[] @db.ObjectId @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recipeId])
+  @@index([recipeId, createdAt])
+  @@index([userId])
 }
 
 model WeeklyChallenge {
