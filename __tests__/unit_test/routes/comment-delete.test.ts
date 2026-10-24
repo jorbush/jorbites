@@ -4,21 +4,24 @@ import { DELETE as CommentDELETE } from '@/app/api/comments/[commentId]/route';
 // Mock the user and comment actions
 jest.mock('@/app/actions/getCurrentUser', () => jest.fn());
 jest.mock('@/app/actions/getCommentById', () => jest.fn());
+jest.mock('@/app/utils/recipeRating', () => ({
+    recomputeRecipeRating: jest.fn().mockResolvedValue({
+        averageRating: 4.5,
+        ratingCount: 10,
+    }),
+}));
 
 // Mock prisma
 jest.mock('@/app/lib/prismadb', () => ({
     comment: {
         delete: jest.fn(),
-        aggregate: jest.fn(),
-    },
-    recipe: {
-        update: jest.fn(),
     },
 }));
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getCommentById from '@/app/actions/getCommentById';
 import prisma from '@/app/lib/prismadb';
+import { recomputeRecipeRating } from '@/app/utils/recipeRating';
 
 describe('Comment Delete API Error Handling', () => {
     beforeEach(() => {
@@ -134,16 +137,12 @@ describe('Comment Delete API Error Handling', () => {
                 userId: 'test-user-id',
                 comment: 'Test comment',
                 recipeId: 'recipe-id',
+                rating: 5,
             };
             (getCommentById as jest.Mock).mockResolvedValueOnce(mockComment);
             (prisma.comment.delete as jest.Mock).mockResolvedValueOnce(
                 mockComment
             );
-            (prisma.comment.aggregate as jest.Mock).mockResolvedValueOnce({
-                _avg: { rating: 4.5 },
-                _count: { rating: 10 },
-            });
-            (prisma.recipe.update as jest.Mock).mockResolvedValueOnce({});
 
             const mockParams = {
                 params: Promise.resolve({ commentId: 'comment-id' }),
@@ -157,22 +156,7 @@ describe('Comment Delete API Error Handling', () => {
             expect(prisma.comment.delete).toHaveBeenCalledWith({
                 where: { id: 'comment-id' },
             });
-            expect(prisma.comment.aggregate).toHaveBeenCalledWith({
-                where: {
-                    recipeId: 'recipe-id',
-                    rating: { not: null },
-                    id: { not: 'comment-id' },
-                },
-                _avg: { rating: true },
-                _count: { rating: true },
-            });
-            expect(prisma.recipe.update).toHaveBeenCalledWith({
-                where: { id: 'recipe-id' },
-                data: {
-                    averageRating: 4.5,
-                    ratingCount: 10,
-                },
-            });
+            expect(recomputeRecipeRating).toHaveBeenCalledWith('recipe-id');
         });
 
         it('should return 500 when database operation fails', async () => {

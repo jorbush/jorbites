@@ -28,7 +28,11 @@ export default async function getCommentsByRecipeId(params: IParams) {
             recipeId: params.recipeId,
         });
 
-        const query: any = {};
+        const query: any = {
+            isCooked: {
+                not: true,
+            },
+        };
 
         if (recipeId) {
             query.recipeId = recipeId;

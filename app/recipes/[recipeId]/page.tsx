@@ -5,6 +5,7 @@ import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
+import getCooksnapsByRecipeId from '@/app/actions/getCooksnapsByRecipeId';
 import { trackRecipeView } from '@/app/actions/tracking';
 
 interface IParams {
@@ -85,12 +86,13 @@ export async function generateMetadata(props: {
 const RecipePage = async (props: { params: Promise<IParams> }) => {
     const params = await props.params;
 
-    let recipe, currentUser, comments;
+    let recipe, currentUser, comments, cooksnaps;
     try {
-        [recipe, currentUser, comments] = await Promise.all([
+        [recipe, currentUser, comments, cooksnaps] = await Promise.all([
             getRecipeById(params),
             getCurrentUser(),
             getCommentsByRecipeId(params),
+            getCooksnapsByRecipeId(params),
         ]);
     } catch {
         return (
@@ -123,6 +125,7 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
             recipe={recipe}
             currentUser={currentUser}
             comments={comments}
+            cooksnaps={cooksnaps}
         />
     );
 };

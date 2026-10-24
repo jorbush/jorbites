@@ -18,8 +18,6 @@ describe('CommentActionBar', () => {
         rating: null,
         showRating: false,
         onToggleRating: vi.fn(),
-        isCooked: false,
-        onToggleCooked: vi.fn(),
         selectedFile: null,
         onFileSelect: vi.fn(),
         fileInputRef: { current: null },

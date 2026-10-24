@@ -173,4 +173,19 @@ jest.mock('@/app/utils/r2', () => ({
     uploadToR2: jest
         .fn()
         .mockResolvedValue('https://images.jorbites.com/mock.jpg'),
+    isValidR2Url: jest.fn().mockImplementation((url: unknown) => {
+        if (!url || typeof url !== 'string') return null;
+        try {
+            const parsed = new URL(url);
+            const host = parsed.hostname.toLowerCase();
+            const isAllowed =
+                host === 'images.jorbites.com' ||
+                host.endsWith('.r2.cloudflarestorage.com') ||
+                host.endsWith('.r2.dev') ||
+                host === 'res.cloudinary.com';
+            return isAllowed ? url : null;
+        } catch {
+            return null;
+        }
+    }),
 }));

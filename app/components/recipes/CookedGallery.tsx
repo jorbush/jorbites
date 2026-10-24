@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { SafeComment } from '@/app/types';
+import { SafeCooksnap } from '@/app/types';
 import Avatar from '@/app/components/utils/Avatar';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import PhotoLightbox from '@/app/components/modals/PhotoLightbox';
@@ -11,23 +11,18 @@ import ScrollableContainer from '@/app/components/utils/ScrollableContainer';
 import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface CookedGalleryProps {
-    comments?: SafeComment[];
+    cooksnaps?: SafeCooksnap[];
 }
 
-const EMPTY_COMMENTS: SafeComment[] = [];
+const EMPTY_COOKSNAPS: SafeCooksnap[] = [];
 
 const CookedGallery: React.FC<CookedGalleryProps> = ({
-    comments = EMPTY_COMMENTS,
+    cooksnaps = EMPTY_COOKSNAPS,
 }) => {
     const { push } = useRouter() || {};
     const { t } = useTranslation();
     const mounted = useIsMounted();
     const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
-
-    // Filter comments that are strictly marked as isCooked and have an image
-    const cooksnaps = useMemo(() => {
-        return comments.filter((c) => Boolean(c.isCooked && c.imageSrc));
-    }, [comments]);
 
     if (cooksnaps.length === 0) {
         return null;

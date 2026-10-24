@@ -19,7 +19,6 @@ export interface CommentBoxProps {
     onCreateComment: (
         comment: string,
         rating: number | null,
-        isCooked?: boolean,
         imageSrc?: string | null
     ) => void;
     isLoading?: boolean;
@@ -126,7 +125,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 }
             }
 
-            onCreateComment(comment, rating, false, uploadedImageSrc);
+            onCreateComment(comment, rating, uploadedImageSrc);
 
             if (previewUrl) {
                 try {

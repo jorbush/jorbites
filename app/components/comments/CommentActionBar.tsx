@@ -9,8 +9,6 @@ export interface CommentActionBarProps {
     rating: number | null;
     showRating: boolean;
     onToggleRating: () => void;
-    isCooked?: boolean;
-    onToggleCooked?: (isCooked: boolean) => void;
     selectedFile: File | null;
     onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
     fileInputRef: React.RefObject<HTMLInputElement | null>;

@@ -108,7 +108,6 @@ describe('CommentBox', () => {
             expect(mockProps.onCreateComment).toHaveBeenCalledWith(
                 'This is a test comment',
                 null,
-                false,
                 null
             );
         });
@@ -132,7 +131,6 @@ describe('CommentBox', () => {
             expect(mockProps.onCreateComment).toHaveBeenCalledWith(
                 'Very nice!',
                 4,
-                false,
                 null
             );
         });
@@ -163,7 +161,6 @@ describe('CommentBox', () => {
             expect(mockProps.onCreateComment).toHaveBeenCalledWith(
                 'No rating comment',
                 null,
-                false,
                 null
             );
         });
@@ -280,7 +277,7 @@ describe('CommentBox', () => {
         });
     });
 
-    it('submits comment with isCooked false even when submitting', async () => {
+    it('submits comment without isCooked flag when submitting', async () => {
         render(<CommentBox {...mockProps} />);
 
         const textarea = screen.getByPlaceholderText('write_comment');
@@ -295,7 +292,6 @@ describe('CommentBox', () => {
             expect(mockProps.onCreateComment).toHaveBeenCalledWith(
                 'Made this for dinner!',
                 null,
-                false,
                 null
             );
         });

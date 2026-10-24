@@ -40,6 +40,16 @@ jest.mock('@/app/lib/badgeForge', () => ({
     triggerBadgeForgeEvaluation: jest.fn().mockResolvedValue(true),
 }));
 
+// Mock recomputeRecipeRating
+jest.mock('@/app/utils/recipeRating', () => ({
+    recomputeRecipeRating: jest.fn().mockResolvedValue({
+        averageRating: 5.0,
+        ratingCount: 1,
+    }),
+}));
+
+import { recomputeRecipeRating } from '@/app/utils/recipeRating';
+
 // Mock getCurrentUser
 jest.mock('@/app/actions/getCurrentUser', () =>
     jest.fn(() => {
@@ -342,22 +352,14 @@ describe('Comments API Error Handling', () => {
                             imageSrc: null,
                         },
                     },
-                    averageRating: 5.0,
-                    ratingCount: 2,
                 },
                 include: {
                     comments: true,
                 },
             });
-            // Assert aggregate calculation query
-            expect(prisma.comment.aggregate).toHaveBeenCalledWith({
-                where: {
-                    recipeId: 'test-recipe-id',
-                    rating: { not: null },
-                },
-                _avg: { rating: true },
-                _count: { rating: true },
-            });
+            expect(recomputeRecipeRating).toHaveBeenCalledWith(
+                'test-recipe-id'
+            );
         });
 
         it('should create comment with isCooked true and imageSrc when provided', async () => {
@@ -381,9 +383,9 @@ describe('Comments API Error Handling', () => {
                     {
                         id: 'comment-cooked-1',
                         userId: 'test-user-id',
-                        comment: 'I cooked this!',
+                        comment: 'Great recipe!',
                         rating: 5,
-                        isCooked: true,
+                        isCooked: false,
                         imageSrc:
                             'https://images.jorbites.com/remakes/photo.webp',
                     },
@@ -404,9 +406,8 @@ describe('Comments API Error Handling', () => {
             const mockRequest = {
                 json: jest.fn().mockResolvedValue({
                     recipeId: 'recipe-cooked-id',
-                    comment: 'I cooked this!',
+                    comment: 'Great recipe!',
                     rating: 5,
-                    isCooked: true,
                     imageSrc: 'https://images.jorbites.com/remakes/photo.webp',
                 }),
             } as unknown as Request;
@@ -422,22 +423,23 @@ describe('Comments API Error Handling', () => {
                     comments: {
                         create: {
                             userId: 'test-user-id',
-                            comment: 'I cooked this!',
+                            comment: 'Great recipe!',
                             rating: 5,
-                            isCooked: true,
+                            isCooked: false,
                             imageSrc:
                                 'https://images.jorbites.com/remakes/photo.webp',
                         },
                     },
-                    averageRating: 5.0,
-                    ratingCount: 2,
                 },
                 include: {
                     comments: true,
                 },
             });
+            expect(recomputeRecipeRating).toHaveBeenCalledWith(
+                'recipe-cooked-id'
+            );
             expect(sendNotification).toHaveBeenCalledWith({
-                type: NotificationType.NEW_COOKSNAP,
+                type: NotificationType.NEW_COMMENT,
                 userEmail: 'owner@example.com',
                 params: {
                     userName: 'Cooker',
@@ -445,10 +447,6 @@ describe('Comments API Error Handling', () => {
                     recipeName: undefined,
                 },
             });
-            expect(triggerBadgeForgeEvaluation).toHaveBeenCalledWith(
-                'test-user-id',
-                'COOKSNAP_POSTED'
-            );
         });
 
         it('should create regular comment with imageSrc when isCooked is false, dispatching NEW_COMMENT and not triggering badge evaluation', async () => {
@@ -517,8 +515,6 @@ describe('Comments API Error Handling', () => {
                                 'https://images.jorbites.com/remakes/dough.webp',
                         },
                     },
-                    averageRating: 0,
-                    ratingCount: 0,
                 },
                 include: {
                     comments: true,
@@ -564,11 +560,9 @@ describe('Comments API Error Handling', () => {
                     {
                         id: 'comment-self-1',
                         userId: 'test-user-id',
-                        comment: 'Cooked my own dish again!',
+                        comment: 'Note on my own recipe',
                         rating: 5,
-                        isCooked: true,
-                        imageSrc:
-                            'https://images.jorbites.com/remakes/photo.webp',
+                        isCooked: false,
                     },
                 ],
             };
@@ -587,10 +581,8 @@ describe('Comments API Error Handling', () => {
             const mockRequest = {
                 json: jest.fn().mockResolvedValue({
                     recipeId: 'own-recipe-id',
-                    comment: 'Cooked my own dish again!',
+                    comment: 'Note on my own recipe',
                     rating: 5,
-                    isCooked: true,
-                    imageSrc: 'https://images.jorbites.com/remakes/photo.webp',
                 }),
             } as unknown as Request;
 
@@ -598,10 +590,6 @@ describe('Comments API Error Handling', () => {
             expect(response.status).toBe(200);
 
             expect(sendNotification).not.toHaveBeenCalled();
-            expect(triggerBadgeForgeEvaluation).toHaveBeenCalledWith(
-                'test-user-id',
-                'COOKSNAP_POSTED'
-            );
         });
     });
 });

@@ -13,7 +13,7 @@ sequenceDiagram
     participant Client as Recipe Client (Next.js)
     participant Modal as CooksnapModal
     participant R2 as Cloudflare R2
-    participant API as Comments API (Next.js)
+    participant API as Cooksnaps API (Next.js)
     participant Notifier as Jorbites Notifier (Go)
     participant BF as Badge Forge (Rust)
     actor Author as Recipe Author
@@ -22,8 +22,8 @@ sequenceDiagram
     Client->>Modal: Open CooksnapModal(recipeId, recipeTitle)
     User->>Modal: Selects photo, optional rating & note, clicks Submit
     Modal->>R2: Upload compressed WebP photo
-    Modal->>API: POST /api/comments (recipeId, comment, rating, isCooked=true, imageSrc)
-    API->>API: Save comment & update recipe averageRating/ratingCount
+    Modal->>API: POST /api/cooksnaps (recipeId, imageSrc, comment, rating)
+    API->>API: Save Cooksnap in dedicated collection & update recipe averageRating/ratingCount
     par Dispatch Notification
         API->>Notifier: POST /notifications (Type: NEW_COOKSNAP, recipient: authorEmail)
         Notifier-->>Author: WebPush / Email ("@username cooked your recipe! See their photo")
@@ -33,7 +33,7 @@ sequenceDiagram
     end
     API-->>Modal: Success response
     Modal-->>Client: Close modal & refresh recipe page
-    Client-->>User: Cooksnap appears in CookedGallery & Comments
+    Client-->>User: Cooksnap appears in CookedGallery (isolated from discussion comments)
 ```
 
 ---
@@ -44,11 +44,10 @@ sequenceDiagram
 - **Header Action Bar**: A dedicated `"📸 I Made This!"` button in `RecipeInfoHeader.tsx` alongside Save, Like, and Likes counter.
 - **Post-Steps Banner**: An engaging banner card immediately below the recipe preparation steps in `RecipeInfo.tsx` prompting cooks who just finished following the recipe to upload their photo.
 - **Strict Separation from Regular Comments**:
-  - Regular comments (`CommentBox`) retain the photo attachment button (`HiOutlineCamera`) for general pictures (e.g., questions about ingredient texture or progress), but attaching a photo in a comment does **NOT** mark it as `isCooked`.
+  - Regular comments (`CommentBox`) retain the photo attachment button (`HiOutlineCamera`) for general pictures (e.g., questions about ingredient texture or progress), but attaching a photo in a comment does **NOT** mark it as a cooksnap.
   - The `"🥑 I Cooked This!"` checkbox is removed from `CommentBox`.
-  - `isCooked = true` is **exclusively** set through the dedicated `"📸 I Made This!"` Cooksnap workflow (`CooksnapModal`).
-  - Comments in `Comment.tsx` only display the `"🥑 Cooked"` badge if `isCooked === true`.
-  - The `CookedGallery` exclusively displays entries where `isCooked === true && imageSrc != null`.
+  - Cooksnaps are a **dedicated first-class entity** (`Cooksnap` collection in Prisma/MongoDB) created exclusively through `CooksnapModal` and `/api/cooksnaps`.
+  - The `CookedGallery` exclusively displays entries from `Cooksnap`, while the `Comments` list displays only conversational discussion comments, eliminating visual duplication on screen.
 
 ### 2. Fast 1-Click Submission (`CooksnapModal.tsx`)
 - Drag-and-drop or mobile camera upload.

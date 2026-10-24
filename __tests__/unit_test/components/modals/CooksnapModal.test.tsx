@@ -148,8 +148,8 @@ describe('CooksnapModal', () => {
                     },
                 });
             }
-            if (url === '/api/comments') {
-                return Promise.resolve({ data: { id: 'comment-1' } });
+            if (url === '/api/cooksnaps') {
+                return Promise.resolve({ data: { id: 'cooksnap-1' } });
             }
             return Promise.reject(new Error('Unknown url'));
         });
@@ -188,11 +188,10 @@ describe('CooksnapModal', () => {
                 expect.any(Object),
                 expect.any(Object)
             );
-            expect(axios.post).toHaveBeenCalledWith('/api/comments', {
+            expect(axios.post).toHaveBeenCalledWith('/api/cooksnaps', {
                 recipeId: 'test-recipe-123',
                 comment: 'Added extra lime, delicious!',
                 rating: 5,
-                isCooked: true,
                 imageSrc: 'https://images.jorbites.com/cooksnap.webp',
             });
             expect(toast.success).toHaveBeenCalledWith(
@@ -213,8 +212,8 @@ describe('CooksnapModal', () => {
                     },
                 });
             }
-            if (url === '/api/comments') {
-                return Promise.resolve({ data: { id: 'comment-1' } });
+            if (url === '/api/cooksnaps') {
+                return Promise.resolve({ data: { id: 'cooksnap-1' } });
             }
             return Promise.reject(new Error('Unknown url'));
         });
@@ -233,10 +232,9 @@ describe('CooksnapModal', () => {
 
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith(
-                '/api/comments',
+                '/api/cooksnaps',
                 expect.objectContaining({
                     comment: 'I made this recipe!',
-                    isCooked: true,
                     imageSrc: 'https://images.jorbites.com/cooksnap.webp',
                 })
             );

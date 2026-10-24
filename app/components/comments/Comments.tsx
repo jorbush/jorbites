@@ -42,7 +42,6 @@ interface CommentsProps {
     onCreateComment: (
         comment: string,
         rating: number | null,
-        isCooked?: boolean,
         imageSrc?: string | null
     ) => void;
     comments?: SafeComment[];

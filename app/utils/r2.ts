@@ -30,6 +30,32 @@ function getS3Client(): S3Client {
 }
 
 /**
+ * Validates whether an image URL is from an allowed trusted host (R2 or Cloudinary).
+ * @param urlStr - The candidate URL
+ * @returns string | null - Cleaned URL if valid, null otherwise
+ */
+export function isValidR2Url(urlStr: unknown): string | null {
+    if (!urlStr || typeof urlStr !== 'string') return null;
+    try {
+        const parsed = new URL(urlStr);
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:')
+            return null;
+        const host = parsed.hostname.toLowerCase();
+        const r2Domain = publicDomain
+            .replace(/^https?:\/\//, '')
+            .replace(/\/.*$/, '');
+        const isAllowed =
+            host === r2Domain ||
+            host.endsWith('.r2.cloudflarestorage.com') ||
+            host.endsWith('.r2.dev') ||
+            host === 'res.cloudinary.com';
+        return isAllowed ? urlStr : null;
+    } catch {
+        return null;
+    }
+}
+
+/**
  * Checks if a URL is an R2 resource
  * @param url - The URL to check
  * @returns boolean - true if it's an R2 URL

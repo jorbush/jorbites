@@ -2,6 +2,7 @@ import {
     Recipe,
     User,
     Comment,
+    Cooksnap,
     Workshop,
     WorkshopParticipant,
     List,
@@ -88,6 +89,12 @@ export type SafeComment = Omit<Comment, 'createdAt'> & {
     rating?: number | null;
     isCooked?: boolean;
     imageSrc?: string | null;
+};
+
+export type SafeCooksnap = Omit<Cooksnap, 'createdAt' | 'updatedAt'> & {
+    createdAt: string;
+    updatedAt: string;
+    user: CommentAuthor;
 };
 
 export type SafeUser = Omit<

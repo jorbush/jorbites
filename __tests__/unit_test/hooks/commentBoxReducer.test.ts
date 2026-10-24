@@ -24,7 +24,6 @@ describe('commentBoxReducer', () => {
             const modified: CommentBoxState = {
                 ...initialState,
                 rating: 5,
-                isCooked: true,
             };
             const result = commentBoxReducer(modified, {
                 type: 'SET_COMMENT',
@@ -32,7 +31,6 @@ describe('commentBoxReducer', () => {
             });
             expect(result.comment).toBe('Updated comment');
             expect(result.rating).toBe(5);
-            expect(result.isCooked).toBe(true);
         });
     });
 
@@ -93,25 +91,9 @@ describe('commentBoxReducer', () => {
         });
     });
 
-    describe('SET_COOKED', () => {
-        it('updates isCooked flag', () => {
-            const result = commentBoxReducer(initialState, {
-                type: 'SET_COOKED',
-                payload: true,
-            });
-            expect(result.isCooked).toBe(true);
-
-            const turnedOff = commentBoxReducer(result, {
-                type: 'SET_COOKED',
-                payload: false,
-            });
-            expect(turnedOff.isCooked).toBe(false);
-        });
-    });
-
     describe('SELECT_FILE', () => {
-        it('sets selectedFile, previewUrl, without setting isCooked to true', () => {
-            const file = new File(['fake data'], 'cooked-dish.png', {
+        it('sets selectedFile and previewUrl', () => {
+            const file = new File(['fake data'], 'dish.png', {
                 type: 'image/png',
             });
             const result = commentBoxReducer(initialState, {
@@ -125,7 +107,6 @@ describe('commentBoxReducer', () => {
             expect(result.previewUrl).toBe(
                 'blob:http://localhost/dish-preview'
             );
-            expect(result.isCooked).toBe(false);
         });
     });
 
@@ -138,15 +119,12 @@ describe('commentBoxReducer', () => {
                 ...initialState,
                 selectedFile: file,
                 previewUrl: 'blob:http://localhost/dish-preview',
-                isCooked: true,
             };
             const result = commentBoxReducer(stateWithFile, {
                 type: 'REMOVE_FILE',
             });
             expect(result.selectedFile).toBeNull();
             expect(result.previewUrl).toBeNull();
-            // isCooked is preserved
-            expect(result.isCooked).toBe(true);
         });
     });
 
@@ -191,7 +169,6 @@ describe('commentBoxReducer', () => {
                 comment: 'Great recipe!',
                 rating: 5,
                 showRating: true,
-                isCooked: true,
                 selectedFile: file,
                 previewUrl: 'blob:http://localhost/test',
                 isUploading: true,

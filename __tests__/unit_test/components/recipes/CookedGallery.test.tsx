@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import CookedGallery from '@/app/components/recipes/CookedGallery';
-import { SafeComment } from '@/app/types';
+import { SafeCooksnap } from '@/app/types';
 
 const mockPush = vi.fn();
 
@@ -68,7 +68,7 @@ vi.mock('@/app/components/utils/ScrollableContainer', () => ({
 }));
 
 describe('CookedGallery', () => {
-    const sampleCooksnaps: SafeComment[] = [
+    const sampleCooksnaps: SafeCooksnap[] = [
         {
             id: 'c-1',
             userId: 'u-1',
@@ -76,8 +76,8 @@ describe('CookedGallery', () => {
             comment: 'Turned out amazing!',
             rating: 5,
             imageSrc: 'https://images.jorbites.com/c1.webp',
-            isCooked: true,
             createdAt: '2026-10-20T10:00:00.000Z',
+            updatedAt: '2026-10-20T10:00:00.000Z',
             likedIds: [],
             user: {
                 id: 'u-1',
@@ -95,8 +95,8 @@ describe('CookedGallery', () => {
             comment: 'Substituted parsley with cilantro',
             rating: 4,
             imageSrc: 'https://images.jorbites.com/c2.webp',
-            isCooked: true,
             createdAt: '2026-10-20T11:00:00.000Z',
+            updatedAt: '2026-10-20T11:00:00.000Z',
             likedIds: [],
             user: {
                 id: 'u-2',
@@ -104,26 +104,6 @@ describe('CookedGallery', () => {
                 image: null,
                 verified: false,
                 level: 3,
-                badges: [],
-            },
-        },
-        // Regular comment with image but NOT cooked -> should be EXCLUDED
-        {
-            id: 'c-3',
-            userId: 'u-3',
-            recipeId: 'r-1',
-            comment: 'Is my dough supposed to look like this?',
-            rating: null,
-            imageSrc: 'https://images.jorbites.com/dough-question.jpg',
-            isCooked: false,
-            createdAt: '2026-10-20T11:30:00.000Z',
-            likedIds: [],
-            user: {
-                id: 'u-3',
-                name: 'Carlos',
-                image: null,
-                verified: false,
-                level: 1,
                 badges: [],
             },
         },
@@ -138,19 +118,16 @@ describe('CookedGallery', () => {
     });
 
     it('returns null when there are no cooksnaps', () => {
-        const { container } = render(<CookedGallery comments={[]} />);
+        const { container } = render(<CookedGallery cooksnaps={[]} />);
         expect(container.firstChild).toBeNull();
     });
 
-    it('renders gallery with cooksnap cards and excludes regular comments with photo', () => {
-        render(<CookedGallery comments={sampleCooksnaps} />);
+    it('renders gallery with cooksnap cards', () => {
+        render(<CookedGallery cooksnaps={sampleCooksnaps} />);
 
         expect(screen.getByTestId('cooked-gallery')).toBeDefined();
         expect(screen.getByTestId('cooksnap-card-c-1')).toBeDefined();
         expect(screen.getByTestId('cooksnap-card-c-2')).toBeDefined();
-
-        // c-3 had isCooked: false, so it must not be in the gallery
-        expect(screen.queryByTestId('cooksnap-card-c-3')).toBeNull();
 
         expect(screen.getByText('Chef Jordi')).toBeDefined();
         expect(screen.getByText('Maria')).toBeDefined();
@@ -158,7 +135,7 @@ describe('CookedGallery', () => {
     });
 
     it('opens lightbox when a cooksnap photo card is clicked', () => {
-        render(<CookedGallery comments={sampleCooksnaps} />);
+        render(<CookedGallery cooksnaps={sampleCooksnaps} />);
 
         expect(screen.queryByTestId('photo-lightbox')).toBeNull();
 
@@ -173,7 +150,7 @@ describe('CookedGallery', () => {
     });
 
     it('navigates to user profile when avatar or name is clicked', () => {
-        render(<CookedGallery comments={sampleCooksnaps} />);
+        render(<CookedGallery cooksnaps={sampleCooksnaps} />);
 
         const chefName = screen.getByText('Chef Jordi');
         fireEvent.click(chefName);

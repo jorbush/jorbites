@@ -5,7 +5,7 @@ import { useCallback, useMemo, useTransition } from 'react';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useLoginModal from '@/app/hooks/useLoginModal';
-import { SafeComment, SafeRecipe, SafeUser } from '@/app/types';
+import { SafeComment, SafeCooksnap, SafeRecipe, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
 import { categories } from '@/app/components/navbar/categoriesData';
 import { IconType } from 'react-icons';
@@ -23,6 +23,7 @@ import CookedGallery from '@/app/components/recipes/CookedGallery';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
+    cooksnaps?: SafeCooksnap[];
     recipe: SafeRecipe & {
         user: SafeUser;
         coCooksIds?: string[];
@@ -35,6 +36,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     recipe,
     currentUser,
     comments,
+    cooksnaps,
 }) => {
     const { refresh } = useRouter() || {};
     const loginModal = useLoginModal();
@@ -67,12 +69,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     const ratingCount = recipe.ratingCount || 0;
 
     const onCreateComment = useCallback(
-        (
-            comment: string,
-            rating: number | null,
-            isCooked?: boolean,
-            imageSrc?: string | null
-        ) => {
+        (comment: string, rating: number | null, imageSrc?: string | null) => {
             if (!currentUser) {
                 return loginModal.onOpen();
             }
@@ -83,7 +80,6 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                         comment: comment,
                         recipeId: recipe?.id,
                         rating: rating,
-                        isCooked: isCooked,
                         imageSrc: imageSrc,
                     });
                     toast.success(t('comment_created'));
@@ -169,7 +165,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                         />
                     </div>
                     <div className="mt-2">
-                        <CookedGallery comments={comments} />
+                        <CookedGallery cooksnaps={cooksnaps} />
                     </div>
                     <div id="comments-section">
                         <Comments

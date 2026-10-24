@@ -67,7 +67,7 @@ const CooksnapModal: React.FC = () => {
                 });
             }
 
-            // 3. Post comment with isCooked: true
+            // 3. Post cooksnap to dedicated endpoint
             const defaultNote = mounted
                 ? t('i_made_this_default_note', {
                       defaultValue: 'I made this recipe!',
@@ -76,12 +76,11 @@ const CooksnapModal: React.FC = () => {
 
             const commentText = note.trim() || defaultNote;
 
-            await axios.post('/api/comments', {
+            await axios.post('/api/cooksnaps', {
                 recipeId: cooksnapModal.recipeId,
+                imageSrc: publicUrl,
                 comment: commentText,
                 rating: rating,
-                isCooked: true,
-                imageSrc: publicUrl,
             });
 
             toast.success(
