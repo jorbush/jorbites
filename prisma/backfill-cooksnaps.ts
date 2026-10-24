@@ -3,15 +3,6 @@ import { redisCache } from '../app/lib/redis';
 import { recomputeRecipeRating } from '../app/utils/recipeRating';
 
 const prisma = new PrismaClient();
-const BATCH_SIZE = 10;
-
-function chunkArray<T>(items: T[], size: number): T[][] {
-    const chunks: T[][] = [];
-    for (let i = 0; i < items.length; i += size) {
-        chunks.push(items.slice(i, i + size));
-    }
-    return chunks;
-}
 
 export async function backfillCooksnaps() {
     console.log('Starting Cooksnap migration backfill...');
@@ -34,114 +25,116 @@ export async function backfillCooksnaps() {
         const affectedRecipeIds = new Set<string>();
         const affectedUserIds = new Set<string>();
 
-        const commentBatches = chunkArray(cookedComments, BATCH_SIZE);
-        await commentBatches.reduce(async (chain, batch) => {
-            await chain;
-            const batchResults = await Promise.all(
-                batch.map(async (comment) => {
-                    if (!comment.imageSrc) {
-                        return 'skipped';
-                    }
+        // Deduplicate comments in memory to avoid concurrent unique constraint races
+        const seenUserRecipe = new Set<string>();
+        const commentsToMigrate: typeof cookedComments = [];
+        const duplicateCommentsToDelete: typeof cookedComments = [];
 
-                    affectedRecipeIds.add(comment.recipeId);
-                    affectedUserIds.add(comment.userId);
+        for (const comment of cookedComments) {
+            if (!comment.imageSrc) {
+                skippedCount++;
+                continue;
+            }
 
-                    const existingCooksnap = await prisma.cooksnap.findFirst({
-                        where: {
-                            userId: comment.userId,
-                            recipeId: comment.recipeId,
-                        },
-                    });
+            const key = `${comment.userId}:${comment.recipeId}`;
+            if (seenUserRecipe.has(key)) {
+                duplicateCommentsToDelete.push(comment);
+            } else {
+                seenUserRecipe.add(key);
+                commentsToMigrate.push(comment);
+            }
+        }
 
-                    if (existingCooksnap) {
-                        await prisma.comment.delete({
-                            where: { id: comment.id },
-                        });
-                        return 'skipped';
-                    }
+        // Delete duplicate comments that share the same (userId, recipeId)
+        await Promise.all(
+            duplicateCommentsToDelete.map(async (comment) => {
+                await prisma.comment.delete({
+                    where: { id: comment.id },
+                });
+                skippedCount++;
+            })
+        );
 
-                    await prisma.cooksnap.create({
-                        data: {
-                            userId: comment.userId,
-                            recipeId: comment.recipeId,
-                            imageSrc: comment.imageSrc,
-                            comment: comment.comment,
-                            rating: comment.rating,
-                            likedIds: comment.likedIds || [],
-                            createdAt: comment.createdAt,
-                        },
-                    });
+        // Migrate unique comments concurrently
+        await Promise.all(
+            commentsToMigrate.map(async (comment) => {
+                affectedRecipeIds.add(comment.recipeId);
+                affectedUserIds.add(comment.userId);
 
-                    // Delete migrated comment so it no longer duplicates in the comments feed
+                const existingCooksnap = await prisma.cooksnap.findFirst({
+                    where: {
+                        userId: comment.userId,
+                        recipeId: comment.recipeId,
+                    },
+                });
+
+                if (existingCooksnap) {
                     await prisma.comment.delete({
                         where: { id: comment.id },
                     });
-
-                    return 'migrated';
-                })
-            );
-
-            for (const status of batchResults) {
-                if (status === 'migrated') {
-                    migratedCount++;
-                } else {
                     skippedCount++;
+                    return;
                 }
-            }
-        }, Promise.resolve());
+
+                await prisma.cooksnap.create({
+                    data: {
+                        userId: comment.userId,
+                        recipeId: comment.recipeId,
+                        imageSrc: comment.imageSrc!,
+                        comment: comment.comment,
+                        rating: comment.rating,
+                        likedIds: comment.likedIds || [],
+                        createdAt: comment.createdAt,
+                    },
+                });
+
+                // Delete migrated comment so it no longer duplicates in the comments feed
+                await prisma.comment.delete({
+                    where: { id: comment.id },
+                });
+
+                migratedCount++;
+            })
+        );
 
         console.log(
             `Migration complete! Migrated: ${migratedCount}, Skipped: ${skippedCount}. Recomputing recipe ratings and clearing caches...`
         );
 
-        const recipeBatches = chunkArray(
-            Array.from(affectedRecipeIds),
-            BATCH_SIZE
+        await Promise.all(
+            Array.from(affectedRecipeIds).map(async (recipeId) => {
+                try {
+                    await recomputeRecipeRating(recipeId);
+                    await Promise.all([
+                        redisCache.del(`recipe:comments:${recipeId}`),
+                        redisCache.del(`recipe:cooksnaps:${recipeId}`),
+                        redisCache.del(`recipe:${recipeId}`),
+                    ]);
+                } catch (err) {
+                    console.warn(
+                        `Failed to recompute rating or clear cache for recipe ${recipeId}:`,
+                        err
+                    );
+                }
+            })
         );
-        await recipeBatches.reduce(async (chain, batch) => {
-            await chain;
-            await Promise.all(
-                batch.map(async (recipeId) => {
-                    try {
-                        await recomputeRecipeRating(recipeId);
-                        await Promise.all([
-                            redisCache.del(`recipe:comments:${recipeId}`),
-                            redisCache.del(`recipe:cooksnaps:${recipeId}`),
-                            redisCache.del(`recipe:${recipeId}`),
-                        ]);
-                    } catch (err) {
-                        console.warn(
-                            `Failed to recompute rating or clear cache for recipe ${recipeId}:`,
-                            err
-                        );
-                    }
-                })
-            );
-        }, Promise.resolve());
 
         console.log(
             `Updated ratings and cleared cache for ${affectedRecipeIds.size} recipes.`
         );
 
-        const userBatches = chunkArray(
-            Array.from(affectedUserIds),
-            BATCH_SIZE
+        await Promise.all(
+            Array.from(affectedUserIds).map(async (userId) => {
+                try {
+                    await redisCache.del(`user:activity:graph:${userId}`);
+                } catch (err) {
+                    console.warn(
+                        `Failed to clear activity cache for user ${userId}:`,
+                        err
+                    );
+                }
+            })
         );
-        await userBatches.reduce(async (chain, batch) => {
-            await chain;
-            await Promise.all(
-                batch.map(async (userId) => {
-                    try {
-                        await redisCache.del(`user:activity:graph:${userId}`);
-                    } catch (err) {
-                        console.warn(
-                            `Failed to clear activity cache for user ${userId}:`,
-                            err
-                        );
-                    }
-                })
-            );
-        }, Promise.resolve());
     } catch (error) {
         console.error('Backfill failed:', error);
         process.exit(1);
