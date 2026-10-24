@@ -48,8 +48,8 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
             expect(response.status).toBe(200);
             expect(data).toEqual({
                 showStats: true,
-                showActivityGraph: true,
-                showArticles: true,
+                showActivityGraph: false,
+                showArticles: false,
             });
         });
 
@@ -58,7 +58,7 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
             (prisma.user.findUnique as jest.Mock).mockResolvedValue({
                 profilePreferences: {
                     showStats: false,
-                    showArticles: false,
+                    showArticles: true,
                 },
             });
 
@@ -68,8 +68,8 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
             expect(response.status).toBe(200);
             expect(data).toEqual({
                 showStats: false,
-                showActivityGraph: true,
-                showArticles: false,
+                showActivityGraph: false,
+                showArticles: true,
             });
         });
 
@@ -201,16 +201,16 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
             (prisma.user.findUnique as jest.Mock).mockResolvedValue({
                 profilePreferences: {
                     showStats: true,
-                    showActivityGraph: true,
-                    showArticles: true,
+                    showActivityGraph: false,
+                    showArticles: false,
                 },
             });
             (prisma.user.update as jest.Mock).mockResolvedValue({
                 id: 'user-123',
                 profilePreferences: {
                     showStats: false,
-                    showActivityGraph: true,
-                    showArticles: true,
+                    showActivityGraph: false,
+                    showArticles: false,
                 },
             });
 
@@ -228,16 +228,16 @@ describe('Profile Preferences API (/api/profilePreferences)', () => {
             expect(response.status).toBe(200);
             expect(data).toEqual({
                 showStats: false,
-                showActivityGraph: true,
-                showArticles: true,
+                showActivityGraph: false,
+                showArticles: false,
             });
             expect(prisma.user.update).toHaveBeenCalledWith({
                 where: { id: 'user-123' },
                 data: {
                     profilePreferences: {
                         showStats: false,
-                        showActivityGraph: true,
-                        showArticles: true,
+                        showActivityGraph: false,
+                        showArticles: false,
                     },
                 },
                 select: {

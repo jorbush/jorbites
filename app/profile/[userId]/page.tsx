@@ -12,6 +12,7 @@ import ProfileHeaderSkeleton from '@/app/components/profile/ProfileHeaderSkeleto
 import ProfileJsonLd from '@/app/components/profile/ProfileJsonLd';
 import ProfileContentSection from '@/app/components/profile/ProfileContentSection';
 import { getBlogsByAuthor } from '@/app/utils/blog-utils';
+import { DEFAULT_PROFILE_PREFERENCES } from '@/app/utils/profile-utils';
 
 interface IParams {
     userId?: string;
@@ -96,7 +97,8 @@ async function loadProfilePageData(
         ]);
 
     const showActivityGraph =
-        user?.profilePreferences?.showActivityGraph ?? true;
+        user?.profilePreferences?.showActivityGraph ??
+        DEFAULT_PROFILE_PREFERENCES.showActivityGraph;
     const language = currentUser?.language || user?.language || 'en';
 
     const [userActivity, blogs] = await Promise.all([

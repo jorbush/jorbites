@@ -189,6 +189,11 @@ describe('ProfileClient', () => {
                 searchParams={{}}
                 profileUserId="user1"
                 blogs={mockBlogs}
+                profilePreferences={{
+                    showStats: true,
+                    showActivityGraph: false,
+                    showArticles: true,
+                }}
             />
         );
 
@@ -238,6 +243,11 @@ describe('ProfileClient', () => {
                 searchParams={{}}
                 profileUserId="user1"
                 blogs={mockBlogs}
+                profilePreferences={{
+                    showStats: true,
+                    showActivityGraph: false,
+                    showArticles: true,
+                }}
             />
         );
 
@@ -256,6 +266,11 @@ describe('ProfileClient', () => {
                 searchParams={{ tab: 'blogs' }}
                 profileUserId="user1"
                 blogs={[]}
+                profilePreferences={{
+                    showStats: true,
+                    showActivityGraph: false,
+                    showArticles: true,
+                }}
             />
         );
 
@@ -450,6 +465,34 @@ describe('ProfileClient', () => {
             // Should fallback to recipes tab and display recipe content instead of blog content
             expect(getByText('Recipe 1')).toBeDefined();
             expect(queryByTestId('profile-blogs-content')).toBeNull();
+        });
+
+        it('respects default profile preferences (Option A: stats visible, activity graph hidden, authored articles hidden)', () => {
+            const userWithoutCustomPrefs = {
+                ...mockUserWithStats,
+                profilePreferences: null,
+            };
+
+            const { getByTestId, queryByTestId } = render(
+                <ProfileClient
+                    recipes={mockRecipes}
+                    blogs={mockBlogs}
+                    user={userWithoutCustomPrefs}
+                    currentUser={mockCurrentUser}
+                    graphRecipes={mockGraphRecipes}
+                    totalPages={1}
+                    currentPage={1}
+                    searchParams={{}}
+                    profileUserId="creator-1"
+                />
+            );
+
+            // Stats shown by default
+            expect(getByTestId('profile-cooking-statistics')).toBeDefined();
+            // Activity graph hidden by default
+            expect(queryByTestId('profile-activity-graph')).toBeNull();
+            // Authored articles tab hidden by default
+            expect(queryByTestId('tab-blogs')).toBeNull();
         });
     });
 });

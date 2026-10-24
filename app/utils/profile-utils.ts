@@ -214,16 +214,22 @@ export const getCreatorSameAsLinks = (
 
 export const DEFAULT_PROFILE_PREFERENCES: Required<ProfilePreferences> = {
     showStats: true,
-    showActivityGraph: true,
-    showArticles: true,
+    showActivityGraph: false,
+    showArticles: false,
 };
 
 export const getProfilePreferences = (
     user?: SafeUser | null
 ): Required<ProfilePreferences> => {
     return {
-        showStats: user?.profilePreferences?.showStats ?? true,
-        showActivityGraph: user?.profilePreferences?.showActivityGraph ?? true,
-        showArticles: user?.profilePreferences?.showArticles ?? true,
+        showStats:
+            user?.profilePreferences?.showStats ??
+            DEFAULT_PROFILE_PREFERENCES.showStats,
+        showActivityGraph:
+            user?.profilePreferences?.showActivityGraph ??
+            DEFAULT_PROFILE_PREFERENCES.showActivityGraph,
+        showArticles:
+            user?.profilePreferences?.showArticles ??
+            DEFAULT_PROFILE_PREFERENCES.showArticles,
     };
 };

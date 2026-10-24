@@ -322,8 +322,8 @@ describe('profile-utils', () => {
             );
             expect(getProfilePreferences(undefined)).toEqual({
                 showStats: true,
-                showActivityGraph: true,
-                showArticles: true,
+                showActivityGraph: false,
+                showArticles: false,
             });
         });
 
@@ -331,8 +331,8 @@ describe('profile-utils', () => {
             const user = { id: 'user-1' } as any;
             expect(getProfilePreferences(user)).toEqual({
                 showStats: true,
-                showActivityGraph: true,
-                showArticles: true,
+                showActivityGraph: false,
+                showArticles: false,
             });
         });
 
@@ -346,8 +346,8 @@ describe('profile-utils', () => {
 
             expect(getProfilePreferences(user)).toEqual({
                 showStats: false,
-                showActivityGraph: true,
-                showArticles: true,
+                showActivityGraph: false,
+                showArticles: false,
             });
         });
     });

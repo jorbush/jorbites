@@ -12,7 +12,10 @@ import UserStats from '@/app/components/stats/UserStats';
 import ActivityHeatmap, {
     ActivityItem,
 } from '@/app/components/profile/ActivityHeatmap';
-import { getProfilePreferences } from '@/app/utils/profile-utils';
+import {
+    getProfilePreferences,
+    DEFAULT_PROFILE_PREFERENCES,
+} from '@/app/utils/profile-utils';
 import { useProfileTabs } from '@/app/hooks/useProfileTabs';
 
 interface SearchParams {
@@ -206,9 +209,13 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
     );
     const preferences = profilePreferences || getProfilePreferences(targetUser);
 
-    const showStats = preferences.showStats ?? true;
-    const showActivityGraph = preferences.showActivityGraph ?? true;
-    const showArticles = preferences.showArticles ?? true;
+    const showStats =
+        preferences.showStats ?? DEFAULT_PROFILE_PREFERENCES.showStats;
+    const showActivityGraph =
+        preferences.showActivityGraph ??
+        DEFAULT_PROFILE_PREFERENCES.showActivityGraph;
+    const showArticles =
+        preferences.showArticles ?? DEFAULT_PROFILE_PREFERENCES.showArticles;
 
     const { activeTab, handleTabChange, tabs } = useProfileTabs({
         tabParam: searchParams?.tab,
