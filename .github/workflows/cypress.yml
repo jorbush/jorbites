@@ -53,7 +53,7 @@ jobs:
                   version: 11
 
             - name: Set up Node.js
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: '22'
                   cache: 'pnpm'
@@ -116,12 +116,13 @@ jobs:
                   }" > cypress.env.json
 
             - name: Cypress run
-              uses: cypress-io/github-action@v6
+              uses: cypress-io/github-action@v7
               with:
                   install: false
                   build: pnpm run build
                   start: pnpm start
                   wait-on: 'http://localhost:3000'
+                  wait-on-timeout: 120
                   config-file: cypress.config.ts
                   spec: ${{ matrix.containers.spec }}
               env:
