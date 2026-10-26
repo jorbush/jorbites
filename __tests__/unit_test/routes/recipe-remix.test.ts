@@ -1,6 +1,5 @@
 import { POST as RecipePOST } from '@/app/api/recipes/route';
 import prisma from '@/app/lib/prismadb';
-import sendNotification from '@/app/actions/sendNotification';
 import updateUserLevel from '@/app/actions/updateUserLevel';
 import { redisCache } from '@/app/lib/redis';
 
