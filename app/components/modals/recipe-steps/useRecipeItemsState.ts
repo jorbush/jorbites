@@ -26,6 +26,9 @@ export function useRecipeItemsState({
         if (recipeModal.isEditMode && recipeModal.editRecipeData) {
             return recipeModal.editRecipeData.ingredients?.length || 1;
         }
+        if (recipeModal.forkRecipeData) {
+            return recipeModal.forkRecipeData.ingredients?.length || 1;
+        }
         if (draftData && draftData.ingredients) {
             return draftData.ingredients.length || 1;
         }
@@ -35,6 +38,9 @@ export function useRecipeItemsState({
     const [numSteps, setNumSteps] = useState<number>(() => {
         if (recipeModal.isEditMode && recipeModal.editRecipeData) {
             return recipeModal.editRecipeData.steps?.length || 1;
+        }
+        if (recipeModal.forkRecipeData) {
+            return recipeModal.forkRecipeData.steps?.length || 1;
         }
         if (draftData && draftData.steps) {
             return draftData.steps.length || 1;

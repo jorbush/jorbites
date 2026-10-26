@@ -60,6 +60,13 @@ const sendNotification = async ({
             metadata.likedBy = params.userName;
         }
 
+        if (type === NotificationType.RECIPE_REMIX) {
+            if (params.userName) metadata.remixerName = params.userName;
+            if (params.recipeId) metadata.remixRecipeId = params.recipeId;
+            if (params.recipeTitle)
+                metadata.originalRecipeTitle = params.recipeTitle;
+        }
+
         const notificationPayload = {
             type: type,
             recipient: userEmail,

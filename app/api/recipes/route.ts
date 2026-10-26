@@ -17,6 +17,8 @@ import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 import { MAX_CO_COOKS, MAX_LINKED_RECIPES } from '@/app/utils/constants';
 import { DraftService } from '@/app/services/draftService';
 
+const OBJECT_ID_REGEX = /^[0-9a-fA-F]{24}$/;
+
 export async function POST(request: Request) {
     try {
         const currentUser = await getCurrentUser();
@@ -77,6 +79,7 @@ export async function POST(request: Request) {
             recipeYield,
             prepTime,
             cookTime,
+            forkedFromRecipeId,
         } = body;
 
         const recipeExist = await prisma.recipe.findFirst({
@@ -115,6 +118,41 @@ export async function POST(request: Request) {
         );
 
         const finalQuestId = questId && questId.trim() !== '' ? questId : null;
+
+        const rawForkedFromRecipeId =
+            forkedFromRecipeId && typeof forkedFromRecipeId === 'string'
+                ? forkedFromRecipeId.trim()
+                : null;
+
+        let validForkedFromRecipe: {
+            id: string;
+            title: string;
+            userId: string;
+            user?: { email: string | null } | null;
+        } | null = null;
+
+        if (
+            rawForkedFromRecipeId &&
+            OBJECT_ID_REGEX.test(rawForkedFromRecipeId)
+        ) {
+            validForkedFromRecipe = await prisma.recipe.findUnique({
+                where: { id: rawForkedFromRecipeId },
+                select: {
+                    id: true,
+                    title: true,
+                    userId: true,
+                    user: {
+                        select: {
+                            email: true,
+                        },
+                    },
+                },
+            });
+        }
+
+        const finalForkedFromRecipeId = validForkedFromRecipe
+            ? validForkedFromRecipe.id
+            : null;
 
         const recipe = await prisma.recipe.create({
             data: {
@@ -158,6 +196,7 @@ export async function POST(request: Request) {
                     cookTime !== ''
                         ? parseInt(cookTime.toString(), 10)
                         : null,
+                forkedFromRecipeId: finalForkedFromRecipeId,
             },
         });
 
@@ -189,6 +228,26 @@ export async function POST(request: Request) {
             }
         }
 
+        if (
+            validForkedFromRecipe &&
+            validForkedFromRecipe.userId !== currentUser.id
+        ) {
+            if (validForkedFromRecipe.user?.email) {
+                await sendNotification({
+                    type: NotificationType.RECIPE_REMIX,
+                    userEmail: validForkedFromRecipe.user.email,
+                    params: {
+                        userName: currentUser.name || 'A user',
+                        recipeId: recipe.id,
+                        recipeTitle: validForkedFromRecipe.title,
+                    },
+                });
+            }
+            await updateUserLevel({
+                userId: validForkedFromRecipe.userId,
+            });
+        }
+
         await updateUserLevel({
             userId: currentUser.id,
         });
@@ -204,6 +263,12 @@ export async function POST(request: Request) {
                 redisCache.del(`user:activity:graph:${currentUser.id}`),
                 redisCache.incr('recipes:global:version'),
             ]);
+            if (finalForkedFromRecipeId) {
+                await Promise.all([
+                    redisCache.del(`recipe:${finalForkedFromRecipeId}`),
+                    redisCache.del(`recipe:remixes:${finalForkedFromRecipeId}`),
+                ]);
+            }
             if (body.draftId) {
                 await DraftService.cleanUpDraftOnPublish(
                     body.draftId,

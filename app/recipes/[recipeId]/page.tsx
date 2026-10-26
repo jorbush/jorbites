@@ -6,6 +6,7 @@ import EmptyState from '@/app/components/utils/EmptyState';
 import RecipeClient from '@/app/recipes/[recipeId]/RecipeClient';
 import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
 import getCooksnapsByRecipeId from '@/app/actions/getCooksnapsByRecipeId';
+import getRecipeRemixes from '@/app/actions/getRecipeRemixes';
 import { trackRecipeView } from '@/app/actions/tracking';
 
 interface IParams {
@@ -86,14 +87,17 @@ export async function generateMetadata(props: {
 const RecipePage = async (props: { params: Promise<IParams> }) => {
     const params = await props.params;
 
-    let recipe, currentUser, comments, cooksnaps;
+    let recipe, currentUser, comments, cooksnaps, remixes;
     try {
-        [recipe, currentUser, comments, cooksnaps] = await Promise.all([
-            getRecipeById(params),
-            getCurrentUser(),
-            getCommentsByRecipeId(params),
-            getCooksnapsByRecipeId(params),
-        ]);
+        [recipe, currentUser, comments, cooksnaps, remixes] = await Promise.all(
+            [
+                getRecipeById(params),
+                getCurrentUser(),
+                getCommentsByRecipeId(params),
+                getCooksnapsByRecipeId(params),
+                getRecipeRemixes(params),
+            ]
+        );
     } catch {
         return (
             <ClientOnly>
@@ -126,6 +130,7 @@ const RecipePage = async (props: { params: Promise<IParams> }) => {
             currentUser={currentUser}
             comments={comments}
             cooksnaps={cooksnaps}
+            remixes={remixes}
         />
     );
 };

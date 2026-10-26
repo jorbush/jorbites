@@ -19,7 +19,7 @@ import useIsMounted from '@/app/hooks/useIsMounted';
 import useCooksnapModal from '@/app/hooks/useCooksnapModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import Button from '@/app/components/buttons/Button';
-import { TbPhotoPlus } from 'react-icons/tb';
+import { TbPhotoPlus, TbGitFork } from 'react-icons/tb';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -238,9 +238,9 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 RenderGanttTable={RecipeGanttTable}
             />
 
-            {/* Post-steps Cooksnap Button */}
-            <div className="flex w-full flex-row items-center justify-center pt-2">
-                <div className="w-[240px]">
+            {/* Post-steps Cooksnap and Remix Buttons */}
+            <div className="flex w-full flex-wrap items-center justify-center gap-4 pt-2">
+                <div className="w-[220px]">
                     <Button
                         label={
                             mounted
@@ -257,6 +257,27 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                             cooksnapModal.onOpen(id, recipeTitle);
                         }}
                         dataTestId="post-steps-cooksnap-btn"
+                    />
+                </div>
+                <div className="w-[220px]">
+                    <Button
+                        label={
+                            mounted
+                                ? String(
+                                      t('remix_recipe', {
+                                          defaultValue: 'Remix Recipe',
+                                      })
+                                  )
+                                : 'Remix Recipe'
+                        }
+                        icon={TbGitFork}
+                        outline
+                        onClick={() => {
+                            if (!currentUser) return loginModal.onOpen();
+                            push(`/recipes/create?forkFrom=${id}`);
+                        }}
+                        dataTestId="remix-recipe-btn"
+                        dataCy="remix-recipe-btn"
                     />
                 </div>
             </div>

@@ -39,9 +39,61 @@ function buildIndexedSlots(
  */
 export function buildInitialRecipeDefaultValues(
     recipeModal: RecipeModalStateLike,
-    draftData?: Partial<DraftData> | null
+    draftData?: Partial<DraftData> | null,
+    t?: (key: string, options?: any) => string
 ): Record<string, unknown> {
     const emptySlots = buildEmptySlots();
+
+    if (recipeModal.forkRecipeData) {
+        const forkData = recipeModal.forkRecipeData;
+        const { list: ingredients, indexed: ingredientsObject } =
+            buildIndexedSlots(
+                forkData.ingredients,
+                'ingredient',
+                RECIPE_MAX_INGREDIENTS
+            );
+        const { list: steps, indexed: stepsObject } = buildIndexedSlots(
+            forkData.steps,
+            'step',
+            RECIPE_MAX_STEPS
+        );
+
+        const rawTitle = forkData.title || '';
+        const defaultTitle = t
+            ? t('remix_of', {
+                  title: rawTitle,
+                  defaultValue: `Remix of ${rawTitle}`,
+              })
+            : `Remix of ${rawTitle}`;
+
+        return {
+            ...emptySlots,
+            categories: Array.isArray(forkData.categories)
+                ? forkData.categories
+                : [],
+            method: forkData.method || '',
+            imageSrc: '',
+            imageSrc1: '',
+            imageSrc2: '',
+            imageSrc3: '',
+            title: defaultTitle,
+            description: forkData.description || '',
+            ingredients,
+            steps,
+            minutes: forkData.minutes !== undefined ? forkData.minutes : 30,
+            prepTime: forkData.prepTime ?? undefined,
+            cookTime: forkData.cookTime ?? undefined,
+            coCooksIds: [],
+            linkedRecipeIds: [],
+            youtubeUrl: '',
+            questId: '',
+            draftId: '',
+            inviteToken: '',
+            forkedFromRecipeId: recipeModal.forkedFromRecipeId || '',
+            ...ingredientsObject,
+            ...stepsObject,
+        };
+    }
 
     if (recipeModal.isEditMode && recipeModal.editRecipeData) {
         const editData = recipeModal.editRecipeData;
@@ -86,6 +138,7 @@ export function buildInitialRecipeDefaultValues(
             questId: editData.questId || recipeModal.questId || '',
             draftId: '',
             inviteToken: '',
+            forkedFromRecipeId: '',
             ...ingredientsObject,
             ...stepsObject,
         };
@@ -133,6 +186,7 @@ export function buildInitialRecipeDefaultValues(
             questId: draftData.questId || recipeModal.questId || '',
             draftId: draftData.draftId || '',
             inviteToken: draftData.inviteToken || '',
+            forkedFromRecipeId: '',
             ...ingredientsObject,
             ...stepsObject,
         };
@@ -159,5 +213,6 @@ export function buildInitialRecipeDefaultValues(
         questId: recipeModal.questId || '',
         draftId: '',
         inviteToken: '',
+        forkedFromRecipeId: '',
     };
 }

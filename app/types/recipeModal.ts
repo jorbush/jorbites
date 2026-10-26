@@ -35,5 +35,7 @@ export interface RecipeModalStateLike extends RecipeModalDraftController {
     isEditMode?: boolean;
     onClose?: () => void;
     editRecipeData?: EditRecipeData | null;
+    forkRecipeData?: Partial<EditRecipeData> | null;
+    forkedFromRecipeId?: string | null;
     questId?: string | null;
 }

@@ -32,11 +32,12 @@ export function useRecipeFormState({
 }: UseRecipeFormStateProps) {
     const { refresh } = useRouter() || {};
     const { t } = useTranslation();
+    const isForkMode = Boolean(recipeModal.forkRecipeData);
 
     const { draftData, isLoadingDraft, mutateDraft, syncFormFromDraft } =
         useDraftSync({
             activeDraftId: recipeModal.activeDraftId,
-            isEditMode: Boolean(recipeModal.isEditMode),
+            isEditMode: Boolean(recipeModal.isEditMode) || isForkMode,
             currentUser,
             isOpen: Boolean(recipeModal.isOpen),
             initialDraftData: propDraftData,
@@ -46,6 +47,7 @@ export function useRecipeFormState({
     const [step, setStep] = useState(() => {
         if (
             !recipeModal.isEditMode &&
+            !isForkMode &&
             draftData &&
             draftData.currentStep !== undefined
         ) {
@@ -58,8 +60,8 @@ export function useRecipeFormState({
     });
 
     const initialDefaultValues = useMemo(
-        () => buildInitialRecipeDefaultValues(recipeModal, draftData),
-        [recipeModal, draftData]
+        () => buildInitialRecipeDefaultValues(recipeModal, draftData, t),
+        [recipeModal, draftData, t]
     );
 
     const {
@@ -158,7 +160,7 @@ export function useRecipeFormState({
     syncFormFromDraft(setValue, getValues, step, lock);
 
     useDraftSwitchSync({
-        isEditMode: recipeModal.isEditMode,
+        isEditMode: Boolean(recipeModal.isEditMode) || isForkMode,
         draftData,
         setStep,
         setNumIngredients,

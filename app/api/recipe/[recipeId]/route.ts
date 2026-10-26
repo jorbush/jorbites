@@ -287,10 +287,21 @@ async function cleanupOldImages(
     }
 }
 
-async function invalidateRecipeCache(recipeId: string) {
+async function invalidateRecipeCache(
+    recipeId: string,
+    forkedFromRecipeId?: string | null
+) {
     try {
-        await redisCache.del(`recipe:${recipeId}`);
-        await redisCache.incr('recipes:global:version');
+        const deletions = [
+            redisCache.del(`recipe:${recipeId}`),
+            redisCache.incr('recipes:global:version'),
+        ];
+        if (forkedFromRecipeId) {
+            deletions.push(
+                redisCache.del(`recipe:remixes:${forkedFromRecipeId}`)
+            );
+        }
+        await Promise.all(deletions);
     } catch (error: any) {
         logger.error(
             'PATCH /api/recipe/[recipeId] - cache invalidation error',
@@ -458,7 +469,7 @@ export async function PATCH(
 
         logger.info('PATCH /api/recipe/[recipeId] - success', { recipeId });
 
-        await invalidateRecipeCache(recipeId);
+        await invalidateRecipeCache(recipeId, recipe.forkedFromRecipeId);
 
         return NextResponse.json(updatedRecipe);
     } catch (error: any) {
@@ -552,14 +563,23 @@ export async function DELETE(
 
         // Invalidate cache
         try {
-            await Promise.all([
+            const cacheInvalidations = [
                 redisCache.del(`recipe:${recipeId}`),
                 redisCache.del(`recipe:comments:${recipeId}`),
                 redisCache.del(`recipe:cooksnaps:${recipeId}`),
+                redisCache.del(`recipe:remixes:${recipeId}`),
                 redisCache.del(`recipes:graph:${currentUser.id}`),
                 redisCache.del(`user:activity:graph:${currentUser.id}`),
                 redisCache.incr('recipes:global:version'),
-            ]);
+            ];
+            if (recipe.forkedFromRecipeId) {
+                cacheInvalidations.push(
+                    redisCache.del(
+                        `recipe:remixes:${recipe.forkedFromRecipeId}`
+                    )
+                );
+            }
+            await Promise.all(cacheInvalidations);
         } catch (error: any) {
             logger.error(
                 'DELETE /api/recipe/[recipeId] - cache invalidation error',

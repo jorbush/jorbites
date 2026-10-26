@@ -20,10 +20,13 @@ import { useTranslation } from 'react-i18next';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
 import CookedGallery from '@/app/components/recipes/CookedGallery';
+import RemixAttributionBanner from '@/app/components/recipes/RemixAttributionBanner';
+import RecipeRemixesSection from '@/app/components/recipes/RecipeRemixesSection';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
     cooksnaps?: SafeCooksnap[];
+    remixes?: SafeRecipe[];
     recipe: SafeRecipe & {
         user: SafeUser;
         coCooksIds?: string[];
@@ -37,6 +40,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     currentUser,
     comments,
     cooksnaps,
+    remixes,
 }) => {
     const { refresh } = useRouter() || {};
     const loginModal = useLoginModal();
@@ -132,6 +136,10 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
             />
             <div className="mx-auto max-w-[800px]">
                 <div className="flex flex-col gap-6">
+                    <RemixAttributionBanner
+                        forkedFromRecipe={recipe.forkedFromRecipe}
+                        forkedFromRecipeId={recipe.forkedFromRecipeId}
+                    />
                     <RecipeHead
                         title={recipe.title}
                         minutes={recipe.minutes.toString()}
@@ -170,6 +178,13 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             cooksnaps={cooksnaps}
                             currentUser={currentUser}
                             recipeAuthorId={recipe.userId}
+                        />
+                    </div>
+                    <div className="mt-2">
+                        <RecipeRemixesSection
+                            originalRecipeId={recipe.id}
+                            remixes={remixes}
+                            currentUser={currentUser}
                         />
                     </div>
                     <div id="comments-section">

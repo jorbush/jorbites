@@ -64,9 +64,14 @@ export function useRecipeStepNavigation({
     refresh,
 }: UseRecipeStepNavigationProps) {
     const [isLoading, setIsLoading] = useState(false);
+    const isForkMode = Boolean(recipeModal.forkRecipeData);
 
     const onBack = async () => {
-        if (process.env.NODE_ENV === 'production' && !recipeModal.isEditMode) {
+        if (
+            process.env.NODE_ENV === 'production' &&
+            !recipeModal.isEditMode &&
+            !isForkMode
+        ) {
             await saveDraft(step - 1);
         }
         setStep((value) => Math.max(value - 1, 0));
@@ -123,7 +128,8 @@ export function useRecipeStepNavigation({
             if (
                 success &&
                 process.env.NODE_ENV === 'production' &&
-                !recipeModal.isEditMode
+                !recipeModal.isEditMode &&
+                !isForkMode
             ) {
                 await saveDraft(step + 1);
             }
@@ -148,7 +154,9 @@ export function useRecipeStepNavigation({
             } else {
                 const url = `${window.location.origin}/api/recipes`;
                 await axios.post(url, data);
-                await deleteDraft();
+                if (!isForkMode) {
+                    await deleteDraft();
+                }
                 toast.success(t('recipe_posted'));
             }
 
@@ -172,6 +180,7 @@ export function useRecipeStepNavigation({
                 questId: '',
                 draftId: '',
                 inviteToken: '',
+                forkedFromRecipeId: '',
             });
             setStep(STEPS.CATEGORY);
             recipeModal.onClose?.();

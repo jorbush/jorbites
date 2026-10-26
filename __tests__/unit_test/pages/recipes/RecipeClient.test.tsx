@@ -188,4 +188,54 @@ describe('RecipeClient', () => {
         expect(getByText('3 servings')).toBeDefined();
         expect(getByText('Indian')).toBeDefined();
     });
+
+    it('renders remix attribution banner when recipe was forked', () => {
+        const forkedRecipe = {
+            ...mockRecipe,
+            forkedFromRecipeId: 'parent-123',
+            forkedFromRecipe: {
+                id: 'parent-123',
+                title: 'Original Pizza',
+                user: {
+                    id: 'chef-99',
+                    name: 'Chef Mario',
+                },
+            },
+        };
+
+        const { getByTestId, getByText } = render(
+            <RecipeClient
+                recipe={forkedRecipe}
+                currentUser={mockCurrentUser}
+                comments={mockComments}
+            />
+        );
+
+        expect(getByTestId('remix-attribution-banner')).toBeInTheDocument();
+        expect(getByText('Original Pizza')).toBeInTheDocument();
+        expect(getByText('@Chef Mario')).toBeInTheDocument();
+    });
+
+    it('renders community remixes section when variations exist', () => {
+        const mockRemixes: SafeRecipe[] = [
+            {
+                ...mockRecipe,
+                id: 'remix-variation-1',
+                title: 'Extra Cheese Remix',
+                forkedFromRecipeId: mockRecipe.id,
+            },
+        ];
+
+        const { getByTestId, getByText } = render(
+            <RecipeClient
+                recipe={mockRecipe}
+                currentUser={mockCurrentUser}
+                comments={mockComments}
+                remixes={mockRemixes}
+            />
+        );
+
+        expect(getByTestId('community-remixes-section')).toBeInTheDocument();
+        expect(getByText('Extra Cheese Remix')).toBeInTheDocument();
+    });
 });
