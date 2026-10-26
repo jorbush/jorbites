@@ -11,19 +11,24 @@ export interface RecipeModalStore {
     forkedFromRecipeId: string | null;
     questId: string | null;
     activeDraftId: string | null;
-    onOpen: () => void;
-    onOpenCreate: (questId?: string) => void;
+    onCloseCallback?: (() => void) | null;
+    onOpen: (onCloseCallback?: () => void) => void;
+    onOpenCreate: (questId?: string, onCloseCallback?: () => void) => void;
     onOpenFork: (
         forkData: Partial<EditRecipeData>,
-        forkedFromRecipeId: string
+        forkedFromRecipeId: string,
+        onCloseCallback?: () => void
     ) => void;
-    onOpenDraft: (draftId: string) => void;
-    onOpenSharedDraft: (draftId: string) => void;
-    onOpenEdit: (recipeData: EditRecipeData) => void;
+    onOpenDraft: (draftId: string, onCloseCallback?: () => void) => void;
+    onOpenSharedDraft: (draftId: string, onCloseCallback?: () => void) => void;
+    onOpenEdit: (
+        recipeData: EditRecipeData,
+        onCloseCallback?: () => void
+    ) => void;
     onClose: () => void;
 }
 
-const useRecipeModal = create<RecipeModalStore>((set) => ({
+const useRecipeModal = create<RecipeModalStore>((set, get) => ({
     isOpen: false,
     isEditMode: false,
     editRecipeData: null,
@@ -31,7 +36,8 @@ const useRecipeModal = create<RecipeModalStore>((set) => ({
     forkedFromRecipeId: null,
     questId: null,
     activeDraftId: null,
-    onOpen: () =>
+    onCloseCallback: null,
+    onOpen: (onCloseCallback) =>
         set({
             isOpen: true,
             isEditMode: false,
@@ -40,8 +46,9 @@ const useRecipeModal = create<RecipeModalStore>((set) => ({
             forkedFromRecipeId: null,
             questId: null,
             activeDraftId: null,
+            onCloseCallback: onCloseCallback || null,
         }),
-    onOpenCreate: (questId?: string) =>
+    onOpenCreate: (questId?: string, onCloseCallback?: () => void) =>
         set({
             isOpen: true,
             isEditMode: false,
@@ -50,10 +57,12 @@ const useRecipeModal = create<RecipeModalStore>((set) => ({
             forkedFromRecipeId: null,
             questId: questId || null,
             activeDraftId: null,
+            onCloseCallback: onCloseCallback || null,
         }),
     onOpenFork: (
         forkData: Partial<EditRecipeData>,
-        forkedFromRecipeId: string
+        forkedFromRecipeId: string,
+        onCloseCallback?: () => void
     ) =>
         set({
             isOpen: true,
@@ -63,8 +72,9 @@ const useRecipeModal = create<RecipeModalStore>((set) => ({
             forkedFromRecipeId: forkedFromRecipeId,
             questId: forkData.questId || null,
             activeDraftId: null,
+            onCloseCallback: onCloseCallback || null,
         }),
-    onOpenDraft: (draftId: string) =>
+    onOpenDraft: (draftId: string, onCloseCallback?: () => void) =>
         set({
             isOpen: true,
             isEditMode: false,
@@ -73,8 +83,9 @@ const useRecipeModal = create<RecipeModalStore>((set) => ({
             forkedFromRecipeId: null,
             questId: null,
             activeDraftId: draftId,
+            onCloseCallback: onCloseCallback || null,
         }),
-    onOpenSharedDraft: (draftId: string) =>
+    onOpenSharedDraft: (draftId: string, onCloseCallback?: () => void) =>
         set({
             isOpen: true,
             isEditMode: false,
@@ -83,8 +94,9 @@ const useRecipeModal = create<RecipeModalStore>((set) => ({
             forkedFromRecipeId: null,
             questId: null,
             activeDraftId: draftId,
+            onCloseCallback: onCloseCallback || null,
         }),
-    onOpenEdit: (recipeData: EditRecipeData) =>
+    onOpenEdit: (recipeData: EditRecipeData, onCloseCallback?: () => void) =>
         set({
             isOpen: true,
             isEditMode: true,
@@ -93,8 +105,10 @@ const useRecipeModal = create<RecipeModalStore>((set) => ({
             forkedFromRecipeId: null,
             questId: recipeData.questId ?? null,
             activeDraftId: null,
+            onCloseCallback: onCloseCallback || null,
         }),
-    onClose: () =>
+    onClose: () => {
+        const callback = get().onCloseCallback;
         set({
             isOpen: false,
             isEditMode: false,
@@ -103,7 +117,12 @@ const useRecipeModal = create<RecipeModalStore>((set) => ({
             forkedFromRecipeId: null,
             questId: null,
             activeDraftId: null,
-        }),
+            onCloseCallback: null,
+        });
+        if (callback) {
+            callback();
+        }
+    },
 }));
 
 export default useRecipeModal;

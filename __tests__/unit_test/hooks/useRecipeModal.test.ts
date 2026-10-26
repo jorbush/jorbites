@@ -75,5 +75,24 @@ describe('useRecipeModal', () => {
         expect(state.editRecipeData).toBeNull();
         expect(state.questId).toBeNull();
         expect(state.activeDraftId).toBeNull();
+        expect(state.onCloseCallback).toBeNull();
+    });
+
+    it('invokes and resets onCloseCallback on onClose', () => {
+        let callbackCalled = false;
+        useRecipeModal
+            .getState()
+            .onOpenFork({ title: 'Remix' }, 'rec-123', () => {
+                callbackCalled = true;
+            });
+
+        expect(useRecipeModal.getState().isOpen).toBe(true);
+        expect(useRecipeModal.getState().onCloseCallback).toBeDefined();
+
+        useRecipeModal.getState().onClose();
+
+        expect(callbackCalled).toBe(true);
+        expect(useRecipeModal.getState().isOpen).toBe(false);
+        expect(useRecipeModal.getState().onCloseCallback).toBeNull();
     });
 });

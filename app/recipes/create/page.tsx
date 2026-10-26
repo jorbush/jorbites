@@ -17,8 +17,10 @@ interface CreatePageProps {
 }
 
 export default async function RecipeCreatePage(props: CreatePageProps) {
-    const searchParams = await props.searchParams;
-    const currentUser = await getCurrentUser();
+    const [searchParams, currentUser] = await Promise.all([
+        props.searchParams,
+        getCurrentUser(),
+    ]);
 
     if (!currentUser) {
         redirect('/?login=true');

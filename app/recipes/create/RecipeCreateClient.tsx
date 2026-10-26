@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import { SafeRecipe } from '@/app/types';
@@ -18,7 +18,16 @@ export default function RecipeCreateClient({
     const router = useRouter();
     const recipeModal = useRecipeModal();
     const initializedRef = useRef(false);
-    const wasOpenRef = useRef(false);
+    const isUnmountingRef = useRef(false);
+
+    const handleClose = useCallback(() => {
+        if (isUnmountingRef.current) return;
+        if (forkFromId) {
+            router.push(`/recipes/${forkFromId}`);
+        } else {
+            router.push('/');
+        }
+    }, [forkFromId, router]);
 
     useEffect(() => {
         if (initializedRef.current) return;
@@ -37,25 +46,18 @@ export default function RecipeCreateClient({
                     prepTime: forkFromRecipe.prepTime ?? undefined,
                     cookTime: forkFromRecipe.cookTime ?? undefined,
                 },
-                forkFromId
+                forkFromId,
+                handleClose
             );
         } else {
-            recipeModal.onOpen();
+            recipeModal.onOpen(handleClose);
         }
-    }, [forkFromRecipe, forkFromId, recipeModal]);
 
-    // Handle user closing modal while on /recipes/create
-    useEffect(() => {
-        if (recipeModal.isOpen) {
-            wasOpenRef.current = true;
-        } else if (wasOpenRef.current) {
-            if (forkFromId) {
-                router.push(`/recipes/${forkFromId}`);
-            } else {
-                router.push('/');
-            }
-        }
-    }, [recipeModal.isOpen, forkFromId, router]);
+        return () => {
+            isUnmountingRef.current = true;
+            recipeModal.onClose();
+        };
+    }, [forkFromRecipe, forkFromId, recipeModal, handleClose]);
 
     return (
         <div className="flex min-h-[60vh] items-center justify-center">
