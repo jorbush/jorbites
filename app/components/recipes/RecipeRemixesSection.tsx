@@ -26,17 +26,19 @@ interface RecipeRemixesSectionProps {
     currentUser?: SafeUser | null;
 }
 
-const EMPTY_REMIXES: RemixRecipeItem[] = [];
-
 export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
     originalRecipeId,
-    remixes = EMPTY_REMIXES,
+    remixes,
     currentUser,
 }) => {
     const { push } = useRouter() || {};
     const { t } = useTranslation();
     const mounted = useIsMounted();
     const loginModal = useLoginModal();
+
+    if (!remixes || remixes.length === 0) {
+        return null;
+    }
 
     const title = mounted
         ? t('community_remixes', {
@@ -50,60 +52,6 @@ export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
         }
         push(`/recipes/create?forkFrom=${originalRecipeId}`);
     };
-
-    if (remixes.length === 0) {
-        return (
-            <div
-                className="flex flex-col pr-2 pl-2"
-                data-cy="community-remixes-section"
-                data-testid="community-remixes-section"
-            >
-                <hr />
-                <div className="mt-8 mb-4 flex flex-row items-center justify-between">
-                    <div className="flex flex-row items-center gap-2">
-                        <TbGitFork
-                            size={22}
-                            className="text-neutral-700 dark:text-neutral-200"
-                            aria-hidden="true"
-                        />
-                        <div className="text-xl font-semibold dark:text-neutral-100">
-                            {title}
-                        </div>
-                        <div className="text-md ml-1 text-neutral-500">(0)</div>
-                    </div>
-                </div>
-                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-300 p-6 text-center dark:border-neutral-700">
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                        {mounted
-                            ? t('no_community_remixes', {
-                                  defaultValue:
-                                      'No remixes yet. Customize this recipe and make it your own!',
-                              })
-                            : 'No remixes yet. Customize this recipe and make it your own!'}
-                    </p>
-                    <div className="mt-3 w-[200px]">
-                        <Button
-                            label={
-                                mounted
-                                    ? String(
-                                          t('remix_recipe', {
-                                              defaultValue: 'Remix Recipe',
-                                          })
-                                      )
-                                    : 'Remix Recipe'
-                            }
-                            icon={TbGitFork}
-                            outline
-                            small
-                            onClick={onRemixClick}
-                            dataTestId="empty-section-remix-btn"
-                            dataCy="empty-section-remix-btn"
-                        />
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div

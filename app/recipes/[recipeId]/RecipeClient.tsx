@@ -180,13 +180,15 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             recipeAuthorId={recipe.userId}
                         />
                     </div>
-                    <div className="mt-2">
-                        <RecipeRemixesSection
-                            originalRecipeId={recipe.id}
-                            remixes={remixes}
-                            currentUser={currentUser}
-                        />
-                    </div>
+                    {remixes && remixes.length > 0 && (
+                        <div className="mt-2">
+                            <RecipeRemixesSection
+                                originalRecipeId={recipe.id}
+                                remixes={remixes}
+                                currentUser={currentUser}
+                            />
+                        </div>
+                    )}
                     <div id="comments-section">
                         <Comments
                             currentUser={currentUser}

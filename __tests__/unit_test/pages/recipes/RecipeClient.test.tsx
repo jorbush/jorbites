@@ -238,4 +238,17 @@ describe('RecipeClient', () => {
         expect(getByTestId('community-remixes-section')).toBeInTheDocument();
         expect(getByText('Extra Cheese Remix')).toBeInTheDocument();
     });
+
+    it('does not render community remixes section when variations do not exist', () => {
+        const { queryByTestId } = render(
+            <RecipeClient
+                recipe={mockRecipe}
+                currentUser={mockCurrentUser}
+                comments={mockComments}
+                remixes={[]}
+            />
+        );
+
+        expect(queryByTestId('community-remixes-section')).toBeNull();
+    });
 });
