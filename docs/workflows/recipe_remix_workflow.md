@@ -25,13 +25,8 @@ sequenceDiagram
     User->>Editor: Customizes steps/ingredients, uploads dish photo, clicks Submit
     Editor->>API: POST /api/recipes with forkedFromRecipeId
     API->>DB: prisma.recipe.create (with forkedFromRecipeId)
-    API->>DB: Fetch original recipe & author email
-    par Creator Recognition: Dispatch Notification
-        API->>Notifier: POST /notifications (Type: RECIPE_REMIX, recipient: authorEmail)
-        Notifier-->>OriginalAuthor: WebPush / Email ("@username published a remix of your recipe!")
-    and Creator Recognition: Award XP / Leveling
+    par Creator Recognition: Award XP / Leveling
         API->>BF: updateUserLevel(remixerId)
-        API->>BF: updateUserLevel(originalAuthorId)
     and Cache Invalidation
         API->>Redis: Invalidate parent recipe & remixes list cache
     end
@@ -78,12 +73,11 @@ sequenceDiagram
 
 ### 5. Creator Recognition & Gamification
 
-- **Notification Type**: `NotificationType.RECIPE_REMIX`.
-- **Alert Message**: `"@username published a remix of your recipe!"`.
-- **Double XP / Level Progression**:
+- **XP / Level Progression**:
     - The remixer is awarded recipe creation XP via `updateUserLevel({ userId: currentUser.id })`.
-    - The original recipe author is awarded XP via `updateUserLevel({ userId: originalRecipe.userId })`.
-- **Self-Remixing Protection**: If a cook remixes their own recipe, self-notification and duplicate author XP awards are cleanly suppressed.
+- **Cross-Service Notifications & Author Rewards** (Tracked in [#1752](https://github.com/jorbush/jorbites/issues/1752)):
+    - Future integration with `jorbites-notifier` for `RECIPE_REMIX` email/web push alerts: `"@username published a remix of your recipe!"`.
+    - Future integration with `badge_forge` for author recognition XP awards when community cooks publish variations of their recipes.
 
 ### 6. Cache Invalidation & Data Integrity
 

@@ -126,9 +126,6 @@ export async function POST(request: Request) {
 
         let validForkedFromRecipe: {
             id: string;
-            title: string;
-            userId: string;
-            user?: { email: string | null } | null;
         } | null = null;
 
         if (
@@ -139,13 +136,6 @@ export async function POST(request: Request) {
                 where: { id: rawForkedFromRecipeId },
                 select: {
                     id: true,
-                    title: true,
-                    userId: true,
-                    user: {
-                        select: {
-                            email: true,
-                        },
-                    },
                 },
             });
         }
@@ -226,26 +216,6 @@ export async function POST(request: Request) {
                     },
                 });
             }
-        }
-
-        if (
-            validForkedFromRecipe &&
-            validForkedFromRecipe.userId !== currentUser.id
-        ) {
-            if (validForkedFromRecipe.user?.email) {
-                await sendNotification({
-                    type: NotificationType.RECIPE_REMIX,
-                    userEmail: validForkedFromRecipe.user.email,
-                    params: {
-                        userName: currentUser.name || 'A user',
-                        recipeId: recipe.id,
-                        recipeTitle: validForkedFromRecipe.title,
-                    },
-                });
-            }
-            await updateUserLevel({
-                userId: validForkedFromRecipe.userId,
-            });
         }
 
         await updateUserLevel({

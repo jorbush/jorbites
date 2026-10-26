@@ -3,7 +3,6 @@ import prisma from '@/app/lib/prismadb';
 import sendNotification from '@/app/actions/sendNotification';
 import updateUserLevel from '@/app/actions/updateUserLevel';
 import { redisCache } from '@/app/lib/redis';
-import { NotificationType } from '@/app/types/notification';
 
 let mockedSession: any = null;
 
@@ -55,17 +54,10 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
         (prisma.recipe.findFirst as jest.Mock).mockResolvedValue(null);
     });
 
-    it('creates a remixed recipe, notifies original author, and awards XP to both', async () => {
+    it('creates a remixed recipe, persists forkedFromRecipeId, invalidates cache, and awards creator XP', async () => {
         const originalRecipeId = '507f1f77bcf86cd799439011';
         const originalRecipe = {
             id: originalRecipeId,
-            title: 'Grandma Secret Pasta',
-            userId: 'original-author-id',
-            user: {
-                id: 'original-author-id',
-                name: 'Grandma',
-                email: 'grandma@test.com',
-            },
         };
 
         const createdRemix = {
@@ -113,26 +105,12 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
             })
         );
 
-        // 2. Verify notification sent to original recipe author
-        expect(sendNotification).toHaveBeenCalledWith({
-            type: NotificationType.RECIPE_REMIX,
-            userEmail: 'grandma@test.com',
-            params: {
-                userName: 'Remix Chef',
-                recipeId: 'new-remix-id',
-                recipeTitle: 'Grandma Secret Pasta',
-            },
-        });
-
-        // 3. Verify XP awarded to both remixer and original author
+        // 2. Verify XP awarded to remixer
         expect(updateUserLevel).toHaveBeenCalledWith({
             userId: 'remixer-user-id',
         });
-        expect(updateUserLevel).toHaveBeenCalledWith({
-            userId: 'original-author-id',
-        });
 
-        // 4. Verify Redis cache invalidation for parent recipe and its remixes
+        // 3. Verify Redis cache invalidation for parent recipe and its remixes
         expect(redisCache.del).toHaveBeenCalledWith(
             `recipe:${originalRecipeId}`
         );
@@ -190,13 +168,6 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
                 }),
             })
         );
-
-        // No remix notifications or author level updates
-        expect(sendNotification).not.toHaveBeenCalledWith(
-            expect.objectContaining({
-                type: NotificationType.RECIPE_REMIX,
-            })
-        );
     });
 
     it('gracefully sets forkedFromRecipeId to null when original recipe does not exist', async () => {
@@ -250,26 +221,12 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
                 }),
             })
         );
-
-        // Does not notify or award author XP
-        expect(sendNotification).not.toHaveBeenCalledWith(
-            expect.objectContaining({
-                type: NotificationType.RECIPE_REMIX,
-            })
-        );
     });
 
-    it('suppresses remix notification and duplicate XP award when remixing own recipe', async () => {
+    it('creates a remix of own recipe without issues', async () => {
         const ownOriginalRecipeId = '507f1f77bcf86cd799439012';
         const ownOriginalRecipe = {
             id: ownOriginalRecipeId,
-            title: 'My Own Curry',
-            userId: 'remixer-user-id', // Same user!
-            user: {
-                id: 'remixer-user-id',
-                name: 'Remix Chef',
-                email: 'remixer@test.com',
-            },
         };
 
         const createdRemix = {
@@ -308,15 +265,13 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
         const response = await RecipePOST(request);
         expect(response.status).toBe(200);
 
-        // Should NOT send RECIPE_REMIX notification to oneself
-        expect(sendNotification).not.toHaveBeenCalledWith(
+        expect(prisma.recipe.create).toHaveBeenCalledWith(
             expect.objectContaining({
-                type: NotificationType.RECIPE_REMIX,
+                data: expect.objectContaining({
+                    forkedFromRecipeId: ownOriginalRecipeId,
+                }),
             })
         );
-
-        // Remixer gets creation XP once, not called a second time for originalAuthor
-        expect(updateUserLevel).toHaveBeenCalledTimes(1);
         expect(updateUserLevel).toHaveBeenCalledWith({
             userId: 'remixer-user-id',
         });
