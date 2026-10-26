@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import useRecipeModal from '@/app/hooks/useRecipeModal';
 import { SafeRecipe } from '@/app/types';
@@ -16,12 +16,8 @@ export default function RecipeCreateClient({
     forkFromId,
 }: RecipeCreateClientProps) {
     const router = useRouter();
-    const recipeModal = useRecipeModal();
-    const initializedRef = useRef(false);
-    const isUnmountingRef = useRef(false);
 
     const handleClose = useCallback(() => {
-        if (isUnmountingRef.current) return;
         if (forkFromId) {
             router.push(`/recipes/${forkFromId}`);
         } else {
@@ -30,11 +26,8 @@ export default function RecipeCreateClient({
     }, [forkFromId, router]);
 
     useEffect(() => {
-        if (initializedRef.current) return;
-        initializedRef.current = true;
-
         if (forkFromRecipe && forkFromId) {
-            recipeModal.onOpenFork(
+            useRecipeModal.getState().onOpenFork(
                 {
                     title: forkFromRecipe.title,
                     description: forkFromRecipe.description,
@@ -50,14 +43,16 @@ export default function RecipeCreateClient({
                 handleClose
             );
         } else {
-            recipeModal.onOpen(handleClose);
+            useRecipeModal.getState().onOpen(handleClose);
         }
 
         return () => {
-            isUnmountingRef.current = true;
-            recipeModal.onClose();
+            const state = useRecipeModal.getState();
+            if (state.isOpen) {
+                state.onClose({ skipCallback: true });
+            }
         };
-    }, [forkFromRecipe, forkFromId, recipeModal, handleClose]);
+    }, [forkFromRecipe, forkFromId, handleClose]);
 
     return (
         <div className="flex min-h-[60vh] items-center justify-center">

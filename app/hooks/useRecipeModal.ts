@@ -25,7 +25,7 @@ export interface RecipeModalStore {
         recipeData: EditRecipeData,
         onCloseCallback?: () => void
     ) => void;
-    onClose: () => void;
+    onClose: (options?: { skipCallback?: boolean }) => void;
 }
 
 const useRecipeModal = create<RecipeModalStore>((set, get) => ({
@@ -107,8 +107,8 @@ const useRecipeModal = create<RecipeModalStore>((set, get) => ({
             activeDraftId: null,
             onCloseCallback: onCloseCallback || null,
         }),
-    onClose: () => {
-        const callback = get().onCloseCallback;
+    onClose: (options?: { skipCallback?: boolean }) => {
+        const callback = options?.skipCallback ? null : get().onCloseCallback;
         set({
             isOpen: false,
             isEditMode: false,
