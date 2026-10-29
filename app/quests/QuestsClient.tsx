@@ -80,7 +80,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
     currentPage,
     initialStatus = 'all',
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
     const questModal = useQuestModal();
     const loginModal = useLoginModal();
@@ -257,7 +257,8 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
                                             </p>
                                             <p className="text-neutral-500 dark:text-neutral-400">
                                                 {formatDistanceToNowLocale(
-                                                    new Date(quest.createdAt)
+                                                    new Date(quest.createdAt),
+                                                    i18n.language
                                                 )}
                                             </p>
                                         </div>

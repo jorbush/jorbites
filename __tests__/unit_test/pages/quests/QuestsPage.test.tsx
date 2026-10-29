@@ -16,6 +16,10 @@ vi.mock('next/navigation', () => ({
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => key,
+        i18n: {
+            language: 'en',
+            changeLanguage: vi.fn(),
+        },
     }),
     initReactI18next: {
         type: '3rdParty',
@@ -239,5 +243,18 @@ describe('<QuestsClient />', () => {
             />
         );
         expect(screen.getByText('no_quests')).toBeDefined();
+    });
+
+    it('renders relative time on quest cards', () => {
+        render(
+            <QuestsClient
+                currentUser={mockUser}
+                quests={mockQuests}
+                totalPages={1}
+                currentPage={1}
+            />
+        );
+        const timeDisplays = screen.getAllByText('2 hours ago');
+        expect(timeDisplays.length).toBe(mockQuests.length);
     });
 });

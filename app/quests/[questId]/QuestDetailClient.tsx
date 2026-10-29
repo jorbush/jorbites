@@ -102,7 +102,7 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
     currentUser,
     quest,
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { back, push, refresh } = useRouter() || {};
     const questModal = useQuestModal();
     const recipeModal = useRecipeModal();
@@ -247,7 +247,8 @@ const QuestDetailClient: React.FC<QuestDetailClientProps> = ({
                                 </p>
                                 <p className="text-sm text-neutral-500 dark:text-neutral-400">
                                     {formatDistanceToNowLocale(
-                                        new Date(quest.createdAt)
+                                        new Date(quest.createdAt),
+                                        i18n.language
                                     )}
                                 </p>
                             </div>

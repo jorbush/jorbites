@@ -40,8 +40,14 @@ const getCurrentLocale = (lang?: string | null): LocaleType => {
             // Dynamic import to prevent SSR issues
             // Use i18next directly as it's safe for SSR and avoids path resolution issues in tests.
             // Since app/i18n.ts initializes the global i18next instance, this will return the same configured instance.
-            const i18n = require('i18next');
-            if (i18n.language) return processLang(i18n.language);
+            const i18nModule = require('i18next');
+            const i18n = i18nModule.default || i18nModule;
+            const currentLang = i18n.language || i18n.resolvedLanguage;
+            if (currentLang) return processLang(currentLang);
+
+            const storedLang = window.localStorage?.getItem('i18nextLng');
+            if (storedLang) return processLang(storedLang);
+
             return 'es';
         } catch {
             return 'es';

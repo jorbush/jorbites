@@ -166,6 +166,40 @@ describe('date-utils', () => {
             const result = formatDistanceToNowLocale(twoDaysAgo.toISOString());
             expect(result).toContain('hace 2 días');
         });
+
+        it('should format distance to now using explicitly passed lang parameter', () => {
+            const resultEn = formatDistanceToNowLocale(twoDaysAgo, 'en');
+            expect(resultEn).toContain('2 days ago');
+
+            const resultCa = formatDistanceToNowLocale(twoDaysAgo, 'ca');
+            expect(resultCa).toContain('fa 2 dies');
+
+            const resultEs = formatDistanceToNowLocale(twoDaysAgo, 'es');
+            expect(resultEs).toContain('hace 2 días');
+        });
+
+        it('should format distance to now using resolvedLanguage fallback', () => {
+            vi.stubGlobal('window', {});
+            const i18n = require('i18next');
+            delete i18n.language;
+            i18n.resolvedLanguage = 'ca';
+            const result = formatDistanceToNowLocale(twoDaysAgo);
+            expect(result).toContain('fa 2 dies');
+            delete i18n.resolvedLanguage;
+        });
+
+        it('should format distance to now using localStorage fallback', () => {
+            vi.stubGlobal('window', {
+                localStorage: {
+                    getItem: (key: string) =>
+                        key === 'i18nextLng' ? 'en' : null,
+                },
+            });
+            const i18n = require('i18next');
+            delete i18n.language;
+            const result = formatDistanceToNowLocale(twoDaysAgo);
+            expect(result).toContain('2 days ago');
+        });
     });
 
     describe('formatPeriodKey', () => {
