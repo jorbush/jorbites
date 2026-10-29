@@ -148,6 +148,10 @@ const FooterPwaInstall: React.FC = () => {
         ],
     };
 
+    if (isInstalled) {
+        return null;
+    }
+
     return (
         <section
             id="pwa-install-guide"
@@ -157,7 +161,6 @@ const FooterPwaInstall: React.FC = () => {
         >
             <div className="flex flex-col gap-4">
                 <PwaHeader
-                    isInstalled={isInstalled}
                     hasDeferredPrompt={Boolean(deferredPrompt)}
                     isExpanded={isExpanded}
                     onInstall={handleInstallClick}

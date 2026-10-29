@@ -154,7 +154,7 @@ describe('FooterPwaInstall', () => {
         ).toBeDefined();
     });
 
-    it('handles beforeinstallprompt event and triggers prompt on install button click', async () => {
+    it('handles beforeinstallprompt event and hides component after successful installation', async () => {
         render(<FooterPwaInstall />);
 
         const mockPrompt = vi.fn().mockResolvedValue(undefined);
@@ -177,17 +177,40 @@ describe('FooterPwaInstall', () => {
         });
 
         expect(mockPrompt).toHaveBeenCalled();
-        expect(screen.getByTestId('pwa-installed-badge')).toBeDefined();
+        // Component does not display once app is installed
+        expect(screen.queryByTestId('footer-pwa-install')).toBeNull();
     });
 
-    it('displays installed badge when appinstalled event fires', async () => {
+    it('does not display component when appinstalled event fires', async () => {
         render(<FooterPwaInstall />);
+
+        expect(screen.getByTestId('footer-pwa-install')).toBeDefined();
 
         act(() => {
             window.dispatchEvent(new Event('appinstalled'));
         });
 
-        const badge = await screen.findByTestId('pwa-installed-badge');
-        expect(badge).toBeDefined();
+        // Component should not display when installed
+        expect(screen.queryByTestId('footer-pwa-install')).toBeNull();
+    });
+
+    it('does not display component when already running in standalone mode', () => {
+        const originalMatchMedia = window.matchMedia;
+        window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+            matches: query === '(display-mode: standalone)',
+            media: query,
+            onchange: null,
+            addListener: vi.fn(),
+            removeListener: vi.fn(),
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+            dispatchEvent: vi.fn(),
+        }));
+
+        render(<FooterPwaInstall />);
+
+        expect(screen.queryByTestId('footer-pwa-install')).toBeNull();
+
+        window.matchMedia = originalMatchMedia;
     });
 });

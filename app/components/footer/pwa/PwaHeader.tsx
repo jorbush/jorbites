@@ -3,15 +3,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
-import {
-    FiDownload,
-    FiCheckCircle,
-    FiChevronDown,
-    FiChevronUp,
-} from 'react-icons/fi';
+import { FiDownload, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 interface PwaHeaderProps {
-    isInstalled: boolean;
     hasDeferredPrompt: boolean;
     isExpanded: boolean;
     onInstall: () => void;
@@ -19,7 +13,6 @@ interface PwaHeaderProps {
 }
 
 const PwaHeader: React.FC<PwaHeaderProps> = ({
-    isInstalled,
     hasDeferredPrompt,
     isExpanded,
     onInstall,
@@ -50,17 +43,7 @@ const PwaHeader: React.FC<PwaHeaderProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-                {isInstalled && (
-                    <span
-                        data-testid="pwa-installed-badge"
-                        className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
-                    >
-                        <FiCheckCircle className="size-3.5" />
-                        {t('footer_pwa_btn_installed')}
-                    </span>
-                )}
-
-                {hasDeferredPrompt && !isInstalled && (
+                {hasDeferredPrompt && (
                     <button
                         type="button"
                         onClick={onInstall}
