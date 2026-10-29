@@ -2,6 +2,7 @@
 
 import type { Dispatch, SetStateAction, MouseEvent } from 'react';
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import {
@@ -64,6 +65,7 @@ export function useRecipeStepNavigation({
     t,
     refresh,
 }: UseRecipeStepNavigationProps) {
+    const { push } = useRouter() || {};
     const [isLoading, setIsLoading] = useState(false);
     const isForkMode = Boolean(recipeModal.forkRecipeData);
 
@@ -181,13 +183,15 @@ export function useRecipeStepNavigation({
         setIsLoading(true);
 
         try {
+            let createdRecipeId: string | null = null;
             if (recipeModal.isEditMode && recipeModal.editRecipeData) {
                 const url = `${window.location.origin}/api/recipe/${recipeModal.editRecipeData.id}`;
                 await axios.patch(url, data);
                 toast.success(t('recipe_updated'));
             } else {
                 const url = `${window.location.origin}/api/recipes`;
-                await axios.post(url, data);
+                const response = await axios.post(url, data);
+                createdRecipeId = response?.data?.id || null;
                 if (!isForkMode) {
                     await deleteDraft();
                 }
@@ -217,9 +221,21 @@ export function useRecipeStepNavigation({
                 forkedFromRecipeId: '',
             });
             setStep(STEPS.CATEGORY);
-            recipeModal.onClose?.();
-            if (refresh) {
-                refresh();
+
+            const isCreatePage =
+                typeof window !== 'undefined' &&
+                window.location.pathname.startsWith('/recipes/create');
+
+            if ((isForkMode || isCreatePage) && createdRecipeId) {
+                recipeModal.onClose?.({ skipCallback: true });
+                if (push) {
+                    push(`/recipes/${createdRecipeId}`);
+                }
+            } else {
+                recipeModal.onClose?.();
+                if (refresh) {
+                    refresh();
+                }
             }
         } catch (error: any) {
             toast.error(

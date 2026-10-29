@@ -6,6 +6,12 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 vi.mock('axios');
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+    useRouter: () => ({
+        push: mockPush,
+    }),
+}));
 vi.mock('react-hot-toast', () => ({
     toast: {
         success: vi.fn(),
@@ -319,7 +325,8 @@ describe('useRecipeStepNavigation', () => {
 
             expect(axios.post).toHaveBeenCalled();
             expect(mockReset).toHaveBeenCalled();
-            expect(mockOnClose).toHaveBeenCalled();
+            expect(mockOnClose).toHaveBeenCalledWith({ skipCallback: true });
+            expect(mockPush).toHaveBeenCalledWith('/recipes/new-remix-id');
             expect(toast.success).toHaveBeenCalledWith('recipe_posted');
         });
     });

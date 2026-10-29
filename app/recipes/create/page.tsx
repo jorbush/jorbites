@@ -23,15 +23,19 @@ export default async function RecipeCreatePage(props: CreatePageProps) {
     ]);
 
     if (!currentUser) {
-        redirect('/?login=true');
+        redirect('/');
     }
 
     let forkFromRecipe = null;
+    let validForkFromId: string | undefined = undefined;
     if (searchParams.forkFrom) {
         try {
             forkFromRecipe = await getRecipeById({
                 recipeId: searchParams.forkFrom,
             });
+            if (forkFromRecipe) {
+                validForkFromId = searchParams.forkFrom;
+            }
         } catch (error) {
             console.error('Failed to fetch forkFrom recipe', error);
         }
@@ -41,7 +45,7 @@ export default async function RecipeCreatePage(props: CreatePageProps) {
         <ClientOnly>
             <RecipeCreateClient
                 forkFromRecipe={forkFromRecipe}
-                forkFromId={searchParams.forkFrom}
+                forkFromId={validForkFromId}
             />
         </ClientOnly>
     );

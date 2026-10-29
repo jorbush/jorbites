@@ -46,14 +46,6 @@ export default async function getRecipeById(params: IParams) {
                     select: {
                         id: true,
                         title: true,
-                        imageSrc: true,
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                image: true,
-                            },
-                        },
                     },
                 },
             },

@@ -109,7 +109,6 @@ describe('RecipeRemixesSection', () => {
         expect(screen.getByText('SpicyChef')).toBeInTheDocument();
 
         const remixCard = screen.getByTestId('remix-card-remix-1');
-        fireEvent.click(remixCard);
-        expect(mockPush).toHaveBeenCalledWith('/recipes/remix-1');
+        expect(remixCard).toHaveAttribute('href', '/recipes/remix-1');
     });
 });

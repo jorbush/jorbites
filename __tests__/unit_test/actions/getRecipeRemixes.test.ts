@@ -100,7 +100,14 @@ describe('getRecipeRemixes Server Action', () => {
             where: {
                 forkedFromRecipeId: 'parent-1',
             },
-            include: {
+            take: 20,
+            select: {
+                id: true,
+                title: true,
+                imageSrc: true,
+                minutes: true,
+                createdAt: true,
+                forkedFromRecipeId: true,
                 user: {
                     select: {
                         id: true,

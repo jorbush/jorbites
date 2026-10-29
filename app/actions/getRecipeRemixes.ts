@@ -38,7 +38,14 @@ export default async function getRecipeRemixes(
             where: {
                 forkedFromRecipeId: recipeId,
             },
-            include: {
+            take: 20,
+            select: {
+                id: true,
+                title: true,
+                imageSrc: true,
+                minutes: true,
+                createdAt: true,
+                forkedFromRecipeId: true,
                 user: {
                     select: {
                         id: true,

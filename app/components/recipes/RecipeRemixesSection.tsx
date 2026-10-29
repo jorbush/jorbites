@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { TbGitFork } from 'react-icons/tb';
 import { SafeRecipe, SafeUser } from '@/app/types';
@@ -19,7 +19,7 @@ export type RemixRecipeItem = SafeRecipe & {
 };
 
 interface RecipeRemixesSectionProps {
-    originalRecipeId: string;
+    originalRecipeId?: string;
     remixes?: RemixRecipeItem[];
     currentUser?: SafeUser | null;
 }
@@ -27,7 +27,6 @@ interface RecipeRemixesSectionProps {
 export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
     remixes,
 }) => {
-    const { push } = useRouter() || {};
     const { t } = useTranslation();
     const mounted = useIsMounted();
 
@@ -61,17 +60,9 @@ export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
 
             <ScrollableContainer className="gap-4">
                 {remixes.map((item) => (
-                    <div
+                    <Link
                         key={item.id}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => push(`/recipes/${item.id}`)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                push(`/recipes/${item.id}`);
-                            }
-                        }}
+                        href={`/recipes/${item.id}`}
                         className="group w-44 shrink-0 cursor-pointer text-left focus:outline-hidden"
                         data-cy={`remix-card-${item.id}`}
                         data-testid={`remix-card-${item.id}`}
@@ -86,7 +77,7 @@ export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
                                     quality="auto:good"
                                 />
                             )}
-                            {item.minutes && (
+                            {Boolean(item.minutes) && (
                                 <div className="absolute bottom-2 left-2 z-10 rounded-md bg-neutral-950/70 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-xs">
                                     {item.minutes} min
                                 </div>
@@ -108,7 +99,7 @@ export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
                                 </span>
                             </div>
                         )}
-                    </div>
+                    </Link>
                 ))}
             </ScrollableContainer>
         </div>
