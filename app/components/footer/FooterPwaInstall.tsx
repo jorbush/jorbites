@@ -148,6 +148,10 @@ const FooterPwaInstall: React.FC = () => {
         ],
     };
 
+    if (isInstalled) {
+        return null;
+    }
+
     return (
         <section
             id="pwa-install-guide"
@@ -157,26 +161,34 @@ const FooterPwaInstall: React.FC = () => {
         >
             <div className="flex flex-col gap-4">
                 <PwaHeader
-                    isInstalled={isInstalled}
                     hasDeferredPrompt={Boolean(deferredPrompt)}
                     isExpanded={isExpanded}
                     onInstall={handleInstallClick}
                     onToggle={() => setIsExpanded((prev) => !prev)}
                 />
 
-                {isExpanded && (
-                    <div className="flex flex-col gap-4 pt-1">
-                        <PwaPlatformTabs
-                            platform={platform}
-                            onSelectPlatform={setPlatform}
-                        />
-                        <PwaStepCards
-                            platform={platform}
-                            steps={stepsMap[platform]}
-                        />
-                        <PwaBenefits />
+                <div
+                    data-testid="pwa-collapsible-wrapper"
+                    className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${
+                        isExpanded
+                            ? 'grid-rows-[1fr] opacity-100'
+                            : 'pointer-events-none grid-rows-[0fr] opacity-0'
+                    }`}
+                >
+                    <div className="overflow-hidden">
+                        <div className="flex flex-col gap-4 pt-1">
+                            <PwaPlatformTabs
+                                platform={platform}
+                                onSelectPlatform={setPlatform}
+                            />
+                            <PwaStepCards
+                                platform={platform}
+                                steps={stepsMap[platform]}
+                            />
+                            <PwaBenefits />
+                        </div>
                     </div>
-                )}
+                </div>
             </div>
         </section>
     );
