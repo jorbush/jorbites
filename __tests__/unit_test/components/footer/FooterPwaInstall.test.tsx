@@ -35,17 +35,40 @@ describe('FooterPwaInstall', () => {
         cleanup();
     });
 
-    it('renders the PWA install section container, title, badge, and description', () => {
+    it('renders the PWA install section container, title, and description without the PWA badge', () => {
         render(<FooterPwaInstall />);
 
         expect(screen.getByTestId('footer-pwa-install')).toBeDefined();
         expect(screen.getByText('footer_pwa_title')).toBeDefined();
-        expect(screen.getByText('footer_pwa_badge')).toBeDefined();
+        expect(screen.queryByText('footer_pwa_badge')).toBeNull();
         expect(screen.getByText('footer_pwa_description')).toBeDefined();
     });
 
-    it('renders all three platform tabs', () => {
+    it('is collapsed by default and expands/collapses when toggle button is clicked', () => {
         render(<FooterPwaInstall />);
+
+        // Initially collapsed by default
+        expect(screen.queryByTestId('pwa-steps-container')).toBeNull();
+        expect(screen.getByText('footer_pwa_toggle_show')).toBeDefined();
+
+        const toggleButton = screen.getByTestId('pwa-toggle-button');
+        fireEvent.click(toggleButton);
+
+        // Now expanded
+        expect(screen.getByTestId('pwa-steps-container')).toBeDefined();
+        expect(screen.getByText('footer_pwa_toggle_hide')).toBeDefined();
+
+        // Click again to re-collapse
+        fireEvent.click(toggleButton);
+        expect(screen.queryByTestId('pwa-steps-container')).toBeNull();
+        expect(screen.getByText('footer_pwa_toggle_show')).toBeDefined();
+    });
+
+    it('renders all three platform tabs when expanded', () => {
+        render(<FooterPwaInstall />);
+
+        // Expand
+        fireEvent.click(screen.getByTestId('pwa-toggle-button'));
 
         expect(screen.getByTestId('pwa-tab-ios')).toBeDefined();
         expect(screen.getByTestId('pwa-tab-android')).toBeDefined();
@@ -54,6 +77,9 @@ describe('FooterPwaInstall', () => {
 
     it('displays iOS installation steps when iOS tab is clicked', () => {
         render(<FooterPwaInstall />);
+
+        // Expand
+        fireEvent.click(screen.getByTestId('pwa-toggle-button'));
 
         const iosTab = screen.getByTestId('pwa-tab-ios');
         fireEvent.click(iosTab);
@@ -69,6 +95,9 @@ describe('FooterPwaInstall', () => {
 
     it('displays Android installation steps when Android tab is clicked', () => {
         render(<FooterPwaInstall />);
+
+        // Expand
+        fireEvent.click(screen.getByTestId('pwa-toggle-button'));
 
         const androidTab = screen.getByTestId('pwa-tab-android');
         fireEvent.click(androidTab);
@@ -91,6 +120,9 @@ describe('FooterPwaInstall', () => {
     it('displays Desktop installation steps when Desktop tab is clicked', () => {
         render(<FooterPwaInstall />);
 
+        // Expand
+        fireEvent.click(screen.getByTestId('pwa-toggle-button'));
+
         const desktopTab = screen.getByTestId('pwa-tab-desktop');
         fireEvent.click(desktopTab);
 
@@ -109,31 +141,17 @@ describe('FooterPwaInstall', () => {
         expect(screen.getByText('footer_pwa_desktop_step3_desc')).toBeDefined();
     });
 
-    it('renders the 3 PWA benefit badges', () => {
+    it('renders the 3 PWA benefit badges when expanded', () => {
         render(<FooterPwaInstall />);
+
+        // Expand
+        fireEvent.click(screen.getByTestId('pwa-toggle-button'));
 
         expect(screen.getByText('footer_pwa_benefit_standalone')).toBeDefined();
         expect(screen.getByText('footer_pwa_benefit_offline')).toBeDefined();
         expect(
             screen.getByText('footer_pwa_benefit_notifications')
         ).toBeDefined();
-    });
-
-    it('toggles collapse and expand when toggle button is clicked', () => {
-        render(<FooterPwaInstall />);
-
-        // Initially expanded
-        expect(screen.getByTestId('pwa-steps-container')).toBeDefined();
-
-        const toggleButton = screen.getByTestId('pwa-toggle-button');
-        fireEvent.click(toggleButton);
-
-        // Now collapsed
-        expect(screen.queryByTestId('pwa-steps-container')).toBeNull();
-
-        // Click again to re-expand
-        fireEvent.click(toggleButton);
-        expect(screen.getByTestId('pwa-steps-container')).toBeDefined();
     });
 
     it('handles beforeinstallprompt event and triggers prompt on install button click', async () => {
