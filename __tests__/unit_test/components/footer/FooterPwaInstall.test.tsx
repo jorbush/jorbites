@@ -44,24 +44,34 @@ describe('FooterPwaInstall', () => {
         expect(screen.getByText('footer_pwa_description')).toBeDefined();
     });
 
-    it('is collapsed by default and expands/collapses when toggle button is clicked', () => {
+    it('is collapsed by default and expands/collapses smoothly when toggle button is clicked', () => {
         render(<FooterPwaInstall />);
 
-        // Initially collapsed by default
-        expect(screen.queryByTestId('pwa-steps-container')).toBeNull();
-        expect(screen.getByText('footer_pwa_toggle_show')).toBeDefined();
-
         const toggleButton = screen.getByTestId('pwa-toggle-button');
+        const wrapper = screen.getByTestId('pwa-collapsible-wrapper');
+
+        // Initially collapsed by default
+        expect(toggleButton.getAttribute('aria-expanded')).toBe('false');
+        expect(screen.getByText('footer_pwa_toggle_show')).toBeDefined();
+        expect(wrapper.className).toContain('grid-rows-[0fr]');
+        expect(wrapper.className).toContain('opacity-0');
+        expect(wrapper.className).toContain('pointer-events-none');
+
         fireEvent.click(toggleButton);
 
         // Now expanded
-        expect(screen.getByTestId('pwa-steps-container')).toBeDefined();
+        expect(toggleButton.getAttribute('aria-expanded')).toBe('true');
         expect(screen.getByText('footer_pwa_toggle_hide')).toBeDefined();
+        expect(wrapper.className).toContain('grid-rows-[1fr]');
+        expect(wrapper.className).toContain('opacity-100');
 
         // Click again to re-collapse
         fireEvent.click(toggleButton);
-        expect(screen.queryByTestId('pwa-steps-container')).toBeNull();
+        expect(toggleButton.getAttribute('aria-expanded')).toBe('false');
         expect(screen.getByText('footer_pwa_toggle_show')).toBeDefined();
+        expect(wrapper.className).toContain('grid-rows-[0fr]');
+        expect(wrapper.className).toContain('opacity-0');
+        expect(wrapper.className).toContain('pointer-events-none');
     });
 
     it('renders all three platform tabs when expanded', () => {

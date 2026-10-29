@@ -41,18 +41,19 @@ const PwaPlatformTabs: React.FC<PwaPlatformTabsProps> = ({
                         type="button"
                         role="tab"
                         id={`pwa-tab-${tab.id}`}
+                        aria-label={tab.label}
                         aria-selected={isSelected}
                         aria-controls={`pwa-panel-${tab.id}`}
                         data-testid={`pwa-tab-${tab.id}`}
                         onClick={() => onSelectPlatform(tab.id)}
-                        className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
+                        className={`inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-colors duration-200 md:px-3 md:py-1.5 ${
                             isSelected
                                 ? 'bg-white font-semibold text-neutral-900 shadow-xs dark:bg-neutral-700 dark:text-white'
                                 : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                         }`}
                     >
-                        <Icon className="size-3.5" />
-                        <span>{tab.label}</span>
+                        <Icon className="size-4 md:size-3.5" />
+                        <span className="hidden md:inline">{tab.label}</span>
                     </button>
                 );
             })}

@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
-import { FiDownload, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FiDownload, FiChevronDown } from 'react-icons/fi';
 
 interface PwaHeaderProps {
     hasDeferredPrompt: boolean;
@@ -72,11 +72,11 @@ const PwaHeader: React.FC<PwaHeaderProps> = ({
                             ? t('footer_pwa_toggle_hide')
                             : t('footer_pwa_toggle_show')}
                     </span>
-                    {isExpanded ? (
-                        <FiChevronUp className="size-3.5" />
-                    ) : (
-                        <FiChevronDown className="size-3.5" />
-                    )}
+                    <FiChevronDown
+                        className={`size-3.5 transition-transform duration-300 ${
+                            isExpanded ? 'rotate-180' : ''
+                        }`}
+                    />
                 </button>
             </div>
         </div>
