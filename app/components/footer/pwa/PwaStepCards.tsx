@@ -22,14 +22,14 @@ const PwaStepCards: React.FC<PwaStepCardsProps> = ({ platform, steps }) => {
                 return (
                     <div
                         key={step.number}
-                        className="flex items-start gap-3.5 rounded-xl border border-neutral-200/80 bg-white p-3.5 shadow-2xs md:flex-col md:gap-2 dark:border-neutral-800 dark:bg-neutral-800/80"
+                        className="flex items-center gap-3.5 rounded-xl border border-neutral-200/80 bg-white p-3.5 shadow-2xs md:flex-col md:items-start md:gap-2 dark:border-neutral-800 dark:bg-neutral-800/80"
                     >
-                        <div className="flex shrink-0 items-center gap-2 md:w-full md:justify-between">
-                            <span className="inline-flex size-6 items-center justify-center rounded-full bg-neutral-100 text-xs font-bold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
+                        <div className="flex shrink-0 items-center justify-center md:w-full md:justify-between">
+                            <span className="hidden size-6 items-center justify-center rounded-full bg-neutral-100 text-xs font-bold text-neutral-700 md:inline-flex dark:bg-neutral-700 dark:text-neutral-200">
                                 {step.number}
                             </span>
-                            <div className="flex size-7 items-center justify-center rounded-lg bg-neutral-50 text-neutral-600 dark:bg-neutral-700/60 dark:text-neutral-300">
-                                <Icon className="size-3.5" />
+                            <div className="flex size-9 items-center justify-center rounded-xl bg-neutral-100 text-neutral-600 md:size-7 md:rounded-lg md:bg-neutral-50 dark:bg-neutral-700/60 dark:text-neutral-300">
+                                <Icon className="size-4.5 md:size-3.5" />
                             </div>
                         </div>
                         <div className="min-w-0 flex-1">
