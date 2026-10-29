@@ -22,7 +22,6 @@ vi.mock('next/image', () => ({
 
 describe('PwaHeader', () => {
     const defaultProps = {
-        isInstalled: false,
         hasDeferredPrompt: false,
         isExpanded: false,
         onInstall: vi.fn(),
@@ -86,26 +85,11 @@ describe('PwaHeader', () => {
         expect(onToggle).toHaveBeenCalledTimes(1);
     });
 
-    it('renders installed badge when isInstalled is true and hides install button', () => {
-        render(
-            <PwaHeader
-                {...defaultProps}
-                isInstalled={true}
-                hasDeferredPrompt={true}
-            />
-        );
-
-        expect(screen.getByTestId('pwa-installed-badge')).toBeDefined();
-        expect(screen.getByText('footer_pwa_btn_installed')).toBeDefined();
-        expect(screen.queryByTestId('pwa-install-button')).toBeNull();
-    });
-
-    it('renders install button when hasDeferredPrompt is true and not installed', () => {
+    it('renders install button when hasDeferredPrompt is true', () => {
         const onInstall = vi.fn();
         render(
             <PwaHeader
                 {...defaultProps}
-                isInstalled={false}
                 hasDeferredPrompt={true}
                 onInstall={onInstall}
             />
@@ -117,5 +101,16 @@ describe('PwaHeader', () => {
 
         fireEvent.click(installBtn);
         expect(onInstall).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not render install button when hasDeferredPrompt is false', () => {
+        render(
+            <PwaHeader
+                {...defaultProps}
+                hasDeferredPrompt={false}
+            />
+        );
+
+        expect(screen.queryByTestId('pwa-install-button')).toBeNull();
     });
 });
