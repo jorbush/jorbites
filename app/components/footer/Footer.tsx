@@ -9,6 +9,7 @@ import { FaGithub, FaTwitter, FaInstagram, FaEnvelope } from 'react-icons/fa';
 import { RiGitRepositoryLine } from 'react-icons/ri';
 import { CONTACT_EMAIL, CMS_URL } from '@/app/utils/constants';
 import FooterMenu from './FooterMenu';
+import FooterPwaInstall from './FooterPwaInstall';
 
 const SOCIAL_LINKS = [
     {
@@ -51,6 +52,7 @@ const Footer = () => {
             <div className="mx-auto max-w-6xl">
                 <div className="flex flex-col items-center gap-6">
                     <FooterMenu />
+                    <FooterPwaInstall />
                     <a
                         href={`https://github.com/jorbush/jorbites/releases/tag/v${packageJson.version}`}
                         className="inline-flex items-center rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-600 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"

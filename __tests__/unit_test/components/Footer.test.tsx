@@ -206,4 +206,23 @@ describe('<Footer />', () => {
             expect(screen.getByAltText('Jorbites Logo')).toBeDefined();
         });
     });
+
+    describe('PWA Install Guide Integration', () => {
+        it('renders the PWA installation guide section', () => {
+            render(<Footer />);
+            expect(screen.getByTestId('footer-pwa-install')).toBeDefined();
+            expect(screen.getByText('footer_pwa_title')).toBeDefined();
+        });
+
+        it('places the PWA installation guide right below FooterMenu', () => {
+            render(<Footer />);
+
+            const footerContent =
+                screen.getByTestId('footer-menu').parentElement;
+            const pwaSection = screen.getByTestId('footer-pwa-install');
+
+            // FooterMenu is child 0, PWA install guide is child 1
+            expect(footerContent?.children[1]).toBe(pwaSection);
+        });
+    });
 });
