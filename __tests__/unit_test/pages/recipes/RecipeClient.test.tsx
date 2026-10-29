@@ -213,7 +213,6 @@ describe('RecipeClient', () => {
 
         expect(getByTestId('remix-attribution-banner')).toBeInTheDocument();
         expect(getByText('Original Pizza')).toBeInTheDocument();
-        expect(getByText('@Chef Mario')).toBeInTheDocument();
     });
 
     it('renders community remixes section when variations exist', () => {

@@ -20,6 +20,7 @@ import useCooksnapModal from '@/app/hooks/useCooksnapModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import Button from '@/app/components/buttons/Button';
 import { TbPhotoPlus, TbGitFork } from 'react-icons/tb';
+import RemixAttributionBanner from '@/app/components/recipes/RemixAttributionBanner';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -53,6 +54,17 @@ interface RecipeInfoProps {
     recipeYield?: number | null;
     ganttTable?: GanttTable | null;
     recipeTitle?: string;
+    forkedFromRecipe?: {
+        id: string;
+        title: string;
+        imageSrc?: string;
+        user?: {
+            id: string;
+            name: string | null;
+            image?: string | null;
+        } | null;
+    } | null;
+    forkedFromRecipeId?: string | null;
 }
 
 const EMPTY_ARRAY: any[] = [];
@@ -164,6 +176,8 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     recipeYield,
     ganttTable,
     recipeTitle,
+    forkedFromRecipe,
+    forkedFromRecipeId,
 }) => {
     const { t } = useTranslation();
     const { push } = useRouter() || {};
@@ -212,6 +226,15 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 recipeCuisine={recipeCuisine}
                 recipeYield={recipeYield}
             />
+
+            {(forkedFromRecipe || forkedFromRecipeId) && (
+                <div className="-mt-4">
+                    <RemixAttributionBanner
+                        forkedFromRecipe={forkedFromRecipe}
+                        forkedFromRecipeId={forkedFromRecipeId}
+                    />
+                </div>
+            )}
 
             <RecipeCoCooks
                 isLoadingRelatedData={isLoadingRelatedData}

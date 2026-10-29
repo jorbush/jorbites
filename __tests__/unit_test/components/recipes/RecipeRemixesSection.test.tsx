@@ -15,19 +15,10 @@ vi.mock('@/app/hooks/useIsMounted', () => ({
     default: () => true,
 }));
 
-const mockLoginOpen = vi.fn();
-vi.mock('@/app/hooks/useLoginModal', () => ({
-    default: () => ({
-        onOpen: mockLoginOpen,
-    }),
-}));
-
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string, options?: any) => {
-            if (key === 'community_remixes')
-                return 'Community Remixes & Variations';
-            if (key === 'remix_recipe') return 'Remix';
+            if (key === 'community_remixes') return 'Remixes';
             return options?.defaultValue || key;
         },
     }),
@@ -99,7 +90,7 @@ describe('RecipeRemixesSection', () => {
         expect(undefinedContainer.firstChild).toBeNull();
     });
 
-    it('renders list of remixes and handles clicking a variation', () => {
+    it('renders list of remixes without count or duplicate button and handles clicking a variation', () => {
         render(
             <RecipeRemixesSection
                 originalRecipeId="orig-123"
@@ -108,43 +99,17 @@ describe('RecipeRemixesSection', () => {
             />
         );
 
-        expect(screen.getByText('(1)')).toBeInTheDocument();
+        expect(screen.getByText('Remixes')).toBeInTheDocument();
+        expect(screen.queryByText('(1)')).not.toBeInTheDocument();
+        expect(
+            screen.queryByTestId('section-remix-btn')
+        ).not.toBeInTheDocument();
+
         expect(screen.getByText('Spicy Carbonara Remix')).toBeInTheDocument();
         expect(screen.getByText('SpicyChef')).toBeInTheDocument();
 
         const remixCard = screen.getByTestId('remix-card-remix-1');
         fireEvent.click(remixCard);
         expect(mockPush).toHaveBeenCalledWith('/recipes/remix-1');
-    });
-
-    it('navigates to create remix when header Remix button is clicked', () => {
-        render(
-            <RecipeRemixesSection
-                originalRecipeId="orig-123"
-                remixes={mockRemixes}
-                currentUser={mockUser}
-            />
-        );
-
-        const remixBtn = screen.getByTestId('section-remix-btn');
-        fireEvent.click(remixBtn);
-        expect(mockPush).toHaveBeenCalledWith(
-            '/recipes/create?forkFrom=orig-123'
-        );
-    });
-
-    it('prompts login if unauthenticated user clicks header Remix button', () => {
-        render(
-            <RecipeRemixesSection
-                originalRecipeId="orig-123"
-                remixes={mockRemixes}
-                currentUser={null}
-            />
-        );
-
-        const remixBtn = screen.getByTestId('section-remix-btn');
-        fireEvent.click(remixBtn);
-        expect(mockLoginOpen).toHaveBeenCalled();
-        expect(mockPush).not.toHaveBeenCalled();
     });
 });

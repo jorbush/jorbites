@@ -10,9 +10,11 @@ import {
     conflict,
     internalServerError,
     rateLimitExceeded,
+    badRequest,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { validateRecipeCreateData } from '@/app/utils/recipeValidation';
+import { validateRemixContent } from '@/app/utils/recipeRemixValidation';
 import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 import { MAX_CO_COOKS, MAX_LINKED_RECIPES } from '@/app/utils/constants';
 import { DraftService } from '@/app/services/draftService';
@@ -126,6 +128,8 @@ export async function POST(request: Request) {
 
         let validForkedFromRecipe: {
             id: string;
+            ingredients: string[];
+            steps: string[];
         } | null = null;
 
         if (
@@ -136,8 +140,36 @@ export async function POST(request: Request) {
                 where: { id: rawForkedFromRecipeId },
                 select: {
                     id: true,
+                    ingredients: true,
+                    steps: true,
                 },
             });
+        }
+
+        if (validForkedFromRecipe) {
+            const { hasModifiedIngredients, hasModifiedSteps, isValidRemix } =
+                validateRemixContent(
+                    ingredients,
+                    steps,
+                    validForkedFromRecipe.ingredients,
+                    validForkedFromRecipe.steps
+                );
+
+            if (!isValidRemix) {
+                if (!hasModifiedIngredients && !hasModifiedSteps) {
+                    return badRequest(
+                        'A recipe remix must include changes to both the ingredients and preparation steps of the original recipe'
+                    );
+                }
+                if (!hasModifiedIngredients) {
+                    return badRequest(
+                        'A recipe remix must include changes to the ingredients of the original recipe'
+                    );
+                }
+                return badRequest(
+                    'A recipe remix must include changes to the preparation steps of the original recipe'
+                );
+            }
         }
 
         const finalForkedFromRecipeId = validForkedFromRecipe

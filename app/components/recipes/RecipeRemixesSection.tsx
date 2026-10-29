@@ -9,8 +9,6 @@ import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import Avatar from '@/app/components/utils/Avatar';
 import ScrollableContainer from '@/app/components/utils/ScrollableContainer';
 import useIsMounted from '@/app/hooks/useIsMounted';
-import useLoginModal from '@/app/hooks/useLoginModal';
-import Button from '@/app/components/buttons/Button';
 
 export type RemixRecipeItem = SafeRecipe & {
     user?: {
@@ -27,14 +25,11 @@ interface RecipeRemixesSectionProps {
 }
 
 export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
-    originalRecipeId,
     remixes,
-    currentUser,
 }) => {
     const { push } = useRouter() || {};
     const { t } = useTranslation();
     const mounted = useIsMounted();
-    const loginModal = useLoginModal();
 
     if (!remixes || remixes.length === 0) {
         return null;
@@ -42,16 +37,9 @@ export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
 
     const title = mounted
         ? t('community_remixes', {
-              defaultValue: 'Community Remixes & Variations',
+              defaultValue: 'Remixes',
           })
-        : 'Community Remixes & Variations';
-
-    const onRemixClick = () => {
-        if (!currentUser) {
-            return loginModal.onOpen();
-        }
-        push(`/recipes/create?forkFrom=${originalRecipeId}`);
-    };
+        : 'Remixes';
 
     return (
         <div
@@ -60,38 +48,14 @@ export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
             data-testid="community-remixes-section"
         >
             <hr />
-            <div className="mt-8 mb-4 flex flex-row items-center justify-between">
-                <div className="flex flex-row items-center gap-2">
-                    <TbGitFork
-                        size={22}
-                        className="text-neutral-700 dark:text-neutral-200"
-                        aria-hidden="true"
-                    />
-                    <div className="text-xl font-semibold dark:text-neutral-100">
-                        {title}
-                    </div>
-                    <div className="text-md ml-1 text-neutral-500">
-                        ({remixes.length})
-                    </div>
-                </div>
-                <div className="w-[150px]">
-                    <Button
-                        label={
-                            mounted
-                                ? String(
-                                      t('remix_recipe', {
-                                          defaultValue: 'Remix',
-                                      })
-                                  )
-                                : 'Remix'
-                        }
-                        icon={TbGitFork}
-                        outline
-                        small
-                        onClick={onRemixClick}
-                        dataTestId="section-remix-btn"
-                        dataCy="section-remix-btn"
-                    />
+            <div className="mt-8 mb-4 flex flex-row items-center gap-2">
+                <TbGitFork
+                    size={22}
+                    className="text-neutral-700 dark:text-neutral-200"
+                    aria-hidden="true"
+                />
+                <div className="text-xl font-semibold dark:text-neutral-100">
+                    {title}
                 </div>
             </div>
 
@@ -129,7 +93,7 @@ export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
                             )}
                         </div>
 
-                        <div className="mt-2 line-clamp-1 font-semibold text-neutral-800 transition group-hover:text-emerald-600 dark:text-neutral-100 dark:group-hover:text-emerald-400">
+                        <div className="group-hover:text-green-450 dark:group-hover:text-green-450 mt-2 line-clamp-1 font-semibold text-neutral-800 transition dark:text-neutral-100">
                             {item.title}
                         </div>
 

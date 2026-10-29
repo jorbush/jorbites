@@ -53,10 +53,12 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
         (prisma.recipe.findFirst as jest.Mock).mockResolvedValue(null);
     });
 
-    it('creates a remixed recipe, persists forkedFromRecipeId, invalidates cache, and awards creator XP', async () => {
+    it('creates a remixed recipe when both ingredients and steps are modified', async () => {
         const originalRecipeId = '507f1f77bcf86cd799439011';
         const originalRecipe = {
             id: originalRecipeId,
+            ingredients: ['Pasta', 'Garlic', 'Olive Oil'],
+            steps: ['Boil pasta', 'Fry garlic in oil', 'Combine'],
         };
 
         const createdRemix = {
@@ -116,6 +118,114 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
         expect(redisCache.del).toHaveBeenCalledWith(
             `recipe:remixes:${originalRecipeId}`
         );
+    });
+
+    it('rejects remix with 400 when both ingredients and steps are identical to original', async () => {
+        const originalRecipeId = '507f1f77bcf86cd799439011';
+        const originalRecipe = {
+            id: originalRecipeId,
+            ingredients: ['Pasta', 'Garlic', 'Olive Oil'],
+            steps: ['Boil pasta', 'Fry garlic in oil', 'Combine'],
+        };
+
+        (prisma.recipe.findUnique as jest.Mock).mockResolvedValue(
+            originalRecipe
+        );
+
+        const request = {
+            json: jest.fn().mockResolvedValue({
+                title: 'Remix of Grandma Secret Pasta',
+                description: 'Identical copy',
+                imageSrc: 'https://images.test/identical.webp',
+                categories: ['Pasta'],
+                method: 'Boil',
+                ingredients: ['Pasta', 'Garlic', 'Olive Oil'],
+                steps: ['Boil pasta', 'Fry garlic in oil', 'Combine'],
+                minutes: 20,
+                forkedFromRecipeId: originalRecipeId,
+            }),
+        } as unknown as Request;
+
+        const response = await RecipePOST(request);
+        expect(response.status).toBe(400);
+
+        const data = await response.json();
+        expect(data.error).toContain(
+            'both the ingredients and preparation steps'
+        );
+        expect(prisma.recipe.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects remix with 400 when only ingredients are modified and steps are unchanged', async () => {
+        const originalRecipeId = '507f1f77bcf86cd799439011';
+        const originalRecipe = {
+            id: originalRecipeId,
+            ingredients: ['Pasta', 'Garlic', 'Olive Oil'],
+            steps: ['Boil pasta', 'Fry garlic in oil', 'Combine'],
+        };
+
+        (prisma.recipe.findUnique as jest.Mock).mockResolvedValue(
+            originalRecipe
+        );
+
+        const request = {
+            json: jest.fn().mockResolvedValue({
+                title: 'Remix of Grandma Secret Pasta',
+                description: 'Only ingredients changed',
+                imageSrc: 'https://images.test/partial.webp',
+                categories: ['Pasta'],
+                method: 'Boil',
+                ingredients: ['Pasta', 'Garlic', 'Truffle Oil'], // Changed!
+                steps: ['Boil pasta', 'Fry garlic in oil', 'Combine'], // Unchanged!
+                minutes: 20,
+                forkedFromRecipeId: originalRecipeId,
+            }),
+        } as unknown as Request;
+
+        const response = await RecipePOST(request);
+        expect(response.status).toBe(400);
+
+        const data = await response.json();
+        expect(data.error).toContain(
+            'changes to the preparation steps of the original recipe'
+        );
+        expect(prisma.recipe.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects remix with 400 when only steps are modified and ingredients are unchanged', async () => {
+        const originalRecipeId = '507f1f77bcf86cd799439011';
+        const originalRecipe = {
+            id: originalRecipeId,
+            ingredients: ['Pasta', 'Garlic', 'Olive Oil'],
+            steps: ['Boil pasta', 'Fry garlic in oil', 'Combine'],
+        };
+
+        (prisma.recipe.findUnique as jest.Mock).mockResolvedValue(
+            originalRecipe
+        );
+
+        const request = {
+            json: jest.fn().mockResolvedValue({
+                title: 'Remix of Grandma Secret Pasta',
+                description: 'Only steps changed',
+                imageSrc: 'https://images.test/partial-steps.webp',
+                categories: ['Pasta'],
+                method: 'Boil',
+                ingredients: ['Pasta', 'Garlic', 'Olive Oil'], // Unchanged!
+                steps: ['Simmer pasta in stock', 'Slow roast garlic', 'Plate'], // Changed!
+                minutes: 20,
+                forkedFromRecipeId: originalRecipeId,
+            }),
+        } as unknown as Request;
+
+        const response = await RecipePOST(request);
+        expect(response.status).toBe(400);
+
+        const data = await response.json();
+        expect(data.error).toContain(
+            'changes to the ingredients of the original recipe'
+        );
+        expect(prisma.recipe.create).not.toHaveBeenCalled();
     });
 
     it('gracefully ignores malformed forkedFromRecipeId and sets it to null without crashing', async () => {
@@ -222,10 +332,12 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
         );
     });
 
-    it('creates a remix of own recipe without issues', async () => {
+    it('creates a remix of own recipe when both ingredients and steps are modified', async () => {
         const ownOriginalRecipeId = '507f1f77bcf86cd799439012';
         const ownOriginalRecipe = {
             id: ownOriginalRecipeId,
+            ingredients: ['Curry powder', 'Potatoes'],
+            steps: ['Chop potatoes', 'Boil with curry'],
         };
 
         const createdRemix = {
@@ -235,8 +347,8 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
             imageSrc: 'https://images.test/curry-v2.webp',
             categories: ['Curry'],
             method: 'Simmer',
-            ingredients: ['Curry powder'],
-            steps: ['Cook'],
+            ingredients: ['Curry paste', 'Sweet Potatoes'],
+            steps: ['Cube sweet potatoes', 'Simmer with paste'],
             minutes: 30,
             userId: 'remixer-user-id',
             forkedFromRecipeId: ownOriginalRecipeId,
@@ -254,8 +366,8 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
                 imageSrc: 'https://images.test/curry-v2.webp',
                 categories: ['Curry'],
                 method: 'Simmer',
-                ingredients: ['Curry powder'],
-                steps: ['Cook'],
+                ingredients: ['Curry paste', 'Sweet Potatoes'],
+                steps: ['Cube sweet potatoes', 'Simmer with paste'],
                 minutes: 30,
                 forkedFromRecipeId: ownOriginalRecipeId,
             }),

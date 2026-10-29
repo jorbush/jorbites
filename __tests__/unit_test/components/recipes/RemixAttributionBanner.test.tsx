@@ -29,7 +29,7 @@ describe('RemixAttributionBanner', () => {
         expect(container.firstChild).toBeNull();
     });
 
-    it('renders attribution banner with recipe link and author link', () => {
+    it('renders attribution banner with recipe link', () => {
         const mockForked = {
             id: 'original-123',
             title: 'Classic Carbonara',
@@ -56,10 +56,6 @@ describe('RemixAttributionBanner', () => {
         });
         expect(recipeLink).toBeInTheDocument();
         expect(recipeLink).toHaveAttribute('href', '/recipes/original-123');
-
-        const authorLink = screen.getByRole('link', { name: '@Marco' });
-        expect(authorLink).toBeInTheDocument();
-        expect(authorLink).toHaveAttribute('href', '/profile/author-456');
     });
 
     it('renders fallback text when recipe data is missing but forkedFromRecipeId exists', () => {

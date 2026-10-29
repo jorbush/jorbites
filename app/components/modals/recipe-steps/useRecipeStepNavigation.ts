@@ -17,6 +17,7 @@ import {
     processIngredientsOnStepAdvance,
     processStepsOnStepAdvance,
 } from './recipeStepProcessors';
+import { validateRemixContent } from '@/app/utils/recipeRemixValidation';
 
 export interface UseRecipeStepNavigationProps {
     step: number;
@@ -144,6 +145,39 @@ export function useRecipeStepNavigation({
             return;
         }
 
+        if (isForkMode && recipeModal.forkRecipeData) {
+            const { hasModifiedIngredients, hasModifiedSteps, isValidRemix } =
+                validateRemixContent(
+                    data.ingredients,
+                    data.steps,
+                    recipeModal.forkRecipeData.ingredients,
+                    recipeModal.forkRecipeData.steps
+                );
+
+            if (!isValidRemix) {
+                if (!hasModifiedIngredients && !hasModifiedSteps) {
+                    toast.error(
+                        t('remix_validation_both_required') ||
+                            'A recipe remix must include changes to both the ingredients and preparation steps of the original recipe.'
+                    );
+                    setStep(STEPS.INGREDIENTS);
+                } else if (!hasModifiedIngredients) {
+                    toast.error(
+                        t('remix_validation_ingredients_required') ||
+                            'A recipe remix must include changes to the ingredients of the original recipe.'
+                    );
+                    setStep(STEPS.INGREDIENTS);
+                } else {
+                    toast.error(
+                        t('remix_validation_steps_required') ||
+                            'A recipe remix must include changes to the preparation steps of the original recipe.'
+                    );
+                    setStep(STEPS.STEPS);
+                }
+                return;
+            }
+        }
+
         setIsLoading(true);
 
         try {
@@ -187,8 +221,10 @@ export function useRecipeStepNavigation({
             if (refresh) {
                 refresh();
             }
-        } catch {
-            toast.error(t('something_went_wrong'));
+        } catch (error: any) {
+            toast.error(
+                error?.response?.data?.error || t('something_went_wrong')
+            );
         } finally {
             setIsLoading(false);
         }

@@ -20,7 +20,6 @@ import { useTranslation } from 'react-i18next';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
 import CookedGallery from '@/app/components/recipes/CookedGallery';
-import RemixAttributionBanner from '@/app/components/recipes/RemixAttributionBanner';
 import RecipeRemixesSection from '@/app/components/recipes/RecipeRemixesSection';
 
 interface RecipeClientProps {
@@ -136,10 +135,6 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
             />
             <div className="mx-auto max-w-[800px]">
                 <div className="flex flex-col gap-6">
-                    <RemixAttributionBanner
-                        forkedFromRecipe={recipe.forkedFromRecipe}
-                        forkedFromRecipeId={recipe.forkedFromRecipeId}
-                    />
                     <RecipeHead
                         title={recipe.title}
                         minutes={recipe.minutes.toString()}
@@ -171,6 +166,8 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             recipeCuisine={recipe.recipeCuisine}
                             recipeYield={recipe.recipeYield}
                             ganttTable={recipe.ganttTable}
+                            forkedFromRecipe={recipe.forkedFromRecipe}
+                            forkedFromRecipeId={recipe.forkedFromRecipeId}
                         />
                     </div>
                     <div className="mt-2">
