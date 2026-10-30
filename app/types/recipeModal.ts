@@ -28,12 +28,12 @@ export interface RecipeModalDraftController {
     isEditMode?: boolean;
     activeDraftId?: string | null;
     onOpenSharedDraft: (draftId: string) => void;
-    onClose?: () => void;
+    onClose?: (options?: { skipCallback?: boolean }) => void;
 }
 
 export interface RecipeModalStateLike extends RecipeModalDraftController {
     isEditMode?: boolean;
-    onClose?: () => void;
+    onClose?: (options?: { skipCallback?: boolean }) => void;
     editRecipeData?: EditRecipeData | null;
     forkRecipeData?: Partial<EditRecipeData> | null;
     forkedFromRecipeId?: string | null;

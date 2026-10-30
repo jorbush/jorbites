@@ -1,15 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import RecipeRemixesSection from '@/app/components/recipes/RecipeRemixesSection';
 import { SafeRecipe, SafeUser } from '@/app/types';
-
-const mockPush = vi.fn();
-vi.mock('next/navigation', () => ({
-    useRouter: () => ({
-        push: mockPush,
-    }),
-}));
 
 vi.mock('@/app/hooks/useIsMounted', () => ({
     default: () => true,
