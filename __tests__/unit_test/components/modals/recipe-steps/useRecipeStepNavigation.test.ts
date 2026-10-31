@@ -6,6 +6,12 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 vi.mock('axios');
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+    useRouter: () => ({
+        push: mockPush,
+    }),
+}));
 vi.mock('react-hot-toast', () => ({
     toast: {
         success: vi.fn(),
@@ -221,5 +227,107 @@ describe('useRecipeStepNavigation', () => {
             })
         );
         expect(laterResult.current.secondaryActionLabel).toBe('back');
+    });
+
+    describe('Remix content validation in fork mode', () => {
+        const forkRecipeData = {
+            title: 'Original Dish',
+            ingredients: ['Flour', 'Water', 'Salt'],
+            steps: ['Mix', 'Knead', 'Bake'],
+        };
+
+        const forkProps = {
+            ...defaultProps,
+            step: STEPS.IMAGES,
+            recipeModal: {
+                isEditMode: false,
+                onClose: mockOnClose,
+                forkRecipeData,
+            },
+        };
+
+        it('blocks submission and navigates to ingredients when both ingredients and steps are identical', async () => {
+            const { result } = renderHook(() =>
+                useRecipeStepNavigation(forkProps)
+            );
+
+            await act(async () => {
+                await result.current.onSubmit({
+                    title: 'Remix of Original Dish',
+                    ingredients: ['Flour', 'Water', 'Salt'],
+                    steps: ['Mix', 'Knead', 'Bake'],
+                });
+            });
+
+            expect(axios.post).not.toHaveBeenCalled();
+            expect(toast.error).toHaveBeenCalledWith(
+                'remix_validation_both_required'
+            );
+            expect(mockSetStep).toHaveBeenCalledWith(STEPS.INGREDIENTS);
+        });
+
+        it('blocks submission and navigates to ingredients when only ingredients are unchanged', async () => {
+            const { result } = renderHook(() =>
+                useRecipeStepNavigation(forkProps)
+            );
+
+            await act(async () => {
+                await result.current.onSubmit({
+                    title: 'Remix of Original Dish',
+                    ingredients: ['Flour', 'Water', 'Salt'],
+                    steps: ['Mix gently', 'Cold ferment', 'Bake with steam'], // Modified
+                });
+            });
+
+            expect(axios.post).not.toHaveBeenCalled();
+            expect(toast.error).toHaveBeenCalledWith(
+                'remix_validation_ingredients_required'
+            );
+            expect(mockSetStep).toHaveBeenCalledWith(STEPS.INGREDIENTS);
+        });
+
+        it('blocks submission and navigates to steps when only steps are unchanged', async () => {
+            const { result } = renderHook(() =>
+                useRecipeStepNavigation(forkProps)
+            );
+
+            await act(async () => {
+                await result.current.onSubmit({
+                    title: 'Remix of Original Dish',
+                    ingredients: ['Rye Flour', 'Water', 'Salt', 'Seeds'], // Modified
+                    steps: ['Mix', 'Knead', 'Bake'], // Unchanged
+                });
+            });
+
+            expect(axios.post).not.toHaveBeenCalled();
+            expect(toast.error).toHaveBeenCalledWith(
+                'remix_validation_steps_required'
+            );
+            expect(mockSetStep).toHaveBeenCalledWith(STEPS.STEPS);
+        });
+
+        it('submits successfully when both ingredients and steps are modified', async () => {
+            (axios.post as any).mockResolvedValueOnce({
+                data: { id: 'new-remix-id' },
+            });
+
+            const { result } = renderHook(() =>
+                useRecipeStepNavigation(forkProps)
+            );
+
+            await act(async () => {
+                await result.current.onSubmit({
+                    title: 'Remix of Original Dish',
+                    ingredients: ['Rye Flour', 'Water', 'Salt', 'Seeds'],
+                    steps: ['Mix gently', 'Cold ferment', 'Bake with steam'],
+                });
+            });
+
+            expect(axios.post).toHaveBeenCalled();
+            expect(mockReset).toHaveBeenCalled();
+            expect(mockOnClose).toHaveBeenCalledWith({ skipCallback: true });
+            expect(mockPush).toHaveBeenCalledWith('/recipes/new-remix-id');
+            expect(toast.success).toHaveBeenCalledWith('recipe_posted');
+        });
     });
 });

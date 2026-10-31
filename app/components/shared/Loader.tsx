@@ -19,6 +19,7 @@ const Loader: React.FC<LoaderProps> = ({ height = '70vh' }) => {
                     alt="Loading..."
                     width={80}
                     height={80}
+                    style={{ width: 'auto', height: 'auto' }}
                 />
             </div>
         </div>

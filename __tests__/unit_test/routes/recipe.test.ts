@@ -399,5 +399,53 @@ describe('Recipe API Error Handling', () => {
                 })
             );
         });
+
+        it('should invalidate parent recipe remixes cache when editing a remixed recipe', async () => {
+            const { redisCache } = require('@/app/lib/redis');
+            mockedSession = {
+                expires: 'expires',
+                user: { name: 'test', email: 'test@a.com' },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+
+            const remixedRecipe = {
+                id: 'remix-recipe-id',
+                userId: 'test-user-id',
+                title: 'Remixed Pasta',
+                description: 'Updated remix',
+                imageSrc: 'http://test.jpg',
+                categories: ['Dinner'],
+                method: 'Baking',
+                ingredients: ['Pasta'],
+                steps: ['Cook'],
+                minutes: 25,
+                forkedFromRecipeId: 'parent-recipe-id',
+            };
+
+            (getRecipeById as jest.Mock).mockResolvedValue(remixedRecipe);
+            (prisma.recipe.update as jest.Mock).mockResolvedValue(
+                remixedRecipe
+            );
+
+            const mockRequest = {
+                json: jest.fn().mockResolvedValue({
+                    title: 'Remixed Pasta V2',
+                }),
+            } as unknown as Request;
+
+            const mockParams = {
+                params: Promise.resolve({ recipeId: 'remix-recipe-id' }),
+            };
+
+            const response = await RecipePATCH(mockRequest, mockParams);
+            expect(response.status).toBe(200);
+
+            expect(redisCache.del).toHaveBeenCalledWith(
+                'recipe:remix-recipe-id'
+            );
+            expect(redisCache.del).toHaveBeenCalledWith(
+                'recipe:remixes:parent-recipe-id'
+            );
+        });
     });
 });

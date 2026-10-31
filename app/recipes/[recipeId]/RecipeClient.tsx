@@ -20,10 +20,12 @@ import { useTranslation } from 'react-i18next';
 import { formatText } from '@/app/utils/textFormatting';
 import RecipeSchema from '@/app/components/recipes/RecipeSchema';
 import CookedGallery from '@/app/components/recipes/CookedGallery';
+import RecipeRemixesSection from '@/app/components/recipes/RecipeRemixesSection';
 
 interface RecipeClientProps {
     comments?: SafeComment[];
     cooksnaps?: SafeCooksnap[];
+    remixes?: SafeRecipe[];
     recipe: SafeRecipe & {
         user: SafeUser;
         coCooksIds?: string[];
@@ -37,6 +39,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
     currentUser,
     comments,
     cooksnaps,
+    remixes,
 }) => {
     const { refresh } = useRouter() || {};
     const loginModal = useLoginModal();
@@ -163,6 +166,8 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             recipeCuisine={recipe.recipeCuisine}
                             recipeYield={recipe.recipeYield}
                             ganttTable={recipe.ganttTable}
+                            forkedFromRecipe={recipe.forkedFromRecipe}
+                            forkedFromRecipeId={recipe.forkedFromRecipeId}
                         />
                     </div>
                     <div className="mt-2">
@@ -172,6 +177,15 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                             recipeAuthorId={recipe.userId}
                         />
                     </div>
+                    {remixes && remixes.length > 0 && (
+                        <div className="mt-2">
+                            <RecipeRemixesSection
+                                originalRecipeId={recipe.id}
+                                remixes={remixes}
+                                currentUser={currentUser}
+                            />
+                        </div>
+                    )}
                     <div id="comments-section">
                         <Comments
                             currentUser={currentUser}

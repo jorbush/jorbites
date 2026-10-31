@@ -42,6 +42,12 @@ export default async function getRecipeById(params: IParams) {
                         badges: true,
                     },
                 },
+                forkedFromRecipe: {
+                    select: {
+                        id: true,
+                        title: true,
+                    },
+                },
             },
         });
 

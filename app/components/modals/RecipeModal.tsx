@@ -279,7 +279,7 @@ const RecipeModalContent: React.FC<{
             }
             isLoading={isLoading}
             topButton={
-                !recipeModal.isEditMode ? (
+                !recipeModal.isEditMode && !recipeModal.forkRecipeData ? (
                     <RecipeModalTopActions
                         onSaveDraft={saveDraft}
                         onOpenDrafts={handleOpenDrafts}

@@ -2,6 +2,7 @@
 
 import type { Dispatch, SetStateAction, MouseEvent } from 'react';
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import {
@@ -17,6 +18,7 @@ import {
     processIngredientsOnStepAdvance,
     processStepsOnStepAdvance,
 } from './recipeStepProcessors';
+import { validateRemixContent } from '@/app/utils/recipeRemixValidation';
 
 export interface UseRecipeStepNavigationProps {
     step: number;
@@ -63,10 +65,16 @@ export function useRecipeStepNavigation({
     t,
     refresh,
 }: UseRecipeStepNavigationProps) {
+    const { push } = useRouter() || {};
     const [isLoading, setIsLoading] = useState(false);
+    const isForkMode = Boolean(recipeModal.forkRecipeData);
 
     const onBack = async () => {
-        if (process.env.NODE_ENV === 'production' && !recipeModal.isEditMode) {
+        if (
+            process.env.NODE_ENV === 'production' &&
+            !recipeModal.isEditMode &&
+            !isForkMode
+        ) {
             await saveDraft(step - 1);
         }
         setStep((value) => Math.max(value - 1, 0));
@@ -123,7 +131,8 @@ export function useRecipeStepNavigation({
             if (
                 success &&
                 process.env.NODE_ENV === 'production' &&
-                !recipeModal.isEditMode
+                !recipeModal.isEditMode &&
+                !isForkMode
             ) {
                 await saveDraft(step + 1);
             }
@@ -138,17 +147,54 @@ export function useRecipeStepNavigation({
             return;
         }
 
+        if (isForkMode && recipeModal.forkRecipeData) {
+            const { hasModifiedIngredients, hasModifiedSteps, isValidRemix } =
+                validateRemixContent(
+                    data.ingredients,
+                    data.steps,
+                    recipeModal.forkRecipeData.ingredients,
+                    recipeModal.forkRecipeData.steps
+                );
+
+            if (!isValidRemix) {
+                if (!hasModifiedIngredients && !hasModifiedSteps) {
+                    toast.error(
+                        t('remix_validation_both_required') ||
+                            'A recipe remix must include changes to both the ingredients and preparation steps of the original recipe.'
+                    );
+                    setStep(STEPS.INGREDIENTS);
+                } else if (!hasModifiedIngredients) {
+                    toast.error(
+                        t('remix_validation_ingredients_required') ||
+                            'A recipe remix must include changes to the ingredients of the original recipe.'
+                    );
+                    setStep(STEPS.INGREDIENTS);
+                } else {
+                    toast.error(
+                        t('remix_validation_steps_required') ||
+                            'A recipe remix must include changes to the preparation steps of the original recipe.'
+                    );
+                    setStep(STEPS.STEPS);
+                }
+                return;
+            }
+        }
+
         setIsLoading(true);
 
         try {
+            let createdRecipeId: string | null = null;
             if (recipeModal.isEditMode && recipeModal.editRecipeData) {
                 const url = `${window.location.origin}/api/recipe/${recipeModal.editRecipeData.id}`;
                 await axios.patch(url, data);
                 toast.success(t('recipe_updated'));
             } else {
                 const url = `${window.location.origin}/api/recipes`;
-                await axios.post(url, data);
-                await deleteDraft();
+                const response = await axios.post(url, data);
+                createdRecipeId = response?.data?.id || null;
+                if (!isForkMode) {
+                    await deleteDraft();
+                }
                 toast.success(t('recipe_posted'));
             }
 
@@ -172,14 +218,29 @@ export function useRecipeStepNavigation({
                 questId: '',
                 draftId: '',
                 inviteToken: '',
+                forkedFromRecipeId: '',
             });
             setStep(STEPS.CATEGORY);
-            recipeModal.onClose?.();
-            if (refresh) {
-                refresh();
+
+            const isCreatePage =
+                typeof window !== 'undefined' &&
+                window.location.pathname.startsWith('/recipes/create');
+
+            if ((isForkMode || isCreatePage) && createdRecipeId) {
+                recipeModal.onClose?.({ skipCallback: true });
+                if (push) {
+                    push(`/recipes/${createdRecipeId}`);
+                }
+            } else {
+                recipeModal.onClose?.();
+                if (refresh) {
+                    refresh();
+                }
             }
-        } catch {
-            toast.error(t('something_went_wrong'));
+        } catch (error: any) {
+            toast.error(
+                error?.response?.data?.error || t('something_went_wrong')
+            );
         } finally {
             setIsLoading(false);
         }

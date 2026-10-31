@@ -19,7 +19,8 @@ import useIsMounted from '@/app/hooks/useIsMounted';
 import useCooksnapModal from '@/app/hooks/useCooksnapModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import Button from '@/app/components/buttons/Button';
-import { TbPhotoPlus } from 'react-icons/tb';
+import { TbPhotoPlus, TbGitFork } from 'react-icons/tb';
+import RemixAttributionBanner from '@/app/components/recipes/RemixAttributionBanner';
 
 interface RecipeInfoProps {
     user: SafeUser;
@@ -53,6 +54,17 @@ interface RecipeInfoProps {
     recipeYield?: number | null;
     ganttTable?: GanttTable | null;
     recipeTitle?: string;
+    forkedFromRecipe?: {
+        id: string;
+        title: string;
+        imageSrc?: string;
+        user?: {
+            id: string;
+            name: string | null;
+            image?: string | null;
+        } | null;
+    } | null;
+    forkedFromRecipeId?: string | null;
 }
 
 const EMPTY_ARRAY: any[] = [];
@@ -81,6 +93,9 @@ const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({ items }) => {
     const mounted = useIsMounted();
 
     if (items.length === 0) return null;
+
+    const seen = new Map<string, number>();
+
     return (
         <>
             <hr />
@@ -92,14 +107,19 @@ const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({ items }) => {
                     {mounted ? t('ingredients') : 'ingredients'}
                 </div>
                 <ul className="list-disc pt-4 pl-9">
-                    {items.map((item, i) => (
-                        <li
-                            key={`ing-${i}-${item}`}
-                            className="mb-2"
-                        >
-                            {formatText(item)}
-                        </li>
-                    ))}
+                    {items.map((item) => {
+                        const count = (seen.get(item) ?? 0) + 1;
+                        seen.set(item, count);
+                        const key = count === 1 ? item : `${item}-${count}`;
+                        return (
+                            <li
+                                key={key}
+                                className="mb-2"
+                            >
+                                {formatText(item)}
+                            </li>
+                        );
+                    })}
                 </ul>
             </div>
         </>
@@ -115,6 +135,9 @@ const RecipeSteps: React.FC<RecipeStepsProps> = ({ items }) => {
     const mounted = useIsMounted();
 
     if (items.length === 0) return null;
+
+    const seen = new Map<string, number>();
+
     return (
         <>
             <hr />
@@ -126,15 +149,20 @@ const RecipeSteps: React.FC<RecipeStepsProps> = ({ items }) => {
                     {mounted ? t('steps') : 'steps'}
                 </div>
                 <ol className="list-decimal pt-4 pl-9">
-                    {items.map((item, index) => (
-                        <li
-                            key={`step-${index}-${item}`}
-                            className="overflow-wrap-anywhere mb-2 break-words"
-                            data-cy={`step-${index}`}
-                        >
-                            {formatText(item)}
-                        </li>
-                    ))}
+                    {items.map((item, index) => {
+                        const count = (seen.get(item) ?? 0) + 1;
+                        seen.set(item, count);
+                        const key = count === 1 ? item : `${item}-${count}`;
+                        return (
+                            <li
+                                key={key}
+                                className="overflow-wrap-anywhere mb-2 break-words"
+                                data-cy={`step-${index}`}
+                            >
+                                {formatText(item)}
+                            </li>
+                        );
+                    })}
                 </ol>
             </div>
         </>
@@ -164,6 +192,8 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
     recipeYield,
     ganttTable,
     recipeTitle,
+    forkedFromRecipe,
+    forkedFromRecipeId,
 }) => {
     const { t } = useTranslation();
     const { push } = useRouter() || {};
@@ -213,6 +243,15 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 recipeYield={recipeYield}
             />
 
+            {(forkedFromRecipe || forkedFromRecipeId) && (
+                <div className="-mt-4">
+                    <RemixAttributionBanner
+                        forkedFromRecipe={forkedFromRecipe}
+                        forkedFromRecipeId={forkedFromRecipeId}
+                    />
+                </div>
+            )}
+
             <RecipeCoCooks
                 isLoadingRelatedData={isLoadingRelatedData}
                 coCooks={coCooks}
@@ -238,9 +277,9 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 RenderGanttTable={RecipeGanttTable}
             />
 
-            {/* Post-steps Cooksnap Button */}
-            <div className="flex w-full flex-row items-center justify-center pt-2">
-                <div className="w-[240px]">
+            {/* Post-steps Cooksnap and Remix Buttons */}
+            <div className="flex w-full flex-wrap items-center justify-center gap-4 pt-2">
+                <div className="w-[220px]">
                     <Button
                         label={
                             mounted
@@ -257,6 +296,27 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                             cooksnapModal.onOpen(id, recipeTitle);
                         }}
                         dataTestId="post-steps-cooksnap-btn"
+                    />
+                </div>
+                <div className="w-[220px]">
+                    <Button
+                        label={
+                            mounted
+                                ? String(
+                                      t('remix_recipe', {
+                                          defaultValue: 'Remix Recipe',
+                                      })
+                                  )
+                                : 'Remix Recipe'
+                        }
+                        icon={TbGitFork}
+                        outline
+                        onClick={() => {
+                            if (!currentUser) return loginModal.onOpen();
+                            push(`/recipes/create?forkFrom=${id}`);
+                        }}
+                        dataTestId="remix-recipe-btn"
+                        dataCy="remix-recipe-btn"
                     />
                 </div>
             </div>

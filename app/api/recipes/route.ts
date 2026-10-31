@@ -10,12 +10,16 @@ import {
     conflict,
     internalServerError,
     rateLimitExceeded,
+    badRequest,
 } from '@/app/utils/apiErrors';
 import { logger } from '@/app/lib/axiom/server';
 import { validateRecipeCreateData } from '@/app/utils/recipeValidation';
+import { validateRemixContent } from '@/app/utils/recipeRemixValidation';
 import { contentCreationRatelimit } from '@/app/lib/ratelimit';
 import { MAX_CO_COOKS, MAX_LINKED_RECIPES } from '@/app/utils/constants';
 import { DraftService } from '@/app/services/draftService';
+
+const OBJECT_ID_REGEX = /^[0-9a-fA-F]{24}$/;
 
 export async function POST(request: Request) {
     try {
@@ -77,6 +81,7 @@ export async function POST(request: Request) {
             recipeYield,
             prepTime,
             cookTime,
+            forkedFromRecipeId,
         } = body;
 
         const recipeExist = await prisma.recipe.findFirst({
@@ -115,6 +120,61 @@ export async function POST(request: Request) {
         );
 
         const finalQuestId = questId && questId.trim() !== '' ? questId : null;
+
+        const rawForkedFromRecipeId =
+            forkedFromRecipeId && typeof forkedFromRecipeId === 'string'
+                ? forkedFromRecipeId.trim()
+                : null;
+
+        let validForkedFromRecipe: {
+            id: string;
+            ingredients: string[];
+            steps: string[];
+        } | null = null;
+
+        if (
+            rawForkedFromRecipeId &&
+            OBJECT_ID_REGEX.test(rawForkedFromRecipeId)
+        ) {
+            validForkedFromRecipe = await prisma.recipe.findUnique({
+                where: { id: rawForkedFromRecipeId },
+                select: {
+                    id: true,
+                    ingredients: true,
+                    steps: true,
+                },
+            });
+        }
+
+        if (validForkedFromRecipe) {
+            const { hasModifiedIngredients, hasModifiedSteps, isValidRemix } =
+                validateRemixContent(
+                    ingredients,
+                    steps,
+                    validForkedFromRecipe.ingredients,
+                    validForkedFromRecipe.steps
+                );
+
+            if (!isValidRemix) {
+                if (!hasModifiedIngredients && !hasModifiedSteps) {
+                    return badRequest(
+                        'A recipe remix must include changes to both the ingredients and preparation steps of the original recipe'
+                    );
+                }
+                if (!hasModifiedIngredients) {
+                    return badRequest(
+                        'A recipe remix must include changes to the ingredients of the original recipe'
+                    );
+                }
+                return badRequest(
+                    'A recipe remix must include changes to the preparation steps of the original recipe'
+                );
+            }
+        }
+
+        const finalForkedFromRecipeId = validForkedFromRecipe
+            ? validForkedFromRecipe.id
+            : null;
 
         const recipe = await prisma.recipe.create({
             data: {
@@ -158,6 +218,7 @@ export async function POST(request: Request) {
                     cookTime !== ''
                         ? parseInt(cookTime.toString(), 10)
                         : null,
+                forkedFromRecipeId: finalForkedFromRecipeId,
             },
         });
 
@@ -204,6 +265,12 @@ export async function POST(request: Request) {
                 redisCache.del(`user:activity:graph:${currentUser.id}`),
                 redisCache.incr('recipes:global:version'),
             ]);
+            if (finalForkedFromRecipeId) {
+                await Promise.all([
+                    redisCache.del(`recipe:${finalForkedFromRecipeId}`),
+                    redisCache.del(`recipe:remixes:${finalForkedFromRecipeId}`),
+                ]);
+            }
             if (body.draftId) {
                 await DraftService.cleanUpDraftOnPublish(
                     body.draftId,

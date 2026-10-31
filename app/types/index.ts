@@ -61,6 +61,7 @@ export type SafeRecipe = Omit<
     | 'prepTime'
     | 'cookTime'
     | 'ganttTable'
+    | 'forkedFromRecipeId'
 > & {
     createdAt: string;
     coCooksIds?: string[];
@@ -76,6 +77,17 @@ export type SafeRecipe = Omit<
     prepTime?: number | null;
     cookTime?: number | null;
     ganttTable?: GanttTable | null;
+    forkedFromRecipeId?: string | null;
+    forkedFromRecipe?: {
+        id: string;
+        title: string;
+        imageSrc?: string;
+        user?: {
+            id: string;
+            name: string | null;
+            image?: string | null;
+        } | null;
+    } | null;
 };
 
 export type CommentAuthor = Pick<

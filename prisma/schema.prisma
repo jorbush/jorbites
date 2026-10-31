@@ -111,13 +111,18 @@ model Recipe {
   prepTime Int?
   cookTime Int?
   ganttTable Json?
+  forkedFromRecipeId String? @db.ObjectId
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  forkedFromRecipe Recipe? @relation("RecipeForks", fields: [forkedFromRecipeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  forks Recipe[] @relation("RecipeForks")
   comments Comment[]
   cooksnaps Cooksnap[]
   quest Quest? @relation(fields: [questId], references: [id], onDelete: SetNull)
   lists List[] @relation(fields: [listIds], references: [id])
   planningMeals PlanningMeal[]
+
+  @@index([forkedFromRecipeId])
 }
 
 model Comment {

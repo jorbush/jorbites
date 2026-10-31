@@ -240,4 +240,81 @@ describe('buildInitialRecipeDefaultValues', () => {
         );
         expect(defaults[`step-${RECIPE_MAX_STEPS}`]).toBeUndefined();
     });
+
+    it('populates form defaults from forkRecipeData with translated title and empty imageSrc', () => {
+        const forkRecipeData: any = {
+            title: 'Classic Tiramisu',
+            description: 'Traditional Italian dessert',
+            categories: ['Dessert', 'Italian'],
+            method: 'Chilled',
+            ingredients: ['Mascarpone', 'Savoiardi', 'Espresso'],
+            steps: ['Dip cookies in espresso', 'Layer with mascarpone cream'],
+            minutes: 45,
+            prepTime: 20,
+            cookTime: 0,
+        };
+
+        const mockTranslate = (key: string, options?: any) => {
+            if (key === 'remix_of') return `Remix of ${options?.title}`;
+            return key;
+        };
+
+        const defaults = buildInitialRecipeDefaultValues(
+            {
+                isOpen: true,
+                isEditMode: false,
+                forkRecipeData,
+                forkedFromRecipeId: 'parent-recipe-123',
+            },
+            null,
+            mockTranslate
+        );
+
+        expect(defaults.title).toBe('Remix of Classic Tiramisu');
+        expect(defaults.description).toBe('Traditional Italian dessert');
+        expect(defaults.categories).toEqual(['Dessert', 'Italian']);
+        expect(defaults.method).toBe('Chilled');
+        expect(defaults.minutes).toBe(45);
+        expect(defaults.prepTime).toBe(20);
+        expect(defaults.cookTime).toBe(0);
+        expect(defaults.ingredients).toEqual([
+            'Mascarpone',
+            'Savoiardi',
+            'Espresso',
+        ]);
+        expect(defaults.steps).toEqual([
+            'Dip cookies in espresso',
+            'Layer with mascarpone cream',
+        ]);
+        expect(defaults.imageSrc).toBe('');
+        expect(defaults.imageSrc1).toBe('');
+        expect(defaults.forkedFromRecipeId).toBe('parent-recipe-123');
+        expect(defaults['ingredient-0']).toBe('Mascarpone');
+        expect(defaults['step-0']).toBe('Dip cookies in espresso');
+    });
+
+    it('falls back to standard Remix of prefix when translation function is omitted', () => {
+        const forkRecipeData: any = {
+            title: 'Paella',
+            categories: ['Spanish'],
+            method: 'Simmer',
+            ingredients: ['Rice', 'Saffron'],
+            steps: ['Cook rice'],
+            minutes: 60,
+        };
+
+        const defaults = buildInitialRecipeDefaultValues(
+            {
+                isOpen: true,
+                isEditMode: false,
+                forkRecipeData,
+                forkedFromRecipeId: 'paella-999',
+            },
+            null
+        );
+
+        expect(defaults.title).toBe('Remix of Paella');
+        expect(defaults.forkedFromRecipeId).toBe('paella-999');
+        expect(defaults.imageSrc).toBe('');
+    });
 });
