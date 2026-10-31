@@ -93,6 +93,9 @@ const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({ items }) => {
     const mounted = useIsMounted();
 
     if (items.length === 0) return null;
+
+    const seen = new Map<string, number>();
+
     return (
         <>
             <hr />
@@ -104,14 +107,19 @@ const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({ items }) => {
                     {mounted ? t('ingredients') : 'ingredients'}
                 </div>
                 <ul className="list-disc pt-4 pl-9">
-                    {items.map((item, i) => (
-                        <li
-                            key={`ing-${i}-${item}`}
-                            className="mb-2"
-                        >
-                            {formatText(item)}
-                        </li>
-                    ))}
+                    {items.map((item) => {
+                        const count = (seen.get(item) ?? 0) + 1;
+                        seen.set(item, count);
+                        const key = count === 1 ? item : `${item}-${count}`;
+                        return (
+                            <li
+                                key={key}
+                                className="mb-2"
+                            >
+                                {formatText(item)}
+                            </li>
+                        );
+                    })}
                 </ul>
             </div>
         </>
@@ -127,6 +135,9 @@ const RecipeSteps: React.FC<RecipeStepsProps> = ({ items }) => {
     const mounted = useIsMounted();
 
     if (items.length === 0) return null;
+
+    const seen = new Map<string, number>();
+
     return (
         <>
             <hr />
@@ -138,15 +149,20 @@ const RecipeSteps: React.FC<RecipeStepsProps> = ({ items }) => {
                     {mounted ? t('steps') : 'steps'}
                 </div>
                 <ol className="list-decimal pt-4 pl-9">
-                    {items.map((item, index) => (
-                        <li
-                            key={`step-${index}-${item}`}
-                            className="overflow-wrap-anywhere mb-2 break-words"
-                            data-cy={`step-${index}`}
-                        >
-                            {formatText(item)}
-                        </li>
-                    ))}
+                    {items.map((item, index) => {
+                        const count = (seen.get(item) ?? 0) + 1;
+                        seen.set(item, count);
+                        const key = count === 1 ? item : `${item}-${count}`;
+                        return (
+                            <li
+                                key={key}
+                                className="overflow-wrap-anywhere mb-2 break-words"
+                                data-cy={`step-${index}`}
+                            >
+                                {formatText(item)}
+                            </li>
+                        );
+                    })}
                 </ol>
             </div>
         </>
