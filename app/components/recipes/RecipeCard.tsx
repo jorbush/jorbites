@@ -10,6 +10,7 @@ import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { memo, useCallback, useMemo } from 'react';
 import Avatar from '@/app/components/utils/Avatar';
 import ClientOnly from '@/app/components/utils/ClientOnly';
+import ViewTransition from '@/app/components/utils/ViewTransition';
 import { IconType } from 'react-icons';
 
 interface RecipeCardProps {
@@ -67,17 +68,23 @@ const RecipeCard = memo(function RecipeCard({
         >
             <div className="flex w-full flex-col gap-2">
                 <div className="relative aspect-square w-full overflow-hidden rounded-xl">
-                    <CustomProxyImage
-                        src={data.imageSrc || '/avocado.webp'}
-                        alt="recipe"
-                        fill
-                        priority={isFirstCard}
-                        className="size-full object-cover transition group-hover:scale-110"
-                        width={209}
-                        height={209}
-                        sizes="(max-width: 640px) 150px, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 209px, 250px"
-                        quality="auto:eco"
-                    />
+                    <ViewTransition
+                        name={`recipe-image-${data.id}`}
+                        share="morph"
+                        default="none"
+                    >
+                        <CustomProxyImage
+                            src={data.imageSrc || '/avocado.webp'}
+                            alt="recipe"
+                            fill
+                            priority={isFirstCard}
+                            className="size-full object-cover transition group-hover:scale-110"
+                            width={209}
+                            height={209}
+                            sizes="(max-width: 640px) 150px, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 209px, 250px"
+                            quality="auto:eco"
+                        />
+                    </ViewTransition>
                     <div className="absolute top-3 right-3 z-10">
                         <HeartButton
                             recipeId={data.id}

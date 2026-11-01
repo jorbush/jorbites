@@ -8,8 +8,10 @@ import { useRouter } from 'next/navigation';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import useShare from '@/app/hooks/useShare';
 import useIsMounted from '@/app/hooks/useIsMounted';
+import ViewTransition from '@/app/components/utils/ViewTransition';
 
 interface RecipeHeadProps {
+    id?: string;
     title: string;
     minutes: string;
     prepTime?: number | null;
@@ -18,6 +20,7 @@ interface RecipeHeadProps {
 }
 
 const RecipeHead: React.FC<RecipeHeadProps> = ({
+    id,
     title,
     minutes,
     prepTime,
@@ -145,17 +148,37 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                 index === currentImageIndex ? 'auto' : 'none',
                         }}
                     >
-                        <CustomProxyImage
-                            src={imageSrc || '/avocado.webp'}
-                            fill
-                            priority={index === 0}
-                            className="rounded-xl object-cover"
-                            alt="Recipe Image"
-                            maxQuality={true}
-                            quality="auto:best"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                            preloadViaProxy={index === 0}
-                        />
+                        {index === 0 ? (
+                            <ViewTransition
+                                name={id ? `recipe-image-${id}` : undefined}
+                                share="morph"
+                                default="none"
+                            >
+                                <CustomProxyImage
+                                    src={imageSrc || '/avocado.webp'}
+                                    fill
+                                    priority={true}
+                                    className="rounded-xl object-cover"
+                                    alt="Recipe Image"
+                                    maxQuality={true}
+                                    quality="auto:best"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                                    preloadViaProxy={true}
+                                />
+                            </ViewTransition>
+                        ) : (
+                            <CustomProxyImage
+                                src={imageSrc || '/avocado.webp'}
+                                fill
+                                priority={false}
+                                className="rounded-xl object-cover"
+                                alt="Recipe Image"
+                                maxQuality={true}
+                                quality="auto:best"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                                preloadViaProxy={false}
+                            />
+                        )}
                     </div>
                 ))}
                 {imagesSrc.length > 1 && (

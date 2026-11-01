@@ -150,3 +150,19 @@ body,
     }
   }
 }
+
+/* View Transitions */
+::view-transition-group(.morph) {
+  animation-duration: 350ms;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Respect user's motion preferences for view transitions */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0.01ms !important;
+  }
+}
+
