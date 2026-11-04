@@ -1,5 +1,7 @@
 import { logger } from '@/app/lib/axiom/server';
 
+const BADGE_FORGE_TIMEOUT_MS = 5000;
+
 interface IParams {
     userId?: string;
 }
@@ -23,6 +25,7 @@ export default async function updateUserLevel(params: IParams) {
                 },
                 body: JSON.stringify(badgeForgePayload),
                 cache: 'no-store',
+                signal: AbortSignal.timeout(BADGE_FORGE_TIMEOUT_MS),
             }
         );
 

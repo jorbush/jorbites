@@ -22,6 +22,8 @@ interface SendNotificationParams {
     };
 }
 
+const NOTIFIER_TIMEOUT_MS = 5000;
+
 const sendNotification = async ({
     type,
     userEmail,
@@ -96,6 +98,7 @@ const sendNotification = async ({
                 },
                 body: JSON.stringify(notificationPayload),
                 cache: 'no-store',
+                signal: AbortSignal.timeout(NOTIFIER_TIMEOUT_MS),
             }
         );
 
