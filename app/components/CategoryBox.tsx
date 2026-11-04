@@ -33,17 +33,43 @@ const CategoryBoxComponent: React.FC<CategoryBoxProps> = ({
     const handleCategorySelection = useCallback(() => {
         const currentQuery = qs.parse(toString());
 
-        let updatedQuery: any = {
-            ...currentQuery,
-            category: label,
-        };
+        const existingCategoryRaw = currentQuery.category;
+        let currentCategories: string[] = [];
 
-        if ('page' in currentQuery) {
-            delete updatedQuery.page;
+        if (Array.isArray(existingCategoryRaw)) {
+            currentCategories = existingCategoryRaw.filter(
+                (item): item is string =>
+                    typeof item === 'string' && Boolean(item)
+            );
+        } else if (
+            typeof existingCategoryRaw === 'string' &&
+            existingCategoryRaw
+        ) {
+            currentCategories = existingCategoryRaw
+                .split(',')
+                .map((c) => c.trim())
+                .filter(Boolean);
         }
 
-        if (get('category') === label) {
+        let updatedCategories: string[];
+        if (currentCategories.includes(label)) {
+            updatedCategories = currentCategories.filter((c) => c !== label);
+        } else {
+            updatedCategories = [...currentCategories, label];
+        }
+
+        let updatedQuery: any = {
+            ...currentQuery,
+        };
+
+        if (updatedCategories.length > 0) {
+            updatedQuery.category = updatedCategories;
+        } else {
             delete updatedQuery.category;
+        }
+
+        if ('page' in updatedQuery) {
+            delete updatedQuery.page;
         }
 
         const url = qs.stringifyUrl(
@@ -55,7 +81,7 @@ const CategoryBoxComponent: React.FC<CategoryBoxProps> = ({
         );
 
         push(url);
-    }, [label, push, pathname, get, toString]);
+    }, [label, push, pathname, toString]);
 
     return (
         <button

@@ -16,7 +16,7 @@ export interface IFavoriteRecipesParams {
     page?: number;
     limit?: number;
     orderBy?: OrderByType;
-    category?: string;
+    category?: string | string[];
     search?: string;
     startDate?: string;
     endDate?: string;
@@ -84,10 +84,19 @@ export default async function getFavoriteRecipes(
         };
 
         // Apply category filter
-        if (typeof category === 'string') {
-            whereClause.categories = {
-                has: category,
-            };
+        if (category) {
+            const categoryArray = Array.isArray(category)
+                ? category.filter(Boolean)
+                : category
+                      .split(',')
+                      .map((c) => c.trim())
+                      .filter(Boolean);
+
+            if (categoryArray.length > 0) {
+                whereClause.categories = {
+                    hasSome: categoryArray,
+                };
+            }
         }
 
         // Apply search filter

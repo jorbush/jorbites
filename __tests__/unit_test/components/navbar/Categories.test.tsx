@@ -42,7 +42,7 @@ describe('<Categories />', () => {
     it('renders nothing when not on the main page', () => {
         mockUsePathname.mockReturnValue('/some-other-page');
         mockUseSearchParams.mockReturnValue({
-            get: vi.fn().mockReturnValue(null),
+            getAll: vi.fn().mockReturnValue([]),
         } as any);
 
         const { container } = render(<Categories />);
@@ -52,7 +52,7 @@ describe('<Categories />', () => {
     it('renders all categories on the main page', () => {
         mockUsePathname.mockReturnValue('/');
         mockUseSearchParams.mockReturnValue({
-            get: vi.fn().mockReturnValue(null),
+            getAll: vi.fn().mockReturnValue([]),
         } as any);
 
         render(<Categories />);
@@ -72,12 +72,26 @@ describe('<Categories />', () => {
     it('marks the selected category', () => {
         mockUsePathname.mockReturnValue('/');
         mockUseSearchParams.mockReturnValue({
-            get: vi.fn().mockReturnValue('Fruits'),
+            getAll: vi.fn().mockReturnValue(['Fruits']),
         } as any);
 
         render(<Categories />);
 
         const selectedCategory = screen.getByTestId('category-box-fruits');
         expect(selectedCategory.textContent).toBe('Fruits (selected)');
+    });
+
+    it('marks multiple selected categories', () => {
+        mockUsePathname.mockReturnValue('/');
+        mockUseSearchParams.mockReturnValue({
+            getAll: vi.fn().mockReturnValue(['Fruits', 'Desserts']),
+        } as any);
+
+        render(<Categories />);
+
+        const selectedCategory1 = screen.getByTestId('category-box-fruits');
+        const selectedCategory2 = screen.getByTestId('category-box-desserts');
+        expect(selectedCategory1.textContent).toBe('Fruits (selected)');
+        expect(selectedCategory2.textContent).toBe('Desserts (selected)');
     });
 });
