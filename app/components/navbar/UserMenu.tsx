@@ -13,19 +13,19 @@ import useSettingsModal from '@/app/hooks/useSettingsModal';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import {
-    FcAddImage,
-    FcDocument,
-    FcManager,
-    FcLike,
-    FcIdea,
-    FcSettings,
-    FcExport,
-    FcImport,
-    FcPortraitMode,
-    FcTodoList,
-    FcBookmark,
-    FcPlanner,
-} from 'react-icons/fc';
+    FiPlusSquare,
+    FiUser,
+    FiFileText,
+    FiHeart,
+    FiCalendar,
+    FiCheckSquare,
+    FiBookmark,
+    FiGrid,
+    FiSettings,
+    FiLogOut,
+    FiLogIn,
+    FiUserPlus,
+} from 'react-icons/fi';
 
 interface UserMenuProps {
     currentUser?: SafeUser | null;
@@ -124,7 +124,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('post_recipe')}
                                     extraClasses="sm:hidden"
-                                    icon={FcAddImage}
+                                    icon={FiPlusSquare}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -132,7 +132,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('my_profile')}
-                                    icon={FcManager}
+                                    icon={FiUser}
                                     avatarSrc={currentUser?.image || undefined}
                                 />
                                 <MenuItem
@@ -141,7 +141,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('my_drafts') || 'My Drafts'}
-                                    icon={FcDocument}
+                                    icon={FiFileText}
                                     dataCy="user-menu-my-drafts"
                                 />
                                 <MenuItem
@@ -150,7 +150,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('my_favorites')}
-                                    icon={FcLike}
+                                    icon={FiHeart}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -158,7 +158,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('events') || 'Events'}
-                                    icon={FcIdea}
+                                    icon={FiCalendar}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -166,7 +166,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('quests') || 'Quests'}
-                                    icon={FcTodoList}
+                                    icon={FiCheckSquare}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -174,7 +174,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('lists') || 'Lists'}
-                                    icon={FcBookmark}
+                                    icon={FiBookmark}
                                     dataCy="user-menu-lists"
                                 />
                                 <MenuItem
@@ -183,7 +183,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('meal_planner') || 'Plannings'}
-                                    icon={FcPlanner}
+                                    icon={FiGrid}
                                     dataCy="user-menu-plannings"
                                 />
                                 {/* <MenuItem
@@ -200,14 +200,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('settings')}
-                                    icon={FcSettings}
+                                    icon={FiSettings}
                                     dataCy="user-menu-settings"
                                 />
                                 <MenuItem
                                     onClick={() => signOut()}
                                     label={t('logout')}
                                     dataCy="user-menu-logout"
-                                    icon={FcExport}
+                                    icon={FiLogOut}
                                 />
                             </>
                         ) : (
@@ -218,7 +218,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('events') || 'Events'}
-                                    icon={FcIdea}
+                                    icon={FiCalendar}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -226,7 +226,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('quests') || 'Quests'}
-                                    icon={FcTodoList}
+                                    icon={FiCheckSquare}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -234,7 +234,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('lists') || 'Lists'}
-                                    icon={FcBookmark}
+                                    icon={FiBookmark}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -242,7 +242,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('meal_planner') || 'Plannings'}
-                                    icon={FcPlanner}
+                                    icon={FiGrid}
                                 />
                                 {/* <MenuItem
                                     onClick={() => {
@@ -258,7 +258,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('settings')}
-                                    icon={FcSettings}
+                                    icon={FiSettings}
                                     dataCy="user-menu-settings"
                                 />
                                 <MenuItem
@@ -268,7 +268,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                     }}
                                     label={t('login')}
                                     dataCy="user-menu-login"
-                                    icon={FcImport}
+                                    icon={FiLogIn}
                                 />
                                 <MenuItem
                                     onClick={() => {
@@ -276,7 +276,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                                         toggleOpen();
                                     }}
                                     label={t('sign_up')}
-                                    icon={FcPortraitMode}
+                                    icon={FiUserPlus}
                                 />
                             </>
                         )}
