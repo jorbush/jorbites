@@ -50,4 +50,24 @@ describe('updateUserLevel Server Action', () => {
             updateUserLevel({ userId: 'u123' })
         ).resolves.toBeUndefined();
     });
+
+    it('should include an AbortSignal timeout on fetch and handle timeout gracefully', async () => {
+        jest.mocked(fetch).mockRejectedValue(
+            new DOMException(
+                'The operation was aborted due to timeout',
+                'TimeoutError'
+            )
+        );
+
+        await expect(
+            updateUserLevel({ userId: 'u123' })
+        ).resolves.toBeUndefined();
+
+        expect(fetch).toHaveBeenCalledWith(
+            'http://badge-forge.example.com/update',
+            expect.objectContaining({
+                signal: expect.any(AbortSignal),
+            })
+        );
+    });
 });

@@ -119,4 +119,26 @@ describe('sendNotification Server Action', () => {
 
         expect(result).toBeUndefined();
     });
+
+    it('should include an AbortSignal timeout on fetch and handle timeout gracefully', async () => {
+        jest.mocked(fetch).mockRejectedValue(
+            new DOMException(
+                'The operation was aborted due to timeout',
+                'TimeoutError'
+            )
+        );
+
+        const result = await sendNotification({
+            type: NotificationType.NEW_COMMENT,
+            userEmail: 'user@example.com',
+        });
+
+        expect(fetch).toHaveBeenCalledWith(
+            'http://notifier.example.com/notifications',
+            expect.objectContaining({
+                signal: expect.any(AbortSignal),
+            })
+        );
+        expect(result).toBeUndefined();
+    });
 });
