@@ -128,6 +128,11 @@ export async function POST(request: Request) {
 
         let validForkedFromRecipe: {
             id: string;
+            title: string;
+            userId: string;
+            user?: {
+                email: string | null;
+            } | null;
             ingredients: string[];
             steps: string[];
         } | null = null;
@@ -140,6 +145,13 @@ export async function POST(request: Request) {
                 where: { id: rawForkedFromRecipeId },
                 select: {
                     id: true,
+                    title: true,
+                    userId: true,
+                    user: {
+                        select: {
+                            email: true,
+                        },
+                    },
                     ingredients: true,
                     steps: true,
                 },
@@ -248,6 +260,59 @@ export async function POST(request: Request) {
                     },
                 });
             }
+        }
+
+        if (
+            validForkedFromRecipe &&
+            validForkedFromRecipe.userId !== currentUser.id
+        ) {
+            const remixSideEffects: Promise<unknown>[] = [];
+
+            if (validForkedFromRecipe.user?.email) {
+                remixSideEffects.push(
+                    sendNotification({
+                        type: NotificationType.RECIPE_REMIX,
+                        userEmail: validForkedFromRecipe.user.email,
+                        params: {
+                            userName: currentUser.name || 'cook',
+                            recipeId: recipe.id,
+                            recipeName: validForkedFromRecipe.title,
+                            remixRecipeId: recipe.id,
+                            originalRecipeTitle: validForkedFromRecipe.title,
+                        },
+                    }).catch((err: unknown) => {
+                        logger.warn(
+                            'POST /api/recipes - remix notification error',
+                            {
+                                error:
+                                    err instanceof Error
+                                        ? err.message
+                                        : String(err),
+                                recipeId: recipe.id,
+                            }
+                        );
+                    })
+                );
+            }
+
+            remixSideEffects.push(
+                updateUserLevel({
+                    userId: validForkedFromRecipe.userId,
+                }).catch((err: unknown) => {
+                    logger.warn(
+                        'POST /api/recipes - original author level update error',
+                        {
+                            error:
+                                err instanceof Error
+                                    ? err.message
+                                    : String(err),
+                            originalAuthorId: validForkedFromRecipe.userId,
+                        }
+                    );
+                })
+            );
+
+            await Promise.allSettled(remixSideEffects);
         }
 
         await updateUserLevel({

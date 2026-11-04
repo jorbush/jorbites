@@ -17,6 +17,8 @@ interface SendNotificationParams {
         periodKey?: string;
         recipeTitle?: string;
         winnerName?: string;
+        remixRecipeId?: string;
+        originalRecipeTitle?: string;
     };
 }
 
@@ -55,6 +57,24 @@ const sendNotification = async ({
         if (params.periodKey) metadata.periodKey = params.periodKey;
         if (params.recipeTitle) metadata.recipeTitle = params.recipeTitle;
         if (params.winnerName) metadata.winnerName = params.winnerName;
+        if (params.remixRecipeId) metadata.remixRecipeId = params.remixRecipeId;
+        if (params.originalRecipeTitle)
+            metadata.originalRecipeTitle = params.originalRecipeTitle;
+
+        if (type === NotificationType.RECIPE_REMIX) {
+            if (!metadata.remixRecipeId && params.recipeId) {
+                metadata.remixRecipeId = params.recipeId;
+            }
+            if (!metadata.originalRecipeTitle && params.recipeName) {
+                metadata.originalRecipeTitle = params.recipeName;
+            }
+            if (!metadata.recipeId && params.remixRecipeId) {
+                metadata.recipeId = params.remixRecipeId;
+            }
+            if (!metadata.recipeName && params.originalRecipeTitle) {
+                metadata.recipeName = params.originalRecipeTitle;
+            }
+        }
 
         if (type === NotificationType.NEW_LIKE && params.userName) {
             metadata.likedBy = params.userName;

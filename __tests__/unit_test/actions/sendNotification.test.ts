@@ -65,6 +65,46 @@ describe('sendNotification Server Action', () => {
         expect(result).toEqual({ status: 'sent' });
     });
 
+    it('should format RECIPE_REMIX payload with remixRecipeId and originalRecipeTitle', async () => {
+        jest.mocked(fetch).mockResolvedValue({
+            ok: true,
+            json: jest.fn().mockResolvedValue({ status: 'sent' }),
+        } as any);
+
+        const result = await sendNotification({
+            type: NotificationType.RECIPE_REMIX,
+            userEmail: 'original_author@example.com',
+            params: {
+                userName: 'RemixChef',
+                recipeId: 'remix-456',
+                recipeName: 'Original Carbonara',
+            },
+        });
+
+        expect(fetch).toHaveBeenCalledWith(
+            'http://notifier.example.com/notifications',
+            expect.objectContaining({
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Key': 'test-key',
+                },
+                body: JSON.stringify({
+                    type: NotificationType.RECIPE_REMIX,
+                    recipient: 'original_author@example.com',
+                    metadata: {
+                        authorName: 'RemixChef',
+                        recipeId: 'remix-456',
+                        recipeName: 'Original Carbonara',
+                        remixRecipeId: 'remix-456',
+                        originalRecipeTitle: 'Original Carbonara',
+                    },
+                }),
+            })
+        );
+        expect(result).toEqual({ status: 'sent' });
+    });
+
     it('should handle notifier service failure gracefully', async () => {
         jest.mocked(fetch).mockResolvedValue({
             ok: false,

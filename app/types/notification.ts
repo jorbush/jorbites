@@ -13,12 +13,15 @@ export enum NotificationType {
     VOTATION_RESULT = 'VOTATION_RESULT',
     NEW_EVENT = 'NEW_EVENT',
     EVENT_ENDING_SOON = 'EVENT_ENDING_SOON',
+    RECIPE_REMIX = 'RECIPE_REMIX',
 }
 
 export interface NotificationTemplateParams {
     userName?: string | null | undefined;
     recipeId?: string;
     recipeName?: string;
+    remixRecipeId?: string;
+    originalRecipeTitle?: string;
     questId?: string;
     submissionId?: string;
     fulfilledByName?: string;

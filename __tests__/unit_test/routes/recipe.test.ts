@@ -38,6 +38,13 @@ jest.mock('@/app/actions/getRecipeById', () => ({
 
 import getRecipeById from '@/app/actions/getRecipeById';
 
+jest.mock('@/app/actions/updateUserLevel', () => ({
+    __esModule: true,
+    default: jest.fn(() => Promise.resolve()),
+}));
+
+import updateUserLevel from '@/app/actions/updateUserLevel';
+
 jest.mock('@/app/lib/redis', () => ({
     redis: {
         get: jest.fn(),
@@ -209,6 +216,42 @@ describe('Recipe API Error Handling', () => {
             );
             expect(data.code).toBe('INVALID_INPUT');
             expect(data.timestamp).toBeDefined();
+        });
+
+        it('should recalculate parent author level when deleting a remixed recipe', async () => {
+            mockedSession = {
+                expires: 'expires',
+                user: {
+                    name: 'test',
+                    email: 'test@a.com',
+                },
+            };
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+            (getRecipeById as jest.Mock).mockResolvedValue({
+                id: 'remix-id',
+                userId: mockUser.id,
+                forkedFromRecipeId: 'parent-id',
+            });
+            (prisma.recipe.delete as jest.Mock).mockResolvedValue({
+                id: 'remix-id',
+            });
+            (prisma.recipe.findUnique as jest.Mock).mockResolvedValue({
+                userId: 'parent-author-id',
+            });
+
+            const mockParams = {
+                params: Promise.resolve({ recipeId: 'remix-id' }),
+            };
+
+            const response = await RecipeDELETE({} as Request, mockParams);
+            expect(response.status).toBe(200);
+
+            expect(updateUserLevel).toHaveBeenCalledWith({
+                userId: mockUser.id,
+            });
+            expect(updateUserLevel).toHaveBeenCalledWith({
+                userId: 'parent-author-id',
+            });
         });
     });
 
