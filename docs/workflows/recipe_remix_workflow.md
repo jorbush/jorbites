@@ -75,9 +75,10 @@ sequenceDiagram
 
 - **XP / Level Progression**:
     - The remixer is awarded recipe creation XP via `updateUserLevel({ userId: currentUser.id })`.
-- **Cross-Service Notifications & Author Rewards** (Tracked in [#1752](https://github.com/jorbush/jorbites/issues/1752)):
-    - Future integration with `jorbites-notifier` for `RECIPE_REMIX` email/web push alerts: `"@username published a remix of your recipe!"`.
-    - Future integration with `badge_forge` for author recognition XP awards when community cooks publish variations of their recipes.
+- **Cross-Service Notifications & Author Rewards** (Implemented in [#1752](https://github.com/jorbush/jorbites/issues/1752)):
+    - Integration with `jorbites-notifier` for `RECIPE_REMIX` email and web push alerts: `"@username published a remix of your recipe!"`.
+    - Integration with `badge_forge` for author recognition XP awards when community cooks publish variations of their recipes (`updateUserLevel({ userId: originalAuthorId })`).
+    - Self-remix suppression to prevent duplicate author XP awards and redundant notifications to oneself.
 
 ### 6. Cache Invalidation & Data Integrity
 

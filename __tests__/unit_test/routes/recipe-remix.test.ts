@@ -1,6 +1,8 @@
 import { POST as RecipePOST } from '@/app/api/recipes/route';
 import prisma from '@/app/lib/prismadb';
+import sendNotification from '@/app/actions/sendNotification';
 import updateUserLevel from '@/app/actions/updateUserLevel';
+import { NotificationType } from '@/app/types/notification';
 import { redisCache } from '@/app/lib/redis';
 
 let mockedSession: any = null;
@@ -19,8 +21,12 @@ jest.mock('@/app/lib/prismadb', () => ({
     },
 }));
 
-jest.mock('@/app/actions/sendNotification', () => jest.fn());
-jest.mock('@/app/actions/updateUserLevel', () => jest.fn());
+jest.mock('@/app/actions/sendNotification', () =>
+    jest.fn(() => Promise.resolve())
+);
+jest.mock('@/app/actions/updateUserLevel', () =>
+    jest.fn(() => Promise.resolve())
+);
 
 jest.mock('@/app/lib/redis', () => ({
     redisCache: {
@@ -57,6 +63,11 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
         const originalRecipeId = '507f1f77bcf86cd799439011';
         const originalRecipe = {
             id: originalRecipeId,
+            title: 'Grandma Secret Pasta',
+            userId: 'original-author-id',
+            user: {
+                email: 'author@test.com',
+            },
             ingredients: ['Pasta', 'Garlic', 'Olive Oil'],
             steps: ['Boil pasta', 'Fry garlic in oil', 'Combine'],
         };
@@ -106,12 +117,28 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
             })
         );
 
-        // 2. Verify XP awarded to remixer
+        // 2. Verify RECIPE_REMIX notification sent to original recipe author
+        expect(sendNotification).toHaveBeenCalledWith({
+            type: NotificationType.RECIPE_REMIX,
+            userEmail: 'author@test.com',
+            params: {
+                userName: 'Remix Chef',
+                recipeId: 'new-remix-id',
+                recipeName: 'Grandma Secret Pasta',
+                remixRecipeId: 'new-remix-id',
+                originalRecipeTitle: 'Grandma Secret Pasta',
+            },
+        });
+
+        // 3. Verify XP awarded to both original author (karma) and remixer (creation XP)
+        expect(updateUserLevel).toHaveBeenCalledWith({
+            userId: 'original-author-id',
+        });
         expect(updateUserLevel).toHaveBeenCalledWith({
             userId: 'remixer-user-id',
         });
 
-        // 3. Verify Redis cache invalidation for parent recipe and its remixes
+        // 4. Verify Redis cache invalidation for parent recipe and its remixes
         expect(redisCache.del).toHaveBeenCalledWith(
             `recipe:${originalRecipeId}`
         );
@@ -336,6 +363,11 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
         const ownOriginalRecipeId = '507f1f77bcf86cd799439012';
         const ownOriginalRecipe = {
             id: ownOriginalRecipeId,
+            title: 'My Own Curry',
+            userId: 'remixer-user-id',
+            user: {
+                email: 'remixer@test.com',
+            },
             ingredients: ['Curry powder', 'Potatoes'],
             steps: ['Chop potatoes', 'Boil with curry'],
         };
@@ -383,8 +415,146 @@ describe('Recipe Remix API route (POST /api/recipes with forkedFromRecipeId)', (
                 }),
             })
         );
+
+        // Self-remix suppression: NO RECIPE_REMIX notification should be sent
+        expect(sendNotification).not.toHaveBeenCalledWith(
+            expect.objectContaining({
+                type: NotificationType.RECIPE_REMIX,
+            })
+        );
+
+        // Remixer only receives their own single creation XP update (no duplicate author update)
+        expect(updateUserLevel).toHaveBeenCalledTimes(1);
         expect(updateUserLevel).toHaveBeenCalledWith({
             userId: 'remixer-user-id',
         });
+    });
+
+    it('handles remix creation gracefully when original author has no email', async () => {
+        const originalRecipeId = '507f1f77bcf86cd799439099';
+        const originalRecipe = {
+            id: originalRecipeId,
+            title: 'Author Without Email Recipe',
+            userId: 'author-no-email-id',
+            user: null,
+            ingredients: ['Flour', 'Water'],
+            steps: ['Mix', 'Bake'],
+        };
+
+        const createdRemix = {
+            id: 'remix-no-email-id',
+            title: 'Remix of No Email Recipe',
+            description: 'Added yeast',
+            imageSrc: 'https://images.test/bread.webp',
+            categories: ['Bread'],
+            method: 'Bake',
+            ingredients: ['Flour', 'Water', 'Yeast'],
+            steps: ['Mix and proof', 'Bake'],
+            minutes: 60,
+            userId: 'remixer-user-id',
+            forkedFromRecipeId: originalRecipeId,
+        };
+
+        (prisma.recipe.create as jest.Mock).mockResolvedValue(createdRemix);
+        (prisma.recipe.findUnique as jest.Mock).mockResolvedValue(
+            originalRecipe
+        );
+
+        const request = {
+            json: jest.fn().mockResolvedValue({
+                title: 'Remix of No Email Recipe',
+                description: 'Added yeast',
+                imageSrc: 'https://images.test/bread.webp',
+                categories: ['Bread'],
+                method: 'Bake',
+                ingredients: ['Flour', 'Water', 'Yeast'],
+                steps: ['Mix and proof', 'Bake'],
+                minutes: 60,
+                forkedFromRecipeId: originalRecipeId,
+            }),
+        } as unknown as Request;
+
+        const response = await RecipePOST(request);
+        expect(response.status).toBe(200);
+
+        // No notification sent since author has no email
+        expect(sendNotification).not.toHaveBeenCalledWith(
+            expect.objectContaining({
+                type: NotificationType.RECIPE_REMIX,
+            })
+        );
+
+        // Both author and remixer levels are still updated
+        expect(updateUserLevel).toHaveBeenCalledWith({
+            userId: 'author-no-email-id',
+        });
+        expect(updateUserLevel).toHaveBeenCalledWith({
+            userId: 'remixer-user-id',
+        });
+    });
+
+    it('handles notification and level update errors gracefully without failing remix creation', async () => {
+        const originalRecipeId = '507f1f77bcf86cd799439088';
+        const originalRecipe = {
+            id: originalRecipeId,
+            title: 'Resilient Recipe',
+            userId: 'author-resilient-id',
+            user: {
+                email: 'author@resilient.com',
+            },
+            ingredients: ['Milk', 'Eggs'],
+            steps: ['Whisk', 'Cook'],
+        };
+
+        const createdRemix = {
+            id: 'remix-resilient-id',
+            title: 'Remix Resilient',
+            description: 'Added cinnamon',
+            imageSrc: 'https://images.test/custard.webp',
+            categories: ['Dessert'],
+            method: 'Cook',
+            ingredients: ['Milk', 'Eggs', 'Cinnamon'],
+            steps: ['Whisk together', 'Cook slowly'],
+            minutes: 15,
+            userId: 'remixer-user-id',
+            forkedFromRecipeId: originalRecipeId,
+        };
+
+        (prisma.recipe.create as jest.Mock).mockResolvedValue(createdRemix);
+        (prisma.recipe.findUnique as jest.Mock).mockResolvedValue(
+            originalRecipe
+        );
+
+        // Simulate external microservice errors specifically on remix operations
+        (sendNotification as jest.Mock).mockImplementation((params) => {
+            if (params.type === NotificationType.RECIPE_REMIX) {
+                return Promise.reject(new Error('Notifier service down'));
+            }
+            return Promise.resolve();
+        });
+        (updateUserLevel as jest.Mock).mockImplementation((params) => {
+            if (params.userId === 'author-resilient-id') {
+                return Promise.reject(new Error('Badge forge unavailable'));
+            }
+            return Promise.resolve();
+        });
+
+        const request = {
+            json: jest.fn().mockResolvedValue({
+                title: 'Remix Resilient',
+                description: 'Added cinnamon',
+                imageSrc: 'https://images.test/custard.webp',
+                categories: ['Dessert'],
+                method: 'Cook',
+                ingredients: ['Milk', 'Eggs', 'Cinnamon'],
+                steps: ['Whisk together', 'Cook slowly'],
+                minutes: 15,
+                forkedFromRecipeId: originalRecipeId,
+            }),
+        } as unknown as Request;
+
+        const response = await RecipePOST(request);
+        // Recipe creation succeeds even if external services throw errors
+        expect(response.status).toBe(200);
     });
 });

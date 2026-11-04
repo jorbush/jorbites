@@ -557,6 +557,40 @@ export async function DELETE(
             }),
         ]);
 
+        if (recipe.forkedFromRecipeId) {
+            try {
+                const parentRecipe = await prisma.recipe.findUnique({
+                    where: { id: recipe.forkedFromRecipeId },
+                    select: { userId: true },
+                });
+                if (parentRecipe && parentRecipe.userId !== currentUser.id) {
+                    await updateUserLevel({
+                        userId: parentRecipe.userId,
+                    }).catch((err: unknown) =>
+                        logger.warn(
+                            'DELETE /api/recipe/[recipeId] - parent author level update error',
+                            {
+                                error:
+                                    err instanceof Error
+                                        ? err.message
+                                        : String(err),
+                                parentAuthorId: parentRecipe.userId,
+                                recipeId,
+                            }
+                        )
+                    );
+                }
+            } catch (err: unknown) {
+                logger.warn(
+                    'DELETE /api/recipe/[recipeId] - parent recipe lookup error',
+                    {
+                        error: err instanceof Error ? err.message : String(err),
+                        recipeId,
+                    }
+                );
+            }
+        }
+
         logger.info('DELETE /api/recipe/[recipeId] - success', {
             recipeId,
         });
