@@ -3,13 +3,14 @@
 import { SafeUser } from '@/app/types';
 import { useTranslation } from 'react-i18next';
 import {
-    IoTimeOutline,
-    IoFastFoodOutline,
-    IoStarOutline,
     IoRestaurantOutline,
+    IoHeartOutline,
+    IoTimeOutline,
+    IoCalendarOutline,
+    IoBookmarkOutline,
     IoFlameOutline,
 } from 'react-icons/io5';
-import { FaArrowUp, FaHeart } from 'react-icons/fa';
+import { FaArrowUp } from 'react-icons/fa';
 import Container from '@/app/components/utils/Container';
 import StatCard from '@/app/components/stats/StatCard';
 import PreferenceCard from '@/app/components/stats/PreferenceCard';
@@ -37,62 +38,77 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
     // Footer elements
     const recipesTrendFooter =
         trend > 0 ? (
-            <>
-                <FaArrowUp className="mr-1 text-green-500" />
-                <span className="font-medium text-green-500">{trend}% </span>
-                <span className="ml-1 text-neutral-500 dark:text-neutral-400">
+            <div className="flex items-center gap-1.5">
+                <span className="border-green-450/30 bg-green-450/20 dark:bg-green-450/15 dark:text-green-450 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold text-neutral-800">
+                    <FaArrowUp className="text-green-450 dark:text-green-450 size-2" />
+                    {trend}%
+                </span>
+                <span className="text-neutral-500 dark:text-neutral-400">
                     {t('this_year')}
                 </span>
-            </>
+            </div>
         ) : null;
 
     const likesFooter = (
         <span className="text-neutral-500 dark:text-neutral-400">
-            {t('avg')}: {user?.avgLikesPerRecipe || 0} {t('per_recipe')}
+            {t('avg')}:{' '}
+            <span className="font-semibold text-neutral-800 dark:text-neutral-200">
+                {user?.avgLikesPerRecipe || 0}
+            </span>{' '}
+            {t('per_recipe')}
         </span>
     );
 
     const cookingTimeFooter = (
         <span className="text-neutral-500 dark:text-neutral-400">
-            {user?.totalCookingTime || 0} {t('minutes_total')}
+            <span className="font-semibold text-neutral-800 dark:text-neutral-200">
+                {user?.totalCookingTime || 0}
+            </span>{' '}
+            {t('minutes_total')}
         </span>
     );
 
     const thisYearFooter = (
         <span className="text-neutral-500 dark:text-neutral-400">
-            {Math.round(
-                ((user?.recipesThisYear || 0) / (recipeCount || 1)) * 100
-            )}
-            % {t('of_all_recipes')}
+            <span className="font-semibold text-neutral-800 dark:text-neutral-200">
+                {Math.round(
+                    ((user?.recipesThisYear || 0) / (recipeCount || 1)) * 100
+                )}
+                %
+            </span>{' '}
+            {t('of_all_recipes')}
         </span>
     );
+
+    const categoryDisplay = user?.mostUsedCategory
+        ? t(user.mostUsedCategory.toLowerCase()) || user.mostUsedCategory
+        : '-';
+
+    const methodDisplay = user?.mostUsedMethod
+        ? t(user.mostUsedMethod.toLowerCase()) || user.mostUsedMethod
+        : '-';
 
     return (
         <Container>
             {recipeCount > 0 && (
                 <div className="py-4">
-                    <h2 className="mb-4 px-2 text-xl font-semibold dark:text-neutral-100">
-                        {t('cooking_statistics')}{' '}
+                    {/* Cooking Statistics Section */}
+                    <h2 className="mb-3 px-1 text-lg font-semibold tracking-tight text-neutral-900 sm:text-xl dark:text-neutral-100">
+                        {t('cooking_statistics')}
                     </h2>
 
-                    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
                         <StatCard
                             title={t('recipes')}
                             value={formatNumber(recipeCount)}
-                            icon={<IoFastFoodOutline />}
-                            iconBgColor="bg-green-100"
-                            iconDarkBgColor="dark:bg-green-900/30"
-                            iconColor="text-green-450"
+                            icon={<IoRestaurantOutline />}
                             footer={recipesTrendFooter}
                         />
 
                         <StatCard
                             title={t('favorites')}
                             value={formatNumber(user?.likesReceived || 0)}
-                            icon={<FaHeart />}
-                            iconBgColor="bg-red-100"
-                            iconDarkBgColor="dark:bg-red-900/30"
-                            iconColor="text-red-500"
+                            icon={<IoHeartOutline />}
                             footer={likesFooter}
                         />
 
@@ -100,9 +116,6 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
                             title={t('cooking_time')}
                             value={`${cookingTimeInHours}h`}
                             icon={<IoTimeOutline />}
-                            iconBgColor="bg-blue-100"
-                            iconDarkBgColor="dark:bg-blue-900/30"
-                            iconColor="text-blue-500"
                             footer={cookingTimeFooter}
                         />
 
@@ -112,43 +125,27 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
                                 t('this_year').slice(1)
                             }
                             value={user?.recipesThisYear || 0}
-                            icon={<IoStarOutline />}
-                            iconBgColor="bg-purple-100"
-                            iconDarkBgColor="dark:bg-purple-900/30"
-                            iconColor="text-purple-500"
+                            icon={<IoCalendarOutline />}
                             footer={thisYearFooter}
                         />
                     </div>
 
-                    <h2 className="mt-6 mb-4 px-2 text-xl font-semibold dark:text-neutral-100">
-                        {t('cooking_preferences')}{' '}
+                    {/* Cooking Preferences Section */}
+                    <h2 className="mt-8 mb-3 px-1 text-lg font-semibold tracking-tight text-neutral-900 sm:text-xl dark:text-neutral-100">
+                        {t('cooking_preferences')}
                     </h2>
 
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                         <PreferenceCard
                             title={t('most_used_category')}
-                            value={
-                                user?.mostUsedCategory
-                                    ? t(user.mostUsedCategory.toLowerCase())
-                                    : '-'
-                            }
-                            icon={<IoRestaurantOutline />}
-                            iconBgColor="bg-amber-100"
-                            iconDarkBgColor="dark:bg-amber-900/30"
-                            iconColor="text-amber-500"
+                            value={categoryDisplay}
+                            icon={<IoBookmarkOutline />}
                         />
 
                         <PreferenceCard
                             title={t('most_used_method')}
-                            value={
-                                user?.mostUsedMethod
-                                    ? t(user.mostUsedMethod.toLowerCase())
-                                    : '-'
-                            }
+                            value={methodDisplay}
                             icon={<IoFlameOutline />}
-                            iconBgColor="bg-teal-100"
-                            iconDarkBgColor="dark:bg-teal-900/30"
-                            iconColor="text-teal-500"
                         />
                     </div>
                 </div>
