@@ -64,12 +64,14 @@ const BlogPage = async (props: PageProps) => {
         props.params,
         props.searchParams,
     ]);
+    const blog = await getBlogById(params.id, searchParams.lang);
     return (
         <Suspense fallback={<BlogDetailSkeleton />}>
             <ClientOnly>
                 <BlogDetailClient
                     id={params.id}
                     lang={searchParams.lang}
+                    initialBlog={blog}
                 />
             </ClientOnly>
         </Suspense>

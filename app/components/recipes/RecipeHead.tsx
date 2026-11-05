@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo, TouchEvent } from 'react';
 import { FiChevronLeft, FiChevronRight, FiShare2 } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import Heading from '@/app/components/navigation/Heading';
-import { useRouter } from 'next/navigation';
+import useViewTransitionRouter from '@/app/hooks/useViewTransitionRouter';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import useShare from '@/app/hooks/useShare';
 import useIsMounted from '@/app/hooks/useIsMounted';
@@ -29,7 +29,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const isTransitioning = useRef(false);
-    const { back } = useRouter() || {};
+    const { back } = useViewTransitionRouter() || {};
     const { share } = useShare();
     const touchStartX = useRef(0);
     const touchEndX = useRef(0);

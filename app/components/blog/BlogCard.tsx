@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import useViewTransitionRouter from '@/app/hooks/useViewTransitionRouter';
 import { useTranslation } from 'react-i18next';
 import { Blog } from '@/app/utils/markdownUtils';
 import { formatDate } from '@/app/utils/date-utils';
@@ -12,7 +12,7 @@ interface BlogCardProps {
 }
 
 const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
-    const { push } = useRouter() || {};
+    const { push } = useViewTransitionRouter() || {};
     const { i18n } = useTranslation();
 
     const navigateToBlog = () => {

@@ -2,7 +2,7 @@
 
 import { Blog } from '@/app/utils/markdownUtils';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'next/navigation';
+import useViewTransitionRouter from '@/app/hooks/useViewTransitionRouter';
 import { FiChevronLeft, FiShare2, FiCalendar } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 import Heading from '@/app/components/navigation/Heading';
@@ -31,7 +31,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
     relatedBlogs = EMPTY_BLOGS,
 }) => {
     const { t, i18n } = useTranslation();
-    const { back, push } = useRouter() || {};
+    const { back, push } = useViewTransitionRouter() || {};
     const { share } = useShare();
 
     const dateDisplay = formatDate(blog.frontmatter.date, i18n.language);

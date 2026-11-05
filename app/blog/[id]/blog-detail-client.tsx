@@ -7,7 +7,7 @@ import { Blog } from '@/app/utils/markdownUtils';
 import BlogDetail, {
     BlogDetailSkeleton,
 } from '@/app/components/blog/BlogDetail';
-import { useRouter } from 'next/navigation';
+import useViewTransitionRouter from '@/app/hooks/useViewTransitionRouter';
 import useTheme from '@/app/hooks/useTheme';
 import { SafeUser } from '@/app/types';
 import useSWR from 'swr';
@@ -16,21 +16,28 @@ import { fetcher, axiosFetcher } from '@/app/utils/fetcher';
 interface BlogDetailClientProps {
     id: string;
     lang?: string;
+    initialBlog?: Blog | null;
 }
 
-const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id, lang }) => {
+const BlogDetailClient: React.FC<BlogDetailClientProps> = ({
+    id,
+    lang,
+    initialBlog,
+}) => {
     const { t, i18n } = useTranslation();
-    const { push } = useRouter() || {};
+    const { push } = useViewTransitionRouter() || {};
 
     useTheme();
 
     const currentLang = lang || i18n.language || 'en';
 
     const {
-        data: blog,
+        data: blog = initialBlog ?? undefined,
         error: blogError,
         isLoading: blogLoading,
-    } = useSWR<Blog>(`/api/blogs/${id}?lang=${currentLang}`, fetcher);
+    } = useSWR<Blog>(`/api/blogs/${id}?lang=${currentLang}`, fetcher, {
+        fallbackData: initialBlog || undefined,
+    });
 
     const { data: authorData } = useSWR<SafeUser>(
         blog?.frontmatter?.user_id
@@ -57,7 +64,7 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id, lang }) => {
             .slice(0, 3);
     }, [relatedBlogsData, id]);
 
-    const loading = blogLoading;
+    const loading = !blog && blogLoading;
 
     const error = useMemo(() => {
         if (!blogError) return null;

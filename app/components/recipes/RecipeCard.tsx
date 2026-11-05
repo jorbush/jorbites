@@ -1,7 +1,7 @@
 'use client';
 
 import { SafeRecipe, SafeUser } from '@/app/types';
-import { useRouter } from 'next/navigation';
+import useViewTransitionRouter from '@/app/hooks/useViewTransitionRouter';
 import HeartButton from '@/app/components/buttons/HeartButton';
 import PinButton from '@/app/components/buttons/PinButton';
 import { GiTrophyCup } from 'react-icons/gi';
@@ -36,7 +36,7 @@ const RecipeCard = memo(function RecipeCard({
     actionIcon: ActionIcon,
     canPin = false,
 }: RecipeCardProps) {
-    const { push } = useRouter() || {};
+    const { push } = useViewTransitionRouter() || {};
     const { t } = useTranslation();
 
     const handleCancel = useCallback(
