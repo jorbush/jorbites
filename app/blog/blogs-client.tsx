@@ -7,10 +7,8 @@ import { Blog } from '@/app/utils/markdownUtils';
 import { formatDate } from '@/app/utils/date-utils';
 import useTheme from '@/app/hooks/useTheme';
 import BlogCard, { BlogCardSkeleton } from '@/app/components/blog/BlogCard';
-import ActionCard from '@/app/components/shared/ActionCard';
 import Pagination from '@/app/components/navigation/Pagination';
 import CmsSubmitButton from '@/app/components/cms/CmsSubmitButton';
-import { CMS_BLOGS_URL } from '@/app/utils/constants';
 import useSWR from 'swr';
 import { fetcher } from '@/app/utils/fetcher';
 
@@ -204,21 +202,6 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                                 )}
                             </div>
                         </div>
-
-                        {/* Contribute / CMS */}
-                        <ActionCard
-                            title={t('blog_contribute_title')}
-                            subtitle={t('blog_contribute_subtitle')}
-                            buttonText={t('blog_contribute_button')}
-                            onClick={() =>
-                                window.open(
-                                    CMS_BLOGS_URL,
-                                    '_blank',
-                                    'noopener,noreferrer'
-                                )
-                            }
-                            variant="secondary"
-                        />
                     </div>
                 </div>
             </div>

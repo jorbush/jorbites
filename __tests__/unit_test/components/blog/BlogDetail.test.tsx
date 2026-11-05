@@ -106,6 +106,28 @@ vi.mock('@/app/components/VerificationBadge', () => ({
     ),
 }));
 
+const mockViewTransition = vi.fn(
+    ({
+        children,
+        ...props
+    }: {
+        children: React.ReactNode;
+        [key: string]: any;
+    }) => (
+        <div
+            data-testid="view-transition"
+            {...props}
+        >
+            {children}
+        </div>
+    )
+);
+
+vi.mock('@/app/components/utils/ViewTransition', () => ({
+    default: (props: any) => mockViewTransition(props),
+    ViewTransition: (props: any) => mockViewTransition(props),
+}));
+
 vi.mock('@/app/components/blog/BlogCard', () => ({
     default: ({ blog }: { blog: any }) => (
         <div data-testid={`blog-card-${blog.id}`}>{blog.frontmatter.title}</div>
@@ -260,5 +282,26 @@ describe('BlogDetail', () => {
 
         // Check if "See more" section is NOT displayed
         expect(screen.queryByText('see_more')).toBeNull();
+    });
+
+    it('wraps heading with ViewTransition for article animations', () => {
+        render(
+            <BlogDetail
+                blog={mockBlog}
+                author={mockAuthor}
+                relatedBlogs={[]}
+            />
+        );
+
+        expect(mockViewTransition).toHaveBeenCalledWith(
+            expect.objectContaining({
+                name: 'article-title-test-blog',
+                share: 'morph',
+                default: 'none',
+            })
+        );
+        const vtElement = screen.getByTestId('view-transition');
+        expect(vtElement.getAttribute('name')).toBe('article-title-test-blog');
+        expect(vtElement.getAttribute('share')).toBe('morph');
     });
 });
