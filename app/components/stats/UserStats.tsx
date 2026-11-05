@@ -39,8 +39,8 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
     const recipesTrendFooter =
         trend > 0 ? (
             <div className="flex items-center gap-1.5">
-                <span className="inline-flex items-center gap-1 rounded-full border border-green-450/30 bg-green-450/20 px-2 py-0.5 text-[11px] font-semibold text-neutral-800 dark:bg-green-450/15 dark:text-green-450">
-                    <FaArrowUp className="size-2 text-green-450 dark:text-green-450" />
+                <span className="border-green-450/30 bg-green-450/20 dark:bg-green-450/15 dark:text-green-450 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold text-neutral-800">
+                    <FaArrowUp className="text-green-450 dark:text-green-450 size-2" />
                     {trend}%
                 </span>
                 <span className="text-neutral-500 dark:text-neutral-400">
@@ -93,7 +93,7 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
             {recipeCount > 0 && (
                 <div className="py-4">
                     {/* Cooking Statistics Section */}
-                    <h2 className="mb-3 px-1 text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-xl">
+                    <h2 className="mb-3 px-1 text-lg font-semibold tracking-tight text-neutral-900 sm:text-xl dark:text-neutral-100">
                         {t('cooking_statistics')}
                     </h2>
 
@@ -131,7 +131,7 @@ const UserStats = ({ user }: { user?: SafeUser | null }) => {
                     </div>
 
                     {/* Cooking Preferences Section */}
-                    <h2 className="mb-3 mt-8 px-1 text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-xl">
+                    <h2 className="mt-8 mb-3 px-1 text-lg font-semibold tracking-tight text-neutral-900 sm:text-xl dark:text-neutral-100">
                         {t('cooking_preferences')}
                     </h2>
 

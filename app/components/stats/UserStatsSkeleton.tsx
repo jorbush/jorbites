@@ -12,14 +12,14 @@ const UserStatsSkeleton = () => {
                     {[1, 2, 3, 4].map((index) => (
                         <div
                             key={index}
-                            className="flex flex-col justify-between rounded-2xl border border-neutral-200/80 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-800/90 sm:p-5"
+                            className="flex flex-col justify-between rounded-2xl border border-neutral-200/80 bg-white p-4 sm:p-5 dark:border-neutral-800 dark:bg-neutral-800/90"
                         >
                             <div>
                                 <div className="flex items-start justify-between gap-2">
                                     {/* Title skeleton */}
                                     <div className="h-4 w-16 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700" />
                                     {/* Icon skeleton */}
-                                    <div className="size-9 shrink-0 animate-pulse rounded-xl bg-neutral-200 dark:bg-neutral-700 sm:size-10" />
+                                    <div className="size-9 shrink-0 animate-pulse rounded-xl bg-neutral-200 sm:size-10 dark:bg-neutral-700" />
                                 </div>
                                 {/* Value skeleton */}
                                 <div className="mt-2 h-8 w-16 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700" />
@@ -33,17 +33,17 @@ const UserStatsSkeleton = () => {
                 </div>
 
                 {/* Preferences Header Skeleton */}
-                <div className="mb-3 mt-8 h-6 w-44 animate-pulse rounded-md bg-neutral-200 px-1 dark:bg-neutral-800" />
+                <div className="mt-8 mb-3 h-6 w-44 animate-pulse rounded-md bg-neutral-200 px-1 dark:bg-neutral-800" />
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                     {/* Preference Cards Skeleton - match PreferenceCard layout */}
                     {[1, 2].map((index) => (
                         <div
                             key={index}
-                            className="flex items-center gap-3.5 rounded-2xl border border-neutral-200/80 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-800/90 sm:gap-4 sm:p-5"
+                            className="flex items-center gap-3.5 rounded-2xl border border-neutral-200/80 bg-white p-4 sm:gap-4 sm:p-5 dark:border-neutral-800 dark:bg-neutral-800/90"
                         >
                             {/* Icon skeleton */}
-                            <div className="size-11 shrink-0 animate-pulse rounded-xl bg-neutral-200 dark:bg-neutral-700 sm:size-12" />
+                            <div className="size-11 shrink-0 animate-pulse rounded-xl bg-neutral-200 sm:size-12 dark:bg-neutral-700" />
                             <div className="flex flex-col gap-1.5">
                                 {/* Title skeleton */}
                                 <div className="h-3.5 w-24 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700" />

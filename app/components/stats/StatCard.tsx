@@ -29,27 +29,27 @@ const StatCard: React.FC<StatCardProps> = ({
         ) {
             return (
                 <div className="flex items-baseline">
-                    <span className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-3xl">
+                    <span className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-neutral-100">
                         {value.slice(0, -1)}
                     </span>
-                    <span className="ml-0.5 text-base font-semibold text-neutral-400 dark:text-neutral-500 sm:text-lg">
+                    <span className="ml-0.5 text-base font-semibold text-neutral-400 sm:text-lg dark:text-neutral-500">
                         h
                     </span>
                 </div>
             );
         }
         return (
-            <span className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-3xl">
+            <span className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-neutral-100">
                 {value}
             </span>
         );
     };
 
     return (
-        <div className="shadow-xs flex flex-col justify-between rounded-2xl border border-neutral-200/80 bg-white p-4 transition-colors duration-200 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-800/90 dark:hover:border-neutral-700 sm:p-5">
+        <div className="flex flex-col justify-between rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs transition-colors duration-200 hover:border-neutral-300 sm:p-5 dark:border-neutral-800 dark:bg-neutral-800/90 dark:hover:border-neutral-700">
             <div>
                 <div className="flex items-start justify-between gap-2">
-                    <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 sm:text-sm">
+                    <p className="text-xs font-medium text-neutral-500 sm:text-sm dark:text-neutral-400">
                         {title}
                     </p>
                     <div
