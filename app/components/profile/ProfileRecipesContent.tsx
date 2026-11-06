@@ -51,17 +51,14 @@ const ProfileRecipesContent: React.FC<ProfileRecipesContentProps> = ({
     return (
         <div data-testid="profile-recipes-content">
             {pinnedRecipes.length > 0 && (
-                <div className="mb-8 w-full">
+                <div className="mb-8 w-full rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-4 sm:p-6 dark:border-neutral-800 dark:bg-neutral-800/40">
                     <div className="mb-4 flex items-center gap-2">
-                        <BsPinAngleFill
-                            className="text-green-450"
-                            size={22}
-                        />
-                        <h2 className="text-xl font-semibold dark:text-neutral-100">
+                        <span className="border-green-450/30 bg-green-450/20 dark:border-green-450/30 dark:bg-green-450/15 dark:text-green-450 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold text-neutral-800">
+                            <BsPinAngleFill className="text-green-450 size-3" />
                             {t('pinned_recipes')}
-                        </h2>
+                        </span>
                     </div>
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                         {pinnedRecipes.map((recipe: any) => (
                             <RecipeCard
                                 currentUser={currentUser}
@@ -76,7 +73,6 @@ const ProfileRecipesContent: React.FC<ProfileRecipesContentProps> = ({
                             />
                         ))}
                     </div>
-                    <hr className="mt-8 border-neutral-200 dark:border-neutral-800" />
                 </div>
             )}
 

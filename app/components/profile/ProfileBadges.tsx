@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 import Badge from '@/app/components/utils/Badge';
 import ScrollableContainer from '@/app/components/utils/ScrollableContainer';
@@ -67,6 +68,7 @@ const getBadgeTooltip = (badge: string) => {
 
 const ProfileBadges: React.FC<ProfileBadgesProps> = ({ badges }) => {
     const { push } = useRouter();
+    const { t } = useTranslation();
 
     if (!badges || !Array.isArray(badges) || badges.length === 0) {
         return null;
@@ -83,8 +85,13 @@ const ProfileBadges: React.FC<ProfileBadgesProps> = ({ badges }) => {
     };
 
     return (
-        <>
-            <ScrollableContainer className="mt-2">
+        <div className="mt-3 rounded-2xl border border-neutral-200/80 bg-white p-3.5 shadow-xs sm:p-4 dark:border-neutral-800 dark:bg-neutral-800/90">
+            <div className="mb-2 flex items-center justify-between px-1">
+                <span className="text-xs font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+                    {t('badges')} ({badges.length})
+                </span>
+            </div>
+            <ScrollableContainer>
                 {badges.map((badge) => (
                     <Badge
                         key={badge}
@@ -92,12 +99,11 @@ const ProfileBadges: React.FC<ProfileBadgesProps> = ({ badges }) => {
                         alt={`${badge} badge`}
                         tooltipText={getBadgeTooltip(badge)}
                         onClick={() => onBadgeClick(badge)}
-                        size={50}
+                        size={48}
                     />
                 ))}
             </ScrollableContainer>
-            <hr className="mt-2" />
-        </>
+        </div>
     );
 };
 

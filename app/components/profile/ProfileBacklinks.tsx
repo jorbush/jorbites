@@ -75,7 +75,7 @@ const ProfileWebsiteLink: React.FC<{ websiteUrl?: string | null }> = ({
             href={formatExternalUrl(websiteUrl)}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-700 transition hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
+            className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-700 transition-colors duration-200 hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
             data-testid="profile-website-link"
             aria-label={t('visit_website') || 'Visit website'}
         >
@@ -114,7 +114,7 @@ const ProfileSocialLinks: React.FC<ProfileSocialLinksProps> = (props) => {
                             href={getSocialLink(id, handle)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`p-1 transition ${hoverClass}`}
+                            className={`p-1 transition-colors duration-200 ${hoverClass}`}
                             aria-label={label}
                             data-testid={testId}
                         >
