@@ -275,15 +275,14 @@ describe('<QuestDetailClient />', () => {
         expect(screen.getByText(/recipe_replies/)).toBeDefined();
     });
 
-    it('displays correct number of recipe replies', () => {
+    it('displays recipe replies', () => {
         render(
             <QuestDetailClient
                 currentUser={mockUser}
                 quest={mockQuest}
             />
         );
-        // Should show "Recipe Replies (1)"
-        expect(screen.getByText(/1/)).toBeDefined();
+        expect(screen.getByText('Test Recipe')).toBeDefined();
     });
 
     it('renders empty state when no recipes', () => {

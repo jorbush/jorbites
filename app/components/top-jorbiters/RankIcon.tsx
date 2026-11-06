@@ -22,15 +22,23 @@ const getMedalColor = (index: number) => {
 
 const RankIcon: React.FC<RankIconProps> = ({ rank }) => {
     if (rank === 0) {
-        return <FaTrophy className={`${getMedalColor(rank)} text-2xl`} />;
+        return (
+            <FaTrophy
+                className={`${getMedalColor(rank)} text-xl sm:text-2xl`}
+            />
+        );
     }
 
     if (rank <= 2) {
-        return <FaMedal className={`${getMedalColor(rank)} text-2xl`} />;
+        return (
+            <FaMedal className={`${getMedalColor(rank)} text-xl sm:text-2xl`} />
+        );
     }
 
     return (
-        <span className="text-xl font-bold text-neutral-400">#{rank + 1}</span>
+        <span className="text-sm font-bold tracking-tight text-neutral-400 sm:text-base dark:text-neutral-500">
+            #{rank + 1}
+        </span>
     );
 };
 

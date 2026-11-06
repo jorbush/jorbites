@@ -16,7 +16,7 @@ import Heading from '@/app/components/navigation/Heading';
 import Input from '@/app/components/inputs/Input';
 
 const QuestModal = () => {
-    const { refresh } = useRouter() || {};
+    const { refresh, push } = useRouter() || {};
     const { t } = useTranslation();
     const questModal = useQuestModal();
     const [isLoading, setIsLoading] = useState(false);
@@ -87,8 +87,12 @@ const QuestModal = () => {
                 status: 'open',
                 recipeId: '',
             });
+            const wasCreate = !questModal.isEditMode;
             questModal.onClose();
-            refresh();
+            if (wasCreate) {
+                push?.('/quests?status=open');
+            }
+            refresh?.();
         } catch (error: any) {
             console.error('Failed to save quest', error);
             const errorMessage =
@@ -157,7 +161,11 @@ const QuestModal = () => {
                     })}
                     disabled={isLoading}
                     rows={5}
-                    className="w-full rounded-lg border border-neutral-300 p-3 text-neutral-900 transition focus:border-rose-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+                    className={`w-full rounded-xl border p-3 text-sm text-neutral-900 transition-colors duration-200 focus:outline-hidden dark:bg-neutral-900 dark:text-neutral-100 ${
+                        errors.description
+                            ? 'border-rose-500 focus:border-rose-500'
+                            : 'border-neutral-300 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 dark:border-neutral-700 dark:focus:border-neutral-100 dark:focus:ring-neutral-100'
+                    }`}
                     placeholder={
                         t('quest_description_placeholder') ||
                         'Describe the recipe you would like someone to create...'
@@ -183,7 +191,7 @@ const QuestModal = () => {
                         id="status"
                         {...register('status')}
                         disabled={isLoading}
-                        className="w-full rounded-lg border border-neutral-300 p-3 text-neutral-900 transition focus:border-rose-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+                        className="w-full rounded-xl border border-neutral-300 p-3 text-sm text-neutral-900 transition-colors duration-200 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:outline-hidden dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-neutral-100 dark:focus:ring-neutral-100"
                         data-cy="quest-status"
                     >
                         <option value="open">{t('open') || 'Open'}</option>

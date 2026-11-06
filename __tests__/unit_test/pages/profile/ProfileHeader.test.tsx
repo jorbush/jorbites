@@ -65,6 +65,8 @@ vi.mock('react-icons/fi', () => ({
     FiExternalLink: () =>
         React.createElement('div', { 'data-testid': 'external-link-icon' }),
     FiEdit3: () => React.createElement('div', { 'data-testid': 'edit3-icon' }),
+    FiChevronLeft: () =>
+        React.createElement('div', { 'data-testid': 'chevron-left-icon' }),
     FiBookOpen: () =>
         React.createElement('div', { 'data-testid': 'book-open-icon' }),
 }));
@@ -394,5 +396,42 @@ describe('ProfileHeader', () => {
         expect(ytLink.getAttribute('href')).toBe(
             'https://youtube.com/@chef_anna'
         );
+    });
+
+    it('renders back button and triggers navigation on click', () => {
+        const mockBack = vi.fn();
+        const useRouterMock = vi.mocked(useRouter);
+        useRouterMock.mockReturnValue({
+            push: vi.fn(),
+            back: mockBack,
+            query: {},
+        } as any);
+
+        const { getByRole } = render(
+            <ProfileHeader
+                user={mockUser}
+                currentUser={null}
+            />
+        );
+
+        const backButton = getByRole('button', { name: /back/i });
+        expect(backButton).toBeDefined();
+        fireEvent.click(backButton);
+        expect(mockBack).toHaveBeenCalled();
+    });
+
+    it('renders action button labels with responsive md classes', () => {
+        const { getByTestId, getByRole } = render(
+            <ProfileHeader
+                user={mockUser}
+                currentUser={mockUser}
+            />
+        );
+
+        const editButton = getByTestId('edit-profile-button');
+        expect(editButton.textContent).toContain('edit_profile');
+
+        const shareButton = getByRole('button', { name: /share/i });
+        expect(shareButton.textContent).toContain('share');
     });
 });

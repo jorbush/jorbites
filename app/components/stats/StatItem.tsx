@@ -9,14 +9,22 @@ interface StatItemProps {
 }
 
 const StatItem: React.FC<StatItemProps> = ({ value, label, flexDirection }) => (
-    <div className={`flex flex-${flexDirection} items-center gap-1`}>
+    <div
+        className={`flex ${
+            flexDirection === 'row' ? 'flex-row' : 'flex-col'
+        } items-center gap-1`}
+    >
         <p
-            className={`text-green-450 font-bold ${flexDirection !== 'row' ? 'text-lg' : 'text-sm'}`}
+            className={`text-green-450 font-bold ${
+                flexDirection !== 'row' ? 'text-lg' : 'text-sm'
+            }`}
         >
             {value}
         </p>
         <p
-            className={`text-neutral-500 dark:text-neutral-400 ${flexDirection !== 'row' ? 'text-sm' : 'text-xs'}`}
+            className={`text-neutral-500 dark:text-neutral-400 ${
+                flexDirection !== 'row' ? 'text-sm' : 'text-xs'
+            }`}
         >
             {label}
         </p>

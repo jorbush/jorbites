@@ -4,10 +4,10 @@ import React from 'react';
 import { SafePlanning } from '@/app/types';
 import Avatar from '@/app/components/utils/Avatar';
 import { formatDate } from '@/app/utils/date-utils';
-import { FiChevronLeft } from 'react-icons/fi';
 import { GiPadlock, GiPadlockOpen } from 'react-icons/gi';
+import VerificationBadge from '@/app/components/VerificationBadge';
 
-interface PlanningHeaderProps {
+export interface PlanningHeaderProps {
     editedName: string;
     editedDesc: string;
     planning: SafePlanning;
@@ -18,6 +18,8 @@ interface PlanningHeaderProps {
     togglePrivacy: () => void;
     push: (url: string) => void;
     t: any;
+    mealsCount?: number;
+    showLock?: boolean;
 }
 
 export const PlanningHeader: React.FC<PlanningHeaderProps> = ({
@@ -31,80 +33,103 @@ export const PlanningHeader: React.FC<PlanningHeaderProps> = ({
     togglePrivacy,
     push,
     t,
+    mealsCount,
+    showLock = true,
 }) => {
     return (
-        <div className="flex w-full flex-1 flex-col gap-3">
-            {/* Title & Back Button Row */}
-            <div className="flex w-full flex-row items-center gap-2.5">
-                <button
-                    type="button"
-                    onClick={() => push('/plannings')}
-                    className="flex shrink-0 cursor-pointer items-center justify-center rounded-full p-2 text-neutral-600 transition hover:bg-neutral-100 focus:outline-hidden dark:text-neutral-400 dark:hover:bg-neutral-800"
-                    aria-label="Back"
-                >
-                    <FiChevronLeft className="text-2xl" />
-                </button>
+        <div className="flex w-full flex-col">
+            {/* Fallback lock for standalone tests */}
+            {showLock && isOwner && togglePrivacy && (
+                <div className="mb-4 flex justify-end">
+                    <button
+                        type="button"
+                        onClick={togglePrivacy}
+                        disabled={isSaving}
+                        data-cy="toggle-plan-privacy"
+                        aria-label={
+                            (isPrivate ? t('private') : t('public')) || ''
+                        }
+                        title={(isPrivate ? t('private') : t('public')) || ''}
+                        className="flex size-9 cursor-pointer items-center justify-center rounded-xl border border-neutral-200/80 bg-white text-neutral-700 shadow-2xs transition-colors duration-200 hover:border-neutral-300 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600"
+                    >
+                        {isPrivate ? (
+                            <GiPadlock
+                                size={16}
+                                className="text-neutral-700 dark:text-neutral-300"
+                                data-testid="lock-icon"
+                            />
+                        ) : (
+                            <GiPadlockOpen
+                                size={16}
+                                className="text-neutral-700 dark:text-neutral-300"
+                                data-testid="lock-open-icon"
+                            />
+                        )}
+                    </button>
+                </div>
+            )}
+
+            {/* Plan Title & Date */}
+            <div className="mb-5">
                 <h1
-                    className="truncate text-3xl font-semibold tracking-tight"
+                    className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white"
                     data-cy="plan-title"
                 >
                     {editedName}
                 </h1>
-            </div>
-
-            {/* Description & Metadata */}
-            <div className="flex flex-col gap-2 pl-12 md:pl-0">
+                <p className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+                    {formatDate(planning.createdAt, language)}
+                </p>
                 {editedDesc && (
                     <p
-                        className="text-sm font-light text-neutral-500 dark:text-neutral-400"
+                        className="mt-3 text-sm text-neutral-600 dark:text-neutral-400"
                         data-cy="plan-description"
                     >
                         {editedDesc}
                     </p>
                 )}
+            </div>
 
-                <div className="mt-1 flex flex-wrap items-center gap-3">
-                    {planning.user && (
-                        <div className="flex flex-row items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 text-xs dark:bg-neutral-950">
-                            <Avatar
-                                src={planning.user.image}
-                                size={20}
-                            />
-                            <span className="font-medium text-neutral-600 dark:text-neutral-400">
-                                {planning.user.name}
-                            </span>
-                        </div>
-                    )}
-                    <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                        {formatDate(planning.createdAt, language)}
-                    </div>
-
-                    {isOwner && (
-                        <button
-                            type="button"
-                            onClick={togglePrivacy}
-                            disabled={isSaving}
-                            data-cy="toggle-plan-privacy"
-                            className="flex cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-1.5 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
-                            title={
-                                (isPrivate ? t('private') : t('public')) || ''
+            {/* Bottom shelf: Chef User & Meals Count */}
+            <div className="flex flex-col justify-between gap-4 border-t border-neutral-100 pt-4 sm:flex-row sm:items-center dark:border-neutral-800">
+                {planning.user ? (
+                    <div className="flex items-center gap-3">
+                        <Avatar
+                            src={planning.user.image}
+                            size={42}
+                            onClick={() =>
+                                push(`/profile/${planning.user!.id}`)
                             }
-                        >
-                            {isPrivate ? (
-                                <GiPadlock
-                                    size={20}
-                                    className="text-neutral-700 dark:text-neutral-300"
-                                    data-testid="lock-icon"
-                                />
-                            ) : (
-                                <GiPadlockOpen
-                                    size={20}
-                                    className="text-neutral-700 dark:text-neutral-300"
-                                    data-testid="lock-open-icon"
-                                />
+                            quality="auto:eco"
+                        />
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-1.5">
+                                <button
+                                    type="button"
+                                    className="hover:text-green-450 dark:hover:text-green-450 cursor-pointer text-left text-base font-semibold text-neutral-900 transition-colors duration-200 focus:outline-hidden sm:text-lg dark:text-white"
+                                    onClick={() =>
+                                        push(`/profile/${planning.user!.id}`)
+                                    }
+                                >
+                                    {planning.user.name}
+                                </button>
+                                {planning.user.verified && (
+                                    <VerificationBadge size={18} />
+                                )}
+                            </div>
+                            {typeof planning.user.level === 'number' && (
+                                <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                                    {`${t('level')} ${planning.user.level}`}
+                                </div>
                             )}
-                        </button>
-                    )}
+                        </div>
+                    </div>
+                ) : (
+                    <div />
+                )}
+
+                <div className="self-end text-xs font-medium text-neutral-500 sm:self-auto dark:text-neutral-400">
+                    {`${mealsCount ?? planning.meals?.length ?? 0} ${t('meals')}`}
                 </div>
             </div>
         </div>

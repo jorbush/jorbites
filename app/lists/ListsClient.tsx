@@ -12,6 +12,7 @@ import ConfirmModal from '@/app/components/modals/ConfirmModal';
 import Avatar from '@/app/components/utils/Avatar';
 import { formatDate } from '@/app/utils/date-utils';
 import { FcBookmark } from 'react-icons/fc';
+import { GiPadlock, GiPadlockOpen } from 'react-icons/gi';
 import TabNavigation, {
     NavigationTab,
 } from '@/app/components/utils/TabNavigation';
@@ -58,11 +59,20 @@ const ListsClient: React.FC<ListsClientProps> = ({
 
     return (
         <Container>
-            <div className="flex flex-col gap-6 pb-12 md:pt-8 dark:text-white">
-                <div className="flex flex-row items-center gap-2">
-                    <FcBookmark size={32} />
-                    <div className="text-3xl font-bold">
-                        {t('lists') || 'Lists'}
+            <div className="flex flex-col gap-6 pt-2 pb-12 sm:pt-4 dark:text-white">
+                {/* Header */}
+                <div className="flex items-center gap-3.5">
+                    <div className="flex size-11 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 shadow-2xs sm:size-12 dark:border-neutral-700/60 dark:bg-neutral-800">
+                        <FcBookmark size={28} />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white">
+                            {t('lists') || 'Lists'}
+                        </h1>
+                        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                            {t('lists_subtitle') ||
+                                'Organize your favorite recipes into custom collections or discover community lists'}
+                        </p>
                     </div>
                 </div>
 
@@ -76,10 +86,10 @@ const ListsClient: React.FC<ListsClientProps> = ({
                 />
 
                 {/* Tab Content */}
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {listsToRender.length === 0 ? (
-                        <div className="col-span-full flex h-48 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 py-10 text-neutral-500 dark:border-neutral-700">
-                            <p className="text-lg font-light">
+                        <div className="col-span-full flex h-48 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 py-10 text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
+                            <p className="text-sm font-medium">
                                 {t('no_lists') || 'No lists found'}
                             </p>
                         </div>
@@ -88,69 +98,120 @@ const ListsClient: React.FC<ListsClientProps> = ({
                             <div
                                 key={list.id}
                                 data-cy="list-card"
-                                className="group relative flex w-full flex-col gap-2 overflow-hidden rounded-xl border border-neutral-200 p-4 transition hover:shadow-lg dark:border-neutral-700"
+                                className="group relative flex w-full flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs transition-colors duration-200 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900/90 dark:hover:border-neutral-700"
                             >
-                                <div className="text-xl font-bold">
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            push(`/lists/${list.id}`);
-                                        }}
-                                        data-cy="list-card-title"
-                                        className="cursor-pointer text-left font-bold after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
-                                    >
-                                        {list.isDefault
-                                            ? t('to_cook_later')
-                                            : list.name}
-                                    </button>
+                                <div>
+                                    {/* Card Top: Privacy Pill & Actions */}
+                                    <div className="mb-3 flex items-center justify-between gap-2">
+                                        <span
+                                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                                                list.isPrivate
+                                                    ? 'border border-neutral-200/80 bg-neutral-100 text-neutral-700 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300'
+                                                    : 'border-green-450/40 bg-green-450/15 dark:text-green-450 border text-neutral-800'
+                                            }`}
+                                        >
+                                            {list.isPrivate ? (
+                                                <>
+                                                    <GiPadlock size={11} />
+                                                    <span>
+                                                        {t('private') ||
+                                                            'Private'}
+                                                    </span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <GiPadlockOpen size={11} />
+                                                    <span>
+                                                        {t('public') ||
+                                                            'Public'}
+                                                    </span>
+                                                </>
+                                            )}
+                                        </span>
+
+                                        {activeTab === 'my' &&
+                                            !list.isDefault && (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setDeleteListId(
+                                                            list.id
+                                                        );
+                                                    }}
+                                                    data-cy="delete-list-button"
+                                                    className="z-10 flex size-8 cursor-pointer items-center justify-center rounded-lg border border-red-200/80 bg-red-50 text-red-600 shadow-2xs transition-colors duration-200 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/60"
+                                                    title={
+                                                        t('delete_list') ||
+                                                        'Delete list'
+                                                    }
+                                                >
+                                                    <AiOutlineDelete
+                                                        size={16}
+                                                    />
+                                                </button>
+                                            )}
+                                    </div>
+
+                                    {/* Card Title */}
+                                    <h2 className="mb-2 text-lg font-bold text-neutral-900 dark:text-white">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                push(`/lists/${list.id}`);
+                                            }}
+                                            data-cy="list-card-title"
+                                            className="hover:text-green-450 line-clamp-1 cursor-pointer text-left font-bold transition-colors duration-200 focus:outline-hidden"
+                                        >
+                                            {list.isDefault
+                                                ? t('to_cook_later')
+                                                : list.name}
+                                        </button>
+                                    </h2>
                                 </div>
-                                <div className="flex flex-row items-center gap-2">
-                                    <div className="text-sm text-neutral-500">
-                                        {list.recipeIds.length} {t('recipes')}
-                                    </div>
-                                    <div className="size-1 rounded-full bg-neutral-300 dark:bg-neutral-600" />
-                                    <div className="text-sm text-neutral-500">
-                                        {formatDate(
-                                            list.createdAt,
-                                            i18n.language
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="flex flex-row items-center justify-between">
-                                    <div className="text-xs text-neutral-400">
-                                        {list.isPrivate
-                                            ? t('private')
-                                            : t('public')}
-                                    </div>
-                                    {list.user && (
-                                        <div className="flex flex-row items-center gap-2">
-                                            <Avatar
-                                                src={list.user.image}
-                                                size={16}
-                                            />
-                                            <div className="text-xs font-medium text-neutral-500">
-                                                {list.user.name}
-                                            </div>
+
+                                {/* Inset Shelf / Footer */}
+                                <div className="mt-4 border-t border-neutral-100 pt-3 dark:border-neutral-800">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex min-w-0 items-center gap-2">
+                                            {list.user ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        push(
+                                                            `/profile/${list.user!.id}`
+                                                        );
+                                                    }}
+                                                    className="group/author flex min-w-0 cursor-pointer items-center gap-2 text-left focus:outline-hidden"
+                                                >
+                                                    <Avatar
+                                                        src={list.user.image}
+                                                        size={22}
+                                                        quality="auto:eco"
+                                                    />
+                                                    <span className="group-hover/author:text-green-450 dark:group-hover/author:text-green-450 truncate text-xs font-medium text-neutral-700 transition-colors duration-200 dark:text-neutral-300">
+                                                        {list.user.name}
+                                                    </span>
+                                                </button>
+                                            ) : (
+                                                <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                                                    {formatDate(
+                                                        list.createdAt,
+                                                        i18n.language
+                                                    )}
+                                                </span>
+                                            )}
                                         </div>
-                                    )}
+                                        <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                                            <span>
+                                                {list.recipeIds.length}{' '}
+                                                {t('recipes') || 'recipes'}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                {activeTab === 'my' && !list.isDefault && (
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setDeleteListId(list.id);
-                                        }}
-                                        data-cy="delete-list-button"
-                                        className="absolute top-4 right-4 z-10 cursor-pointer rounded-full border-0 bg-transparent p-2 text-rose-500 transition group-hover:block hover:bg-rose-100 focus:outline-hidden md:hidden dark:hover:bg-rose-900"
-                                        title={
-                                            t('delete_list') || 'Delete list'
-                                        }
-                                    >
-                                        <AiOutlineDelete size={20} />
-                                    </button>
-                                )}
                             </div>
                         ))
                     )}

@@ -136,8 +136,8 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
     ) => {
         if (plans.length === 0) {
             return (
-                <div className="flex h-48 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 py-10 text-neutral-500 dark:border-neutral-700">
-                    <p className="text-lg font-light">{t('no_meal_plans')}</p>
+                <div className="rounded-2xl border border-dashed border-neutral-300 p-12 text-center text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
+                    <p className="text-sm font-medium">{t('no_meal_plans')}</p>
                 </div>
             );
         }
@@ -172,34 +172,36 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
 
     return (
         <Container>
-            <div className="flex flex-col gap-8 pb-12 md:pt-8 dark:text-white">
+            <div className="flex flex-col gap-6 pt-2 pb-12 sm:pt-4 dark:text-white">
                 {/* Header */}
                 <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-                    <div className="flex flex-row items-center gap-3">
-                        <div className="rounded-2xl bg-neutral-100 p-2.5 dark:bg-neutral-900">
-                            <FcPlanner size={40} />
+                    <div className="flex flex-row items-center gap-3.5">
+                        <div className="flex size-11 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 shadow-2xs sm:size-12 dark:border-neutral-700/60 dark:bg-neutral-800">
+                            <FcPlanner size={28} />
                         </div>
-                        <div className="flex flex-col">
-                            <h1 className="text-3xl font-semibold tracking-tight">
+                        <div>
+                            <h1 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white">
                                 {t('meal_planner')}
                             </h1>
-                            <p className="text-sm font-light text-neutral-500 dark:text-neutral-400">
+                            <p className="text-sm text-neutral-500 dark:text-neutral-400">
                                 {t('meal_planner_subtitle') ||
                                     'Design, customize, and share your week diets with the community.'}
                             </p>
                         </div>
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={handleCreateClick}
-                        className="flex cursor-pointer flex-row items-center justify-center gap-2 rounded-xl bg-neutral-900 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-neutral-800 active:scale-[0.98] dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
-                        data-testid="create-meal-plan-button"
-                        data-cy="create-meal-plan-button"
-                    >
-                        <BiPlus size={20} />
-                        <span>{t('create_meal_plan')}</span>
-                    </button>
+                    <div className="hidden md:block md:flex-shrink-0">
+                        <button
+                            type="button"
+                            onClick={handleCreateClick}
+                            className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+                            data-testid="create-meal-plan-button"
+                            data-cy="create-meal-plan-button"
+                        >
+                            <BiPlus size={18} />
+                            <span>{t('create_meal_plan')}</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Tab Navigation */}
@@ -220,6 +222,18 @@ const PlanningsClient: React.FC<PlanningsClientProps> = ({
                         renderGrid(communityPlannings, false)}
                 </div>
             </div>
+
+            {/* Floating Action Button for mobile (below md) */}
+            <button
+                type="button"
+                onClick={handleCreateClick}
+                className="fixed right-6 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-10 flex size-14 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white shadow-lg transition-colors duration-200 hover:bg-neutral-800 md:hidden dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+                data-testid="create-meal-plan-button-mobile"
+                data-cy="create-meal-plan-button-mobile"
+                aria-label={t('create_meal_plan') as string}
+            >
+                <BiPlus className="size-6" />
+            </button>
 
             {/* Create Planning Modal */}
             <PlanningModal

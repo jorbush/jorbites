@@ -3,6 +3,7 @@ import getUsersWhoLikedRecipe from '@/app/actions/getUsersWhoLikedRecipe';
 import ClientOnly from '@/app/components/utils/ClientOnly';
 import EmptyState from '@/app/components/utils/EmptyState';
 import LikesClient from './LikesClient';
+import LikesClientSkeleton from './LikesClientSkeleton';
 import { Metadata } from 'next';
 
 interface IParams {
@@ -44,7 +45,7 @@ const LikesPage = async (props: { params: Promise<IParams> }) => {
     }
 
     return (
-        <ClientOnly>
+        <ClientOnly fallback={<LikesClientSkeleton />}>
             <LikesClient
                 recipe={recipe}
                 likedUsers={likedUsers}

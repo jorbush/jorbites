@@ -79,6 +79,24 @@ describe('PlanningsClient', () => {
         expect(screen.getByLabelText('plan_description')).toBeDefined();
     });
 
+    it('opens create planning modal when mobile floating button is clicked', () => {
+        render(
+            <PlanningsClient
+                initialMyPlannings={[]}
+                initialCommunityPlannings={[]}
+                currentUser={mockUser}
+            />
+        );
+
+        const mobileCreateButton = screen.getByTestId(
+            'create-meal-plan-button-mobile'
+        );
+        fireEvent.click(mobileCreateButton);
+
+        expect(screen.getByLabelText('plan_name')).toBeDefined();
+        expect(screen.getByLabelText('plan_description')).toBeDefined();
+    });
+
     it('submits planning request successfully', async () => {
         vi.mocked(axios.post).mockResolvedValue({ data: { id: 'new-plan' } });
 

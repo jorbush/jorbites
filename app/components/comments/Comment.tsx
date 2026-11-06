@@ -95,32 +95,35 @@ const Comment: React.FC<CommentProps> = ({
     };
 
     return (
-        <div className="relative mt-2 mr-1 mb-2 ml-1 flex items-start">
-            <div className="mt-2 shrink-0">
+        <div className="relative flex items-start py-1">
+            <div className="mt-1 shrink-0">
                 <Avatar
                     src={userImage}
                     onClick={navigateToProfile}
+                    extraClasses="ring-2 ring-neutral-100 dark:ring-neutral-800"
                     quality="auto:eco"
                 />
             </div>
-            <div className="mt-2 ml-4 grow">
+            <div className="ml-3.5 min-w-0 grow">
                 <div className="mb-1 flex flex-wrap items-center gap-2">
                     <button
                         type="button"
-                        className="cursor-pointer truncate border-0 bg-transparent p-0 text-justify text-left font-bold whitespace-normal text-neutral-800 dark:text-neutral-100"
+                        className="hover:text-green-450 dark:hover:text-green-450 cursor-pointer truncate border-0 bg-transparent p-0 text-left font-bold text-neutral-800 transition-colors duration-200 dark:text-neutral-100"
                         onClick={navigateToProfile}
                     >
                         {userName}
                     </button>
-                    {verified && <VerificationBadge className="mt-0.5" />}
-                    <div className="text-sm text-neutral-500 dark:text-neutral-400">
+                    {verified && (
+                        <VerificationBadge className="text-green-450" />
+                    )}
+                    <span className="border-green-450/30 bg-green-450/15 dark:text-green-450 rounded-full border px-2 py-0.5 text-xs font-semibold text-neutral-800">
                         {mounted
                             ? `${t('level')} ${userLevel}`
                             : `level ${userLevel}`}
-                    </div>
+                    </span>
                     {Boolean(isCooked) && (
                         <span
-                            className="bg-green-450/20 dark:bg-green-450/10 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold text-green-800 dark:text-green-300"
+                            className="border-green-450/40 bg-green-450/20 dark:text-green-450 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold text-neutral-800"
                             data-testid="cooked-badge"
                             data-cy="cooked-badge"
                         >
@@ -159,11 +162,11 @@ const Comment: React.FC<CommentProps> = ({
                 </div>
 
                 {imageSrc && (
-                    <div className="mt-2">
+                    <div className="mt-2.5">
                         <button
                             type="button"
                             onClick={() => setLightboxOpen(true)}
-                            className="group relative inline-block overflow-hidden rounded-lg border border-neutral-200 focus:outline-hidden dark:border-neutral-700"
+                            className="group relative inline-block overflow-hidden rounded-xl border border-neutral-200/80 shadow-2xs transition-colors duration-200 hover:border-neutral-300 focus:outline-hidden dark:border-neutral-700/80 dark:hover:border-neutral-600"
                             data-testid="remake-photo-button"
                             data-cy="remake-photo-button"
                         >
@@ -172,19 +175,19 @@ const Comment: React.FC<CommentProps> = ({
                                 alt="User remake proof"
                                 width={180}
                                 height={140}
-                                className="object-cover transition group-hover:scale-105"
+                                className="object-cover transition-transform duration-200 group-hover:scale-105"
                             />
                         </button>
                     </div>
                 )}
 
-                <div className="mt-2 flex min-h-[24px] items-center justify-between text-sm text-neutral-500 dark:text-neutral-400">
+                <div className="mt-2.5 flex min-h-[24px] items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
                     <div className="flex items-center gap-4">
                         <div className="shrink-0">{translateButtonElement}</div>
                         <button
                             type="button"
                             onClick={toggleLike}
-                            className="flex cursor-pointer items-center gap-1 transition hover:opacity-85 focus:outline-hidden"
+                            className="flex cursor-pointer items-center gap-1.5 transition-colors duration-200 hover:opacity-85 focus:outline-hidden"
                             aria-label={
                                 hasLiked ? 'Unlike comment' : 'Like comment'
                             }
@@ -212,7 +215,7 @@ const Comment: React.FC<CommentProps> = ({
                 {canDelete && (
                     <button
                         type="button"
-                        className="absolute top-2 right-1 border-0 bg-transparent p-0 text-rose-500"
+                        className="absolute top-2 right-1 cursor-pointer border-0 bg-transparent p-0 text-rose-500 transition-colors duration-200 hover:text-rose-600"
                         onClick={openDeleteModal}
                         aria-label="Delete comment"
                         data-testid="MdDelete"

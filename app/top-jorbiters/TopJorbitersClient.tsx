@@ -18,11 +18,11 @@ const TopJorbitersClient: React.FC<TopJorbitersClientProps> = ({
 }) => {
     return (
         <Container>
-            <div className="mx-auto max-w-(--breakpoint-lg) sm:px-2 md:px-4">
+            <div className="mx-auto max-w-(--breakpoint-lg) pt-2 pb-12 sm:px-2 sm:pt-4 md:px-4">
                 <LeaderboardHeader />
 
                 {/* Leaderboard Grid */}
-                <div className="space-y-4">
+                <div className="space-y-3.5 sm:space-y-4">
                     {topJorbiters?.map((jorbiter, index) => (
                         <JorbiterCard
                             key={jorbiter.id}

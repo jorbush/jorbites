@@ -76,7 +76,7 @@ interface RecipeDescriptionProps {
 const RecipeDescription: React.FC<RecipeDescriptionProps> = ({ content }) => {
     return (
         <div
-            className="text-justify text-lg font-light text-neutral-500 dark:text-neutral-100"
+            className="rounded-2xl border border-neutral-200/80 bg-white p-5 text-justify text-base leading-relaxed font-normal text-neutral-700 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/90 dark:text-neutral-200"
             data-cy="recipe-description-display"
         >
             {typeof content === 'string' ? formatText(content) : content}
@@ -97,32 +97,29 @@ const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({ items }) => {
     const seen = new Map<string, number>();
 
     return (
-        <>
-            <hr />
-            <div
-                className="dark:text-neutral-100"
-                data-cy="ingredients-section"
-            >
-                <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                    {mounted ? t('ingredients') : 'ingredients'}
-                </div>
-                <ul className="list-disc pt-4 pl-9">
-                    {items.map((item) => {
-                        const count = (seen.get(item) ?? 0) + 1;
-                        seen.set(item, count);
-                        const key = count === 1 ? item : `${item}-${count}`;
-                        return (
-                            <li
-                                key={key}
-                                className="mb-2"
-                            >
-                                {formatText(item)}
-                            </li>
-                        );
-                    })}
-                </ul>
+        <div
+            className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/90 dark:text-neutral-100"
+            data-cy="ingredients-section"
+        >
+            <div className="flex flex-row items-center gap-2 text-xl font-bold text-neutral-900 dark:text-white">
+                {mounted ? t('ingredients') : 'ingredients'}
             </div>
-        </>
+            <ul className="list-disc space-y-2 pt-4 pl-6 text-neutral-700 dark:text-neutral-300">
+                {items.map((item) => {
+                    const count = (seen.get(item) ?? 0) + 1;
+                    seen.set(item, count);
+                    const key = count === 1 ? item : `${item}-${count}`;
+                    return (
+                        <li
+                            key={key}
+                            className="leading-relaxed"
+                        >
+                            {formatText(item)}
+                        </li>
+                    );
+                })}
+            </ul>
+        </div>
     );
 };
 
@@ -139,33 +136,35 @@ const RecipeSteps: React.FC<RecipeStepsProps> = ({ items }) => {
     const seen = new Map<string, number>();
 
     return (
-        <>
-            <hr />
-            <div
-                className="dark:text-neutral-100"
-                data-cy="steps-section"
-            >
-                <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                    {mounted ? t('steps') : 'steps'}
-                </div>
-                <ol className="list-decimal pt-4 pl-9">
-                    {items.map((item, index) => {
-                        const count = (seen.get(item) ?? 0) + 1;
-                        seen.set(item, count);
-                        const key = count === 1 ? item : `${item}-${count}`;
-                        return (
-                            <li
-                                key={key}
-                                className="overflow-wrap-anywhere mb-2 break-words"
-                                data-cy={`step-${index}`}
-                            >
-                                {formatText(item)}
-                            </li>
-                        );
-                    })}
-                </ol>
+        <div
+            className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/90 dark:text-neutral-100"
+            data-cy="steps-section"
+        >
+            <div className="flex flex-row items-center gap-2 text-xl font-bold text-neutral-900 dark:text-white">
+                {mounted ? t('steps') : 'steps'}
             </div>
-        </>
+            <ol className="mt-4 space-y-3.5">
+                {items.map((item, index) => {
+                    const count = (seen.get(item) ?? 0) + 1;
+                    seen.set(item, count);
+                    const key = count === 1 ? item : `${item}-${count}`;
+                    return (
+                        <li
+                            key={key}
+                            className="overflow-wrap-anywhere flex items-start gap-3.5 break-words"
+                            data-cy={`step-${index}`}
+                        >
+                            <span className="border-green-450/40 bg-green-450/15 dark:text-green-450 flex size-7 shrink-0 items-center justify-center rounded-lg border text-xs font-bold text-neutral-900">
+                                {index + 1}
+                            </span>
+                            <div className="flex-1 pt-0.5 leading-relaxed text-neutral-700 dark:text-neutral-300">
+                                {formatText(item)}
+                            </div>
+                        </li>
+                    );
+                })}
+            </ol>
+        </div>
     );
 };
 
@@ -323,20 +322,17 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
 
             {/* YouTube video section */}
             {youtubeUrl && (
-                <>
-                    <hr />
-                    <div className="dark:text-neutral-100">
-                        <div className="flex flex-row items-center gap-2 text-xl font-semibold">
-                            {t('youtube_video')}
-                        </div>
-                        <div className="mt-4">
-                            <YouTubePreview
-                                url={youtubeUrl}
-                                title={`${t('video_for')} ${user.name}'s recipe`}
-                            />
-                        </div>
+                <div className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/90 dark:text-neutral-100">
+                    <div className="flex flex-row items-center gap-2 text-xl font-bold text-neutral-900 dark:text-white">
+                        {t('youtube_video')}
                     </div>
-                </>
+                    <div className="mt-4 overflow-hidden rounded-xl">
+                        <YouTubePreview
+                            url={youtubeUrl}
+                            title={`${t('video_for')} ${user.name}'s recipe`}
+                        />
+                    </div>
+                </div>
             )}
 
             {/* Linked recipes section */}

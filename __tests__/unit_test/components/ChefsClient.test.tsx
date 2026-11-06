@@ -367,7 +367,7 @@ describe('<ChefsClient />', () => {
         );
         // Default orderBy is 'trending'
         const trendingButton = screen.getByTestId('order-by-trending');
-        expect(trendingButton.className).toContain('bg-orange-500');
+        expect(trendingButton.className).toContain('bg-green-450');
     });
 
     it('renders Container component', () => {

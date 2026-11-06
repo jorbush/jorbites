@@ -105,32 +105,49 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
 
     return (
         <>
-            <div className="flex items-baseline justify-between sm:mr-4 sm:ml-4">
+            {/* Header: Back, Title, Share aligned in the same row */}
+            <div className="mb-4 flex items-center justify-between gap-2 sm:mb-6 sm:gap-4 sm:px-2">
                 <button
                     type="button"
-                    className="mr-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    className="group inline-flex shrink-0 cursor-pointer items-center gap-2 text-sm font-semibold text-neutral-600 transition-colors duration-200 hover:text-neutral-900 focus:outline-hidden md:w-auto dark:text-neutral-400 dark:hover:text-white"
                     onClick={() => back()}
                     aria-label="Go back"
+                    data-cy="back-button"
                 >
-                    <FiChevronLeft className="text-xl" />
+                    <div className="flex size-9 items-center justify-center rounded-xl border border-neutral-200/80 bg-white text-neutral-700 shadow-2xs transition-colors duration-200 group-hover:border-neutral-300 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:group-hover:border-neutral-600">
+                        <FiChevronLeft size={18} />
+                    </div>
+                    <span className="hidden text-xs font-semibold md:inline">
+                        {mounted ? t('back') || 'Back' : 'Back'}
+                    </span>
                 </button>
-                <Heading
-                    title={title}
-                    subtitle={subtitleText}
-                    center
-                    dataCy="recipe-title-display"
-                />
+
+                <div className="min-w-0 flex-1">
+                    <Heading
+                        title={title}
+                        subtitle={subtitleText}
+                        center
+                        dataCy="recipe-title-display"
+                    />
+                </div>
+
                 <button
                     type="button"
-                    className="ml-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-neutral-200/80 bg-white text-neutral-700 shadow-2xs transition-colors duration-200 hover:border-neutral-300 focus:outline-hidden md:w-auto md:gap-2 md:px-3 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600"
                     onClick={() => share()}
                     aria-label="Share"
+                    data-cy="share-button"
                 >
-                    <FiShare2 className="text-xl" />
+                    <FiShare2 size={16} />
+                    <span className="hidden text-xs font-semibold md:inline">
+                        {mounted ? t('share') || 'Share' : 'Share'}
+                    </span>
                 </button>
             </div>
+
+            {/* Hero Image Carousel */}
             <div
-                className="relative h-[60vh] w-full overflow-hidden rounded-xl"
+                className="relative h-[60vh] w-full overflow-hidden rounded-2xl border border-neutral-200/80 shadow-xs dark:border-neutral-800"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -158,7 +175,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                     src={imageSrc || '/avocado.webp'}
                                     fill
                                     priority={true}
-                                    className="rounded-xl object-cover"
+                                    className="rounded-2xl object-cover"
                                     alt="Recipe Image"
                                     maxQuality={true}
                                     quality="auto:best"
@@ -171,7 +188,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                 src={imageSrc || '/avocado.webp'}
                                 fill
                                 priority={false}
-                                className="rounded-xl object-cover"
+                                className="rounded-2xl object-cover"
                                 alt="Recipe Image"
                                 maxQuality={true}
                                 quality="auto:best"
@@ -184,34 +201,34 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                 {imagesSrc.length > 1 && (
                     <>
                         <div
-                            className="absolute top-0 bottom-0 left-0 z-[2] flex w-1/4 items-center justify-center transition-colors hover:bg-gradient-to-r hover:from-black/10 hover:to-transparent"
+                            className="absolute top-0 bottom-0 left-0 z-[2] flex w-1/4 items-center justify-center transition-colors duration-200 hover:bg-gradient-to-r hover:from-black/10 hover:to-transparent"
                             style={{ pointerEvents: 'none' }}
                             data-testid="prev-button"
                         >
                             <button
                                 type="button"
-                                className="absolute top-1/2 left-3 -translate-y-1/2 transform rounded-full border-0 bg-white/90 p-2 shadow-lg transition-colors hover:bg-white focus:outline-hidden"
+                                className="absolute top-1/2 left-3 flex size-9 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-full border border-neutral-200/60 bg-white/90 text-neutral-800 shadow-md backdrop-blur-xs transition-colors duration-200 hover:bg-white focus:outline-hidden dark:border-neutral-700/60 dark:bg-neutral-800/90 dark:text-neutral-100 dark:hover:bg-neutral-800"
                                 style={{ pointerEvents: 'auto' }}
                                 onClick={goToPreviousImage}
                                 aria-label="Previous image"
                             >
-                                <FiChevronLeft className="cursor-pointer text-2xl text-neutral-800" />
+                                <FiChevronLeft className="cursor-pointer text-xl" />
                             </button>
                         </div>
 
                         <div
-                            className="absolute top-0 right-0 bottom-0 z-[2] flex w-1/4 items-center justify-center transition-colors hover:bg-gradient-to-l hover:from-black/10 hover:to-transparent"
+                            className="absolute top-0 right-0 bottom-0 z-[2] flex w-1/4 items-center justify-center transition-colors duration-200 hover:bg-gradient-to-l hover:from-black/10 hover:to-transparent"
                             style={{ pointerEvents: 'none' }}
                             data-testid="next-button"
                         >
                             <button
                                 type="button"
-                                className="absolute top-1/2 right-3 -translate-y-1/2 transform rounded-full border-0 bg-white/90 p-2 shadow-lg transition-colors hover:bg-white focus:outline-hidden"
+                                className="absolute top-1/2 right-3 flex size-9 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-full border border-neutral-200/60 bg-white/90 text-neutral-800 shadow-md backdrop-blur-xs transition-colors duration-200 hover:bg-white focus:outline-hidden dark:border-neutral-700/60 dark:bg-neutral-800/90 dark:text-neutral-100 dark:hover:bg-neutral-800"
                                 style={{ pointerEvents: 'auto' }}
                                 onClick={goToNextImage}
                                 aria-label="Next image"
                             >
-                                <FiChevronRight className="cursor-pointer text-2xl text-neutral-800" />
+                                <FiChevronRight className="cursor-pointer text-xl" />
                             </button>
                         </div>
                         {/* Dot Indicators */}
@@ -229,7 +246,7 @@ const RecipeHead: React.FC<RecipeHeadProps> = ({
                                     data-testid={`dot-indicator-${index}`}
                                 >
                                     <span
-                                        className={`h-2 rounded-full transition-all duration-300 ${
+                                        className={`h-2 rounded-full transition-[width,background-color] duration-300 ${
                                             index === currentImageIndex
                                                 ? 'w-8 bg-white'
                                                 : 'w-2 bg-white/60 group-hover:bg-white/80'

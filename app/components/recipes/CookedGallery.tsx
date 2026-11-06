@@ -74,19 +74,18 @@ const CookedGallery: React.FC<CookedGalleryProps> = ({
 
     return (
         <div
-            className="flex flex-col pr-2 pl-2"
+            className="flex flex-col rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/90"
             data-testid="cooked-gallery"
         >
-            <hr />
-            <div className="mt-8 mb-4 flex flex-row items-center">
-                <div className="text-xl font-semibold dark:text-neutral-100">
+            <div className="mb-4 flex flex-row items-center">
+                <div className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
                     {mounted
                         ? t('cooked_by_community', {
                               defaultValue: 'Cooked by the Community',
                           })
                         : 'Cooked by the Community'}
                 </div>
-                <div className="text-md ml-2 text-neutral-500">
+                <div className="ml-2.5 inline-flex items-center rounded-full border border-neutral-200/80 bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-700 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300">
                     {cooksnaps.length}
                 </div>
             </div>
@@ -119,13 +118,13 @@ const CookedGallery: React.FC<CookedGalleryProps> = ({
                             data-testid={`cooksnap-card-${item.id}`}
                         >
                             {/* Dish Photo */}
-                            <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800">
+                            <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-neutral-200/60 bg-neutral-100 shadow-2xs dark:border-neutral-800 dark:bg-neutral-800">
                                 {item.imageSrc && (
                                     <CustomProxyImage
                                         src={item.imageSrc}
                                         alt={`Cooksnap by ${item.user?.name || 'cook'}`}
                                         fill
-                                        className="object-cover transition group-hover:opacity-90"
+                                        className="object-cover transition-opacity duration-200 group-hover:opacity-90"
                                         quality="auto:good"
                                     />
                                 )}
@@ -144,7 +143,7 @@ const CookedGallery: React.FC<CookedGalleryProps> = ({
                                         }}
                                         disabled={isDeleting}
                                         aria-label="Delete cooksnap"
-                                        className="absolute right-2 bottom-2 z-10 flex size-7 cursor-pointer items-center justify-center rounded-full bg-neutral-900/70 text-white transition hover:bg-rose-500 focus:outline-hidden"
+                                        className="absolute right-2 bottom-2 z-10 flex size-7 cursor-pointer items-center justify-center rounded-lg bg-neutral-900/80 text-white transition-colors duration-200 hover:bg-rose-500 focus:outline-hidden"
                                         data-testid={`delete-cooksnap-${item.id}`}
                                     >
                                         <MdDelete size={16} />
@@ -171,7 +170,7 @@ const CookedGallery: React.FC<CookedGalleryProps> = ({
                                             src={item.user?.image}
                                             size={20}
                                         />
-                                        <span className="truncate text-xs font-medium text-neutral-700 hover:underline dark:text-neutral-300">
+                                        <span className="hover:text-green-450 dark:hover:text-green-450 truncate text-xs font-medium text-neutral-700 transition-colors duration-200 hover:underline dark:text-neutral-300">
                                             {item.user?.name || 'Jorbiter'}
                                         </span>
                                     </button>

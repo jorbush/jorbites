@@ -133,7 +133,7 @@ const RecipeClient: React.FC<RecipeClientProps> = ({
                 recipeCuisine={recipe.recipeCuisine}
                 recipeYield={recipe.recipeYield}
             />
-            <div className="mx-auto max-w-[800px]">
+            <div className="mx-auto max-w-[800px] pt-2 pb-12 sm:pt-4">
                 <div className="flex flex-col gap-6">
                     <RecipeHead
                         id={recipe.id}

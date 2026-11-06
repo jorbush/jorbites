@@ -11,12 +11,13 @@ import { SafeList, SafeUser, SafeRecipe } from '@/app/types';
 import axios from 'axios';
 
 const mockShare = vi.fn();
+const mockPush = vi.fn();
 
 vi.mock('axios');
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
         refresh: vi.fn(),
-        push: vi.fn(),
+        push: mockPush,
     }),
 }));
 vi.mock('@/app/hooks/useShare', () => ({
@@ -139,6 +140,19 @@ describe('ListClient', () => {
         );
 
         expect(screen.queryByTitle('delete_list')).toBeNull();
+    });
+
+    it('shows share button for non-owner if list is public', () => {
+        const otherUser = { ...mockUser, id: 'other-id' };
+        render(
+            <ListClient
+                list={{ ...mockList, isPrivate: false }}
+                recipes={mockRecipes}
+                currentUser={otherUser}
+            />
+        );
+
+        expect(screen.getByRole('button', { name: /share/i })).toBeDefined();
     });
 
     it('does not show delete button for default list', () => {
@@ -274,5 +288,19 @@ describe('ListClient', () => {
         expect(mockShare).toHaveBeenCalledWith({
             title: 'My Special List',
         });
+    });
+
+    it('navigates to user profile when clicking author avatar or name', () => {
+        render(
+            <ListClient
+                list={mockList}
+                recipes={mockRecipes}
+                currentUser={mockUser}
+            />
+        );
+
+        const authorButton = screen.getByText('Test User');
+        fireEvent.click(authorButton);
+        expect(mockPush).toHaveBeenCalledWith('/profile/user-id');
     });
 });

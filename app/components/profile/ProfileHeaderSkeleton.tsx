@@ -4,28 +4,36 @@ import ScrollableContainer from '@/app/components/utils/ScrollableContainer';
 const ProfileHeaderSkeleton = () => {
     return (
         <Container>
-            <div className="col-span-2 flex flex-row items-center justify-between gap-3 p-2 text-xl font-semibold sm:gap-4 dark:text-neutral-100">
-                <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
-                    {/* Avatar skeleton */}
-                    <div className="size-18 shrink-0 animate-pulse rounded-full bg-neutral-200 sm:size-22 md:size-[100px] dark:bg-neutral-700"></div>
-
-                    <div className="flex min-w-0 flex-1 flex-col gap-1 text-2xl sm:gap-2 md:text-3xl">
-                        <div className="flex items-center gap-1.5 sm:gap-2">
-                            {/* Name skeleton */}
-                            <div className="h-8 w-40 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                        </div>
-                        {/* Level skeleton */}
-                        <div className="h-5 w-20 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                        {/* Member since skeleton */}
-                        <div className="h-4 w-28 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                    </div>
+            {/* Top Navigation & Actions Bar Skeleton */}
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-3 pt-1 sm:mb-3 sm:pt-2">
+                {/* Back button skeleton */}
+                <div className="flex items-center gap-2.5">
+                    <div className="size-9 animate-pulse rounded-xl bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="h-4 w-12 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                 </div>
 
-                {/* Action buttons placeholder */}
-                <div className="flex shrink-0 items-center gap-2 self-start pt-1 sm:gap-2.5 sm:self-center sm:pt-0">
-                    <div className="size-9 animate-pulse rounded-xl bg-neutral-200 sm:size-10 dark:bg-neutral-700"></div>
-                    <div className="size-9 animate-pulse rounded-xl bg-neutral-200 sm:size-10 dark:bg-neutral-700"></div>
-                    <div className="size-9 animate-pulse rounded-xl bg-neutral-200 sm:size-10 dark:bg-neutral-700"></div>
+                {/* Action buttons skeleton */}
+                <div className="flex items-center gap-2">
+                    <div className="size-9 animate-pulse rounded-xl bg-neutral-200 md:h-9 md:w-24 dark:bg-neutral-700"></div>
+                    <div className="size-9 animate-pulse rounded-xl bg-neutral-200 md:h-9 md:w-28 dark:bg-neutral-700"></div>
+                    <div className="size-9 animate-pulse rounded-xl bg-neutral-200 md:h-9 md:w-20 dark:bg-neutral-700"></div>
+                </div>
+            </div>
+
+            {/* User Identity Block Skeleton */}
+            <div className="flex items-center gap-3.5 p-2 sm:gap-4">
+                {/* Avatar skeleton */}
+                <div className="size-18 shrink-0 animate-pulse rounded-full bg-neutral-200 sm:size-22 md:size-[100px] dark:bg-neutral-700"></div>
+
+                <div className="flex min-w-0 flex-1 flex-col gap-1 text-2xl sm:gap-2 md:text-3xl">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                        {/* Name skeleton */}
+                        <div className="h-8 w-40 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                    </div>
+                    {/* Level skeleton */}
+                    <div className="h-5 w-20 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                    {/* Member since skeleton */}
+                    <div className="h-4 w-28 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                 </div>
             </div>
 

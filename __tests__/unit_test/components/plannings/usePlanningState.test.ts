@@ -151,4 +151,22 @@ describe('usePlanningState hook', () => {
         ).toBe(450);
         expect(axios.patch).toHaveBeenCalled();
     });
+
+    it('calls axios.delete and navigates to /plannings on handleDeletePlanning', async () => {
+        vi.mocked(axios.delete).mockResolvedValueOnce({ data: {} });
+
+        const { result } = renderHook(() =>
+            usePlanningState({
+                planning: mockPlanning,
+                currentUser: mockCurrentUser,
+            })
+        );
+
+        await act(async () => {
+            await result.current.handleDeletePlanning();
+        });
+
+        expect(axios.delete).toHaveBeenCalledWith('/api/plannings/plan-123');
+        expect(mockRefresh).toHaveBeenCalled();
+    });
 });

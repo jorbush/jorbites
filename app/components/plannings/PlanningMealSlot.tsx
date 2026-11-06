@@ -31,11 +31,11 @@ export const PlanningMealSlot: React.FC<PlanningMealSlotProps> = ({
     return (
         <div
             data-testid="meal-slot"
-            className="border-neutral-250 flex min-h-[140px] flex-col overflow-hidden rounded-2xl border bg-white/40 dark:border-neutral-900 dark:bg-neutral-900/30"
+            className="flex min-h-[140px] flex-col overflow-hidden rounded-xl border border-neutral-200/80 bg-neutral-50/50 dark:border-neutral-800 dark:bg-neutral-900/40"
         >
             {/* Meal Slot Header */}
             <div
-                className={`flex flex-row items-center gap-2 border-b border-inherit px-3 py-2 text-sm font-semibold ${getMealHeaderClass(mealType)}`}
+                className={`flex flex-row items-center gap-2 border-b border-inherit px-3 py-2 text-xs font-semibold ${getMealHeaderClass(mealType)}`}
             >
                 {getMealIcon(mealType)}
                 <span className="capitalize">{t(mealType)}</span>
@@ -50,7 +50,7 @@ export const PlanningMealSlot: React.FC<PlanningMealSlotProps> = ({
                     return (
                         <div
                             key={meal.id}
-                            className="group/recipe dark:border-neutral-850 relative flex flex-row items-center gap-2 rounded-xl border border-neutral-200 bg-white p-2 transition hover:bg-neutral-50 dark:bg-[#151515] dark:hover:bg-neutral-900"
+                            className="group/recipe relative flex flex-row items-center gap-2.5 rounded-lg border border-neutral-200/80 bg-white p-2 shadow-2xs transition-colors duration-200 hover:border-neutral-300 dark:border-neutral-700/60 dark:bg-neutral-800 dark:hover:border-neutral-600"
                         >
                             <div className="relative size-10 shrink-0 overflow-hidden rounded-lg">
                                 <CustomProxyImage
@@ -87,7 +87,7 @@ export const PlanningMealSlot: React.FC<PlanningMealSlotProps> = ({
                                     {recipe.calories && (
                                         <span
                                             data-testid="recipe-calories"
-                                            className="dark:text-emerald-450 shrink-0 text-[10px] font-semibold text-emerald-600"
+                                            className="dark:text-green-450 shrink-0 text-[10px] font-semibold text-neutral-700"
                                         >
                                             {recipe.calories} kcal
                                         </span>
@@ -101,7 +101,7 @@ export const PlanningMealSlot: React.FC<PlanningMealSlotProps> = ({
                                     type="button"
                                     onClick={() => onRemoveRecipe(meal.id)}
                                     data-cy="remove-meal-recipe-button"
-                                    className="absolute top-1/2 right-1 -translate-y-1/2 rounded-full p-1 text-neutral-500 opacity-0 transition-opacity duration-200 group-hover/recipe:opacity-100 hover:bg-neutral-100 hover:text-rose-600 dark:text-neutral-500 dark:hover:bg-neutral-800"
+                                    className="absolute top-1/2 right-1.5 -translate-y-1/2 rounded-md p-1 text-neutral-400 opacity-0 transition-opacity duration-200 group-hover/recipe:opacity-100 hover:bg-red-50 hover:text-red-600 dark:text-neutral-400 dark:hover:bg-red-950/40 dark:hover:text-red-400"
                                     title={t('delete') || 'Delete'}
                                 >
                                     <AiOutlineDelete size={15} />
@@ -116,7 +116,7 @@ export const PlanningMealSlot: React.FC<PlanningMealSlotProps> = ({
                     <button
                         type="button"
                         onClick={() => onAddRecipeClick(day, mealType)}
-                        className="dark:border-neutral-850 flex cursor-pointer items-center justify-center gap-1 rounded-xl border border-dashed border-neutral-300 py-3 text-xs text-neutral-500 transition hover:bg-neutral-50 hover:text-neutral-900 dark:hover:bg-neutral-900/60 dark:hover:text-white"
+                        className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-dashed border-neutral-300 py-2.5 text-xs text-neutral-500 transition-colors duration-200 hover:border-neutral-400 hover:text-neutral-900 dark:border-neutral-700 dark:hover:border-neutral-600 dark:hover:text-white"
                         data-testid="add-recipe-button"
                         data-cy="add-recipe-button"
                     >

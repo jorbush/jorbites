@@ -23,7 +23,7 @@ export function usePlanningState({
     planning,
     currentUser,
 }: UsePlanningStateProps) {
-    const { push, refresh } = useRouter() || {};
+    const { push, refresh, back } = useRouter() || {};
     const { t, i18n } = useTranslation();
     const { share } = useShare();
     const loginModal = useLoginModal();
@@ -50,6 +50,7 @@ export function usePlanningState({
     } | null>(null);
     const [isShoppingListOpen, setIsShoppingListOpen] = useState(false);
     const [isCalendarExportOpen, setIsCalendarExportOpen] = useState(false);
+    const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 
     // Grouped meals map for quick lookup
     const groupedMeals = useMemo(() => {
@@ -237,8 +238,25 @@ export function usePlanningState({
         t,
     ]);
 
+    const handleDeletePlanning = useCallback(async () => {
+        if (!isOwner) return;
+        setIsSaving(true);
+        try {
+            await axios.delete(`/api/plannings/${planning.id}`);
+            toast.success(t('meal_plan_deleted') || 'Meal plan deleted');
+            if (push) push('/plannings');
+            if (refresh) refresh();
+        } catch {
+            toast.error(t('something_went_wrong'));
+        } finally {
+            setIsSaving(false);
+            setIsConfirmDeleteOpen(false);
+        }
+    }, [isOwner, planning.id, push, refresh, t]);
+
     return {
         push,
+        back,
         t,
         i18n,
         share,
@@ -259,6 +277,8 @@ export function usePlanningState({
         setIsShoppingListOpen,
         isCalendarExportOpen,
         setIsCalendarExportOpen,
+        isConfirmDeleteOpen,
+        setIsConfirmDeleteOpen,
         groupedMeals,
         handleUpdatePlanning,
         handleAddRecipeClick,
@@ -266,5 +286,6 @@ export function usePlanningState({
         handleRemoveRecipe,
         handleSaveToggle,
         togglePrivacy,
+        handleDeletePlanning,
     };
 }

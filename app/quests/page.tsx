@@ -24,12 +24,12 @@ interface QuestsPageProps {
 const QuestsPage = async ({ searchParams }: QuestsPageProps) => {
     const resolvedParams = await searchParams;
     const page = parseInt(resolvedParams.page || '1');
-    const status = resolvedParams.status || 'all';
+    const status = resolvedParams.status || 'open';
 
     const [currentUser, response] = await Promise.all([
         getCurrentUser(),
         getQuests({
-            status: resolvedParams.status,
+            status: status === 'all' ? undefined : status,
             page: page,
             limit: 10,
         }),

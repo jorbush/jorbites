@@ -71,6 +71,7 @@ describe('PlanningClient', () => {
         expect(screen.getByTestId('shopping-list-button')).toBeDefined();
         expect(screen.getByTestId('export-calendar-button')).toBeDefined();
         expect(screen.getByTestId('share-button')).toBeDefined();
+        expect(screen.getByRole('button', { name: /back/i })).toBeDefined();
     });
 
     it('renders correct lock icon based on privacy settings', () => {
@@ -141,6 +142,28 @@ describe('PlanningClient', () => {
         });
     });
 
+    it('shows delete plan button for owner and calls axios.delete on confirmation', async () => {
+        vi.mocked(axios.delete).mockResolvedValue({ data: {} });
+        render(
+            <PlanningClient
+                planning={mockPlanning}
+                currentUser={mockUser}
+            />
+        );
+
+        const deleteButton = screen.getByTestId('delete-plan-button');
+        expect(deleteButton).toBeDefined();
+
+        fireEvent.click(deleteButton);
+
+        const confirmButton = screen.getByTestId('modal-action-button');
+        await act(async () => {
+            fireEvent.click(confirmButton);
+        });
+
+        expect(axios.delete).toHaveBeenCalledWith('/api/plannings/plan-1');
+    });
+
     it('shows add recipe buttons by default for the owner', () => {
         render(
             <PlanningClient
@@ -178,6 +201,8 @@ describe('PlanningClient', () => {
         expect(screen.queryByTestId('add-recipe-button')).toBeNull();
         // No edit plan button
         expect(screen.queryByTestId('edit-plan-button')).toBeNull();
+        // No delete plan button
+        expect(screen.queryByTestId('delete-plan-button')).toBeNull();
 
         // Should show save plan bookmark button
         const savePlanButton = screen.getByTestId('save-plan-button');
