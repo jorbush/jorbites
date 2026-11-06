@@ -155,6 +155,7 @@ const AddToListModal = () => {
                                     <div
                                         className="relative size-5"
                                         data-cy="list-item-selected"
+                                        data-testid="list-item-selected"
                                     >
                                         <FaCheckCircle
                                             size={20}
@@ -193,7 +194,7 @@ const AddToListModal = () => {
                             type="checkbox"
                             {...register('isPrivate')}
                             data-cy="new-list-private-checkbox"
-                            className="size-4 rounded border-neutral-300 bg-neutral-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-neutral-600 dark:bg-neutral-700 dark:ring-offset-neutral-800 dark:focus:ring-blue-600"
+                            className="accent-green-450 text-green-450 focus:ring-green-450 dark:focus:ring-green-450 size-4 rounded border-neutral-300 bg-neutral-100 focus:ring-2 dark:border-neutral-600 dark:bg-neutral-700 dark:ring-offset-neutral-800"
                         />
                         <label
                             htmlFor="isPrivate"
