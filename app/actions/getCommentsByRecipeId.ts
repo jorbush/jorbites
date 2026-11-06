@@ -28,11 +28,7 @@ export default async function getCommentsByRecipeId(params: IParams) {
             recipeId: params.recipeId,
         });
 
-        const query: any = {
-            isCooked: {
-                not: true,
-            },
-        };
+        const query: any = {};
 
         if (recipeId) {
             query.recipeId = recipeId;
@@ -57,10 +53,12 @@ export default async function getCommentsByRecipeId(params: IParams) {
             },
         });
 
-        const safeComments = comments.map((comment) => ({
-            ...comment,
-            createdAt: comment.createdAt.toISOString(),
-        }));
+        const safeComments = comments
+            .filter((comment) => !comment.isCooked)
+            .map((comment) => ({
+                ...comment,
+                createdAt: comment.createdAt.toISOString(),
+            }));
 
         logger.info('getCommentsByRecipeId - success', {
             recipeId,

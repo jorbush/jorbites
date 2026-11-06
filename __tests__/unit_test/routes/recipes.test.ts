@@ -396,6 +396,37 @@ describe('Recipes API Routes and Server Actions', () => {
         expect(response[0]).toMatchObject(comment);
     });
 
+    it('should return comments including legacy comments without isCooked and exclude cooksnaps', async () => {
+        (prisma.comment.findMany as jest.Mock).mockResolvedValue([
+            {
+                ...mockComment,
+                id: 'legacy-comment',
+                isCooked: undefined,
+                createdAt: mockComment.createdAt,
+            },
+            {
+                ...mockComment,
+                id: 'normal-comment',
+                isCooked: false,
+                createdAt: mockComment.createdAt,
+            },
+            {
+                ...mockComment,
+                id: 'cooked-comment',
+                isCooked: true,
+                createdAt: mockComment.createdAt,
+            },
+        ]);
+
+        const response = await getCommentsByRecipeId({
+            recipeId: publishedRecipe?.id,
+        });
+        expect(response.map((c: any) => c.id)).toEqual([
+            'legacy-comment',
+            'normal-comment',
+        ]);
+    });
+
     it('should delete the comment', async () => {
         if (!comment) {
             throw new Error('comment is not defined');

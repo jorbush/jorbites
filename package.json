@@ -15,6 +15,7 @@
         "backfill-quests": "npx tsx prisma/backfill-quests.ts",
         "backfill-cooksnaps": "npx tsx prisma/backfill-cooksnaps.ts",
         "backfill-split-recipes": "npx tsx prisma/backfill-split-recipe-fields.ts",
+        "backfill-comments": "npx tsx prisma/backfill-comments.ts",
         "seed:e2e": "npx tsx prisma/seed-e2e.ts",
         "sync:content": "npx tsx scripts/sync-content.ts",
         "sync:events": "npx tsx scripts/sync-events.ts",
