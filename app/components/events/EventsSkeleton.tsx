@@ -14,9 +14,9 @@ export const EventsSkeleton: React.FC<EventsSkeletonProps> = ({
             <div className="px-4 py-8">
                 {/* SectionHeader Skeleton */}
                 <div className="mb-10 animate-pulse text-center">
-                    <div className="mb-3 flex items-center justify-center gap-2">
+                    <div className="mb-3 flex items-center justify-center gap-3">
                         {/* Icon placeholder */}
-                        <div className="size-8 rounded bg-neutral-200 sm:size-10 dark:bg-neutral-700"></div>
+                        <div className="size-10 rounded-xl bg-neutral-200 sm:size-11 dark:bg-neutral-700"></div>
                         {/* Title placeholder */}
                         <div className="h-8 w-40 rounded bg-neutral-200 sm:h-10 sm:w-48 dark:bg-neutral-700"></div>
                     </div>
@@ -26,15 +26,15 @@ export const EventsSkeleton: React.FC<EventsSkeletonProps> = ({
 
                 {/* WeeklyChallenge Skeleton (only if it exists) */}
                 {weeklyChallenge && (
-                    <div className="mb-10 animate-pulse rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-900">
-                        <div className="mb-4 flex items-center gap-2">
+                    <div className="mb-10 animate-pulse rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs dark:border-neutral-800 dark:bg-neutral-800/90">
+                        <div className="mb-4 flex items-center gap-3">
                             {/* Icon placeholder */}
-                            <div className="size-6 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                            <div className="size-10 rounded-xl bg-neutral-200 sm:size-11 dark:bg-neutral-700"></div>
                             {/* Title placeholder */}
-                            <div className="h-6 w-36 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                            <div className="h-6 w-36 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                         </div>
                         {/* Challenge name placeholder */}
-                        <div className="mb-2 h-5 w-48 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                        <div className="mb-2 h-6 w-48 rounded bg-neutral-200 dark:bg-neutral-700"></div>
                         {/* Description placeholder */}
                         <div className="mb-4 space-y-2">
                             <div className="h-4 w-full rounded bg-neutral-200 dark:bg-neutral-700"></div>
@@ -46,13 +46,13 @@ export const EventsSkeleton: React.FC<EventsSkeletonProps> = ({
                 )}
 
                 {/* EventCalendar Skeleton */}
-                <div className="mb-10 animate-pulse rounded-xl border border-neutral-200 bg-white p-4 shadow-sm md:p-6 dark:border-neutral-700 dark:bg-neutral-900">
+                <div className="mb-10 animate-pulse rounded-2xl border border-neutral-200 bg-white p-4 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-800/90">
                     {/* Calendar Header */}
                     <div className="mb-6 flex items-center justify-between">
                         <div className="h-7 w-32 rounded bg-neutral-200 md:h-8 md:w-40 dark:bg-neutral-700"></div>
                         <div className="flex gap-2">
-                            <div className="size-8 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                            <div className="size-8 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                            <div className="size-8 rounded-xl bg-neutral-200 sm:size-9 dark:bg-neutral-700"></div>
+                            <div className="size-8 rounded-xl bg-neutral-200 sm:size-9 dark:bg-neutral-700"></div>
                         </div>
                     </div>
 
@@ -71,7 +71,7 @@ export const EventsSkeleton: React.FC<EventsSkeletonProps> = ({
                         {[...Array(35)].map((_, i) => (
                             <div
                                 key={i}
-                                className="relative h-[64px] rounded-lg border border-neutral-100 bg-neutral-50/50 p-1 md:h-[104px] md:p-2 dark:border-neutral-800 dark:bg-neutral-950/20"
+                                className="relative h-[64px] rounded-xl border border-neutral-100 bg-neutral-50/50 p-1 md:h-[104px] md:p-2 dark:border-neutral-800 dark:bg-neutral-900/40"
                             >
                                 <div className="size-4 rounded bg-neutral-200 dark:bg-neutral-700"></div>
                             </div>
@@ -96,9 +96,9 @@ export const EventsSkeleton: React.FC<EventsSkeletonProps> = ({
                                     className="min-w-[280px] flex-shrink-0 sm:min-w-[320px] md:min-w-[350px]"
                                 >
                                     {/* EventCardSkeleton matching design */}
-                                    <div className="dark:bg-dark overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white dark:border-neutral-700">
+                                    <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-xs dark:border-neutral-800 dark:bg-neutral-800/90">
                                         <div className="relative h-40 w-full bg-neutral-200 dark:bg-neutral-700"></div>
-                                        <div className="p-4">
+                                        <div className="p-4 sm:p-5">
                                             <div className="h-[56px] space-y-2">
                                                 <div className="h-5 w-5/6 rounded bg-neutral-200 dark:bg-neutral-700"></div>
                                                 <div className="h-5 w-1/2 rounded bg-neutral-200 dark:bg-neutral-700"></div>

@@ -14,9 +14,9 @@ interface EventCardProps {
 
 export const EventCardSkeleton = () => {
     return (
-        <div className="dark:bg-dark overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white dark:border-neutral-700">
-            <div className="relative h-40 w-full animate-pulse bg-neutral-200 dark:bg-neutral-700"></div>
-            <div className="p-4">
+        <div className="overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-xs dark:border-neutral-800 dark:bg-neutral-800/90">
+            <div className="relative h-40 w-full animate-pulse bg-neutral-100 dark:bg-neutral-800"></div>
+            <div className="p-4 sm:p-5">
                 <div className="h-[56px] space-y-2">
                     <div className="h-5 w-5/6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                     <div className="h-5 w-1/2 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
@@ -58,7 +58,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, priority = false }) => {
     };
 
     return (
-        <div className="dark:bg-dark relative overflow-hidden rounded-xl border-[1px] border-neutral-200 bg-white transition hover:shadow-md dark:border-neutral-700 dark:text-neutral-100">
+        <div className="relative overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-xs transition-colors duration-200 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-800/90 dark:text-neutral-100 dark:hover:border-neutral-700">
             <div className="relative h-40 w-full bg-neutral-100 dark:bg-neutral-800">
                 <Image
                     src={event.frontmatter.image || '/jorbites-social.jpg'}
@@ -69,7 +69,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, priority = false }) => {
                     priority={priority}
                 />
             </div>
-            <div className="p-4">
+            <div className="p-4 sm:p-5">
                 <h3 className="text-xl font-semibold">
                     <div className="line-clamp-2 h-[56px]">
                         <button
@@ -78,7 +78,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, priority = false }) => {
                                 e.stopPropagation();
                                 navigateToEvent();
                             }}
-                            className="cursor-pointer text-left text-xl font-semibold after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
+                            className="cursor-pointer text-left text-xl font-semibold after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:underline focus:outline-hidden"
                         >
                             {event.frontmatter.title}
                         </button>
