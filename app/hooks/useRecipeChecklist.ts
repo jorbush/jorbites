@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export function useRecipeChecklist(
     recipeId: string | undefined,
@@ -10,6 +10,11 @@ export function useRecipeChecklist(
     const [checkedIndices, setCheckedIndices] = useState<Set<number>>(
         new Set()
     );
+    const checkedIndicesRef = useRef<Set<number>>(checkedIndices);
+
+    useEffect(() => {
+        checkedIndicesRef.current = checkedIndices;
+    }, [checkedIndices]);
 
     useEffect(() => {
         if (!storageKey || typeof window === 'undefined') return;
@@ -18,13 +23,11 @@ export function useRecipeChecklist(
             if (raw) {
                 const parsed = JSON.parse(raw);
                 if (Array.isArray(parsed)) {
-                    setCheckedIndices(
-                        new Set(
-                            parsed.filter(
-                                (n): n is number => typeof n === 'number'
-                            )
-                        )
+                    const loaded = new Set(
+                        parsed.filter((n): n is number => typeof n === 'number')
                     );
+                    checkedIndicesRef.current = loaded;
+                    setCheckedIndices(loaded);
                 }
             }
         } catch {
@@ -34,36 +37,37 @@ export function useRecipeChecklist(
 
     const toggleIndex = useCallback(
         (index: number) => {
-            setCheckedIndices((prev) => {
-                const next = new Set(prev);
-                if (next.has(index)) {
-                    next.delete(index);
-                } else {
-                    next.add(index);
-                }
+            const next = new Set(checkedIndicesRef.current);
+            if (next.has(index)) {
+                next.delete(index);
+            } else {
+                next.add(index);
+            }
+            checkedIndicesRef.current = next;
+            setCheckedIndices(next);
 
-                if (storageKey && typeof window !== 'undefined') {
-                    try {
-                        if (next.size === 0) {
-                            localStorage.removeItem(storageKey);
-                        } else {
-                            localStorage.setItem(
-                                storageKey,
-                                JSON.stringify(Array.from(next))
-                            );
-                        }
-                    } catch {
-                        // Ignore localStorage errors
+            if (storageKey && typeof window !== 'undefined') {
+                try {
+                    if (next.size === 0) {
+                        localStorage.removeItem(storageKey);
+                    } else {
+                        localStorage.setItem(
+                            storageKey,
+                            JSON.stringify(Array.from(next))
+                        );
                     }
+                } catch {
+                    // Ignore localStorage errors
                 }
-                return next;
-            });
+            }
         },
         [storageKey]
     );
 
     const resetChecklist = useCallback(() => {
-        setCheckedIndices(new Set());
+        const next = new Set<number>();
+        checkedIndicesRef.current = next;
+        setCheckedIndices(next);
         if (storageKey && typeof window !== 'undefined') {
             try {
                 localStorage.removeItem(storageKey);
