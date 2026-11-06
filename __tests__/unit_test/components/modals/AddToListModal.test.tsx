@@ -1,4 +1,4 @@
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import AddToListModal from '@/app/components/modals/AddToListModal';
 import useAddToListModal from '@/app/hooks/useAddToListModal';
@@ -53,5 +53,50 @@ describe('AddToListModal', () => {
     it('shows loading state initially', () => {
         render(<AddToListModal />);
         expect(screen.getByText('loading')).toBeDefined();
+    });
+
+    it('renders the tick with text-green-450 when a list contains the recipe', async () => {
+        vi.mocked(axios.get).mockResolvedValue({
+            data: [
+                {
+                    id: 'list-1',
+                    name: 'to cook later',
+                    isDefault: true,
+                    recipeIds: ['recipe-id'],
+                },
+            ],
+        });
+
+        render(<AddToListModal />);
+
+        const checkIconContainer =
+            await screen.findByTestId('list-item-selected');
+        expect(checkIconContainer).toBeDefined();
+        const icon = checkIconContainer.querySelector('svg');
+        expect(icon?.getAttribute('class')).toContain('text-green-450');
+    });
+
+    it('renders the Private list checkbox with green-450 styling when creating a new list', async () => {
+        vi.mocked(axios.get).mockResolvedValue({
+            data: [
+                {
+                    id: 'list-1',
+                    name: 'to cook later',
+                    isDefault: true,
+                    recipeIds: [],
+                },
+            ],
+        });
+
+        render(<AddToListModal />);
+
+        const createButton = await screen.findByText('create_new_list');
+        fireEvent.click(createButton);
+
+        const checkbox = screen.getByLabelText('private_list');
+        expect(checkbox).toBeDefined();
+        expect(checkbox.className).toContain('accent-green-450');
+        expect(checkbox.className).toContain('text-green-450');
+        expect(checkbox.className).toContain('focus:ring-green-450');
     });
 });
