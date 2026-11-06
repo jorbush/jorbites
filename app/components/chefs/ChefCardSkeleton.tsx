@@ -1,58 +1,47 @@
 const ChefCardSkeleton = () => {
     return (
         <div
-            className="group animate-pulse cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-lg focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:focus:ring-offset-neutral-900"
+            className="group animate-pulse overflow-hidden rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-800/90"
             data-cy="chef-card-skeleton"
             data-testid="chef-card-skeleton"
         >
-            {/* Header with gradient background */}
-            <div className="relative h-24 bg-neutral-200 dark:bg-neutral-700" />
-
-            {/* Avatar overlapping the header */}
-            <div className="relative -mt-12 flex flex-col items-center px-4 pb-4">
-                <div className="mb-3 rounded-full border-4 border-white bg-neutral-300 dark:border-neutral-800 dark:bg-neutral-600">
-                    <div className="size-24 rounded-full" />
-                </div>
-
-                {/* Chef Name */}
-                <div className="mb-2 flex w-full flex-col items-center gap-2">
-                    <div className="h-5 w-3/4 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-                    <div className="h-4 w-1/2 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-                </div>
-
-                {/* Most Used Category */}
-                <div className="mb-3 h-4 w-1/3 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-
-                {/* Stats Grid */}
-                <div className="mt-2 grid w-full grid-cols-3 gap-3 border-t border-neutral-200 pt-4 dark:border-neutral-700">
-                    {/* Recipes */}
-                    <div className="flex flex-col items-center">
-                        <div className="mb-1 size-5 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-                        <div className="h-5 w-8 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-                        <div className="mt-1 h-3 w-12 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-                    </div>
-
-                    {/* Likes */}
-                    <div className="flex flex-col items-center">
-                        <div className="mb-1 size-5 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-                        <div className="h-5 w-8 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-                        <div className="mt-1 h-3 w-10 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-                    </div>
-
-                    {/* Badges */}
-                    <div className="flex flex-col items-center">
-                        <div className="mb-1 size-5 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-                        <div className="h-5 w-8 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-                        <div className="mt-1 h-3 w-12 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
-                    </div>
-                </div>
-
-                {/* Recent Activity Indicator */}
-                <div className="mt-4 h-10 w-full rounded-lg bg-neutral-100 dark:bg-neutral-700/50" />
-
-                {/* Average likes indicator */}
-                <div className="mt-2 h-3 w-2/3 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
+            {/* Level badge placeholder */}
+            <div className="mb-2 flex w-full justify-end">
+                <div className="h-5 w-16 rounded-full bg-neutral-200 dark:bg-neutral-700" />
             </div>
+
+            {/* Avatar placeholder */}
+            <div className="my-2 flex justify-center">
+                <div className="size-24 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+            </div>
+
+            {/* Chef Name placeholder */}
+            <div className="mt-1 flex flex-col items-center gap-1.5">
+                <div className="h-5 w-32 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
+                <div className="h-3.5 w-20 rounded-lg bg-neutral-200 dark:bg-neutral-700" />
+            </div>
+
+            {/* Stats Grid Shelf placeholder */}
+            <div className="mt-4 grid w-full grid-cols-3 gap-2 rounded-xl border border-neutral-100 bg-neutral-50/70 p-2.5 dark:border-neutral-700/50 dark:bg-neutral-800/50">
+                <div className="flex flex-col items-center gap-1">
+                    <div className="size-3.5 rounded bg-neutral-200 dark:bg-neutral-700" />
+                    <div className="h-4 w-6 rounded bg-neutral-200 dark:bg-neutral-700" />
+                    <div className="h-2.5 w-10 rounded bg-neutral-200 dark:bg-neutral-700" />
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                    <div className="size-3.5 rounded bg-neutral-200 dark:bg-neutral-700" />
+                    <div className="h-4 w-6 rounded bg-neutral-200 dark:bg-neutral-700" />
+                    <div className="h-2.5 w-10 rounded bg-neutral-200 dark:bg-neutral-700" />
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                    <div className="size-3.5 rounded bg-neutral-200 dark:bg-neutral-700" />
+                    <div className="h-4 w-6 rounded bg-neutral-200 dark:bg-neutral-700" />
+                    <div className="h-2.5 w-10 rounded bg-neutral-200 dark:bg-neutral-700" />
+                </div>
+            </div>
+
+            {/* Recent Activity Indicator placeholder */}
+            <div className="mt-3 h-8 w-full rounded-xl bg-neutral-100 dark:bg-neutral-800/50" />
         </div>
     );
 };

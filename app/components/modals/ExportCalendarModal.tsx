@@ -78,7 +78,7 @@ const ExportCalendarModal: React.FC<ExportCalendarModalProps> = ({
                     type="date"
                     value={calendarStartDate}
                     onChange={(e) => setCalendarStartDate(e.target.value)}
-                    className="w-full rounded-md border border-neutral-300 bg-white p-3 font-light text-neutral-900 outline-hidden transition focus:border-black dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-white"
+                    className="w-full rounded-xl border border-neutral-300 bg-white p-3 font-light text-neutral-900 outline-hidden transition-colors duration-200 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-neutral-100 dark:focus:ring-neutral-100"
                 />
             </div>
         </div>

@@ -79,7 +79,7 @@ const PlanningModal: React.FC<PlanningModalProps> = ({
             <div className="flex flex-row items-center justify-between rounded-lg border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-800">
                 <div className="flex flex-col gap-0.5">
                     <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                        {t('private_list') || 'Private Plan'}
+                        {t('private_meal_plan') || 'Private meal plan'}
                     </span>
                     <span className="text-xs font-light text-neutral-400">
                         {isPrivate ? t('plan_is_private') : t('plan_is_public')}

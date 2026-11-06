@@ -48,7 +48,7 @@ export const RecipeCoCooks: React.FC<RecipeCoCooksProps> = ({
                     <button
                         key={cook.id}
                         type="button"
-                        className="flex cursor-pointer items-center gap-2 rounded-full bg-neutral-100 px-2 py-1 text-left focus:outline-hidden dark:bg-neutral-900"
+                        className="flex cursor-pointer items-center gap-2 rounded-xl border border-neutral-200/80 bg-white px-2.5 py-1 text-left shadow-2xs transition-colors duration-200 hover:border-neutral-300 focus:outline-hidden dark:border-neutral-700/60 dark:bg-neutral-800 dark:hover:border-neutral-600"
                         onClick={() => push(`/profile/${cook.id}`)}
                     >
                         <Avatar

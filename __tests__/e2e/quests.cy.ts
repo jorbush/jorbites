@@ -30,6 +30,9 @@ describe('Quests E2E', () => {
         cy.task('log', 'Quest created');
         cy.wait(1000);
 
+        // Switch to Open filter to view newly created quest
+        cy.contains('button', /open/i).click();
+
         // STEP 3: Verify quest appears in the list
         cy.task('log', '=== STEP 3: Verifying quest in list ===');
         cy.get('[data-cy="quest-card-title"]', { timeout: 10000 })

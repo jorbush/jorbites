@@ -6,11 +6,13 @@ import RecipeSelectModal from '@/app/components/modals/RecipeSelectModal';
 import PlanningModal from '@/app/components/modals/PlanningModal';
 import WeeklyShoppingListModal from '@/app/components/modals/WeeklyShoppingListModal';
 import ExportCalendarModal from '@/app/components/modals/ExportCalendarModal';
+import ConfirmModal from '@/app/components/modals/ConfirmModal';
 import { usePlanningState } from '@/app/components/plannings/usePlanningState';
 import { PlanningHeader } from '@/app/components/plannings/PlanningHeader';
 import { PlanningActions } from '@/app/components/plannings/PlanningActions';
 import { PlanningDayCard } from '@/app/components/plannings/PlanningDayCard';
 import { DAYS_OF_WEEK } from '@/app/utils/constants';
+import { FiChevronLeft } from 'react-icons/fi';
 
 interface PlanningClientProps {
     planning: SafePlanning;
@@ -23,6 +25,7 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
 }) => {
     const {
         push,
+        back,
         t,
         i18n,
         share,
@@ -41,6 +44,8 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
         setIsShoppingListOpen,
         isCalendarExportOpen,
         setIsCalendarExportOpen,
+        isConfirmDeleteOpen,
+        setIsConfirmDeleteOpen,
         groupedMeals,
         handleUpdatePlanning,
         handleAddRecipeClick,
@@ -48,14 +53,53 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
         handleRemoveRecipe,
         handleSaveToggle,
         togglePrivacy,
+        handleDeletePlanning,
         setActiveSlot,
     } = usePlanningState({ planning, currentUser });
 
     return (
         <Container>
-            <div className="flex flex-col gap-6 pb-12 md:pt-8 dark:text-white">
-                {/* Plan Header & Info */}
-                <div className="flex flex-col justify-between gap-6 border-b border-neutral-200 pb-6 md:flex-row md:items-start dark:border-neutral-800">
+            <div className="flex flex-col gap-6 pt-2 pb-12 sm:pt-4 dark:text-white">
+                {/* Top Navigation & Actions Bar */}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    {/* Back Button */}
+                    <button
+                        type="button"
+                        onClick={() => (back ? back() : push('/plannings'))}
+                        className="group inline-flex cursor-pointer items-center gap-2.5 text-sm font-semibold text-neutral-600 transition-colors duration-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+                        aria-label={t('back') || 'Back'}
+                        data-cy="back-button"
+                    >
+                        <div className="flex size-9 items-center justify-center rounded-xl border border-neutral-200/80 bg-white text-neutral-700 shadow-2xs transition-colors duration-200 group-hover:border-neutral-300 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:group-hover:border-neutral-600">
+                            <FiChevronLeft size={18} />
+                        </div>
+                        <span>{t('back') || 'Back'}</span>
+                    </button>
+
+                    {/* Planning Actions */}
+                    <PlanningActions
+                        statusFlags={{
+                            isOwner,
+                            isPrivate,
+                            isSaved,
+                            isSaving,
+                        }}
+                        editedName={editedName}
+                        onShoppingListOpen={() => setIsShoppingListOpen(true)}
+                        onCalendarExportOpen={() =>
+                            setIsCalendarExportOpen(true)
+                        }
+                        onPlanningModalOpen={() => setIsPlanningModalOpen(true)}
+                        handleSaveToggle={handleSaveToggle}
+                        togglePrivacy={togglePrivacy}
+                        onDelete={() => setIsConfirmDeleteOpen(true)}
+                        share={share}
+                        t={t}
+                    />
+                </div>
+
+                {/* Plan Header Card */}
+                <div className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/90">
                     <PlanningHeader
                         editedName={editedName}
                         editedDesc={editedDesc}
@@ -67,24 +111,13 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                         togglePrivacy={togglePrivacy}
                         push={push}
                         t={t}
-                    />
-
-                    <PlanningActions
-                        statusFlags={{ isOwner, isPrivate, isSaved, isSaving }}
-                        editedName={editedName}
-                        onShoppingListOpen={() => setIsShoppingListOpen(true)}
-                        onCalendarExportOpen={() =>
-                            setIsCalendarExportOpen(true)
-                        }
-                        onPlanningModalOpen={() => setIsPlanningModalOpen(true)}
-                        handleSaveToggle={handleSaveToggle}
-                        share={share}
-                        t={t}
+                        mealsCount={meals.length}
+                        showLock={false}
                     />
                 </div>
 
                 {/* Week Diet Grid */}
-                <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-6">
                     {DAYS_OF_WEEK.map((day) => (
                         <PlanningDayCard
                             key={day}
@@ -145,6 +178,17 @@ const PlanningClient: React.FC<PlanningClientProps> = ({
                 onClose={() => setIsCalendarExportOpen(false)}
                 planningName={editedName}
                 meals={meals}
+            />
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmModal
+                open={isConfirmDeleteOpen}
+                setIsOpen={setIsConfirmDeleteOpen}
+                onConfirm={handleDeletePlanning}
+                description={
+                    t('delete_meal_plan_confirmation') ||
+                    'Are you sure you want to delete this meal plan?'
+                }
             />
         </Container>
     );

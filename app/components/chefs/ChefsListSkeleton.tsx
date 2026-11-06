@@ -33,8 +33,8 @@ const ChefsListSkeleton: React.FC<ChefsListSkeletonProps> = ({
             <div className="mb-6 space-y-4">
                 {/* Search Bar */}
                 <div className="flex flex-col gap-4 sm:flex-row">
-                    <div className="h-12 flex-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
-                    <div className="h-12 w-24 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+                    <div className="h-12 flex-1 rounded-2xl bg-neutral-200 dark:bg-neutral-700" />
+                    <div className="h-12 w-24 rounded-2xl bg-neutral-200 dark:bg-neutral-700" />
                 </div>
 
                 {/* Order By Filter Pills */}

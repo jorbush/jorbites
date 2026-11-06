@@ -150,6 +150,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
             <div className="mt-1 shrink-0">
                 <Avatar
                     src={userImage}
+                    extraClasses="ring-2 ring-neutral-100 dark:ring-neutral-800"
                     quality="auto:eco"
                 />
             </div>
@@ -158,7 +159,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({
                 onSubmit={handleSubmit}
                 className="min-w-0 grow"
             >
-                <div className="rounded-xl border border-neutral-200 bg-transparent p-3 transition-colors focus-within:border-neutral-300 dark:border-neutral-700 dark:focus:border-neutral-600">
+                <div className="rounded-xl border border-neutral-200/80 bg-transparent p-3.5 transition-colors duration-200 focus-within:border-neutral-400 dark:border-neutral-700/80 dark:focus-within:border-neutral-500">
                     <CommentInput
                         value={comment}
                         onChange={handleInputChange}

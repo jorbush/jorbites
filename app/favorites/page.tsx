@@ -14,6 +14,7 @@ import getFavoriteRecipes, {
 } from '@/app/actions/getFavoriteRecipes';
 
 import FavoritesClient from './FavoritesClient';
+import FavoritesClientSkeleton from '@/app/components/favorites/FavoritesClientSkeleton';
 
 export const metadata: Metadata = {
     title: 'Mis Favoritos | Jorbites',
@@ -75,7 +76,7 @@ const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
     }
 
     return (
-        <ClientOnly>
+        <ClientOnly fallback={<FavoritesClientSkeleton />}>
             <FavoritesClient
                 recipes={favoriteRecipesResponse.recipes}
                 currentUser={currentUser}

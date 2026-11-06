@@ -30,14 +30,18 @@ const RecipeCategoryView: React.FC<CategoryViewProps> = ({
                 className="flex flex-row items-center gap-4"
                 data-testid="recipe-category-inner"
             >
-                <Icon
-                    size={40}
-                    className="text-neutral-600"
-                    data-testid={`${Icon.name.toLowerCase()}`}
-                />
+                <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-neutral-200/80 bg-neutral-50 shadow-2xs dark:border-neutral-700/60 dark:bg-neutral-800">
+                    <Icon
+                        size={30}
+                        className="text-neutral-600 dark:text-neutral-300"
+                        data-testid={`${Icon.name.toLowerCase()}`}
+                    />
+                </div>
                 <div className="flex flex-col">
-                    <div className="text-lg font-semibold">{displayLabel}</div>
-                    <div className="font-light text-neutral-500">
+                    <div className="text-lg font-semibold text-neutral-900 dark:text-white">
+                        {displayLabel}
+                    </div>
+                    <div className="font-light text-neutral-500 dark:text-neutral-400">
                         {description}
                     </div>
                 </div>

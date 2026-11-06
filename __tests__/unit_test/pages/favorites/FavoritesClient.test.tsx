@@ -143,4 +143,19 @@ describe('FavoritesClient', () => {
         expect(paginationNav).toBeDefined();
         expect(getByText(/of/)).toBeDefined();
     });
+
+    it('renders header with favorites heading', () => {
+        const { getByRole } = render(
+            <FavoritesClient
+                recipes={mockRecipes}
+                currentUser={mockCurrentUser}
+                totalPages={1}
+                currentPage={1}
+                searchParams={{}}
+            />
+        );
+
+        const heading = getByRole('heading', { level: 1 });
+        expect(heading).toBeDefined();
+    });
 });

@@ -45,13 +45,13 @@ const ActionCard: React.FC<ActionCardProps> = ({
 
     return (
         <div className="flex w-full flex-row items-center justify-center">
-            <div className="border-green-450/20 from-green-450/10 to-green-450/20 dark:border-green-450/30 dark:from-green-450/10 dark:to-green-450/20 w-full max-w-2xl rounded-lg border-2 border-dashed bg-gradient-to-r p-8 text-center">
+            <div className="border-green-450/30 from-green-450/10 to-green-450/20 dark:border-green-450/30 dark:from-green-450/10 dark:to-green-450/20 w-full max-w-2xl rounded-2xl border-2 border-dashed bg-gradient-to-r p-6 text-center shadow-xs sm:p-8">
                 <div className="mx-auto max-w-md">
                     <div className="mb-4 text-4xl">{emoji}</div>
-                    <h3 className="mb-3 text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+                    <h3 className="mb-2 text-xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
                         {title}
                     </h3>
-                    <p className="mb-6 text-neutral-600 dark:text-neutral-400">
+                    <p className="mb-6 text-sm text-neutral-600 sm:text-base dark:text-neutral-400">
                         {subtitle}
                     </p>
                     <Button

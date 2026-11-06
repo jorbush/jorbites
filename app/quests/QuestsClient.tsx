@@ -7,12 +7,11 @@ import { useTranslation } from 'react-i18next';
 import useQuestModal from '@/app/hooks/useQuestModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import { FiPlus, FiCheckCircle, FiClock, FiCircle } from 'react-icons/fi';
+import { FcTodoList } from 'react-icons/fc';
 import { formatDistanceToNowLocale } from '@/app/utils/date-utils';
 import Avatar from '@/app/components/utils/Avatar';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import Pagination from '@/app/components/navigation/Pagination';
-import { FcTodoList } from 'react-icons/fc';
-import Button from '@/app/components/buttons/Button';
 
 interface Quest {
     id: string;
@@ -42,26 +41,41 @@ interface Quest {
 const getStatusIcon = (status: string) => {
     switch (status) {
         case 'open':
-            return <FiCircle className="text-blue-500" />;
+            return (
+                <FiCircle
+                    className="text-neutral-500 dark:text-neutral-400"
+                    size={13}
+                />
+            );
         case 'in_progress':
-            return <FiClock className="text-yellow-500" />;
+            return (
+                <FiClock
+                    className="dark:text-green-450 text-neutral-800"
+                    size={13}
+                />
+            );
         case 'completed':
-            return <FiCheckCircle className="text-green-500" />;
+            return (
+                <FiCheckCircle
+                    className="text-neutral-600 dark:text-neutral-300"
+                    size={13}
+                />
+            );
         default:
-            return <FiCircle />;
+            return <FiCircle size={13} />;
     }
 };
 
 const getStatusColor = (status: string) => {
     switch (status) {
-        case 'open':
-            return 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200';
         case 'in_progress':
-            return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200';
+            return 'border border-green-450/40 bg-green-450/15 text-neutral-800 dark:text-green-450';
+        case 'open':
+            return 'border border-neutral-200/80 bg-neutral-100 text-neutral-700 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300';
         case 'completed':
-            return 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200';
+            return 'border border-neutral-200/80 bg-neutral-50 text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900/50 dark:text-neutral-400';
         default:
-            return 'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200';
+            return 'border border-neutral-200/80 bg-neutral-100 text-neutral-700 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300';
     }
 };
 
@@ -78,7 +92,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
     quests,
     totalPages,
     currentPage,
-    initialStatus = 'all',
+    initialStatus = 'in_progress',
 }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
@@ -89,11 +103,12 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
         if (
             initialStatus === 'open' ||
             initialStatus === 'in_progress' ||
-            initialStatus === 'completed'
+            initialStatus === 'completed' ||
+            initialStatus === 'all'
         ) {
             return initialStatus;
         }
-        return 'all';
+        return 'in_progress';
     };
 
     const [filter, setFilter] = useState<
@@ -111,13 +126,14 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
     const handleFilterChange = (newFilter: typeof filter) => {
         setFilter(newFilter);
         const params = new URLSearchParams(window.location.search);
-        if (newFilter !== 'all') {
+        if (newFilter !== 'in_progress') {
             params.set('status', newFilter);
         } else {
             params.delete('status');
         }
         params.set('page', '1');
-        push(`/quests?${params.toString()}`);
+        const queryString = params.toString();
+        push(queryString ? `/quests?${queryString}` : '/quests');
     };
 
     const navigateToRecipe = (recipeId: string) => {
@@ -129,50 +145,57 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
     };
 
     return (
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="pt-2 pb-12 sm:pt-4">
             {/* Header */}
-            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <div className="flex items-center gap-3">
-                        <FcTodoList className="mb-2 size-10" />
-                        <h1 className="pb-2 text-3xl font-semibold text-neutral-900 dark:text-white">
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3.5">
+                    <div className="flex size-11 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 shadow-2xs sm:size-12 dark:border-neutral-700/60 dark:bg-neutral-800">
+                        <FcTodoList size={28} />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white">
                             {t('quests') || 'Recipe Quests'}
                         </h1>
+                        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                            {t('quests_subtitle') ||
+                                'Request recipes from the community or fulfill existing requests'}
+                        </p>
                     </div>
-                    <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-                        {t('quests_subtitle') ||
-                            'Request recipes from the community or fulfill existing requests'}
-                    </p>
                 </div>
                 <div className="hidden md:block md:flex-shrink-0">
-                    <Button
+                    <button
+                        type="button"
                         onClick={handleRequestRecipe}
-                        label={t('request_recipe') || 'Request Recipe'}
-                        icon={FiPlus}
-                        rose
-                        dataCy="request-recipe-button"
-                    />
+                        className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+                        data-cy="request-recipe-button"
+                    >
+                        <FiPlus size={18} />
+                        <span>{t('request_recipe') || 'Request Recipe'}</span>
+                    </button>
                 </div>
             </div>
 
             {/* Filters Row with Horizontal Scroll */}
             <div className="-mx-4 mb-6 overflow-x-auto px-4 sm:mx-0 sm:px-0">
                 <div className="flex min-w-max gap-2 pb-2">
-                    {(['all', 'open', 'in_progress', 'completed'] as const).map(
-                        (status) => (
-                            <button
-                                key={status}
-                                type="button"
-                                onClick={() => handleFilterChange(status)}
-                                className={`flex-shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition ${
-                                    filter === status
-                                        ? 'bg-rose-500 text-white'
-                                        : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
-                                }`}
-                            >
-                                {t(status) || status.replace('_', ' ')}
-                            </button>
-                        )
+                    {(['in_progress', 'open', 'completed', 'all'] as const).map(
+                        (status) => {
+                            const isActive = filter === status;
+                            return (
+                                <button
+                                    key={status}
+                                    type="button"
+                                    onClick={() => handleFilterChange(status)}
+                                    className={`flex-shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                                        isActive
+                                            ? 'border-green-450/50 bg-green-450 hover:bg-green-450/90 border font-semibold text-neutral-900 shadow-xs'
+                                            : 'border border-neutral-200/80 bg-neutral-50/80 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-800'
+                                    }`}
+                                >
+                                    {t(status) || status.replace('_', ' ')}
+                                </button>
+                            );
+                        }
                     )}
                 </div>
             </div>
@@ -181,7 +204,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
             <button
                 type="button"
                 onClick={handleRequestRecipe}
-                className="fixed right-6 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-10 flex size-14 cursor-pointer items-center justify-center rounded-full bg-rose-500 text-white shadow-lg transition hover:bg-rose-600 md:hidden"
+                className="fixed right-6 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-10 flex size-14 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white shadow-lg transition-colors duration-200 hover:bg-neutral-800 md:hidden dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
                 data-cy="request-recipe-button-mobile"
                 aria-label={t('request_recipe') || 'Request Recipe'}
             >
@@ -190,137 +213,127 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
 
             {/* Quests Grid */}
             {quests.length === 0 ? (
-                <div className="rounded-lg border-2 border-dashed border-neutral-300 p-12 text-center dark:border-neutral-800">
-                    <FiCircle className="mx-auto mb-4 size-12 text-neutral-400" />
-                    <h3 className="mb-2 text-lg font-medium text-neutral-900 dark:text-white">
+                <div className="rounded-2xl border border-dashed border-neutral-300 p-12 text-center dark:border-neutral-800">
+                    <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 text-neutral-400 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-500">
+                        <FiCircle size={22} />
+                    </div>
+                    <h3 className="mb-1 text-base font-semibold text-neutral-900 dark:text-white">
                         {t('no_quests') || 'No quests found'}
                     </h3>
-                    <p className="text-neutral-600 dark:text-neutral-400">
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
                         {t('no_quests_description') ||
                             'Be the first to request a recipe!'}
                     </p>
                 </div>
             ) : (
-                <div className="space-y-6">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                     {quests.map((quest) => (
                         <div
                             key={quest.id}
-                            className="overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm transition hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900"
+                            className="flex flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs transition-colors duration-200 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900/90 dark:hover:border-neutral-700"
                         >
-                            <div className="p-6">
+                            <div>
                                 {/* Quest Header */}
-                                <div className="mb-4 flex items-start justify-between">
-                                    <div className="flex-1">
-                                        <div className="mb-2 flex items-center gap-2">
-                                            {getStatusIcon(quest.status)}
-                                            <span
-                                                className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(
-                                                    quest.status
-                                                )}`}
-                                                data-cy="quest-card-status"
-                                            >
-                                                {t(quest.status) ||
-                                                    quest.status}
-                                            </span>
-                                        </div>
-                                        <h2 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-white">
-                                            <button
-                                                type="button"
-                                                className="cursor-pointer border-0 bg-transparent p-0 text-left text-xl font-semibold text-neutral-900 hover:text-rose-500 focus:outline-hidden dark:text-white dark:hover:text-rose-400"
-                                                onClick={() =>
-                                                    navigateToQuest(quest.id)
-                                                }
-                                                data-cy="quest-card-title"
-                                            >
-                                                {quest.title}
-                                            </button>
-                                        </h2>
-                                        <p
-                                            className="text-neutral-600 dark:text-neutral-400"
-                                            data-cy="quest-card-description"
+                                <div className="mb-2 flex items-start justify-between gap-3">
+                                    <h2 className="text-base font-bold text-neutral-900 sm:text-lg dark:text-white">
+                                        <button
+                                            type="button"
+                                            className="hover:text-green-450 dark:hover:text-green-450 line-clamp-1 cursor-pointer border-0 bg-transparent p-0 text-left text-base font-bold text-neutral-900 transition-colors duration-200 focus:outline-hidden sm:text-lg dark:text-white"
+                                            onClick={() =>
+                                                navigateToQuest(quest.id)
+                                            }
+                                            data-cy="quest-card-title"
                                         >
-                                            {quest.description}
-                                        </p>
-                                    </div>
+                                            {quest.title}
+                                        </button>
+                                    </h2>
+                                    <span
+                                        className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${getStatusColor(
+                                            quest.status
+                                        )}`}
+                                        data-cy="quest-card-status"
+                                    >
+                                        {getStatusIcon(quest.status)}
+                                        <span>
+                                            {t(quest.status) || quest.status}
+                                        </span>
+                                    </span>
                                 </div>
 
-                                {/* Quest Footer */}
-                                <div className="flex items-center justify-between border-t border-neutral-200 pt-4 dark:border-neutral-800">
-                                    <div className="flex items-center gap-3">
+                                <p
+                                    className="line-clamp-2 text-sm leading-relaxed text-neutral-600 sm:line-clamp-3 dark:text-neutral-400"
+                                    data-cy="quest-card-description"
+                                >
+                                    {quest.description}
+                                </p>
+                            </div>
+
+                            {/* Quest Bottom Shelf / Footer */}
+                            <div className="mt-4 border-t border-neutral-100 pt-3 dark:border-neutral-800">
+                                <div className="flex items-center justify-between gap-2">
+                                    <div className="flex min-w-0 items-center gap-2.5">
                                         <Avatar
                                             src={quest.user.image}
                                             size={32}
                                         />
-                                        <div className="text-sm">
-                                            <p className="font-medium text-neutral-900 dark:text-white">
+                                        <div className="flex min-w-0 flex-col">
+                                            <span className="truncate text-xs font-semibold text-neutral-800 dark:text-neutral-200">
                                                 {quest.user.name}
-                                            </p>
-                                            <p className="text-neutral-500 dark:text-neutral-400">
+                                            </span>
+                                            <span className="text-[11px] text-neutral-500 dark:text-neutral-400">
                                                 {formatDistanceToNowLocale(
                                                     new Date(quest.createdAt),
                                                     i18n.language
                                                 )}
-                                            </p>
+                                            </span>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                                            {quest.recipes.length}{' '}
-                                            {quest.recipes.length === 1
-                                                ? t('reply') || 'reply'
-                                                : t('replies') || 'replies'}
-                                        </span>
-                                    </div>
+                                    <span className="shrink-0 text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                                        {quest.recipes.length}{' '}
+                                        {quest.recipes.length === 1
+                                            ? t('reply') || 'reply'
+                                            : t('replies') || 'replies'}
+                                    </span>
                                 </div>
 
                                 {/* Recipe Replies Preview */}
                                 {quest.recipes.length > 0 && (
-                                    <div className="mt-4 border-t border-neutral-200 pt-4 dark:border-neutral-800">
-                                        <p className="mb-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                            {t('recipe_replies') ||
-                                                'Recipe Replies'}
-                                        </p>
-                                        <div className="flex gap-2 overflow-x-auto">
-                                            {quest.recipes
-                                                .slice(0, 4)
-                                                .map((recipe) => (
-                                                    <button
-                                                        key={recipe.id}
-                                                        type="button"
-                                                        className="group relative size-20 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg border-0 p-0"
-                                                        onClick={() =>
-                                                            navigateToRecipe(
-                                                                recipe.id
-                                                            )
+                                    <div className="mt-3 flex gap-2 overflow-x-auto pt-1">
+                                        {quest.recipes
+                                            .slice(0, 3)
+                                            .map((recipe) => (
+                                                <button
+                                                    key={recipe.id}
+                                                    type="button"
+                                                    className="group/reply relative size-12 flex-shrink-0 cursor-pointer overflow-hidden rounded-xl border border-neutral-200/80 p-0 dark:border-neutral-700/60"
+                                                    onClick={() =>
+                                                        navigateToRecipe(
+                                                            recipe.id
+                                                        )
+                                                    }
+                                                    aria-label={recipe.title}
+                                                >
+                                                    <CustomProxyImage
+                                                        src={
+                                                            recipe.imageSrc ||
+                                                            '/avocado.webp'
                                                         }
-                                                        aria-label={
-                                                            recipe.title
-                                                        }
-                                                    >
-                                                        <CustomProxyImage
-                                                            src={
-                                                                recipe.imageSrc ||
-                                                                '/avocado.webp'
-                                                            }
-                                                            fill
-                                                            className="object-cover transition group-hover:scale-110"
-                                                            alt={recipe.title}
-                                                            quality="auto:eco"
-                                                            width={80}
-                                                            height={80}
-                                                        />
-                                                    </button>
-                                                ))}
-                                            {quest.recipes.length > 4 && (
-                                                <div className="flex size-20 flex-shrink-0 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800">
-                                                    <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                                                        +
-                                                        {quest.recipes.length -
-                                                            4}
-                                                    </span>
-                                                </div>
-                                            )}
-                                        </div>
+                                                        fill
+                                                        className="object-cover transition-transform duration-200 group-hover/reply:scale-105"
+                                                        alt={recipe.title}
+                                                        quality="auto:eco"
+                                                        width={48}
+                                                        height={48}
+                                                    />
+                                                </button>
+                                            ))}
+                                        {quest.recipes.length > 3 && (
+                                            <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800">
+                                                <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+                                                    +{quest.recipes.length - 3}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

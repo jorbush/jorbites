@@ -16,7 +16,7 @@ export const getMealIcon = (mealType: string) => {
             return (
                 <IoRestaurantOutline
                     size={20}
-                    className="text-emerald-500"
+                    className="text-green-450"
                 />
             );
         case 'dinner':
@@ -43,7 +43,7 @@ export const getMealHeaderClass = (mealType: string) => {
         case 'breakfast':
             return 'bg-amber-50/50 border-amber-200 text-amber-900 dark:bg-amber-950/20 dark:border-amber-900/40 dark:text-amber-300';
         case 'lunch':
-            return 'bg-emerald-50/50 border-emerald-200 text-emerald-900 dark:bg-emerald-950/20 dark:border-emerald-900/40 dark:text-emerald-300';
+            return 'bg-green-450/15 border-green-450/30 text-neutral-900 dark:bg-green-450/10 dark:border-green-450/20 dark:text-green-450';
         case 'dinner':
             return 'bg-indigo-50/50 border-indigo-200 text-indigo-900 dark:bg-indigo-950/20 dark:border-indigo-900/40 dark:text-indigo-300';
         case 'snack':

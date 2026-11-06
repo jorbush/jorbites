@@ -82,14 +82,13 @@ const Comments: React.FC<CommentsProps> = ({
     });
 
     return (
-        <div className="flex flex-col pr-2 pl-2">
-            <hr />
-            <div className="mt-8 mb-4 flex flex-row items-center justify-between">
+        <div className="flex flex-col rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/90">
+            <div className="mb-6 flex flex-row items-center justify-between">
                 <div className="flex flex-row items-center">
-                    <div className="text-xl font-semibold dark:text-neutral-100">
+                    <div className="text-xl font-bold text-neutral-900 dark:text-white">
                         {isMounted ? t('comments') : 'comments'}
                     </div>
-                    <div className="text-md ml-2 text-neutral-500">
+                    <div className="ml-2.5 inline-flex items-center rounded-full border border-neutral-200/80 bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-700 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300">
                         {comments.length}
                     </div>
                 </div>
@@ -98,36 +97,41 @@ const Comments: React.FC<CommentsProps> = ({
                     onSortChange={handleSortChange}
                 />
             </div>
-            <div className="mr-4 ml-4">
+            <div>
                 <CommentBox
                     userImage={currentUser?.image}
                     onCreateComment={onCreateComment}
                     isLoading={isLoading}
                 />
-                {sortedComments.map((comment: SafeComment) => (
-                    <div
-                        key={comment.id}
-                        className="mr-2 ml-2"
-                    >
-                        <hr />
-                        <Comment
-                            userId={comment.user.id}
-                            userImage={comment.user.image}
-                            comment={comment.comment}
-                            createdAt={comment.createdAt}
-                            userName={comment.user.name ?? ''}
-                            verified={comment.user.verified}
-                            canDelete={currentUser?.id === comment.userId}
-                            commentId={comment.id}
-                            userLevel={comment.user.level}
-                            rating={comment.rating}
-                            likedIds={comment.likedIds || []}
-                            currentUser={currentUser}
-                            isCooked={comment.isCooked}
-                            imageSrc={comment.imageSrc}
-                        />
+                {sortedComments.length > 0 && (
+                    <div className="mt-4 divide-y divide-neutral-100 dark:divide-neutral-800">
+                        {sortedComments.map((comment: SafeComment) => (
+                            <div
+                                key={comment.id}
+                                className="py-3 first:pt-0 last:pb-0"
+                            >
+                                <Comment
+                                    userId={comment.user.id}
+                                    userImage={comment.user.image}
+                                    comment={comment.comment}
+                                    createdAt={comment.createdAt}
+                                    userName={comment.user.name ?? ''}
+                                    verified={comment.user.verified}
+                                    canDelete={
+                                        currentUser?.id === comment.userId
+                                    }
+                                    commentId={comment.id}
+                                    userLevel={comment.user.level}
+                                    rating={comment.rating}
+                                    likedIds={comment.likedIds || []}
+                                    currentUser={currentUser}
+                                    isCooked={comment.isCooked}
+                                    imageSrc={comment.imageSrc}
+                                />
+                            </div>
+                        ))}
                     </div>
-                ))}
+                )}
             </div>
         </div>
     );

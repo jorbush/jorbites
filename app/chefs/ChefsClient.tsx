@@ -100,17 +100,14 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                 {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-center gap-3">
-                        <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-amber-500">
-                            <IoRestaurantOutline
-                                className="text-white"
-                                size={28}
-                            />
+                        <div className="flex size-12 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 text-neutral-700 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300">
+                            <IoRestaurantOutline size={26} />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-semibold text-neutral-900 dark:text-white">
+                            <h1 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white">
                                 {t('chefs')}
                             </h1>
-                            <p className="text-neutral-600 dark:text-neutral-400">
+                            <p className="text-sm text-neutral-500 sm:text-base dark:text-neutral-400">
                                 {t('chefs_subtitle')}
                             </p>
                         </div>
@@ -140,7 +137,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                                     handleSearchChange(e.target.value)
                                 }
                                 onKeyDown={handleKeyDown}
-                                className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-full border border-neutral-300 bg-white py-3 pr-10 pl-11 text-sm transition outline-none focus:ring-2 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+                                className="focus:border-green-450 focus:ring-green-450/20 dark:focus:border-green-450 w-full rounded-2xl border border-neutral-200/80 bg-white py-3 pr-10 pl-11 text-sm shadow-xs transition-colors duration-200 outline-none focus:ring-2 dark:border-neutral-700/80 dark:bg-neutral-800/80 dark:text-white"
                                 data-cy="chef-search-input"
                                 data-testid="chef-search-input"
                                 aria-label={t('search_chefs') ?? ''}
@@ -152,7 +149,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                                         handleSearchChange('');
                                         updateURL('', orderBy);
                                     }}
-                                    className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+                                    className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer rounded-full p-1 text-neutral-400 transition-colors duration-200 hover:text-neutral-600 dark:hover:text-neutral-200"
                                     aria-label="Clear search"
                                 >
                                     <BiX size={20} />
@@ -162,7 +159,7 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                         <button
                             type="button"
                             onClick={handleSearchSubmit}
-                            className="rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+                            className="cursor-pointer rounded-2xl bg-neutral-900 px-6 py-3 text-sm font-semibold text-white shadow-xs transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
                             data-cy="chef-search-button"
                             data-testid="chef-search-button"
                         >
@@ -178,10 +175,10 @@ const ChefsClient: React.FC<ChefsClientProps> = ({
                                     key={order}
                                     type="button"
                                     onClick={() => handleOrderByChange(order)}
-                                    className={`flex-shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition ${
+                                    className={`flex-shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
                                         orderBy === order
-                                            ? 'bg-orange-500 text-white'
-                                            : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300 dark:bg-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-600'
+                                            ? 'border-green-450/50 bg-green-450 hover:bg-green-450/90 border text-neutral-900 shadow-xs'
+                                            : 'border border-neutral-200/80 bg-neutral-50/80 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:border-neutral-600'
                                     }`}
                                     data-cy={`order-by-${order}`}
                                     data-testid={`order-by-${order}`}

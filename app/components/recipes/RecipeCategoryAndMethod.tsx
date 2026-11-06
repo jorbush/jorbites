@@ -23,32 +23,39 @@ const RecipeCategoryAndMethod: React.FC<RecipeInfoProps> = ({
 }) => {
     const hasContent = (categories && categories.length > 0) || method;
 
-    return (
-        <>
-            {hasContent && <hr />}
+    if (!hasContent) {
+        return (
             <div
                 data-testid="recipe-category-and-method"
                 data-cy="cooking-methods"
-                className="flex flex-row flex-wrap gap-8 dark:text-neutral-100"
-            >
-                {categories &&
-                    categories.map((category, index) => (
-                        <RecipeCategoryView
-                            key={`${category.label}-${index}`}
-                            icon={category.icon}
-                            label={category.label}
-                            description={''}
-                        />
-                    ))}
-                {method && (
+                className="hidden"
+            />
+        );
+    }
+
+    return (
+        <div
+            data-testid="recipe-category-and-method"
+            data-cy="cooking-methods"
+            className="flex flex-row flex-wrap gap-6 rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/90 dark:text-neutral-100"
+        >
+            {categories &&
+                categories.map((category, index) => (
                     <RecipeCategoryView
-                        icon={method.icon}
-                        label={method?.label}
+                        key={`${category.label}-${index}`}
+                        icon={category.icon}
+                        label={category.label}
                         description={''}
                     />
-                )}
-            </div>
-        </>
+                ))}
+            {method && (
+                <RecipeCategoryView
+                    icon={method.icon}
+                    label={method?.label}
+                    description={''}
+                />
+            )}
+        </div>
     );
 };
 

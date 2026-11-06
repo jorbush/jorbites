@@ -42,18 +42,18 @@ export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
 
     return (
         <div
-            className="flex flex-col pr-2 pl-2"
+            className="flex flex-col rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/90"
             data-cy="community-remixes-section"
             data-testid="community-remixes-section"
         >
-            <hr />
-            <div className="mt-8 mb-4 flex flex-row items-center gap-2">
-                <TbGitFork
-                    size={22}
-                    className="text-neutral-700 dark:text-neutral-200"
-                    aria-hidden="true"
-                />
-                <div className="text-xl font-semibold dark:text-neutral-100">
+            <div className="mb-4 flex flex-row items-center gap-2.5">
+                <div className="flex size-9 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 text-neutral-700 shadow-2xs dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300">
+                    <TbGitFork
+                        size={18}
+                        aria-hidden="true"
+                    />
+                </div>
+                <div className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
                     {title}
                 </div>
             </div>
@@ -67,7 +67,7 @@ export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
                         data-cy={`remix-card-${item.id}`}
                         data-testid={`remix-card-${item.id}`}
                     >
-                        <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-neutral-100 shadow-xs transition-transform duration-200 group-hover:scale-[1.02] dark:bg-neutral-800">
+                        <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-neutral-200/60 bg-neutral-100 shadow-xs transition-transform duration-200 group-hover:scale-[1.02] dark:border-neutral-800 dark:bg-neutral-800">
                             {item.imageSrc && (
                                 <CustomProxyImage
                                     src={item.imageSrc}
@@ -84,7 +84,7 @@ export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
                             )}
                         </div>
 
-                        <div className="group-hover:text-green-450 dark:group-hover:text-green-450 mt-2 line-clamp-1 font-semibold text-neutral-800 transition dark:text-neutral-100">
+                        <div className="group-hover:text-green-450 dark:group-hover:text-green-450 mt-2 line-clamp-1 font-bold text-neutral-900 transition-colors duration-200 dark:text-white">
                             {item.title}
                         </div>
 

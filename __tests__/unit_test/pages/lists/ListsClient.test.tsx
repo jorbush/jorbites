@@ -10,11 +10,13 @@ import ListsClient from '@/app/lists/ListsClient';
 import { SafeList, SafeUser } from '@/app/types';
 import axios from 'axios';
 
+const mockPush = vi.fn();
+
 vi.mock('axios');
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
         refresh: vi.fn(),
-        push: vi.fn(),
+        push: mockPush,
     }),
 }));
 
@@ -188,5 +190,19 @@ describe('ListsClient', () => {
         });
 
         expect(axios.delete).toHaveBeenCalledWith('/api/lists/list-2');
+    });
+
+    it('navigates to user profile when clicking author in list card', () => {
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
+
+        const authorButtons = screen.getAllByText('Test User');
+        fireEvent.click(authorButtons[0]);
+        expect(mockPush).toHaveBeenCalledWith('/profile/user-id');
     });
 });

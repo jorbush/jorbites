@@ -137,7 +137,7 @@ const AddToListModal = () => {
                                 onClick={() => handleToggleRecipeInList(list)}
                                 data-cy="list-item"
                                 data-cy-id={list.id}
-                                className={`group flex w-full cursor-pointer flex-row items-center justify-between rounded-lg border-2 p-4 text-left transition hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
+                                className={`group flex w-full cursor-pointer flex-row items-center justify-between rounded-lg border-2 p-4 text-left transition-colors duration-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
                                     isSelected
                                         ? 'border-black dark:border-white'
                                         : 'border-neutral-200 dark:border-neutral-700'
@@ -158,7 +158,7 @@ const AddToListModal = () => {
                                     >
                                         <FaCheckCircle
                                             size={20}
-                                            className="absolute inset-0 text-green-500 transition-opacity duration-200"
+                                            className="text-green-450 absolute inset-0 transition-opacity duration-200"
                                         />
                                     </div>
                                 )}

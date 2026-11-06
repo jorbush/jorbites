@@ -27,7 +27,7 @@ describe('PlanningModal', () => {
         expect(screen.getByText('Create Diet')).toBeDefined();
         expect(screen.getByLabelText('plan_name')).toBeDefined();
         expect(screen.getByLabelText('plan_description')).toBeDefined();
-        expect(screen.getByText('private_list')).toBeDefined();
+        expect(screen.getByText('private_meal_plan')).toBeDefined();
     });
 
     it('does not render when closed', () => {

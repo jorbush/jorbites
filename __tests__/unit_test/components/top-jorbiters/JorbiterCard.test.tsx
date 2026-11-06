@@ -93,4 +93,21 @@ describe('<JorbiterCard />', () => {
         const cardDiv = container.firstChild as HTMLElement;
         expect(cardDiv.className).toContain('border-neutral-400');
     });
+
+    it('renders correctly when user has no badges', () => {
+        const jorbiterWithoutBadges = {
+            ...mockJorbiter,
+            badges: undefined,
+        };
+        render(
+            <JorbiterCard
+                jorbiter={jorbiterWithoutBadges}
+                index={3}
+            />
+        );
+        expect(screen.getByText('John Doe')).toBeDefined();
+        expect(screen.getByText('42')).toBeDefined();
+        expect(screen.getByText('100')).toBeDefined();
+        expect(screen.queryByText('badges')).toBeNull();
+    });
 });

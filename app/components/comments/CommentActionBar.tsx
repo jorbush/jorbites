@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { HiOutlinePaperAirplane, HiOutlineCamera } from 'react-icons/hi';
+import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 import useIsMounted from '@/app/hooks/useIsMounted';
 
 export interface CommentActionBarProps {
@@ -32,15 +33,15 @@ const CommentActionBar: React.FC<CommentActionBarProps> = ({
     return (
         <div className="mt-3 flex items-center justify-between border-t border-neutral-200/70 pt-2.5 dark:border-neutral-700/70">
             {/* Action Options (Rate & Photo) */}
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <div className="flex flex-wrap items-center gap-2">
                 {/* Toggle Star Rating Button (Icon-only on < md, Text on >= md) */}
                 <button
                     type="button"
                     onClick={onToggleRating}
-                    className={`flex cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition select-none ${
+                    className={`flex cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-semibold shadow-2xs transition-colors duration-200 select-none ${
                         rating !== null || showRating
-                            ? 'bg-amber-400/20 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300'
-                            : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                            ? 'border-amber-300/80 bg-amber-50 text-amber-700 dark:border-amber-500/30 dark:bg-amber-950/30 dark:text-amber-300'
+                            : 'border-neutral-200/80 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700/60'
                     }`}
                     data-testid="rate-toggle-btn"
                     title={
@@ -53,8 +54,18 @@ const CommentActionBar: React.FC<CommentActionBarProps> = ({
                             : 'Rate'
                     }
                 >
-                    <span className="text-amber-500">⭐</span>
-                    <span className="hidden md:inline">
+                    {rating !== null || showRating ? (
+                        <AiFillStar
+                            size={15}
+                            className="text-amber-500"
+                        />
+                    ) : (
+                        <AiOutlineStar
+                            size={15}
+                            className="text-neutral-500 dark:text-neutral-400"
+                        />
+                    )}
+                    <span className="hidden text-xs font-semibold md:inline">
                         {mounted
                             ? String(
                                   t('rate') && t('rate') !== 'rate'
@@ -89,10 +100,10 @@ const CommentActionBar: React.FC<CommentActionBarProps> = ({
                     />
                     <label
                         htmlFor="cooked-photo-input"
-                        className={`flex cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition select-none ${
+                        className={`flex cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-semibold shadow-2xs transition-colors duration-200 select-none ${
                             selectedFile
-                                ? 'bg-green-450/20 dark:bg-green-450/10 text-green-800 dark:text-green-300'
-                                : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                                ? 'border-green-450/40 bg-green-450/15 dark:text-green-450 text-neutral-900'
+                                : 'border-neutral-200/80 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700/60'
                         }`}
                         title={
                             mounted
@@ -105,8 +116,15 @@ const CommentActionBar: React.FC<CommentActionBarProps> = ({
                                 : 'Add photo'
                         }
                     >
-                        <HiOutlineCamera size={14} />
-                        <span className="hidden md:inline">
+                        <HiOutlineCamera
+                            size={15}
+                            className={
+                                selectedFile
+                                    ? 'dark:text-green-450 text-neutral-900'
+                                    : 'text-neutral-500 dark:text-neutral-400'
+                            }
+                        />
+                        <span className="hidden text-xs font-semibold md:inline">
                             {mounted
                                 ? String(
                                       t('add_photo') &&
@@ -125,9 +143,9 @@ const CommentActionBar: React.FC<CommentActionBarProps> = ({
                 type="submit"
                 data-testid="submit-comment"
                 disabled={isSubmitting || commentEmpty}
-                className={`bg-green-450 flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-green-950 transition hover:opacity-90 md:px-4 ${
+                className={`border-green-450 bg-green-450 flex items-center justify-center gap-1.5 rounded-xl border px-3.5 py-1.5 text-xs font-bold text-neutral-950 shadow-2xs transition-colors duration-200 hover:brightness-95 md:px-4 ${
                     isSubmitting || commentEmpty
-                        ? 'cursor-not-allowed opacity-50'
+                        ? 'cursor-not-allowed opacity-50 shadow-none'
                         : 'cursor-pointer'
                 }`}
                 data-cy="submit-comment"
@@ -149,7 +167,7 @@ const CommentActionBar: React.FC<CommentActionBarProps> = ({
                 </span>
                 <HiOutlinePaperAirplane
                     size={13}
-                    className="rotate-90"
+                    className="rotate-90 text-neutral-950"
                 />
             </button>
         </div>
