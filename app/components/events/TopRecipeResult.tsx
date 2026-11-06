@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiAward, FiHeart } from 'react-icons/fi';
+import { FiHeart } from 'react-icons/fi';
 import Link from 'next/link';
 import Image from 'next/image';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
@@ -53,18 +53,12 @@ const TopRecipeResult: React.FC<TopRecipeResultProps> = ({
                             height={64}
                             className="object-contain transition-transform duration-500 hover:rotate-12"
                         />
-                        <div className="bg-green-450 absolute -right-1 -bottom-1 flex size-6 items-center justify-center rounded-lg text-neutral-900 shadow-xs">
-                            <FiAward className="text-xs" />
-                        </div>
                     </div>
                 </div>
 
                 {/* Content details */}
                 <div className="flex-1 text-center md:text-left">
-                    <span className="border-green-450/30 bg-green-450/15 dark:text-green-450 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold text-neutral-800">
-                        🏆 {t(`recipe_of_the_${category}`)}
-                    </span>
-                    <h3 className="mt-2.5 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+                    <h3 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
                         {t(`recipe_of_the_${category}_winner`)}
                     </h3>
                     <p className="mb-4 text-sm text-neutral-500 dark:text-neutral-400">

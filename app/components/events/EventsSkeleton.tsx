@@ -27,14 +27,10 @@ export const EventsSkeleton: React.FC<EventsSkeletonProps> = ({
                 {/* WeeklyChallenge Skeleton (only if it exists) */}
                 {weeklyChallenge && (
                     <div className="mb-10 animate-pulse rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs dark:border-neutral-800 dark:bg-neutral-800/90">
-                        <div className="mb-4 flex items-center gap-3">
-                            {/* Icon placeholder */}
-                            <div className="size-10 rounded-xl bg-neutral-200 sm:size-11 dark:bg-neutral-700"></div>
-                            {/* Title placeholder */}
-                            <div className="h-6 w-36 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                        </div>
+                        {/* Title placeholder */}
+                        <div className="mb-2 h-7 w-44 rounded bg-neutral-200 sm:h-8 dark:bg-neutral-700"></div>
                         {/* Challenge name placeholder */}
-                        <div className="mb-2 h-6 w-48 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                        <div className="mb-2 h-6 w-36 rounded bg-neutral-200 dark:bg-neutral-700"></div>
                         {/* Description placeholder */}
                         <div className="mb-4 space-y-2">
                             <div className="h-4 w-full rounded bg-neutral-200 dark:bg-neutral-700"></div>
