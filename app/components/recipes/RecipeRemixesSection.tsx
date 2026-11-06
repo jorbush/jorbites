@@ -58,7 +58,10 @@ export const RecipeRemixesSection: React.FC<RecipeRemixesSectionProps> = ({
                 </div>
             </div>
 
-            <ScrollableContainer className="gap-4">
+            <ScrollableContainer
+                className="gap-4"
+                fadeColorClassName="from-white dark:from-dark"
+            >
                 {remixes.map((item) => (
                     <Link
                         key={item.id}
