@@ -15,6 +15,8 @@ import { RecipeInfoHeader } from './RecipeInfoHeader';
 import { RecipeCoCooks } from './RecipeCoCooks';
 import { RecipeLinkedRecipes } from './RecipeLinkedRecipes';
 import { RecipeGanttTable } from './RecipeGanttTable';
+import RecipeIngredients from './RecipeIngredients';
+import RecipeSteps from './RecipeSteps';
 import useIsMounted from '@/app/hooks/useIsMounted';
 import useCooksnapModal from '@/app/hooks/useCooksnapModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
@@ -80,90 +82,6 @@ const RecipeDescription: React.FC<RecipeDescriptionProps> = ({ content }) => {
             data-cy="recipe-description-display"
         >
             {typeof content === 'string' ? formatText(content) : content}
-        </div>
-    );
-};
-
-interface RecipeIngredientsProps {
-    items: string[];
-}
-
-const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({ items }) => {
-    const { t } = useTranslation();
-    const mounted = useIsMounted();
-
-    if (items.length === 0) return null;
-
-    const seen = new Map<string, number>();
-
-    return (
-        <div
-            className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/90 dark:text-neutral-100"
-            data-cy="ingredients-section"
-        >
-            <div className="flex flex-row items-center gap-2 text-xl font-bold text-neutral-900 dark:text-white">
-                {mounted ? t('ingredients') : 'ingredients'}
-            </div>
-            <ul className="list-disc space-y-2 pt-4 pl-6 text-neutral-700 dark:text-neutral-300">
-                {items.map((item) => {
-                    const count = (seen.get(item) ?? 0) + 1;
-                    seen.set(item, count);
-                    const key = count === 1 ? item : `${item}-${count}`;
-                    return (
-                        <li
-                            key={key}
-                            className="leading-relaxed"
-                        >
-                            {formatText(item)}
-                        </li>
-                    );
-                })}
-            </ul>
-        </div>
-    );
-};
-
-interface RecipeStepsProps {
-    items: string[];
-}
-
-const RecipeSteps: React.FC<RecipeStepsProps> = ({ items }) => {
-    const { t } = useTranslation();
-    const mounted = useIsMounted();
-
-    if (items.length === 0) return null;
-
-    const seen = new Map<string, number>();
-
-    return (
-        <div
-            className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-900/90 dark:text-neutral-100"
-            data-cy="steps-section"
-        >
-            <div className="flex flex-row items-center gap-2 text-xl font-bold text-neutral-900 dark:text-white">
-                {mounted ? t('steps') : 'steps'}
-            </div>
-            <ol className="mt-4 space-y-3.5">
-                {items.map((item, index) => {
-                    const count = (seen.get(item) ?? 0) + 1;
-                    seen.set(item, count);
-                    const key = count === 1 ? item : `${item}-${count}`;
-                    return (
-                        <li
-                            key={key}
-                            className="overflow-wrap-anywhere flex items-start gap-3.5 break-words"
-                            data-cy={`step-${index}`}
-                        >
-                            <span className="border-green-450/40 bg-green-450/15 dark:text-green-450 flex size-7 shrink-0 items-center justify-center rounded-lg border text-xs font-bold text-neutral-900">
-                                {index + 1}
-                            </span>
-                            <div className="flex-1 pt-0.5 leading-relaxed text-neutral-700 dark:text-neutral-300">
-                                {formatText(item)}
-                            </div>
-                        </li>
-                    );
-                })}
-            </ol>
         </div>
     );
 };
@@ -270,6 +188,7 @@ const RecipeInfo: React.FC<RecipeInfoProps> = ({
                 stepsText={stepsText}
                 ganttTable={ganttTable}
                 recipeTitle={recipeTitle}
+                recipeId={id}
                 RenderDescription={RecipeDescription}
                 RenderIngredients={RecipeIngredients}
                 RenderSteps={RecipeSteps}
