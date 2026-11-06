@@ -16,19 +16,6 @@ interface JorbiterCardProps {
     index: number;
 }
 
-const getMedalColor = (index: number) => {
-    switch (index) {
-        case 0:
-            return 'text-yellow-400';
-        case 1:
-            return 'text-neutral-400';
-        case 2:
-            return 'text-amber-600';
-        default:
-            return 'text-neutral-300';
-    }
-};
-
 const JorbiterCard: React.FC<JorbiterCardProps> = ({ jorbiter, index }) => {
     const { push } = useRouter() || {};
     const isMdOrSmaller = useMediaQuery('(max-width: 675px)');

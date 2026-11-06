@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import LikesClient from '@/app/recipes/[recipeId]/likes/LikesClient';
 import { SafeRecipe, SafeUser } from '@/app/types';
