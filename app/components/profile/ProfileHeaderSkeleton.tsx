@@ -53,7 +53,7 @@ const ProfileHeaderSkeleton = () => {
             </div>
 
             {/* Badges skeleton */}
-            <div className="mt-3 rounded-2xl border border-neutral-200/80 bg-white p-3.5 shadow-xs sm:p-4 dark:border-neutral-800 dark:bg-neutral-800/90">
+            <div className="mt-3 rounded-2xl border border-neutral-200/80 bg-white p-3.5 shadow-xs sm:p-4 dark:border-neutral-800 dark:bg-neutral-800">
                 <div className="mb-2 px-1">
                     <div className="h-3.5 w-24 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
                 </div>

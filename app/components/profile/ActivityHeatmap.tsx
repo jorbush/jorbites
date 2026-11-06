@@ -174,7 +174,7 @@ const MonthLabelsRow: React.FC<MonthLabelsRowProps> = ({
     monthLabels,
 }) => (
     <div className="mb-2 flex min-w-[600px] gap-0.5 sm:gap-1">
-        <div className="dark:bg-dark sticky left-0 z-10 w-6 shrink-0 bg-white sm:w-7" />
+        <div className="sticky left-0 z-10 w-6 shrink-0 bg-white sm:w-7 dark:bg-neutral-800" />
         <div className="flex gap-0.5 sm:gap-1">
             {weeks.map((week, weekIndex) => {
                 const monthLabel = monthLabels.find(
@@ -202,7 +202,7 @@ interface DayLabelsColProps {
 }
 
 const DayLabelsCol: React.FC<DayLabelsColProps> = ({ dayLabels }) => (
-    <div className="dark:bg-dark sticky left-0 z-10 flex flex-col gap-0.5 bg-white pr-1.5 sm:gap-1 sm:pr-2">
+    <div className="sticky left-0 z-10 flex flex-col gap-0.5 bg-white pr-1.5 sm:gap-1 sm:pr-2 dark:bg-neutral-800">
         {dayLabels.map((label, index) => (
             <div
                 key={label}
@@ -423,7 +423,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
                         {displayTitle}
                     </h2>
                 )}
-                <div className="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs sm:p-5 dark:border-neutral-800 dark:bg-neutral-800/90">
+                <div className="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs sm:p-5 dark:border-neutral-800 dark:bg-neutral-800">
                     <ActivityHeatmapGrid
                         weeks={weeks}
                         monthLabels={monthLabels}

@@ -8,6 +8,7 @@ interface HorizontalScrollSectionProps {
     emptyMessage?: string;
     children: React.ReactNode;
     hasItems: boolean;
+    fadeColorClassName?: string;
 }
 
 // Constants for scroll behavior
@@ -19,6 +20,7 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
     emptyMessage = 'No items found',
     children,
     hasItems,
+    fadeColorClassName = 'from-white dark:from-dark',
 }) => {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -116,10 +118,14 @@ const HorizontalScrollSection: React.FC<HorizontalScrollSectionProps> = ({
                     </div>
 
                     {/* Left fade overlay */}
-                    <div className="pointer-events-none absolute top-0 left-0 h-full w-3 bg-gradient-to-r from-white to-transparent dark:from-neutral-900" />
+                    <div
+                        className={`pointer-events-none absolute top-0 left-0 h-full w-3 bg-gradient-to-r to-transparent ${fadeColorClassName}`}
+                    />
 
                     {/* Right fade overlay */}
-                    <div className="pointer-events-none absolute top-0 right-0 h-full w-3 bg-gradient-to-l from-white to-transparent dark:from-neutral-900" />
+                    <div
+                        className={`pointer-events-none absolute top-0 right-0 h-full w-3 bg-gradient-to-l to-transparent ${fadeColorClassName}`}
+                    />
 
                     {/* Right scroll button */}
                     {showRightArrow && (

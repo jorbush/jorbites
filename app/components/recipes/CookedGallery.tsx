@@ -90,7 +90,10 @@ const CookedGallery: React.FC<CookedGalleryProps> = ({
                 </div>
             </div>
 
-            <ScrollableContainer className="gap-4">
+            <ScrollableContainer
+                className="gap-4"
+                fadeColorClassName="from-white dark:from-dark"
+            >
                 {cooksnaps.map((item) => {
                     const canDelete =
                         Boolean(currentUser) &&

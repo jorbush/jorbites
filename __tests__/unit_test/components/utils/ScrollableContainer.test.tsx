@@ -76,7 +76,7 @@ describe('<ScrollableContainer />', () => {
         expect(leftOverlay.className).toContain('bg-gradient-to-r');
         expect(leftOverlay.className).toContain('from-white');
         expect(leftOverlay.className).toContain('to-transparent');
-        expect(leftOverlay.className).toContain('dark:from-neutral-900');
+        expect(leftOverlay.className).toContain('dark:from-neutral-800');
 
         // Right overlay
         const rightOverlay = overlays[1] as HTMLElement;
@@ -88,7 +88,22 @@ describe('<ScrollableContainer />', () => {
         expect(rightOverlay.className).toContain('bg-gradient-to-l');
         expect(rightOverlay.className).toContain('from-white');
         expect(rightOverlay.className).toContain('to-transparent');
-        expect(rightOverlay.className).toContain('dark:from-neutral-900');
+        expect(rightOverlay.className).toContain('dark:from-neutral-800');
+    });
+
+    it('applies custom fadeColorClassName when provided', () => {
+        const { container } = render(
+            <ScrollableContainer fadeColorClassName="from-white dark:from-dark">
+                <div>Test content</div>
+            </ScrollableContainer>
+        );
+
+        const overlays = container.querySelectorAll('.pointer-events-none');
+        expect(overlays).toHaveLength(2);
+        const leftOverlay = overlays[0] as HTMLElement;
+        expect(leftOverlay.className).toContain('dark:from-dark');
+        const rightOverlay = overlays[1] as HTMLElement;
+        expect(rightOverlay.className).toContain('dark:from-dark');
     });
 
     it('works with no children', () => {

@@ -85,7 +85,7 @@ const ProfileBadges: React.FC<ProfileBadgesProps> = ({ badges }) => {
     };
 
     return (
-        <div className="mt-3 rounded-2xl border border-neutral-200/80 bg-white p-3.5 shadow-xs sm:p-4 dark:border-neutral-800 dark:bg-neutral-800/90">
+        <div className="mt-3 rounded-2xl border border-neutral-200/80 bg-white p-3.5 shadow-xs sm:p-4 dark:border-neutral-800 dark:bg-neutral-800">
             <div className="mb-2 flex items-center justify-between px-1">
                 <span className="text-xs font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
                     {t('badges')} ({badges.length})

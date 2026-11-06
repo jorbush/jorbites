@@ -9,13 +9,13 @@ const RecipeContributionGraphSkeleton = () => {
                     <div className="h-6 w-56 animate-pulse rounded bg-neutral-200 sm:h-7 dark:bg-neutral-700" />
                 </div>
 
-                <div className="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs sm:p-5 dark:border-neutral-800 dark:bg-neutral-800/90">
+                <div className="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs sm:p-5 dark:border-neutral-800 dark:bg-neutral-800">
                     <div className="flex justify-center">
                         <div className="w-full max-w-4xl overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch]">
                             <div className="relative inline-flex min-w-[600px] flex-col">
                                 {/* Month labels skeleton */}
                                 <div className="mb-2 flex min-w-[600px] gap-0.5 sm:gap-1">
-                                    <div className="dark:bg-dark sticky left-0 z-10 w-6 shrink-0 bg-white sm:w-7" />
+                                    <div className="sticky left-0 z-10 w-6 shrink-0 bg-white sm:w-7 dark:bg-neutral-800" />
                                     <div className="flex gap-0.5 sm:gap-1">
                                         {Array.from({ length: 53 }).map(
                                             (_, index) => (
@@ -35,7 +35,7 @@ const RecipeContributionGraphSkeleton = () => {
                                 {/* Calendar grid skeleton */}
                                 <div className="flex gap-0.5 sm:gap-1">
                                     {/* Day labels skeleton - sticky on left */}
-                                    <div className="dark:bg-dark sticky left-0 z-10 flex flex-col gap-0.5 bg-white pr-1.5 sm:gap-1 sm:pr-2">
+                                    <div className="sticky left-0 z-10 flex flex-col gap-0.5 bg-white pr-1.5 sm:gap-1 sm:pr-2 dark:bg-neutral-800">
                                         {Array.from({ length: 7 }).map(
                                             (_, index) => (
                                                 <div
