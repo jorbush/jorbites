@@ -98,33 +98,30 @@ export const RecipeGanttTable: React.FC<RecipeGanttTableProps> = ({
     };
 
     return (
-        <>
-            <hr />
-            <div
-                ref={tableSectionRef}
-                className="dark:text-neutral-100"
-                data-cy="gantt-table-section"
-                data-testid="gantt-table-section"
-            >
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-                    <h3 className="flex flex-row items-center gap-2 text-xl font-semibold">
-                        {tableLabel}
-                    </h3>
-                    <RecipeGanttControls
-                        onExportSheet={handleExportSheet}
-                        onExportPNG={handleExportPNG}
-                    />
-                </div>
-
-                <RecipeGanttPreSteps preSteps={preSteps} />
-
-                <RecipeGanttGrid
-                    rows={rows}
-                    totalCols={totalCols}
-                    cellMap={cellMap}
-                    tableLabel={tableLabel}
+        <div
+            ref={tableSectionRef}
+            className="dark:text-neutral-100"
+            data-cy="gantt-table-section"
+            data-testid="gantt-table-section"
+        >
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+                <h3 className="flex flex-row items-center gap-2 text-xl font-semibold">
+                    {tableLabel}
+                </h3>
+                <RecipeGanttControls
+                    onExportSheet={handleExportSheet}
+                    onExportPNG={handleExportPNG}
                 />
             </div>
-        </>
+
+            <RecipeGanttPreSteps preSteps={preSteps} />
+
+            <RecipeGanttGrid
+                rows={rows}
+                totalCols={totalCols}
+                cellMap={cellMap}
+                tableLabel={tableLabel}
+            />
+        </div>
     );
 };
