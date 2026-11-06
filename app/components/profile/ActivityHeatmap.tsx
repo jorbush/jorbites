@@ -419,20 +419,22 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
                 data-cy="activity-heatmap"
             >
                 {showTitle && (
-                    <h2 className="mb-4 px-2 text-lg font-semibold sm:text-xl dark:text-neutral-100">
+                    <h2 className="mb-3 px-1 text-lg font-semibold tracking-tight text-neutral-900 sm:text-xl dark:text-neutral-100">
                         {displayTitle}
                     </h2>
                 )}
-                <ActivityHeatmapGrid
-                    weeks={weeks}
-                    monthLabels={monthLabels}
-                    dayLabels={dayLabels}
-                    formatDate={formatDate}
-                    onSelectDay={handleSelectDay}
-                    onHoverDay={showTooltip}
-                    onLeaveDay={handleLeaveDay}
-                    scrollRef={scrollContainerRef}
-                />
+                <div className="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs sm:p-5 dark:border-neutral-800 dark:bg-neutral-800/90">
+                    <ActivityHeatmapGrid
+                        weeks={weeks}
+                        monthLabels={monthLabels}
+                        dayLabels={dayLabels}
+                        formatDate={formatDate}
+                        onSelectDay={handleSelectDay}
+                        onHoverDay={showTooltip}
+                        onLeaveDay={handleLeaveDay}
+                        scrollRef={scrollContainerRef}
+                    />
+                </div>
                 <ActivityHeatmapTooltip
                     hoveredDay={hoveredDay}
                     tooltipPosition={tooltipPosition}

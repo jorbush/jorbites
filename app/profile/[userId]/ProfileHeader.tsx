@@ -61,7 +61,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                                 <VerificationBadge className="mt-0.5 shrink-0" />
                             )}
                         </div>
-                        <div className="text-base text-neutral-400 sm:text-lg md:text-xl">{`${t('level')} ${user?.level}`}</div>
+                        <div className="flex items-center">
+                            <span className="border-green-450/30 bg-green-450/15 dark:text-green-450 inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold text-neutral-800">
+                                {`${t('level')} ${user?.level ?? 0}`}
+                            </span>
+                        </div>
                         {user?.createdAt && (
                             <div className="flex items-center gap-1 text-xs text-neutral-500">
                                 <FiCalendar className="size-3 shrink-0" />
@@ -73,18 +77,18 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                         )}
                     </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-2 self-start pt-1 sm:gap-3.5 sm:self-center sm:pt-0">
+                <div className="flex shrink-0 items-center gap-2 self-start pt-1 sm:gap-2.5 sm:self-center sm:pt-0">
                     {currentUser && user && currentUser.id === user.id && (
                         <>
                             <button
                                 type="button"
                                 onClick={() => settingsModal.onOpen('account')}
-                                className="hover:text-green-450 dark:hover:text-green-450 flex cursor-pointer items-center justify-center text-neutral-600 transition focus:outline-hidden dark:text-neutral-100"
+                                className="flex size-9 cursor-pointer items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 text-neutral-600 shadow-2xs transition-colors duration-200 hover:border-neutral-300 hover:text-neutral-900 focus:outline-hidden sm:size-10 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:text-white"
                                 title={t('edit_profile') || 'Edit Profile'}
                                 aria-label={t('edit_profile') || 'Edit Profile'}
                                 data-testid="edit-profile-button"
                             >
-                                <FiEdit3 className="size-5" />
+                                <FiEdit3 className="size-4 sm:size-4.5" />
                             </button>
                             <RecipeBookButton
                                 userId={user.id}
@@ -95,12 +99,12 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                     )}
                     <button
                         type="button"
-                        className="hover:text-green-450 dark:hover:text-green-450 flex cursor-pointer items-center justify-center text-neutral-600 transition focus:outline-hidden dark:text-neutral-100"
+                        className="flex size-9 cursor-pointer items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 text-neutral-600 shadow-2xs transition-colors duration-200 hover:border-neutral-300 hover:text-neutral-900 focus:outline-hidden sm:size-10 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:text-white"
                         onClick={() => share()}
                         title={t('share') || 'Share'}
                         aria-label="Share"
                     >
-                        <FiShare2 className="size-5" />
+                        <FiShare2 className="size-4 sm:size-4.5" />
                     </button>
                 </div>
             </div>
@@ -114,8 +118,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, currentUser }) => {
                 youtube={user?.youtube}
                 tiktok={user?.tiktok}
             />
-
-            <hr className="mt-2" />
 
             {/* Badges */}
             <ProfileBadges badges={user?.badges} />

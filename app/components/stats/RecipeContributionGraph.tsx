@@ -317,59 +317,65 @@ const RecipeContributionGraph: React.FC<RecipeContributionGraphProps> = ({
     return (
         <Container>
             <div className="w-full py-4">
-                <h2 className="mb-4 px-2 text-lg font-semibold sm:text-xl dark:text-neutral-100">
+                <h2 className="mb-3 px-1 text-lg font-semibold tracking-tight text-neutral-900 sm:text-xl dark:text-neutral-100">
                     {t('recipe_contribution_graph')}
                 </h2>
-                <div className="flex justify-center">
-                    <div
-                        ref={scrollContainerRef}
-                        className="w-full max-w-4xl overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch]"
-                    >
-                        <div className="relative inline-flex min-w-[600px] flex-col">
-                            <ContributionMonthLabels
-                                weeks={weeks}
-                                monthLabels={monthLabels}
-                            />
-
-                            <div className="flex gap-0.5 sm:gap-1">
-                                <ContributionDayLabels dayLabels={dayLabels} />
+                <div className="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs sm:p-5 dark:border-neutral-800 dark:bg-neutral-800/90">
+                    <div className="flex justify-center">
+                        <div
+                            ref={scrollContainerRef}
+                            className="w-full max-w-4xl overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch]"
+                        >
+                            <div className="relative inline-flex min-w-[600px] flex-col">
+                                <ContributionMonthLabels
+                                    weeks={weeks}
+                                    monthLabels={monthLabels}
+                                />
 
                                 <div className="flex gap-0.5 sm:gap-1">
-                                    {weeks.map((week) => (
-                                        <div
-                                            key={week[0].date.toISOString()}
-                                            data-testid="week-column"
-                                            className="flex shrink-0 flex-col gap-0.5 sm:gap-1"
-                                        >
-                                            {week.map((day) => (
-                                                <ContributionCell
-                                                    key={day.date.toISOString()}
-                                                    day={day}
-                                                    onSelect={handleSelectDay}
-                                                    onHover={showTooltip}
-                                                    onLeave={() => {
-                                                        setHoveredDay(null);
-                                                        setTooltipPosition(
-                                                            null
-                                                        );
-                                                    }}
-                                                    formatDate={formatDate}
-                                                    t={t}
-                                                />
-                                            ))}
-                                        </div>
-                                    ))}
+                                    <ContributionDayLabels
+                                        dayLabels={dayLabels}
+                                    />
+
+                                    <div className="flex gap-0.5 sm:gap-1">
+                                        {weeks.map((week) => (
+                                            <div
+                                                key={week[0].date.toISOString()}
+                                                data-testid="week-column"
+                                                className="flex shrink-0 flex-col gap-0.5 sm:gap-1"
+                                            >
+                                                {week.map((day) => (
+                                                    <ContributionCell
+                                                        key={day.date.toISOString()}
+                                                        day={day}
+                                                        onSelect={
+                                                            handleSelectDay
+                                                        }
+                                                        onHover={showTooltip}
+                                                        onLeave={() => {
+                                                            setHoveredDay(null);
+                                                            setTooltipPosition(
+                                                                null
+                                                            );
+                                                        }}
+                                                        formatDate={formatDate}
+                                                        t={t}
+                                                    />
+                                                ))}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
+
+                                <ContributionTooltip
+                                    hoveredDay={hoveredDay}
+                                    tooltipPosition={tooltipPosition}
+                                    formatDate={formatDate}
+                                    t={t}
+                                />
+
+                                <ContributionLegend t={t} />
                             </div>
-
-                            <ContributionTooltip
-                                hoveredDay={hoveredDay}
-                                tooltipPosition={tooltipPosition}
-                                formatDate={formatDate}
-                                t={t}
-                            />
-
-                            <ContributionLegend t={t} />
                         </div>
                     </div>
                 </div>
