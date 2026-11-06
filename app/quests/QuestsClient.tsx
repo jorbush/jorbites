@@ -92,7 +92,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
     quests,
     totalPages,
     currentPage,
-    initialStatus = 'in_progress',
+    initialStatus = 'open',
 }) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
@@ -108,7 +108,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
         ) {
             return initialStatus;
         }
-        return 'in_progress';
+        return 'open';
     };
 
     const [filter, setFilter] = useState<
@@ -126,7 +126,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
     const handleFilterChange = (newFilter: typeof filter) => {
         setFilter(newFilter);
         const params = new URLSearchParams(window.location.search);
-        if (newFilter !== 'in_progress') {
+        if (newFilter !== 'open') {
             params.set('status', newFilter);
         } else {
             params.delete('status');
@@ -178,7 +178,7 @@ const QuestsClient: React.FC<QuestsClientProps> = ({
             {/* Filters Row with Horizontal Scroll */}
             <div className="-mx-4 mb-6 overflow-x-auto px-4 sm:mx-0 sm:px-0">
                 <div className="flex min-w-max gap-2 pb-2">
-                    {(['in_progress', 'open', 'completed', 'all'] as const).map(
+                    {(['open', 'in_progress', 'completed', 'all'] as const).map(
                         (status) => {
                             const isActive = filter === status;
                             return (
