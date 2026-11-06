@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Blog } from '@/app/utils/markdownUtils';
 import { formatDate } from '@/app/utils/date-utils';
 import { FiArrowRight } from 'react-icons/fi';
+import ViewTransition from '@/app/components/utils/ViewTransition';
 
 interface BlogCardProps {
     blog: Blog;
@@ -24,18 +25,24 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
                 <div className="mb-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">
                     {formatDate(blog.frontmatter.date, i18n.language)}
                 </div>
-                <h3 className="group-hover:text-green-450 mb-2 text-lg leading-tight font-semibold text-neutral-800 transition-colors dark:text-neutral-100">
-                    <button
-                        type="button"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            navigateToBlog();
-                        }}
-                        className="cursor-pointer text-left after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
-                    >
-                        {blog.frontmatter.title}
-                    </button>
-                </h3>
+                <ViewTransition
+                    name={`article-title-${blog.id}`}
+                    share="morph"
+                    default="none"
+                >
+                    <h3 className="group-hover:text-green-450 mb-2 text-lg leading-tight font-semibold text-neutral-800 transition-colors dark:text-neutral-100">
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigateToBlog();
+                            }}
+                            className="cursor-pointer text-left after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline focus:outline-hidden"
+                        >
+                            {blog.frontmatter.title}
+                        </button>
+                    </h3>
+                </ViewTransition>
                 <p className="line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
                     {blog.frontmatter.description}
                 </p>

@@ -83,4 +83,17 @@ describe('<Heading />', () => {
         expect(subtitleElement?.className).toContain('font-light');
         expect(subtitleElement?.className).toContain('text-neutral-500');
     });
+
+    it('applies custom style and className when provided', () => {
+        const { container } = render(
+            <Heading
+                title="Test Title"
+                className="custom-heading-class"
+                style={{ viewTransitionName: 'article-title-1' }}
+            />
+        );
+        const rootElement = container.firstChild as HTMLElement;
+        expect(rootElement.className).toContain('custom-heading-class');
+        expect(rootElement.style.viewTransitionName).toBe('article-title-1');
+    });
 });

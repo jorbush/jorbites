@@ -15,6 +15,7 @@ import Avatar from '@/app/components/utils/Avatar';
 import VerificationBadge from '@/app/components/VerificationBadge';
 import useShare from '@/app/hooks/useShare';
 import BlogCard from '@/app/components/blog/BlogCard';
+import ViewTransition from '@/app/components/utils/ViewTransition';
 
 interface BlogDetailProps {
     blog: Blog;
@@ -135,10 +136,16 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                 >
                     <FiChevronLeft className="text-xl" />
                 </button>
-                <Heading
-                    title={blog.frontmatter.title}
-                    center
-                />
+                <ViewTransition
+                    name={blog?.id ? `article-title-${blog.id}` : undefined}
+                    share="morph"
+                    default="none"
+                >
+                    <Heading
+                        title={blog.frontmatter.title}
+                        center
+                    />
+                </ViewTransition>
                 <button
                     type="button"
                     className="ml-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"

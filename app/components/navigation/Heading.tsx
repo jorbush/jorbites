@@ -5,6 +5,8 @@ interface HeadingProps {
     subtitle?: string;
     center?: boolean;
     dataCy?: string;
+    style?: React.CSSProperties;
+    className?: string;
 }
 
 const Heading: React.FC<HeadingProps> = ({
@@ -12,11 +14,16 @@ const Heading: React.FC<HeadingProps> = ({
     subtitle,
     center,
     dataCy,
+    style,
+    className = '',
 }) => {
     const words = title.split(' ');
     const isLongWord = words.some((word) => word.length > 20);
     return (
-        <div className={center ? 'text-center' : 'text-start'}>
+        <div
+            className={`${center ? 'text-center' : 'text-start'} ${className}`}
+            style={style}
+        >
             <div
                 className={`text-center text-2xl font-semibold whitespace-pre-wrap dark:text-neutral-100 ${
                     isLongWord ? 'break-words' : ''

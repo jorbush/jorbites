@@ -59,6 +59,28 @@ vi.mock('next/image', () => ({
     ),
 }));
 
+const mockViewTransition = vi.fn(
+    ({
+        children,
+        ...props
+    }: {
+        children: React.ReactNode;
+        [key: string]: any;
+    }) => (
+        <div
+            data-testid="view-transition"
+            {...props}
+        >
+            {children}
+        </div>
+    )
+);
+
+vi.mock('@/app/components/utils/ViewTransition', () => ({
+    default: (props: any) => mockViewTransition(props),
+    ViewTransition: (props: any) => mockViewTransition(props),
+}));
+
 describe('BlogCard', () => {
     // Sample blog data for testing
     const mockBlog: Blog = {
@@ -94,5 +116,20 @@ describe('BlogCard', () => {
         // Check if the date is displayed
         const dateElement = screen.getByText(/August 29, 2025/i);
         expect(dateElement).toBeDefined();
+    });
+
+    it('wraps the title with ViewTransition for article animations', () => {
+        render(<BlogCard blog={mockBlog} />);
+
+        expect(mockViewTransition).toHaveBeenCalledWith(
+            expect.objectContaining({
+                name: 'article-title-test-blog',
+                share: 'morph',
+                default: 'none',
+            })
+        );
+        const vtElement = screen.getByTestId('view-transition');
+        expect(vtElement.getAttribute('name')).toBe('article-title-test-blog');
+        expect(vtElement.getAttribute('share')).toBe('morph');
     });
 });
