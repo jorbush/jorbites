@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiAward, FiHeart } from 'react-icons/fi';
+import { FiHeart } from 'react-icons/fi';
 import Link from 'next/link';
 import Image from 'next/image';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
@@ -41,15 +41,11 @@ const TopRecipeResult: React.FC<TopRecipeResultProps> = ({
     const badgePath = `/badges/${badgeSlug}.webp`;
 
     return (
-        <div className="border-green-450/30 from-green-450/5 dark:border-green-450/20 relative mb-10 overflow-hidden rounded-2xl border-2 bg-gradient-to-br via-white to-emerald-50/10 p-6 shadow-lg transition duration-300 hover:shadow-xl dark:from-neutral-900/40 dark:via-neutral-950 dark:to-emerald-950/5">
-            {/* Background glowing decorations */}
-            <div className="bg-green-450/10 dark:bg-green-450/5 absolute -top-16 -right-16 size-40 rounded-full blur-3xl" />
-            <div className="absolute -bottom-16 -left-16 size-40 rounded-full bg-emerald-500/10 blur-3xl dark:bg-emerald-500/5" />
-
+        <div className="relative mb-10 overflow-hidden rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs transition-colors duration-200 hover:border-neutral-300 sm:p-6 dark:border-neutral-800 dark:bg-neutral-800/90 dark:hover:border-neutral-700">
             <div className="relative flex flex-col gap-6 md:flex-row md:items-center">
                 {/* Winner Badge Image */}
                 <div className="flex flex-shrink-0 justify-center">
-                    <div className="bg-green-450/20 dark:bg-green-450/10 relative flex size-20 items-center justify-center rounded-full p-1.5 shadow-[0_0_15px_rgba(197,240,164,0.25)] dark:shadow-[0_0_15px_rgba(197,240,164,0.1)]">
+                    <div className="relative flex size-20 items-center justify-center rounded-2xl border border-neutral-200/70 bg-neutral-100 p-2 dark:border-neutral-700/60 dark:bg-neutral-800">
                         <Image
                             src={badgePath}
                             alt={t(badgeSlug) || badgeSlug}
@@ -57,18 +53,12 @@ const TopRecipeResult: React.FC<TopRecipeResultProps> = ({
                             height={64}
                             className="object-contain transition-transform duration-500 hover:rotate-12"
                         />
-                        <div className="bg-green-450 absolute right-0 -bottom-1 rounded-full p-0.5 text-green-950 shadow-md">
-                            <FiAward className="text-xs" />
-                        </div>
                     </div>
                 </div>
 
                 {/* Content details */}
                 <div className="flex-1 text-center md:text-left">
-                    <span className="bg-green-450/20 dark:bg-green-450/10 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold text-green-800 ring-1 ring-green-600/20 ring-inset dark:text-green-400 dark:ring-green-500/20">
-                        🏆 {t(`recipe_of_the_${category}`)}
-                    </span>
-                    <h3 className="mt-2.5 text-2xl font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
+                    <h3 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
                         {t(`recipe_of_the_${category}_winner`)}
                     </h3>
                     <p className="mb-4 text-sm text-neutral-500 dark:text-neutral-400">
@@ -81,7 +71,7 @@ const TopRecipeResult: React.FC<TopRecipeResultProps> = ({
                     </p>
 
                     {/* Winner Recipe details */}
-                    <div className="mx-auto flex max-w-sm items-center gap-4 rounded-xl border border-neutral-100 bg-white/60 p-3 backdrop-blur-sm md:mx-0 dark:border-neutral-800 dark:bg-neutral-900/40">
+                    <div className="mx-auto flex max-w-sm items-center gap-4 rounded-xl border border-neutral-200/80 bg-neutral-50/60 p-3 md:mx-0 dark:border-neutral-700/60 dark:bg-neutral-900/40">
                         <Link
                             href={`/recipes/${winner.id}`}
                             className="relative size-16 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100 transition-opacity hover:opacity-90 dark:bg-neutral-800"
@@ -97,7 +87,7 @@ const TopRecipeResult: React.FC<TopRecipeResultProps> = ({
                         <div className="min-w-0 flex-1 text-left">
                             <Link
                                 href={`/recipes/${winner.id}`}
-                                className="hover:text-green-450 dark:hover:text-green-450 block truncate font-semibold text-neutral-800 dark:text-neutral-100"
+                                className="hover:text-green-450 dark:hover:text-green-450 block truncate font-semibold text-neutral-800 transition-colors duration-200 dark:text-neutral-100"
                             >
                                 {winner.title}
                             </Link>

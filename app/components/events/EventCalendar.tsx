@@ -89,32 +89,32 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
     const todayDate = isMounted ? new Date() : null;
 
     return (
-        <div className="mb-10 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm md:p-6 dark:border-neutral-700 dark:bg-neutral-900">
+        <div className="mb-10 rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-800/90">
             <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-xl font-semibold md:text-2xl dark:text-neutral-100">
+                <h2 className="text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl dark:text-neutral-100">
                     {monthName} {year}
                 </h2>
                 <div className="flex gap-2">
                     <button
                         type="button"
                         onClick={prevMonth}
-                        className="cursor-pointer rounded-full p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                        className="flex size-8 cursor-pointer items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 text-neutral-600 transition-colors duration-200 hover:border-neutral-300 hover:bg-neutral-200/70 sm:size-9 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700/60"
                         aria-label="Previous Month"
                     >
                         <MdChevronLeft
-                            size={24}
-                            className="dark:text-neutral-400"
+                            size={22}
+                            className="text-neutral-600 dark:text-neutral-300"
                         />
                     </button>
                     <button
                         type="button"
                         onClick={nextMonth}
-                        className="cursor-pointer rounded-full p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                        className="flex size-8 cursor-pointer items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 text-neutral-600 transition-colors duration-200 hover:border-neutral-300 hover:bg-neutral-200/70 sm:size-9 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-700/60"
                         aria-label="Next Month"
                     >
                         <MdChevronRight
-                            size={24}
-                            className="dark:text-neutral-400"
+                            size={22}
+                            className="text-neutral-600 dark:text-neutral-300"
                         />
                     </button>
                 </div>
@@ -144,17 +144,17 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                         <div
                             key={format(day, 'yyyy-MM-dd')}
                             suppressHydrationWarning
-                            className={`relative h-auto min-h-[64px] rounded-lg border p-1 transition-all md:min-h-[104px] md:p-2 ${
+                            className={`relative h-auto min-h-[64px] rounded-xl border p-1 transition-colors duration-200 md:min-h-[104px] md:p-2 ${
                                 isCurrentMonth
-                                    ? 'border-neutral-100 bg-white dark:border-neutral-700 dark:bg-neutral-900'
-                                    : 'border-transparent bg-neutral-50 text-neutral-300 dark:bg-neutral-950 dark:text-neutral-600'
+                                    ? 'border-neutral-200/60 bg-white hover:border-neutral-300 dark:border-neutral-700/60 dark:bg-neutral-900/60 dark:hover:border-neutral-600'
+                                    : 'border-transparent bg-neutral-50/50 text-neutral-300 dark:bg-neutral-900/20 dark:text-neutral-600'
                             } ${isToday ? 'ring-green-450 ring-2' : ''}`}
                         >
                             <span
                                 suppressHydrationWarning
                                 className={`text-xs font-medium md:text-sm ${
                                     isToday
-                                        ? 'text-green-600 dark:text-green-400'
+                                        ? 'dark:text-green-450 font-bold text-neutral-900'
                                         : 'text-neutral-700 dark:text-neutral-300'
                                 }`}
                             >
@@ -172,7 +172,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                                             className="cursor-pointer"
                                             prefetch={false}
                                         >
-                                            <div className="group border-green-450 relative size-5 overflow-hidden rounded-full border bg-neutral-100 sm:size-6 md:size-8 dark:bg-neutral-800">
+                                            <div className="group border-green-450/70 relative size-5 overflow-hidden rounded-full border bg-neutral-100 shadow-xs sm:size-6 md:size-8 dark:bg-neutral-800">
                                                 <Image
                                                     src={
                                                         event.frontmatter

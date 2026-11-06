@@ -96,17 +96,17 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
     };
 
     return (
-        <div className="mb-10 rounded-2xl border border-neutral-200 bg-gradient-to-br from-neutral-50 via-white to-neutral-50/50 p-6 shadow-md transition duration-300 dark:border-neutral-800 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900/50">
+        <div className="mb-10 rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-neutral-800 dark:bg-neutral-800/90">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                    <div className="bg-green-450/20 dark:bg-green-450/10 dark:text-green-450 flex size-12 items-center justify-center rounded-xl text-green-600">
-                        <FiAward className="text-2xl" />
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700 sm:size-11 dark:bg-neutral-800 dark:text-neutral-300">
+                        <FiAward className="size-5" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
+                        <h2 className="text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl dark:text-neutral-100">
                             {t(`recipe_of_the_${category}_voting`)}
                         </h2>
-                        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                        <p className="text-xs text-neutral-500 sm:text-sm dark:text-neutral-400">
                             {t('voting_period') || 'Voting period'}:{' '}
                             {formatPeriodKey(
                                 category,
@@ -116,8 +116,8 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                         </p>
                     </div>
                 </div>
-                <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-600/20 ring-inset dark:bg-emerald-950/30 dark:text-emerald-400 dark:ring-emerald-500/20">
-                    <span className="mr-1.5 size-1.5 animate-pulse rounded-full bg-emerald-500"></span>
+                <span className="border-green-450/30 bg-green-450/15 dark:text-green-450 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold text-neutral-800">
+                    <span className="bg-green-450 size-1.5 animate-pulse rounded-full"></span>
                     {t('live_voting') || 'Live Voting'}
                 </span>
             </div>
@@ -137,10 +137,10 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                     return (
                         <div
                             key={candidate.id}
-                            className={`group relative flex flex-col justify-between overflow-hidden rounded-xl border p-4 transition duration-300 ${
+                            className={`group relative flex flex-col justify-between overflow-hidden rounded-xl border p-4 transition-colors duration-200 ${
                                 isSelected
-                                    ? 'border-green-450 bg-green-450/5 dark:border-green-450/50 dark:bg-green-450/10 shadow-sm'
-                                    : 'border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-neutral-700'
+                                    ? 'border-green-450/80 bg-green-450/10 dark:border-green-450/50 dark:bg-green-450/15 shadow-xs'
+                                    : 'border-neutral-200/80 bg-neutral-50/60 hover:border-neutral-300 dark:border-neutral-700/60 dark:bg-neutral-900/40 dark:hover:border-neutral-600'
                             }`}
                         >
                             <div className="flex gap-4">
@@ -195,12 +195,12 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                                         </span>
                                         <span>{votePercent}%</span>
                                     </div>
-                                    <div className="dark:bg-neutral-850 h-2 w-full overflow-hidden rounded-full bg-neutral-100">
+                                    <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-200/80 dark:bg-neutral-700/80">
                                         <div
-                                            className={`h-full rounded-full transition duration-500 ${
+                                            className={`h-full rounded-full transition-[width] duration-300 ${
                                                 isSelected
-                                                    ? 'from-green-450 bg-gradient-to-r to-emerald-500'
-                                                    : 'bg-neutral-400 dark:bg-neutral-600'
+                                                    ? 'bg-green-450'
+                                                    : 'bg-neutral-400 dark:bg-neutral-500'
                                             }`}
                                             style={{ width: `${votePercent}%` }}
                                         />
@@ -211,9 +211,9 @@ const TopRecipeVoting: React.FC<TopRecipeVotingProps> = ({
                                     type="button"
                                     onClick={() => handleVote(candidate.id)}
                                     disabled={!!votingId}
-                                    className={`flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition duration-200 ${
+                                    className={`flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
                                         isSelected
-                                            ? 'bg-green-450 shadow-green-450/20 hover:bg-green-450/90 text-white shadow-sm dark:text-black'
+                                            ? 'bg-green-450 hover:bg-green-450/90 text-neutral-900 shadow-xs'
                                             : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
                                     } disabled:opacity-50`}
                                 >
