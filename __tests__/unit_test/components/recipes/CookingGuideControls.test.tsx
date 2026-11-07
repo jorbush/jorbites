@@ -60,6 +60,13 @@ describe('CookingGuideHeader & CookingGuideFooter', () => {
         const headerBadge = screen.getByTestId('header-active-timer-badge');
         expect(headerBadge.textContent).toContain('03:05');
 
+        const shield = screen.getByTestId('guide-pwa-status-bar-shield');
+        expect(shield.className).toContain('pwa-status-bar-shield');
+
+        const header = screen.getByRole('banner');
+        expect(header.className).toContain('pwa-header-surface');
+        expect(header.className).toContain('backdrop-blur-sm');
+
         fireEvent.click(headerBadge);
         expect(togglePause).toHaveBeenCalledTimes(1);
 

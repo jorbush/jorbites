@@ -200,7 +200,11 @@ describe('<Navbar />', () => {
         expect(header.className).not.toContain('bg-white/75');
         expect(header.className).not.toContain('backdrop-blur-lg');
 
+        const shield = screen.getByTestId('pwa-status-bar-shield');
+        expect(shield.className).toContain('pwa-status-bar-shield');
+
         const topRow = screen.getByTestId('navbar-top-row');
+        expect(topRow.className).toContain('pwa-header-surface');
         expect(topRow.className).toContain('relative');
         expect(topRow.className).toContain('z-10');
         expect(topRow.className).toContain('border-b');

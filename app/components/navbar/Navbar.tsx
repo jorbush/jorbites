@@ -49,10 +49,15 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
 
     return (
         <header className="fixed top-0 right-0 left-0 z-20 w-full transition duration-300">
+            <div
+                aria-hidden="true"
+                data-testid="pwa-status-bar-shield"
+                className="pwa-status-bar-shield"
+            />
             <nav aria-label="Main navigation">
                 <div
                     data-testid="navbar-top-row"
-                    className="relative z-10 border-b border-neutral-200/40 bg-white/75 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] pb-3 shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition duration-300 sm:pt-[calc(1rem+env(safe-area-inset-top,0px))] sm:pb-4 dark:border-neutral-800/40 dark:bg-[#0F0F0F]/75 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]"
+                    className="pwa-header-surface relative z-10 border-b border-neutral-200/40 bg-white/75 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] pb-3 shadow-[0_2px_20px_rgba(0,0,0,0.03)] backdrop-blur-lg transition duration-300 sm:pt-[calc(1rem+env(safe-area-inset-top,0px))] sm:pb-4 dark:border-neutral-800/40 dark:bg-[#0F0F0F]/75 dark:shadow-[0_2px_20px_rgba(0,0,0,0.15)]"
                 >
                     <Container>
                         <div className="flex min-h-[48px] flex-row items-center justify-between gap-3 md:gap-0">

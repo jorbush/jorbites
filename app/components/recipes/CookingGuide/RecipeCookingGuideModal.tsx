@@ -100,7 +100,7 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
                     defaultValue: 'Interactive Cooking Guide',
                 })
             )}
-            className="fixed inset-0 z-50 m-0 flex h-dvh max-h-none w-full max-w-none flex-col justify-between overflow-hidden border-none bg-neutral-50/95 p-0 text-neutral-900 backdrop-blur-xl select-none dark:bg-neutral-950/95 dark:text-white"
+            className="fixed inset-0 z-50 m-0 flex h-dvh max-h-none w-full max-w-none flex-col justify-between overflow-hidden border-none bg-neutral-50 p-0 text-neutral-900 select-none dark:bg-neutral-950 dark:text-white"
             data-testid="recipe-cooking-guide-modal"
             data-cy="recipe-cooking-guide-modal"
         >
