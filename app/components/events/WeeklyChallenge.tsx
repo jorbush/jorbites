@@ -20,7 +20,7 @@ const WeeklyChallenge: React.FC<WeeklyChallengeProps> = ({ challenge }) => {
             href="/events/challenge_of_the_week"
             className="block"
         >
-            <div className="mb-10 rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs transition-colors duration-200 hover:border-neutral-300 sm:p-6 dark:border-neutral-800 dark:bg-neutral-800/90 dark:hover:border-neutral-700">
+            <div className="group mb-10 rounded-2xl border border-neutral-200/80 bg-white/80 p-5 shadow-xs transition-[border-color,box-shadow,transform] duration-200 hover:scale-[1.01] hover:border-neutral-300 sm:p-6 dark:border-neutral-800/80 dark:bg-neutral-900/60 dark:hover:border-neutral-700">
                 <div className="mb-2">
                     <h2 className="text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl dark:text-neutral-100">
                         {t('weekly_challenge')}
@@ -36,7 +36,7 @@ const WeeklyChallenge: React.FC<WeeklyChallengeProps> = ({ challenge }) => {
                         ),
                     })}
                 </p>
-                <div className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200/80 bg-neutral-50/80 px-3 py-1 text-xs font-medium text-neutral-600 dark:border-neutral-700/60 dark:bg-neutral-800/60 dark:text-neutral-300">
                     <IoTimeOutline className="size-3.5" />
                     <span>
                         {t('challenge_ends')}:{' '}

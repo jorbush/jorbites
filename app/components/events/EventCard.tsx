@@ -14,7 +14,7 @@ interface EventCardProps {
 
 export const EventCardSkeleton = () => {
     return (
-        <div className="overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-xs dark:border-neutral-800 dark:bg-neutral-800/90">
+        <div className="overflow-hidden rounded-2xl border border-neutral-200/80 bg-white/80 shadow-xs dark:border-neutral-800/80 dark:bg-neutral-900/60">
             <div className="relative h-40 w-full animate-pulse bg-neutral-100 dark:bg-neutral-800"></div>
             <div className="p-4 sm:p-5">
                 <div className="h-[56px] space-y-2">
@@ -58,13 +58,13 @@ const EventCard: React.FC<EventCardProps> = ({ event, priority = false }) => {
     };
 
     return (
-        <div className="relative overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-xs transition-colors duration-200 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-800/90 dark:text-neutral-100 dark:hover:border-neutral-700">
-            <div className="relative h-40 w-full bg-neutral-100 dark:bg-neutral-800">
+        <div className="group relative overflow-hidden rounded-2xl border border-neutral-200/80 bg-white/80 shadow-xs transition-[border-color,box-shadow] duration-200 hover:border-neutral-300 dark:border-neutral-800/80 dark:bg-neutral-900/60 dark:text-neutral-100 dark:hover:border-neutral-700">
+            <div className="relative h-40 w-full overflow-hidden bg-neutral-100 dark:bg-neutral-800">
                 <Image
                     src={event.frontmatter.image || '/jorbites-social.jpg'}
                     alt={event.frontmatter.title}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-300 ease-out group-hover:scale-102"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     priority={priority}
                 />
@@ -86,7 +86,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, priority = false }) => {
                 </h3>
                 {!isPermanent && dateDisplay && (
                     <div className="mt-2 flex items-center text-sm text-neutral-500 dark:text-neutral-400">
-                        <FiCalendar className="mr-2" />
+                        <FiCalendar className="mr-2 size-4 shrink-0" />
                         <span>{dateDisplay}</span>
                     </div>
                 )}

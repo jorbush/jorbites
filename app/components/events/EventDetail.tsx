@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { Components } from 'react-markdown';
 import { formatDateRange } from '@/app/utils/date-utils';
 import useShare from '@/app/hooks/useShare';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface EventDetailProps {
     event: Event;
@@ -21,6 +22,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
     const { back } = useRouter() || {};
     const { share } = useShare();
     const { i18n, t } = useTranslation();
+    const mounted = useIsMounted();
 
     // Don't process dates for permanent events
     const isPermanent = event.frontmatter.permanent === true;
@@ -75,7 +77,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
         a: ({ href, children, ...props }) => (
             <Link
                 href={href || '#'}
-                className="text-green-450 hover:underline"
+                className="decoration-green-450 hover:text-green-450 dark:hover:text-green-450 font-medium text-neutral-900 underline decoration-2 underline-offset-4 transition-colors duration-200 dark:text-neutral-100"
                 {...props}
             >
                 {children}
@@ -165,30 +167,55 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
 
     return (
         <div className="mx-auto max-w-[800px] px-4 py-6 dark:text-neutral-100">
-            <div className="mb-6 flex items-baseline justify-between">
+            {/* Header: Back, Title, Share aligned in the same row */}
+            <div className="mb-4 flex items-center justify-between gap-2 sm:mb-6 sm:gap-4 sm:px-2">
                 <button
                     type="button"
-                    className="mr-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    className="group inline-flex shrink-0 cursor-pointer items-center gap-2 text-sm font-semibold text-neutral-600 transition-colors duration-200 hover:text-neutral-900 focus:outline-hidden md:w-auto dark:text-neutral-400 dark:hover:text-white"
                     onClick={() => back()}
                     aria-label="Back"
+                    data-cy="back-button"
                 >
-                    <FiChevronLeft className="text-xl" />
+                    <div className="flex size-9 items-center justify-center rounded-xl border border-neutral-200/80 bg-white text-neutral-700 shadow-2xs transition-colors duration-200 group-hover:border-neutral-300 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:group-hover:border-neutral-600">
+                        <FiChevronLeft size={18} />
+                    </div>
+                    <span className="hidden text-xs font-semibold md:inline">
+                        {mounted ? t('back') || 'Back' : 'Back'}
+                    </span>
                 </button>
-                <Heading
-                    title={event.frontmatter.title}
-                    center
-                />
+
+                <div className="min-w-0 flex-1">
+                    <Heading
+                        title={event.frontmatter.title}
+                        center
+                        dataCy="event-title-display"
+                    />
+                    {!isPermanent && dateDisplay && (
+                        <div className="mt-1 flex items-center justify-center gap-1.5 text-xs font-medium text-neutral-500 sm:text-sm dark:text-neutral-400">
+                            <FiCalendar
+                                size={14}
+                                className="shrink-0"
+                            />
+                            <span>{dateDisplay}</span>
+                        </div>
+                    )}
+                </div>
+
                 <button
                     type="button"
-                    className="ml-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-neutral-200/80 bg-white text-neutral-700 shadow-2xs transition-colors duration-200 hover:border-neutral-300 focus:outline-hidden md:w-auto md:gap-2 md:px-3 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600"
                     onClick={() => share({ title: event.frontmatter.title })}
                     aria-label="Share"
+                    data-cy="share-button"
                 >
-                    <FiShare2 className="text-xl" />
+                    <FiShare2 size={16} />
+                    <span className="hidden text-xs font-semibold md:inline">
+                        {mounted ? t('share') || 'Share' : 'Share'}
+                    </span>
                 </button>
             </div>
 
-            <div className="mb-6 w-full overflow-hidden rounded-xl">
+            <div className="relative mb-6 overflow-hidden rounded-2xl border border-neutral-200/80 bg-neutral-100 shadow-xs dark:border-neutral-800 dark:bg-neutral-800/60">
                 <Image
                     src={event.frontmatter.image || '/jorbites-social.jpg'}
                     alt={event.frontmatter.title}
@@ -199,13 +226,6 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
                     priority
                 />
             </div>
-
-            {!isPermanent && dateDisplay && (
-                <div className="mb-6 flex items-center text-neutral-500 dark:text-neutral-400">
-                    <FiCalendar className="mr-2 text-lg" />
-                    <span>{dateDisplay}</span>
-                </div>
-            )}
 
             <div className="prose dark:prose-invert max-w-none">
                 <ReactMarkdown
@@ -222,19 +242,23 @@ const EventDetail: React.FC<EventDetailProps> = ({ event }) => {
 export const EventDetailSkeleton = () => {
     return (
         <div className="mx-auto max-w-[800px] px-4 py-6">
-            <div className="mb-6 flex items-baseline justify-between">
-                <div className="size-6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="mx-auto h-8 w-2/3 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="size-6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+            <div className="mb-4 flex items-center justify-between gap-2 sm:mb-6 sm:gap-4 sm:px-2">
+                <div className="flex items-center gap-2">
+                    <div className="size-9 animate-pulse rounded-xl bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="hidden h-4 w-10 animate-pulse rounded bg-neutral-200 md:inline dark:bg-neutral-700"></div>
+                </div>
+                <div className="min-w-0 flex-1 space-y-2">
+                    <div className="mx-auto h-8 w-2/3 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="mx-auto h-4 w-32 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="size-9 animate-pulse rounded-xl bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="hidden h-4 w-10 animate-pulse rounded bg-neutral-200 md:inline dark:bg-neutral-700"></div>
+                </div>
             </div>
 
-            <div className="mb-6 w-full animate-pulse overflow-hidden rounded-xl">
+            <div className="mb-6 w-full animate-pulse overflow-hidden rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80">
                 <div className="aspect-[4/3] w-full bg-neutral-200 dark:bg-neutral-700"></div>
-            </div>
-
-            <div className="mb-6 flex items-center">
-                <div className="mr-2 size-4 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="h-4 w-1/3 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
             </div>
 
             <div className="flex flex-col gap-4">
