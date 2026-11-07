@@ -37,7 +37,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
 
     return (
         <div
-            className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/80 bg-white/80 p-5 shadow-2xs backdrop-blur-xs transition-all duration-300 dark:border-neutral-800/80 dark:bg-neutral-900/60 ${
+            className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/80 bg-white/80 p-5 shadow-2xs backdrop-blur-xs transition-[transform,border-color,box-shadow] duration-300 ease-out dark:border-neutral-800/80 dark:bg-neutral-900/60 ${
                 comingSoon
                     ? 'opacity-80'
                     : 'hover:scale-102 hover:border-neutral-300 hover:shadow-xs dark:hover:border-neutral-700'
@@ -108,7 +108,7 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                         </div>
                         <div className="h-2 w-full overflow-hidden rounded-full border border-neutral-300/20 bg-neutral-200 dark:border-neutral-700/20 dark:bg-neutral-800">
                             <div
-                                className="bg-green-450 h-full rounded-full transition-all duration-300"
+                                className="bg-green-450 h-full rounded-full transition-[width] duration-500 ease-out"
                                 style={{ width: `${progress}%` }}
                             />
                         </div>
