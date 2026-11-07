@@ -7,6 +7,7 @@ import { Blog } from '@/app/utils/markdownUtils';
 import { formatDate } from '@/app/utils/date-utils';
 import { FiArrowRight, FiCalendar } from 'react-icons/fi';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
+import useIsMounted from '@/app/hooks/useIsMounted';
 
 interface BlogCardProps {
     blog: Blog;
@@ -15,11 +16,7 @@ interface BlogCardProps {
 const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
     const { push } = useRouter() || {};
     const { t, i18n } = useTranslation();
-    const [mounted, setMounted] = React.useState(false);
-
-    React.useEffect(() => {
-        setMounted(true);
-    }, []);
+    const mounted = useIsMounted();
 
     const navigateToBlog = () => {
         push(`/blog/${blog.id}`);

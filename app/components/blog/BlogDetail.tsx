@@ -177,7 +177,7 @@ const BlogDetailNav: React.FC<BlogDetailNavProps> = ({
         <nav
             aria-label={
                 mounted
-                    ? t('article_navigation', 'Article navigation')
+                    ? String(t('article_navigation', 'Article navigation'))
                     : 'Article navigation'
             }
             className="mb-6 flex items-center justify-between gap-2 sm:gap-4"
@@ -186,7 +186,7 @@ const BlogDetailNav: React.FC<BlogDetailNavProps> = ({
                 type="button"
                 className="group inline-flex shrink-0 cursor-pointer items-center gap-2 text-sm font-semibold text-neutral-600 transition-colors duration-200 hover:text-neutral-900 focus:outline-hidden md:w-auto dark:text-neutral-400 dark:hover:text-white"
                 onClick={onBack}
-                aria-label={mounted ? t('back', 'Go back') : 'Go back'}
+                aria-label={mounted ? String(t('back', 'Go back')) : 'Go back'}
             >
                 <div className="flex size-9 items-center justify-center rounded-xl border border-neutral-200/80 bg-white text-neutral-700 shadow-2xs transition-colors duration-200 group-hover:border-neutral-300 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:group-hover:border-neutral-600">
                     <FiChevronLeft size={18} />
@@ -312,7 +312,9 @@ const BlogRelatedSection: React.FC<BlogRelatedSectionProps> = ({
     return (
         <aside
             aria-label={
-                mounted ? t('see_more', 'Related articles') : 'Related articles'
+                mounted
+                    ? String(t('see_more', 'Related articles'))
+                    : 'Related articles'
             }
             className="mt-14 border-t border-neutral-200/80 pt-10 dark:border-neutral-800"
         >

@@ -32,13 +32,10 @@ interface UseBlogDetailDataParams {
     initialRelatedBlogs?: Blog[];
 }
 
-const useBlogDetailData = ({
-    id,
-    lang,
-    initialBlog,
-    initialAuthor,
-    initialRelatedBlogs = EMPTY_BLOGS,
-}: UseBlogDetailDataParams) => {
+const useActiveBlogLanguage = (
+    lang?: string,
+    fallbackLang?: string
+): string => {
     const { i18n } = useTranslation();
     const [clientLang, setClientLang] = useState<string | null>(null);
 
@@ -52,9 +49,78 @@ const useBlogDetailData = ({
         };
     }, [i18n]);
 
-    const currentLang =
-        clientLang || lang || initialBlog?.language || i18n.language || 'es';
+    return clientLang || lang || fallbackLang || i18n.language || 'es';
+};
 
+const useBlogAuthor = (
+    userId?: string | null,
+    initialAuthor?: SafeUser | null
+): SafeUser | null => {
+    const { data: authorData } = useSWR<SafeUser>(
+        userId ? `/api/user/${userId}` : null,
+        axiosFetcher,
+        initialAuthor ? { fallbackData: initialAuthor } : undefined
+    );
+
+    return authorData || initialAuthor || null;
+};
+
+const useRelatedBlogs = (
+    activeBlog: Blog | null | undefined,
+    currentLang: string,
+    initialRelatedBlogs: Blog[],
+    isMatchingInitialBlog: boolean
+): Blog[] => {
+    const activeId = activeBlog?.id;
+    const relatedCategory =
+        activeBlog?.category === 'releases' ? 'releases' : 'general';
+
+    const fallbackData = useMemo(() => {
+        if (initialRelatedBlogs.length > 0 && isMatchingInitialBlog) {
+            return { blogs: initialRelatedBlogs, totalPages: 1 };
+        }
+        return undefined;
+    }, [initialRelatedBlogs, isMatchingInitialBlog]);
+
+    const { data: relatedBlogsData } = useSWR(
+        activeBlog
+            ? `/api/blogs?lang=${currentLang}&pageSize=4&category=${relatedCategory}`
+            : null,
+        fetcher,
+        fallbackData ? { fallbackData } : undefined
+    );
+
+    return useMemo(() => {
+        if (relatedBlogsData?.blogs) {
+            return relatedBlogsData.blogs
+                .filter((b: Blog) => b.id !== activeId)
+                .slice(0, 2);
+        }
+        return isMatchingInitialBlog ? initialRelatedBlogs : EMPTY_BLOGS;
+    }, [
+        relatedBlogsData,
+        activeId,
+        initialRelatedBlogs,
+        isMatchingInitialBlog,
+    ]);
+};
+
+const getBlogErrorMessage = (error: unknown): string | null => {
+    if (!error) return null;
+    if ((error as { status?: number })?.status === 404) {
+        return 'Blog not found';
+    }
+    return 'Failed to load blog';
+};
+
+const useBlogDetailData = ({
+    id,
+    lang,
+    initialBlog,
+    initialAuthor,
+    initialRelatedBlogs = EMPTY_BLOGS,
+}: UseBlogDetailDataParams) => {
+    const currentLang = useActiveBlogLanguage(lang, initialBlog?.language);
     const isMatchingInitialBlog = Boolean(
         initialBlog && initialBlog.language === currentLang
     );
@@ -70,45 +136,19 @@ const useBlogDetailData = ({
     );
 
     const activeBlog = blog || (isMatchingInitialBlog ? initialBlog : null);
-
-    const { data: authorData } = useSWR<SafeUser>(
-        activeBlog?.frontmatter?.user_id
-            ? `/api/user/${activeBlog.frontmatter.user_id}`
-            : null,
-        axiosFetcher,
-        initialAuthor ? { fallbackData: initialAuthor } : undefined
+    const author = useBlogAuthor(
+        activeBlog?.frontmatter?.user_id,
+        initialAuthor
     );
-
-    const author = authorData || initialAuthor || null;
-
-    const relatedCategory =
-        activeBlog?.category === 'releases' ? 'releases' : 'general';
-    const { data: relatedBlogsData } = useSWR(
-        activeBlog
-            ? `/api/blogs?lang=${currentLang}&pageSize=4&category=${relatedCategory}`
-            : null,
-        fetcher,
-        initialRelatedBlogs.length > 0 && isMatchingInitialBlog
-            ? { fallbackData: { blogs: initialRelatedBlogs, totalPages: 1 } }
-            : undefined
+    const relatedBlogs = useRelatedBlogs(
+        activeBlog,
+        currentLang,
+        initialRelatedBlogs,
+        isMatchingInitialBlog
     );
-
-    const relatedBlogs = useMemo(() => {
-        if (relatedBlogsData?.blogs) {
-            return relatedBlogsData.blogs
-                .filter((b: Blog) => b.id !== id)
-                .slice(0, 2);
-        }
-        return isMatchingInitialBlog ? initialRelatedBlogs : EMPTY_BLOGS;
-    }, [relatedBlogsData, id, initialRelatedBlogs, isMatchingInitialBlog]);
 
     const loading = blogLoading && !activeBlog;
-
-    const error = useMemo(() => {
-        if (!blogError) return null;
-        if ((blogError as any).status === 404) return 'Blog not found';
-        return 'Failed to load blog';
-    }, [blogError]);
+    const error = getBlogErrorMessage(blogError);
 
     return {
         activeBlog,
