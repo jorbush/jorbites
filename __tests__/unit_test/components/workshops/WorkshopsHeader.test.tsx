@@ -82,8 +82,8 @@ describe('<WorkshopsHeader />', () => {
 
         const heading = container.querySelector('h1');
         expect(heading).toBeDefined();
-        expect(heading?.className).toContain('mb-3');
-        expect(heading?.className).toContain('font-semibold');
+        expect(heading?.className).toContain('text-2xl');
+        expect(heading?.className).toContain('font-bold');
     });
 
     it('renders icon with correct accessibility attribute', () => {
