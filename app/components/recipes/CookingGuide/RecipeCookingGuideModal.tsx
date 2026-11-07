@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useRef, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { FiCheck } from 'react-icons/fi';
@@ -48,7 +48,6 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
     completedStepsCount,
 }) => {
     const { t, i18n } = useTranslation();
-    const dialogRef = useRef<HTMLDialogElement>(null);
 
     const {
         currentIndex,
@@ -79,21 +78,6 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
         onClose,
     });
 
-    useEffect(() => {
-        const dialog = dialogRef.current;
-        if (!dialog) return;
-        if (typeof dialog.showModal === 'function') {
-            try {
-                if (dialog.open) {
-                    dialog.close();
-                }
-                dialog.showModal();
-            } catch {
-                dialog.setAttribute('open', '');
-            }
-        }
-    }, []);
-
     const detectedAction = useMemo(
         () => detectStepAction(currentStepText),
         [currentStepText]
@@ -110,22 +94,13 @@ const ActiveCookingGuideDialog: React.FC<ActiveCookingGuideDialogProps> = ({
 
     const dialogContent = (
         <dialog
-            ref={dialogRef}
             open
-            onCancel={(e) => {
-                e.preventDefault();
-                if (isIngredientsOpen) {
-                    setIsIngredientsOpen(false);
-                } else {
-                    onClose();
-                }
-            }}
             aria-label={String(
                 t('guide_modal_label', {
                     defaultValue: 'Interactive Cooking Guide',
                 })
             )}
-            className="fixed inset-0 z-50 m-0 flex h-full max-h-none w-full max-w-none flex-col justify-between overflow-hidden border-none bg-neutral-50/95 p-0 text-neutral-900 backdrop-blur-xl select-none dark:bg-neutral-950/95 dark:text-white"
+            className="fixed inset-0 z-50 m-0 flex h-dvh max-h-none w-full max-w-none flex-col justify-between overflow-hidden border-none bg-neutral-50/95 p-0 text-neutral-900 backdrop-blur-xl select-none dark:bg-neutral-950/95 dark:text-white"
             data-testid="recipe-cooking-guide-modal"
             data-cy="recipe-cooking-guide-modal"
         >
