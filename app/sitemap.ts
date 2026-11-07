@@ -18,6 +18,27 @@ export async function getSitemapData(): Promise<MetadataRoute.Sitemap> {
         lastModified: new Date(recipe.createdAt),
     }));
 
+    const publicLists = await prisma.list.findMany({
+        where: {
+            isPrivate: false,
+        },
+        select: {
+            id: true,
+            updatedAt: true,
+            createdAt: true,
+        },
+        orderBy: {
+            updatedAt: 'desc',
+        },
+        take: 100,
+    });
+
+    const listEntries = publicLists.map((list) => ({
+        url: `${baseUrl}/lists/${list.id}`,
+        lastModified: list.updatedAt || list.createdAt || new Date(),
+        priority: 0.7,
+    }));
+
     const eventsDirectory = path.join(process.cwd(), 'app/content/events/es');
     const eventEntries: MetadataRoute.Sitemap = [];
 
@@ -61,6 +82,11 @@ export async function getSitemapData(): Promise<MetadataRoute.Sitemap> {
             priority: 1.0,
         },
         {
+            url: `${baseUrl}/lists`,
+            lastModified: new Date(),
+            priority: 0.8,
+        },
+        {
             url: `${baseUrl}/courses`,
             lastModified: new Date(),
             priority: 0.8,
@@ -71,6 +97,7 @@ export async function getSitemapData(): Promise<MetadataRoute.Sitemap> {
             priority: 0.7,
         },
         ...recipeEntries,
+        ...listEntries,
         ...eventEntries,
         ...userEntries,
     ];

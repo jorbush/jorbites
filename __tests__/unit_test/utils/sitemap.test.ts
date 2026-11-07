@@ -10,6 +10,9 @@ vi.mock('@/app/lib/prismadb', () => ({
         user: {
             findMany: (...args: any[]) => mockFindMany('user', ...args),
         },
+        list: {
+            findMany: (...args: any[]) => mockFindMany('list', ...args),
+        },
     },
 }));
 
@@ -43,6 +46,15 @@ describe('getSitemapData', () => {
                     { id: 'recipe1', createdAt: new Date('2023-01-01') },
                 ]);
             }
+            if (model === 'list') {
+                return Promise.resolve([
+                    {
+                        id: 'list1',
+                        updatedAt: new Date('2023-01-02'),
+                        createdAt: new Date('2023-01-01'),
+                    },
+                ]);
+            }
             if (model === 'user') {
                 return Promise.resolve([
                     {
@@ -65,6 +77,22 @@ describe('getSitemapData', () => {
         expect(sitemap).toContainEqual(
             expect.objectContaining({
                 url: 'https://jorbites.com',
+            })
+        );
+
+        // Verify lists hub entry
+        expect(sitemap).toContainEqual(
+            expect.objectContaining({
+                url: 'https://jorbites.com/lists',
+                priority: 0.8,
+            })
+        );
+
+        // Verify list entry
+        expect(sitemap).toContainEqual(
+            expect.objectContaining({
+                url: 'https://jorbites.com/lists/list1',
+                priority: 0.7,
             })
         );
 

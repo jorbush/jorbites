@@ -101,3 +101,29 @@ export const formatIsoDuration = (
     }
     return result;
 };
+
+export function createOGImageUrl(
+    cloudinaryUrl: string | null | undefined
+): string {
+    if (!cloudinaryUrl) return '/jorbites-social.jpg';
+
+    if (!cloudinaryUrl.includes('cloudinary.com')) {
+        return cloudinaryUrl;
+    }
+
+    try {
+        const cloudinaryRegex =
+            /^(https?:\/\/res\.cloudinary\.com\/[^/]+)\/image\/upload(?:\/([^/]+))?\/(.+)$/;
+        const matches = cloudinaryUrl.match(cloudinaryRegex);
+
+        if (matches) {
+            const [, baseUrl, , imagePath] = matches;
+            return `${baseUrl}/image/upload/f_auto,q_auto:good,w_1200,h_630,c_fill/${imagePath}`;
+        } else {
+            return cloudinaryUrl;
+        }
+    } catch (error) {
+        console.error('Error creating OG image URL:', error);
+        return cloudinaryUrl;
+    }
+}

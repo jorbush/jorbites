@@ -6,6 +6,7 @@ import RecipeCard from '@/app/components/recipes/RecipeCard';
 import { useCallback, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import Avatar from '@/app/components/utils/Avatar';
@@ -101,9 +102,18 @@ const ListClient: React.FC<ListClientProps> = ({
                 {/* Top Navigation & Actions Bar */}
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     {/* Back Button */}
-                    <button
-                        type="button"
-                        onClick={() => (back ? back() : push('/lists'))}
+                    <Link
+                        href="/lists"
+                        onClick={(e) => {
+                            if (
+                                back &&
+                                typeof window !== 'undefined' &&
+                                window.history.length > 1
+                            ) {
+                                e.preventDefault();
+                                back();
+                            }
+                        }}
                         className="group inline-flex cursor-pointer items-center gap-2.5 text-sm font-semibold text-neutral-600 transition-colors duration-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                         data-cy="back-button"
                     >
@@ -111,7 +121,7 @@ const ListClient: React.FC<ListClientProps> = ({
                             <FiChevronLeft size={18} />
                         </div>
                         <span>{t('back') || 'Back'}</span>
-                    </button>
+                    </Link>
 
                     {/* Action Controls */}
                     {(!list.isPrivate || isOwner) && (
@@ -203,27 +213,37 @@ const ListClient: React.FC<ListClientProps> = ({
                     <div className="flex flex-col justify-between gap-4 border-t border-neutral-100 pt-4 sm:flex-row sm:items-center dark:border-neutral-800">
                         {list.user ? (
                             <div className="flex items-center gap-3">
-                                <Avatar
-                                    src={list.user.image}
-                                    size={42}
-                                    onClick={() =>
-                                        push?.(`/profile/${list.user!.id}`)
+                                <Link
+                                    href={`/profile/${list.user.id}`}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        push?.(`/profile/${list.user!.id}`);
+                                    }}
+                                    className="cursor-pointer"
+                                    aria-label={
+                                        list.user.name || 'User profile'
                                     }
-                                    quality="auto:eco"
-                                />
+                                >
+                                    <Avatar
+                                        src={list.user.image}
+                                        size={42}
+                                        quality="auto:eco"
+                                    />
+                                </Link>
                                 <div className="flex flex-col">
                                     <div className="flex items-center gap-1.5">
-                                        <button
-                                            type="button"
+                                        <Link
+                                            href={`/profile/${list.user.id}`}
                                             className="hover:text-green-450 dark:hover:text-green-450 cursor-pointer text-left text-base font-semibold text-neutral-900 transition-colors duration-200 focus:outline-hidden sm:text-lg dark:text-white"
-                                            onClick={() =>
+                                            onClick={(e) => {
+                                                e.preventDefault();
                                                 push?.(
                                                     `/profile/${list.user!.id}`
-                                                )
-                                            }
+                                                );
+                                            }}
                                         >
                                             {list.user.name}
-                                        </button>
+                                        </Link>
                                         {list.user.verified && (
                                             <VerificationBadge size={18} />
                                         )}

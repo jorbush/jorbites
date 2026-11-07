@@ -5,6 +5,7 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { SafeList, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { AiOutlineDelete } from 'react-icons/ai';
@@ -155,9 +156,10 @@ const ListsClient: React.FC<ListsClientProps> = ({
 
                                     {/* Card Title */}
                                     <h2 className="mb-2 text-lg font-bold text-neutral-900 dark:text-white">
-                                        <button
-                                            type="button"
+                                        <Link
+                                            href={`/lists/${list.id}`}
                                             onClick={(e) => {
+                                                e.preventDefault();
                                                 e.stopPropagation();
                                                 push(`/lists/${list.id}`);
                                             }}
@@ -167,7 +169,7 @@ const ListsClient: React.FC<ListsClientProps> = ({
                                             {list.isDefault
                                                 ? t('to_cook_later')
                                                 : list.name}
-                                        </button>
+                                        </Link>
                                     </h2>
                                 </div>
 
@@ -176,9 +178,10 @@ const ListsClient: React.FC<ListsClientProps> = ({
                                     <div className="flex items-center justify-between">
                                         <div className="flex min-w-0 items-center gap-2">
                                             {list.user ? (
-                                                <button
-                                                    type="button"
+                                                <Link
+                                                    href={`/profile/${list.user.id}`}
                                                     onClick={(e) => {
+                                                        e.preventDefault();
                                                         e.stopPropagation();
                                                         push(
                                                             `/profile/${list.user!.id}`
@@ -194,7 +197,7 @@ const ListsClient: React.FC<ListsClientProps> = ({
                                                     <span className="group-hover/author:text-green-450 dark:group-hover/author:text-green-450 truncate text-xs font-medium text-neutral-700 transition-colors duration-200 dark:text-neutral-300">
                                                         {list.user.name}
                                                     </span>
-                                                </button>
+                                                </Link>
                                             ) : (
                                                 <span className="text-xs text-neutral-500 dark:text-neutral-400">
                                                     {formatDate(
