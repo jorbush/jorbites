@@ -1,9 +1,9 @@
 'use client';
 
 import '@/app/i18n';
+import React, { useMemo, useState, useEffect } from 'react';
 import Container from '@/app/components/utils/Container';
 import { useTranslation } from 'react-i18next';
-import { useMemo, useState, useEffect } from 'react';
 import { Blog } from '@/app/utils/markdownUtils';
 import BlogDetail, {
     BlogDetailSkeleton,
@@ -22,18 +22,24 @@ interface BlogDetailClientProps {
     initialRelatedBlogs?: Blog[];
 }
 
-const BlogDetailClient: React.FC<BlogDetailClientProps> = ({
+const EMPTY_BLOGS: Blog[] = [];
+
+interface UseBlogDetailDataParams {
+    id: string;
+    lang?: string;
+    initialBlog?: Blog | null;
+    initialAuthor?: SafeUser | null;
+    initialRelatedBlogs?: Blog[];
+}
+
+const useBlogDetailData = ({
     id,
     lang,
     initialBlog,
     initialAuthor,
-    initialRelatedBlogs = [],
-}) => {
-    const { t, i18n } = useTranslation();
-    const { push } = useRouter() || {};
-
-    useTheme();
-
+    initialRelatedBlogs = EMPTY_BLOGS,
+}: UseBlogDetailDataParams) => {
+    const { i18n } = useTranslation();
     const [clientLang, setClientLang] = useState<string | null>(null);
 
     useEffect(() => {
@@ -93,7 +99,7 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({
                 .filter((b: Blog) => b.id !== id)
                 .slice(0, 2);
         }
-        return isMatchingInitialBlog ? initialRelatedBlogs : [];
+        return isMatchingInitialBlog ? initialRelatedBlogs : EMPTY_BLOGS;
     }, [relatedBlogsData, id, initialRelatedBlogs, isMatchingInitialBlog]);
 
     const loading = blogLoading && !activeBlog;
@@ -104,36 +110,93 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({
         return 'Failed to load blog';
     }, [blogError]);
 
+    return {
+        activeBlog,
+        author,
+        relatedBlogs,
+        loading,
+        error,
+    };
+};
+
+interface BlogDetailErrorStateProps {
+    error: string;
+    onBack: () => void;
+}
+
+const BlogDetailErrorState: React.FC<BlogDetailErrorStateProps> = ({
+    error,
+    onBack,
+}) => {
+    const { t } = useTranslation();
+
+    return (
+        <div className="mx-auto max-w-md py-16 text-center">
+            <h2 className="mb-2 text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+                {error}
+            </h2>
+            <p className="mb-6 text-sm text-neutral-600 dark:text-neutral-400">
+                {t(
+                    'blog_not_found_message',
+                    "The blog post you're looking for could not be found."
+                )}
+            </p>
+            <button
+                type="button"
+                onClick={onBack}
+                className="inline-flex cursor-pointer items-center justify-center rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+            >
+                {t('back_to_blog', 'Back to Blog')}
+            </button>
+        </div>
+    );
+};
+
+const BlogDetailClient: React.FC<BlogDetailClientProps> = ({
+    id,
+    lang,
+    initialBlog,
+    initialAuthor,
+    initialRelatedBlogs = EMPTY_BLOGS,
+}) => {
+    const { push } = useRouter() || {};
+    useTheme();
+
+    const { activeBlog, author, relatedBlogs, loading, error } =
+        useBlogDetailData({
+            id,
+            lang,
+            initialBlog,
+            initialAuthor,
+            initialRelatedBlogs,
+        });
+
+    if (loading) {
+        return (
+            <Container>
+                <BlogDetailSkeleton />
+            </Container>
+        );
+    }
+
+    if (error || !activeBlog) {
+        return (
+            <Container>
+                <BlogDetailErrorState
+                    error={error || 'Blog not found'}
+                    onBack={() => push && push('/blog')}
+                />
+            </Container>
+        );
+    }
+
     return (
         <Container>
-            {loading ? (
-                <BlogDetailSkeleton />
-            ) : error ? (
-                <div className="mx-auto max-w-md py-16 text-center">
-                    <h2 className="mb-2 text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-                        {error}
-                    </h2>
-                    <p className="mb-6 text-sm text-neutral-600 dark:text-neutral-400">
-                        {t(
-                            'blog_not_found_message',
-                            "The blog post you're looking for could not be found."
-                        )}
-                    </p>
-                    <button
-                        type="button"
-                        onClick={() => push('/blog')}
-                        className="inline-flex cursor-pointer items-center justify-center rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
-                    >
-                        {t('back_to_blog', 'Back to Blog')}
-                    </button>
-                </div>
-            ) : activeBlog ? (
-                <BlogDetail
-                    blog={activeBlog}
-                    author={author}
-                    relatedBlogs={relatedBlogs}
-                />
-            ) : null}
+            <BlogDetail
+                blog={activeBlog}
+                author={author}
+                relatedBlogs={relatedBlogs}
+            />
         </Container>
     );
 };

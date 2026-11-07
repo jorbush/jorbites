@@ -15,6 +15,11 @@ interface BlogCardProps {
 const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
     const { push } = useRouter() || {};
     const { t, i18n } = useTranslation();
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const navigateToBlog = () => {
         push(`/blog/${blog.id}`);
@@ -36,10 +41,12 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
                         dateTime={blog.frontmatter.date}
                         suppressHydrationWarning
                     >
-                        {formatDate(
-                            blog.frontmatter.date,
-                            blog.language || i18n.language
-                        )}
+                        {mounted
+                            ? formatDate(blog.frontmatter.date, i18n.language)
+                            : formatDate(
+                                  blog.frontmatter.date,
+                                  blog.language || 'en'
+                              )}
                     </time>
                 </div>
 
@@ -79,7 +86,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
             {/* Footer with read more link & arrow */}
             <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-3 text-xs font-semibold text-neutral-500 transition-colors duration-200 group-hover:text-neutral-900 dark:border-neutral-800/80 dark:text-neutral-400 dark:group-hover:text-white">
                 <span suppressHydrationWarning>
-                    {t('read_more', 'Read more')}
+                    {mounted ? t('read_more', 'Read more') : 'Read more'}
                 </span>
                 <FiArrowRight className="text-neutral-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-neutral-900 dark:text-neutral-500 dark:group-hover:text-white" />
             </div>

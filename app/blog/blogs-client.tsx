@@ -8,7 +8,6 @@ import { Blog } from '@/app/utils/markdownUtils';
 import useTheme from '@/app/hooks/useTheme';
 import BlogCard, { BlogCardSkeleton } from '@/app/components/blog/BlogCard';
 import Pagination from '@/app/components/navigation/Pagination';
-import CmsSubmitButton from '@/app/components/cms/CmsSubmitButton';
 import { FcNews } from 'react-icons/fc';
 import { FiEdit3 } from 'react-icons/fi';
 import { CMS_BLOGS_URL } from '@/app/utils/constants';
@@ -60,7 +59,7 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
         <Container>
             <div className="flex flex-col gap-6 pt-2 pb-12 sm:pt-4 dark:text-white">
                 {/* Header */}
-                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
                     <div className="flex items-center gap-3.5">
                         <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-neutral-200/80 bg-neutral-100 shadow-2xs sm:size-12 dark:border-neutral-700/60 dark:bg-neutral-800">
                             <FcNews size={28} />
@@ -75,8 +74,17 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                         </div>
                     </div>
 
-                    <div className="hidden md:block md:shrink-0">
-                        <CmsSubmitButton target="blogs" />
+                    <div className="hidden lg:block lg:shrink-0">
+                        <a
+                            href={CMS_BLOGS_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+                            data-testid="propose-blog-button"
+                        >
+                            <FiEdit3 size={18} />
+                            <span>{t('propose_blog', 'Propose Article')}</span>
+                        </a>
                     </div>
                 </div>
 
@@ -145,12 +153,12 @@ const BlogsClient: React.FC<BlogsClientProps> = ({
                 </div>
             </div>
 
-            {/* Floating Action Button for mobile (below md) */}
+            {/* Floating Action Button for mobile & tablet (below lg) */}
             <a
                 href={CMS_BLOGS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="fixed right-6 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-10 flex size-14 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white shadow-lg transition-colors duration-200 hover:bg-neutral-800 md:hidden dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+                className="fixed right-6 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-10 flex size-14 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white shadow-lg transition-colors duration-200 hover:bg-neutral-800 lg:hidden dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
                 data-testid="propose-blog-button-mobile"
                 data-cy="propose-blog-button-mobile"
                 aria-label={String(t('propose_blog', 'Propose Article'))}
