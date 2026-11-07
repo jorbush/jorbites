@@ -33,7 +33,7 @@ export const CookingGuideIngredientsDrawer: React.FC<
             data-testid="cooking-guide-ingredients-drawer"
         >
             <div
-                className="flex h-full w-full max-w-sm flex-col border-l border-neutral-200/80 bg-white px-5 pt-[calc(1.25rem+env(safe-area-inset-top,0px))] pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] shadow-2xl sm:px-6 dark:border-neutral-800 dark:bg-neutral-900"
+                className="flex h-full w-full max-w-sm flex-col border-l border-neutral-200/80 bg-white px-5 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] shadow-2xl sm:px-6 dark:border-neutral-800 dark:bg-neutral-900"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between border-b border-neutral-200/80 pb-4 dark:border-neutral-800">

@@ -147,7 +147,7 @@ export default async function RootLayout({
                 </ClientOnly>
                 <main
                     id="main-content"
-                    className="w-full max-w-full grow pt-[calc(7rem+env(safe-area-inset-top,0px))] pb-[calc(5rem+env(safe-area-inset-bottom,0px))]"
+                    className="pwa-main-offset w-full max-w-full grow pt-[calc(7rem+env(safe-area-inset-top,0px))] pb-[calc(5rem+env(safe-area-inset-bottom,0px))]"
                 >
                     {children}
                 </main>

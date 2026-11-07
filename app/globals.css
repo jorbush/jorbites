@@ -166,3 +166,39 @@ body,
   }
 }
 
+/* Standalone PWA status-bar shield & header clearance (reduces iOS status-bar progressive blur) */
+.pwa-status-bar-shield {
+  display: none;
+}
+
+@media (display-mode: standalone) {
+  .pwa-status-bar-shield {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 60;
+    height: max(env(safe-area-inset-top, 0px), 10px);
+    background-color: #ffffff;
+  }
+
+  .dark .pwa-status-bar-shield {
+    background-color: #0F0F0F;
+  }
+
+  .pwa-header-surface {
+    padding-top: calc(1.5rem + env(safe-area-inset-top, 0px));
+    background-color: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .dark .pwa-header-surface {
+    background-color: rgba(15, 15, 15, 0.96);
+  }
+
+  .pwa-main-offset {
+    padding-top: calc(7.5rem + env(safe-area-inset-top, 0px));
+  }
+}

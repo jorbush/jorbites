@@ -108,7 +108,12 @@ export const CookingGuideHeader: React.FC<CookingGuideHeaderProps> = ({
     const seenSteps = new Map<string, number>();
 
     return (
-        <header className="relative z-10 border-b border-neutral-200/80 bg-white/80 px-3 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] pb-2.5 backdrop-blur-md md:px-6 md:pt-[calc(1rem+env(safe-area-inset-top,0px))] md:pb-4 dark:border-neutral-800/80 dark:bg-neutral-900/70">
+        <header className="pwa-header-surface relative z-10 border-b border-neutral-200/80 bg-white/90 px-3 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] pb-2.5 backdrop-blur-sm md:px-6 md:pt-[calc(1rem+env(safe-area-inset-top,0px))] md:pb-4 dark:border-neutral-800/80 dark:bg-neutral-900/85">
+            <div
+                aria-hidden="true"
+                data-testid="guide-pwa-status-bar-shield"
+                className="pwa-status-bar-shield"
+            />
             <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 md:gap-3">
                 <div className="flex min-w-0 flex-1 items-center gap-2.5 md:gap-3">
                     <div className="border-green-450/50 bg-green-450 flex size-8 shrink-0 items-center justify-center rounded-xl border text-neutral-950 shadow-2xs md:size-9">
