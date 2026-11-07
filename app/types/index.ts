@@ -189,10 +189,16 @@ export type SafeWorkshopParticipant = Omit<WorkshopParticipant, 'joinedAt'> & {
     joinedAt: string;
 };
 
+export type SafeListRecipePreview = Pick<
+    SafeRecipe,
+    'id' | 'title' | 'imageSrc'
+>;
+
 export type SafeList = Omit<List, 'createdAt' | 'updatedAt'> & {
     createdAt: string;
     updatedAt: string;
     user?: SafeUser;
+    recipes?: SafeListRecipePreview[];
 };
 
 export type SafePlanningMeal = Omit<PlanningMeal, 'id' | 'planningId'> & {

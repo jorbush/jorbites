@@ -5,15 +5,11 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { SafeList, SafeUser } from '@/app/types';
 import Container from '@/app/components/utils/Container';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { AiOutlineDelete } from 'react-icons/ai';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
-import Avatar from '@/app/components/utils/Avatar';
-import { formatDate } from '@/app/utils/date-utils';
 import { FcBookmark } from 'react-icons/fc';
-import { GiPadlock, GiPadlockOpen } from 'react-icons/gi';
+import ListCard from '@/app/components/lists/ListCard';
 import TabNavigation, {
     NavigationTab,
 } from '@/app/components/utils/TabNavigation';
@@ -96,126 +92,17 @@ const ListsClient: React.FC<ListsClientProps> = ({
                         </div>
                     ) : (
                         listsToRender.map((list) => (
-                            <div
+                            <ListCard
                                 key={list.id}
-                                data-cy="list-card"
-                                className="group relative flex w-full flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs transition-colors duration-200 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900/90 dark:hover:border-neutral-700"
-                            >
-                                <div>
-                                    {/* Card Top: Privacy Pill & Actions */}
-                                    <div className="mb-3 flex items-center justify-between gap-2">
-                                        <span
-                                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                                                list.isPrivate
-                                                    ? 'border border-neutral-200/80 bg-neutral-100 text-neutral-700 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300'
-                                                    : 'border-green-450/40 bg-green-450/15 dark:text-green-450 border text-neutral-800'
-                                            }`}
-                                        >
-                                            {list.isPrivate ? (
-                                                <>
-                                                    <GiPadlock size={11} />
-                                                    <span>
-                                                        {t('private') ||
-                                                            'Private'}
-                                                    </span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <GiPadlockOpen size={11} />
-                                                    <span>
-                                                        {t('public') ||
-                                                            'Public'}
-                                                    </span>
-                                                </>
-                                            )}
-                                        </span>
-
-                                        {activeTab === 'my' &&
-                                            !list.isDefault && (
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setDeleteListId(
-                                                            list.id
-                                                        );
-                                                    }}
-                                                    data-cy="delete-list-button"
-                                                    className="z-10 flex size-8 cursor-pointer items-center justify-center rounded-lg border border-red-200/80 bg-red-50 text-red-600 shadow-2xs transition-colors duration-200 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/60"
-                                                    title={
-                                                        t('delete_list') ||
-                                                        'Delete list'
-                                                    }
-                                                >
-                                                    <AiOutlineDelete
-                                                        size={16}
-                                                    />
-                                                </button>
-                                            )}
-                                    </div>
-
-                                    {/* Card Title */}
-                                    <h2 className="mb-2 text-lg font-bold text-neutral-900 dark:text-white">
-                                        <Link
-                                            href={`/lists/${list.id}`}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                push(`/lists/${list.id}`);
-                                            }}
-                                            data-cy="list-card-title"
-                                            className="hover:text-green-450 line-clamp-1 cursor-pointer text-left font-bold transition-colors duration-200 focus:outline-hidden"
-                                        >
-                                            {list.isDefault
-                                                ? t('to_cook_later')
-                                                : list.name}
-                                        </Link>
-                                    </h2>
-                                </div>
-
-                                {/* Inset Shelf / Footer */}
-                                <div className="mt-4 border-t border-neutral-100 pt-3 dark:border-neutral-800">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex min-w-0 items-center gap-2">
-                                            {list.user ? (
-                                                <Link
-                                                    href={`/profile/${list.user.id}`}
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        push(
-                                                            `/profile/${list.user!.id}`
-                                                        );
-                                                    }}
-                                                    className="group/author flex min-w-0 cursor-pointer items-center gap-2 text-left focus:outline-hidden"
-                                                >
-                                                    <Avatar
-                                                        src={list.user.image}
-                                                        size={22}
-                                                        quality="auto:eco"
-                                                    />
-                                                    <span className="group-hover/author:text-green-450 dark:group-hover/author:text-green-450 truncate text-xs font-medium text-neutral-700 transition-colors duration-200 dark:text-neutral-300">
-                                                        {list.user.name}
-                                                    </span>
-                                                </Link>
-                                            ) : (
-                                                <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                                                    {formatDate(
-                                                        list.createdAt,
-                                                        i18n.language
-                                                    )}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 dark:text-neutral-400">
-                                            <span>
-                                                {list.recipeIds.length}{' '}
-                                                {t('recipes') || 'recipes'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                list={list}
+                                showDelete={
+                                    activeTab === 'my' && !list.isDefault
+                                }
+                                onDeleteClick={(id) => setDeleteListId(id)}
+                                push={push}
+                                t={t}
+                                language={i18n.language}
+                            />
                         ))
                     )}
                 </div>

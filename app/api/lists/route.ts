@@ -27,6 +27,14 @@ export async function GET() {
                 user: {
                     select: USER_SELECT_FIELDS,
                 },
+                recipes: {
+                    select: {
+                        id: true,
+                        title: true,
+                        imageSrc: true,
+                    },
+                    take: 4,
+                },
             },
             orderBy: {
                 createdAt: 'asc',
@@ -38,16 +46,26 @@ export async function GET() {
             listCount: lists.length,
         });
 
-        const safeLists = lists.map((list) => ({
+        const safeLists = lists.map((list: any) => ({
             ...list,
             createdAt: list.createdAt.toISOString(),
             updatedAt: list.updatedAt.toISOString(),
-            user: {
-                ...list.user,
-                createdAt: list.user.createdAt.toISOString(),
-                updatedAt: list.user.updatedAt.toISOString(),
-                emailVerified: list.user.emailVerified?.toISOString() || null,
-            },
+            user: list.user
+                ? {
+                      ...list.user,
+                      createdAt: list.user.createdAt.toISOString(),
+                      updatedAt: list.user.updatedAt.toISOString(),
+                      emailVerified:
+                          list.user.emailVerified?.toISOString() || null,
+                  }
+                : undefined,
+            recipes: list.recipes
+                ? list.recipes.map((recipe: any) => ({
+                      id: recipe.id,
+                      title: recipe.title,
+                      imageSrc: recipe.imageSrc,
+                  }))
+                : [],
         }));
 
         return NextResponse.json(safeLists);
@@ -125,12 +143,22 @@ export async function POST(request: Request) {
             ...list,
             createdAt: list.createdAt.toISOString(),
             updatedAt: list.updatedAt.toISOString(),
-            user: {
-                ...list.user,
-                createdAt: list.user.createdAt.toISOString(),
-                updatedAt: list.user.updatedAt.toISOString(),
-                emailVerified: list.user.emailVerified?.toISOString() || null,
-            },
+            user: list.user
+                ? {
+                      ...list.user,
+                      createdAt: list.user.createdAt.toISOString(),
+                      updatedAt: list.user.updatedAt.toISOString(),
+                      emailVerified:
+                          list.user.emailVerified?.toISOString() || null,
+                  }
+                : undefined,
+            recipes: (list as any).recipes
+                ? (list as any).recipes.map((recipe: any) => ({
+                      id: recipe.id,
+                      title: recipe.title,
+                      imageSrc: recipe.imageSrc,
+                  }))
+                : [],
         };
 
         return NextResponse.json(safeList);

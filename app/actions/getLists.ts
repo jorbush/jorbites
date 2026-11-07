@@ -21,6 +21,14 @@ export default async function getLists() {
                 user: {
                     select: USER_SELECT_FIELDS,
                 },
+                recipes: {
+                    select: {
+                        id: true,
+                        title: true,
+                        imageSrc: true,
+                    },
+                    take: 4,
+                },
             },
             orderBy: {
                 createdAt: 'desc',
@@ -36,6 +44,14 @@ export default async function getLists() {
                   include: {
                       user: {
                           select: USER_SELECT_FIELDS,
+                      },
+                      recipes: {
+                          select: {
+                              id: true,
+                              title: true,
+                              imageSrc: true,
+                          },
+                          take: 4,
                       },
                   },
                   orderBy: {
@@ -64,6 +80,13 @@ export default async function getLists() {
                           list.user.emailVerified?.toISOString() || null,
                   }
                 : undefined,
+            recipes: list.recipes
+                ? list.recipes.map((recipe: any) => ({
+                      id: recipe.id,
+                      title: recipe.title,
+                      imageSrc: recipe.imageSrc,
+                  }))
+                : [],
         });
 
         const safeCommunityLists = communityLists.map(mapToSafe);
@@ -92,7 +115,7 @@ export default async function getLists() {
                         },
                     },
                 });
-                lists = [defaultList];
+                lists = [{ ...defaultList, recipes: [] }];
             } catch (error: any) {
                 logger.error('getLists - error creating default list', {
                     error: error.message,
@@ -103,6 +126,14 @@ export default async function getLists() {
                     include: {
                         user: {
                             select: USER_SELECT_FIELDS,
+                        },
+                        recipes: {
+                            select: {
+                                id: true,
+                                title: true,
+                                imageSrc: true,
+                            },
+                            take: 4,
                         },
                     },
                     orderBy: { createdAt: 'asc' },

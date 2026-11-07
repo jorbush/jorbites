@@ -35,6 +35,13 @@ const mockMyLists: SafeList[] = [
         name: 'To cook later',
         userId: 'user-id',
         recipeIds: ['recipe-1'],
+        recipes: [
+            {
+                id: 'recipe-1',
+                title: 'Delicious Pasta',
+                imageSrc: 'https://example.com/pasta.jpg',
+            },
+        ],
         isDefault: true,
         isPrivate: true,
         createdAt: new Date().toISOString(),
@@ -204,5 +211,20 @@ describe('ListsClient', () => {
         const authorButtons = screen.getAllByText('Test User');
         fireEvent.click(authorButtons[0]);
         expect(mockPush).toHaveBeenCalledWith('/profile/user-id');
+    });
+
+    it('renders recipes preview and preview header on list cards', () => {
+        render(
+            <ListsClient
+                initialMyLists={mockMyLists}
+                initialCommunityLists={mockCommunityLists}
+                currentUser={mockUser}
+            />
+        );
+
+        expect(screen.getAllByText('PREVIEW_RECIPES').length).toBeGreaterThan(
+            0
+        );
+        expect(screen.getByAltText('Delicious Pasta')).toBeDefined();
     });
 });
