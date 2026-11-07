@@ -9,33 +9,10 @@ import getCommentsByRecipeId from '@/app/actions/getCommentsByRecipeId';
 import getCooksnapsByRecipeId from '@/app/actions/getCooksnapsByRecipeId';
 import getRecipeRemixes from '@/app/actions/getRecipeRemixes';
 import { trackRecipeView } from '@/app/actions/tracking';
+import { createOGImageUrl } from '@/app/utils/seo-utils';
 
 interface IParams {
     recipeId?: string;
-}
-
-function createOGImageUrl(cloudinaryUrl: string | null): string {
-    if (!cloudinaryUrl) return '/jorbites-social.jpg';
-
-    if (!cloudinaryUrl.includes('cloudinary.com')) {
-        return cloudinaryUrl;
-    }
-
-    try {
-        const cloudinaryRegex =
-            /^(https?:\/\/res\.cloudinary\.com\/[^/]+)\/image\/upload(?:\/([^/]+))?\/(.+)$/;
-        const matches = cloudinaryUrl.match(cloudinaryRegex);
-
-        if (matches) {
-            const [, baseUrl, _existingTransforms, imagePath] = matches;
-            return `${baseUrl}/image/upload/f_auto,q_auto:good,w_1200,h_630,c_fill/${imagePath}`;
-        } else {
-            return cloudinaryUrl;
-        }
-    } catch (error) {
-        console.error('Error creating OG image URL:', error);
-        return cloudinaryUrl;
-    }
 }
 
 export async function generateMetadata(props: {
