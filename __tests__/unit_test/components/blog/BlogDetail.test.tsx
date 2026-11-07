@@ -261,4 +261,95 @@ describe('BlogDetail', () => {
         // Check if "See more" section is NOT displayed
         expect(screen.queryByText('see_more')).toBeNull();
     });
+
+    it('renders semantic HTML elements for Safari and Chrome Reader Mode', () => {
+        const { container } = render(
+            <BlogDetail
+                blog={mockBlog}
+                author={mockAuthor}
+                relatedBlogs={[]}
+            />
+        );
+
+        // Check <article> root with Schema.org BlogPosting
+        const article = container.querySelector('article');
+        expect(article).not.toBeNull();
+        expect(article?.getAttribute('itemtype')).toBe(
+            'https://schema.org/BlogPosting'
+        );
+
+        // Check <nav> for top back/share controls
+        const nav = container.querySelector('nav');
+        expect(nav).not.toBeNull();
+
+        // Check <header>
+        const header = container.querySelector('header');
+        expect(header).not.toBeNull();
+
+        // Check headline itemprop
+        const h1 = container.querySelector('h1[itemprop="headline"]');
+        expect(h1).not.toBeNull();
+
+        // Check <time> element with datePublished and dateTime attribute
+        const time = container.querySelector(
+            'time[itemprop="datePublished"][datetime="2025-08-29"]'
+        );
+        expect(time).not.toBeNull();
+
+        // Check author Person itemprop and rel="author"
+        const authorWrapper = container.querySelector(
+            '[itemprop="author"][itemtype="https://schema.org/Person"]'
+        );
+        expect(authorWrapper).not.toBeNull();
+        const authorName = container.querySelector('[itemprop="name"]');
+        expect(authorName?.textContent).toBe('Test Author');
+
+        // Check article body container
+        const bodySection = container.querySelector('[itemprop="articleBody"]');
+        expect(bodySection).not.toBeNull();
+        expect(bodySection?.classList.contains('article-body')).toBe(true);
+        expect(bodySection?.classList.contains('entry-content')).toBe(true);
+    });
+
+    it('renders related blogs inside an <aside> landmark element', () => {
+        const relatedBlogs: Blog[] = [
+            {
+                id: 'related-1',
+                slug: 'related-1',
+                frontmatter: {
+                    title: 'Related Blog 1',
+                    description: 'First related blog',
+                    date: '2025-08-28',
+                    user_id: '789',
+                },
+                content: 'Content 1',
+                language: 'en',
+                category: 'general',
+            },
+        ];
+
+        const { container } = render(
+            <BlogDetail
+                blog={mockBlog}
+                author={mockAuthor}
+                relatedBlogs={relatedBlogs}
+            />
+        );
+
+        const aside = container.querySelector('aside');
+        expect(aside).not.toBeNull();
+    });
+
+    it('renders article description with itemprop="description" for reader mode', () => {
+        const { container } = render(
+            <BlogDetail
+                blog={mockBlog}
+                author={mockAuthor}
+            />
+        );
+
+        const description = container.querySelector('[itemprop="description"]');
+        expect(description).not.toBeNull();
+        expect(description?.textContent).toBe(mockBlog.frontmatter.description);
+    });
 });

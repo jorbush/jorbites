@@ -1,8 +1,9 @@
 'use client';
 
+import '@/app/i18n';
 import Container from '@/app/components/utils/Container';
 import { useTranslation } from 'react-i18next';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Blog } from '@/app/utils/markdownUtils';
 import BlogDetail, {
     BlogDetailSkeleton,
@@ -16,48 +17,86 @@ import { fetcher, axiosFetcher } from '@/app/utils/fetcher';
 interface BlogDetailClientProps {
     id: string;
     lang?: string;
+    initialBlog?: Blog | null;
+    initialAuthor?: SafeUser | null;
+    initialRelatedBlogs?: Blog[];
 }
 
-const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id, lang }) => {
+const BlogDetailClient: React.FC<BlogDetailClientProps> = ({
+    id,
+    lang,
+    initialBlog,
+    initialAuthor,
+    initialRelatedBlogs = [],
+}) => {
     const { t, i18n } = useTranslation();
     const { push } = useRouter() || {};
 
     useTheme();
 
-    const currentLang = lang || i18n.language || 'en';
+    const [clientLang, setClientLang] = useState<string | null>(null);
+
+    useEffect(() => {
+        const handleLanguageChanged = (newLang: string) => {
+            if (newLang) setClientLang(newLang);
+        };
+        i18n.on('languageChanged', handleLanguageChanged);
+        return () => {
+            i18n.off('languageChanged', handleLanguageChanged);
+        };
+    }, [i18n]);
+
+    const currentLang =
+        clientLang || lang || initialBlog?.language || i18n.language || 'es';
+
+    const isMatchingInitialBlog = Boolean(
+        initialBlog && initialBlog.language === currentLang
+    );
 
     const {
         data: blog,
         error: blogError,
         isLoading: blogLoading,
-    } = useSWR<Blog>(`/api/blogs/${id}?lang=${currentLang}`, fetcher);
-
-    const { data: authorData } = useSWR<SafeUser>(
-        blog?.frontmatter?.user_id
-            ? `/api/user/${blog.frontmatter.user_id}`
-            : null,
-        axiosFetcher
+    } = useSWR<Blog>(
+        `/api/blogs/${id}?lang=${currentLang}`,
+        fetcher,
+        isMatchingInitialBlog ? { fallbackData: initialBlog! } : undefined
     );
 
-    const author = authorData || null;
+    const activeBlog = blog || (isMatchingInitialBlog ? initialBlog : null);
+
+    const { data: authorData } = useSWR<SafeUser>(
+        activeBlog?.frontmatter?.user_id
+            ? `/api/user/${activeBlog.frontmatter.user_id}`
+            : null,
+        axiosFetcher,
+        initialAuthor ? { fallbackData: initialAuthor } : undefined
+    );
+
+    const author = authorData || initialAuthor || null;
 
     const relatedCategory =
-        blog?.category === 'releases' ? 'releases' : 'general';
+        activeBlog?.category === 'releases' ? 'releases' : 'general';
     const { data: relatedBlogsData } = useSWR(
-        blog
+        activeBlog
             ? `/api/blogs?lang=${currentLang}&pageSize=4&category=${relatedCategory}`
             : null,
-        fetcher
+        fetcher,
+        initialRelatedBlogs.length > 0 && isMatchingInitialBlog
+            ? { fallbackData: { blogs: initialRelatedBlogs, totalPages: 1 } }
+            : undefined
     );
 
     const relatedBlogs = useMemo(() => {
-        if (!relatedBlogsData?.blogs) return [];
-        return relatedBlogsData.blogs
-            .filter((b: Blog) => b.id !== id)
-            .slice(0, 3);
-    }, [relatedBlogsData, id]);
+        if (relatedBlogsData?.blogs) {
+            return relatedBlogsData.blogs
+                .filter((b: Blog) => b.id !== id)
+                .slice(0, 2);
+        }
+        return isMatchingInitialBlog ? initialRelatedBlogs : [];
+    }, [relatedBlogsData, id, initialRelatedBlogs, isMatchingInitialBlog]);
 
-    const loading = blogLoading;
+    const loading = blogLoading && !activeBlog;
 
     const error = useMemo(() => {
         if (!blogError) return null;
@@ -70,25 +109,27 @@ const BlogDetailClient: React.FC<BlogDetailClientProps> = ({ id, lang }) => {
             {loading ? (
                 <BlogDetailSkeleton />
             ) : error ? (
-                <div className="py-10 text-center">
-                    <h2 className="mb-4 text-2xl font-semibold text-red-500 dark:text-red-400">
+                <div className="mx-auto max-w-md py-16 text-center">
+                    <h2 className="mb-2 text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
                         {error}
                     </h2>
-                    <p className="mb-6 text-neutral-600 dark:text-neutral-400">
-                        {t('blog_not_found_message') ||
-                            "The blog post you're looking for could not be found."}
+                    <p className="mb-6 text-sm text-neutral-600 dark:text-neutral-400">
+                        {t(
+                            'blog_not_found_message',
+                            "The blog post you're looking for could not be found."
+                        )}
                     </p>
                     <button
                         type="button"
                         onClick={() => push('/blog')}
-                        className="bg-green-450 cursor-pointer rounded-lg px-4 py-2 text-black"
+                        className="inline-flex cursor-pointer items-center justify-center rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
                     >
-                        {t('back_to_blog') || 'Back to Blog'}
+                        {t('back_to_blog', 'Back to Blog')}
                     </button>
                 </div>
-            ) : blog ? (
+            ) : activeBlog ? (
                 <BlogDetail
-                    blog={blog}
+                    blog={activeBlog}
                     author={author}
                     relatedBlogs={relatedBlogs}
                 />

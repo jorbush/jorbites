@@ -1,11 +1,11 @@
 'use client';
 
+import React from 'react';
 import { Blog } from '@/app/utils/markdownUtils';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import { FiChevronLeft, FiShare2, FiCalendar } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
-import Heading from '@/app/components/navigation/Heading';
 import Link from 'next/link';
 import CustomProxyImage from '@/app/components/optimization/CustomProxyImage';
 import { Components } from 'react-markdown';
@@ -14,6 +14,7 @@ import { SafeUser } from '@/app/types';
 import Avatar from '@/app/components/utils/Avatar';
 import VerificationBadge from '@/app/components/VerificationBadge';
 import useShare from '@/app/hooks/useShare';
+import useIsMounted from '@/app/hooks/useIsMounted';
 import BlogCard from '@/app/components/blog/BlogCard';
 
 interface BlogDetailProps {
@@ -32,13 +33,17 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
     const { t, i18n } = useTranslation();
     const { back, push } = useRouter() || {};
     const { share } = useShare();
+    const mounted = useIsMounted();
 
-    const dateDisplay = formatDate(blog.frontmatter.date, i18n.language);
+    const dateDisplay = formatDate(
+        blog.frontmatter.date,
+        blog.language || i18n.language
+    );
 
     const markdownComponents: Components = {
         h1: ({ children, ...props }) => (
             <h1
-                className="mt-6 mb-4 text-3xl font-semibold"
+                className="mt-8 mb-4 text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white"
                 {...props}
             >
                 {children}
@@ -46,7 +51,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
         ),
         h2: ({ children, ...props }) => (
             <h2
-                className="mt-5 mb-3 text-2xl font-semibold"
+                className="mt-7 mb-3 text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl dark:text-white"
                 {...props}
             >
                 {children}
@@ -54,22 +59,47 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
         ),
         h3: ({ children, ...props }) => (
             <h3
-                className="mt-4 mb-2 text-xl font-semibold"
+                className="mt-6 mb-2 text-lg font-bold text-neutral-900 sm:text-xl dark:text-white"
                 {...props}
             >
                 {children}
             </h3>
         ),
-        p: (props) => (
-            <p
-                className="mb-4"
-                {...props}
-            />
-        ),
+        p: ({ node, children, ...props }) => {
+            const hasBlockChild = (n: any): boolean => {
+                if (!n) return false;
+                if (
+                    n.type === 'element' &&
+                    (n.tagName === 'img' ||
+                        n.tagName === 'div' ||
+                        n.tagName === 'figure' ||
+                        n.tagName === 'pre')
+                ) {
+                    return true;
+                }
+                if (Array.isArray(n.children)) {
+                    return n.children.some(hasBlockChild);
+                }
+                return false;
+            };
+
+            if (hasBlockChild(node)) {
+                return <div className="mb-5">{children}</div>;
+            }
+
+            return (
+                <p
+                    className="mb-5 text-base leading-relaxed text-neutral-700 dark:text-neutral-300"
+                    {...props}
+                >
+                    {children}
+                </p>
+            );
+        },
         a: ({ href, children, ...props }) => (
             <Link
                 href={href || '#'}
-                className="text-green-450 hover:underline"
+                className="decoration-green-450 hover:text-green-450 dark:hover:text-green-450 font-medium text-neutral-900 underline decoration-2 underline-offset-4 transition-colors duration-200 dark:text-neutral-100"
                 {...props}
             >
                 {children}
@@ -77,25 +107,31 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
         ),
         ul: (props) => (
             <ul
-                className="mb-4 ml-6 list-disc"
+                className="mb-5 ml-6 list-disc space-y-1 text-neutral-700 dark:text-neutral-300"
                 {...props}
             />
         ),
         ol: (props) => (
             <ol
-                className="mb-4 ml-6 list-decimal"
+                className="mb-5 ml-6 list-decimal space-y-1 text-neutral-700 dark:text-neutral-300"
                 {...props}
             />
         ),
         li: (props) => (
             <li
-                className="mb-1"
+                className="mb-1 leading-relaxed"
+                {...props}
+            />
+        ),
+        blockquote: (props) => (
+            <blockquote
+                className="border-green-450 bg-green-450/5 my-5 rounded-r-xl border-l-4 py-3 pr-4 pl-4 text-neutral-700 italic dark:text-neutral-300"
                 {...props}
             />
         ),
         strong: (props) => (
             <strong
-                className="font-semibold"
+                className="font-bold text-neutral-900 dark:text-white"
                 {...props}
             />
         ),
@@ -105,10 +141,26 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                 {...props}
             />
         ),
+        code: ({ children, ...props }) => (
+            <code
+                className="rounded-md border border-neutral-200/60 bg-neutral-100 px-1.5 py-0.5 font-mono text-xs text-neutral-800 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-200"
+                {...props}
+            >
+                {children}
+            </code>
+        ),
+        pre: ({ children, ...props }) => (
+            <pre
+                className="my-5 overflow-x-auto rounded-2xl border border-neutral-200/80 bg-neutral-900 p-4 font-mono text-xs text-neutral-100 dark:border-neutral-800"
+                {...props}
+            >
+                {children}
+            </pre>
+        ),
         img: ({ src, alt }) => {
             if (!src || typeof src !== 'string') return null;
             return (
-                <span className="my-6 block overflow-hidden rounded-xl">
+                <figure className="my-6 block overflow-hidden rounded-2xl border border-neutral-200/80 shadow-xs dark:border-neutral-800">
                     <CustomProxyImage
                         src={src}
                         alt={alt || 'Blog Image'}
@@ -119,88 +171,175 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                         sizes="(max-width: 800px) 100vw, 800px"
                         style={{ width: '100%', height: 'auto' }}
                     />
-                </span>
+                </figure>
             );
         },
     };
 
     return (
         <div className="mx-auto max-w-[800px] px-4 py-6 dark:text-neutral-100">
-            <div className="mb-6 flex items-baseline justify-between">
+            {/* Top Navigation Bar matching Recipe page */}
+            <nav
+                aria-label={
+                    mounted
+                        ? t('article_navigation') || 'Article navigation'
+                        : 'Article navigation'
+                }
+                className="mb-6 flex items-center justify-between gap-2 sm:gap-4"
+            >
                 <button
                     type="button"
-                    className="mr-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    className="group inline-flex shrink-0 cursor-pointer items-center gap-2 text-sm font-semibold text-neutral-600 transition-colors duration-200 hover:text-neutral-900 focus:outline-hidden md:w-auto dark:text-neutral-400 dark:hover:text-white"
                     onClick={() => back()}
-                    aria-label={t('back') as string}
+                    aria-label={mounted ? t('back') || 'Go back' : 'Go back'}
                 >
-                    <FiChevronLeft className="text-xl" />
+                    <div className="flex size-9 items-center justify-center rounded-xl border border-neutral-200/80 bg-white text-neutral-700 shadow-2xs transition-colors duration-200 group-hover:border-neutral-300 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:group-hover:border-neutral-600">
+                        <FiChevronLeft size={18} />
+                    </div>
+                    <span className="hidden text-xs font-semibold md:inline">
+                        {mounted ? t('back') || 'Back' : 'Back'}
+                    </span>
                 </button>
-                <Heading
-                    title={blog.frontmatter.title}
-                    center
-                />
+
                 <button
                     type="button"
-                    className="ml-4 flex translate-y-3 cursor-pointer items-center gap-2 text-neutral-600 focus:outline-hidden md:translate-y-0 dark:text-neutral-100"
+                    className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-neutral-200/80 bg-white text-neutral-700 shadow-2xs transition-colors duration-200 hover:border-neutral-300 focus:outline-hidden md:w-auto md:gap-2 md:px-3 dark:border-neutral-700/60 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-600"
                     onClick={() => share({ title: blog.frontmatter.title })}
                     aria-label="Share"
                 >
-                    <FiShare2 className="text-xl" />
+                    <FiShare2 size={16} />
+                    <span className="hidden text-xs font-semibold md:inline">
+                        {mounted ? t('share') || 'Share' : 'Share'}
+                    </span>
                 </button>
-            </div>
+            </nav>
 
-            {/* Author Section - matching RecipeInfo styling */}
-            {author && (
-                <div className="mb-6 flex flex-row items-center gap-2">
-                    <Avatar
-                        src={author?.image}
-                        size={40}
-                        onClick={() => push('/profile/' + author.id)}
-                        quality="auto:eco"
-                    />
-                    <div className="flex flex-col">
-                        <div className="flex flex-row items-center">
-                            <button
-                                type="button"
-                                className="cursor-pointer text-left text-xl font-semibold focus:outline-hidden dark:text-neutral-100"
-                                onClick={() => push('/profile/' + author.id)}
+            {/* Main Article Container */}
+            <article
+                itemScope
+                itemType="https://schema.org/BlogPosting"
+                className="article-content"
+            >
+                <header className="mb-8">
+                    {/* Article Title */}
+                    <h1
+                        itemProp="headline"
+                        className="mb-4 text-3xl leading-tight font-extrabold tracking-tight text-neutral-900 sm:text-4xl lg:text-5xl dark:text-white"
+                    >
+                        {blog.frontmatter.title}
+                    </h1>
+
+                    {/* Article Lead Description */}
+                    {blog.frontmatter.description && (
+                        <p
+                            itemProp="description"
+                            className="mb-6 text-lg leading-relaxed text-neutral-600 sm:text-xl dark:text-neutral-300"
+                        >
+                            {blog.frontmatter.description}
+                        </p>
+                    )}
+
+                    {/* Author & Metadata Section */}
+                    {author ? (
+                        <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-neutral-200/80 bg-neutral-50/60 p-4 dark:border-neutral-800 dark:bg-neutral-900/60">
+                            <div
+                                className="flex items-center gap-3"
+                                itemProp="author"
+                                itemScope
+                                itemType="https://schema.org/Person"
                             >
-                                {author.name}
-                            </button>
-                            {author.verified && (
-                                <VerificationBadge
-                                    className="mt-1 ml-1"
-                                    size={20}
+                                <Avatar
+                                    src={author?.image}
+                                    size={44}
+                                    onClick={() =>
+                                        push('/profile/' + author.id)
+                                    }
+                                    quality="auto:eco"
                                 />
-                            )}
-                        </div>
-                        {typeof author.level === 'number' && (
-                            <div className="text-sm text-neutral-400">
-                                {`${t('level')} ${author.level}`}
+                                <div>
+                                    <div className="flex items-center gap-1.5">
+                                        <button
+                                            type="button"
+                                            rel="author"
+                                            className="hover:text-green-450 dark:hover:text-green-450 cursor-pointer text-left text-base font-bold text-neutral-900 transition-colors duration-200 focus:outline-hidden dark:text-neutral-100"
+                                            onClick={() =>
+                                                push('/profile/' + author.id)
+                                            }
+                                        >
+                                            <span itemProp="name">
+                                                {author.name}
+                                            </span>
+                                        </button>
+                                        {author.verified && (
+                                            <VerificationBadge size={16} />
+                                        )}
+                                    </div>
+                                    {typeof author.level === 'number' && (
+                                        <div className="mt-0.5">
+                                            <span
+                                                suppressHydrationWarning
+                                                className="border-green-450/40 bg-green-450/15 dark:text-green-450 inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold text-neutral-900"
+                                            >
+                                                {`${mounted ? t('level', 'Level') : 'Level'} ${author.level}`}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        )}
-                    </div>
+
+                            <div className="flex items-center gap-1.5 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                                <FiCalendar size={14} />
+                                <time
+                                    dateTime={blog.frontmatter.date}
+                                    itemProp="datePublished"
+                                    suppressHydrationWarning
+                                >
+                                    {dateDisplay}
+                                </time>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-1.5 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                            <FiCalendar size={14} />
+                            <time
+                                dateTime={blog.frontmatter.date}
+                                itemProp="datePublished"
+                                suppressHydrationWarning
+                            >
+                                {dateDisplay}
+                            </time>
+                        </div>
+                    )}
+                </header>
+
+                {/* Markdown Body */}
+                <div
+                    itemProp="articleBody"
+                    className="prose dark:prose-invert article-body entry-content post-content max-w-none"
+                >
+                    <ReactMarkdown components={markdownComponents}>
+                        {blog.content}
+                    </ReactMarkdown>
                 </div>
-            )}
+            </article>
 
-            <div className="mb-6 flex items-center text-neutral-500 dark:text-neutral-400">
-                <FiCalendar className="mr-2 text-lg" />
-                <span>{dateDisplay}</span>
-            </div>
-
-            <div className="prose dark:prose-invert max-w-none">
-                <ReactMarkdown components={markdownComponents}>
-                    {blog.content}
-                </ReactMarkdown>
-            </div>
-
-            {/* See More Section */}
+            {/* See More Section - Strictly 1 column on < md, 2 columns on md and larger screens */}
             {relatedBlogs.length > 0 && (
-                <div className="mt-12 border-t border-neutral-200 pt-8 dark:border-neutral-700">
-                    <h2 className="mb-6 text-2xl font-semibold dark:text-neutral-100">
-                        {t('see_more') || 'See more'}
+                <aside
+                    aria-label={
+                        mounted
+                            ? t('see_more') || 'Related articles'
+                            : 'Related articles'
+                    }
+                    className="mt-14 border-t border-neutral-200/80 pt-10 dark:border-neutral-800"
+                >
+                    <h2
+                        suppressHydrationWarning
+                        className="mb-6 text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl dark:text-white"
+                    >
+                        {mounted ? t('see_more', 'See more') : 'See more'}
                     </h2>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         {relatedBlogs.map((relatedBlog) => (
                             <BlogCard
                                 key={relatedBlog.id}
@@ -208,7 +347,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                             />
                         ))}
                     </div>
-                </div>
+                </aside>
             )}
         </div>
     );
@@ -217,31 +356,34 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
 export const BlogDetailSkeleton = () => {
     return (
         <div className="mx-auto max-w-[800px] px-4 py-6">
-            <div className="mb-6 flex items-baseline justify-between">
-                <div className="size-6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="mx-auto h-8 w-2/3 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="size-6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-            </div>
-
-            <div className="mb-6 flex items-center gap-3">
-                <div className="size-10 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="flex-1">
-                    <div className="mb-1 h-5 w-32 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                    <div className="h-4 w-20 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+            <div className="mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <div className="size-9 animate-pulse rounded-xl bg-neutral-200 dark:bg-neutral-800" />
+                    <div className="hidden h-4 w-10 animate-pulse rounded bg-neutral-200 md:inline dark:bg-neutral-800" />
                 </div>
+                <div className="size-9 animate-pulse rounded-xl bg-neutral-200 dark:bg-neutral-800" />
             </div>
 
-            <div className="mb-6 flex items-center">
-                <div className="mr-2 size-4 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="h-4 w-1/3 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+            <div className="mb-4 h-10 w-3/4 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-800" />
+
+            <div className="mb-8 flex items-center justify-between rounded-2xl border border-neutral-200/80 bg-neutral-50/60 p-4 dark:border-neutral-800 dark:bg-neutral-900/60">
+                <div className="flex items-center gap-3">
+                    <div className="size-11 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
+                    <div className="space-y-1.5">
+                        <div className="h-4 w-28 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
+                        <div className="h-3 w-16 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
+                    </div>
+                </div>
+                <div className="h-4 w-24 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
             </div>
 
-            <div className="flex flex-col gap-4">
-                <div className="h-4 w-full animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="h-4 w-5/6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="h-4 w-4/5 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="h-4 w-full animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
-                <div className="h-4 w-3/4 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700"></div>
+            <div className="space-y-4">
+                <div className="h-4 w-full animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
+                <div className="h-4 w-5/6 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
+                <div className="h-4 w-4/5 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
+                <div className="h-44 w-full animate-pulse rounded-2xl bg-neutral-200 dark:bg-neutral-800" />
+                <div className="h-4 w-full animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
+                <div className="h-4 w-3/4 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
             </div>
         </div>
     );
